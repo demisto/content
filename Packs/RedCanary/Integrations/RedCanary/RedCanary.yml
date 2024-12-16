@@ -43,11 +43,18 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: Maximum number of incidents to pull per fetch
+  name: fetch_limit
+  type: 0
+  defaultvalue: "2"
+  section: Collect
+  additionalinfo: A maximum detections to fetch in each iteration.
+  required: false
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.11.10.115186
   commands:
   - name: redcanary-acknowledge-detection
     arguments:

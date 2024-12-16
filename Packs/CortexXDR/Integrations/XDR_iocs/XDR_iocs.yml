@@ -111,7 +111,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - display: ''
   name: feedExpirationInterval
@@ -123,7 +122,7 @@ configuration:
   defaultvalue: 'true'
   hidden: true
   required: false
-- defaultvalue: '1'
+- defaultvalue: '15'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
@@ -135,10 +134,15 @@ configuration:
   defaultvalue: 'sourceoriginalseverity'
   required: false
 - defaultvalue: 'comments'
-  additionalinfo: The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
-  display: XSOAR Comment Field
+  additionalinfo: 'The Cortex XSOAR field where comments are stored and being export to XDR. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary).'
+  display: XSOAR Comment Field Exporting To XDR
   name: xsoar_comments_field
-  type: 0
+  options:
+  - indicator_link
+  - comments
+  type: 16
+  section: Collect
+  advanced: true
   required: false
 - defaultvalue: 'false'
   additionalinfo: Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`.
@@ -156,6 +160,13 @@ configuration:
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
+- display: Extensive logging (for debugging purposes)
+  additionalinfo: Do not use this option unless advised otherwise. Using this parameter may result in increased processing time.
+  name: extensive_logs
+  type: 8
+  section: Collect
+  advanced: true
   required: false
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Cortex XDR - IOC
@@ -175,10 +186,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Sync your IOC with Cortex XDR and delete the old.
+    description: Sync your IOC with Cortex XDR.
     name: xdr-iocs-sync
   - arguments:
-    - description: IOCs to push. leave empty to push all recently modified IOCs.the indicators.
+    - description: The indicators to be pushed. Leave empty to push all recently modified IOCs.
       name: indicator
       isArray: true
     description: Push modified IOCs to Cortex XDR.
@@ -215,7 +226,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

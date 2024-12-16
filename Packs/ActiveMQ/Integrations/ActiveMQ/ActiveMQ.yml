@@ -23,11 +23,11 @@ configuration:
   required: false
 - display: '--------------------- Certificate Authentication ---------------------                         Client certificate (.pem)'
   name: client_cert
-  type: 12
+  type: 14
   required: false
 - display: Client certificate key (.key)
   name: client_key
-  type: 12
+  type: 14
   required: false
 - display: Root Certificate
   name: root_ca
@@ -54,7 +54,7 @@ configuration:
   name: queue_name
   type: 0
   required: false
-description: Integration with ActiveMQ queue
+description: Integration with ActiveMQ queue.
 display: ActiveMQ
 name: ActiveMQ
 script:
@@ -66,7 +66,7 @@ script:
     - description: The content of the message to send.
       name: body
       required: true
-    - description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}'
+    - description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}.'
       name: headers
     description: Sends a message to the specified destination.
     name: activemq-send
@@ -81,7 +81,7 @@ script:
       name: queue-name
     description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     name: activemq-subscribe
-  dockerimage: demisto/py3-tools:1.0.0.49475
+  dockerimage: demisto/py3-tools:1.0.0.114656
   isfetch: true
   runonce: false
   script: '-'

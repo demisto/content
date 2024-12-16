@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5f79deee-3355-46a6-89b7-389326b6121e
+    taskid: e7a0c648-4655-489b-8b5f-d2e9933c32c6
     type: start
     task:
-      id: 5f79deee-3355-46a6-89b7-389326b6121e
+      id: e7a0c648-4655-489b-8b5f-d2e9933c32c6
       version: -1
       name: ""
       iscommand: false
@@ -17,12 +17,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
@@ -35,10 +36,157 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 97ecc205-d585-4b9e-8b79-99a416713f03
+    taskid: e3125302-cca2-4074-80b0-0b97e593cd7b
     type: playbook
     task:
-      id: 97ecc205-d585-4b9e-8b79-99a416713f03
+      id: e3125302-cca2-4074-80b0-0b97e593cd7b
+      version: -1
+      name: GenericPolling with Cluster IP Address
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: cluster_id,cluster_ip_address
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.ClusterId
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.cluster_ip_address
+                iscontext: true
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      Ids:
+        complex:
+          root: inputs.RequestId
+      Interval:
+        complex:
+          root: inputs.PollingInterval
+      PollingCommandArgName:
+        simple: request_id
+      PollingCommandName:
+        simple: rubrik-gps-async-result
+      Timeout:
+        complex:
+          root: inputs.PollingTimeout
+      dt:
+        simple: RubrikPolaris.GPSAsyncResult(val.status === 'RUNNING' || val.status === 'QUEUED' || val.status === 'ACQUIRING').id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 00e52f45-004a-4078-83f5-cd64777beb14
+    type: regular
+    task:
+      id: 00e52f45-004a-4078-83f5-cd64777beb14
+      version: -1
+      name: Get async results
+      description: Retrieve the result of an asynchronous request. This command will retrieve the result of requests made by commands "rubrik-gps-snapshot-files-download", "rubrik-gps-vm-livemount", "rubrik-gps-vm-export" and "rubrik-gps-vm-snapshot-create".
+      script: '|||rubrik-gps-async-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: inputs.ClusterId
+      cluster_ip_address:
+        complex:
+          root: inputs.cluster_ip_address
+      request_id:
+        complex:
+          root: inputs.RequestId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3749f6c7-ea16-46e2-803b-2a4f9eb47d04
+    type: title
+    task:
+      id: 3749f6c7-ea16-46e2-803b-2a4f9eb47d04
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2ade9a95-3458-4ee0-8b13-3323eb77356a
+    type: playbook
+    task:
+      id: 2ade9a95-3458-4ee0-8b13-3323eb77356a
       version: -1
       name: GenericPolling
       description: |-
@@ -76,9 +224,9 @@ tasks:
         complex:
           root: inputs.PollingTimeout
       dt:
-        simple: RubrikPolaris.GPSAsyncResult(val.status === 'RUNNING' || val.status
-          === 'QUEUED' || val.status === 'ACQUIRING').id
+        simple: RubrikPolaris.GPSAsyncResult(val.status === 'RUNNING' || val.status === 'QUEUED' || val.status === 'ACQUIRING').id
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -87,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -98,64 +246,37 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 5e3c09a3-62c7-475e-8f49-ceab510e5afa
-    type: regular
+  "8":
+    id: "8"
+    taskid: cf09feb1-c59e-4529-8370-7758a827f577
+    type: condition
     task:
-      id: 5e3c09a3-62c7-475e-8f49-ceab510e5afa
+      id: cf09feb1-c59e-4529-8370-7758a827f577
       version: -1
-      name: Get async results
-      description: Retrieve the result of an asynchronous request. This command will
-        retrieve the result of requests made by commands "rubrik-gps-snapshot-files-download",
-        "rubrik-gps-vm-livemount", "rubrik-gps-vm-export" and "rubrik-gps-vm-snapshot-create".
-      script: '|||rubrik-gps-async-result'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      cluster_id:
-        complex:
-          root: inputs.ClusterId
-      request_id:
-        complex:
-          root: inputs.RequestId
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 405
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 7991cbac-80b8-4747-8b50-d5c09bace317
-    type: title
-    task:
-      id: 7991cbac-80b8-4747-8b50-d5c09bace317
-      version: -1
-      name: Done
-      type: title
+      name: Does Cluster IP address exists?
+      description: Check if the Cluster IP address exists in the playbook input.
+      scriptName: Exists
+      type: condition
       iscommand: false
       brand: ""
-      description: ''
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.cluster_ip_address
+          transformers:
+          - operator: trim
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 580
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -170,9 +291,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 595,
-        "width": 380,
-        "x": 450,
+        "height": 735,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
@@ -198,8 +319,15 @@ inputs:
   value:
     simple: "720"
   required: false
-  description: Amount of time to poll before declaring a timeout and resuming the
-    playbook (in minutes).
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+  playbookInputQuery:
+- key: cluster_ip_address
+  value: {}
+  required: false
+  description: |-
+    IP address of the cluster node to access the download link. Only required to retrieve the results of the command "rubrik-gps-snapshot-files-download".
+
+    Note: Users can retrieve the list of the IP addresses by executing the "rubrik-gps-cluster-list" command.
   playbookInputQuery:
 outputs:
 - contextPath: RubrikPolaris.GPSAsyncResult

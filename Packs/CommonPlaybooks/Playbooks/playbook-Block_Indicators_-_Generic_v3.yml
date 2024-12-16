@@ -1174,7 +1174,7 @@ tasks:
     type: condition
     task:
       id: 4b64da5f-53b9-4fdd-8e65-5a133c6700d6
-      description: ""
+      description: "Looks for available indicators to process"
       version: -1
       name: Are there indicators to block?
       type: condition
@@ -1551,12 +1551,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Should the given indicators be automatically blocked, or should the user be given the option to choose?
-
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
+  description: "Should the given indicators be automatically blocked, or should the user be prompted to select whether to block them?\n\nPossible values: True/False. \nDefault value: True.\n\nIf set to True - No prompt will appear. All of the provided indicators will be blocked automatically.\n\nIf set to False - The user will be prompted to select which indicators to block."
   playbookInputQuery:
 - key: CustomBlockRule
   value:
@@ -1630,9 +1625,28 @@ inputs:
   description: "Possible values: True/False.  Default: True.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: SiteName
   value: {}

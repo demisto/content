@@ -1,4 +1,3 @@
-
 import pytest
 
 import MimecastV2
@@ -50,8 +49,18 @@ policy_args = {
     'fromType': 'free_mail_domains',
     'fromValue': 'gmail.com',
     'toType': 'email_domain',
-    'toValue': 'gmail.com'
+    'toValue': 'gmail.com',
+    'bidirectional': '',
+    'comment': '',
+    'enabled': '',
+    'enforced': '',
+    'override': '',
+    'toDate': '',
+    'fromDate': '',
+    'fromEternal': '',
+    'toEternal': ''
 }
+
 
 get_args_response = (policy_args, 'no_action')
 
@@ -113,7 +122,7 @@ def test_update_policy(mocker):
     mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
 
-    res = MimecastV2.update_policy()
+    res = MimecastV2.update_policy_command()
     assert res['Contents']['Description'] == 'new new'
     assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
 
@@ -122,7 +131,7 @@ def test_update_policy(mocker):
                         return_value=set_empty_value_args_res_list_all)
     mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    res = MimecastV2.update_policy()
+    res = MimecastV2.update_policy_command()
     assert res['Contents']['Description'] == 'new new'
     assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
     assert res['Contents']['Sender']['Domain'] == 'gmail.com'
@@ -660,6 +669,56 @@ def test_empty_query(mocker):
     assert len(results.get('Contents')) == 0
 
 
+def test_query_email_arguments(requests_mock):
+    """
+    Test case for the 'query' function of the MimecastV2 integration with email arguments.
+
+    GIVEN:
+        - A mocked HTTP request to Mimecast API with specific email parameters.
+    WHEN:
+        - The 'query' function is called with sentTo, sentFrom, and subject arguments.
+    THEN:
+        - Ensure the request body matches the expected XML structure with the correct values.
+    """
+    query_data = util_load_json("test_data/query_response.json")
+    expected_body = {'admin': True,
+                     'query': '<?xml version="1.0"?> \n'
+                              '    <xmlquery trace="iql,muse">\n'
+                              '    <metadata query-type="emailarchive" archive="true" '
+                              'active="false" page-size="25" startrow="0">\n'
+                              '        <smartfolders/>\n'
+                              '        <return-fields>\n'
+                              '            <return-field>attachmentcount</return-field>\n'
+                              '            <return-field>status</return-field>\n'
+                              '            <return-field>subject</return-field>\n'
+                              '            <return-field>size</return-field>\n'
+                              '            <return-field>receiveddate</return-field>\n'
+                              '            <return-field>displayfrom</return-field>\n'
+                              '            <return-field>id</return-field>\n'
+                              '            <return-field>displayto</return-field>\n'
+                              '            <return-field>smash</return-field>\n'
+                              '        </return-fields>\n'
+                              '    </metadata>\n'
+                              '    <muse>\n'
+                              '        <text>subject: Test Email Subject</text>\n'
+                              '        <date select="last_year"/>\n'
+                              '        <sent select="from" >sender@example.com</sent><sent '
+                              'select="to" >recipient@example.com</sent>\n'
+                              '        <docs select="optional"></docs>\n'
+                              '        <route/>\n'
+                              '    </muse>\n'
+                              '</xmlquery>'}
+    mocked_post = requests_mock.post(
+        f"{MimecastV2.BASE_URL}/api/archive/search",
+        json=query_data["response"],
+        status_code=200
+    )
+    args = {"sentTo": "recipient@example.com", "sentFrom": "sender@example.com", "subject": "Test Email Subject"}
+    MimecastV2.query(args)
+    sent_body = mocked_post.last_request.json()
+    assert sent_body["data"] == [expected_body], "The request body does not match the expected structure."
+
+
 def test_get_message_metadata_with_attachments(mocker):
     """
         Given: Message metadata from API with attachments.
@@ -686,3 +745,265 @@ def test_get_message_metadata_with_attachments(mocker):
     assert expected_metadata.get('attachments')[0].get('filename') == actual_metadata.get('Attachments')[0].get('FileName')
     assert expected_metadata.get('attachments')[0].get('extension') == actual_metadata.get('Attachments')[0].get('Extension')
     assert expected_metadata.get('attachments')[0].get('id') == actual_metadata.get('Attachments')[0].get('ID')
+
+
+def test_get_archive_search_logs_command(mocker):
+    """
+    Test case for the 'get_archive_search_logs_command' function of the MimecastV2 class,
+    where no 'query_xml' argument is given.
+
+    GIVEN:
+        - A mocked HTTP request to the Mimecast API (using http_request).
+
+    WHEN:
+        - The 'get_archive_search_logs_command' function is called without the 'query_xml' argument.
+
+    THEN:
+        - Make sure no exception is raised.
+    """
+
+    args = {'limit': '5', 'query': 'integration.com'}
+    mock_response = util_load_json('test_data/get_archive_search_logs_response.json')
+    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=mock_response)
+    result = MimecastV2.get_archive_search_logs_command(args)
+    assert result.outputs['data'][0]['logs'] == mock_response[0]['data'][0]['logs']
+    assert result.outputs_prefix == "Mimecast.ArchiveSearchLog"
+
+
+def test_get_search_logs_command(mocker):
+    """
+    Tests the 'get_archive_search_logs_command' function of the MimecastV2 class with various arguments.
+
+    This test mocks the http_request method to return a sample response containing archive search
+    logs data. It then calls the get_archive_search_logs_command function with arguments specifying
+    limit, page, page_size, query, and start date. Finally, it asserts that the extracted logs data
+    matches the expected response.
+
+    Args:
+        mocker (pytest.MonkeyFixture): Pytest mocker fixture used to patch methods.
+    """
+
+    args = {'limit': '50', 'page': '1', 'page_size': '1', 'query': 'aa.aa.aa.aa', 'start': '2017-09-16T14:49:18+0000'}
+    mock_response = util_load_json('test_data/get_search_logs_response.json')
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    result = MimecastV2.get_archive_search_logs_command(args)
+    assert result.outputs == mock_response.get('data')[0]['logs']
+    assert result.outputs_prefix == "Mimecast.ArchiveSearchLog"
+
+
+def test_get_view_logs_command(mocker):
+    """
+    Test the get_view_logs_command function of the MimecastV2 integration.
+
+    Args:
+        mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
+    """
+
+    args = {"end": "2024-09-16T14:49:18+0000", "limit": "2", "query": "example@test.com", "start": "2017-09-16T14:49:18+0000"}
+    mock_response = util_load_json('test_data/get_view_logs_response.json')
+    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
+    result = MimecastV2.get_view_logs_command(args)
+    assert result.outputs["data"] == mock_response[0].get("data")
+    assert result.outputs_prefix == 'Mimecast.ViewLog'
+
+
+def test_list_account_command(mocker):
+    """
+    Test the list_account_command function of the MimecastV2 integration.
+
+    Args:
+        mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
+    """
+
+    args = {'account_code': 'ABC123'}
+    mock_response = util_load_json('test_data/list_account_response.json')
+    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=mock_response)
+    result = MimecastV2.list_account_command(args)
+    assert result.outputs['data'] == mock_response[0].get('data')
+    assert result.outputs_prefix == 'Mimecast.Account'
+    assert result.outputs_key_field == "accountCode"
+
+
+@pytest.mark.parametrize(
+    "args, mock_response, expected_outputs_prefix",
+    [
+        (
+            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'blockedsenders'},
+            (util_load_json('test_data/list_policies_response.json'), 1),
+            'Mimecast.BlockedSendersPolicy'
+        ),
+        (
+            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'antispoofing-bypass'},
+            (util_load_json('test_data/list_policies_response.json'), 1),
+            'Mimecast.AntispoofingBypassPolicy'
+        ),
+        (
+            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'address-alteration'},
+            (util_load_json('test_data/list_policies_response.json'), 1),
+            'Mimecast.AddressAlterationPolicy'
+        ),
+    ]
+)
+def test_list_policies_command(mocker, args, mock_response, expected_outputs_prefix):
+    """
+    Unit test for the list_policies_command function in MimecastV2 integration.
+
+    Given
+    - list_policies_command function from MimecastV2 integration.
+    - command args including policyType set to "address-alteration".
+    - command raw response from the server.
+    When
+    - mock the server response to request_with_pagination.
+    Then
+    - Validate the content of the response to match the expected data structure.
+
+    Args:
+        mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
+    """
+
+    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
+    result = MimecastV2.list_policies_command(args)
+    assert result.outputs == mock_response[0]
+    assert result.outputs_prefix == expected_outputs_prefix
+    assert result.outputs_key_field == 'id'
+
+
+def test_create_antispoofing_bypass_policy_command(mocker):
+    """
+    When:
+        Running create antispoofing bypass policy command.
+
+    Args:
+        mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
+    """
+
+    args = {
+        "bidirectional": "no",
+        "comment": "test",
+        "description": "test",
+        "enabled": "no",
+        "enforced": "no",
+        "from_date": "1 day",
+        "from_eternal": "no",
+        "from_part": "envelope_from",
+        "from_type": "email_domain",
+        "from_value": "googl.com",
+        "option": "disable_bypass",
+        "override": "no",
+        "spf_domain": "google.com",
+        "to_date": "now",
+        "to_eternal": "no",
+        "to_type": "email_domain",
+        "to_value": "google.com",
+    }
+    mock_response = util_load_json('test_data/create_antispoofing_bypass_policy_response.json')
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    result = MimecastV2.create_antispoofing_bypass_policy_command(args)
+    id = mock_response['data'][0]['id']
+    assert result.outputs == mock_response.get("data")
+    assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
+    assert result.readable_output == f'Anti-Spoofing Bypass policy {id} was created successfully'
+    assert result.outputs_key_field == "id"
+
+
+def test_update_antispoofing_bypass_policy_command(mocker):
+    """
+    Given
+    - update_antispoofing_bypass_policy_command function from MimecastV2 integration.
+    - command args including description, enabled, from_eternal, id, option, and to_eternal.
+    - command raw response from the server.
+    When
+    - mock the server response to http_request.
+    Then
+    - Validate the content of the response to match the expected data structure.
+    - Ensure the readable output contains the correct policy ID and success message.
+    - Check the outputs_prefix is correct.
+
+    Args:
+        mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
+    """
+
+    args = {
+        "bidirectional": "no",
+        "description": "test",
+        "enabled": "no",
+        "from_date": "1 day",
+        "from_eternal": "no",
+        "from_part": "both",
+        "option": "disable_bypass",
+        "policy_id": "eNo1jr0Ogj",
+        "to_date": "now",
+        "to_eternal": "yes",
+    }
+    mock_response = util_load_json(
+        "test_data/update_antispoofing_bypass_policy_response.json"
+    )
+    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    result = MimecastV2.update_antispoofing_bypass_policy_command(args)
+    assert mock_response.get('data') == result.outputs
+    assert f'Policy ID- {args["policy_id"]} has been updated successfully.' == result.readable_output
+    assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
+    assert result.outputs_key_field == 'id'
+
+
+def test_update_address_alteration_policy_command(mocker):
+    """Unit test
+    Given
+    - update_address_alteration_policy_command function from MimecastV2 integration.
+    - command args including enabled, enforced, from_eternal, from_type, policy_description, policy_id, to_eternal, and to_type.
+    - command raw response from the server.
+    When
+    - mock the server response to http_request.
+    Then
+    - Validate the content of the response to match the expected data structure.
+    """
+
+    args = {
+        "bidirectional": "no",
+        "comment": "test-comment",
+        "conditions": "8.8.8.8/24",
+        "enabled": "no",
+        "enforced": "no",
+        "from_date": "1 day",
+        "from_eternal": "no",
+        "from_part": "envelope_from",
+        "override": "no",
+        "policy_description": "test",
+        "policy_id": "eNo1jrsOgjA",
+        "to_date": "now",
+        "to_eternal": "no",
+    }
+    id = args["policy_id"]
+    mock_response = util_load_json('test_data/update_address_alteration_policy_response.json')
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    result = MimecastV2.update_address_alteration_policy_command(args)
+    assert result.outputs == mock_response.get("data")
+    assert result.readable_output == f'{id} has been updated successfully'
+    assert result.outputs_prefix == 'Mimecast.AddressAlterationPolicy'
+    assert result.outputs_key_field == 'id'
+
+
+def test_create_block_sender_policy_command(mocker):
+    """Unit test
+    Given:
+    - Valid input arguments to create a block sender policy.
+
+    When:
+    - The create_or_update_policy_request method is called.
+
+    Then:
+    - Ensure the returned result matches the expected output.
+    - Ensure the readable output is as expected.
+    - Ensure the outputs prefix and key field are correct.
+    """
+    args = {'description': 'test', 'fromPart': 'both', 'fromType': 'email_domain',
+            'fromValue': 'google.com', 'option': 'block_sender', 'toType': 'everyone'}
+    mock_response = util_load_json('test_data/create_block_sender_policy_response.json')
+    result_outputs = util_load_json('test_data/create_block_sender_policy_result_outputs.json')
+    result_readable_output = util_load_json('test_data/create_block_sender_policy_result_readable_output.md')
+    mocker.patch.object(MimecastV2, "create_or_update_policy_request", return_value=mock_response)
+    result = MimecastV2.create_block_sender_policy_command(args)
+    assert result.outputs == result_outputs
+    assert result.readable_output == result_readable_output
+    assert result.outputs_prefix == 'Mimecast.BlockedSendersPolicy'
+    assert result.outputs_key_field == 'id'

@@ -1,0 +1,10 @@
+{
+    "Name": "Observation: strike \"0000000000000000000000000000000000000000000000000000000000000001\" [2024-05-31 03:49:12]",
+    "Tags": "mitre:T1001",
+    "EventCreatorEmail": "info@flashpoint-intel.com",
+    "EventId": "0000000000000000000001",
+    "UUID": "00000000-0000-0000-0000-0001",
+    "Href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
+    "ObservedTime": "May 31, 2024  04:03",
+    "MalwareDescription": "This malicious adoption has caused difficulties in determining whether observed activity is related to an ongoing criminal attack."
+}

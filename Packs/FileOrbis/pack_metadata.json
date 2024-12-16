@@ -2,17 +2,15 @@
     "name": "FileOrbis",
     "description": "FileOrbis XSOAR integration.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "FileOrbis",
     "url": "https://www.fileorbis.com/",
     "email": "info@fileorbis.com",
     "categories": [
         "IT Services"
     ],
-    "tags": [
-    ],
-    "useCases": [
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Offboarding",
         "IT"

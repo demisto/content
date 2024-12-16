@@ -51,4 +51,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1059 - Command and Scripting Interpreter](../doc_files/MITRE_ATT&CK_CoA_-_T1059_-_Command_and_Scripting_Interpreter.png)
+![MITRE ATT&CK CoA - T1059 - Command and Scripting Interpreter](../doc_files/MITRE_ATTandCK_CoA_-_T1059_-_Command_and_Scripting_Interpreter.png)

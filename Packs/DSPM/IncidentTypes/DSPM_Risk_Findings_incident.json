@@ -1,0 +1,29 @@
+{
+    "id": "DSPM Risk Findings",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "DSPM Risk Findings",
+    "prevName": "DSPM Risk Findings",
+    "color": "#D4E8F1",
+    "playbookId": "DSPM Multi-Cloud Risk Remediation",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.10.0"
+}

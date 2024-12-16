@@ -1,0 +1,23 @@
+{
+    "id": "1a2e3f4k5e6a7k8e9f0a",
+    "uri": "fake:fake:ca:1a2e3f4k5e6a7k8e9f0a",
+    "account": "fake:admin:accounts:fake",
+    "name": "fake-ca-name",
+    "state": "active",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-01T01:00:00Z",
+    "csr": "",
+    "cert": "-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArfakfakaf2fa4k1e2a3f5k6e7a8f9k0a1e3f5k7a9f1k2e4k6a8f2a5k3f7e9a1f2k4a6e8f0k3a1f2k5a7e9f1a3k5f8e0a2f4k6e8a1f2a3k4a5e6f7a8k9e0f1k2a3e4k5f6a7k8e9\n-----END CERTIFICATE-----",
+    "serialNumber": "1f2a3k4e5f6a7k8e9f0a",
+    "subject": "/C=FA/ST=Fk/L=FkCity/O=FakeOrg/OU=FakeUnit",
+    "issuer": "/C=FA/ST=Fk/L=FkCity/O=FakeOrg/OU=FakeUnit",
+    "notBefore": "2025-01-01T00:00:00Z",
+    "notAfter": "2025-12-31T23:59:59Z",
+    "sha1Fingerprint": "1a2e3f4k5e6a7k8e9f0a",
+    "sha256Fingerprint": "1f2a3k4e5f6a7k8e9f0a",
+    "sha512Fingerprint": "1e2a3f4k5e6a7k8e9f0a",
+    "purpose": {
+        "client_authentication": "enabled",
+        "user_authentication": "enabled"
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "data": {
+        "repository": {
+            "branchProtectionRules": {
+                "nodes": [
+                    {
+                        "id": "ABCD",
+                        "pattern": "contrib/**/*",
+                        "matchingRefs": {
+                            "totalCount": 100
+                        }
+                    },
+                    {
+                        "id": "ABCE",
+                        "pattern": "contrib/some_leftover",
+                        "matchingRefs": {
+                            "totalCount": 0
+                        }
+                    },
+                    {
+                        "id": "ABCF",
+                        "pattern": "contrib/currently_deleted_branch",
+                        "matchingRefs": {
+                            "totalCount": 0
+                        }
+                    },
+                    {
+                        "id": "ABCG",
+                        "pattern": "some_old_protection",
+                        "matchingRefs": {
+                            "totalCount": 3
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

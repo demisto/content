@@ -1,4 +1,9 @@
 [INGEST:vendor="cyber-ark", product="vault", target_dataset="cyber_ark_vault_raw", no_hit = keep]
 // Supports parsing from the ISO 8601 compatible IsoTimestamp field (for e.g. 2023-07-31T11:30:59Z or 2023-07-31T11:30:59+03:00)
-filter cs6Label ~=  "IsoTimestamp" and cs6 != null
-| alter _time = cs6;
+filter cs6Label ~=  "IsoTimestamp" and to_string(cs6) ~= "[+-]\d{2}\:"
+| alter 
+	_time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S%Ez", replex(to_string(cs6), "\s+", ""));
+
+filter cs6Label ~=  "IsoTimestamp" and to_string(cs6) ~= "[\.\d]+Z"
+| alter
+	_time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", replex(to_string(cs6), "\s+", ""));

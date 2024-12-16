@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 285,
+          "x": 387.5,
           "y": 50
         }
       }
@@ -43,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "39"
     scriptarguments:
       all:
         simple: "yes"
@@ -52,7 +52,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 285,
+          "x": 387.5,
           "y": 195
         }
       }
@@ -75,7 +75,7 @@ tasks:
       brand: Gmail Single User
     nexttasks:
       '#none#':
-      - "3"
+      - "38"
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -88,8 +88,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: special test via playbook (1)
-      templateParams: {}
+        simple: special test via playbook (${RandomString})
       to:
         simple: yarden@demistodev.com
       transientFile:
@@ -98,11 +97,12 @@ tasks:
       transientFileContent:
         simple: this is a test text inside a test attachment mail!
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 370
+          "x": 387.5,
+          "y": 545
         }
       }
     note: false
@@ -128,11 +128,12 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 545
+          "x": 387.5,
+          "y": 895
         }
       }
     note: false
@@ -169,17 +170,17 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
-      subject: {}
-      to: {}
+        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString})
+          newer_than:1d
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 720
+          "x": 387.5,
+          "y": 1070
         }
       }
     note: false
@@ -211,11 +212,12 @@ tasks:
             value:
               simple: Email.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 895
+          "x": 387.5,
+          "y": 1245
         }
       }
     note: false
@@ -246,11 +248,12 @@ tasks:
       key:
         simple: Email
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 2295
+          "x": 387.5,
+          "y": 2645
         }
       }
     note: false
@@ -284,11 +287,12 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 2120
+          "x": 387.5,
+          "y": 2470
         }
       }
     note: false
@@ -314,11 +318,12 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1070
+          "x": 172.5,
+          "y": 1420
         }
       }
     note: false
@@ -355,17 +360,17 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
-      subject: {}
-      to: {}
+        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString})
+          newer_than:1d
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1245
+          "x": 172.5,
+          "y": 1595
         }
       }
     note: false
@@ -397,6 +402,7 @@ tasks:
             value:
               simple: Email.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -429,13 +435,14 @@ tasks:
       message-id:
         simple: ${Testmail.ID}
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 2470
+          "x": 387.5,
+          "y": 2820
         }
       }
     note: false
@@ -467,6 +474,8 @@ tasks:
             value:
               simple: Email.Attachments
             iscontext: true
+          right:
+            value: {}
       - - operator: isEqualString
           left:
             value:
@@ -476,11 +485,12 @@ tasks:
             value:
               simple: Testmail.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 2645
+          "x": 387.5,
+          "y": 2995
         }
       }
     note: false
@@ -502,11 +512,12 @@ tasks:
       '#none#':
       - "19"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 705,
-          "y": 2835
+          "y": 3185
         }
       }
     note: false
@@ -530,11 +541,12 @@ tasks:
       message:
         simple: Email found without attachment
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 2820
+          "y": 3170
         }
       }
     note: false
@@ -588,11 +600,12 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -629,17 +642,17 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
-      subject: {}
-      to: {}
+        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString})
+          newer_than:1d
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -671,6 +684,7 @@ tasks:
             value:
               simple: Email.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -702,14 +716,16 @@ tasks:
         simple: "yes"
       index: {}
       key: {}
-      keysToKeep: {}
+      keysToKeep:
+        simple: Testmail.Sender
       subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 705,
-          "y": 2995
+          "y": 3345
         }
       }
     note: false
@@ -747,8 +763,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: multi attachment test via playbook
-      templateParams: {}
+        simple: multi attachment test via playbook (${RandomString})
       to:
         simple: yarden@demistodev.com
       transientFile:
@@ -757,11 +772,12 @@ tasks:
       transientFileContent:
         simple: this is a test text inside a test attachment mail!,another mail content.
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 705,
-          "y": 3345
+          "y": 3695
         }
       }
     note: false
@@ -787,6 +803,7 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -828,17 +845,17 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:multi attachment test via playbook newer_than:1d
-      subject: {}
-      to: {}
+        simple: from:${Testmail.Sender} subject:multi attachment test via playbook
+          (${RandomString}) newer_than:1d
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 705,
-          "y": 3695
+          "y": 4045
         }
       }
     note: false
@@ -870,11 +887,12 @@ tasks:
             value:
               simple: Email.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 705,
-          "y": 3870
+          "y": 4220
         }
       }
     note: false
@@ -900,11 +918,12 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 602.5,
-          "y": 4045
+          "y": 4395
         }
       }
     note: false
@@ -941,17 +960,17 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:multi attachment test via playbook newer_than:1d
-      subject: {}
-      to: {}
+        simple: from:${Testmail.Sender} subject:multi attachment test via playbook
+          (${RandomString}) newer_than:1d
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 602.5,
-          "y": 4220
+          "y": 4570
         }
       }
     note: false
@@ -983,11 +1002,12 @@ tasks:
             value:
               simple: Email.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 602.5,
-          "y": 4395
+          "y": 4745
         }
       }
     note: false
@@ -1023,7 +1043,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 4920
+          "y": 5270
         }
       }
     note: false
@@ -1049,11 +1069,12 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 490,
-          "y": 4570
+          "y": 4920
         }
       }
     note: false
@@ -1090,17 +1111,17 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:multi attachment test via playbook newer_than:1d
-      subject: {}
-      to: {}
+        simple: from:${Testmail.Sender} subject:multi attachment test via playbook
+          (${RandomString}) newer_than:1d
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 490,
-          "y": 4745
+          "y": 5095
         }
       }
     note: false
@@ -1133,11 +1154,12 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 5095
+          "x": 725,
+          "y": 5445
         }
       }
     note: false
@@ -1168,11 +1190,12 @@ tasks:
       key:
         simple: Email
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 5270
+          "x": 725,
+          "y": 5620
         }
       }
     note: false
@@ -1200,13 +1223,14 @@ tasks:
       message-id:
         simple: ${Testmail.ID}
       user-id:
-        simple: shai@demistodev.com
+        simple: ${Testmail.Sender}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 5445
+          "x": 725,
+          "y": 5795
         }
       }
     note: false
@@ -1221,7 +1245,7 @@ tasks:
       id: 2baa3614-121a-4e84-88dd-3fc88195fccf
       version: -1
       name: Create a new File
-      scriptName: FileCreateAndUpload
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
@@ -1235,6 +1259,7 @@ tasks:
       filename:
         simple: attachment1.txt
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1280,11 +1305,12 @@ tasks:
             value:
               simple: Testmail.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 5620
+          "x": 725,
+          "y": 5970
         }
       }
     note: false
@@ -1308,11 +1334,12 @@ tasks:
       message:
         simple: Email found without attachment
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 5970
+          "x": 510,
+          "y": 6320
         }
       }
     note: false
@@ -1331,11 +1358,12 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1052.5,
-          "y": 5985
+          "x": 940,
+          "y": 6335
         }
       }
     note: false
@@ -1379,17 +1407,101 @@ tasks:
           right:
             value:
               simple: "3"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 837.5,
-          "y": 5795
+          "x": 930,
+          "y": 6145
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2ab051df-145f-4773-88c4-aa1f7beeac84
+    type: regular
+    task:
+      id: 2ab051df-145f-4773-88c4-aa1f7beeac84
+      version: -1
+      name: Set the email sender
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: Testmail.Sender
+      value:
+        simple: ${Gmail.SentMail.From}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 2160e46b-ad65-4703-8cf2-88e660a64b18
+    type: regular
+    task:
+      id: 2160e46b-ad65-4703-8cf2-88e660a64b18
+      version: -1
+      name: Generate random string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "8"
+      Lowercase:
+        simple: "False"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1399,8 +1511,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6015,
-        "width": 1382.5,
+        "height": 6365,
+        "width": 1270,
         "x": 50,
         "y": 50
       }

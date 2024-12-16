@@ -126,7 +126,7 @@ def test_say_hello():
     assert response.outputs == 'Hello Dbot'
 
 
-@ pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
+@pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
     ('low', 1), ('medium', 2), ('high', 3), ('critical', 4), ('unknown', 0)
 ])
 def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):

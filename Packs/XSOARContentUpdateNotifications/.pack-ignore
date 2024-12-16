@@ -28,3 +28,5 @@ pb
 [file:ListInstalledContentPacks.yml]
 ignore=BA124
 
+[file:incidenttype-Content_Update_Check.json]
+ignore=GR107

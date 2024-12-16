@@ -1,0 +1,16 @@
+comment: Common code that is appended into scripts which require searching incidents.
+commonfields:
+  id: GetIncidentsApiModule
+  version: -1
+name: GetIncidentsApiModule
+script: '-'
+subtype: python3
+tags:
+- infra
+- server
+timeout: 0s
+type: python
+dockerimage: demisto/python3:3.10.14.99865
+tests:
+- No Tests
+fromversion: 5.0.0

@@ -1,31 +1,27 @@
 Amazon Security Lake is a fully managed security data lake service.
 This integration was integrated and tested with version 1.34.20 of AWS Security Lake SDK (boto3).
 
-## Configure AWS-SecurityLake on Cortex XSOAR
+## Configure Amazon Security Lake in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS-SecurityLake.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Name | User name | True |
-    | Role Arn | Role ARN | False |
-    | Role Session Name | Role Session Name | False |
-    | Role Session Duration | Role Session Duration | False |
-    | AWS Default Region | AWS Default Region | False |
-    | Access Key | Access Key | False |
-    | Secret Key | Secret Key | False |
-    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Name | User name | True |
+| Role Arn | Role ARN | False |
+| Role Session Name | Role Session Name | False |
+| Role Session Duration | Role Session Duration | False |
+| AWS Default Region | AWS Default Region | False |
+| Access Key | Access Key | False |
+| Secret Key | Secret Key | False |
+| Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-security-lake-query-execute
@@ -60,41 +56,41 @@ Execute a new query, wait for the query to complete (using polling), and return 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Athena.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
-| AWS.Athena.Query.Query | String | The SQL query statements which the query execution ran. | 
-| AWS.Athena.Query.StatementType | String | The type of query statement that was run. | 
-| AWS.Athena.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
-| AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
-| AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
-| AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
-| AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
-| AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
-| AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
-| AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
-| AWS.Athena.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
-| AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
-| AWS.Athena.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
-| AWS.Athena.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
-| AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
-| AWS.Athena.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
-| AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
-| AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
-| AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
-| AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
-| AWS.Athena.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
-| AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
-| AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
-| AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
-| AWS.Athena.QueryResults | List | List of query results. | 
+| AWS.SecurityLake.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
+| AWS.SecurityLake.Query.Query | String | The SQL query statements which the query execution ran. | 
+| AWS.SecurityLake.Query.StatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
+| AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
+| AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
+| AWS.SecurityLake.Query.Status.State | String | The state of the query execution. | 
+| AWS.SecurityLake.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
+| AWS.SecurityLake.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
+| AWS.SecurityLake.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
+| AWS.SecurityLake.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
+| AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
+| AWS.SecurityLake.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
+| AWS.SecurityLake.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
+| AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
+| AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
+| AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
+| AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
+| AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
+| AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
+| AWS.SecurityLake.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
+| AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
+| AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
+| AWS.SecurityLake.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
+| AWS.SecurityLake.Query.SubstatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.QueryResults | List | List of query results. | 
 
 ### aws-security-lake-data-catalogs-list
 
@@ -123,7 +119,7 @@ Lists the data catalogs in the current Amazon Web Services account.
 | --- | --- | --- |
 | AWS.SecurityLake.Catalog.CatalogName | String | The name of the data catalog. | 
 | AWS.SecurityLake.Catalog.Type | String | The data catalog type. | 
-| AWS.SecurityLake.CatalogNextToken | String | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. | 
+| AWS.SecurityLake.CatalogNextToken | String | A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. | 
 
 ### aws-security-lake-databases-list
 
@@ -145,7 +141,7 @@ Lists the databases in the specified data catalog.
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
 | limit | Specifies the maximum number of results to return.  | Optional | 
-| next_token | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.  | Optional | 
+| next_token | A token generated by the SecurityLake. service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.  | Optional | 
 
 #### Context Output
 
@@ -154,7 +150,7 @@ Lists the databases in the specified data catalog.
 | AWS.SecurityLake.Database.Name | String | The name of the database. | 
 | AWS.SecurityLake.Database.Description | String | An optional description of the database. | 
 | AWS.SecurityLake.Database.Parameters | List | A set of custom key/value pairs. | 
-| AWS.SecurityLake.DatabaseNextToken | String | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. | 
+| AWS.SecurityLake.DatabaseNextToken | String | A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. | 
 
 #### Command Example
 ```!aws-security-lake-databases-list catalog_name=Test```
@@ -179,7 +175,7 @@ Lists the metadata for the tables in the specified data catalog database.
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
 | limit | Specifies the maximum number of results to return.  | Optional | 
-| next_token | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.  | Optional | 
+| next_token | A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.  | Optional | 
 | work_group | The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog.  | Optional | 
 
 #### Context Output
@@ -197,7 +193,7 @@ Lists the metadata for the tables in the specified data catalog database.
 | AWS.SecurityLake.TableMetadata.PartitionKeys.Type | String | The data type of the column. | 
 | AWS.SecurityLake.TableMetadata.PartitionKeys.Comment | String | Optional information about the column. | 
 | AWS.SecurityLake.TableMetadata.Parameters | List | A set of custom key/value pairs for table properties. | 
-| AWS.SecurityLake.TableMetadataNextToken | String | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. | 
+| AWS.SecurityLake.TableMetadataNextToken | String | A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. | 
 
 #### Command Example
 ```!aws-security-lake-table-metadata-list catalog_name=Test database_name=test```
@@ -229,41 +225,41 @@ Runs query that takes a provided username and queries the AWS Security Lake for 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Athena.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
-| AWS.Athena.Query.Query | String | The SQL query statements which the query execution ran. | 
-| AWS.Athena.Query.StatementType | String | The type of query statement that was run. | 
-| AWS.Athena.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
-| AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
-| AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
-| AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
-| AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
-| AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
-| AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
-| AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
-| AWS.Athena.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
-| AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
-| AWS.Athena.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
-| AWS.Athena.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
-| AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
-| AWS.Athena.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
-| AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
-| AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
-| AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
-| AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
-| AWS.Athena.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
-| AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
-| AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
-| AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
-| AWS.Athena.MfaLoginQueryResults | List | List of query results. | 
+| AWS.SecurityLake.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
+| AWS.SecurityLake.Query.Query | String | The SQL query statements which the query execution ran. | 
+| AWS.SecurityLake.Query.StatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
+| AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
+| AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
+| AWS.SecurityLake.Query.Status.State | String | The state of the query execution. | 
+| AWS.SecurityLake.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
+| AWS.SecurityLake.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
+| AWS.SecurityLake.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
+| AWS.SecurityLake.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
+| AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
+| AWS.SecurityLake.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
+| AWS.SecurityLake.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
+| AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
+| AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
+| AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
+| AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
+| AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
+| AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
+| AWS.SecurityLake.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
+| AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
+| AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
+| AWS.SecurityLake.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
+| AWS.SecurityLake.Query.SubstatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.MfaLoginQueryResults | List | List of query results. | 
 
 #### Command Example
 ```!aws-security-lake-user-mfalogin-query table=Test database=test user_name=123 output_location=s3://path/to/query/bucket/```
@@ -295,41 +291,41 @@ Runs a query that takes a provided source IP address and queries the AWS Securit
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Athena.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
-| AWS.Athena.Query.Query | String | The SQL query statements which the query execution ran. | 
-| AWS.Athena.Query.StatementType | String | The type of query statement that was run. | 
-| AWS.Athena.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
-| AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
-| AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
-| AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
-| AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
-| AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
-| AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
-| AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
-| AWS.Athena.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
-| AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
-| AWS.Athena.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
-| AWS.Athena.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
-| AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
-| AWS.Athena.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
-| AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
-| AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
-| AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
-| AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
-| AWS.Athena.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
-| AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
-| AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
-| AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
-| AWS.Athena.SourceIPQueryResults | List | List of query results. | 
+| AWS.SecurityLake.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
+| AWS.SecurityLake.Query.Query | String | The SQL query statements which the query execution ran. | 
+| AWS.SecurityLake.Query.StatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
+| AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
+| AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
+| AWS.SecurityLake.Query.Status.State | String | The state of the query execution. | 
+| AWS.SecurityLake.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
+| AWS.SecurityLake.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
+| AWS.SecurityLake.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
+| AWS.SecurityLake.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
+| AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
+| AWS.SecurityLake.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
+| AWS.SecurityLake.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
+| AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
+| AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
+| AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
+| AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
+| AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
+| AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
+| AWS.SecurityLake.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
+| AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
+| AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
+| AWS.SecurityLake.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
+| AWS.SecurityLake.Query.SubstatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.SourceIPQueryResults | List | List of query results. | 
 
 #### Command Example
 ```!aws-security-lake-source-ip-query table=Test database=test ip_src=1.2.3.4 output_location=s3://path/to/query/bucket/```
@@ -361,41 +357,41 @@ This command is used to search for Guard Duty logs for any criticality level act
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Athena.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
-| AWS.Athena.Query.Query | String | The SQL query statements which the query execution ran. | 
-| AWS.Athena.Query.StatementType | String | The type of query statement that was run. | 
-| AWS.Athena.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
-| AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
-| AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
-| AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
-| AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
-| AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
-| AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
-| AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
-| AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
-| AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
-| AWS.Athena.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
-| AWS.Athena.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
-| AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
-| AWS.Athena.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
-| AWS.Athena.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
-| AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
-| AWS.Athena.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
-| AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
-| AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
-| AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
-| AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
-| AWS.Athena.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
-| AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
-| AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
-| AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
-| AWS.Athena.GuardDutyActivityQueryResults | List | List of query results. | 
+| AWS.SecurityLake.Query.QueryExecutionId | String | The unique identifier for each query execution. | 
+| AWS.SecurityLake.Query.Query | String | The SQL query statements which the query execution ran. | 
+| AWS.SecurityLake.Query.StatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.Query.ResultConfiguration.OutputLocation | String | The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption | String | If query and calculation results are encrypted in Amazon S3, indicates the encryption option used \(for example, SSE_KMS or CSE_KMS\) and key information. | 
+| AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey | String | For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID. | 
+| AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner | String | The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation. | 
+| AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption | String | The Amazon S3 canned ACL that Athena should specify when storing query results. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled | Boolean | True if previous query results can be reused when the query is run; otherwise, false. The default is false. | 
+| AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
+| AWS.SecurityLake.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
+| AWS.SecurityLake.Query.Status.State | String | The state of the query execution. | 
+| AWS.SecurityLake.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
+| AWS.SecurityLake.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
+| AWS.SecurityLake.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory | Number | An integer value that specifies the category of a query failure error. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
+| AWS.SecurityLake.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
+| AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
+| AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
+| AWS.SecurityLake.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
+| AWS.SecurityLake.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
+| AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
+| AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
+| AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
+| AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
+| AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
+| AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
+| AWS.SecurityLake.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
+| AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
+| AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
+| AWS.SecurityLake.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
+| AWS.SecurityLake.Query.SubstatementType | String | The type of query statement that was run. | 
+| AWS.SecurityLake.GuardDutyActivityQueryResults | List | List of query results. | 
 
 #### Command Example
 ```!aws-security-lake-guardduty-activity-query table=Test database=test severity=0-Unknown output_location=s3://path/to/query/bucket/```

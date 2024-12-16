@@ -104,72 +104,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - Critical"
+                                            "simple": "1,2,3"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - Critical,2 - High,3 - Non-Critical"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Non-Critical"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -367,72 +317,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - High"
+                                            "simple": "1,2,3"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - High,2 - Medium,3 - Low"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -446,72 +346,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - Do Not Notify"
+                                            "simple": "1,2,3"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Send Email"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Telephone"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -562,118 +412,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - Critical"
+                                            "simple": "1,2,3,4,5"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Moderate"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5 - Planning"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -777,72 +531,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - High"
+                                            "simple": "1,2,3"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - High,2 - Medium,3 - Low"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -1146,72 +850,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - High"
+                                            "simple": "1,2,3"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - High,2 - Medium,3 - Low"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -1225,72 +879,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - Do Not Notify"
+                                            "simple": "1,2,3"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Send Email"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Telephone"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -1304,118 +908,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - Critical"
+                                            "simple": "1,2,3,4,5"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Moderate"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5 - Planning"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -1458,72 +966,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1 - High"
+                                            "simple": "1,2,3"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1 - High,2 - Medium,3 - Low"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -1659,49 +1117,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "3"
+                                            "simple": "1,1 - High,2,2 - Medium,3,3 - Low"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "3,3,2,2,1,1"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },
@@ -1720,49 +1151,22 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
+                                    "input_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "1"
+                                            "simple": "1,1 - High,2,2 - Medium,3,3 - Low"
                                         }
                                     },
-                                    "toReplace": {
+                                    "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "3"
+                                            "simple": "3,3,2,2,1,1"
                                         }
                                     }
                                 },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
+                                "operator": "MapValuesTransformer"
                             }
                         ]
                     },

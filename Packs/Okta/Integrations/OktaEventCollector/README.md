@@ -1,10 +1,9 @@
 Collects the events log for authentication and Audit provided by Okta admin API
 
-## Configure Okta Log on Cortex XSIAM
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
-2. Search for Okta event collector.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Okta Log in Cortex
+
 
 | **Parameter**                                                           | **Description**                                                                           | **Required** |
 |-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|--------------|
@@ -15,7 +14,6 @@ Collects the events log for authentication and Audit provided by Okta admin API
 | First fetch time interval                                               | The period (in days) to retrieve events from, if no time is saved in the system           | True         |
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands in a playbook.
 

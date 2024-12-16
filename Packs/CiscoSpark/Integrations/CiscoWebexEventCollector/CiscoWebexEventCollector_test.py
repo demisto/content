@@ -66,6 +66,24 @@ def mocked_compliance_officer_client():
 """ TEST HELPER FUNCTION """
 
 
+def mock_set_integration_context(context: dict = None) -> dict | None:
+    return context
+
+
+def test_remove_integration_context_for_user(mocker):
+    import CiscoWebexEventCollector
+
+    mock_integration_context = {'test_user1': {'context_key': 'context_value'}, 'test_user2': {'context_key': 'context_value'}}
+    mocker.patch.object(CiscoWebexEventCollector, 'get_integration_context', return_value=mock_integration_context)
+    mock_context = mocker.patch('CiscoWebexEventCollector.set_integration_context', side_effect=mock_set_integration_context)
+
+    assert CiscoWebexEventCollector.get_integration_context() == mock_integration_context
+    CiscoWebexEventCollector.remove_integration_context_for_user('test_user1')
+    assert mock_context.call_args.args[0] == {'test_user1': {}, 'test_user2': {'context_key': 'context_value'}}
+    CiscoWebexEventCollector.remove_integration_context_for_user('test_user2')
+    assert mock_context.call_args.args[0] == {'test_user1': {}, 'test_user2': {}}
+
+
 @freeze_time("2023-12-20 13:40:00 UTC")
 def test_create_last_run():
     """
@@ -193,8 +211,7 @@ def test_oauth_complete(client):
 
     with requests_mock.Mocker() as m:
         m.post(
-            'https://url.com/access_token?grant_type=authorization_code&code=123456&client_id=1&client_secret=1'
-            '&redirect_uri=https%3A%2F%2Fredirect.com',
+            'https://url.com/access_token',
             json=mock_get_access_token()
         )
         results = oauth_complete(client, {'code': '123456'})

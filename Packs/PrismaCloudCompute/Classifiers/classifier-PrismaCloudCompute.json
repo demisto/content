@@ -7,7 +7,7 @@
 	"keyTypeMap": {
 		"audit": "Prisma Cloud Compute Audit v3",
 		"cloudDiscovery": "Prisma Cloud Compute Cloud Discovery",
-		"compliance": "Prisma Cloud Compute Compliance",
+		"compliance": "Prisma Cloud Compute Compliance v2",
 		"vulnerability": "Prisma Cloud Compute Vulnerability"
 	},
 	"transformer": {

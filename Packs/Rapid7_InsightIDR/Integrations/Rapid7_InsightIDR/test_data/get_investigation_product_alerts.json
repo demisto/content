@@ -1,0 +1,21 @@
+[
+    {
+        "type": "THREAT_COMMAND",
+        "threat_command_details": {
+            "alert_id": "id",
+            "alert_type": "Phishing",
+            "applicable_close_reasons": [
+                "ProblemSolved",
+                "InformationalOnly",
+                "Other"
+            ]
+        },
+        "insight_agent_details": [
+            {
+                "alert_id": "id",
+                "alert_type": "Endpoint Prevention",
+                "agent_action_taken": "Block"
+            }
+        ]
+    }
+]

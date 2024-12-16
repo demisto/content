@@ -83,12 +83,6 @@ def login(params):  # pragma: no cover
     # Preparations for SDKs connections
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
     s.verify_mode = ssl.CERT_NONE
-    session = requests.session()
-    session.verify = False
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    # Connect to Vsphere automation sdk using username and password
-    vsphere_client = create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
 
     # Connect to a vCenter Server using username and password
     try:
@@ -103,7 +97,7 @@ def login(params):  # pragma: no cover
                           port=port,
                           sslContext=s)
 
-    return si, vsphere_client
+    return si
 
 
 def logout(si):  # pragma: no cover
@@ -164,7 +158,7 @@ def create_vm_config_creator(host, args):
     resource_allocation_spec.limit = arg_to_number(args.get('cpu-allocation'))
     resource_allocation_info.limit = arg_to_number(args.get('memory'))
     spec.name = args.get('name')
-    spec.numCPUs = arg_to_number(args.get('cpu-num'))
+    spec.numCPUs = arg_to_number(args.get('cpu-num'))  # type: ignore[assignment]
     spec.cpuAllocation = resource_allocation_spec
     spec.memoryAllocation = resource_allocation_info
     spec.memoryMB = arg_to_number(args.get('virtual-memory'))
@@ -308,7 +302,8 @@ def power_on(si, uuid):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise Exception('Error occured while trying to power on Virtual Machine.')
+        raise Exception('Error occurred while trying to power on Virtual Machine.')
+    return None
 
 
 def power_off(si, uuid):
@@ -335,6 +330,7 @@ def power_off(si, uuid):
         }
     elif task.info.state == 'error':
         raise Exception('Error occured while trying to power off Virtual Machine.')
+    return None
 
 
 def suspend(si, uuid):
@@ -361,6 +357,7 @@ def suspend(si, uuid):
         }
     elif task.info.state == 'error':
         raise Exception('Error occured while trying to power on Virtual Machine.')
+    return None
 
 
 def hard_reboot(si, uuid):
@@ -384,6 +381,7 @@ def hard_reboot(si, uuid):
         }
     elif task.info.state == 'error':
         raise Exception('Error occured while trying to reboot Virtual Machine.')
+    return None
 
 
 def wait_for_tasks(si, tasks):
@@ -409,7 +407,7 @@ def wait_for_tasks(si, tasks):
                             state = change.val
                         else:
                             continue
-                        if not str(task) in taskList:
+                        if str(task) not in taskList:
                             continue
                         if state == vim.TaskInfo.State.success:  # type: ignore
                             taskList.remove(str(task))
@@ -538,7 +536,7 @@ def change_nic_state(si, args):  # pragma: no cover
         if isinstance(dev, vim.vm.device.VirtualEthernetCard) and dev.deviceInfo.label == nic_label:  # type: ignore
             virtual_nic_device = dev
     if not virtual_nic_device:
-        raise Exception("Virtual {} could not be found.".format(nic_label))
+        raise Exception(f"Virtual {nic_label} could not be found.")
 
     virtual_nic_spec = vim.vm.device.VirtualDeviceSpec()  # type: ignore
     if new_nic_state == 'delete':
@@ -581,11 +579,12 @@ def change_nic_state(si, args):  # pragma: no cover
             'Type': entryTypes['note'],
             'Contents': ec,
             'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Virtual Machine\'s NIC was {} successfully.'.format(res_new_nic_state),
+            'HumanReadable': f'Virtual Machine\'s NIC was {res_new_nic_state} successfully.',
             'EntryContext': ec
         }
     elif task.info.state == 'error':
         raise Exception('Error occurred while trying to clone VM.')
+    return None
 
 
 def list_vms_by_tag(vsphere_client, args):
@@ -599,7 +598,7 @@ def list_vms_by_tag(vsphere_client, args):
     # This filter isn't needed if vms are empty, when you send an empty vms list - it returns all vms
     if vms:
         vms_details = vsphere_client.vcenter.VM.list(
-            vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
+            vsphere_client.vcenter.VM.FilterSpec(vms={str(vm.id) for vm in vms}))
     data = []
     for vm in vms_details:
         data.append({
@@ -677,6 +676,7 @@ def create_vm(si, args):
         }
     elif task.info.state == 'error':
         raise Exception('Error occurred while trying to create a VM.')
+    return None
 
 
 def clone_vm(si, args):
@@ -737,6 +737,7 @@ def clone_vm(si, args):
         }
     elif task.info.state == 'error':
         raise Exception('Error occurred while trying to clone VM.')
+    return None
 
 
 def relocate_vm(si, args):
@@ -767,6 +768,7 @@ def relocate_vm(si, args):
         }
     elif task.info.state == 'error':
         raise Exception('Error occurred while trying to relocate VM.')
+    return None
 
 
 def delete_vm(si, args):
@@ -793,6 +795,7 @@ def delete_vm(si, args):
         }
     elif task.info.state == 'error':
         raise Exception('Error occurred while trying to delete VM.')
+    return None
 
 
 def register_vm(si, args):
@@ -815,6 +818,7 @@ def register_vm(si, args):
         }
     elif task.info.state == 'error':
         raise Exception('Error occurred while trying to register VM.')
+    return None
 
 
 def unregister_vm(si, args):
@@ -835,13 +839,24 @@ def test_module(si):
     return 'ok'
 
 
+def vsphare_client_login(params):
+    full_url, url, port, user_name, password = parse_params(params)
+
+    session = requests.session()
+    session.verify = not params.get('insecure', False)
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    # Connect to Vsphere automation sdk using username and password
+    return create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
+
+
 def main():  # pragma: no cover
     if REDIRECT_STD_OUT:
         sys.stdout = StringIO()
     res = []
     si = None
     try:
-        si, vsphere_client = login(demisto.params())
+        si = login(demisto.params())
         if demisto.command() == 'test-module':
             result = test_module(si)
         if demisto.command() == 'vmware-get-vms':
@@ -865,6 +880,7 @@ def main():  # pragma: no cover
         if demisto.command() == 'vmware-change-nic-state':
             result = change_nic_state(si, demisto.args())
         if demisto.command() == 'vmware-list-vms-by-tag':
+            vsphere_client = vsphare_client_login(demisto.params())
             result = list_vms_by_tag(vsphere_client, demisto.args())
         if demisto.command() == 'vmware-create-vm':
             result = create_vm(si, demisto.args())

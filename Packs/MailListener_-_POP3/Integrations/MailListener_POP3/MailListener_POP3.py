@@ -60,7 +60,7 @@ def get_user_emails():
             (resp_message, lines, octets) = pop3_server_conn.retr(index)  # type: ignore
             msg_content = str(b'\r\n'.join(lines), errors='ignore')
             msg = Parser().parsestr(msg_content)
-            msg['index'] = index
+            msg['index'] = index  # type: ignore[assignment]
             mails.append(msg)
         except Exception:
             demisto.error("Failed to get email with index " + str(index) + 'from the server.')
@@ -154,7 +154,7 @@ def get_email_context(email_data):
     context_headers = email_data._headers
     context_headers = [{'Name': v[0], 'Value': v[1]}
                        for v in context_headers]
-    headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+    headers = {h['Name'].lower(): h['Value'] for h in context_headers}
 
     context = {
         'Mailbox': EMAIL,
@@ -197,7 +197,7 @@ def parse_mail_parts(parts):
         context_headers = part._headers
         context_headers = [{'Name': v[0], 'Value': v[1]}
                            for v in context_headers]
-        headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+        headers = {h['Name'].lower(): h['Value'] for h in context_headers}
 
         content_type = headers.get('content-type', 'text/plain')
 

@@ -1,27 +1,26 @@
 Multi-Vector Cyber Attack, Breach and Attack Simulation.
 This integration was integrated and tested with API version 1 of cymulate
-## Configure cymulate_v2 on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for cymulate_v2.
-3. Click **Add instance** to create and configure a new integration instance.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API token |  | True |
-    | Base URL |  | False |
-    | Fetch incidents |  | False |
-    | Fetch category | Choose one or more categories to fetch. | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max Fetch | Maximal number of incidents to fetch. Max value can be no grater than 35. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+## Configure cymulate_v2 in Cortex
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API token |  | True |
+| Base URL |  | False |
+| Fetch incidents |  | False |
+| Fetch category | Choose one or more categories to fetch. | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Max Fetch | Maximal number of incidents to fetch. Max value can be no grater than 35. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 

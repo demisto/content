@@ -1,0 +1,13 @@
+{
+    "success": {
+        "args": {
+            "test_name": "Test Queued From XSOAR",
+            "test_id": 105
+        },
+        "command": "safebreach-rerun-test2"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-rerun-test2"
+    }
+}

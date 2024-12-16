@@ -1,38 +1,34 @@
 Rapid7 Insight - Threat Command allows managing alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
 This integration was integrated and tested with version 3.1.4 of rapid7_threat_command
 
-## Configure Rapid7 - Threat Command (IntSights) on Cortex XSOAR
+## Configure Rapid7 - Threat Command (IntSights) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rapid7 - Threat Command (IntSights).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | URL of the Rapid7 platform. | True |
-    | Account ID |  | True |
-    | API key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Fetch incidents |  | False |
-    | First fetch timestamp. | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2023-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
-    | Maximum incidents per fetch | The maximum number of alerts to fetch each time. The default is 50. If the value is greater than 200, it will be considered as 200. | True |
-    | Alert types to fetch as incidents | Alert types to fetch as incidents. | False |
-    | Network types to fetch as incidents | Network types to fetch as incidents. | False |
-    | Minimum Alert Severity Level | Alerts with the minimum level of severity to fetch. | False |
-    | Source types to filter alerts by | Source types to filter alerts by. | False |
-    | Fetch closed alerts | Fetch closed alerts from Rapid7 platform. | False |
-    | Include CSV files of alerts |  | False |
-    | Include attachments of alerts | MSSP accounts must provide a sub-account ID to perform this action. | False |
-    | Sub-account ID (for MSSP accounts). |  | False |
-    | Incident type |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | URL of the Rapid7 platform. | True |
+| Account ID |  | True |
+| API key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Fetch incidents |  | False |
+| First fetch timestamp. | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2023-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
+| Maximum incidents per fetch | The maximum number of alerts to fetch each time. The default is 50. If the value is greater than 200, it will be considered as 200. | True |
+| Alert types to fetch as incidents | Alert types to fetch as incidents. | False |
+| Network types to fetch as incidents | Network types to fetch as incidents. | False |
+| Minimum Alert Severity Level | Alerts with the minimum level of severity to fetch. | False |
+| Source types to filter alerts by | Source types to filter alerts by. | False |
+| Fetch closed alerts | Fetch closed alerts from Rapid7 platform. | False |
+| Include CSV files of alerts |  | False |
+| Include attachments of alerts | MSSP accounts must provide a sub-account ID to perform this action. | False |
+| Sub-account ID (for MSSP accounts). |  | False |
+| Incident type |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### threat-command-cyber-term-list
@@ -86,8 +82,11 @@ List cyber terms by filter.
 | ThreatCommand.CyberTerm.MitreAttack.Techniques.url | String | MITRE ATT&amp;CK technique URLs. | 
 
 #### Command example
+
 ```!threat-command-cyber-term-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -130,6 +129,7 @@ List cyber terms by filter.
 #### Human Readable Output
 
 >### Cyber terms
+
 >|Id|Name|Severity|Overview|Target Countries|Sectors|Related Campaigns|
 >|---|---|---|---|---|---|---|
 >| 6278d77884709631217f2ead | Curious Gorge | Medium | The Curious Gorge threat group was first reported by Google's Threat Analysis Group (TAG) in March 2022, amidst the Russo-Ukrainian War. The APT group, attributed to China’s Liberation Army Strategic Support Force (PLA SSF), targets government, military, logistics, and manufacturing organizations in Ukraine, Russia, and Central Asia. There is little information about Curious Gorge’s TTPs. <br/><br/>In March 2022, Curious Gorge was observed targeting government and military organizations in Ukraine, Russia, Kazakhstan, and Mongolia. <br/><br/>In May 2022, Google reported that Curious Gorge attacked multiple government organizations in Russia, including the Ministry of Foreign Affairs as well as Russian defense contractors, manufacturers, and a logistics company. <br/><br/>The attacks of a Chinese state-sponsored group against Russian entities are interesting, as the two countries are allies. It may reflect a possible shift in China's intelligence collection objectives amidst the Russo-Ukrainian War. | Kazakhstan,<br/>Mongolia,<br/>Russian Federation,<br/>Ukraine | Aerospace/Defense,<br/>Government,<br/>Manufacturing | The 2022 Russia-Ukraine Cyberwarfare |
@@ -161,8 +161,11 @@ List cyber term CVEs by cyber term ID.
 | ThreatCommand.CVE.vendor_product | Number | CVE vendor product. | 
 
 #### Command example
+
 ```!threat-command-cyber-term-cve-list cyber_term_id=1234 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -180,6 +183,7 @@ List cyber term CVEs by cyber term ID.
 #### Human Readable Output
 
 >### Related CVEs to Cyber term 628223a9b8a7a90f3aca3d7d
+
 >|Id|Publish Date|Vendor Product|
 >|---|---|---|
 >| CVE-2015-8562 | 2015-12-16T21:59:00.000Z | Joomla Joomla\! |
@@ -217,8 +221,11 @@ List cyber term IOCs by cyber term ID.
 | ThreatCommand.IOC.reporting_feeds | String | List of reporting feeds in which the value appears. | 
 
 #### Command example
+
 ```!threat-command-cyber-term-ioc-list cyber_term_id=1234 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -241,6 +248,7 @@ List cyber term IOCs by cyber term ID.
 #### Human Readable Output
 
 >### Related IOCs to Cyber term 628223a9b8a7a90f3aca3d7d
+
 >|Value|Type|Is Whitelisted|Updated Date|
 >|---|---|---|---|
 >| 11bd2c9f9e2397c9a16e0990e4ed2cf0679498fe0fd418a3dfdac60b5c160ee5 | Hashes | false | 2022-11-17T11:13:28.000Z |
@@ -273,8 +281,11 @@ Gets lists of IOC document sources.
 | ThreatCommand.Source.type | String | Source type. | 
 
 #### Command example
+
 ```!threat-command-source-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -292,6 +303,7 @@ Gets lists of IOC document sources.
 #### Human Readable Output
 
 >### IOC sources
+
 >|Id|Name|Confidence Level|Type|
 >|---|---|---|---|
 >| 5b68306cf84f7c8696047fda | AlienVault OTX | 3 | IntelligenceFeed |
@@ -330,8 +342,11 @@ Adds a new IOC source document. At least one IOC is required.
 | ThreatCommand.Source.Files.name | String | Document source name. | 
 
 #### Command example
+
 ```!threat-command-source-document-create name=2023test description=test confidence_level=1 domains=test.com```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -348,6 +363,7 @@ Adds a new IOC source document. At least one IOC is required.
 #### Human Readable Output
 
 >### Source document successfully created.
+
 >|Id|Name|
 >|---|---|
 >| 64538007a44a2f2d6740f6be | 2023test |
@@ -371,8 +387,11 @@ Deletes an existing IOC source document.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-source-document-delete source_id=6400a3289083fa5eab401cdd```
+
 #### Human Readable Output
 
 >Source document "6400a3289083fa5eab401cdd" successfully deleted.
@@ -400,8 +419,11 @@ Create new IOCs to existing IOC source documents. At least one IOC is required.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-source-document-ioc-create source_id=6400a3289083fa5eab401cdd domains=test.com```
+
 #### Human Readable Output
 
 >IOC "['test.com']" successfully added to "6400a3289083fa5eab401cdd" document source.
@@ -499,8 +521,11 @@ Gets IOC details by value or IOC's full enrichment data. While using the enrichm
 | ThreatCommand.IOC.reportedFeeds.confidence_level | Number | IOC reported feed confidence level \(Relevant to search mode only\). | 
 
 #### Command example
+
 ```!threat-command-ioc-search ioc_value=test.com```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -545,6 +570,7 @@ Gets IOC details by value or IOC's full enrichment data. While using the enrichm
 #### Human Readable Output
 
 >### IOC "test.com"
+
 >|Value|Type|Status|Is Whitelisted|Score|Severity|Last Update Date|
 >|---|---|---|---|---|---|---|
 >| test.com | Domains | Active | true | 85 | High | 2023-05-04T09:58:10.957Z |
@@ -569,8 +595,11 @@ Adds user tags to IOCs. This enables you to classify IOCs and later search for a
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-ioc-tags-add ioc_value=test.com tag_values=test```
+
 #### Human Readable Output
 
 >The tags "['test']" successfully added to "test.com" IOC.
@@ -598,8 +627,11 @@ You can add an IOC to your user whitelist (even if it is already on the system w
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-account-whitelist-update is_whitelisted="Add to the user whitelist" domains=test.com```
+
 #### Human Readable Output
 
 >The status "Add to the user whitelist" successfully updated to "['test.com']" IOCs in the account whitelist.
@@ -626,8 +658,11 @@ Reverts IOC values to the system-default whitelist status. The ETP Suite automat
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-account-whitelist-remove domains=test.com```
+
 #### Human Readable Output
 
 >The IOCs "['test.com']" successfully removed from the account whitelist.
@@ -654,8 +689,11 @@ Adds an IOC to an internal Remediation Blocklist. By sending the blocklist to se
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-ioc-blocklist-add domains=test.com```
+
 #### Human Readable Output
 
 >The IOCs "['test.com']" successfully added to the remediation blocklist.
@@ -682,8 +720,11 @@ Removes IOC values from the Remediation blocklist. There is no indication of suc
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-ioc-blocklist-remove domains=test.com```
+
 #### Human Readable Output
 
 >The IOCs "['test.com']" successfully removed from the remediation blocklist.
@@ -711,8 +752,11 @@ Changes the severity of existing IOCs for the requester account (overrides the s
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-ioc-severity-update severity=High domains=test.com```
+
 #### Human Readable Output
 
 >The severity "High" successfully updated to "['test.com']" IOCs.
@@ -740,8 +784,11 @@ Adds comments to IOCs. At least one IOC is required.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-ioc-comment-add comment=test domains=test.com```
+
 #### Human Readable Output
 
 >The comment "test" successfully updated to "['test.com']" IOCs.
@@ -762,9 +809,13 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-enrichment-quota-usage```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -780,6 +831,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Current API enrichment credits (quota).
+
 >|Time Period|Total|Remaining|
 >|---|---|---|
 >| 2023-05-04 | 50 | 43 |
@@ -850,8 +902,11 @@ Get a list of alerts with all details.
 | ThreatCommand.Alert.related_threat_ids | String | Alert-related threat IDs. | 
 
 #### Command example
+
 ```!threat-command-alert-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -888,6 +943,7 @@ Get a list of alerts with all details.
 #### Human Readable Output
 
 >### Alert list
+
 >|Id|Type|Sub Type|Title|Description|Severity|Found Date|Is Closed|
 >|---|---|---|---|---|---|---|---|
 >| 641b19b45d60c905560fc484 | AttackIndication | VulnerabilityInTechnologyInUse | sdfsdf | Asfsdfiption | Low | 2018-01-01T00:00:00.000Z | false |
@@ -913,6 +969,7 @@ Send a takedown request for the selected alert (Request that Threat Command will
 #### Context Output
 
 There is no context output for this command.
+
 ### threat-command-alert-takedown-request-status-get
 
 ***
@@ -935,8 +992,11 @@ Get the alert's takedown status.
 | ThreatCommand.Alert.takedown_status | String | Alert's takedown status. | 
 
 #### Command example
+
 ```!threat-command-alert-takedown-request-status-get alert_id=1234```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -951,6 +1011,7 @@ Get the alert's takedown status.
 #### Human Readable Output
 
 >### Takedown status for alert "1234".
+
 >|Takedown Status|
 >|---|
 >| "NotSent" |
@@ -989,8 +1050,11 @@ Create a new alert. You have to insert scenario or type and sub_type.
 | ThreatCommand.Alert.id | String | Alert ID. | 
 
 #### Command example
+
 ```!threat-command-alert-create title="test" description="test" severity="Low" source_type="Application Store" source_network_type="Clear Web" source_url="test.com" scenario="ACompanyEmailAddressReportedAsMalicious"```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1004,6 +1068,7 @@ Create a new alert. You have to insert scenario or type and sub_type.
 #### Human Readable Output
 
 >### Alert successfully created
+
 >|Id|
 >|---|
 >| 64538b71ba5d3f7a8fb27ddc |
@@ -1036,8 +1101,11 @@ Close alert.
 | ThreatCommand.Alert.is_closed | String | Whether the alert is closed. | 
 
 #### Command example
+
 ```!threat-command-alert-close alert_id=1234 reason=Other```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1052,6 +1120,7 @@ Close alert.
 #### Human Readable Output
 
 >### Alert "1234" successfully closed
+
 >|Id|Is Closed|
 >|---|---|
 >| 1234 | true |
@@ -1081,8 +1150,11 @@ Change the alert's severity. Changing the severity level of alerts can help to p
 | ThreatCommand.Alert.severity | String | Alert severity. | 
 
 #### Command example
+
 ```!threat-command-alert-severity-update alert_id=1234 severity=Medium```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1097,6 +1169,7 @@ Change the alert's severity. Changing the severity level of alerts can help to p
 #### Human Readable Output
 
 >### Alert "1234" severity successfully updated to "Medium".
+
 >|Id|Severity|
 >|---|---|
 >| 1234 | Medium |
@@ -1126,8 +1199,11 @@ Get alert's blocklist status.
 | ThreatCommand.Alert.BlockList.status | String | Alert blocklist status. | 
 
 #### Command example
+
 ```!threat-command-alert-blocklist-get alert_id=1234```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1142,6 +1218,7 @@ Get alert's blocklist status.
 #### Human Readable Output
 
 >### Blocklist for alert "1234".
+
 >**No entries.**
 
 
@@ -1168,6 +1245,7 @@ Change selected IOCs blocklist status.
 #### Context Output
 
 There is no context output for this command.
+
 ### threat-command-alert-ioc-report
 
 ***
@@ -1187,6 +1265,7 @@ Report IOCs to external sources (Report the URLs and domains that are included i
 #### Context Output
 
 There is no context output for this command.
+
 ### threat-command-alert-assign
 
 ***
@@ -1212,8 +1291,11 @@ Assign an alert to other ETP Suite users. When an alert is assigned, the assigne
 | ThreatCommand.Alert.assignees | String | Assignees list. | 
 
 #### Command example
+
 ```!threat-command-alert-assign alert_id=1234 user_id=1234```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1230,6 +1312,7 @@ Assign an alert to other ETP Suite users. When an alert is assigned, the assigne
 #### Human Readable Output
 
 >### Alert "1234" successfully assign to user "631ef479b675f72ec9309785".
+
 >|Id|Assignees|
 >|---|---|
 >| 1234 | 1234 |
@@ -1258,8 +1341,11 @@ Unassign an alert from all users.
 | ThreatCommand.Alert.assignees | String | Assignees list. | 
 
 #### Command example
+
 ```!threat-command-alert-unassign alert_id=1234```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1274,6 +1360,7 @@ Unassign an alert from all users.
 #### Human Readable Output
 
 >### Alert '1234' successfully unassigned from any user.
+
 >|Id|
 >|---|
 >| 1234 |
@@ -1297,8 +1384,11 @@ Reopen alert.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-alert-reopen alert_id=1234```
+
 #### Human Readable Output
 
 >Alert "1234" successfully re-opened.
@@ -1322,8 +1412,11 @@ Adds a tag to an alert. This enables you to classify alerts and later search for
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-alert-tag-add alert_id=1234 tag_name=test```
+
 #### Human Readable Output
 
 >The tag "test" successfully added to "1234" Alert.
@@ -1347,8 +1440,11 @@ Removes a tag from the alert.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-alert-tag-remove alert_id=6432e3aa6ff61aae819dc46b tag_id=1234```
+
 #### Human Readable Output
 
 >The tag "6453871c0d771fdc938f18d5" successfully removed from "6432e3aa6ff61aae819dc46b" Alert.
@@ -1373,8 +1469,11 @@ Send mail with the alert details and a question.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-alert-send-mail alert_id=6432e3aa6ff61aae819dc46b email_addresses=test@test.com content=test```
+
 #### Human Readable Output
 
 >The alert "6432e3aa6ff61aae819dc46b" successfully send to "['test@test.com']".
@@ -1398,8 +1497,11 @@ Send a question to an analyst about the requested alert. Questions can revolve a
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-alert-analyst-ask alert_id=1234 question=test```
+
 #### Human Readable Output
 
 >The alert "1234" successfully sent to the analyst.
@@ -1429,8 +1531,11 @@ Get alert's analyst response
 | ThreatCommand.Alert.Message.message | String | Response message. | 
 
 #### Command example
+
 ```!threat-command-alert-analyst-conversation-list alert_id=1234```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1461,6 +1566,7 @@ Get alert's analyst response
 #### Human Readable Output
 
 >### Alert conversation with analyst:
+
 >|Initiator|Message|Date|
 >|---|---|---|
 >| test@test.com | Hello| 2023-04-03T15:02:34.641Z |
@@ -1510,8 +1616,11 @@ Get alert activity log.
 | ThreatCommand.Alert.ActivityLog.Messages.content | String | Alert message content. | 
 
 #### Command example
+
 ```!threat-command-alert-activity-log-get alert_id=1234```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1871,6 +1980,7 @@ Get alert activity log.
 #### Human Readable Output
 
 >### Alert "1234" activity log
+
 >|Id|Type|Update Date|Sub Types|Initiator|
 >|---|---|---|---|---|
 >| 641cbc73bade6cc1ed3a1a25 | PolicyRule | 2023-03-23T20:54:11.730Z | PolicyClose,<br/>PolicyTag | 59490cd818a3b902664b4ed7 |
@@ -1931,8 +2041,11 @@ Get alert's CSV file in case of credentials leakage or leaked credit cards alert
 | InfoFile.Type | string | The type of the CSV file. | 
 
 #### Command example
+
 ```!threat-command-alert-csv-get alert_id=1234```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -1982,8 +2095,11 @@ Add a note to the alert. You can add notes, as text or uploaded files, to an ale
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-alert-note-add alert_id=1234 note=test```
+
 #### Human Readable Output
 
 >Note successfully add to alert "1234".
@@ -2006,8 +2122,11 @@ List alert images by ID.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-alert-image-list alert_id=1234```
+
 #### Human Readable Output
 
 >Alert "1234" does not contain images.
@@ -2066,8 +2185,11 @@ Get CVE's list from account.
 | ThreatCommand.CVE.related_campaigns | String | Related campaigns. | 
 
 #### Command example
+
 ```!threat-command-cve-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2111,6 +2233,7 @@ Get CVE's list from account.
 #### Human Readable Output
 
 >### CVE list.
+
 >|Id|Published Date|Update Date|Severity|Intsights Score|Cvss Score|
 >|---|---|---|---|---|---|
 >| CVE-2014-5600 | 2014-09-09T01:55:00.000Z | 2023-04-30T22:00:37.673Z | Low | 17 | 5.4 |
@@ -2134,8 +2257,11 @@ Add CVEs to account.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-cve-add cve_ids=CVE-1999-0002```
+
 #### Human Readable Output
 
 >The "CVE-1999-0002" CVEs successfully added.
@@ -2158,8 +2284,11 @@ Delete CVEs from account.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-cve-delete cve_ids=CVE-1999-0002```
+
 #### Human Readable Output
 
 >The "CVE-1999-0002" CVEs successfully deleted.
@@ -2188,8 +2317,11 @@ Add assets by type and value. Assets include any company resource that could lea
 | ThreatCommand.Asset.value | String | The value of the asset type. | 
 
 #### Command example
+
 ```!threat-command-asset-add asset_type=CompanyNames asset_value=test```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2204,6 +2336,7 @@ Add assets by type and value. Assets include any company resource that could lea
 #### Human Readable Output
 
 >### Asset "test" successfully added to "CompanyNames" asset list.
+
 >|Type|Value|
 >|---|---|
 >| CompanyNames | test |
@@ -2234,8 +2367,11 @@ Get account assets grouped by asset type.
 | ThreatCommand.Asset.value | String | The value of the asset type. | 
 
 #### Command example
+
 ```!threat-command-asset-list limit=4```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2264,6 +2400,7 @@ Get account assets grouped by asset type.
 #### Human Readable Output
 
 >### Asset list.
+
 >|Type|Value|
 >|---|---|
 >| Domains | com.com |
@@ -2313,8 +2450,11 @@ Delete asset by type and value.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threat-command-asset-delete asset_type=CompanyNames asset_value=test```
+
 #### Human Readable Output
 
 >Asset "test" successfully deleted from "CompanyNames" asset list.
@@ -2340,8 +2480,11 @@ There are no input arguments for this command.
 | ThreatCommand.SystemModule.status | String | Whether the module module is enabled. | 
 
 #### Command example
+
 ```!threat-command-account-system-modules-list```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2386,6 +2529,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### System modules
+
 >|Module Name|Status|
 >|---|---|
 >| discovery | true |
@@ -2442,8 +2586,11 @@ Search for strings in the scrapes database.
 | ThreatCommand.Mentions.date | Date | Mention date. | 
 
 #### Command example
+
 ```!threat-command-mention-search search=test.com```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2750,6 +2897,7 @@ Search for strings in the scrapes database.
 #### Human Readable Output
 
 >### Mentions for "test.com" (page number 0).
+
 >|Author|Original Url|Url|Type|Id|Short Content|Title|Date|
 >|---|---|---|---|---|---|---|---|
 >| jamedoefo | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/page-33 | comment | 1234 | i was here |  | 2023-05-04T10:20:02 |
@@ -2782,8 +2930,11 @@ Get all Managed Security Service Provider's (MSSP) sub-accounts.
 | ThreatCommand.MsspCustomer.note | String | Customer note. | 
 
 #### Command example
+
 ```!threat-command-mssp-customer-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2800,6 +2951,7 @@ Get all Managed Security Service Provider's (MSSP) sub-accounts.
 #### Human Readable Output
 
 >### MSSP customer list
+
 >|Id|Company Name|Status|Note|
 >|---|---|---|---|
 >| 59490ca49b655c027458d115 | Demo - Qmasters | Enabled | test |
@@ -2831,8 +2983,11 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 | ThreatCommand.MsspUser.is_deleted | String | Whether the user was deleted. | 
 
 #### Command example
+
 ```!threat-command-mssp-user-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2849,6 +3004,7 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 #### Human Readable Output
 
 >### MSSP user list
+
 >|Id|Email|Role|Is Deleted|
 >|---|---|---|---|
 >| 64214bc94c75609d09ebb56a | test@test.com | Admin | false |
@@ -2885,8 +3041,11 @@ List the users in your account. Mainly used to assign alerts.
 | ThreatCommand.AccountUser.is_deleted | String | Whether the user was deleted. | 
 
 #### Command example
+
 ```!threat-command-account-user-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -2968,6 +3127,7 @@ List the users in your account. Mainly used to assign alerts.
 #### Human Readable Output
 
 >### Account user list
+
 >|Id|Email|First Name|Last Name|Role|Is Deleted|
 >|---|---|---|---|---|---|
 >| 59490cd818a3b902664b4ed7 | test@test.com | test | test | Admin | false |
@@ -2997,8 +3157,11 @@ List alert types and sub-types. They are mainly used to add manual alerts.
 | ThreatCommand.AlertType.sub_type | String | Sub-type of the type. | 
 
 #### Command example
+
 ```!threat-command-alert-type-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -3013,6 +3176,7 @@ List alert types and sub-types. They are mainly used to add manual alerts.
 #### Human Readable Output
 
 >### Alert types
+
 >|Type|Sub Type|
 >|---|---|
 >| ExploitableData | VulnerabilityInTechnologyInUse |
@@ -3041,8 +3205,11 @@ List alert source types. They are mainly used to add manual alerts.
 | ThreatCommand.AlertSourceType | String | List of source types. | 
 
 #### Command example
+
 ```!threat-command-alert-source-type-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -3056,6 +3223,7 @@ List alert source types. They are mainly used to add manual alerts.
 #### Human Readable Output
 
 >### Alert source types
+
 >|Source Type|
 >|---|
 >| Application Store |
@@ -3089,8 +3257,11 @@ List alert scenarios. They are mainly used to add manual alerts.
 | ThreatCommand.Scenario.description | String | Short description of the scenario. | 
 
 #### Command example
+
 ```!threat-command-alert-scenario-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatCommand": {
@@ -3107,6 +3278,7 @@ List alert scenarios. They are mainly used to add manual alerts.
 #### Human Readable Output
 
 >### Alert scenario list
+
 >|Scenario|Description|Type|Subtype|
 >|---|---|---|---|
 >| ACompanyEmailAddressReportedAsMalicious | A company email address reported as spamming | AttackIndication | AssetReportedAsMalicious |
@@ -3178,7 +3350,7 @@ Checks the reputation of an IP address.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | IP.ASN | String | IP ASN. | 
 | IP.Address | String | IP address. | 
 | IP.Region | String | IP region. | 
@@ -3215,7 +3387,7 @@ Checks the reputation of a URL.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | URL.Data | String | The URL value. | 
 | URL.DetectionEngines | String | URL detection engines. | 
 | URL.PositiveDetections | Number | Number of positive engines. | 
@@ -3253,7 +3425,7 @@ Checks the reputation of a domain.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | Domain.DNSRecords | String | DNS records of the domain. | 
 | ThreatCommand.Domain.domain | String | The domain value. | 
 | ThreatCommand.Domain.sub_domains | Date | Sub domains of the domain. | 

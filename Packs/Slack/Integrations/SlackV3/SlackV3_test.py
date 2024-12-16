@@ -8,6 +8,7 @@ import slack_sdk
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+from SlackV3 import get_war_room_url, parse_common_channels
 
 from CommonServerPython import *
 
@@ -2835,6 +2836,42 @@ def test_send_request_with_entitlement(mocker):
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
 
+def test_slack_send_with_mirrored_file(mocker):
+    """
+    Given:
+      - mirror entry which is basically a file
+    When:
+      - running send-notification triggered from mirroring
+    Then:
+      - Validate that the file is sent successfully
+    """
+    import SlackV3
+
+    mocker.patch.object(demisto, 'params', return_value={'enable_outbound_file_mirroring': True})
+
+    SlackV3.init_globals()
+
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            "message": "test",
+            "channel_id": "1234",
+            "channel": "channel",
+            "entry": "1234",
+            "messageType": SlackV3.MIRROR_TYPE,
+            "entryObject": {}
+        }
+    )
+    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value='file-sent')
+    demisto_results = mocker.patch.object(demisto, 'results')
+
+    SlackV3.slack_send()
+    assert slack_send_request.call_args_list[0].kwargs["file_dict"]
+    assert slack_send_request.call_args_list[0].kwargs["channel_id"] == "1234"
+    assert demisto_results.call_args[0][0]['HumanReadable'] == 'File sent to Slack successfully.'
+
+
 def test_send_request_with_entitlement_blocks(mocker):
     import SlackV3
 
@@ -3252,26 +3289,55 @@ def test_send_message_to_destinations(mocker):
     assert args['body']['text']
 
 
-def test_send_file_to_destinations(mocker):
+def test_send_file_to_destinations_request_args(mocker):
+    """
+    This mocks SlackV3.send_slack_request_sync while the other test mocks slack_sdk.WebClient.files_upload_v2
+    Given:
+        - A file to send to a specific Slack channel
+    When:
+        - Calling the send_slack_request_sync function
+    Then:
+        - Assert the function is called once and the correct arguments are sent to the function
+    """
     import SlackV3
     # Set
-
-    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
-    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
-    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(SlackV3, 'send_slack_request_sync')
 
     # Arrange
     SlackV3.send_file_to_destinations(['channel'], {'name': 'name', 'path': 'yo'}, None)
-
-    args = SlackV3.send_slack_request_sync.call_args[1]
+    request_args = SlackV3.send_slack_request_sync.call_args[1]
 
     # Assert
     assert SlackV3.send_slack_request_sync.call_count == 1
-    assert 'http_verb' not in args
-    assert args['file_'] == 'yo'
-    assert args['body']['filename'] == 'name'
+    assert 'http_verb' not in request_args
+    assert request_args['file_upload_params']['file'] == 'yo'
+    assert request_args['file_upload_params']['filename'] == 'name'
+
+
+def test_send_file_to_destinations_sdk_client_args(mocker):
+    """
+    This mocks slack_sdk.WebClient.files_upload_v2 while the other test mocks SlackV3.send_slack_request_sync
+    Given:
+        - A file to send to a specifc thread in a channel
+    When:
+        - Calling the files_upload_v2 'wrapper' method in the slack_sdk.WebClient class
+    Then:
+        - Assert correct arguments are sent to the method
+    """
+    from SlackV3 import send_file_to_destinations
+    # Set
+    mocker.patch.object(slack_sdk.WebClient, 'files_upload_v2')
+
+    # Arrange
+    send_file_to_destinations(['channel'], {'name': 'name', 'path': 'yo'}, 'thread')
+    sdk_args = slack_sdk.WebClient.files_upload_v2.call_args[1]
+
+    # Assert
+    assert sdk_args['file'] == 'yo'
+    assert sdk_args['filename'] == 'name'
+    assert sdk_args['initial_comment'] is None
+    assert sdk_args['channel'] == 'channel'
+    assert sdk_args['thread_ts'] == 'thread'
 
 
 def test_send_message_retry(mocker):
@@ -3467,7 +3533,7 @@ def test_send_file_no_args_investigation(mocker):
 
     # Assert
     assert SlackV3.slack_send_request.call_count == 1
-    assert success_results[0] == 'File sent to Slack successfully.'
+    assert success_results[0]['HumanReadable'] == 'File sent to Slack successfully.'
 
     assert send_args[0][1] == 'incident-681'
     assert send_args[1]['file_dict'] == {
@@ -4131,6 +4197,7 @@ def test_fail_connect_threads(mocker):
     import SlackV3
     mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'bot_token': '123'})
     mocker.patch.object(demisto, 'args', return_value={'to': 'test', 'message': 'test message'})
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'command', return_value='send-notification')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     for _i in range(8):
@@ -5040,6 +5107,31 @@ def test_conversation_history(mocker):
     assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
 
 
+@pytest.mark.parametrize('raw, output', [
+    ("""
+    key1:value1
+    
+    
+    key2: value2
+    
+    """, {'key1': 'value1', 'key2': 'value2'}),
+    ('key1: value1', {'key1': 'value1'}), ("""
+    
+    
+    """, {})
+
+])
+def test_parse_common_channels(raw, output):
+    assert parse_common_channels(raw) == output
+
+
+def test_parse_common_channels_error(mocker):
+    with pytest.raises(ValueError) as e:
+        mocker.patch.object(demisto, 'error')
+        parse_common_channels('bad input')
+    assert "Invalid common_channels parameter value." in str(e.value)
+
+
 def test_conversation_replies(mocker):
     """
     Given:
@@ -5140,3 +5232,64 @@ async def test_listen(client_session):
         assert result_incident_id == '3'
         assert result_entitlement == '326a8a51-3dbd-4b07-8662-d36bfa9509fb'
         assert test_result_content == expected_content
+
+
+class TestGetWarRoomURL:
+
+    def test_get_war_room_url_with_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        expected_war_room_url = "https://example.com/incidents/war_room?caseId=2930"
+        mocker.patch('SlackV3.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': 'INCIDENT-2930'}}})
+
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_without_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        mocker.patch('SlackV3.is_xsiam', return_value=False)
+        expected_war_room_url = "https://example.com/WarRoom/INCIDENT-2930"
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_xsiam_from_alert_war_room(self, mocker):
+        url = "https://example.com/WarRoom/ALERT-1234"
+        mocker.patch('SlackV3.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': '1234'}}})
+        expected_war_room_url = \
+            "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
+        assert get_war_room_url(url) == expected_war_room_url
+
+
+def test_send_file_api_exception(mocker):
+    """
+    Given:
+        - A mocked, faulty Slack API response.
+    When:
+        - Calling the slack_send_file function.
+    Then:
+        - Assert readable exception is raised.
+    """
+    from SlackV3 import slack_send_file
+    # Set
+    mocker.patch('SlackV3.slack_send_request', side_effect=SlackApiError('The request to the Slack API failed. (url: https://slack.com/api/files.upload)',
+                                                                         {'ok': False, 'error': 'method_deprecated'}))
+
+    # Check that function raises DemistoException
+    with pytest.raises(DemistoException) as e:
+        slack_send_file('channel', _entry_id='123', _comment='Here is a file!')
+    assert str(e.value) == 'Failed to send file: test.txt to Slack. The method has been deprecated.'
+
+
+def test_validate_slack_request_args():
+    """
+    Given:
+        - Invalid Slack API request arguments.
+    When:
+        - Calling the validate_slack_request_args function.
+    Then:
+        - Assert ValueError is raised.
+    """
+    from SlackV3 import validate_slack_request_args
+
+    with pytest.raises(ValueError) as e:
+        validate_slack_request_args(http_verb='HI', method='chat.postMessage', file_upload_params=None)
+    assert str(e.value) == 'Invalid http_verb: HI. Allowed values: POST, GET.'

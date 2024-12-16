@@ -2515,14 +2515,22 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalence of the file in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The number of times the file is detected in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The number of times the file is detected in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalence of the file. | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The number of times the file is detected across all organizations by Microsoft Defender ATP. | 
+| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The number of times the file is detected across all organizations by Microsoft Defender ATP. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
-
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.OrganizationPrevalence | Number | The number of times the indicator is detected in the organization. |
+| File.GlobalPrevalence | Number | The number of times the indicator is detected across all organizations by Microsoft Defender ATP. |
+| File.OrganizationFirstSeen | Date | The date and time when the indicator was first seen in the organization. |
+| File.OrganizationLastSeen | Date | The date and time when the indicator was last seen in the organization. |
+| File.FirstSeenBySource | Date | The date and time when the indicator was first seen by Microsoft Defender ATP. |
+| File.LastSeenBySource | Date | The date and time when the indicator was last seen by Microsoft Defender ATP. |
 
 ##### Command Example
 
@@ -2532,16 +2540,33 @@ File.Read.All
 
 ```json
 {
-    "MicrosoftATP.FileStatistics": {
-        "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
-        "Statistics": {
-            "TopFileNames": [
-                "lsass.exe"
-            ], 
-            "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
-            "GlobalPrevalence": "1355899", 
-            "OrgPrevalence": "0", 
-            "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
+    "File": {
+        "SHA1": "9fe3ba25e5660c23dfe478d577cfacde5795870c",
+        "FirstSeenBySource": "2019-04-03T04:10:18.1001071Z",
+        "LastSeenBySource": "2020-03-23T09:24:54.169574Z",
+        "GlobalPrevalence": 1355899,
+        "Hashes":[
+            {
+                "type" :"SHA1",
+                "value": "9fe3ba25e5660c23dfe478d577cfacde5795870c"
+            }
+        ],
+        "OrganizationPrevalence": 0
+    },
+    "MicrosoftATP": {
+        "FileStatistics": {
+            "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
+            "Statistics": {
+                "TopFileNames": [
+                    "lsass.exe"
+                ], 
+                "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
+                "GlobalPrevalence": "1355899",
+                "GloballyPrevalence": 1355899,
+                "OrgPrevalence": "0",
+                "OrganizationPrevalence": 0,
+                "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
+            }
         }
     }
 }
@@ -2551,10 +2576,16 @@ File.Read.All
 
 ##### Statistics on 9fe3ba25e5660c23dfe478d577cfacde5795870c file:
 
-|GlobalFirstObserved|GlobalLastObserved|GlobalPrevalence|OrgPrevalence|TopFileNames|
+|Global First Observed|Global Last Observed|Global Prevalence|Organization Prevalence|Top File Names|
 |---|---|---|---|---|
 | 2019-04-03T04:10:18.1001071Z | 2020-03-23T09:24:54.169574Z | 1355899 | 0 | lsass.exe |
 
+
+##### File Indicator Example
+
+| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | First Seen By Source | Last Seen By Source | Organization First Seen | Organization Last Seen |
+|---|---|---|---|---|---|---|---|---|---|---|
+| File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Benign | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
 
 ### 27. microsoft-atp-get-file-alerts
 
@@ -7174,3 +7205,58 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### microsoft-atp-get-machine-by-ip
+
+***
+Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
+
+#### Base Command
+
+`microsoft-atp-get-machine-by-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The endpoint IP address. | Required | 
+| timestamp | The timestamp in witch the machines were seen with the internal ip address, 15 minutes before and after it. The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z. | Required | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. If true, the "limit" argument will be ignored. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Machine.ID | String | The machine ID. | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
+| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. | 
+| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. | 
+| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. | 
+| MicrosoftATP.Machine.IPAddresses.type | String | The machine IP address type. | 
+| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
+
+#### Command example
+```!microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
+#### Human Readable Output
+
+>### Microsoft Defender ATP Machine:
+>
+>|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+>|---|---|---|---|---|---|---|---|
+>| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |

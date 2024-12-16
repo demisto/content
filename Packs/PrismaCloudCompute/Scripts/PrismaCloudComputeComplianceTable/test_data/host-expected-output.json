@@ -1,0 +1,18 @@
+{
+    "CloudMetaData": {
+        "accountID": "some_account_id",
+        "awsExecutionEnv": "some_aws_exc_env",
+        "image": "some_cm_image",
+        "provider": "some_provider",
+        "region": "us-west-2",
+        "resourceID": "some_resource_id",
+        "type": "some_type"},
+    "ComplianceDistribution": {
+        "critical": 2,
+        "high": 31,
+        "low": 16,
+        "medium": 52,
+        "total": 101},
+    "ComplianceIssues": ["1337 (high | custom) - title"],
+    "Hostname": "some_hostname1"
+}

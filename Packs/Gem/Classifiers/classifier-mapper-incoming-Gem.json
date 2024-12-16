@@ -1,0 +1,120 @@
+{
+    "id": "Gem Mapper",
+    "name": "Gem Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Gem Alert fields.",
+    "fromVersion": "6.12.0",
+    "defaultIncidentType": "Gem Alert",
+    "mapping": {
+        "Gem Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "simple": "description"
+                },
+                "Account ID": {
+                    "simple": "account.name"
+                },
+                "Account Name": {
+                    "simple": "account.display_name"
+                },
+                "Gem Account Provider": {
+                    "simple": "account.cloud_provider"
+                },
+                "Alert ID": {
+                    "simple": "metadata.alert_id"
+                },
+                "Alert Source": {
+                    "simple": "metadata.alert_source"
+                },
+                "Gem Events Count": {
+                    "simple": "metadata.events_total_count"
+                },
+                "Gem Main Entity ID": {
+                    "simple": "metadata.main_entity.id"
+                },
+                "Gem Main Entity Name": {
+                    "simple": "metadata.main_entity.name"
+                },
+                "Gem Main Entity Region": {
+                    "simple": "metadata.main_entity.metadata.region"
+                },
+                "Gem Main Entity Type": {
+                    "simple": "metadata.main_entity.type"
+                },
+                "Gem TTP ID": {
+                    "simple": "metadata.ttp_id"
+                },
+                "Gem Threat ID": {
+                    "simple": "metadata.threat_id"
+                },
+                "Title": {
+                    "simple": "title"
+                },
+                "External Link": {
+                    "complex": {
+                        "accessor": "threat_id",
+                        "filters": [],
+                        "root": "metadata",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "https://app.gem.security/threats/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "name": {
+                    "simple": "title"
+                },
+                "occurred": {
+                    "simple": "event_datetime"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4,5,6,7,8,9,10"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,1,1,2,2,2,2,3,3,3"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "event_datetime"
+                }
+            }
+        }
+    },
+    "version": -1
+}

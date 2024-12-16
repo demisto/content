@@ -80,6 +80,15 @@ configuration:
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   section: Connect
   advanced: true
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -421,7 +430,7 @@ script:
     - contextPath: AWS.Athena.QueryResults
       description: List of query results.
       type: List
-  dockerimage: demisto/boto3py3:1.0.0.83094
+  dockerimage: demisto/boto3py3:1.0.0.115129
   subtype: python3
 tests:
 - No tests

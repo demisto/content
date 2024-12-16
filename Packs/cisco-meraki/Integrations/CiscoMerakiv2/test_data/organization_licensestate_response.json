@@ -1,0 +1,60 @@
+{
+    "status": "OK",
+    "expirationDate": "Feb 8, 2020 UTC",
+    "licensedDeviceCounts": {
+        "MS": 100
+    },
+    "licenseCount": 20,
+    "states": {
+        "active": {
+            "count": 10
+        },
+        "expired": {
+            "count": 2
+        },
+        "expiring": {
+            "count": 3,
+            "critical": {
+                "thresholdInDays": 14,
+                "expiringCount": 1
+            },
+            "warning": {
+                "thresholdInDays": 90,
+                "expiringCount": 2
+            }
+        },
+        "recentlyQueued": {
+            "count": 0
+        },
+        "unused": {
+            "count": 2,
+            "soonestActivation": {
+                "activationDate": "2020-10-30",
+                "toActivateCount": 1
+            }
+        },
+        "unusedActive": {
+            "count": 3,
+            "oldestActivation": {
+                "activationDate": "2019-09-01",
+                "activeCount": 2
+            }
+        }
+    },
+    "licenseTypes": [
+        {
+            "licenseType": "ENT",
+            "counts": {
+                "unassigned": 2
+            }
+        }
+    ],
+    "systemsManager": {
+        "counts": {
+            "totalSeats": 50,
+            "activeSeats": 10,
+            "unassignedSeats": 20,
+            "orgwideEnrolledDevices": 10
+        }
+    }
+}

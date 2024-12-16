@@ -1,10 +1,11 @@
+deprecated: true
 commonfields:
   id: OpenAI
   version: -1
 name: OpenAI
-display: OpenAI
+display: OpenAI (Deprecated)
 category: Utilities
-description: The OpenAI API can be applied to virtually any task that involves understanding or generating natural language or code. We offer a spectrum of models with different levels of power suitable for different tasks, as well as the ability to fine-tune your own custom models. These models can be used for everything from content generation to semantic search and classification.
+description: "Deprecated. Use `OpenAI GPT` instead."
 configuration:
 - display: OpenAI API URL(e.g. https://api.openai.com/)
   name: url
@@ -23,6 +24,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+
 script:
   script: ''
   type: python

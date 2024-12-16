@@ -2,7 +2,7 @@
     "name": "Rapid7 InsightVM Cloud",
     "description": "Insight VM is a Vulnerability Management Tool which Scan your Network, Eliminate Vulnerabilities, Track and Communicate progress. ",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "thimanshu474",
     "url": "",
     "email": "",

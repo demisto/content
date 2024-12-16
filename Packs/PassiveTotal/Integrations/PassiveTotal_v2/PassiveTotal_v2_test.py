@@ -90,7 +90,7 @@ def test_http_request_authentication_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Unauthenticated. Check the configured Username and API secret.' == str(e.value)
+    assert str(e.value) == 'Unauthenticated. Check the configured Username and API secret.'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -106,7 +106,7 @@ def test_http_request_page_not_found_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'No record(s) found.' == str(e.value)
+    assert str(e.value) == 'No record(s) found.'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -122,8 +122,8 @@ def test_http_request_proxy_error_based_on_status(mock_base_http_request, client
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or check ' \
-           'the host, authentication details and connection details for the proxy.' == str(e.value)
+    assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box ' \
+        'or check the host, authentication details and connection details for the proxy.'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -139,8 +139,8 @@ def test_http_request_internal_server_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'The server encountered an internal error for PassiveTotal and was unable to complete your request.' == str(
-        e.value)
+    assert str(
+        e.value) == 'The server encountered an internal error for PassiveTotal and was unable to complete your request.'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -237,7 +237,7 @@ def test_request_timeout_invalid_value(mocker):
         get_request_timeout()
 
     # Assert
-    assert 'HTTP(S) Request timeout parameter must be a positive integer.' == str(e.value)
+    assert str(e.value) == 'HTTP(S) Request timeout parameter must be a positive integer.'
 
 
 def test_request_timeout_failure(mocker):
@@ -256,7 +256,7 @@ def test_request_timeout_failure(mocker):
     with pytest.raises(ValueError) as e:
         get_request_timeout()
 
-    assert 'HTTP(S) Request timeout parameter must be a positive integer.' == str(e.value)
+    assert str(e.value) == 'HTTP(S) Request timeout parameter must be a positive integer.'
 
 
 def test_request_timeout_large_value_failure(mocker):
@@ -276,7 +276,7 @@ def test_request_timeout_large_value_failure(mocker):
     with pytest.raises(ValueError) as e:
         get_request_timeout()
 
-    assert 'Value is too large for HTTP(S) Request Timeout.' == str(e.value)
+    assert str(e.value) == 'Value is too large for HTTP(S) Request Timeout.'
 
 
 def test_get_components_command_main_success(mocker, client):
@@ -542,7 +542,7 @@ def test_get_host_pairs_command_invalid_value_for_direction(client):
         get_host_pairs_command(client, args)
 
     # Assert
-    assert 'The given value for direction is invalid. Supported values: children, parents.' == str(e.value)
+    assert str(e.value) == 'The given value for direction is invalid. Supported values: children, parents.'
 
 
 def test_get_common_arguments_invalid_value_for_query():
@@ -562,7 +562,7 @@ def test_get_common_arguments_invalid_value_for_query():
         get_common_arguments(args)
 
     # Assert
-    assert 'The given value for query is invalid.' == str(e.value)
+    assert str(e.value) == 'The given value for query is invalid.'
 
 
 def test_get_valid_whois_search_arguments_empty_value_in_query():
@@ -582,7 +582,7 @@ def test_get_valid_whois_search_arguments_empty_value_in_query():
         get_valid_whois_search_arguments(args)
 
     # Assert
-    assert 'query or field argument should not be empty.' == str(e.value)
+    assert str(e.value) == 'query or field argument should not be empty.'
 
 
 def test_get_valid_whois_search_invalid_value_for_field_arguemnts():
@@ -602,8 +602,8 @@ def test_get_valid_whois_search_invalid_value_for_field_arguemnts():
         get_valid_whois_search_arguments(args)
 
     # Assert
-    assert 'Invalid field type field. Valid field types are domain, email, name, organization, address, phone, ' \
-           'nameserver.' == str(e.value)
+    assert str(e.value) == 'Invalid field type field. Valid field types are domain, email, name, organization, address, phone, ' \
+        'nameserver.'
 
 
 @patch('PassiveTotal_v2.CommandResults')
@@ -626,9 +626,9 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
         dummy_response = json.load(f)
     with open('test_data/whois_command/whois_custom_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/whois_command/whois_command_readable_output.md', 'r') as f:
+    with open('test_data/whois_command/whois_command_readable_output.md') as f:
         dummy_readable_output = f.read()
-    with open('test_data/whois_command/whois_command_standard_domain_readable_output.md', 'r') as f:
+    with open('test_data/whois_command/whois_command_standard_domain_readable_output.md') as f:
         dummy_standard_domain_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
@@ -789,7 +789,7 @@ def test_http_request_missing_schema_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Invalid API URL. No schema supplied: http(s).' == str(e.value)
+    assert str(e.value) == 'Invalid API URL. No schema supplied: http(s).'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -805,7 +805,7 @@ def test_http_request_invalid_schema_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Invalid API URL. Supplied schema is invalid, supports http(s).' == str(e.value)
+    assert str(e.value) == 'Invalid API URL. Supplied schema is invalid, supports http(s).'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -821,8 +821,8 @@ def test_http_request_proxy_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or' \
-           ' check the host, authentication details and connection details for the proxy.' == str(e.value)
+    assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or' \
+        ' check the host, authentication details and connection details for the proxy.'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -838,8 +838,8 @@ def test_http_request_connection_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Connectivity failed. Check your internet connection, the API URL or try increasing the HTTP(s) Request' \
-           ' Timeout.' == str(e.value)
+    assert str(e.value) == 'Connectivity failed. Check your internet connection, the API URL or try increasing ' \
+        'the HTTP(s) Request Timeout.'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -856,8 +856,8 @@ def test_http_request_connect_timeout_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Connectivity failed. Check your internet connection, the API URL or try increasing the HTTP(s) Request' \
-           ' Timeout.' == str(e.value)
+    assert str(e.value) == 'Connectivity failed. Check your internet connection, the API URL or try increasing ' \
+        'the HTTP(s) Request Timeout.'
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -873,7 +873,7 @@ def test_http_request_other_demisto_exception(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'custom' == str(e.value)
+    assert str(e.value) == 'custom'
 
 
 def test_init():
@@ -881,9 +881,8 @@ def test_init():
         test init function
     """
     import PassiveTotal_v2
-    with mock.patch.object(PassiveTotal_v2, "main", return_value=42):
-        with mock.patch.object(PassiveTotal_v2, "__name__", "__main__"):
-            PassiveTotal_v2.init()
+    with mock.patch.object(PassiveTotal_v2, "main", return_value=42), mock.patch.object(PassiveTotal_v2, "__name__", "__main__"):
+        PassiveTotal_v2.init()
 
 
 def test_domain_reputation_command_empty_domain_arguments_values(client):
@@ -902,7 +901,7 @@ def test_domain_reputation_command_empty_domain_arguments_values(client):
         domain_reputation_command(client, args)
 
     # Assert
-    assert 'domain argument should not be empty.' == str(e.value)
+    assert str(e.value) == 'domain argument should not be empty.'
 
 
 def test_domain_reputation_command_not_specify_domain_arguments_values(client):
@@ -921,7 +920,7 @@ def test_domain_reputation_command_not_specify_domain_arguments_values(client):
         domain_reputation_command(client, args)
 
     # Assert
-    assert 'domain(s) not specified' == str(e.value)
+    assert str(e.value) == 'domain(s) not specified'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -941,7 +940,7 @@ def test_domain_reputation_command_success(mocker_http_request, client):
         dummy_response = json.load(f)
     with open('test_data/domain_reputation/domain_reputation_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/domain_reputation/domain_reputation_command_readable_output.md', 'r') as f:
+    with open('test_data/domain_reputation/domain_reputation_command_readable_output.md') as f:
         dummy_readable_output = f.read()
     with open('test_data/domain_reputation/domain_reputation_command_reputation_response.json', 'rb') as f:
         dummy_custom_reputation_context = json.load(f)
@@ -1026,7 +1025,7 @@ def test_get_services_command_success(request_mocker, client):
     with open('test_data/services_command/services_command_context.json', 'rb') as f:
         context_output = json.load(f)
 
-    with open('test_data/services_command/services_command_readable_output.md', 'r') as f:
+    with open('test_data/services_command/services_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1077,7 +1076,7 @@ def test_pt_get_whois_command_success(request_mocker, mock_cr, client):
         dummy_response = json.load(f)
     with open('test_data/whois_command/whois_custom_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/whois_command/whois_command_readable_output.md', 'r') as f:
+    with open('test_data/whois_command/whois_command_readable_output.md') as f:
         dummy_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
@@ -1225,11 +1224,11 @@ def test_pt_get_articles_command_success(request_mocker, client):
     args = {
         'query': 'dummy.com',
     }
-    with open('test_data/Articles/articles_command_response.json', 'r') as f:
+    with open('test_data/Articles/articles_command_response.json') as f:
         dummy_response = json.load(f)
-    with open('test_data/Articles/articles_custom_context.json', 'r') as f:
+    with open('test_data/Articles/articles_custom_context.json') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/Articles/articles_command_readable_output.md', 'r') as f:
+    with open('test_data/Articles/articles_command_readable_output.md') as f:
         dummy_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
@@ -1284,7 +1283,7 @@ def test_get_data_card_command_success(request_mocker, client):
     with open('test_data/Data_Card/data_card_command.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Data_Card/data_card_command_readable_output.md', 'r') as f:
+    with open('test_data/Data_Card/data_card_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1326,10 +1325,10 @@ def test_get_reputation_command_success(request_mocker, client):
     with open('test_data/Reputation/reputation_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Reputation/reputation_command_readable_output.md', 'r') as f:
+    with open('test_data/Reputation/reputation_command_readable_output.md') as f:
         readable_output = f.read()
 
-    with open('test_data/Reputation/reputation_command_context.json', 'r') as f:
+    with open('test_data/Reputation/reputation_command_context.json') as f:
         dummy_custom_context = json.load(f)
 
     request_mocker.return_value = dummy_response
@@ -1373,7 +1372,7 @@ def test_ip_reputation_command_empty_arguments_values(client):
         ip_reputation_command(client, args)
 
     # Assert
-    assert 'IP(s) not specified' == str(e.value)
+    assert str(e.value) == 'IP(s) not specified'
 
 
 def test_ip_reputation_command_when_invalid_args_provided(client):
@@ -1392,7 +1391,7 @@ def test_ip_reputation_command_when_invalid_args_provided(client):
         ip_reputation_command(client, args)
 
     # Assert
-    assert 'Invalid IP - 2020-windows.com' == str(e.value)
+    assert str(e.value) == 'Invalid IP - 2020-windows.com'
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -1409,9 +1408,9 @@ def test_ip_reputation_command_success(request_mocker, client):
 
     with open('test_data/ip_reputation/ip_reputation_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('test_data/ip_reputation/ip_reputation_command_context.json', 'r') as f:
+    with open('test_data/ip_reputation/ip_reputation_command_context.json') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/ip_reputation/ip_reputation_command_readable_output.md', 'r') as f:
+    with open('test_data/ip_reputation/ip_reputation_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1441,13 +1440,13 @@ def test_pt_list_intel_profile_command_success(request_mocker, client):
         'source': 'osint',
         'category': 'network'
     }
-    with open('test_data/IntelProfile/intel_profile_command_response.json', 'r') as f:
+    with open('test_data/IntelProfile/intel_profile_command_response.json') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/IntelProfile/intel_profile_command_context.json', 'r') as f:
+    with open('test_data/IntelProfile/intel_profile_command_context.json') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/IntelProfile/intel_profile_command_readable_output.md', 'r') as f:
+    with open('test_data/IntelProfile/intel_profile_command_readable_output.md') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1507,7 +1506,7 @@ def test_list_intel_profile_indicators_command_success(request_mocker, client):
     with open('test_data/Intel_Profile_Indicator/intel_profile_indicator_command.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Intel_Profile_Indicator/intel_profile_indicator_readable_output.md', 'r') as f:
+    with open('test_data/Intel_Profile_Indicator/intel_profile_indicator_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1557,13 +1556,13 @@ def test_pt_list_my_asi_insights_command_success(request_mocker, client):
     args = {
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_response.json') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_context.json', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_context.json') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1599,13 +1598,13 @@ def test_pt_list_my_asi_insights_command_key_not_present(request_mocker, client)
     args = {
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_context.json', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_context.json') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1632,7 +1631,7 @@ def test_list_my_attack_surfaces_command_success(request_mocker, client):
     with open('test_data/Attack_Surface/attack_surface_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
+    with open('test_data/Attack_Surface/attack_surface_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1672,7 +1671,7 @@ def test_list_my_attack_surfaces_command_when_object_not_present_success(request
     with open('test_data/Attack_Surface/attack_surface_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
+    with open('test_data/Attack_Surface/attack_surface_object_not_present.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1701,7 +1700,7 @@ def test_list_third_party_asi_command_success(request_mocker, client):
     with open('test_data/Attack_Surface/third_party_attack_surface_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
+    with open('test_data/Attack_Surface/attack_surface_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response[0]
@@ -1728,7 +1727,7 @@ def test_list_third_party_asi_command_when_object_not_present_success(request_mo
     with open('test_data/Attack_Surface/third_party_attack_surface_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
+    with open('test_data/Attack_Surface/attack_surface_object_not_present.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response[0]
@@ -1778,7 +1777,7 @@ def test_list_my_asi_assets_command_success(request_mocker, client):
     with open('test_data/ASI_Assets/asi_assets_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1810,7 +1809,7 @@ def test_list_my_asi_assets_command_success_object_not_present(request_mocker, c
     with open('test_data/ASI_Assets/asi_assets_command_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1841,13 +1840,13 @@ def test_list_third_party_asi_insights_command_success(request_mocker, client):
         'id': 88256,
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_response.json') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/third_party_asi_insights_command_context.json', 'r') as f:
+    with open('test_data/ASI_Insights/third_party_asi_insights_command_context.json') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1884,13 +1883,13 @@ def test_list_third_party_asi_insights_command_key_not_present(request_mocker, c
         'id': 88256,
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/third_party_asi_insights_key_not_present_context.json', 'r') as f:
+    with open('test_data/ASI_Insights/third_party_asi_insights_key_not_present_context.json') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1917,7 +1916,7 @@ def test_list_my_asi_vulnerable_components_command_success(request_mocker, clien
     with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1969,7 +1968,7 @@ def test_list_my_asi_vulnerabilities_command_success(request_mocker, client):
     with open('test_data/ASI_Vulnerability/asi_vulnerability_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2014,7 +2013,7 @@ def test_list_my_asi_observations_command_success(request_mocker, client):
     with open('test_data/ASI_Observations/asi_observation_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2058,7 +2057,7 @@ def test_list_my_asi_observations_command_success_object_not_present(request_moc
     with open('test_data/ASI_Observations/asi_observation_command_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2102,7 +2101,7 @@ def test_list_third_party_asi_assets_command_success(request_mocker, client):
     with open('test_data/ASI_Assets/third_party_asi_assets_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2134,7 +2133,7 @@ def test_list_third_party_asi_assets_command_success_object_not_present(request_
     with open('test_data/ASI_Assets/third_party_asi_assets_command_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2164,10 +2163,10 @@ def test_pt_list_my_asi_insights_command_sorted_hr(request_mocker, client):
     args = {
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_sorted_hr_response.json', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_sorted_hr_response.json') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_sorted_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Insights/asi_insights_command_sorted_readable_output.md') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2194,7 +2193,7 @@ def test_list_third_party_asi_vulnerable_components_command_success(request_mock
               'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2250,7 +2249,7 @@ def test_list_third_party_attack_surface_vulnerabilities_command_success(request
     with open('test_data/ASI_Vulnerability/third_party_asi_vulnerability_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2309,7 +2308,7 @@ def test_list_third_party_asi_observations_command_success(request_mocker, clien
     with open('test_data/ASI_Observations/third_party_asi_observation_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2354,7 +2353,7 @@ def test_list_third_party_asi_observations_command_success_object_not_present(re
               'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
+    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response

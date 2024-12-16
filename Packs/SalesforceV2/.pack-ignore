@@ -1,0 +1,21 @@
+# GR103 is temporary, see CIAC-11656
+[file:incidentfield-SalesforceV2_Priority.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Last_Modified_Date.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Owner.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Case_Number.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Origin.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Status.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Escalated.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Subject.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Milestone_Status.json]
+ignore=GR103
+[file:incidentfield-SalesforceV2_Closed_Date.json]
+ignore=GR103

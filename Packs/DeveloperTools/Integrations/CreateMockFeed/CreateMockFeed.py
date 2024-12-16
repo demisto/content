@@ -146,7 +146,7 @@ def main():
                             "entityA": indicator_val,
                             "entityAFamily": "indicator",
                             "objectTypeA": indicator_type,
-                            "entityB": "{}".format(x) + prev_indicator,
+                            "entityB": f"{x}" + prev_indicator,
                             "entityBFamily": "indicator",
                             "objectTypeB": prev_type,
                             "fields": {

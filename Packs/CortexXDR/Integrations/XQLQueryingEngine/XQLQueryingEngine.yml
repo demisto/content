@@ -207,6 +207,18 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
+    - description: The XQL query.
+      name: query
+      hidden: true
+    - description: Time in relative date or range format.
+      name: time_frame
+      hidden: true
+    - description: The name of the command.
+      name: command_name
+      hidden: true
+    - description: The name of the query.
+      name: query_name
+      hidden: true
     description: |-
       Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
       When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
@@ -1553,7 +1565,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.10.13.80014
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

@@ -1,0 +1,32 @@
+{
+    "id": "indicator_validitynotafter",
+    "version": -1,
+    "modified": "2023-09-28T08:00:15.145651049Z",
+    "name": "Validity Not After",
+    "ownerOnly": false,
+    "cliName": "validitynotafter",
+    "type": "date",
+    "closeForm": false,
+    "description": "Specifies the date on which the certificate validity period ends.",
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "X509 Certificate"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -7,7 +7,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -39,10 +39,10 @@ script:
     description: Retrieves the scan with the specified identifier.
     name: insightvm-cloud-get-scan
   - arguments:
-    - defaultValue: "0"
+    - defaultValue: '0'
       description: The index of the page to retrieve.
       name: page
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The number of records per page to retrieve.
       name: size
     description: Retrieves a page of scan engines.
@@ -54,28 +54,28 @@ script:
     - description: Search criteria for filtering assets returned.
       name: hostname
       required: true
-    - defaultValue: "0"
+    - defaultValue: '0'
       description: The index of the page (zero-based) to retrieve.
       name: page
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The number of records per page to retrieve.
       name: size
     description: Returns the inventory, assessment, and summary details for a page of assets.
     name: insightvm-cloud-search-assets
   - arguments:
-    - defaultValue: "0"
+    - defaultValue: '0'
       description: The index of the page (zero-based) to retrieve.
       name: page
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The number of records per page to retrieve.
       name: size
     description: Returns the details for sites.
     name: insightvm-cloud-last-sites
   - arguments:
-    - defaultValue: "0"
+    - defaultValue: '0'
       description: The index of the page to retrieve.
       name: page
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The number of records per page to retrieve
       name: size
     - description: Query by which to search for vulnerabilities.
@@ -97,7 +97,7 @@ script:
       required: true
     description: Stops the scan with the specified identifier.
     name: insightvm-cloud-stop-scan
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

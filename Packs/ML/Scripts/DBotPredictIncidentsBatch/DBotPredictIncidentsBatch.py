@@ -19,7 +19,7 @@ def get_phishing_map_labels(comma_values):
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
-    return {k: v for k, v in labels_dict.items()}
+    return dict(labels_dict.items())
 
 
 def build_query_in_respect_to_phishing_labels(args):
@@ -29,12 +29,12 @@ def build_query_in_respect_to_phishing_labels(args):
         return args
     mapping_dict = get_phishing_map_labels(mapping)
     tag_field = args['tagField']
-    tags_union = ' '.join(['"{}"'.format(label) for label in mapping_dict])
-    mapping_query = '{}:({})'.format(tag_field, tags_union)
+    tags_union = ' '.join([f'"{label}"' for label in mapping_dict])
+    mapping_query = f'{tag_field}:({tags_union})'
     if 'query' not in args:
         args['query'] = mapping_query
     else:
-        args['query'] = '({}) and ({})'.format(query, mapping_query)
+        args['query'] = f'({query}) and ({mapping_query})'
     return args
 
 
@@ -78,7 +78,7 @@ def main():
     incidents_df = pd.DataFrame(incidents)
     predictions_df = pd.DataFrame(res[-1]['Contents'])
     df = pd.concat([incidents_df, predictions_df], axis=1)
-    df.rename(columns={"Label": "Prediction"}, inplace=True)
+    df = df.rename(columns={"Label": "Prediction"})
     file_name = 'predictions.csv'
     file_columns = ['id', tag_field_name, 'Prediction',
                     'Probability',
@@ -90,7 +90,7 @@ def main():
     csv_data = filtered_df.to_csv()
     entry = fileResult(file_name, csv_data)
     entry['Contents'] = filtered_df.to_json(orient='records')
-    entry['HumanReadable'] = 'File contains predictions of {} incidents'.format(len(incidents))
+    entry['HumanReadable'] = f'File contains predictions of {len(incidents)} incidents'
     return entry
 
 

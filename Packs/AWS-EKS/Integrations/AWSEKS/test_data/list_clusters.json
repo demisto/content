@@ -1,0 +1,15 @@
+{
+    "response_with_next_toke": {
+        "clusters": [
+            "cluster_name_1",
+            "cluster_name_100"
+        ],
+        "nextToken": "NextToken"
+    },
+    "response_without_next_token": {
+        "clusters": [
+            "cluster_name_101"
+        ],
+        "nextToken": null
+    }
+}

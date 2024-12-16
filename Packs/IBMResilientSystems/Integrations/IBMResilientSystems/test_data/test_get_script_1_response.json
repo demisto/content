@@ -1,0 +1,14 @@
+{
+    "id": 1,
+    "name": "Sample script: process inbound email (v35)",
+    "description": "This script processes inbound emails.",
+    "language": "python",
+    "object_type": 13,
+    "uuid": "0000-0000-0000-0000-0000",
+    "actions": [],
+    "tags": [],
+    "script_text": "...",
+    "creator_id": 0,
+    "last_modified_by": 0,
+    "last_modified_time": 1600698818789
+}

@@ -1,0 +1,28 @@
+{
+    "name": "JizoM",
+    "description": "This integration ensures interaction with the Jizo Manager API",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "SesameIT",
+    "url": "https://sesame-it.com/",
+    "email": "support@sesame-it.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Alerts",
+        "Security"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Jizo"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": [
+        "SesameGit"
+    ]
+}

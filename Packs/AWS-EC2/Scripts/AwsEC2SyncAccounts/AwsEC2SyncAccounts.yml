@@ -4,6 +4,12 @@ args:
   required: true
 - description: The name of the AWS - Organizations instance to collect account from. If not provided, the primary instance will be used.
   name: org_instance_name
+- description: A comma-separated list of accounts to exclude.
+  name: exclude_accounts
+  isArray: true
+- description: The maximum number of accounts to retrieve.
+  name: max_accounts
+  defaultValue: '50'
 comment: Update an AWS - EC2 instance with a list of accounts in an AWS organization, which will allow EC2 commands to run in all of them.
 commonfields:
   id: AwsEC2SyncAccounts
@@ -17,6 +23,8 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.9.110419
 runas: DBotWeakRole
 fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -1,9 +1,0 @@
-{
-    "names": {
-        "Mike": "mike",
-        "Sam": "sam"
-    },
-    "docker_images": {
-        "owner": "docker images bot owner"
-    }
-}

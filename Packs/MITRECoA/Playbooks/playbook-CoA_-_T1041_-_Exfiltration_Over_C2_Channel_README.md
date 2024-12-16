@@ -51,4 +51,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1041 - Exfiltration Over C2 Channel](../doc_files/MITRE_ATT&CK_CoA_-_T1041_-_Exfiltration_Over_C2_Channel.png)
+![MITRE ATT&CK CoA - T1041 - Exfiltration Over C2 Channel](../doc_files/MITRE_ATTandCK_CoA_-_T1041_-_Exfiltration_Over_C2_Channel.png)

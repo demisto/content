@@ -1,3 +1,3 @@
 [INGEST:vendor="McAfee", product="ePO", target_dataset="mcafee_epo_raw" , no_hit=keep]
-filter to_string(EventTimeLocal) ~= ".*\d{2}:\d{2}:\d{2}.*"
-| alter _time = EventTimeLocal;
+filter to_string(DetectedUTC) ~= "\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?"
+| alter _time = parse_timestamp("%F %H:%M:%E*S", to_string(DetectedUTC));

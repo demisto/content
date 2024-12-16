@@ -36,7 +36,7 @@ def mem_size_to_bytes(mem: str) -> int:
     return b
 
 
-def check_memory(target_mem: str, check_type: str) -> str:
+def check_memory(target_mem: str, check_type: str) -> str:  # pragma: no cover
     """Check allocating memory
 
     Arguments:

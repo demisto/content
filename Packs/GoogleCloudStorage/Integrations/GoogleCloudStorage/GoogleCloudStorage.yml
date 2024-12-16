@@ -13,6 +13,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  display: ""
 - display: Default Bucket
   name: default_bucket
   type: 0
@@ -45,6 +46,7 @@ script:
     - contextPath: GCS.Bucket.OwnerID
       description: Bucket owner ID.
       type: String
+    arguments: []
   - arguments:
     - default: true
       description: Name of the bucket to retrieve. If not specified, operation will be performed on the default bucket parameter.
@@ -154,7 +156,7 @@ script:
       description: Object owner ID.
       type: String
     - contextPath: GCS.BucketObject.CRC32c
-      description: CRC32c checksum (as described in RFC 4960, Appendix B https://tools.ietf.org/html/rfc4960#appendix-B), encoded using Base64 in big-endian byte order.
+      description: CRC32c checksum (as described in RFC 4960, Appendix B https://urldefense.proofpoint.com/v2/url?u=https-3A__tools.ietf.org_html_rfc4960-23appendix-2DB&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=MR1rkxIrivnuZMyIZTpFtBdsKt5EkVuLzeEp8_vY-oQ&e= ), encoded using Base64 in big-endian byte order.
       type: String
     - contextPath: GCS.BucketObject.EncryptionAlgorithm
       description: The encryption algorithm.
@@ -221,14 +223,7 @@ script:
     - description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
     - default: true
-      description: |-
-        Entity to add into the Access Control List.
-        Common entity formats are:
-        * user-<userId or email>
-        * group-<groupId or email>
-        * allUsers
-        * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      description: "Entity to add into the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
       name: entity
       required: true
     - auto: PREDEFINED
@@ -247,14 +242,7 @@ script:
     - description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
     - default: true
-      description: |-
-        The entity to update in the Access Control List.
-        Common entity formats are:
-        * user-<userId or email>
-        * group-<groupId or email>
-        * allUsers
-        * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      description: "The entity to update in the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
       name: entity
       required: true
     - auto: PREDEFINED
@@ -273,14 +261,7 @@ script:
     - description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
     - default: true
-      description: |-
-        Entity to remove from the Access Control List.
-        Common entity formats are:
-        * user-<userId or email>
-        * group-<groupId or email>
-        * allUsers
-        * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
       name: entity
       required: true
     description: Removes an entity from a bucket's Access Control List.
@@ -320,14 +301,7 @@ script:
       name: object_name
       required: true
     - default: true
-      description: |-
-        Entity to add into the Access Control List.
-        Common entity formats are:
-        * user-<userId or email>
-        * group-<groupId or email>
-        * allUsers
-        * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      description: "Entity to add into the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
       name: entity
       required: true
     - auto: PREDEFINED
@@ -348,14 +322,7 @@ script:
       name: object_name
       required: true
     - default: true
-      description: |-
-        The entity to update in the Access Control List.
-        Common entity formats are:
-        * user-<userId or email>
-        * group-<groupId or email>
-        * allUsers
-        * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      description: "The entity to update in the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
       name: entity
       required: true
     - auto: PREDEFINED
@@ -376,21 +343,45 @@ script:
       name: object_name
       required: true
     - default: true
-      description: |-
-        Entity to remove from the Access Control List.
-        Common entity formats are:
-        * user-<userId or email>
-        * group-<groupId or email>
-        * allUsers
-        * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
       name: entity
       required: true
     description: Removes an entity from an object's Access Control List.
     name: gcs-delete-bucket-object-policy
-  dockerimage: demisto/google-cloud-storage:1.0.0.83364
+  - arguments:
+    - description: Name of the Bucket to copy the object from. If not specified, operation will be performed on the default bucket parameter.
+      name: source_bucket_name
+    - description: Name of the Bucket to copy the object to.
+      name: destination_bucket_name
+      required: true
+    - description: Name of the object to copy.
+      name: source_object_name
+      required: true
+    - description: Name of the object in the destination bucket. If not specified, operation will be performed with the source_object_name parameter.
+      name: destination_object_name
+    description: Copies a file (object) from one bucket to another.
+    name: gcs-copy-file
+  - arguments:
+    - description: Name of the bucket to which public access policy is to be applied.
+      name: bucket_name
+      required: false
+    - description: |
+        Defines the public access prevention mode for the bucket.
+        - enforced: Completely blocks public access to the bucket, ensuring only authorized users can access it.
+        - inherited: The bucket will inherit the public access prevention setting from its parent project.
+      name: public_access_prevention
+      required: true
+      auto: PREDEFINED
+      defaultValue: 'enforced'
+      predefined:
+      - enforced
+      - inherited
+    description: |
+      Blocks public access to a specified Google Cloud Storage bucket by enabling public access prevention, ensuring only authorized users can access the bucket.
+    name: gcs-block-public-access-bucket
+  dockerimage: demisto/google-cloud-storage:1.0.0.117186
   runonce: false
-  script: '-'
+  script: ''
   type: python
   subtype: python3
 tests:

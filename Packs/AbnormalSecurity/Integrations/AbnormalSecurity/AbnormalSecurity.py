@@ -1,5 +1,8 @@
-from CommonServerPython import *
-from typing import Dict, Any
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+from typing import Any
 import logging
 from datetime import datetime
 
@@ -27,7 +30,6 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class FetchIncidentsError(Exception):
     """Raised when there's an error in fetching incidents."""
-    pass
 
 
 class Client(BaseClient):
@@ -69,8 +71,11 @@ class Client(BaseClient):
         return response
 
     def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_='', page_size=None, page_number=None,
-                                                                   subtenant=None):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant)
+                                                                   subtenant=None, subject=None, sender=None, recipient=None,
+                                                                   reporter=None, attackType=None, threatType=None):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant, subject=subject,
+                               sender=sender, recipient=recipient, reporter=reporter, attackType=attackType,
+                               threatType=threatType)
 
         headers = self._headers
 
@@ -78,8 +83,11 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant)
+    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None,
+                                      subject=None, sender=None, recipient=None, topic=None, attackType=None, attackVector=None):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant,
+                               subject=subject, sender=sender, recipient=recipient, topic=topic, attackType=attackType,
+                               attackVector=attackVector)
 
         headers = self._headers
 
@@ -335,8 +343,15 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
     page_size = args.get('page_size', None)
     page_number = args.get('page_number', None)
     subtenant = args.get('subtenant', None)
+    subject = args.get('subject', None)
+    sender = args.get('sender', None)
+    recipient = args.get('recipient', None)
+    reporter = args.get('reporter', None)
+    attackType = args.get('attackType', None)
+    threatType = args.get('threatType', None)
 
-    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_, page_size, page_number, subtenant)
+    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
+        filter_, page_size, page_number, subtenant, subject, sender, recipient, reporter, attackType, threatType)
     markdown = tableToMarkdown('Campaign IDs', response.get('campaigns', []), headers=['campaignId'], removeNull=True)
 
     command_results = CommandResults(
@@ -356,8 +371,15 @@ def get_a_list_of_threats_command(client, args):
     page_number = args.get('page_number', None)
     source = str(args.get('source', ''))
     subtenant = args.get('subtenant', None)
+    subject = args.get('subject', None)
+    sender = args.get('sender', None)
+    recipient = args.get('recipient', None)
+    topic = args.get('topic', None)
+    attackType = args.get('attackType', None)
+    attackVector = args.get('attackVector', None)
 
-    response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source, subtenant)
+    response = client.get_a_list_of_threats_request(
+        filter_, page_size, page_number, source, subtenant, subject, sender, recipient, topic, attackType, attackVector)
     markdown = tableToMarkdown('Threat IDs', response.get('threats'), headers=['threatId'], removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
@@ -455,7 +477,7 @@ def get_details_of_an_abuse_mailbox_campaign_command(client, args):
 
     response = client.get_details_of_an_abuse_mailbox_campaign_request(campaign_id, subtenant)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.AbuseCampaign.campaigns',
+        outputs_prefix='AbnormalSecurity.AbuseCampaign',
         outputs_key_field='campaignId',
         outputs=response,
         raw_response=response
@@ -611,7 +633,7 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
 
 def submit_false_negative_report_command(client, args):
-    recipient_email = str(args.get('recipient_email;', ''))
+    recipient_email = str(args.get('recipient_email', ''))
     sender_email = str(args.get('sender_email', ''))
     subject = str(args.get('subject', ''))
     response = client.submit_false_negative_report_request(recipient_email, sender_email, subject)
@@ -624,7 +646,7 @@ def submit_false_negative_report_command(client, args):
 
 
 def submit_false_positive_report_command(client, args):
-    portal_link = str(args.get('portal_link;', ''))
+    portal_link = str(args.get('portal_link', ''))
     response = client.submit_false_positive_report_request(portal_link)
     command_results = CommandResults(
         readable_output=response,
@@ -769,7 +791,7 @@ def generate_account_takeover_cases_incidents(client, cases):
 
 def fetch_incidents(
         client: Client,
-        last_run: Dict[str, Any],
+        last_run: dict[str, Any],
         first_fetch_time: str,
         fetch_threats: bool,
         fetch_abuse_campaigns: bool,

@@ -1,0 +1,50 @@
+[
+    {
+        "contactType": "REGISTRANT",
+        "firstName": "Domain",
+        "lastName": "Administrator",
+        "organization": "CSC Corporate Domains, Inc.",
+        "street1": "251 Little Falls Drive",
+        "street2": "",
+        "city": "Wilmington",
+        "stateProvince": "DE",
+        "country": "US",
+        "postalCode": "19808",
+        "email": "admin@internationaladmin.com",
+        "phone": "+1.3026365400",
+        "phoneExtn": "",
+        "fax": ""
+    },
+    {
+        "contactType": "ADMINISTRATIVE",
+        "firstName": "Domain",
+        "lastName": "Administrator",
+        "organization": "CSC Corporate Domains, Inc.",
+        "street1": "251 Little Falls Drive",
+        "street2": "",
+        "city": "Wilmington",
+        "stateProvince": "DE",
+        "country": "US",
+        "postalCode": "19808",
+        "email": "admin@internationaladmin.com",
+        "phone": "+1.3026365400",
+        "phoneExtn": "",
+        "fax": ""
+    },
+    {
+        "contactType": "TECHNICAL",
+        "firstName": "DNS",
+        "lastName": "Administrator",
+        "organization": "CSC Corporate Domains, Inc.",
+        "street1": "251 Little Falls Drive",
+        "street2": "",
+        "city": "Wilmington",
+        "stateProvince": "DE",
+        "country": "US",
+        "postalCode": "19808",
+        "email": "dns-admin@cscglobal.com",
+        "phone": "+1.3026365400",
+        "phoneExtn": "",
+        "fax": ""
+    }
+]

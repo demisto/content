@@ -1,0 +1,1059 @@
+category: Cloud Services
+sectionOrder:
+  - Connect
+  - Collect
+commonfields:
+  id: Gem
+  version: -1
+defaultmapperin: Gem Mapper
+defaultclassifier: Gem Classifier
+configuration:
+  - display: Incident type
+    name: incidentType
+    type: 13
+    defaultvalue: Gem Alert
+    section: Connect
+    required: false
+  - display: API Endpoint
+    defaultvalue: "https://app.gem.security/api"
+    additionalinfo: "The API endpoint to use for connection (US or EU)"
+    name: api_endpoint
+    type: 15
+    section: Connect
+    required: true
+    options:
+      - "https://app.gem.security/api"
+      - "https://eu-west-1.app.gem.security/api"
+  - display: Service Account ID
+    name: credentials
+    defaultvalue: ""
+    type: 9
+    required: true
+    section: Connect
+    displaypassword: Service Account Secret
+  - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+    defaultvalue: 30 days
+    name: first_fetch
+    required: false
+    type: 0
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    section: Connect
+    required: false
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    section: Connect
+    required: false
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    section: Collect
+    required: false
+  - display: Maximum number of alerts per fetch
+    defaultvalue: 10
+    name: max_fetch
+    type: 0
+    section: Collect
+    required: false
+description: "Use Gem alerts as a trigger for Cortex XSOAR’s custom playbooks, to automate response to specific TTPs."
+display: Gem
+name: Gem
+script:
+  commands:
+    - name: gem-list-threats
+      description: List all threats detected in Gem.
+      arguments:
+        - name: limit
+          description: The number of alert to fetch.
+          required: false
+          defaultValue: "50"
+        - name: time_start
+          description: "The start time of the threats to return in ISO format. Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: time_end
+          description: "The end time of the threats to return in ISO format. Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: ordering
+          description: The ordering of the items.
+          required: false
+          defaultValue: "-timeframe_start"
+          auto: PREDEFINED
+          predefined:
+            - "-timeframe_start"
+            - "timeframe_state"
+            - "-mitre_technique"
+            - "mitre_technique"
+            - "-severity"
+            - "severity"
+            - "-assignee"
+            - "assignee"
+            - "-is_resolved"
+            - "is_resolved"
+        - name: status
+          description: The status of the threats to return.
+          required: false
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - open
+            - resolved
+            - in_progress
+        - name: ttp_id
+          description: The TTP ID of the threats to return.
+          required: false
+        - name: title
+          description: The title of the threats to return.
+          required: false
+        - name: severity
+          description: The severity of the threats to return.
+          required: false
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - low
+            - medium
+            - high
+        - name: cloud_provider
+          description: The provider of the threats to return.
+          required: false
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - aws
+            - azure
+            - gcp
+            - okta
+            - huawei
+        - name: entity_type
+          description: The entity type of the threats to return.
+          required: false
+      outputs:
+        - contextPath: Gem.ThreatsList.accounts.account_status
+          description: "Indicates the current status of the account (e.g., active, suspended)."
+          type: String
+        - contextPath: Gem.ThreatsList.accounts.cloud_provider
+          description: "Specifies the cloud service provider for the account (e.g., AWS, Azure)."
+          type: String
+        - contextPath: Gem.ThreatsList.accounts.display_name
+          description: "The display name associated with the account."
+          type: String
+        - contextPath: Gem.ThreatsList.accounts.hierarchy_path.id
+          description: "Unique identifier within the account hierarchy path."
+          type: String
+        - contextPath: Gem.ThreatsList.accounts.hierarchy_path.name
+          description: "Name designation within the account hierarchy path."
+          type: String
+        - contextPath: Gem.ThreatsList.accounts.id
+          description: "The unique numerical identifier for the account."
+          type: Number
+        - contextPath: Gem.ThreatsList.accounts.identifier
+          description: "An alternative identifier for the account."
+          type: String
+        - contextPath: Gem.ThreatsList.accounts.organization_name
+          description: "The name of the organization to which the account belongs."
+          type: String
+        - contextPath: Gem.ThreatsList.alert_source
+          description: "The source of the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.accounts.account_status
+          description: "Indicates the account status related to a specific alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.accounts.cloud_provider
+          description: "Cloud provider associated with the alert's account."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.accounts.display_name
+          description: "Display name of the account related to the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.accounts.id
+          description: "Numerical identifier for the account associated with the alert."
+          type: Number
+        - contextPath: Gem.ThreatsList.alerts.accounts.identifier
+          description: "Identifier for the account related to the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.accounts.organization_name
+          description: "Organization name associated with the alert's account."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.alert_source
+          description: "The source of individual alerts."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.datetime
+          description: "The date and time when the alert was generated."
+          type: Date
+        - contextPath: Gem.ThreatsList.alerts.description
+          description: "Description of the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.entities.activity_by_provider
+          description: "Details about activity by the cloud provider in relation to the alert."
+          type: Unknown
+        - contextPath: Gem.ThreatsList.alerts.entities.cloud_provider
+          description: "Cloud provider related to the alert entities."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.entities.id
+          description: "Unique identifier for the entities related to the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.entities.is_main_entity
+          description: "Indicates if the entity is the primary subject of the alert."
+          type: Boolean
+        - contextPath: Gem.ThreatsList.alerts.entities.is_secondary_entity
+          description: "Indicates if the entity is a secondary subject of the alert."
+          type: Boolean
+        - contextPath: Gem.ThreatsList.alerts.entities.resource_id
+          description: "Identifier for the resources involved in the alert."
+          type: Unknown
+        - contextPath: Gem.ThreatsList.alerts.entities.type
+          description: "Type of entities involved in the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.id
+          description: "Unique identifier for the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.main_alert_id
+          description: "Identifier for the primary alert, if applicable."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.mitre_techniques.id
+          description: "Identifier for the MITRE ATT&CK technique associated with the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.mitre_techniques.technique_name
+          description: "Name of the MITRE ATT&CK technique related to the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.organization_id
+          description: "Identifier for the organization associated with the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.severity
+          description: "Numerical representation of the alert's severity."
+          type: Number
+        - contextPath: Gem.ThreatsList.alerts.severity_text
+          description: "Textual description of the alert's severity."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.status
+          description: "Current status of the alert (e.g., open, resolved. in_progress)."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.title
+          description: "Title or summary of the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.alerts.ttp_id
+          description: "Identifier for the tactics, techniques, and procedures (TTP) related to the alert."
+          type: String
+        - contextPath: Gem.ThreatsList.assignees
+          description: "Information about who is assigned to address the threats."
+          type: Unknown
+        - contextPath: Gem.ThreatsList.category
+          description: "Classification or category of the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.datetime
+          description: "The date and time when the threat was identified or logged."
+          type: Date
+        - contextPath: Gem.ThreatsList.description
+          description: "Detailed description of the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.entities.activity_by_provider
+          description: "Details about the activity conducted by the cloud provider in relation to the threat."
+          type: Unknown
+        - contextPath: Gem.ThreatsList.entities.cloud_provider
+          description: "Cloud service provider associated with the entities in the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.entities.id
+          description: "Unique identifier for the entities involved in the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.entities.is_main_entity
+          description: "Indicates if the entity is the primary focus of the threat."
+          type: Boolean
+        - contextPath: Gem.ThreatsList.entities.is_secondary_entity
+          description: "Indicates if the entity plays a secondary role in the context of the threat."
+          type: Boolean
+        - contextPath: Gem.ThreatsList.entities.resource_id
+          description: "Identifier for the resources targeted or involved in the threat."
+          type: Unknown
+        - contextPath: Gem.ThreatsList.entities.type
+          description: "Type or nature of the entities involved in the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.id
+          description: "Unique identifier for the threat list item."
+          type: String
+        - contextPath: Gem.ThreatsList.main_alert_id
+          description: "Main alert identifier related to the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.mitre_techniques.id
+          description: "Identifier for MITRE ATT&CK techniques associated with the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.mitre_techniques.technique_name
+          description: "Name of the MITRE ATT&CK technique associated with the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.organization_id
+          description: "Identifier of the organization associated with the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.severity_text
+          description: "Textual description of the overall severity of the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.status
+          description: "Current status of the threat (e.g., active, resolved)."
+          type: String
+        - contextPath: Gem.ThreatsList.title
+          description: "Title or main description of the threat."
+          type: String
+        - contextPath: Gem.ThreatsList.ttp_id
+          description: "Identifier for the tactics, techniques, and procedures (TTP) associated with the threat."
+          type: String
+    - name: gem-get-threat-details
+      description: Get details about a specific threat.
+      arguments:
+        - name: threat_id
+          description: The ID of the threat to get details for.
+          required: true
+      outputs:
+        - contextPath: Gem.Threat.accounts.account_status
+          description: "Indicates the current status of the account (e.g., active, suspended)."
+          type: String
+        - contextPath: Gem.Threat.accounts.cloud_provider
+          description: "Specifies the cloud service provider for the account (e.g., AWS, Azure)."
+          type: String
+        - contextPath: Gem.Threat.accounts.display_name
+          description: "The display name associated with the account."
+          type: String
+        - contextPath: Gem.Threat.accounts.hierarchy_path.id
+          description: "Unique identifier within the account hierarchy path."
+          type: String
+        - contextPath: Gem.Threat.accounts.hierarchy_path.name
+          description: "Name designation within the account hierarchy path."
+          type: String
+        - contextPath: Gem.Threat.accounts.id
+          description: "The unique numerical identifier for the account."
+          type: Number
+        - contextPath: Gem.Threat.accounts.identifier
+          description: "An alternative identifier for the account."
+          type: String
+        - contextPath: Gem.Threat.accounts.organization_name
+          description: "The name of the organization to which the account belongs."
+          type: String
+        - contextPath: Gem.Threat.alert_source
+          description: "The source of the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.accounts.account_status
+          description: "Indicates the account status related to a specific alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.accounts.cloud_provider
+          description: "Cloud provider associated with the alert's account."
+          type: String
+        - contextPath: Gem.Threat.alerts.accounts.display_name
+          description: "Display name of the account related to the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.accounts.id
+          description: "Numerical identifier for the account associated with the alert."
+          type: Number
+        - contextPath: Gem.Threat.alerts.accounts.identifier
+          description: "Identifier for the account related to the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.accounts.organization_name
+          description: "Organization name associated with the alert's account."
+          type: String
+        - contextPath: Gem.Threat.alerts.alert_source
+          description: "The source of individual alerts."
+          type: String
+        - contextPath: Gem.Threat.alerts.datetime
+          description: "The date and time when the alert was generated."
+          type: Date
+        - contextPath: Gem.Threat.alerts.description
+          description: "Description of the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.entities.activity_by_provider
+          description: "Details about activity by the cloud provider in relation to the alert."
+          type: Unknown
+        - contextPath: Gem.Threat.alerts.entities.cloud_provider
+          description: "Cloud provider related to the alert entities."
+          type: String
+        - contextPath: Gem.Threat.alerts.entities.id
+          description: "Unique identifier for the entities related to the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.entities.is_main_entity
+          description: "Indicates if the entity is the primary subject of the alert."
+          type: Boolean
+        - contextPath: Gem.Threat.alerts.entities.is_secondary_entity
+          description: "Indicates if the entity is a secondary subject of the alert."
+          type: Boolean
+        - contextPath: Gem.Threat.alerts.entities.resource_id
+          description: "Identifier for the resources involved in the alert."
+          type: Unknown
+        - contextPath: Gem.Threat.alerts.entities.type
+          description: "Type of entities involved in the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.id
+          description: "Unique identifier for the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.main_alert_id
+          description: "Identifier for the primary alert, if applicable."
+          type: String
+        - contextPath: Gem.Threat.alerts.mitre_techniques.id
+          description: "Identifier for the MITRE ATT&CK technique associated with the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.mitre_techniques.technique_name
+          description: "Name of the MITRE ATT&CK technique related to the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.organization_id
+          description: "Identifier for the organization associated with the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.severity
+          description: "Numerical representation of the alert's severity."
+          type: Number
+        - contextPath: Gem.Threat.alerts.severity_text
+          description: "Textual description of the alert's severity."
+          type: String
+        - contextPath: Gem.Threat.alerts.status
+          description: "Current status of the alert (e.g., open, resolved. in_progress)."
+          type: String
+        - contextPath: Gem.Threat.alerts.title
+          description: "Title or summary of the alert."
+          type: String
+        - contextPath: Gem.Threat.alerts.ttp_id
+          description: "Identifier for the tactics, techniques, and procedures (TTP) related to the alert."
+          type: String
+        - contextPath: Gem.Threat.assignees
+          description: "Information about who is assigned to address the threats."
+          type: Unknown
+        - contextPath: Gem.Threat.category
+          description: "Classification or category of the threat."
+          type: String
+        - contextPath: Gem.Threat.datetime
+          description: "The date and time when the threat was identified or logged."
+          type: Date
+        - contextPath: Gem.Threat.description
+          description: "Detailed description of the threat."
+          type: String
+        - contextPath: Gem.Threat.entities.activity_by_provider
+          description: "Details about the activity conducted by the cloud provider in relation to the threat."
+          type: Unknown
+        - contextPath: Gem.Threat.entities.cloud_provider
+          description: "Cloud service provider associated with the entities in the threat."
+          type: String
+        - contextPath: Gem.Threat.entities.id
+          description: "Unique identifier for the entities involved in the threat."
+          type: String
+        - contextPath: Gem.Threat.entities.is_main_entity
+          description: "Indicates if the entity is the primary focus of the threat."
+          type: Boolean
+        - contextPath: Gem.Threat.entities.is_secondary_entity
+          description: "Indicates if the entity plays a secondary role in the context of the threat."
+          type: Boolean
+        - contextPath: Gem.Threat.entities.resource_id
+          description: "Identifier for the resources targeted or involved in the threat."
+          type: Unknown
+        - contextPath: Gem.Threat.entities.type
+          description: "Type or nature of the entities involved in the threat."
+          type: String
+        - contextPath: Gem.Threat.id
+          description: "Unique identifier for the threat list item."
+          type: String
+        - contextPath: Gem.Threat.main_alert_id
+          description: "Main alert identifier related to the threat."
+          type: String
+        - contextPath: Gem.Threat.mitre_techniques.id
+          description: "Identifier for MITRE ATT&CK techniques associated with the threat."
+          type: String
+        - contextPath: Gem.Threat.mitre_techniques.technique_name
+          description: "Name of the MITRE ATT&CK technique associated with the threat."
+          type: String
+        - contextPath: Gem.Threat.organization_id
+          description: "Identifier of the organization associated with the threat."
+          type: String
+        - contextPath: Gem.Threat.severity_text
+          description: "Textual description of the overall severity of the threat."
+          type: String
+        - contextPath: Gem.Threat.status
+          description: "Current status of the threat (e.g., active, resolved)."
+          type: String
+        - contextPath: Gem.Threat.title
+          description: "Title or main description of the threat."
+          type: String
+        - contextPath: Gem.Threat.ttp_id
+          description: "Identifier for the tactics, techniques, and procedures (TTP) associated with the threat."
+          type: String
+
+    - name: gem-get-alert-details
+      description: Get details about a specific alert.
+      arguments:
+        - name: alert_id
+          description: The ID of the alert to get details for.
+          required: true
+      outputs:
+        - contextPath: Gem.Alert.alert_context.account_db_id
+          description: "Database identifier for the account associated with the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.alert_id
+          description: "Unique identifier for the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.alert_source
+          description: "The source from which the alert originated."
+          type: String
+        - contextPath: Gem.Alert.alert_context.alert_source_id
+          description: "Identifier for the specific source of the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.alert_source_url
+          description: "URL associated with the alert source."
+          type: String
+        - contextPath: Gem.Alert.alert_context.cloud_provider
+          description: "The cloud service provider associated with the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.created_at
+          description: "The timestamp when the alert was created."
+          type: Date
+        - contextPath: Gem.Alert.alert_context.description
+          description: "Detailed description of the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.description_template
+          description: "Template used for generating the alert description."
+          type: String
+        - contextPath: Gem.Alert.alert_context.general_cloud_provider
+          description: "General classification of the cloud provider related to the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.mitre_techniques.id
+          description: "Identifier for the MITRE ATT&CK technique associated with the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.mitre_techniques.technique_name
+          description: "Name of the MITRE ATT&CK technique related to the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.resolved
+          description: "Indicates whether the alert has been resolved."
+          type: Boolean
+        - contextPath: Gem.Alert.alert_context.severity
+          description: "Numerical representation of the alert's severity."
+          type: Number
+        - contextPath: Gem.Alert.alert_context.status
+          description: "Current status of the alert (e.g., open, resolved, in_progress)."
+          type: String
+        - contextPath: Gem.Alert.alert_context.timeframe_end
+          description: "End date and time of the timeframe relevant to the alert."
+          type: Date
+        - contextPath: Gem.Alert.alert_context.timeframe_start
+          description: "Start date and time of the timeframe relevant to the alert."
+          type: Date
+        - contextPath: Gem.Alert.alert_context.title
+          description: "Title or main description of the alert."
+          type: String
+        - contextPath: Gem.Alert.alert_context.ttp_id
+          description: "Identifier for the tactics, techniques, and procedures (TTP) related to the alert."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.analysis
+          description: "Analysis or summary of the triage configuration for the alert."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.entities.activity_by_provider
+          description: "Activity details by the cloud provider related to the triage entities."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.entities.cloud_provider
+          description: "Cloud provider associated with the triage entities."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.entities.id
+          description: "Unique identifier for the entities involved in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.entities.is_main_entity
+          description: "Indicates if the entity is the primary focus in the triage."
+          type: Boolean
+        - contextPath: Gem.Alert.triage_configuration.entities.is_secondary_entity
+          description: "Indicates if the entity plays a secondary role in the triage."
+          type: Boolean
+        - contextPath: Gem.Alert.triage_configuration.entities.resource_id
+          description: "Resource identifier associated with the triage entities."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.entities.type
+          description: "Type or nature of the entities involved in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.description
+          description: "Description of the event groups involved in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.end_time
+          description: "End time for the event groups in the triage."
+          type: Date
+        - contextPath: Gem.Alert.triage_configuration.event_groups.error_code
+          description: "Error code associated with the event groups in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.event_name
+          description: "Name of the specific event within the event group related to the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.event_type
+          description: "Type or category of the event within the event group."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.events
+          description: "Details of the events that are part of the event group in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.start_time
+          description: "Start time for the event groups involved in the triage."
+          type: Date
+        - contextPath: Gem.Alert.triage_configuration.event_groups.time_indicator_text
+          description: "Textual indicator of the time relevant to the event groups in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.timeline_item_type
+          description: "Type of timeline item represented by the event groups in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.title
+          description: "Title or main description of the event groups in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.event_groups.type
+          description: "Overall type or classification of the event groups in the triage."
+          type: String
+        - contextPath: Gem.Alert.triage_configuration.resolve_params.include_data_events
+          description: "Indicates whether data events should be included in the resolution process."
+          type: Boolean
+        - contextPath: Gem.Alert.triage_configuration.resolve_params.timeframe_lookup_window_hours
+          description: "Number of hours in the lookup window for timeframe analysis in the resolution process."
+          type: Number
+        - contextPath: Gem.Alert.triage_configuration.state
+          description: "Current state or status of the triage configuration for the alert."
+          type: String
+
+    - name: gem-list-inventory-resources
+      description: List inventory resources in Gem.
+      arguments:
+        - name: limit
+          description: The number of items to return.
+          required: false
+          defaultValue: "50"
+        - name: include_deleted
+          description: Include deleted resources in the response.
+          required: false
+          defaultValue: false
+          type: Boolean
+        - name: region
+          description: The region of the resources to return.
+          required: false
+        - name: resource_type
+          description: The type of the resources to return.
+          required: false
+        - name: search
+          description: The search query to use.
+          required: false
+      outputs:
+        - contextPath: Gem.InventoryItems.account.account_status
+          description: "Current status of the account associated with the inventory item (e.g., active, suspended)."
+          type: String
+        - contextPath: Gem.InventoryItems.account.cloud_provider
+          description: "Name of the cloud service provider for the account associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.account.display_name
+          description: "Display name of the account associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.account.hierarchy_path
+          description: "Hierarchical path in the account structure associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.account.id
+          description: "Unique numerical identifier for the account associated with the inventory item."
+          type: Number
+        - contextPath: Gem.InventoryItems.account.identifier
+          description: "Alternative identifier for the account associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.account.organization_name
+          description: "Name of the organization to which the account associated with the inventory item belongs."
+          type: String
+        - contextPath: Gem.InventoryItems.account.tenant
+          description: "Tenant information for the account associated with the inventory item in a multi-tenant environment."
+          type: String
+        - contextPath: Gem.InventoryItems.categories
+          description: "Categories or types assigned to the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.created_at
+          description: "Timestamp indicating when the inventory item was created."
+          type: Date
+        - contextPath: Gem.InventoryItems.deleted
+          description: "Indicates whether the inventory item has been marked as deleted."
+          type: Boolean
+        - contextPath: Gem.InventoryItems.external_url
+          description: "URL linking to external information or resources related to the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.identifiers.name
+          description: "Name associated with the identifier of the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.identifiers.value
+          description: "Value of the identifier assigned to the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.region
+          description: "Geographic region associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItems.resource_id
+          description: "Unique identifier for the resource that the inventory item represents."
+          type: String
+        - contextPath: Gem.InventoryItems.resource_type
+          description: "Type of resource that the inventory item represents (e.g., VM, database)."
+          type: String
+        - contextPath: Gem.InventoryItems.tags
+          description: "Tags or labels assigned to the inventory item for categorization or identification."
+          type: String
+
+    - name: gem-get-resource-details
+      description: Get details about a specific resource.
+      arguments:
+        - name: resource_id
+          description: The ID of the resource to get details for.
+          required: true
+      outputs:
+        - contextPath: Gem.InventoryItem.account.account_status
+          description: "Current status of the account associated with the inventory item (e.g., active, suspended)."
+          type: String
+        - contextPath: Gem.InventoryItem.account.cloud_provider
+          description: "Name of the cloud service provider for the account associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.account.display_name
+          description: "Display name of the account associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.account.hierarchy_path
+          description: "Hierarchical path in the account structure associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.account.id
+          description: "Unique numerical identifier for the account associated with the inventory item."
+          type: Number
+        - contextPath: Gem.InventoryItem.account.identifier
+          description: "Alternative identifier for the account associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.account.organization_name
+          description: "Name of the organization to which the account associated with the inventory item belongs."
+          type: String
+        - contextPath: Gem.InventoryItem.account.tenant
+          description: "Tenant information for the account associated with the inventory item in a multi-tenant environment."
+          type: String
+        - contextPath: Gem.InventoryItem.categories
+          description: "Categories or types assigned to the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.created_at
+          description: "Timestamp indicating when the inventory item was created."
+          type: Date
+        - contextPath: Gem.InventoryItem.deleted
+          description: "Indicates whether the inventory item has been marked as deleted."
+          type: Boolean
+        - contextPath: Gem.InventoryItem.external_url
+          description: "URL linking to external information or resources related to the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.identifiers.name
+          description: "Name associated with the identifier of the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.identifiers.value
+          description: "Value of the identifier assigned to the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.region
+          description: "Geographic region associated with the inventory item."
+          type: String
+        - contextPath: Gem.InventoryItem.resource_id
+          description: "Unique identifier for the resource that the inventory item represents."
+          type: String
+        - contextPath: Gem.InventoryItem.resource_type
+          description: "Type of resource that the inventory item represents (e.g., VM, database)."
+          type: String
+
+    - name: gem-list-ips-by-entity
+      description: List all source IP addresses used by an entity in a specific timeframe. The results are sorted by activity volume.
+      arguments:
+        - name: entity_id
+          description: "Gem ID of the entity. This will usually be the ARN or CSP ID. This property is also available for every resource in the Inventory screen. Example: arn:aws:ec2:us-east-1:112233445566:instance/i-1234567890abcdefg."
+          required: true
+        - name: entity_type
+          description: "Type of the entity. See documentation for the full options list."
+          required: true
+        - name: read_only
+          description: "Show read-only events."
+          required: false
+          type: Boolean
+          defaultValue: false
+        - name: start_time
+          description: "Timeframe start (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: end_time
+          description: "Timeframe end (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+      outputs:
+        - contextPath: Gem.IP.AS_NAME
+          description: "Name of the Autonomous System (AS) associated with the IP address."
+          type: String
+        - contextPath: Gem.IP.AS_NUMBER
+          description: "Number of the Autonomous System (AS) associated with the IP address."
+          type: String
+        - contextPath: Gem.IP.CITY
+          description: "City where the IP address is located."
+          type: String
+        - contextPath: Gem.IP.COUNTRY_CODE
+          description: "Country code corresponding to the location of the IP address."
+          type: String
+        - contextPath: Gem.IP.COUNTRY_NAME
+          description: "Name of the country where the IP address is located."
+          type: String
+        - contextPath: Gem.IP.COUNT_SOURCEIP
+          description: "Count of occurrences or references to the source IP address."
+          type: String
+        - contextPath: Gem.IP.IP_TYPE
+          description: "Type of the IP address (e.g., IPv4, IPv6)."
+          type: String
+        - contextPath: Gem.IP.IS_PRIVATE
+          description: "Indicates whether the IP address is private (e.g., within a local network)."
+          type: String
+        - contextPath: Gem.IP.LATITUDE
+          description: "Latitude coordinate of the IP address's location."
+          type: String
+        - contextPath: Gem.IP.LONGITUDE
+          description: "Longitude coordinate of the IP address's location."
+          type: String
+        - contextPath: Gem.IP.PROVIDER
+          description: "Internet service provider associated with the IP address."
+          type: String
+        - contextPath: Gem.IP.SOURCEIPADDRESS
+          description: "The actual IP address being referenced or analyzed."
+          type: String
+
+    - name: gem-list-services-by-entity
+      description: List all services accessed by an entity in a specific timeframe. The results are sorted by activity volume.
+      arguments:
+        - name: entity_id
+          description: "Gem ID of the entity. This will usually be the ARN or CSP ID. This property is also available for every resource in the Inventory screen. Example: arn:aws:ec2:us-east-1:112233445566:instance/i-1234567890abcdefg."
+          required: true
+        - name: entity_type
+          description: "Type of the entity. See documentation for the full options list."
+          required: true
+        - name: read_only
+          description: "Show read-only events."
+          required: false
+          type: Boolean
+          defaultValue: false
+        - name: start_time
+          description: "Timeframe start (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: end_time
+          description: "Timeframe end (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+      outputs:
+        - contextPath: Gem.Entity.By.Services.COUNT_SERVICE
+          description: "Number of times the specified service appears or is utilized within the context."
+          type: String
+        - contextPath: Gem.Entity.By.Services.SERVICE
+          description: "Name or type of the service being referenced or analyzed."
+          type: String
+
+    - name: gem-list-events-by-entity
+      description: List all events performed by an entity in a specific timeframe. The results are sorted by activity volume.
+      arguments:
+        - name: entity_id
+          description: "Gem ID of the entity. This will usually be the ARN or CSP ID. This property is also available for every resource in the Inventory screen. Example: arn:aws:ec2:us-east-1:112233445566:instance/i-1234567890abcdefg."
+          required: true
+        - name: entity_type
+          description: "Type of the entity. See documentation for the full options list."
+          required: true
+        - name: read_only
+          description: "Show read-only events."
+          required: false
+          type: Boolean
+          defaultValue: false
+        - name: start_time
+          description: "Timeframe start (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: end_time
+          description: "Timeframe end (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+      outputs:
+        - contextPath: Gem.Entity.By.Events.EVENTNAME
+          description: "Name of the event being referenced or analyzed."
+          type: String
+        - contextPath: Gem.Entity.By.Events.EVENTNAME_COUNT
+          description: "Count of occurrences or references to the specified event name."
+          type: String
+
+    - name: gem-list-accessing-entities
+      description: List all entities that accessed an entity in a specific timeframe. The results are sorted by activity volume.
+      arguments:
+        - name: entity_id
+          description: "Gem ID of the entity. This will usually be the ARN or CSP ID. This property is also available for every resource in the Inventory screen. Example: arn:aws:ec2:us-east-1:112233445566:instance/i-1234567890abcdefg."
+          required: true
+        - name: entity_type
+          description: "Type of the entity. See documentation for the full options list."
+          required: true
+        - name: read_only
+          description: "Show read-only events."
+          required: false
+          type: Boolean
+          defaultValue: false
+        - name: start_time
+          description: "Timeframe start (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: end_time
+          description: "Timeframe end (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+      outputs:
+        - contextPath: Gem.Entity.Accessing.USER_COUNT
+          description: "Number of users accessing or interacting with the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.USER_ID
+          description: "Identifier(s) of the user(s) accessing or interacting with the entity."
+          type: String
+
+    - name: gem-list-using-entities
+      description: List all entities that used an entity in a specific timeframe. The results are sorted by activity volume.
+      arguments:
+        - name: entity_id
+          description: "Gem ID of the entity. This will usually be the ARN or CSP ID. This property is also available for every resource in the Inventory screen. Example: arn:aws:ec2:us-east-1:112233445566:instance/i-1234567890abcdefg."
+          required: true
+        - name: entity_type
+          description: "Type of the entity. See documentation for the full options list."
+          required: true
+        - name: read_only
+          description: "Show read-only events."
+          required: false
+          type: Boolean
+          defaultValue: false
+        - name: start_time
+          description: "Timeframe start (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: end_time
+          description: "Timeframe end (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+      outputs:
+        - contextPath: Gem.Entity.Using.ENTITY_COUNT
+          description: "Count of the number of times the entity is used or referenced."
+          type: String
+        - contextPath: Gem.Entity.Using.ENTITY_ID
+          description: "Unique identifier for the entity being used or referenced."
+          type: String
+
+    - name: gem-list-events-on-entity
+      description: List all events performed on an entity in a specific timeframe. The results are sorted by activity volume.
+      arguments:
+        - name: entity_id
+          description: "Gem ID of the entity. This will usually be the ARN or CSP ID. This property is also available for every resource in the Inventory screen. Example: arn:aws:ec2:us-east-1:112233445566:instance/i-1234567890abcdefg."
+          required: true
+        - name: entity_type
+          description: "Type of the entity. See documentation for the full options list."
+          required: true
+        - name: read_only
+          description: "Show read-only events."
+          required: false
+          type: Boolean
+          defaultValue: false
+        - name: start_time
+          description: "Timeframe start (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: end_time
+          description: "Timeframe end (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+      outputs:
+        - contextPath: Gem.Entity.On.Events.EVENTNAME
+          description: "Name of the event associated with the entity."
+          type: String
+        - contextPath: Gem.Entity.On.Events.EVENTNAME_COUNT
+          description: "Count of occurrences or instances of the specified event name related to the entity."
+          type: String
+
+    - name: gem-list-accessing-ips
+      description: List all source IP addresses that accessed an entity in a specific timeframe. The results are sorted by activity volume.
+      arguments:
+        - name: entity_id
+          description: "Gem ID of the entity. This will usually be the ARN or CSP ID. This property is also available for every resource in the Inventory screen. Example: arn:aws:ec2:us-east-1:112233445566:instance/i-1234567890abcdefg."
+          required: true
+        - name: entity_type
+          description: "Type of the entity. See documentation for the full options list."
+          required: true
+        - name: read_only
+          description: "Show read-only events."
+          required: false
+          type: Boolean
+          defaultValue: false
+        - name: start_time
+          description: "Timeframe start (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+        - name: end_time
+          description: "Timeframe end (ISO format). Examples: 2023-01-01, 2023-01-01T01:01:01Z, 2023-01-01T01:01:01+00:00."
+          required: true
+      outputs:
+        - contextPath: Gem.Entity.Accessing.IPs.AS_NAME
+          description: "Name of the Autonomous System (AS) associated with the IP address accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.AS_NUMBER
+          description: "Number of the Autonomous System (AS) associated with the IP address accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.CITY
+          description: "City where the IP address accessing the entity is located."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.COUNTRY_CODE
+          description: "Country code corresponding to the location of the IP address accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.COUNTRY_NAME
+          description: "Name of the country where the IP address accessing the entity is located."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.COUNT_SOURCEIP
+          description: "Count of occurrences or references to the source IP address accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.IP_TYPE
+          description: "Type of the IP address (e.g., IPv4, IPv6) accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.IS_PRIVATE
+          description: "Indicates whether the IP address accessing the entity is private (e.g., within a local network)."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.LATITUDE
+          description: "Latitude coordinate of the IP address's location accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.LONGITUDE
+          description: "Longitude coordinate of the IP address's location accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.PROVIDER
+          description: "Internet service provider associated with the IP address accessing the entity."
+          type: String
+        - contextPath: Gem.Entity.Accessing.IPs.SOURCEIPADDRESS
+          description: "The actual IP address being referenced or analyzed that is accessing the entity."
+          type: String
+
+    - name: gem-update-threat-status
+      description: Set a threat's status to open, in progress or resolved.
+      arguments:
+        - name: threat_id
+          description: The ID of the threat to update.
+          required: true
+        - name: status
+          description: The new status of the threat (open, in_progress, resolved).
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - open
+            - in_progress
+            - resolved
+        - name: verdict
+          description: The verdict of the threat.
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - malicious
+            - security_test
+            - planned_action
+            - not_malicious
+            - inconclusive
+        - name: reason
+          description: The reason for resolving the threat.
+          required: false
+
+    - name: gem-run-action
+      description: Run an action on an entity.
+      arguments:
+        - name: action
+          description: The action to run.
+          required: true
+        - name: entity_id
+          description: The ID of the entity to run the action on.
+          required: true
+        - name: entity_type
+          description: The type of the entity to run the action on.
+          required: true
+        - name: alert_id
+          description: The ID of the alert to run the action on.
+          required: true
+        - name: resource_id
+          description: The ID of the resource to run the action on.
+          required: true
+
+    - name: gem-add-timeline-event
+      description: Add a timeline event to a threat.
+      arguments:
+        - name: threat_id
+          description: The ID of the threat to add the timeline event to.
+          required: true
+        - name: comment
+          description: The comment to add to the timeline event.
+          required: true
+
+  isfetch: true
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/auth-utils:1.0.0.116752 # TODO: This docker image was selected since it contains the "jwt" package. Double check if it's the correct one.
+fromversion: 6.12.0
+tests:
+  - No tests

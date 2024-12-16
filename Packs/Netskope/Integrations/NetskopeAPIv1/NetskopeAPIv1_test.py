@@ -144,7 +144,7 @@ def test_get_quarantined_file(requests_mock):
 
     saved_filename = f'{demisto.investigation()["id"]}_{result["FileID"]}'
 
-    assert result['File'] == f'{file_id}.zip'
+    assert result['File'] == f'{file_id}'
     assert os.path.isfile(saved_filename)
 
     os.remove(saved_filename)

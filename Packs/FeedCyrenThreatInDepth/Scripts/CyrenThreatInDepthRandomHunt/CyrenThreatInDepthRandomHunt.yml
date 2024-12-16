@@ -12,18 +12,21 @@ args:
   name: incident_type
 - description: Specify the user you want to assign the new incident (optional, default is current user)
   name: assignee
-comment: |-
-  This script will take a random Cyren Threat InDepth feed indicator and its relationships and create a threat hunting incident for you.
+comment: 'This script will take a random Cyren Threat InDepth feed indicator and its relationships and create a threat hunting incident for you.
+
 
   The main query parameters for the resulting, internal indicator query are:
 
+
   1. Seen for the first time by the feed source within the last 7 days.
+
   2. No investigation on it yet.
-  3. Must have relationships to other indicators.
+
+  3. Must have relationships to other indicators.'
 commonfields:
   id: CyrenThreatInDepthRandomHunt
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: CyrenThreatInDepthRandomHunt
 script: '-'

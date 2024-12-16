@@ -5,7 +5,7 @@ on:
       - edited
       - synchronize
     branches:
-      - 'contrib/**'
+      - "contrib/**"
 
 permissions:
   contents: read
@@ -18,19 +18,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.9"
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       - name: Install Python Dependencies
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: Sync Base Branch to Master
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Updating contribution base branch (contrib/*)"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run ./sync_contrib_base.py --branch_name ${{ github.event.pull_request.base.ref }}
           echo "Finished updating base branch"

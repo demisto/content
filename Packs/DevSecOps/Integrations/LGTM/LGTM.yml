@@ -29,10 +29,10 @@ script:
     - description: The URL of the repository to analyze. LGTM tests this against the [repository providers](https://lgtm.com/admin/help/adding-repository-providers) defined for the system. If it doesn't match any of them, the request fails.
       name: repository
       required: true
-    - description: 'Optional, a [language code](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported) to specify which language to analyze. To request the analysis of more than one language, specify a query  meter for each language. By default, LGTM tries to analyze all supported languages.'
+    - description: Optional, a [language code](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported) to specify which language to analyze. To request the analysis of more than one language, specify a query  meter for each language. By default, LGTM tries to analyze all supported languages.
       isArray: true
       name: language
-    - description: 'The analysis mode of the new project. When set to `full` all commits of the project are analyzed; when set to `sparse` the latest commit of the project is analyzed periodically; when set to `upload`, no automatic analysis is performed, instead externally-generated databases should be uploaded. For new projects the default value is `full`. The `mode` meter cannot be used to change the analysis mode of existing projects. Therefore, for existing projects, it should either be left blank or set to match the analysis mode of the project.'
+    - description: The analysis mode of the new project. When set to `full` all commits of the project are analyzed; when set to `sparse` the latest commit of the project is analyzed periodically; when set to `upload`, no automatic analysis is performed, instead externally-generated databases should be uploaded. For new projects the default value is `full`. The `mode` meter cannot be used to change the analysis mode of existing projects. Therefore, for existing projects, it should either be left blank or set to match the analysis mode of the project.
       name: mode
     - description: Required when `mode=upload`, specify the identifier of the commit used to generate the database.
       name: commit
@@ -71,7 +71,7 @@ script:
       description: The analysis identifier.
       type: String
     - contextPath: LGTM.analysis_summary.commit-id
-      description: 'The commit identifier. The commit identifier is included only if the same commit was successfully analyzed for all languages. A detailed  eakdown of which commit was analyzed for each language is provided in the `languages` property.'
+      description: The commit identifier. The commit identifier is included only if the same commit was successfully analyzed for all languages. A detailed  eakdown of which commit was analyzed for each language is provided in the `languages` property.
       type: String
     - contextPath: LGTM.analysis_summary.languages.language
       description: The short name for the language.
@@ -114,7 +114,7 @@ script:
       description: The analysis identifier.
       type: String
     - contextPath: LGTM.analysis_summary.commit-id
-      description: 'The commit identifier. The commit identifier is included only if the same commit was successfully analyzed for all languages. A detailed  eakdown of which commit was analyzed for each language is provided in the `languages` property.'
+      description: The commit identifier. The commit identifier is included only if the same commit was successfully analyzed for all languages. A detailed  eakdown of which commit was analyzed for each language is provided in the `languages` property.
       type: String
     - contextPath: LGTM.analysis_summary.languages.language
       description: The short name for the language.
@@ -265,7 +265,7 @@ script:
     - description: The identifier of the commit to analyze.
       name: commit
       required: true
-    - description: 'The language codes of the languages to analyze. For a list of available languages, see [Supported languages](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported). To specify more than one language, this  meter can be repeated. If no language is specified, all the project''s languages will be analyzed.'
+    - description: The language codes of the languages to analyze. For a list of available languages, see [Supported languages](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported). To specify more than one language, this  meter can be repeated. If no language is specified, all the project's languages will be analyzed.
       isArray: true
       name: language
     description: Run analysis of a specific commit
@@ -293,9 +293,9 @@ script:
     - description: Your reference number for the code review.
       name: external-id
       required: true
-    - description: 'The callback URL for LGTM to post to on completion of the review. When the code review is complete, the API sends an HTTP POST request to the callback URL with the result of the code review in the request body. The code review results in the request body are identical to the results accessed through the [`/codereviews/{review-id}`](https://lgtm.com/help/lgtm/api/api-v1#opIdgetCodeReview) end-point. If you specify a `callback-secret`, the request also includes an `x-lgtm-signature` header with a digital signature of the request''s contents.'
+    - description: The callback URL for LGTM to post to on completion of the review. When the code review is complete, the API sends an HTTP POST request to the callback URL with the result of the code review in the request body. The code review results in the request body are identical to the results accessed through the [`/codereviews/{review-id}`](https://lgtm.com/help/lgtm/api/api-v1#opIdgetCodeReview) end-point. If you specify a `callback-secret`, the request also includes an `x-lgtm-signature` header with a digital signature of the request's contents.
       name: callback-url
-    - description: 'The `callback-secret` is used to compute a signature which is included in the `x-lgtm-signature` header of the callback response. The receiver of the callback can check the validity of the response by computing the signature using HMAC-SHA1 and verifying that it matches the `x-lgtm-signature` header value. The HMAC algorithm requires byte sequences as inputs for both the secret and the message. The callback secret string must be converted to bytes using UTF-8 encoding. The response body should ideally be read as a plain byte sequence. Conversion to, for example a JSON object, and back to a byte sequence might change the formatting, and would invalidate the signature.'
+    - description: The `callback-secret` is used to compute a signature which is included in the `x-lgtm-signature` header of the callback response. The receiver of the callback can check the validity of the response by computing the signature using HMAC-SHA1 and verifying that it matches the `x-lgtm-signature` header value. The HMAC algorithm requires byte sequences as inputs for both the secret and the message. The callback secret string must be converted to bytes using UTF-8 encoding. The response body should ideally be read as a plain byte sequence. Conversion to, for example a JSON object, and back to a byte sequence might change the formatting, and would invalidate the signature.
       name: callback-secret
     - description: Entry ID of the Patch File , you can use git diff --binary to generate patch file
       name: patch-entry-id
@@ -313,7 +313,7 @@ script:
       description: LGTM Code Review request task id
       type: Unknown
   - arguments:
-    - description: 'The [language](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported) you want to analyze.'
+    - description: The [language](https://lgtm.com/help/lgtm/analysis-faqs#which-languages-are-supported) you want to analyze.
       name: language
       required: true
     - description: The identifier of the project to analyze. Either `project-id` or `projects-list` must be specified.
@@ -384,7 +384,7 @@ script:
       description: Describes whether the query was sucessfully executed against the project.
       type: String
     - contextPath: LGTM.queryjob-results-overview.data.total
-      description: 'Number of results returned by the query. This is  oken down further into `internal` and `external` results. Only applies if `status` is `success`.'
+      description: Number of results returned by the query. This is  oken down further into `internal` and `external` results. Only applies if `status` is `success`.
       type: Number
     - contextPath: LGTM.queryjob-results-overview.data.internal
       description: Number of results that refer to elements within the source tree. Only applies if `status` is `success`.
@@ -398,7 +398,7 @@ script:
     - contextPath: LGTM.queryjob-results-overview.next
       description: LGTM Query Job Results Overview Next
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

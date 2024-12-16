@@ -1,27 +1,23 @@
 {
     "name": "OpenAI",
     "description": "The OpenAI API can be applied to virtually any task that involves understanding or generating natural language or code.",
-    "support": "community",
-    "currentVersion": "1.1.2",
-    "author": "NVISO & Sameh El-Hakim",
-    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "support": "xsoar",
+    "currentVersion": "2.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Utilities"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ai",
+        "openai",
+        "gpt"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ],
-    "devEmail": [
-        "soar-engineering@nviso.eu",
-        "xsoar-sameh@maskme.us"
-    ],
-    "githubUser": [
-        "wstinkens",
-        "sepaprivate"
     ]
 }

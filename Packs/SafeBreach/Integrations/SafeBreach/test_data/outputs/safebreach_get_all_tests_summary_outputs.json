@@ -1,0 +1,76 @@
+{
+    "outputs": {
+        "success": [
+            {
+                "planName": "Dummy - Baseline",
+                "planId": 123,
+                "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
+                "securityActionPerControl": [],
+                "planRunId": "12313.42",
+                "runId": "12313.42",
+                "status": "CANCELED",
+                "blocked": 0,
+                "plannedSimulationsAmount": 19,
+                "internalFail": 0,
+                "notBlocked": 0,
+                "assumedBlocked": 0,
+                "constraintsSkipped": 12,
+                "finalStatus": {
+                    "stopped": 0,
+                    "missed": 0,
+                    "logged": 0,
+                    "detected": 0,
+                    "prevented": 0,
+                    "inconsistent": 0,
+                    "drifted": 0,
+                    "not_drifted": 0,
+                    "baseline": 0
+                },
+                "endTime": 1694171406792,
+                "startTime": 1694171261877,
+                "simulatorCount": 1,
+                "totalNumberOfSimulators": 12,
+                "simulatorExecutions": [
+                    {
+                        "simulatorId": "0000000-0000-0000-0000-00000000"
+                    }
+                ],
+                "ranBy": 1234567654,
+                "moveExecutions": [
+                    {
+                        "moveId": "1465"
+                    },
+                    {
+                        "moveId": "1552"
+                    },
+                    {
+                        "moveId": "1558"
+                    },
+                    {
+                        "moveId": "2195"
+                    },
+                    {
+                        "moveId": "2196"
+                    },
+                    {
+                        "moveId": "2199"
+                    },
+                    {
+                        "moveId": "2221"
+                    },
+                    {
+                        "moveId": "2243"
+                    },
+                    {
+                        "moveId": "2264"
+                    },
+                    {
+                        "moveId": "2337"
+                    }
+                ],
+                "tags": [],
+                "id": "12343.12"
+            }
+        ]
+    }
+}

@@ -108,4 +108,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.5.0
-description: Sanity Test - playbook with Unmockable integration
+description: Sanity Test - Playbook with Unmockable Whois Integration

@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get WMI List](./doc_files/Hurukai_-_Get_WMI_List.png)
+![Hurukai - Get WMI List](../doc_files/Hurukai_-_Get_WMI_List.png)

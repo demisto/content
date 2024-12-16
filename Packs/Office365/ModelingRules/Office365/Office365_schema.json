@@ -1,0 +1,716 @@
+{
+    "msft_o365_general_raw": {
+        "Id": {
+            "type": "string",
+            "is_array": false
+        },
+        "OrganizationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppAccessContext": {
+            "type": "string",
+            "is_array": false
+        },
+        "Platform": {
+            "type": "string",
+            "is_array": false
+        },
+        "userip": {
+            "type": "string",
+            "is_array": false
+        },
+        "senderip": {
+            "type": "string",
+            "is_array": false
+        },
+        "ClientIP": {
+            "type": "string",
+            "is_array": false
+        },
+        "filename": {
+            "type": "string",
+            "is_array": false
+        },
+        "members": {
+            "type": "string",
+            "is_array": false
+        },
+        "ObjectId": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyaction": {
+            "type": "string",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "Operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "InvestigationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "actionid": {
+            "type": "string",
+            "is_array": false
+        },
+        "AlertEntityId": {
+            "type": "string",
+            "is_array": false
+        },
+        "AlertId": {
+            "type": "string",
+            "is_array": false
+        },
+        "detectiontype": {
+            "type": "string",
+            "is_array": false
+        },
+        "EntityType": {
+            "type": "string",
+            "is_array": false
+        },
+        "FileExtension": {
+            "type": "string",
+            "is_array": false
+        },
+        "formname": {
+            "type": "string",
+            "is_array": false
+        },
+        "EntityId": {
+            "type": "string",
+            "is_array": false
+        },
+        "p2sender": {
+            "type": "string",
+            "is_array": false
+        },
+        "targetuserid": {
+            "type": "string",
+            "is_array": false
+        },
+        "ReleaseTo": {
+            "type": "string",
+            "is_array": false
+        },
+        "recipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "username": {
+            "type": "string",
+            "is_array": false
+        },
+        "actoruserid": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserId": {
+            "type": "string",
+            "is_array": false
+        },
+        "userrole": {
+            "type": "string",
+            "is_array": false
+        },
+        "ActorYammerUserId": {
+            "type": "int",
+            "is_array": false
+        },
+        "UserKey": {
+            "type": "string",
+            "is_array": false
+        },
+        "verdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "investigationtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "Category": {
+            "type": "string",
+            "is_array": false
+        },
+        "ModifiedProperties": {
+            "type": "string",
+            "is_array": false
+        },
+        "messages": {
+            "type": "string",
+            "is_array": false
+        },
+        "FileData": {
+            "type": "string",
+            "is_array": false
+        },
+        "fields": {
+            "type": "string",
+            "is_array": false
+        },
+        "ExtraProperties": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "detail": {
+            "type": "string",
+            "is_array": false
+        },
+        "PolicyMatchInfo": {
+            "type": "string",
+            "is_array": false
+        },
+        "Data": {
+            "type": "string",
+            "is_array": false
+        },
+        "dataexporttype": {
+            "type": "string",
+            "is_array": false
+        },
+        "itemid": {
+            "type": "string",
+            "is_array": false
+        },
+        "useragent": {
+            "type": "string",
+            "is_array": false
+        },
+        "ItemType": {
+            "type": "string",
+            "is_array": false
+        },
+        "p1sender": {
+            "type": "string",
+            "is_array": false
+        },
+        "NetworkMessageId": {
+            "type": "string",
+            "is_array": false
+        },
+        "messageid": {
+            "type": "string",
+            "is_array": false
+        },
+        "internetmessageid": {
+            "type": "string",
+            "is_array": false
+        },
+        "FileType": {
+            "type": "string",
+            "is_array": false
+        },
+        "sha256": {
+            "type": "string",
+            "is_array": false
+        },
+        "Reason": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResultStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "actions": {
+            "type": "string",
+            "is_array": false
+        },
+        "Status": {
+            "type": "string",
+            "is_array": false
+        },
+        "Name": {
+            "type": "string",
+            "is_array": false
+        },
+        "entityname": {
+            "type": "string",
+            "is_array": false
+        },
+        "DeviceName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "investigationname": {
+            "type": "string",
+            "is_array": false
+        },
+        "SourceApp": {
+            "type": "string",
+            "is_array": false
+        },
+        "itemname": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "targetyammeruserid": {
+            "type": "string",
+            "is_array": false
+        },
+        "ThreatsAndDetectionTech": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventdeeplink": {
+            "type": "string",
+            "is_array": false
+        },
+        "deeplinkurl": {
+            "type": "string",
+            "is_array": false
+        },
+        "Application": {
+            "type": "string",
+            "is_array": false
+        },
+        "Source": {
+            "type": "string",
+            "is_array": false
+        },
+        "Workload": {
+            "type": "string",
+            "is_array": false
+        },
+        "RecordType": {
+            "type": "int",
+            "is_array": false
+        },
+        "UserType": {
+            "type": "int",
+            "is_array": false
+        },
+        "EnforcementMode": {
+            "type": "int",
+            "is_array": false
+        },
+        "sourceworkload": {
+            "type": "int",
+            "is_array": false
+        },
+        "Scope": {
+            "type": "int",
+            "is_array": false
+        },
+        "FileSize": {
+            "type": "int",
+            "is_array": false
+        }                                                                
+    },
+    "msft_o365_exchange_online_raw": {
+        "Id": {
+            "type": "string",
+            "is_array": false
+        },
+        "OrganizationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppAccessContext": {
+            "type": "string",
+            "is_array": false
+        },
+        "ClientIPAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "ClientIP": {
+            "type": "string",
+            "is_array": false
+        },
+        "ObjectId": {
+            "type": "string",
+            "is_array": false
+        },
+        "ModifiedObjectResolvedName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "AffectedItems": {
+            "type": "string",
+            "is_array": false
+        },
+        "ModifiedProperties": {
+            "type": "string",
+            "is_array": false
+        },
+        "ClientMachineName": {
+            "type": "string",
+            "is_array": false
+        },
+        "OrganizationName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResultStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "MailboxOwnerUPN": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Item": {
+            "type": "string",
+            "is_array": false
+        },
+        "ExchangeMetaData": {
+            "type": "string",
+            "is_array": false
+        },
+        "MailboxGuid": {
+            "type": "string",
+            "is_array": false
+        },
+        "MailboxOwnerSid": {
+            "type": "string",
+            "is_array": false
+        },
+        "LogonUserSid": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserKey": {
+            "type": "string",
+            "is_array": false
+        },
+        "LogonUserDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "OriginatingServer": {
+            "type": "string",
+            "is_array": false
+        },
+        "formid": {
+            "type": "string",
+            "is_array": false
+        },
+        "Workload": {
+            "type": "string",
+            "is_array": false
+        },
+        "ClientApplication": {
+            "type": "string",
+            "is_array": false
+        },
+        "PolicyDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "ClientProcessName": {
+            "type": "string",
+            "is_array": false
+        },
+        "receivers": {
+            "type": "string",
+            "is_array": false
+        },
+        "OperationProperties": {
+            "type": "string",
+            "is_array": false
+        },
+        "sender": {
+            "type": "string",
+            "is_array": false
+        },        
+        "RecordType": {
+            "type": "int",
+            "is_array": false
+        },
+        "LogonType": {
+            "type": "int",
+            "is_array": false
+        },
+        "InternalLogonType": {
+            "type": "int",
+            "is_array": false
+        },
+        "UserType": {
+            "type": "int",
+            "is_array": false
+        },
+        "Scope": {
+            "type": "int",
+            "is_array": false
+        },
+        "AttachmentSizeInBytes": {
+            "type": "int",
+            "is_array": false
+        }                                                                
+    },
+    "msft_o365_sharepoint_online_raw": {
+        "Id": {
+            "type": "string",
+            "is_array": false
+        },
+        "OrganizationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppAccessContext": {
+            "type": "string",
+            "is_array": false
+        },
+        "ObjectId": {
+            "type": "string",
+            "is_array": false
+        },
+        "SourceFileName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Platform": {
+            "type": "string",
+            "is_array": false
+        },
+        "SharePointMetaData": {
+            "type": "string",
+            "is_array": false
+        },
+        "DestinationFileName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ClientIP": {
+            "type": "string",
+            "is_array": false
+        },
+        "Site": {
+            "type": "string",
+            "is_array": false
+        },
+        "SiteUrl": {
+            "type": "string",
+            "is_array": false
+        },
+        "Operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "ItemType": {
+            "type": "string",
+            "is_array": false
+        },
+        "BrowserName": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventSource": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserKey": {
+            "type": "string",
+            "is_array": false
+        },
+        "Source": {
+            "type": "string",
+            "is_array": false
+        },
+        "Workload": {
+            "type": "string",
+            "is_array": false
+        },
+        "AuthenticationType": {
+            "type": "string",
+            "is_array": false
+        },
+        "targetuserorgroupname": {
+            "type": "string",
+            "is_array": false
+        },
+        "ApplicationDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ModifiedProperties": {
+            "type": "string",
+            "is_array": false
+        },
+        "ExceptionInfo": {
+            "type": "string",
+            "is_array": false
+        },
+        "PolicyDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResultStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "RecordType": {
+            "type": "int",
+            "is_array": false
+        },
+        "UserType": {
+            "type": "int",
+            "is_array": false
+        },
+        "Scope": {
+            "type": "int",
+            "is_array": false
+        }                        
+    },
+    "msft_o365_dlp_raw": {
+        "Id": {
+            "type": "string",
+            "is_array": false
+        },
+        "OrganizationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppAccessContext": {
+            "type": "string",
+            "is_array": false
+        },
+        "SharePointMetaData": {
+            "type": "string",
+            "is_array": false
+        },
+        "EndpointMetaData": {
+            "type": "string",
+            "is_array": false
+        },
+        "ObjectId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResultStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "ExceptionInfo": {
+            "type": "string",
+            "is_array": false
+        },
+        "ExchangeMetaData": {
+            "type": "string",
+            "is_array": false
+        },
+        "evaluationsource": {
+            "type": "string",
+            "is_array": false
+        },
+        "Workload": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserId": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserKey": {
+            "type": "string",
+            "is_array": false
+        },
+        "PolicyDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "RecordType": {
+            "type": "int",
+            "is_array": false
+        },
+        "UserType": {
+            "type": "int",
+            "is_array": false
+        },
+        "Scope": {
+            "type": "int",
+            "is_array": false
+        }        
+    },
+    "msft_o365_emails_raw": {
+        "InternetMessageId": {
+            "type": "string",
+            "is_array": false
+        },
+        "sender": {
+            "type": "string",
+            "is_array": false
+        },
+        "From": {
+            "type": "string",
+            "is_array": false
+        },
+        "webLink": {
+            "type": "string",
+            "is_array": false
+        },
+        "toRecipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "ccRecipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "bccRecipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "attachments": {
+            "type": "string",
+            "is_array": false
+        },
+        "internetMessageHeaders": {
+            "type": "string",
+            "is_array": false
+        },
+        "importance": {
+            "type": "string",
+            "is_array": false
+        }        
+    }            
+}        

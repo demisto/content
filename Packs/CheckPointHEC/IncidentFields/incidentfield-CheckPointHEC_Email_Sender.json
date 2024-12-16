@@ -2,7 +2,7 @@
     "id": "incident_checkpointhecemailsender",
     "version": -1,
     "modified": "2023-08-07T15:36:49.667762Z",
-    "name": "CP HEC Email Sender",
+    "name": "CheckPointHEC Email Sender",
     "ownerOnly": false,
     "placeholder": "Email Sender",
     "description": "Sender of the email",

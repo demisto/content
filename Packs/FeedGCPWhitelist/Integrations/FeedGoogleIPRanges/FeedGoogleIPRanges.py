@@ -5,29 +5,29 @@ from JSONFeedApiModule import *  # noqa: E402
 
 feed_config = {
     'All GCP customer global and regional external IP ranges':
-        dict(CIDR={
+        {'CIDR': {
             'url': 'https://www.gstatic.com/ipranges/cloud.json',
             'extractor': "prefixes[]",
             'indicator': 'ipv4Prefix',
             'indicator_type': FeedIndicatorType.CIDR,
-        }, IPv6CIDR={
+        }, 'IPv6CIDR': {
             'url': 'https://www.gstatic.com/ipranges/cloud.json',
             'extractor': "prefixes[]",
             'indicator': 'ipv6Prefix',
             'indicator_type': FeedIndicatorType.IPv6CIDR,
-        }),
+        }},
     'All available Google IP ranges':
-        dict(CIDR={
+        {'CIDR': {
             'url': 'https://www.gstatic.com/ipranges/goog.json',
             'extractor': "prefixes[]",
             'indicator': 'ipv4Prefix',
             'indicator_type': FeedIndicatorType.CIDR,
-        }, IPv6CIDR={
+        }, 'IPv6CIDR': {
             'url': 'https://www.gstatic.com/ipranges/goog.json',
             'extractor': "prefixes[]",
             'indicator': 'ipv6Prefix',
             'indicator_type': FeedIndicatorType.IPv6CIDR,
-        }),
+        }},
 }
 
 

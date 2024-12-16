@@ -1,4 +1,3 @@
-import io
 import json
 import demistomock as demisto
 import pytest
@@ -19,7 +18,7 @@ def client(mocker):
 
 
 def load_test_data(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -154,6 +153,26 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.management_azure]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_test_module_command_with_client_credentials(mocker):
+    import AzureKubernetesServices
+    from AzureKubernetesServices import main
+    mocked_params = {
+        'client_id': 'client_id',
+        'client_secret': 'client_secret',
+        'tenant_id': tenant_id,
+        'subscription_id': subscription_id,
+        'auth_type': 'Client Credentials'
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureKubernetesServices, 'return_results')
+    mocker.patch('AzureKubernetesServices.MicrosoftClient.get_access_token', return_value='token')
+
+    main()
+
+    assert 'ok' in AzureKubernetesServices.return_results.call_args[0][0]
 
 
 def test_generate_login_url(mocker):

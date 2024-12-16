@@ -1,0 +1,22 @@
+[{
+    "id": "user_id",
+    "create_at": 1696486752272,
+    "update_at": 1696486762658,
+    "delete_at": 0,
+    "username": "username",
+    "auth_data": "",
+    "auth_service": "",
+    "email": "email",
+    "nickname": "",
+    "first_name": "first_name",
+    "last_name": "last_name",
+    "position": "position",
+    "roles": "system_admin system_user",
+    "locale": "en",
+    "timezone": {
+        "automaticTimezone": "Asia/Jerusalem",
+        "manualTimezone": "",
+        "useAutomaticTimezone": "true"
+    },
+    "disable_welcome_email": false
+}]

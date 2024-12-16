@@ -1,0 +1,29 @@
+!gem-list-threats time_start="2024-01-01" time_end="2024-02-01" limit=2
+
+!gem-get-threat-details threat_id="00000000-0000-0000-0000-000000000000"
+
+!gem-get-alert-details alert_id="d00000000-0000-0000-0000-000000000000"
+
+!gem-list-inventory-resources limit=6
+
+!gem-get-resource-details resource_id="arn:aws:ec2:us-east-2:123456789123:instance/i-0f123f1234567f0f"
+
+!gem-list-ips-by-entity entity_id="azure user" entity_type="aad_user" start_time="2024-03-01" end_time="2024-03-14" limit=2
+
+!gem-list-services-by-entity entity_id="user" entity_type="aad_user" start_time="2024-03-01" end_time="2024-03-14"
+
+!gem-list-events-by-entity entity_id="arn:aws:ec2:us-east-2:123456789123:instance/i-0f123f1234567f0f" entity_type="ec2_instance" start_time="2024-03-01" end_time="2024-03-14"
+
+!gem-list-accessing-ips entity_id="arn:aws:ec2:us-east-2:123456789123:instance/i-0f123f1234567f0f" entity_type="ec2_instance" start_time="2024-03-01" end_time="2024-03-14"
+
+!gem-list-using-entities entity_id="1.1.1.1" entity_type="external_ip" start_time="2024-03-01" end_time="2024-03-14"
+
+!gem-list-events-on-entity entity_id="arn:aws:ec2:us-east-2:123456789123:instance/i-0f123f1234567f0f" entity_type="ec2_instance" start_time="2024-03-01" end_time="2024-03-14"
+
+!gem-list-accessing-entities entity_id="arn:aws:ec2:us-east-2:123456789123:instance/i-0f123f1234567f0f" entity_type="ec2_instance" start_time="2024-03-01" end_time="2024-03-14"
+
+!gem-update-threat-status threat_id="00000000-0000-0000-0000-000000000000" status="resolved" verdict="security_test" reason="test"
+
+!gem-run-action action= "stop" entity_id= "arn:aws:ec2:us-east-2:123456789123:instance/i-0f123f1234567f0f" entity_type= "ec2_instance" alert_id= "00000000-0000-0000-0000-000000000000" resource_id= "arn:aws:ec2:us-east-2:123456789123:instance/i-0f123f1234567f0f"
+
+!gem-add-timeline-event threat_id="00000000-0000-0000-0000-000000000000" comment="commenting" 

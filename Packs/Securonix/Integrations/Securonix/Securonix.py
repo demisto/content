@@ -24,6 +24,12 @@ VALID_ENTITY_TYPE = ["Users", "Activityaccount", "Resources", "Activityip"]
 # Valid Whitelist Types
 VALID_WHITELIST_TYPE = ["Global", "Attribute"]
 
+# Special characters for spotter query
+SPOTTER_SPECIAL_CHARACTERS = ["\\", "*", "?"]
+
+# Markdown characters.
+MARKDOWN_CHARS = r"\*_{}[]()#+-!"
+
 # Mapping of user input of mirroring direction to XSOAR.
 MIRROR_DIRECTION = {
     'None': None,
@@ -39,6 +45,8 @@ COMMENT_ACTION = 'COMMENTS_ADDED'
 ATTACHMENT_ACTION = 'ATTACHED_FILE'
 # This will store the state mapping of XSOAR states with Securonix states.
 XSOAR_TO_SECURONIX_STATE_MAPPING: Dict = {}
+# Policy types for which retry should have end time to the current time.
+POLICY_TYPES_TO_RETRY = ['DIRECTIVE', 'LAND SPEED', 'TIER2', 'BEACONING']
 
 
 def reformat_resource_groups_outputs(text: str) -> str:
@@ -126,6 +134,29 @@ def parse_data_arr(data_arr: Any, fields_to_drop: list = [], fields_to_include: 
     outputs = {k.replace(' ', ''): v for k, v in readable.copy().items()}
 
     return readable, outputs
+
+
+def string_escape_MD(data: Any):
+    """
+       Escape any chars that might break a markdown string.
+
+       :type data: ``Any``
+       :param data: The data to be modified (required).
+
+       :return: A modified data.
+       :rtype: ``str``
+    """
+    if isinstance(data, str):
+        data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in data])
+    elif isinstance(data, list):
+        new_data = []
+        for sub_data in data:
+            if isinstance(sub_data, str):
+                sub_data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in sub_data])
+            new_data.append(sub_data)
+        data = new_data
+
+    return data
 
 
 def incident_priority_to_dbot_score(priority_str: str, default_severity: str):
@@ -464,6 +495,21 @@ def extract_closing_comments(activity_data: List[Dict[str, Any]], close_states_o
     return " | ".join(closing_comments)
 
 
+def escape_spotter_query(original_query: str) -> str:
+    """Escape the special characters of the spotter query provided from Securonix Incident.
+
+    Args:
+        original_query: The original spotter query provided from Securonix Incident
+
+    Returns:
+        str: The spotter query escaped for special characters.
+    """
+    escaped_query = original_query
+    for special_char in SPOTTER_SPECIAL_CHARACTERS:
+        escaped_query = escaped_query.replace(special_char, f"\\{special_char}")
+    return escaped_query
+
+
 class Client(BaseClient):
     """
     Client to use in the Securonix integration. Overrides BaseClient
@@ -789,8 +835,12 @@ class Client(BaseClient):
             'eventtime_to': to_,
             'prettyJson': True
         }
+        remove_nulls_from_dictionary(params)
         if query:
-            params['query'] = f'{params["query"]} AND {query}'
+            if re.findall(r"index\s*=\s*\w+", query):
+                params['query'] = query
+            else:
+                params['query'] = f'{params["query"]} AND {query}'
         activity_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
                                           params=params)
         return activity_data
@@ -841,7 +891,7 @@ class Client(BaseClient):
         """
         headers = {
             'token': self._token,
-            'Accept': 'application/vnd.snypr.app-v3.0+json'
+            'Accept': 'application/vnd.snypr.app-v6.0+json'
         }
         params = {
             'type': 'list',
@@ -866,7 +916,7 @@ class Client(BaseClient):
         """
         headers = {
             'token': self._token,
-            'Accept': 'application/vnd.snypr.app-v3.0+json'
+            'Accept': 'application/vnd.snypr.app-v6.0+json'
         }
         params = {
             'type': 'metaInfo',
@@ -1589,27 +1639,46 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    from_ = args.get('from')
-    to_ = args.get('to')
-    query = args.get('query')
-    activity_data = client.list_activity_data_request(from_, to_, query)
+    from_ = args.get('from', '').strip()
+    to_ = args.get('to', '').strip()
+    query = escape_spotter_query(args.get('query', '').strip())
+    activity_data = client.list_activity_data_request(from_, to_, query)  # type: ignore
 
     if activity_data.get('error'):
-        raise Exception(f'Failed to get activity data in the given time frame.\n'
+        raise Exception('Failed to get activity data in the given time frame.\n'
                         f'Error from Securonix is: {activity_data.get("errorMessage")}')
 
     activity_events = activity_data.get('events')
-    fields_to_include = ['Accountname', 'Agentfilename', 'Categorybehavior', 'Categoryobject', 'Categoryseverity',
-                         'Collectionmethod', 'Collectiontimestamp', 'Destinationprocessname', 'Destinationusername',
-                         'Deviceaddress', 'Deviceexternalid', 'Devicehostname', 'EventID', 'Eventoutcome', 'Eventtime',
-                         'Filepath', 'Ingestionnodeid', 'JobID', 'Jobstarttime', 'Message', 'Publishedtime',
-                         'Receivedtime', 'Resourcename', 'Rg_category', 'Rg_functionality', 'Rg_id', 'Rg_name',
-                         'Rg_resourcetypeid', 'Rg_vendor', 'Sourcehostname', 'Sourceusername', 'TenantID', 'Tenantname',
-                         'Timeline']
-    activity_readable, activity_outputs = parse_data_arr(activity_events, fields_to_include=fields_to_include)
-    headers = ['Eventid', 'Eventtime', 'Message', 'Accountname']
-    human_readable = tableToMarkdown(name="Activity data:", t=activity_readable, headers=headers, removeNull=True)
-    entry_context = {'Securonix.ActivityData(val.EventID === obj.EventID)': activity_outputs}
+    activity_readables, activity_outputs = parse_data_arr(activity_events)
+    for index, activity in enumerate(activity_readables):
+        if activity.get('Eventid'):
+            activity['EventID'] = activity.get('Eventid')
+            del activity['Eventid']
+        if index < len(activity_outputs) and activity_outputs[index].get('Eventid'):
+            activity_outputs[index]['EventID'] = activity_outputs[index].get('Eventid')
+            del activity_outputs[index]['Eventid']
+        if 'Timeline' in activity:
+            activity['Timeline'] = timestamp_to_datestring(activity.get('Timeline', 0), is_utc=True)
+    headers = ['EventID', 'Eventtime', 'Message', 'Accountname', 'Timeline', 'Devicehostname', 'Accountresourcekey']
+    human_readable = tableToMarkdown(name="Activity data:", t=[{key: string_escape_MD(value)
+                                     for key, value in activity_readable.items()}
+                                     for activity_readable in activity_readables],
+                                     headers=headers, removeNull=True)
+
+    pagination_data = {
+        "totalDocuments": activity_data.get('totalDocuments'),
+        "message": activity_data.get('message'),
+        "queryId": activity_data.get('queryId'),
+        "command_name": 'securonix-list-activity-data'
+    }
+
+    entry_context = {
+        'Securonix.Activity(val.command_name === obj.command_name)': remove_empty_elements(pagination_data)
+    }
+
+    activity_outputs = remove_empty_elements(activity_outputs)
+    if activity_outputs:
+        entry_context['Securonix.ActivityData(val.EventID === obj.EventID)'] = activity_outputs
 
     return human_readable, entry_context, activity_data
 
@@ -1626,7 +1695,7 @@ def list_violation_data(client: Client, args) -> List[CommandResults]:
     """
     from_ = args.get('from', '').strip()
     to_ = args.get('to', '').strip()
-    query = args.get('query', '').strip()
+    query = escape_spotter_query(args.get('query', '').strip())
     query_id = args.get('query_id', '').strip()
     violation_data = client.list_violation_data_request(from_, to_, query, query_id)
 
@@ -1635,9 +1704,12 @@ def list_violation_data(client: Client, args) -> List[CommandResults]:
                         f'Error from Securonix is: {violation_data.get("errorMessage")}')
     violation_events = violation_data.get('events')
     if len(violation_events) > 0:  # type: ignore[arg-type]
-        violation_readable, violation_outputs = parse_data_arr(violation_events)
+        violation_readables, violation_outputs = parse_data_arr(violation_events)
         headers = ['EventID', 'Eventtime', 'Message', 'Policyname', 'Accountname']
-        human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
+        human_readable = tableToMarkdown(name="Activity data:", t=[{key: string_escape_MD(value)
+                                         for key, value in violation_readable.items()}
+                                         for violation_readable in violation_readables],
+                                         headers=headers, removeNull=True)
 
         data = {
             "totalDocuments": violation_data.get('totalDocuments'),
@@ -1688,6 +1760,9 @@ def run_polling_command(client, args: dict, command_name: str, search_function: 
         if delay_type == 'Exponential':
             retry_delay = client.get_securonix_retry_delay() * 2
         retry_timeout: int = retry_delay * retry_count + retry_count * 1
+        policy_type = args.get('policy_type', '').strip().upper()
+        if policy_type in POLICY_TYPES_TO_RETRY:
+            args['to'] = datetime.now().astimezone(timezone.utc).strftime(r'%m/%d/%Y %H:%M:%S')
         polling_args = {
             'polling': True,
             **args
@@ -1726,10 +1801,13 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not total_incidents or float(total_incidents) <= 0.0:
         return 'No incidents where found in this time frame.', {}, incidents
 
-    incidents_items = incidents.get('incidentItems')
-    incidents_readable, incidents_outputs = parse_data_arr(incidents_items)
+    incidents_items: list = incidents.get('incidentItems', [])
+    incidents_readables, incidents_outputs = parse_data_arr(incidents_items)
     headers = ['IncidentID', 'Incident Status', 'Incident Type', 'Priority', 'Reason']
-    human_readable = tableToMarkdown(name="Incidents:", t=incidents_readable,
+    human_readable = tableToMarkdown(name="Incidents:",
+                                     t=[{key: string_escape_MD(value)
+                                         for key, value in incidents_readable.items()}
+                                        for incidents_readable in incidents_readables],
                                      headers=headers, removeNull=True)
     entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incidents_outputs}
     return human_readable, entry_context, incidents
@@ -1751,8 +1829,12 @@ def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     incident_items = incident.get('incidentItems')
     if not incident_items:
         raise Exception('Incident ID is not in Securonix.')
-    incident_readable, incident_outputs = parse_data_arr(incident_items)
-    human_readable = tableToMarkdown(name="Incident:", t=incident_readable, removeNull=True)
+    incident_readables, incident_outputs = parse_data_arr(incident_items)
+    human_readable = tableToMarkdown(name="Incident:",
+                                     t=[{key: string_escape_MD(value)
+                                         for key, value in incident_readable.items()}
+                                        for incident_readable in incident_readables],
+                                     removeNull=True)
     entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return human_readable, entry_context, incident
 
@@ -1999,7 +2081,7 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    watchlist_name = args.get('watchlist_name')
+    watchlist_name = args.get('watchlist_name', '').strip()
     watchlist = client.get_watchlist_request(watchlist_name)
 
     watchlist_events = watchlist.get('events')
@@ -2725,6 +2807,42 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
         for incident in incident_items:
             incident_id = str(incident.get('incidentId', 0))
             violator_id = str(incident.get('violatorId', 0))
+            reasons = incident.get('reason', [])
+            policy_list: list[str] = []
+            policy_stages_json = {}
+            policy_stages_table = []
+            if isinstance(reasons, list):
+                for reason in reasons:
+                    if isinstance(reason, str) and 'PolicyType' in reason:
+                        policy_type = reason.split(':')[-1].strip()
+                        incident['policy_type'] = policy_type
+                    if isinstance(reason, dict) and 'Policies' in reason:
+                        # Parse the policies.
+                        policies = reason.get('Policies')
+                        if not isinstance(policies, dict):
+                            continue
+                        policy_keys = list(policies.keys())
+                        policy_keys.sort()
+                        for stage_key in policy_keys:
+                            stage_dict = policies.get(stage_key)
+                            if not stage_dict or not isinstance(stage_dict, dict):
+                                continue
+                            stage_name = list(stage_dict.keys())[0]
+                            stage_policies: list[str] = stage_dict.get(stage_name)  # type: ignore
+                            if not stage_policies or not isinstance(stage_policies, list):
+                                continue
+                            stage_policies_str = ", ".join(
+                                str(policy) for policy in stage_policies)  # type: ignore
+                            policy_list.extend(stage_policies)  # type: ignore
+                            policy_stages_json[f'{stage_key}:{stage_name}'] = stage_policies
+                            policy_stages_table.append({'Stage Name': f'{stage_key}:{stage_name}',
+                                                        'Policies': stage_policies_str})
+
+            if policy_list:
+                # Add the parsed policies to the incident.
+                incident['policy_list'] = list(dict.fromkeys(policy_list))
+                incident['policy_stages_json'] = policy_stages_json
+                incident['policy_stages_table'] = policy_stages_table
 
             if incident_id not in already_fetched:
                 incident.update(get_mirroring())

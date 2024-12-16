@@ -6,7 +6,6 @@ from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
-from typing import Dict
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request, Response
@@ -33,7 +32,7 @@ def is_json(jstr):
 
 
 class PublishListAccessFormatter(AccessFormatter):
-    def get_user_agent(self, scope: Dict) -> str:
+    def get_user_agent(self, scope: dict) -> str:
         headers = scope.get('headers', [])
         user_agent_header = list(filter(lambda header: header[0].decode() == 'user-agent', headers))
         user_agent = ''
@@ -88,20 +87,19 @@ async def handle_get(
 
         # For normal lists (not json) that are essentially just a long comma separated list
         # this puts each entry on a new line
-        if commaToLineBreak:
-            if not is_json(list_response.get("body")):
-                tmparr = []
-                reader = csv.reader([list_response.get("body")], quoting=csv.QUOTE_MINIMAL)
-                for row in reader:
-                    if type(row) is str:
-                        r = str(row)  # new variable needed for mypy validation
-                        tmparr.append(r)
-                    else:
-                        for cell in row:
-                            c = str(cell)  # new variable needed for mypy validation
-                            tmparr.append(c)
-                list_body = "\n".join(tmparr)
-                return Response(content=list_body)
+        if commaToLineBreak and not is_json(list_response.get("body")):
+            tmparr = []
+            reader = csv.reader([list_response.get("body")], quoting=csv.QUOTE_MINIMAL)
+            for row in reader:
+                if type(row) is str:
+                    r = str(row)  # new variable needed for mypy validation
+                    tmparr.append(r)
+                else:
+                    for cell in row:
+                        c = str(cell)  # new variable needed for mypy validation
+                        tmparr.append(c)
+            list_body = "\n".join(tmparr)
+            return Response(content=list_body)
 
         return Response(content=list_response.get("body"))
     except Exception as e:
@@ -124,7 +122,7 @@ def main() -> None:
                 certificate_path = ''
                 private_key_path = ''
                 try:
-                    ssl_args = dict()
+                    ssl_args = {}
 
                     if certificate and private_key:
                         certificate_file = NamedTemporaryFile(delete=False)
@@ -152,7 +150,7 @@ def main() -> None:
                         '()': PublishListAccessFormatter,
                         'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
                     }
-                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)  # type: ignore[arg-type]
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
                     demisto.updateModuleHealth(f'An error occurred: {str(e)}')

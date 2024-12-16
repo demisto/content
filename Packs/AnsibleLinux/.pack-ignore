@@ -1,5 +1,5 @@
 [file:README.md]
-ignore=RM100,RM113
+ignore=RM113
 
 [file:AnsibleLinux.yml]
 ignore=BA124,IN145

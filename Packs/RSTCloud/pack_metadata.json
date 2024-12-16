@@ -2,7 +2,7 @@
     "name": "RST Threat Feed",
     "description": "High-fidelity threat intelligence database available via API to check domains, URLs, IP addresses and Hashes",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.5",
     "author": "RST Cloud",
     "url": "https://rstcloud.net/",
     "email": "support@rstcloud.net",
@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Threat Intelligence Management"],
+    "tags": [
+        "Threat Intelligence Management"
+    ],
     "useCases": [],
     "keywords": [
         "rstcloud",

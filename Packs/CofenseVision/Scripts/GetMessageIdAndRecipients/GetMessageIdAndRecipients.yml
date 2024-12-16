@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - transformer
-comment: Get the Internet Message Id and Recipient's address of Messages in a format of `internet_message_id:recipients_address.`
+comment: Get the Internet Message Id and Recipient's address of Messages in a format of `internet_message_id:recipients_address.`.
 enabled: true
 args:
 - name: key
@@ -18,7 +18,7 @@ outputs:
   type: Unknown
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

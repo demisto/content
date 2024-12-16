@@ -13,7 +13,7 @@ type: python
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 tests:
 - SplunkShowEnrichment

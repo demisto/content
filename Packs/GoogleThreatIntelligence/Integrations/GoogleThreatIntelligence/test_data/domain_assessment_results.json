@@ -1,0 +1,31 @@
+{
+  "id": "www.example.com",
+  "type": "domain",
+  "links": {
+    "self": "https://www.virustotal.com/api/v3/domains/www.example.com"
+  },
+  "attributes": {
+    "gti_assessment": {
+      "threat_score": {
+        "value": 100
+      },
+      "severity": {
+        "value": "SEVERITY_HIGH"
+      },
+      "contributing_factors": {
+        "mandiant_association_report": true,
+        "mandiant_association_actor": true,
+        "gavs_detections": 3,
+        "normalised_categories": [
+          "trojan"
+        ],
+        "mandiant_association_malware": true,
+        "mandiant_confidence_score": 100
+      },
+      "verdict": {
+        "value": "VERDICT_MALICIOUS"
+      },
+      "description": "This indicator is malicious (high severity) with high impact."
+    }
+  }
+}

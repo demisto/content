@@ -1,0 +1,31 @@
+{
+    "id": "incident_vectrahostactivetraffic",
+    "version": -1,
+    "modified": "2024-07-12T11:42:32.40239275+05:30",
+    "name": "Vectra Host Active Traffic",
+    "ownerOnly": false,
+    "cliName": "vectrahostactivetraffic",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra Host"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

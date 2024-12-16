@@ -25,16 +25,16 @@ MOCK_FILE_INFO = {'name': 'MaliciousFile.exe',
 MOCK_SCAN_JSON_RESPONSE = {'result': TEST_SCAN_UUID}
 
 MOCK_LOOKUP_JSON_ID = {
-  "result": { # noqa
-    "artifact_id": "46901361048229692", # noqa
+  "result": {  # noqa
+    "artifact_id": "46901361048229692",  # noqa
     "assertions": [],
     "community": "default",
     "country": "ES",
     "created": "2021-04-21T16:33:35.329972",
     "detections": {
-              "benign": 0,
-              "malicious": 0,
-              "total": 0
+        "benign": 0,
+        "malicious": 0,
+        "total": 0
     },
     "extended_type": "ASCII text, with no line terminators",
     "failed": False,
@@ -59,25 +59,25 @@ MOCK_LOOKUP_JSON_ID = {
 }
 
 MOCK_SEARCH_JSON_RESPONSE = {
-  "has_more": False, # noqa
+  "has_more": False,  # noqa
   "limit": 50,
   "offset": "gAAAAABggEYSeVVonqsiq8avwkJ6GOJWjHnbMRnMAFXxz330OazXwec3CDe7vLhluF3pAE7AWKbx2B3LRDJfSvRJoO7SJrwlcA==",
   "result": [
-    { # noqa
-      "artifact_id": "21138709956985595", # noqa
+    {  # noqa
+      "artifact_id": "21138709956985595",  # noqa
       "assertions": [
-        { # noqa
-          "author": "0xb9b1FA288F7b1867AEF6C044CDE12ab2De252113", # noqa
+        {  # noqa
+          "author": "0xb9b1FA288F7b1867AEF6C044CDE12ab2De252113",  # noqa
           "author_name": "xxx",
           "bid": "325000000000000000",
           "engine": {
           },
-          "mask": True, # noqa
+          "mask": True,  # noqa
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               },
               "version": "0.1.0"
@@ -86,19 +86,19 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": True
         },
         {
-          "author": "0xA9306463DC64Df02EE4f9eCecc60d947F93Fd9E3", # noqa
+          "author": "0xA9306463DC64Df02EE4f9eCecc60d947F93Fd9E3",  # noqa
           "author_name": "0xA9306463DC64Df02EE4f9eCecc60d947F93Fd9E3",
           "bid": "500000000000000000",
           "engine": {
-            "description": False, # noqa
+            "description": False,  # noqa
             "name": "0xA9306463DC64Df02EE4f9eCecc60d947F93Fd9E3"
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               },
               "signatures_version": "09 September, 2019",
@@ -108,17 +108,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0xA605715C448f4a2319De2ad01F174cA9c440C4Eb", # noqa
+          "author": "0xA605715C448f4a2319De2ad01F174cA9c440C4Eb",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               },
               "vendor_version": "16.0.100 ",
@@ -128,17 +128,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0xE2911b3c44a0C50b4D0Cfe537a0c1a8b992F6aD0", # noqa
+          "author": "0xE2911b3c44a0C50b4D0Cfe537a0c1a8b992F6aD0",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "Malware.Strealer/Android!8.5B3", # noqa
+            "malware_family": "Malware.Strealer/Android!8.5B3",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               }
             }
@@ -146,17 +146,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": True
         },
         {
-          "author": "0x45b94B4AFE4E4B5Bd7f70B84919fba20f1FAfB3f", # noqa
+          "author": "0x45b94B4AFE4E4B5Bd7f70B84919fba20f1FAfB3f",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               }
             }
@@ -164,17 +164,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0x1EdF29c0977aF06215032383F93deB9899D90118", # noqa
+          "author": "0x1EdF29c0977aF06215032383F93deB9899D90118",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               },
               "vendor_version": "2018.11.28.1",
@@ -184,17 +184,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0x3750266F07E0590aA16e55c32e08e48878010f8f", # noqa
+          "author": "0x3750266F07E0590aA16e55c32e08e48878010f8f",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               },
               "vendor_version": "\n"
@@ -203,17 +203,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0xdCc9064325c1aa24E08182676AD23B3D78b39E05", # noqa
+          "author": "0xdCc9064325c1aa24E08182676AD23B3D78b39E05",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               },
               "vendor_version": "1.1",
@@ -223,17 +223,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0xbec683492f5D509e119fB1B60543A1Ca595e0Df9", # noqa
+          "author": "0xbec683492f5D509e119fB1B60543A1Ca595e0Df9",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "Trojan.AndroidOS.Basbanke.C!c", # noqa
+            "malware_family": "Trojan.AndroidOS.Basbanke.C!c",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               }
             }
@@ -241,17 +241,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": True
         },
         {
-          "author": "0x7839aB10854505aBb712F10D1F66d45F359e6c89", # noqa
+          "author": "0x7839aB10854505aBb712F10D1F66d45F359e6c89",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "Trojan.AndroidOS.Agent", # noqa
+            "malware_family": "Trojan.AndroidOS.Agent",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               },
               "signatures_version": "09.10.2019 12:19:44 (102008)",
@@ -262,17 +262,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": True
         },
         {
-          "author": "0xBAFcaF4504FCB3608686b40eB1AEe09Ae1dd2bc3", # noqa
+          "author": "0xBAFcaF4504FCB3608686b40eB1AEe09Ae1dd2bc3",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "Android.Banker.3074", # noqa
+            "malware_family": "Android.Banker.3074",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               },
               "signatures_version": "9828B5A94B943A707D4D994C9880A6B0, 2019-Oct-09 11:49:49",
@@ -283,17 +283,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": True
         },
         {
-          "author": "0xbE0B3ec289aaf9206659F8214c49D083Dc1a9E17", # noqa
+          "author": "0xbE0B3ec289aaf9206659F8214c49D083Dc1a9E17",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               },
               "signatures_version": "11.66.31997, 12-Sep-2019",
@@ -304,19 +304,19 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA", # noqa
+          "author": "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA",  # noqa
           "author_name": "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA",
           "bid": "412500000000000000",
           "engine": {
-            "description": False, # noqa
+            "description": False,  # noqa
             "name": "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA"
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               },
               "vendor_version": "3.0.2.0",
@@ -326,17 +326,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0x80Ed773972d8BA0A4FacF2401Aca5CEba52F76dc", # noqa
+          "author": "0x80Ed773972d8BA0A4FacF2401Aca5CEba52F76dc",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               },
               "vendor_version": "",
@@ -346,17 +346,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0x10A9eE8552f2c6b2787B240CeBeFc4A4BcB96f27", # noqa
+          "author": "0x10A9eE8552f2c6b2787B240CeBeFc4A4BcB96f27",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "TrojanBanker:Android/Basbanke.89a6a78a", # noqa
+            "malware_family": "TrojanBanker:Android/Basbanke.89a6a78a",  # noqa
             "scanner": {
               "environment": {  # noqa
-                "architecture": "AMD64", # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               }
             },
@@ -365,17 +365,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": True
         },
         {
-          "author": "0xF598F7dA0D00D9AD21fb00663a7D62a19D43Ea61", # noqa
+          "author": "0xF598F7dA0D00D9AD21fb00663a7D62a19D43Ea61",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "Android.PUA.General", # noqa
+            "malware_family": "Android.PUA.General",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "x86_64", # noqa
+              "environment": {  # noqa
+                "architecture": "x86_64",  # noqa
                 "operating_system": "Linux"
               },
               "vendor_version": "4.1",
@@ -385,17 +385,17 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         },
         {
-          "author": "0x2b4C240B376E5406C5e2559C27789d776AE97EFD", # noqa
+          "author": "0x2b4C240B376E5406C5e2559C27789d776AE97EFD",  # noqa
           "author_name": "xxx",
           "bid": "500000000000000000",
           "engine": {
           },
           "mask": True,
           "metadata": {
-            "malware_family": "", # noqa
+            "malware_family": "",  # noqa
             "scanner": {
-              "environment": { # noqa
-                "architecture": "AMD64", # noqa
+              "environment": {  # noqa
+                "architecture": "AMD64",  # noqa
                 "operating_system": "Windows"
               },
               "signatures_version": "0.14.32.16015",
@@ -406,11 +406,11 @@ MOCK_SEARCH_JSON_RESPONSE = {
           "verdict": False
         }
       ],
-      "community": "lima", # noqa
+      "community": "lima",  # noqa
       "country": "",
       "created": "2019-10-09T14:15:28.001984",
       "detections": {
-        "benign": 11, # noqa
+        "benign": 11,  # noqa
         "malicious": 6,
         "total": 17
       },
@@ -423,26 +423,26 @@ MOCK_SEARCH_JSON_RESPONSE = {
       "last_seen": "2019-10-09T14:15:28.001984",
       "md5": "d37852c7a538bd645963c25a7f94283e",
       "metadata": [
-        { # noqa
-          "created": "2019-10-05T11:18:20.219300", # noqa
+        {  # noqa
+          "created": "2019-10-05T11:18:20.219300",  # noqa
           "tool": "hash",
           "tool_metadata": {
             "md5": "d37852c7a538bd645963c25a7f94283e",
             "sha1": "b5ec0329009d22d214ce7b44d2904d92da6030ae",
             "sha256": "939adb211c3bcf76b84b2417e1d39248994e21d48a3d7eddca87bb76d6c31cc3",
             "sha3_256": "9911fdc965ee428f463e44b6668961cb935ba20825ece7e07784ae0bf6785f73",
-            "sha3_512": "a68d635db7aafd4af47caf60cef096023872d6e098984e4c24807d2534ce1e0dec5b8c76d913d96e24fccd44f98f649aead27c8d64cf86eab2c17bce7275544e", # noqa
-            "sha512": "0e4ae37d6104cf8b11e9708e56f811164f12eb4cf8e6260c361a669d897d6753c5e1f019515aa13cc6d4efe5cd2aed915bb6b649fa422391eb0a152fea66c0fc", # noqa
+            "sha3_512": "a68d635db7aafd4af47caf60cef096023872d6e098984e4c24807d2534ce1e0dec5b8c76d913d96e24fccd44f98f649aead27c8d64cf86eab2c17bce7275544e",  # noqa
+            "sha512": "0e4ae37d6104cf8b11e9708e56f811164f12eb4cf8e6260c361a669d897d6753c5e1f019515aa13cc6d4efe5cd2aed915bb6b649fa422391eb0a152fea66c0fc",  # noqa
             "ssdeep": "49152:H/9Y3F9hNLDXvCGm458G+2ddIrmo67Kkqoyg5Fxs:f9CrXXvjDyqGrmo6Tqo1zxs",
             "tlsh": "0a952353f6b5e817d932c03220411636a52b6d28db42f64f390977ad28fbdfc8b866d4"
           }
         },
         {
-          "created": "2019-10-05T11:24:12.432267", # noqa
+          "created": "2019-10-05T11:24:12.432267",  # noqa
           "tool": "strings",
           "tool_metadata": {
-            "domains": [ # noqa
-              "", # noqa
+            "domains": [  # noqa
+              "",  # noqa
               "9.sk",
               "B.lc",
               "t.kw",
@@ -471,58 +471,58 @@ MOCK_SEARCH_JSON_RESPONSE = {
 }
 
 MOCK_SCAN_JSON_RESPONSE = {
-  "result": { # noqa
-    "artifact_id": "91008671523384195", # noqa
-    "assertions": [ # noqa
-      { # noqa
-        "author": "0xE0FA6fEfe5F1A4985b42B5Da31231269c360e5E5", # noqa
+  "result": {  # noqa
+    "artifact_id": "91008671523384195",  # noqa
+    "assertions": [  # noqa
+      {  # noqa
+        "author": "0xE0FA6fEfe5F1A4985b42B5Da31231269c360e5E5",  # noqa
         "author_name": "xxx",
-        "bid": "1000000000000000000", # noqa
+        "bid": "1000000000000000000",  # noqa
         "engine": {
         },
-        "mask": True, # noqa
+        "mask": True,  # noqa
         "metadata": {
-          "malware_family": "", # noqa
+          "malware_family": "",  # noqa
           "scanner": {
-            "environment": { # noqa
-              "architecture": "x86_64", # noqa
-              "operating_system": "Linux" # noqa
-            }, # noqa
+            "environment": {  # noqa
+              "architecture": "x86_64",  # noqa
+              "operating_system": "Linux"  # noqa
+            },  # noqa
             "vendor_version": "",
-            "version": "0.1.1" # noqa
-          } # noqa
+            "version": "0.1.1"  # noqa
+          }  # noqa
         },
         "verdict": True
       },
       {
-        "author": "0x51Ea707B45B3AB0EcEAf28b0Ad990FA2014e4E0E", # noqa
+        "author": "0x51Ea707B45B3AB0EcEAf28b0Ad990FA2014e4E0E",  # noqa
         "author_name": "xxx",
         "bid": "1000000000000000000",
         "engine": {
         },
-        "mask": True, # noqa
+        "mask": True,  # noqa
         "metadata": {
-          "malware_family": "" # noqa
+          "malware_family": ""  # noqa
         },
         "verdict": False
       },
       {
-        "author": "0x8434434991A61dAcE1544a7FC1B0F8d83523B778", # noqa
+        "author": "0x8434434991A61dAcE1544a7FC1B0F8d83523B778",  # noqa
         "author_name": "xxx",
         "bid": "1000000000000000000",
-        "engine": { # noqa
+        "engine": {  # noqa
         },
-        "mask": True, # noqa
+        "mask": True,  # noqa
         "metadata": {
-          "malware_family": "", # noqa
+          "malware_family": "",  # noqa
           "scanner": {
-            "environment": { # noqa
-              "architecture": "x86_64", # noqa
+            "environment": {  # noqa
+              "architecture": "x86_64",  # noqa
               "operating_system": "Linux"
             },
             "vendor_version": "",
             "version": "0.2.0"
-          } # noqa
+          }  # noqa
         },
         "verdict": False
       },
@@ -531,9 +531,9 @@ MOCK_SCAN_JSON_RESPONSE = {
     "country": "ES",
     "created": "2021-04-21T17:47:45.031479",
     "detections": {
-      "benign": 3, # noqa
+      "benign": 3,  # noqa
       "malicious": 0,
-      "total": 3 # noqa
+      "total": 3  # noqa
     },
     "extended_type": "ASCII text, with no line terminators",
     "failed": False,
@@ -544,25 +544,25 @@ MOCK_SCAN_JSON_RESPONSE = {
     "last_seen": "2021-04-21T17:47:45.031479",
     "md5": "99999ebcfdb78df077ad2727fd00969f",
     "metadata": [
-      { # noqa
-        "created": "2019-08-02T03:18:57.278529", # noqa
+      {  # noqa
+        "created": "2019-08-02T03:18:57.278529",  # noqa
         "tool": "hash",
         "tool_metadata": {
-          "md5": "99999ebcfdb78df077ad2727fd00969f", # noqa
+          "md5": "99999ebcfdb78df077ad2727fd00969f",  # noqa
           "sha1": "72fe95c5576ec634e214814a32ab785568eda76a",
           "sha256": "939adb211c3bcf76b84b2417e1d39248994e21d48a3d7eddca87bb76d6c31cc3",
           "sha3_256": "1d04c6a0de45640841f5ad06644830e9535e4221315abdae55c898e340c0bd85",
-          "sha3_512": "b3d73fde21923feef7be13e0793059c8c5eecea46794ae452e3d57d058ea02322b1aa573b420fb0ca4ecda6c6d7b0f3618b12ecc43250b3e79d9e74958c7fccc", # noqa
-          "sha512": "f50de615027afe3f1e9a3c9bc71c085d5c71a55413a70cd134328b51fd14188832848673726981a686fd6f2de3b9c24ee90e466b7589800f83d19520cd23d13d", # noqa
+          "sha3_512": "b3d73fde21923feef7be13e0793059c8c5eecea46794ae452e3d57d058ea02322b1aa573b420fb0ca4ecda6c6d7b0f3618b12ecc43250b3e79d9e74958c7fccc",  # noqa
+          "sha512": "f50de615027afe3f1e9a3c9bc71c085d5c71a55413a70cd134328b51fd14188832848673726981a686fd6f2de3b9c24ee90e466b7589800f83d19520cd23d13d",  # noqa
           "ssdeep": "3:N8r3uK:2LuK",
           "tlsh": ""
         }
       },
       {
-        "created": "2019-06-25T11:03:29.989789", # noqa
+        "created": "2019-06-25T11:03:29.989789",  # noqa
         "tool": "strings",
-        "tool_metadata": { # noqa
-          "domains": [ # noqa
+        "tool_metadata": {  # noqa
+          "domains": [  # noqa
           ],
           "ipv4": [],
           "ipv6": [],
@@ -571,41 +571,41 @@ MOCK_SCAN_JSON_RESPONSE = {
         }
       },
       {
-        "created": "2019-11-13T00:10:36.646018", # noqa
+        "created": "2019-11-13T00:10:36.646018",  # noqa
         "tool": "scan",
         "tool_metadata": {
-          "countries": [ # noqa
-            "CN", # noqa
-            "ES", # noqa
+          "countries": [  # noqa
+            "CN",  # noqa
+            "ES",  # noqa
             "JP",
             "PR",
-            "US" # noqa
+            "US"  # noqa
           ],
           "detections": {
-            "benign": 1206, # noqa
+            "benign": 1206,  # noqa
             "total": 1263,
             "unknown": 1
           },
           "first_scan": {
-            "0x0457C40dBA29166c1D2485F93946688C1FC6Cc58": { # noqa
-              "assertion": "benign", # noqa
+            "0x0457C40dBA29166c1D2485F93946688C1FC6Cc58": {  # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "AMD64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "AMD64",  # noqa
                     "operating_system": "Windows"
                   }
                 }
               }
             },
             "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "AMD64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "AMD64",  # noqa
                     "operating_system": "Windows"
                   },
                   "vendor_version": "3.0.2.0",
@@ -614,36 +614,36 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "0x7c6A9f9f9f1a67774999FF0e26ffdBa2c9347eeB": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   }
                 }
               }
             },
             "0xA4815D9b8f710e610E8957F4aD13F725a4331cbB": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   }
                 }
               }
             },
             "xxx1": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "AMD64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "AMD64",  # noqa
                     "operating_system": "Windows"
                   }
                 },
@@ -651,12 +651,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx2": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   },
                   "vendor_version": "\n"
@@ -664,12 +664,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx3": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "AMD64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "AMD64",  # noqa
                     "operating_system": "Windows"
                   },
                   "vendor_version": "16.0.100 ",
@@ -678,12 +678,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx4": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "AMD64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "AMD64",  # noqa
                     "operating_system": "Windows"
                   },
                   "signatures_version": "11.51.31290, 20-Jun-2019",
@@ -693,12 +693,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx5": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "AMD64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "AMD64",  # noqa
                     "operating_system": "Windows"
                   },
                   "signatures_version": "0.14.30.15269",
@@ -708,12 +708,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx6": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   }
                 }
@@ -724,25 +724,25 @@ MOCK_SCAN_JSON_RESPONSE = {
           "first_seen": "2019-06-25T01:53:43.954091+00:00",
           "last_seen": "2020-01-17T23:35:52.662846+00:00",
           "latest_scan": {
-            "xxx": { # noqa
-              "assertion": "benign", # noqa
+            "xxx": {  # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   }
                 }
               }
             },
             "xxx1": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   },
                   "vendor_version": "",
@@ -751,12 +751,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx2": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   },
                   "vendor_version": "",
@@ -765,12 +765,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx3": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   },
                   "vendor_version": "",
@@ -779,12 +779,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx4": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   },
                   "version": "0.3.0"
@@ -792,12 +792,12 @@ MOCK_SCAN_JSON_RESPONSE = {
               }
             },
             "xxx5": {
-              "assertion": "benign", # noqa
+              "assertion": "benign",  # noqa
               "metadata": {
-                "malware_family": "", # noqa
+                "malware_family": "",  # noqa
                 "scanner": {
-                  "environment": { # noqa
-                    "architecture": "x86_64", # noqa
+                  "environment": {  # noqa
+                    "architecture": "x86_64",  # noqa
                     "operating_system": "Linux"
                   },
                   "vendor_version": "1.1",
@@ -808,7 +808,7 @@ MOCK_SCAN_JSON_RESPONSE = {
             "artifact_instance_id": 49856473932287041
           },
           "mimetype": {
-            "extended": "ASCII text, with no line terminators", # noqa
+            "extended": "ASCII text, with no line terminators",  # noqa
             "mime": "text/plain"
           },
           "url": [

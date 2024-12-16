@@ -15,93 +15,93 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: This is an API to get stock prices etc
+description: This is an API to get stock prices etc.
 display: AlphaVantage
 name: AlphaVantage
 script:
   commands:
   - arguments:
-    - description: Symbol or Ticker of stock
+    - description: Symbol or Ticker of stock.
       isArray: true
       name: symbol
       required: true
-    description: Gets data for a stock
+    description: Gets data for a stock.
     name: alphavantage-stock-data-get
     outputs:
     - contextPath: AlphaVantage.StockData.symbol
-      description: 'Stock symbol'
+      description: Stock symbol.
       type: String
     - contextPath: AlphaVantage.StockData.open
-      description: 'Open price'
+      description: Open price.
       type: String
     - contextPath: AlphaVantage.StockData.high
-      description: 'Day high price'
+      description: Day high price.
       type: String
     - contextPath: AlphaVantage.StockData.low
-      description: 'Day low price'
+      description: Day low price.
       type: String
     - contextPath: AlphaVantage.StockData.price
-      description: 'Last price recorded'
+      description: Last price recorded.
       type: String
     - contextPath: AlphaVantage.StockData.volume
-      description: 'Trade volume'
+      description: Trade volume.
       type: String
     - contextPath: AlphaVantage.StockData.latest trading day
-      description: 'Last trade day date'
+      description: Last trade day date.
       type: Date
     - contextPath: AlphaVantage.StockData.previous close
-      description: 'Last day close price'
+      description: Last day close price.
       type: String
     - contextPath: AlphaVantage.StockData.change
-      description: 'Change since last close'
+      description: Change since last close.
       type: String
     - contextPath: AlphaVantage.StockData.change percent
-      description: 'Change since last close in %'
+      description: Change since last close in %.
       type: String
   - arguments:
-    - description: Symbols of stocksto fetch
+    - description: Symbols of stocksto fetch.
       isArray: true
       name: symbol
       required: true
     - auto: PREDEFINED
-      defaultValue: '60min'
-      description: Time interval between two data points
+      defaultValue: 60min
+      description: Time interval between two data points.
       name: interval
       predefined:
-      - '1min'
-      - '5min'
-      - '15min'
-      - '30min'
-      - '60min'
+      - 1min
+      - 5min
+      - 15min
+      - 30min
+      - 60min
     - auto: PREDEFINED
       defaultValue: compact
-      description: Amount of data return
+      description: Amount of data return.
       name: output_size
       predefined:
-      - 'compact'
-      - 'full'
-    description: Gets historical data for a stock
+      - compact
+      - full
+    description: Gets historical data for a stock.
     name: alphavantage-stock-history-get
     outputs:
     - contextPath: AlphaVantage.StockHistory.Information
-      description: 'Info about each time series'
+      description: Info about each time series.
       type: String
     - contextPath: AlphaVantage.StockHistory.Interval
-      description: 'Time interval between two data samples'
+      description: Time interval between two data samples.
       type: String
     - contextPath: AlphaVantage.StockHistory.Last Refreshed
-      description: 'Last time the API  data was refreshed'
+      description: Last time the API  data was refreshed.
       type: String
     - contextPath: AlphaVantage.StockHistory.Output Size
-      description: 'Amount of data. Either last 100 samples or as much as possible'
+      description: Amount of data. Either last 100 samples or as much as possible.
       type: String
     - contextPath: AlphaVantage.StockHistory.Symbol
-      description: 'Stock symbol'
+      description: Stock symbol.
       type: String
     - contextPath: AlphaVantage.StockHistory.Time Series
-      description: 'List of all stock data samples'
+      description: List of all stock data samples.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

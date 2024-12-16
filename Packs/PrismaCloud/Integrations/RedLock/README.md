@@ -1,8 +1,5 @@
-## Configure Prisma Cloud (RedLock) on Cortex XSOAR
+## Configure Prisma Cloud (RedLock) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Prisma Cloud (RedLock).
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,13 +16,12 @@
 | proxy | Use system proxy settings | False |
 | unsecure | Trust any certificate \(not secure\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 **Note:** Further info on creating access keys for Prisma Cloud is available [here](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin/manage-prisma-cloud-administrators/create-access-keys.html).
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### redlock-search-alerts
 ***
@@ -1168,7 +1164,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                     "tags": [
                         "None"
                     ],
-                    "rrn": "rrn::managedLb:us-east-2:274307705868:393ffce52a85f09fef1be815f4fe9ca3186b4540:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-2%3A274307705868%3Aloadbalancer%2Fnet%2Faqwe%2Ffb23c6bcbaee17a1",
+                    "rrn": "rrn::managedLb:us-east-2:123456789012:393ffce52a85f09fef1be815f4fe9ca3186b4540:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-2%3A123456789012%3Aloadbalancer%2Fnet%2Faqwe%2Ffb23c6bcbaee17a1",
                     "security_groups": [
                         "Unavailable"
                     ],
@@ -1177,7 +1173,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                         "N/A"
                     ],
                     "account_id": [
-                        "274307705868"
+                        "123456789012"
                     ],
                     "cloud_type": [
                         "aws"
@@ -1189,7 +1185,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                         "RedlockSandbox"
                     ],
                     "resource_id": [
-                        "arn:aws:elasticloadbalancing:us-east-2:274307705868:loadbalancer/net/aqwe/fb23c6bcbaee17a1"
+                        "arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/net/aqwe/fb23c6bcbaee17a1"
                     ],
                     "inspector_sbp_count": 0,
                     "region_name": [
@@ -1207,7 +1203,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                 "suspicious": false,
                 "metadata": {
                     "account_id": [
-                        "274307705868"
+                        "123456789012"
                     ],
                     "cloud_type": [
                         "aws"

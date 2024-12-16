@@ -2,31 +2,31 @@ HarfangLab EDR Connector,
 Compatible version 2.13.7+
 This integration was integrated and tested with version 2.13.7+ of Hurukai
 
-## Configure HarfangLab EDR on Cortex XSOAR
+## Configure HarfangLab EDR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HarfangLab EDR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API URL |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | API Key |  | False |
-    | Long running instance |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
-    | Minimum severity of alerts to fetch |  | True |
-    | Fetch alerts with status (ACTIVE, CLOSED) |  | False |
-    | First fetch time | Start fetching alerts whose creation date is higher than now minus &amp;lt;first_fetch&amp;gt; days. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API URL |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| API Key |  | False |
+| Incidents Fetch Interval |  | False |
+| Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
+| Minimum severity of alerts to fetch |  | True |
+| Fetch alerts with status (ACTIVE, CLOSED) |  | False |
+| Maximum number of incidents to fetch per call | Fetch maximum &lt;max_fetch&gt; security events and/or threats per call \(leave empty if unlimited\). | False |
+| First fetch time | Start fetching alerts and/or threats whose creation date is higher than now minus &lt;first_fetch&gt; days. | True |
+| Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from HarfangLab EDR to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to HarfangLab EDR\), or Incoming and Outgoing \(to/from HarfangLab EDR and Cortex XSOAR\). | False |
+| Fetch types |  | True |
+| Close Mirrored security event or threat in the XSOAR | When selected, closes the XSOAR incident, which is mirrored from the HarfangLab EDR. | False |
+| Close Mirrored security event or threat in HarfangLab EDR | When selected, closes the HarfangLab EDR security event or threat in the HarfangLab EDR. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### fetch-incidents
@@ -326,6 +326,51 @@ Search for endpoint information from a hostname
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| additional_info1: null<br/>additional_info2: null<br/>additional_info3: null<br/>additional_info4: null | 1.0 | 183558144.0 | x64 | 2 | 3192 | WORKGROUP | true | false | (REDACTED) | 2022-06-15T06:42:50.008015Z | 0 | DC-01 | 0fae71cf-ebde-4533-a50c-b3c0290378db | 2022/06/15 06:38:58 | (REDACTED) | (REDACTED) | false | true | 2022-07-28T07:41:32.197641Z | 2022-07-28T07:47:02.197641Z | 2022-07-28T07:43:44.197641Z | 2022-06-28T14:18:31Z | 20348 | 00454-40000-00001-AA596 | 10 | 0 | Windows Server 2022 Standard Evaluation | windows | 10.0.20348 | id: e96699ef-3dd9-4718-90ef-c7e5646fd466<br/>tenant: null<br/>name: No psexec<br/>description: <br/>revision: 5<br/>sleeptime: 60<br/>sleepjitter: 10<br/>telemetry_process: true<br/>telemetry_process_limit: false<br/>telemetry_process_limit_value: 1000<br/>telemetry_network: true<br/>telemetry_network_limit: false<br/>telemetry_network_limit_value: 1000<br/>telemetry_log: true<br/>telemetry_log_limit: false<br/>telemetry_log_limit_value: 1000<br/>telemetry_remotethread: true<br/>telemetry_remotethread_limit: false<br/>telemetry_remotethread_limit_value: 1000<br/>telemetry_alerts_limit: false<br/>telemetry_alerts_limit_value: 1000<br/>binary_download_enabled: true<br/>loglevel: ERROR<br/>use_sigma: true<br/>ioc_mode: 2<br/>hlai_mode: 1<br/>hlai_skip_signed_ms: true<br/>hlai_skip_signed_others: false<br/>hlai_minimum_level: critical<br/>hibou_mode: 0<br/>hibou_skip_signed_ms: false<br/>hibou_skip_signed_others: false<br/>hibou_minimum_level: critical<br/>yara_mode: 1<br/>yara_skip_signed_ms: true<br/>yara_skip_signed_others: false<br/>use_driver: true<br/>use_isolation: true<br/>use_ransomguard: true<br/>ransomguard_alert_only: false<br/>self_protection: false<br/>use_process_block: true<br/>use_sigma_process_block: false<br/>sigma_ruleset: 1<br/>yara_ruleset: null<br/>ioc_ruleset: null | server | 2022-06-28T14:18:47Z | online | 2133962752.0 | 0 | false | 0 | 2.15.0 |
 >| additional_info1: null<br/>additional_info2: null<br/>additional_info3: null<br/>additional_info4: null | 0.6 | 125627596.0 | x64 | 2 | 3192 | WORKGROUP | true | false | (REDACTED) | 2022-06-14T22:23:08.393381Z | 0 | DC-01 | 706d4524-dc2d-4438-bfef-3b620646db7f | 2022/06/14 21:56:49 | (REDACTED) | (REDACTED) | false | false | 2022-06-15T06:33:46.544505Z | 2022-06-15T06:39:16.544505Z | 2022-06-15T06:35:58.544505Z | 2022-06-14T22:00:23Z | 20348 | 00454-40000-00001-AA081 | 10 | 0 | Windows Server 2022 Standard Evaluation | windows | 10.0.20348 | id: e96699ef-3dd9-4718-90ef-c7e5646fd466<br/>tenant: null<br/>name: No psexec<br/>description: <br/>revision: 5<br/>sleeptime: 60<br/>sleepjitter: 10<br/>telemetry_process: true<br/>telemetry_process_limit: false<br/>telemetry_process_limit_value: 1000<br/>telemetry_network: true<br/>telemetry_network_limit: false<br/>telemetry_network_limit_value: 1000<br/>telemetry_log: true<br/>telemetry_log_limit: false<br/>telemetry_log_limit_value: 1000<br/>telemetry_remotethread: true<br/>telemetry_remotethread_limit: false<br/>telemetry_remotethread_limit_value: 1000<br/>telemetry_alerts_limit: false<br/>telemetry_alerts_limit_value: 1000<br/>binary_download_enabled: true<br/>loglevel: ERROR<br/>use_sigma: true<br/>ioc_mode: 2<br/>hlai_mode: 1<br/>hlai_skip_signed_ms: true<br/>hlai_skip_signed_others: false<br/>hlai_minimum_level: critical<br/>hibou_mode: 0<br/>hibou_skip_signed_ms: false<br/>hibou_skip_signed_others: false<br/>hibou_minimum_level: critical<br/>yara_mode: 1<br/>yara_skip_signed_ms: true<br/>yara_skip_signed_others: false<br/>use_driver: true<br/>use_isolation: true<br/>use_ransomguard: true<br/>ransomguard_alert_only: false<br/>self_protection: false<br/>use_process_block: true<br/>use_sigma_process_block: false<br/>sigma_ruleset: 1<br/>yara_ruleset: null<br/>ioc_ruleset: null | server | 2022-06-14T22:02:32Z | offline | 2133962752.0 | 0 | false | 0 | 2.15.0 |
+
+
+### harfanglab-api-call
+
+***
+Perform a generic API call
+
+#### Base Command
+
+`harfanglab-api-call`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| api_method | API method (GET, POST...). | Required | 
+| api_endpoint | API endpoint (/api/version, /api/data/alert/alert/Alert/...). | Optional | 
+| parameters | URL parameters. | Optional | 
+| data | Posted data. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.API | unknown | API call result | 
+
+#### Command example
+```!harfanglab-api-call api_method=GET api_endpoint=/api/version```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "API": {
+            "version": "2.29.7"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|version|
+>|---|
+>| 2.29.7 |
 
 
 ### harfanglab-telemetry-processes
@@ -2696,6 +2741,1830 @@ Search for binaries
 >|name|path|size|sha256|download link|
 >|---|---|---|---|---|
 >| hurukai | /opt/hurukai/hurukai | 5882824 | 2577fb22e98a4585bedcccfe7fbb48a8b2e0b5ea4c41408247cba86e89ea2eb5 | https://my_edr_stack:8443/api/data/telemetry/Binary/download/2577fb22e98a4585bedcccfe7fbb48a8b2e0b5ea4c41408247cba86e89ea2eb5/?hl_expiring_key=0123456789abcdef |
+
+
+### harfanglab-telemetry-dns
+***
+Search DNS resolutions
+
+
+#### Base Command
+
+`harfanglab-telemetry-dns`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Endpoint hostname. | Optional | 
+| requested_name | Requested domain name. | Optional | 
+| query_type | DNS type (A, AAAA, TXT...). | Optional | 
+| from_date | Start date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| to_date | End date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| limit | Maximum number of elements to fetch. Default is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.TelemetryDNS.resolutions | unknown | Provides a list of DNS resolutions | 
+
+#### Command example
+```!harfanglab-telemetry-dns requested_name=download.windowsupdate.com hostname=webserver```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "Telemetrydns": {
+            "dns": [
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
+                    "create date": "2023-07-20T08:14:28.306000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 5956,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-2fe4-45c7-4417-0026bd8eba8b",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
+                    "create date": "2023-07-20T08:14:23.768000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-2fe4-45c7-1005-00d36589bf35",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
+                    "create date": "2023-07-20T04:14:23.397000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-2fe4-45c7-1005-00d36589bf35",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-17T13:03:34.656000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1900,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-6c07-000eac642d4f",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-17T13:03:28.608000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1276,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-fc04-00c4827455f9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-16T13:03:36.331000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 2620,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-3c0a-008126fb9d08",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-16T13:03:28.944000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1276,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-fc04-00c4827455f9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-15T13:03:37.980000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 5700,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-4416-009d6e609402",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-15T13:03:29.162000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1276,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-fc04-00c4827455f9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-14T13:03:50.310000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 5908,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-1417-007dde4315d9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-14T13:03:42.865000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1276,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-fc04-00c4827455f9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-14T02:14:55.276000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1276,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-fc04-00c4827455f9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-13T13:03:34.668000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 5856,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-e016-008cbea6fa9a",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-13T13:03:29.584000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1276,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-fc04-00c4827455f9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "create date": "2023-07-13T02:14:55.484000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1276,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-c2c0-4b31-fc04-00c4827455f9",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-06T05:33:19.372000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 4876,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-0c13-005257b88fb6",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-06T05:33:11.969000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1216,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-c004-00cebeddc9bf",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-04T05:25:43.924000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 760,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-f802-00e6099364ff",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-04T05:25:37.176000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-1005-006ae872c8a6",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-02T05:25:42.501000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 4252,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-9c10-00a479475cc1",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-02T05:25:35.173000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-1005-006ae872c8a6",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-01T11:40:33.272000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 5656,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-1816-00ba61e017c5",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-01T11:40:28.846000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-1005-006ae872c8a6",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-07-01T03:40:39.204000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-1005-006ae872c8a6",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-06-30T23:40:27.344000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-1005-006ae872c8a6",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                },
+                {
+                    "IP addresses": [
+                        "XXX.XXX.XXX.XXX"
+                    ],
+                    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+                    "create date": "2023-06-30T15:40:28.177000Z",
+                    "hostname": "WEBSERVER",
+                    "pid": 1296,
+                    "process image path": "C:\\Windows\\System32\\svchost.exe",
+                    "process unique id": "67786071-183f-438a-1005-006ae872c8a6",
+                    "query type": "AAAA",
+                    "requested name": "download.windowsupdate.com",
+                    "tenant": ""
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>```
+>{
+>    "IP addresses": [
+>        "XXX.XXX.XXX.XXX"
+>    ],
+>    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
+>    "create date": "2023-06-30T15:40:28.177000Z",
+>    "hostname": "WEBSERVER",
+>    "pid": 1296,
+>    "process image path": "C:\\Windows\\System32\\svchost.exe",
+>    "process unique id": "67786071-183f-438a-1005-006ae872c8a6",
+>    "query type": "AAAA",
+>    "requested name": "download.windowsupdate.com",
+>    "tenant": ""
+>}
+>```
+
+### harfanglab-telemetry-authentication-windows
+***
+Search Windows authentication telemetry
+
+
+#### Base Command
+
+`harfanglab-telemetry-authentication-windows`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Endpoint hostname. | Optional | 
+| source_address | Source IP address. | Optional | 
+| success | Whether authentication succeeded or not. | Optional | 
+| source_username | Source username. | Optional | 
+| target_username | Target username. | Optional | 
+| logon_title | Logon title. | Optional | 
+| from_date | Start date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| to_date | End date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| limit | Maximum number of elements to fetch. Default is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.TelemetryWindowsAuthentications.authentications | unknown | Provides a list of Windows authentications | 
+
+#### Command example
+```!harfanglab-telemetry-authentication-windows limit=5 target_username=vagrant```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "Telemetrywindows_authentications": {
+            "windows_authentications": [
+                {
+                    "agentid": "147b2639-0427-40f3-9004-95cada686d15",
+                    "event id": 4634,
+                    "event title": "An account was logged off",
+                    "hostname": "DC-01",
+                    "logon process name": null,
+                    "logon title": "Network",
+                    "logon type": 3,
+                    "process name": null,
+                    "source address": null,
+                    "source username": null,
+                    "success": null,
+                    "target username": "vagrant",
+                    "timestamp": "2023-07-21T08:04:04.448200Z"
+                },
+                {
+                    "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
+                    "event id": 4634,
+                    "event title": "An account was logged off",
+                    "hostname": "WEBSERVER",
+                    "logon process name": null,
+                    "logon title": "Network",
+                    "logon type": 3,
+                    "process name": null,
+                    "source address": null,
+                    "source username": null,
+                    "success": null,
+                    "target username": "vagrant",
+                    "timestamp": "2023-07-20T12:26:58.076300Z"
+                },
+                {
+                    "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
+                    "event id": 4634,
+                    "event title": "An account was logged off",
+                    "hostname": "WEBSERVER",
+                    "logon process name": null,
+                    "logon title": "Unlock",
+                    "logon type": 7,
+                    "process name": null,
+                    "source address": null,
+                    "source username": null,
+                    "success": null,
+                    "target username": "vagrant",
+                    "timestamp": "2023-07-20T06:24:57.315374Z"
+                },
+                {
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "event id": 4634,
+                    "event title": "An account was logged off",
+                    "hostname": "WEBSERVER",
+                    "logon process name": null,
+                    "logon title": "Network",
+                    "logon type": 3,
+                    "process name": null,
+                    "source address": null,
+                    "source username": null,
+                    "success": null,
+                    "target username": "vagrant",
+                    "timestamp": "2023-07-17T12:31:14.007910Z"
+                },
+                {
+                    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+                    "event id": 4634,
+                    "event title": "An account was logged off",
+                    "hostname": "WEBSERVER",
+                    "logon process name": null,
+                    "logon title": "Unlock",
+                    "logon type": 7,
+                    "process name": null,
+                    "source address": null,
+                    "source username": null,
+                    "success": null,
+                    "target username": "vagrant",
+                    "timestamp": "2023-07-17T05:59:38.968596Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>```
+>{
+>    "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
+>    "event id": 4634,
+>    "event title": "An account was logged off",
+>    "hostname": "WEBSERVER",
+>    "logon process name": null,
+>    "logon title": "Unlock",
+>    "logon type": 7,
+>    "process name": null,
+>    "source address": null,
+>    "source username": null,
+>    "success": null,
+>    "target username": "vagrant",
+>    "timestamp": "2023-07-17T05:59:38.968596Z"
+>}
+>```
+
+### harfanglab-telemetry-authentication-linux
+***
+Search Linux authentication telemetry
+
+
+#### Base Command
+
+`harfanglab-telemetry-authentication-linux`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Endpoint hostname. | Optional | 
+| source_address | Source IP address. | Optional | 
+| success | Whether authentication succeeded or not. | Optional | 
+| source_username | Source username. | Optional | 
+| target_username | Target username. | Optional | 
+| from_date | Start date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| to_date | End date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| limit | Maximum number of elements to fetch. Default is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.TelemetryLinuxAuthentications.authentications | unknown | Provides a list of Linux authentications | 
+
+### harfanglab-telemetry-authentication-macos
+***
+Search Macos authentication telemetry
+
+
+#### Base Command
+
+`harfanglab-telemetry-authentication-macos`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Endpoint hostname. | Optional | 
+| source_address | Source IP address. | Optional | 
+| success | Whether authentication succeeded or not. | Optional | 
+| source_username | Source username. | Optional | 
+| target_username | Target username. | Optional | 
+| from_date | Start date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| to_date | End date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| limit | Maximum number of elements to fetch. Default is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.TelemetryMacosAuthentications.authentications | unknown | Provides a list of Macos authentications | 
+
+### harfanglab-telemetry-authentication-users
+
+***
+Get the top N users who successfully authenticated on the host
+
+#### Base Command
+
+`harfanglab-telemetry-authentication-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Endpoint hostname. | Required | 
+| from_date | Start date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| to_date | End date (format: YYYY-MM-DDTHH:MM:SS). | Optional | 
+| limit | Fetch only the top N users who successfully authenticated on the host. Default is 3. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.Authentications.Users | unknown | Provides a list of users who successfully authenticated on the host with interactive logon \(sorted per decreasing occurrence\) | 
+
+#### Command example
+```!harfanglab-telemetry-authentication-users hostname=CL-Ep2-Win11 limit=4```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "Authentications": {
+            "Users": [
+                {
+                    "Authentication attempts": 4,
+                    "Username": "CL-EP2-WIN11\\hladmin"
+                },
+                {
+                    "Authentication attempts": 2,
+                    "Username": "hladmin"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Top None authentications
+>|Username|Authentication attempts|
+>|---|---|
+>| CL-EP2-WIN11\hladmin | 4 |
+>| hladmin | 2 |
+
+
+### harfanglab-telemetry-process-graph
+***
+Get a process graph
+
+
+#### Base Command
+
+`harfanglab-telemetry-process-graph`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_uuid | Process UUID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.ProcessGraph | unknown | Process Graph | 
+
+#### Command example
+```!harfanglab-telemetry-process-graph process_uuid=37d378de-b558-4597-e820-009fa44c4c03```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "ProcessGraph": {
+            "calc_time": 0.2487087131012231,
+            "current_process_id": "37d378de-b558-4597-e820-009fa44c4c03",
+            "edges": [
+                {
+                    "class": "edge-parent",
+                    "source": "37d378de-b558-4597-a025-000bb895a6e4",
+                    "target": "37d378de-b558-4597-e820-009fa44c4c03"
+                },
+                {
+                    "class": "edge-parent",
+                    "source": "37d378de-b558-4597-6c19-00c365029657",
+                    "target": "37d378de-b558-4597-a025-000bb895a6e4"
+                },
+                {
+                    "class": "edge-parent",
+                    "source": "37d378de-b558-4597-0819-000ba55fbed4",
+                    "target": "37d378de-b558-4597-6c19-00c365029657"
+                },
+                {
+                    "class": "edge-parent",
+                    "source": "37d378de-b558-4597-9002-007a09a922ae",
+                    "target": "37d378de-b558-4597-0819-000ba55fbed4"
+                }
+            ],
+            "missing_processes": {},
+            "nodes": [
+                {
+                    "alertCount": 1,
+                    "childProcessCount": 0,
+                    "childProcessCountConfidence": "exact",
+                    "class": "node",
+                    "connectionCount": 0,
+                    "dnsResolutionCount": 0,
+                    "id": "37d378de-b558-4597-e820-009fa44c4c03",
+                    "injectedThreadCount": 0,
+                    "name": "calc.exe",
+                    "parents": [
+                        "37d378de-b558-4597-a025-000bb895a6e4"
+                    ],
+                    "powershellCount": 0,
+                    "signed": true,
+                    "status": "complete",
+                    "type": "exe"
+                },
+                {
+                    "alertCount": 0,
+                    "childProcessCount": 3,
+                    "childProcessCountConfidence": "exact",
+                    "class": "node",
+                    "connectionCount": 0,
+                    "dnsResolutionCount": 0,
+                    "id": "37d378de-b558-4597-a025-000bb895a6e4",
+                    "injectedThreadCount": 0,
+                    "name": "cmd.exe",
+                    "parents": [
+                        "37d378de-b558-4597-6c19-00c365029657"
+                    ],
+                    "powershellCount": 0,
+                    "signed": true,
+                    "status": "complete",
+                    "type": "exe"
+                },
+                {
+                    "alertCount": 0,
+                    "childProcessCount": 5,
+                    "childProcessCountConfidence": "exact",
+                    "class": "node",
+                    "connectionCount": 0,
+                    "dnsResolutionCount": 0,
+                    "id": "37d378de-b558-4597-6c19-00c365029657",
+                    "injectedThreadCount": 0,
+                    "name": "explorer.exe",
+                    "parents": [
+                        "37d378de-b558-4597-0819-000ba55fbed4"
+                    ],
+                    "powershellCount": 0,
+                    "signed": true,
+                    "status": "complete",
+                    "type": "exe"
+                },
+                {
+                    "alertCount": 0,
+                    "childProcessCount": 1,
+                    "childProcessCountConfidence": "exact",
+                    "class": "node",
+                    "connectionCount": 0,
+                    "dnsResolutionCount": 0,
+                    "id": "37d378de-b558-4597-0819-000ba55fbed4",
+                    "injectedThreadCount": 0,
+                    "name": "userinit.exe",
+                    "parents": [
+                        "37d378de-b558-4597-9002-007a09a922ae"
+                    ],
+                    "powershellCount": 0,
+                    "signed": true,
+                    "status": "complete",
+                    "type": "exe"
+                },
+                {
+                    "alertCount": 0,
+                    "childProcessCount": 5,
+                    "childProcessCountConfidence": "exact",
+                    "class": "node",
+                    "connectionCount": 0,
+                    "dnsResolutionCount": 0,
+                    "id": "37d378de-b558-4597-9002-007a09a922ae",
+                    "injectedThreadCount": 0,
+                    "name": "winlogon.exe",
+                    "parents": [],
+                    "powershellCount": 0,
+                    "signed": true,
+                    "status": "complete",
+                    "type": "exe"
+                }
+            ],
+            "processes": {
+                "37d378de-b558-4597-0819-000ba55fbed4": {
+                    "@event_create_date": "2023-07-20T08:56:43.923000Z",
+                    "@timestamp": "2023-07-20T08:56:47.885612Z",
+                    "@version": "1",
+                    "agent": {
+                        "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+                        "domainname": "WORKGROUP",
+                        "hostname": "martin-vbox-win10-first",
+                        "osproducttype": "Windows 10 Enterprise",
+                        "ostype": "windows",
+                        "osversion": "10.0.19041",
+                        "version": "2.29.0rc1-post0"
+                    },
+                    "ancestors": "C:\\Windows\\System32\\winlogon.exe",
+                    "commandline": "C:\\Windows\\system32\\userinit.exe",
+                    "current_directory": "C:\\Windows\\system32\\",
+                    "fake_parent_commandline": "",
+                    "fake_parent_image": "",
+                    "fake_ppid": 0,
+                    "grandparent_commandline": "",
+                    "grandparent_image": "",
+                    "grandparent_integrity_level": "Unknown",
+                    "groups": [
+                        {
+                            "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+                            "name": "le groupe de la marmotte"
+                        }
+                    ],
+                    "hashes": {
+                        "md5": "582a919ca5f944aa83895a5c633c122c",
+                        "sha1": "6d0c6aea6bce05166761085b1d612558f81d877a",
+                        "sha256": "eda7ee39d4db8142a1e0788e205e80ae798035d60273e74981e09e98c8d0e740"
+                    },
+                    "id": "oVOEcokBVudtObjXHC6o",
+                    "image_name": "C:\\Windows\\System32\\userinit.exe",
+                    "integrity_level": "Medium",
+                    "log_platform_flag": 0,
+                    "log_type": "process",
+                    "logonid": 182681,
+                    "parent_commandline": "winlogon.exe",
+                    "parent_image": "C:\\Windows\\System32\\winlogon.exe",
+                    "parent_integrity_level": "System",
+                    "parent_unique_id": "37d378de-b558-4597-9002-007a09a922ae",
+                    "pe_imphash": "DE7486657F39757C768DEE3094E10FF8",
+                    "pe_info": {
+                        "company_name": "Microsoft Corporation",
+                        "file_description": "Userinit Logon Application",
+                        "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+                        "internal_name": "userinit",
+                        "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+                        "original_filename": "USERINIT.EXE",
+                        "pe_timestamp": "2086-04-07T12:35:36Z",
+                        "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+                        "product_version": "10.0.19041.1"
+                    },
+                    "pe_timestamp": "2086-04-07T12:35:36Z",
+                    "pe_timestamp_int": 3669021336,
+                    "pid": 6408,
+                    "ppid": 656,
+                    "process_name": "userinit.exe",
+                    "process_unique_id": "37d378de-b558-4597-0819-000ba55fbed4",
+                    "session": 1,
+                    "signature_info": {
+                        "root_info": {
+                            "display_name": "Microsoft Root Certificate Authority 2010",
+                            "issuer_name": "Microsoft Root Certificate Authority 2010",
+                            "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+                            "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+                            "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+                        },
+                        "signed_authenticode": false,
+                        "signed_catalog": true,
+                        "signer_info": {
+                            "display_name": "Microsoft Windows",
+                            "issuer_name": "Microsoft Windows Production PCA 2011",
+                            "serial_number": "330000023241fb59996dcc4dff000000000232",
+                            "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+                            "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+                        }
+                    },
+                    "signed": true,
+                    "size": 34816,
+                    "tenant": "",
+                    "username": "MARTIN-VBOX-WIN\\root",
+                    "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+                },
+                "37d378de-b558-4597-6c19-00c365029657": {
+                    "@event_create_date": "2023-07-20T08:56:44.030000Z",
+                    "@timestamp": "2023-07-20T08:56:47.885767Z",
+                    "@version": "1",
+                    "agent": {
+                        "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+                        "domainname": "WORKGROUP",
+                        "hostname": "martin-vbox-win10-first",
+                        "osproducttype": "Windows 10 Enterprise",
+                        "ostype": "windows",
+                        "osversion": "10.0.19041",
+                        "version": "2.29.0rc1-post0"
+                    },
+                    "ancestors": "C:\\Windows\\System32\\userinit.exe|C:\\Windows\\System32\\winlogon.exe",
+                    "commandline": "C:\\Windows\\Explorer.EXE",
+                    "current_directory": "C:\\Windows\\system32\\",
+                    "fake_parent_commandline": "",
+                    "fake_parent_image": "",
+                    "fake_ppid": 0,
+                    "grandparent_commandline": "winlogon.exe",
+                    "grandparent_image": "C:\\Windows\\System32\\winlogon.exe",
+                    "grandparent_integrity_level": "System",
+                    "groups": [
+                        {
+                            "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+                            "name": "le groupe de la marmotte"
+                        }
+                    ],
+                    "hashes": {
+                        "md5": "fde2638e4a80b507e683d973474168da",
+                        "sha1": "7cdd581ae59dae0564e421d3b46683c7b2c50571",
+                        "sha256": "23165139c2a7d2d75df54b8fbac69fa37462c43ff971b78f8cbf99be2613655e"
+                    },
+                    "id": "pVOEcokBVudtObjXHC6y",
+                    "image_name": "C:\\Windows\\explorer.exe",
+                    "integrity_level": "Medium",
+                    "log_platform_flag": 0,
+                    "log_type": "process",
+                    "logonid": 182681,
+                    "parent_commandline": "C:\\Windows\\system32\\userinit.exe",
+                    "parent_image": "C:\\Windows\\System32\\userinit.exe",
+                    "parent_integrity_level": "Medium",
+                    "parent_unique_id": "37d378de-b558-4597-0819-000ba55fbed4",
+                    "pe_imphash": "1B23FD932A3AEF7DBAACECEC28FAB72F",
+                    "pe_info": {
+                        "company_name": "Microsoft Corporation",
+                        "file_description": "Windows Explorer",
+                        "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+                        "internal_name": "explorer",
+                        "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+                        "original_filename": "EXPLORER.EXE",
+                        "pe_timestamp": "2035-04-10T22:40:03Z",
+                        "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+                        "product_version": "10.0.19041.1"
+                    },
+                    "pe_timestamp": "2035-04-10T22:40:03Z",
+                    "pe_timestamp_int": 2059857603,
+                    "pid": 6508,
+                    "ppid": 6408,
+                    "process_name": "explorer.exe",
+                    "process_unique_id": "37d378de-b558-4597-6c19-00c365029657",
+                    "session": 1,
+                    "signature_info": {
+                        "root_info": {
+                            "display_name": "Microsoft Root Certificate Authority 2010",
+                            "issuer_name": "Microsoft Root Certificate Authority 2010",
+                            "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+                            "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+                            "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+                        },
+                        "signed_authenticode": true,
+                        "signed_catalog": false,
+                        "signer_info": {
+                            "display_name": "Microsoft Windows",
+                            "issuer_name": "Microsoft Windows Production PCA 2011",
+                            "serial_number": "330000023241fb59996dcc4dff000000000232",
+                            "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+                            "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+                        }
+                    },
+                    "signed": true,
+                    "size": 4478208,
+                    "tenant": "",
+                    "username": "MARTIN-VBOX-WIN\\root",
+                    "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+                },
+                "37d378de-b558-4597-9002-007a09a922ae": {
+                    "@event_create_date": "2023-07-20T08:56:37.997000Z",
+                    "@timestamp": "2023-07-20T08:56:44.140309Z",
+                    "@version": "1",
+                    "agent": {
+                        "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+                        "domainname": "WORKGROUP",
+                        "hostname": "martin-vbox-win10-first",
+                        "osproducttype": "Windows 10 Enterprise",
+                        "ostype": "windows",
+                        "osversion": "10.0.19041",
+                        "version": "2.29.0rc1-post0"
+                    },
+                    "ancestors": "",
+                    "commandline": "winlogon.exe",
+                    "current_directory": "C:\\Windows\\system32\\",
+                    "fake_parent_commandline": "",
+                    "fake_parent_image": "",
+                    "fake_ppid": 0,
+                    "grandparent_commandline": "",
+                    "grandparent_image": "",
+                    "grandparent_integrity_level": "Unknown",
+                    "groups": [
+                        {
+                            "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+                            "name": "le groupe de la marmotte"
+                        }
+                    ],
+                    "hashes": {
+                        "md5": "8b9b35206487d39b2d3d076444485ec2",
+                        "sha1": "b136d54bb0b352b2239e08f0b4389d663e413050",
+                        "sha256": "fbc2eb97a177f7cbd6e38f3a6c45471e988b01978724f9790af0377bb5f3bf8d"
+                    },
+                    "id": "f1OEcokBVudtObjXDi6K",
+                    "image_name": "C:\\Windows\\System32\\winlogon.exe",
+                    "integrity_level": "System",
+                    "log_platform_flag": 0,
+                    "log_type": "process",
+                    "logonid": 999,
+                    "parent_commandline": "",
+                    "parent_image": "",
+                    "parent_integrity_level": "Unknown",
+                    "pe_imphash": "B25B459645147727E57D02B17D593731",
+                    "pe_info": {
+                        "company_name": "Microsoft Corporation",
+                        "file_description": "Windows Logon Application",
+                        "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+                        "internal_name": "winlogon",
+                        "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+                        "original_filename": "WINLOGON.EXE",
+                        "pe_timestamp": "2077-10-24T01:42:54Z",
+                        "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+                        "product_version": "10.0.19041.1"
+                    },
+                    "pe_timestamp": "2077-10-24T01:42:54Z",
+                    "pe_timestamp_int": 3402265374,
+                    "pid": 656,
+                    "ppid": 548,
+                    "process_name": "winlogon.exe",
+                    "process_unique_id": "37d378de-b558-4597-9002-007a09a922ae",
+                    "session": 1,
+                    "signature_info": {
+                        "root_info": {
+                            "display_name": "Microsoft Root Certificate Authority 2010",
+                            "issuer_name": "Microsoft Root Certificate Authority 2010",
+                            "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+                            "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+                            "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+                        },
+                        "signed_authenticode": false,
+                        "signed_catalog": true,
+                        "signer_info": {
+                            "display_name": "Microsoft Windows",
+                            "issuer_name": "Microsoft Windows Production PCA 2011",
+                            "serial_number": "330000023241fb59996dcc4dff000000000232",
+                            "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+                            "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+                        }
+                    },
+                    "signed": true,
+                    "size": 907776,
+                    "tenant": "",
+                    "username": "NT AUTHORITY\\SYSTEM",
+                    "usersid": "S-1-5-18"
+                },
+                "37d378de-b558-4597-a025-000bb895a6e4": {
+                    "@event_create_date": "2023-07-20T08:57:01.796000Z",
+                    "@timestamp": "2023-07-20T08:57:00.780435Z",
+                    "@version": "1",
+                    "agent": {
+                        "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+                        "domainname": "WORKGROUP",
+                        "hostname": "martin-vbox-win10-first",
+                        "osproducttype": "Windows 10 Enterprise",
+                        "ostype": "windows",
+                        "osversion": "10.0.19041",
+                        "version": "2.29.0rc1-post0"
+                    },
+                    "ancestors": "C:\\Windows\\explorer.exe|C:\\Windows\\System32\\userinit.exe|C:\\Windows\\System32\\winlogon.exe",
+                    "commandline": "C:\\Windows\\system32\\cmd.exe",
+                    "current_directory": "C:\\Users\\root\\",
+                    "fake_parent_commandline": "",
+                    "fake_parent_image": "",
+                    "fake_ppid": 0,
+                    "grandparent_commandline": "C:\\Windows\\system32\\userinit.exe",
+                    "grandparent_image": "C:\\Windows\\System32\\userinit.exe",
+                    "grandparent_integrity_level": "Medium",
+                    "groups": [
+                        {
+                            "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+                            "name": "le groupe de la marmotte"
+                        }
+                    ],
+                    "hashes": {
+                        "md5": "adf77cd50dc93394a09e82250feb23c9",
+                        "sha1": "984b29de3244f878c8f40c5d936536f948c89a7a",
+                        "sha256": "1b041f4deefb7a3d0ddc0cbe6ffca70ae9c1ff88cbbd09f26492886de649acfd"
+                    },
+                    "id": "CWmEcokB50kODsvATmPi",
+                    "image_name": "C:\\Windows\\System32\\cmd.exe",
+                    "integrity_level": "Medium",
+                    "log_platform_flag": 0,
+                    "log_type": "process",
+                    "logonid": 182681,
+                    "parent_commandline": "C:\\Windows\\Explorer.EXE",
+                    "parent_image": "C:\\Windows\\explorer.exe",
+                    "parent_integrity_level": "Medium",
+                    "parent_unique_id": "37d378de-b558-4597-6c19-00c365029657",
+                    "pe_imphash": "272245E2988E1E430500B852C4FB5E18",
+                    "pe_info": {
+                        "company_name": "Microsoft Corporation",
+                        "file_description": "Windows Command Processor",
+                        "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+                        "internal_name": "cmd",
+                        "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+                        "original_filename": "Cmd.Exe",
+                        "pe_timestamp": "1986-06-08T12:13:58Z",
+                        "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+                        "product_version": "10.0.19041.1"
+                    },
+                    "pe_timestamp": "1986-06-08T12:13:58Z",
+                    "pe_timestamp_int": 518616838,
+                    "pid": 9632,
+                    "ppid": 6508,
+                    "process_name": "cmd.exe",
+                    "process_unique_id": "37d378de-b558-4597-a025-000bb895a6e4",
+                    "session": 1,
+                    "signature_info": {
+                        "root_info": {
+                            "display_name": "Microsoft Root Certificate Authority 2010",
+                            "issuer_name": "Microsoft Root Certificate Authority 2010",
+                            "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+                            "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+                            "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+                        },
+                        "signed_authenticode": false,
+                        "signed_catalog": true,
+                        "signer_info": {
+                            "display_name": "Microsoft Windows",
+                            "issuer_name": "Microsoft Windows Production PCA 2011",
+                            "serial_number": "330000023241fb59996dcc4dff000000000232",
+                            "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+                            "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+                        }
+                    },
+                    "signed": true,
+                    "size": 289792,
+                    "tenant": "",
+                    "username": "MARTIN-VBOX-WIN\\root",
+                    "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+                },
+                "37d378de-b558-4597-e820-009fa44c4c03": {
+                    "@event_create_date": "2023-07-20T08:57:52.366000Z",
+                    "@timestamp": "2023-07-20T08:57:55.730865Z",
+                    "@version": "1",
+                    "agent": {
+                        "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+                        "domainname": "WORKGROUP",
+                        "hostname": "martin-vbox-win10-first",
+                        "osproducttype": "Windows 10 Enterprise",
+                        "ostype": "windows",
+                        "osversion": "10.0.19041",
+                        "version": "2.29.0rc1-post0"
+                    },
+                    "ancestors": "C:\\Windows\\System32\\cmd.exe|C:\\Windows\\explorer.exe|C:\\Windows\\System32\\userinit.exe|C:\\Windows\\System32\\winlogon.exe",
+                    "commandline": "calc.exe",
+                    "current_directory": "C:\\Users\\root\\",
+                    "fake_parent_commandline": "",
+                    "fake_parent_image": "",
+                    "fake_ppid": 0,
+                    "grandparent_commandline": "C:\\Windows\\Explorer.EXE",
+                    "grandparent_image": "C:\\Windows\\explorer.exe",
+                    "grandparent_integrity_level": "Medium",
+                    "groups": [
+                        {
+                            "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+                            "name": "le groupe de la marmotte"
+                        }
+                    ],
+                    "hashes": {
+                        "md5": "5da8c98136d98dfec4716edd79c7145f",
+                        "sha1": "ed13af4a0a754b8daee4929134d2ff15ebe053cd",
+                        "sha256": "58189cbd4e6dc0c7d8e66b6a6f75652fc9f4afc7ce0eba7d67d8c3feb0d5381f"
+                    },
+                    "id": "TlOFcokBVudtObjXJS96",
+                    "image_name": "C:\\Windows\\System32\\calc.exe",
+                    "integrity_level": "Medium",
+                    "log_platform_flag": 0,
+                    "log_type": "process",
+                    "logonid": 182681,
+                    "parent_commandline": "C:\\Windows\\system32\\cmd.exe",
+                    "parent_image": "C:\\Windows\\System32\\cmd.exe",
+                    "parent_integrity_level": "Medium",
+                    "parent_unique_id": "37d378de-b558-4597-a025-000bb895a6e4",
+                    "pe_imphash": "8EEAA9499666119D13B3F44ECD77A729",
+                    "pe_info": {
+                        "company_name": "Microsoft Corporation",
+                        "file_description": "Windows Calculator",
+                        "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+                        "internal_name": "CALC",
+                        "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+                        "original_filename": "CALC.EXE",
+                        "pe_timestamp": "1971-09-24T16:02:24Z",
+                        "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+                        "product_version": "10.0.19041.1"
+                    },
+                    "pe_timestamp": "1971-09-24T16:02:24Z",
+                    "pe_timestamp_int": 54576144,
+                    "pid": 8424,
+                    "ppid": 9632,
+                    "process_name": "calc.exe",
+                    "process_unique_id": "37d378de-b558-4597-e820-009fa44c4c03",
+                    "session": 1,
+                    "signature_info": {
+                        "root_info": {
+                            "display_name": "Microsoft Root Certificate Authority 2010",
+                            "issuer_name": "Microsoft Root Certificate Authority 2010",
+                            "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+                            "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+                            "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+                        },
+                        "signed_authenticode": false,
+                        "signed_catalog": true,
+                        "signer_info": {
+                            "display_name": "Microsoft Windows",
+                            "issuer_name": "Microsoft Windows Production PCA 2011",
+                            "serial_number": "330000023241fb59996dcc4dff000000000232",
+                            "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+                            "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+                        }
+                    },
+                    "signed": true,
+                    "size": 27648,
+                    "tenant": "",
+                    "username": "MARTIN-VBOX-WIN\\root",
+                    "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+                }
+            },
+            "remote_threads": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>```
+>{
+>    "calc_time": 0.2487087131012231,
+>    "current_process_id": "37d378de-b558-4597-e820-009fa44c4c03",
+>    "edges": [
+>        {
+>            "class": "edge-parent",
+>            "source": "37d378de-b558-4597-a025-000bb895a6e4",
+>            "target": "37d378de-b558-4597-e820-009fa44c4c03"
+>        },
+>        {
+>            "class": "edge-parent",
+>            "source": "37d378de-b558-4597-6c19-00c365029657",
+>            "target": "37d378de-b558-4597-a025-000bb895a6e4"
+>        },
+>        {
+>            "class": "edge-parent",
+>            "source": "37d378de-b558-4597-0819-000ba55fbed4",
+>            "target": "37d378de-b558-4597-6c19-00c365029657"
+>        },
+>        {
+>            "class": "edge-parent",
+>            "source": "37d378de-b558-4597-9002-007a09a922ae",
+>            "target": "37d378de-b558-4597-0819-000ba55fbed4"
+>        }
+>    ],
+>    "missing_processes": {},
+>    "nodes": [
+>        {
+>            "alertCount": 1,
+>            "childProcessCount": 0,
+>            "childProcessCountConfidence": "exact",
+>            "class": "node",
+>            "connectionCount": 0,
+>            "dnsResolutionCount": 0,
+>            "id": "37d378de-b558-4597-e820-009fa44c4c03",
+>            "injectedThreadCount": 0,
+>            "name": "calc.exe",
+>            "parents": [
+>                "37d378de-b558-4597-a025-000bb895a6e4"
+>            ],
+>            "powershellCount": 0,
+>            "signed": true,
+>            "status": "complete",
+>            "type": "exe"
+>        },
+>        {
+>            "alertCount": 0,
+>            "childProcessCount": 3,
+>            "childProcessCountConfidence": "exact",
+>            "class": "node",
+>            "connectionCount": 0,
+>            "dnsResolutionCount": 0,
+>            "id": "37d378de-b558-4597-a025-000bb895a6e4",
+>            "injectedThreadCount": 0,
+>            "name": "cmd.exe",
+>            "parents": [
+>                "37d378de-b558-4597-6c19-00c365029657"
+>            ],
+>            "powershellCount": 0,
+>            "signed": true,
+>            "status": "complete",
+>            "type": "exe"
+>        },
+>        {
+>            "alertCount": 0,
+>            "childProcessCount": 5,
+>            "childProcessCountConfidence": "exact",
+>            "class": "node",
+>            "connectionCount": 0,
+>            "dnsResolutionCount": 0,
+>            "id": "37d378de-b558-4597-6c19-00c365029657",
+>            "injectedThreadCount": 0,
+>            "name": "explorer.exe",
+>            "parents": [
+>                "37d378de-b558-4597-0819-000ba55fbed4"
+>            ],
+>            "powershellCount": 0,
+>            "signed": true,
+>            "status": "complete",
+>            "type": "exe"
+>        },
+>        {
+>            "alertCount": 0,
+>            "childProcessCount": 1,
+>            "childProcessCountConfidence": "exact",
+>            "class": "node",
+>            "connectionCount": 0,
+>            "dnsResolutionCount": 0,
+>            "id": "37d378de-b558-4597-0819-000ba55fbed4",
+>            "injectedThreadCount": 0,
+>            "name": "userinit.exe",
+>            "parents": [
+>                "37d378de-b558-4597-9002-007a09a922ae"
+>            ],
+>            "powershellCount": 0,
+>            "signed": true,
+>            "status": "complete",
+>            "type": "exe"
+>        },
+>        {
+>            "alertCount": 0,
+>            "childProcessCount": 5,
+>            "childProcessCountConfidence": "exact",
+>            "class": "node",
+>            "connectionCount": 0,
+>            "dnsResolutionCount": 0,
+>            "id": "37d378de-b558-4597-9002-007a09a922ae",
+>            "injectedThreadCount": 0,
+>            "name": "winlogon.exe",
+>            "parents": [],
+>            "powershellCount": 0,
+>            "signed": true,
+>            "status": "complete",
+>            "type": "exe"
+>        }
+>    ],
+>    "processes": {
+>        "37d378de-b558-4597-0819-000ba55fbed4": {
+>            "@event_create_date": "2023-07-20T08:56:43.923000Z",
+>            "@timestamp": "2023-07-20T08:56:47.885612Z",
+>            "@version": "1",
+>            "agent": {
+>                "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+>                "domainname": "WORKGROUP",
+>                "hostname": "martin-vbox-win10-first",
+>                "osproducttype": "Windows 10 Enterprise",
+>                "ostype": "windows",
+>                "osversion": "10.0.19041",
+>                "version": "2.29.0rc1-post0"
+>            },
+>            "ancestors": "C:\\Windows\\System32\\winlogon.exe",
+>            "commandline": "C:\\Windows\\system32\\userinit.exe",
+>            "current_directory": "C:\\Windows\\system32\\",
+>            "fake_parent_commandline": "",
+>            "fake_parent_image": "",
+>            "fake_ppid": 0,
+>            "grandparent_commandline": "",
+>            "grandparent_image": "",
+>            "grandparent_integrity_level": "Unknown",
+>            "groups": [
+>                {
+>                    "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+>                    "name": "le groupe de la marmotte"
+>                }
+>            ],
+>            "hashes": {
+>                "md5": "582a919ca5f944aa83895a5c633c122c",
+>                "sha1": "6d0c6aea6bce05166761085b1d612558f81d877a",
+>                "sha256": "eda7ee39d4db8142a1e0788e205e80ae798035d60273e74981e09e98c8d0e740"
+>            },
+>            "id": "oVOEcokBVudtObjXHC6o",
+>            "image_name": "C:\\Windows\\System32\\userinit.exe",
+>            "integrity_level": "Medium",
+>            "log_platform_flag": 0,
+>            "log_type": "process",
+>            "logonid": 182681,
+>            "parent_commandline": "winlogon.exe",
+>            "parent_image": "C:\\Windows\\System32\\winlogon.exe",
+>            "parent_integrity_level": "System",
+>            "parent_unique_id": "37d378de-b558-4597-9002-007a09a922ae",
+>            "pe_imphash": "DE7486657F39757C768DEE3094E10FF8",
+>            "pe_info": {
+>                "company_name": "Microsoft Corporation",
+>                "file_description": "Userinit Logon Application",
+>                "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+>                "internal_name": "userinit",
+>                "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+>                "original_filename": "USERINIT.EXE",
+>                "pe_timestamp": "2086-04-07T12:35:36Z",
+>                "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+>                "product_version": "10.0.19041.1"
+>            },
+>            "pe_timestamp": "2086-04-07T12:35:36Z",
+>            "pe_timestamp_int": 3669021336,
+>            "pid": 6408,
+>            "ppid": 656,
+>            "process_name": "userinit.exe",
+>            "process_unique_id": "37d378de-b558-4597-0819-000ba55fbed4",
+>            "session": 1,
+>            "signature_info": {
+>                "root_info": {
+>                    "display_name": "Microsoft Root Certificate Authority 2010",
+>                    "issuer_name": "Microsoft Root Certificate Authority 2010",
+>                    "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+>                    "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+>                    "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+>                },
+>                "signed_authenticode": false,
+>                "signed_catalog": true,
+>                "signer_info": {
+>                    "display_name": "Microsoft Windows",
+>                    "issuer_name": "Microsoft Windows Production PCA 2011",
+>                    "serial_number": "330000023241fb59996dcc4dff000000000232",
+>                    "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+>                    "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+>                }
+>            },
+>            "signed": true,
+>            "size": 34816,
+>            "tenant": "",
+>            "username": "MARTIN-VBOX-WIN\\root",
+>            "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+>        },
+>        "37d378de-b558-4597-6c19-00c365029657": {
+>            "@event_create_date": "2023-07-20T08:56:44.030000Z",
+>            "@timestamp": "2023-07-20T08:56:47.885767Z",
+>            "@version": "1",
+>            "agent": {
+>                "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+>                "domainname": "WORKGROUP",
+>                "hostname": "martin-vbox-win10-first",
+>                "osproducttype": "Windows 10 Enterprise",
+>                "ostype": "windows",
+>                "osversion": "10.0.19041",
+>                "version": "2.29.0rc1-post0"
+>            },
+>            "ancestors": "C:\\Windows\\System32\\userinit.exe|C:\\Windows\\System32\\winlogon.exe",
+>            "commandline": "C:\\Windows\\Explorer.EXE",
+>            "current_directory": "C:\\Windows\\system32\\",
+>            "fake_parent_commandline": "",
+>            "fake_parent_image": "",
+>            "fake_ppid": 0,
+>            "grandparent_commandline": "winlogon.exe",
+>            "grandparent_image": "C:\\Windows\\System32\\winlogon.exe",
+>            "grandparent_integrity_level": "System",
+>            "groups": [
+>                {
+>                    "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+>                    "name": "le groupe de la marmotte"
+>                }
+>            ],
+>            "hashes": {
+>                "md5": "fde2638e4a80b507e683d973474168da",
+>                "sha1": "7cdd581ae59dae0564e421d3b46683c7b2c50571",
+>                "sha256": "23165139c2a7d2d75df54b8fbac69fa37462c43ff971b78f8cbf99be2613655e"
+>            },
+>            "id": "pVOEcokBVudtObjXHC6y",
+>            "image_name": "C:\\Windows\\explorer.exe",
+>            "integrity_level": "Medium",
+>            "log_platform_flag": 0,
+>            "log_type": "process",
+>            "logonid": 182681,
+>            "parent_commandline": "C:\\Windows\\system32\\userinit.exe",
+>            "parent_image": "C:\\Windows\\System32\\userinit.exe",
+>            "parent_integrity_level": "Medium",
+>            "parent_unique_id": "37d378de-b558-4597-0819-000ba55fbed4",
+>            "pe_imphash": "1B23FD932A3AEF7DBAACECEC28FAB72F",
+>            "pe_info": {
+>                "company_name": "Microsoft Corporation",
+>                "file_description": "Windows Explorer",
+>                "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+>                "internal_name": "explorer",
+>                "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+>                "original_filename": "EXPLORER.EXE",
+>                "pe_timestamp": "2035-04-10T22:40:03Z",
+>                "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+>                "product_version": "10.0.19041.1"
+>            },
+>            "pe_timestamp": "2035-04-10T22:40:03Z",
+>            "pe_timestamp_int": 2059857603,
+>            "pid": 6508,
+>            "ppid": 6408,
+>            "process_name": "explorer.exe",
+>            "process_unique_id": "37d378de-b558-4597-6c19-00c365029657",
+>            "session": 1,
+>            "signature_info": {
+>                "root_info": {
+>                    "display_name": "Microsoft Root Certificate Authority 2010",
+>                    "issuer_name": "Microsoft Root Certificate Authority 2010",
+>                    "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+>                    "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+>                    "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+>                },
+>                "signed_authenticode": true,
+>                "signed_catalog": false,
+>                "signer_info": {
+>                    "display_name": "Microsoft Windows",
+>                    "issuer_name": "Microsoft Windows Production PCA 2011",
+>                    "serial_number": "330000023241fb59996dcc4dff000000000232",
+>                    "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+>                    "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+>                }
+>            },
+>            "signed": true,
+>            "size": 4478208,
+>            "tenant": "",
+>            "username": "MARTIN-VBOX-WIN\\root",
+>            "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+>        },
+>        "37d378de-b558-4597-9002-007a09a922ae": {
+>            "@event_create_date": "2023-07-20T08:56:37.997000Z",
+>            "@timestamp": "2023-07-20T08:56:44.140309Z",
+>            "@version": "1",
+>            "agent": {
+>                "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+>                "domainname": "WORKGROUP",
+>                "hostname": "martin-vbox-win10-first",
+>                "osproducttype": "Windows 10 Enterprise",
+>                "ostype": "windows",
+>                "osversion": "10.0.19041",
+>                "version": "2.29.0rc1-post0"
+>            },
+>            "ancestors": "",
+>            "commandline": "winlogon.exe",
+>            "current_directory": "C:\\Windows\\system32\\",
+>            "fake_parent_commandline": "",
+>            "fake_parent_image": "",
+>            "fake_ppid": 0,
+>            "grandparent_commandline": "",
+>            "grandparent_image": "",
+>            "grandparent_integrity_level": "Unknown",
+>            "groups": [
+>                {
+>                    "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+>                    "name": "le groupe de la marmotte"
+>                }
+>            ],
+>            "hashes": {
+>                "md5": "8b9b35206487d39b2d3d076444485ec2",
+>                "sha1": "b136d54bb0b352b2239e08f0b4389d663e413050",
+>                "sha256": "fbc2eb97a177f7cbd6e38f3a6c45471e988b01978724f9790af0377bb5f3bf8d"
+>            },
+>            "id": "f1OEcokBVudtObjXDi6K",
+>            "image_name": "C:\\Windows\\System32\\winlogon.exe",
+>            "integrity_level": "System",
+>            "log_platform_flag": 0,
+>            "log_type": "process",
+>            "logonid": 999,
+>            "parent_commandline": "",
+>            "parent_image": "",
+>            "parent_integrity_level": "Unknown",
+>            "pe_imphash": "B25B459645147727E57D02B17D593731",
+>            "pe_info": {
+>                "company_name": "Microsoft Corporation",
+>                "file_description": "Windows Logon Application",
+>                "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+>                "internal_name": "winlogon",
+>                "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+>                "original_filename": "WINLOGON.EXE",
+>                "pe_timestamp": "2077-10-24T01:42:54Z",
+>                "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+>                "product_version": "10.0.19041.1"
+>            },
+>            "pe_timestamp": "2077-10-24T01:42:54Z",
+>            "pe_timestamp_int": 3402265374,
+>            "pid": 656,
+>            "ppid": 548,
+>            "process_name": "winlogon.exe",
+>            "process_unique_id": "37d378de-b558-4597-9002-007a09a922ae",
+>            "session": 1,
+>            "signature_info": {
+>                "root_info": {
+>                    "display_name": "Microsoft Root Certificate Authority 2010",
+>                    "issuer_name": "Microsoft Root Certificate Authority 2010",
+>                    "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+>                    "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+>                    "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+>                },
+>                "signed_authenticode": false,
+>                "signed_catalog": true,
+>                "signer_info": {
+>                    "display_name": "Microsoft Windows",
+>                    "issuer_name": "Microsoft Windows Production PCA 2011",
+>                    "serial_number": "330000023241fb59996dcc4dff000000000232",
+>                    "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+>                    "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+>                }
+>            },
+>            "signed": true,
+>            "size": 907776,
+>            "tenant": "",
+>            "username": "NT AUTHORITY\\SYSTEM",
+>            "usersid": "S-1-5-18"
+>        },
+>        "37d378de-b558-4597-a025-000bb895a6e4": {
+>            "@event_create_date": "2023-07-20T08:57:01.796000Z",
+>            "@timestamp": "2023-07-20T08:57:00.780435Z",
+>            "@version": "1",
+>            "agent": {
+>                "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+>                "domainname": "WORKGROUP",
+>                "hostname": "martin-vbox-win10-first",
+>                "osproducttype": "Windows 10 Enterprise",
+>                "ostype": "windows",
+>                "osversion": "10.0.19041",
+>                "version": "2.29.0rc1-post0"
+>            },
+>            "ancestors": "C:\\Windows\\explorer.exe|C:\\Windows\\System32\\userinit.exe|C:\\Windows\\System32\\winlogon.exe",
+>            "commandline": "C:\\Windows\\system32\\cmd.exe",
+>            "current_directory": "C:\\Users\\root\\",
+>            "fake_parent_commandline": "",
+>            "fake_parent_image": "",
+>            "fake_ppid": 0,
+>            "grandparent_commandline": "C:\\Windows\\system32\\userinit.exe",
+>            "grandparent_image": "C:\\Windows\\System32\\userinit.exe",
+>            "grandparent_integrity_level": "Medium",
+>            "groups": [
+>                {
+>                    "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+>                    "name": "le groupe de la marmotte"
+>                }
+>            ],
+>            "hashes": {
+>                "md5": "adf77cd50dc93394a09e82250feb23c9",
+>                "sha1": "984b29de3244f878c8f40c5d936536f948c89a7a",
+>                "sha256": "1b041f4deefb7a3d0ddc0cbe6ffca70ae9c1ff88cbbd09f26492886de649acfd"
+>            },
+>            "id": "CWmEcokB50kODsvATmPi",
+>            "image_name": "C:\\Windows\\System32\\cmd.exe",
+>            "integrity_level": "Medium",
+>            "log_platform_flag": 0,
+>            "log_type": "process",
+>            "logonid": 182681,
+>            "parent_commandline": "C:\\Windows\\Explorer.EXE",
+>            "parent_image": "C:\\Windows\\explorer.exe",
+>            "parent_integrity_level": "Medium",
+>            "parent_unique_id": "37d378de-b558-4597-6c19-00c365029657",
+>            "pe_imphash": "272245E2988E1E430500B852C4FB5E18",
+>            "pe_info": {
+>                "company_name": "Microsoft Corporation",
+>                "file_description": "Windows Command Processor",
+>                "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+>                "internal_name": "cmd",
+>                "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+>                "original_filename": "Cmd.Exe",
+>                "pe_timestamp": "1986-06-08T12:13:58Z",
+>                "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+>                "product_version": "10.0.19041.1"
+>            },
+>            "pe_timestamp": "1986-06-08T12:13:58Z",
+>            "pe_timestamp_int": 518616838,
+>            "pid": 9632,
+>            "ppid": 6508,
+>            "process_name": "cmd.exe",
+>            "process_unique_id": "37d378de-b558-4597-a025-000bb895a6e4",
+>            "session": 1,
+>            "signature_info": {
+>                "root_info": {
+>                    "display_name": "Microsoft Root Certificate Authority 2010",
+>                    "issuer_name": "Microsoft Root Certificate Authority 2010",
+>                    "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+>                    "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+>                    "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+>                },
+>                "signed_authenticode": false,
+>                "signed_catalog": true,
+>                "signer_info": {
+>                    "display_name": "Microsoft Windows",
+>                    "issuer_name": "Microsoft Windows Production PCA 2011",
+>                    "serial_number": "330000023241fb59996dcc4dff000000000232",
+>                    "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+>                    "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+>                }
+>            },
+>            "signed": true,
+>            "size": 289792,
+>            "tenant": "",
+>            "username": "MARTIN-VBOX-WIN\\root",
+>            "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+>        },
+>        "37d378de-b558-4597-e820-009fa44c4c03": {
+>            "@event_create_date": "2023-07-20T08:57:52.366000Z",
+>            "@timestamp": "2023-07-20T08:57:55.730865Z",
+>            "@version": "1",
+>            "agent": {
+>                "agentid": "f93af2e6-b558-4597-bb9f-d8288a510c45",
+>                "domainname": "WORKGROUP",
+>                "hostname": "martin-vbox-win10-first",
+>                "osproducttype": "Windows 10 Enterprise",
+>                "ostype": "windows",
+>                "osversion": "10.0.19041",
+>                "version": "2.29.0rc1-post0"
+>            },
+>            "ancestors": "C:\\Windows\\System32\\cmd.exe|C:\\Windows\\explorer.exe|C:\\Windows\\System32\\userinit.exe|C:\\Windows\\System32\\winlogon.exe",
+>            "commandline": "calc.exe",
+>            "current_directory": "C:\\Users\\root\\",
+>            "fake_parent_commandline": "",
+>            "fake_parent_image": "",
+>            "fake_ppid": 0,
+>            "grandparent_commandline": "C:\\Windows\\Explorer.EXE",
+>            "grandparent_image": "C:\\Windows\\explorer.exe",
+>            "grandparent_integrity_level": "Medium",
+>            "groups": [
+>                {
+>                    "id": "41761a0c-c691-49f4-88a0-188dcdcc5d40",
+>                    "name": "le groupe de la marmotte"
+>                }
+>            ],
+>            "hashes": {
+>                "md5": "5da8c98136d98dfec4716edd79c7145f",
+>                "sha1": "ed13af4a0a754b8daee4929134d2ff15ebe053cd",
+>                "sha256": "58189cbd4e6dc0c7d8e66b6a6f75652fc9f4afc7ce0eba7d67d8c3feb0d5381f"
+>            },
+>            "id": "TlOFcokBVudtObjXJS96",
+>            "image_name": "C:\\Windows\\System32\\calc.exe",
+>            "integrity_level": "Medium",
+>            "log_platform_flag": 0,
+>            "log_type": "process",
+>            "logonid": 182681,
+>            "parent_commandline": "C:\\Windows\\system32\\cmd.exe",
+>            "parent_image": "C:\\Windows\\System32\\cmd.exe",
+>            "parent_integrity_level": "Medium",
+>            "parent_unique_id": "37d378de-b558-4597-a025-000bb895a6e4",
+>            "pe_imphash": "8EEAA9499666119D13B3F44ECD77A729",
+>            "pe_info": {
+>                "company_name": "Microsoft Corporation",
+>                "file_description": "Windows Calculator",
+>                "file_version": "10.0.19041.1 (WinBuild.160101.0800)",
+>                "internal_name": "CALC",
+>                "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+>                "original_filename": "CALC.EXE",
+>                "pe_timestamp": "1971-09-24T16:02:24Z",
+>                "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
+>                "product_version": "10.0.19041.1"
+>            },
+>            "pe_timestamp": "1971-09-24T16:02:24Z",
+>            "pe_timestamp_int": 54576144,
+>            "pid": 8424,
+>            "ppid": 9632,
+>            "process_name": "calc.exe",
+>            "process_unique_id": "37d378de-b558-4597-e820-009fa44c4c03",
+>            "session": 1,
+>            "signature_info": {
+>                "root_info": {
+>                    "display_name": "Microsoft Root Certificate Authority 2010",
+>                    "issuer_name": "Microsoft Root Certificate Authority 2010",
+>                    "serial_number": "28cc3a25bfba44ac449a9b586b4339aa",
+>                    "thumbprint": "3b1efd3a66ea28b16697394703a72ca340a05bd5",
+>                    "thumbprint_sha256": "df545bf919a2439c36983b54cdfc903dfa4f37d3996d8d84b4c31eec6f3c163e"
+>                },
+>                "signed_authenticode": false,
+>                "signed_catalog": true,
+>                "signer_info": {
+>                    "display_name": "Microsoft Windows",
+>                    "issuer_name": "Microsoft Windows Production PCA 2011",
+>                    "serial_number": "330000023241fb59996dcc4dff000000000232",
+>                    "thumbprint": "ff82bc38e1da5e596df374c53e3617f7eda36b06",
+>                    "thumbprint_sha256": "e866d202865ed3d83c35dff4cde3a2d0fc1d2b17c084e8b26dd0ca28a8c75cfb"
+>                }
+>            },
+>            "signed": true,
+>            "size": 27648,
+>            "tenant": "",
+>            "username": "MARTIN-VBOX-WIN\\root",
+>            "usersid": "S-1-5-21-2977311633-4124872198-649243625-1000"
+>        }
+>    },
+>    "remote_threads": []
+>}
+>```
+
+
 
 
 ### harfanglab-job-info
@@ -7953,3 +9822,357 @@ There is no context output for this command.
 >    "Message": "IOC 0004ffbd9a1a1acd44f4859c39a49639babe515434ca34bec603598b50211bab removed from source Industrial Spy"
 >}
 >```
+
+### harfanglab-whitelist-add
+***
+Add a whitelist
+
+
+#### Base Command
+
+`harfanglab-whitelist-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment | Comment associated to the whitelist. | Optional | 
+| target | Detection engine associated to the whitelist (all, sigma, yara, hlai, vt, ransom, orion, glimps, cape, driver). | Optional | 
+| sigma_rule_id | UUID of the targeted sigma rule (for sigma whitelist). | Optional | 
+| field | Field used for checking the criterion. | Optional | 
+| case_insensitive | Whether checking must be case sensitive or not. | Optional | 
+| operator | Operator used for the criterion (eq, contains, regex). | Optional | 
+| value | Value used for the criterion. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.Whitelists | unknown | Whitelists | 
+
+#### Command example
+```!harfanglab-whitelist-add target=all field=process.hashes.sha256 operator=eq value=dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2514 comment="Example of whitelist for all detection engines" case_insensitive=true```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "Whitelists": {
+            "comment": "Example of whitelist for all detection engines",
+            "creation_date": "2023-07-21T15:41:57.515693Z",
+            "criteria": [
+                {
+                    "case_insensitive": true,
+                    "field": "process.hashes.sha256",
+                    "id": 3004,
+                    "operator": "eq",
+                    "value": "dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2514"
+                }
+            ],
+            "enabled": true,
+            "id": 2519,
+            "last_modifier": {
+                "id": 191,
+                "username": "Harfanglab_Tech"
+            },
+            "last_update": "2023-07-21T15:41:57.515666Z",
+            "orphan": false,
+            "provided_by_hlab": false,
+            "sigma_rule_id": null,
+            "target": "all"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>```
+>{
+>    "comment": "Example of whitelist for all detection engines",
+>    "creation_date": "2023-07-21T15:41:57.515693Z",
+>    "criteria": [
+>        {
+>            "case_insensitive": true,
+>            "field": "process.hashes.sha256",
+>            "id": 3004,
+>            "operator": "eq",
+>            "value": "dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2514"
+>        }
+>    ],
+>    "enabled": true,
+>    "id": 2519,
+>    "last_modifier": {
+>        "id": 191,
+>        "username": "Harfanglab_Tech"
+>    },
+>    "last_update": "2023-07-21T15:41:57.515666Z",
+>    "orphan": false,
+>    "provided_by_hlab": false,
+>    "sigma_rule_id": null,
+>    "target": "all"
+>}
+>```
+
+### harfanglab-whitelist-add-criterion
+***
+Add a criterion to an existing whitelist
+
+
+#### Base Command
+
+`harfanglab-whitelist-add-criterion`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Whitelist id. | Optional | 
+| field | Field used for checking the criterion. | Optional | 
+| case_insensitive | Whether checking must be case sensitive or not. | Optional | 
+| operator | Operator used for the criterion (eq, contains, regex). | Optional | 
+| value | Value used for the criterion. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.Whitelists | unknown | Whitelists | 
+
+#### Command example
+```!harfanglab-whitelist-add-criterion id=2518 field=process.commandline operator=contains value=cmd.exe```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "Whitelists": {
+            "comment": "Example of whitelist for all detection engines",
+            "creation_date": "2023-07-21T15:41:20.320846Z",
+            "criteria": [
+                {
+                    "case_insensitive": true,
+                    "field": "process.hashes.sha256",
+                    "id": 3003,
+                    "operator": "eq",
+                    "value": "dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2515"
+                },
+                {
+                    "case_insensitive": true,
+                    "field": "process.commandline",
+                    "id": 3005,
+                    "operator": "contains",
+                    "value": "cmd.exe"
+                }
+            ],
+            "enabled": true,
+            "id": 2518,
+            "last_modifier": {
+                "id": 191,
+                "username": "Harfanglab_Tech"
+            },
+            "last_update": "2023-07-21T15:41:58.736445Z",
+            "orphan": false,
+            "provided_by_hlab": false,
+            "sigma_rule_id": null,
+            "sigma_rule_name": null,
+            "target": "all"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>```
+>{
+>    "comment": "Example of whitelist for all detection engines",
+>    "creation_date": "2023-07-21T15:41:20.320846Z",
+>    "criteria": [
+>        {
+>            "case_insensitive": true,
+>            "field": "process.hashes.sha256",
+>            "id": 3003,
+>            "operator": "eq",
+>            "value": "dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2515"
+>        },
+>        {
+>            "case_insensitive": true,
+>            "field": "process.commandline",
+>            "id": 3005,
+>            "operator": "contains",
+>            "value": "cmd.exe"
+>        }
+>    ],
+>    "enabled": true,
+>    "id": 2518,
+>    "last_modifier": {
+>        "id": 191,
+>        "username": "Harfanglab_Tech"
+>    },
+>    "last_update": "2023-07-21T15:41:58.736445Z",
+>    "orphan": false,
+>    "provided_by_hlab": false,
+>    "sigma_rule_id": null,
+>    "sigma_rule_name": null,
+>    "target": "all"
+>}
+>```
+
+
+
+
+### harfanglab-whitelist-search
+***
+Search whitelists from a keyword
+
+
+#### Base Command
+
+`harfanglab-whitelist-search`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| keyword | Keyword to search whitelist. | Optional | 
+| provided_by_hlab | Boolean indicating whether to search in whitelists provided by HarfangLab or not. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.Whitelists | unknown | Whitelists | 
+
+#### Command example
+```!harfanglab-whitelist-search keyword=cmd.exe```
+#### Context Example
+```json
+{
+    "Harfanglab": {
+        "Whitelists": {
+            "comment": "Example of whitelist for all detection engines",
+            "creation_date": "2023-07-21T15:41:20.320846Z",
+            "criteria": [
+                {
+                    "case_insensitive": true,
+                    "field": "process.hashes.sha256",
+                    "id": 3003,
+                    "operator": "eq",
+                    "value": "dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2515"
+                },
+                {
+                    "case_insensitive": true,
+                    "field": "process.commandline",
+                    "id": 3005,
+                    "operator": "contains",
+                    "value": "cmd.exe"
+                }
+            ],
+            "criteria_str": "process.hashes.sha256 eq dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2515, process.commandline contains cmd.exe",
+            "enabled": true,
+            "id": 2518,
+            "last_modifier": {
+                "id": 191,
+                "username": "Harfanglab_Tech"
+            },
+            "last_update": "2023-07-21T15:41:58.736445Z",
+            "orphan": false,
+            "provided_by_hlab": false,
+            "sigma_rule_id": null,
+            "sigma_rule_name": null,
+            "target": "all"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>```
+>{
+>    "count": 1,
+>    "next": null,
+>    "previous": null,
+>    "results": [
+>        {
+>            "comment": "Example of whitelist for all detection engines",
+>            "creation_date": "2023-07-21T15:41:20.320846Z",
+>            "criteria": [
+>                {
+>                    "case_insensitive": true,
+>                    "field": "process.hashes.sha256",
+>                    "id": 3003,
+>                    "operator": "eq",
+>                    "value": "dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2515"
+>                },
+>                {
+>                    "case_insensitive": true,
+>                    "field": "process.commandline",
+>                    "id": 3005,
+>                    "operator": "contains",
+>                    "value": "cmd.exe"
+>                }
+>            ],
+>            "criteria_str": "process.hashes.sha256 eq dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2515, process.commandline contains cmd.exe",
+>            "enabled": true,
+>            "id": 2518,
+>            "last_modifier": {
+>                "id": 191,
+>                "username": "Harfanglab_Tech"
+>            },
+>            "last_update": "2023-07-21T15:41:58.736445Z",
+>            "orphan": false,
+>            "provided_by_hlab": false,
+>            "sigma_rule_id": null,
+>            "sigma_rule_name": null,
+>            "target": "all"
+>        }
+>    ]
+>}
+>```
+
+### harfanglab-whitelist-delete
+***
+Delete a whitelist
+
+
+#### Base Command
+
+`harfanglab-whitelist-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Whitelist identifier. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!harfanglab-whitelist-delete id=2518```
+#### Human Readable Output
+
+>None
+
+### harfanglab-endpoint-search
+***
+Search for endpoint information from a hostname
+
+
+#### Base Command
+
+`harfanglab-endpoint-search`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Endpoint hostname. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Harfanglab.Agent | unknown | Agent information | 
+| Harfanglab.Agent.id | string | agent id \(DEPRECATED\) | 
+| Harfanglab.status | string | Status \(DEPRECATED\) | 

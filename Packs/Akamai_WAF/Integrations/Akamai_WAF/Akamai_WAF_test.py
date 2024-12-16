@@ -10,6 +10,14 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def util_load_txt(path: str):
+    """
+    Utility to load text data from a local folder.
+    """
+    with open(path, encoding='utf-8') as file:
+        return file.read()
+
+
 @pytest.fixture(scope='module')
 def akamai_waf_client():
     return Client(base_url="https://hostname/",
@@ -196,3 +204,216 @@ def test_try_parsing_date():
     with pytest.raises(ValueError) as e:
         try_parsing_date(date4, arr_fmt)
         assert value_error == str(e.value)
+
+
+def test_list_siteshield_maps_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_siteshield_maps_command.
+    Then:
+        - The returned value is correct.
+    """
+    from Akamai_WAF import list_siteshield_maps_command
+
+    test_data = util_load_json('test_data/list_siteshild_maps_test.json')
+    expected_raw_response = test_data.get('raw_response')
+    expected_human_readable = test_data.get('human_readable')
+    expected_context_entry = test_data.get('context_entry')
+
+    mocker.patch.object(akamai_waf_client, 'list_siteshield_maps', return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = list_siteshield_maps_command(client=akamai_waf_client)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_acknowledge_warning_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - An enrollment_path.
+    When:
+        - running the command get_cps_change_status.
+    Then:
+        - The returned value is correct.
+    """
+    from Akamai_WAF import acknowledge_warning_command
+
+    change_path = "/cps/v2/enrollments/10002/changes/10002"
+    expected_raw_response = {
+        "change": "/cps/v2/enrollments/10002/changes/10002"
+    }
+    expected_human_readable = "Akamai WAF - Acknowledge_warning"
+    expected_context_entry = {
+        'Akamai.Acknowledge':
+            {
+                'change': '/cps/v2/enrollments/10002/changes/10002'
+            }
+    }
+
+    mocker.patch.object(akamai_waf_client, 'acknowledge_warning', return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = acknowledge_warning_command(client=akamai_waf_client,
+                                                                              change_path=change_path)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_cancel_cps_change_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - enrollment ID and change ID.
+    When:
+        - running the command cancel_cps_change_command.
+    Then:
+        - enrollment ID is cancelled correctly.
+    """
+    from Akamai_WAF import cancel_cps_change_command
+    expected_raw_response = {
+        "change": "/cps/v2/enrollments/193622/changes/3914270"
+    }
+    expected_human_readable = "### Akamai WAF - cps cancel change\n|change|\n|---|\n|\
+ /cps/v2/enrollments/193622/changes/3914270 |\n"
+    expected_context_entry = {
+        'Akamai.Cps.Change.Canceled': {
+            'change': '/cps/v2/enrollments/193622/changes/3914270'
+        }
+    }
+    mocker.patch.object(akamai_waf_client, 'cancel_cps_change', return_value=expected_raw_response)
+    human_readable, context_entry, raw_response = cancel_cps_change_command(client=akamai_waf_client,
+                                                                            enrollment_id="193622",
+                                                                            change_id="3914270")
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_get_cps_enrollment_by_id_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - enrollment ID.
+    When:
+        - running the command get_cps_enrollment_by_id_command.
+    Then:
+        - we get details of enrollment.
+    """
+    from Akamai_WAF import get_cps_enrollment_by_id_command
+    test_data = util_load_json('test_data/get_cps_enrollment_by_id_test.json')
+    expected_raw_response = test_data
+    expected_context_entry = util_load_json('test_data/get_cps_enrollment_by_id_context.json')
+
+    mocker.patch.object(akamai_waf_client, 'get_cps_enrollment_by_id', return_value=expected_raw_response)
+    _, context_entry, raw_response = get_cps_enrollment_by_id_command(client=akamai_waf_client, enrollment_id=193622)
+    assert expected_raw_response == raw_response
+    assert expected_context_entry == context_entry
+
+
+def test_list_appsec_config_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_appsec_config_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_appsec_config_command
+
+    test_data = util_load_json("test_data/list_appsec_config_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client, "list_appsec_config", return_value=expected_raw_response
+    )
+
+    human_readable, context_entry, raw_response = list_appsec_config_command(
+        client=akamai_waf_client
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_dns_zones_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_dns_zones_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_dns_zones_command
+
+    test_data = util_load_json("test_data/list_dns_zones_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client, "list_dns_zones", return_value=expected_raw_response
+    )
+
+    human_readable, context_entry, raw_response = list_dns_zones_command(
+        client=akamai_waf_client
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_dns_zone_recordsets_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_dns_zone_recordsets_command with a specific zone.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_dns_zone_recordsets_command
+
+    zone = "example.com"
+    test_data = util_load_json("test_data/list_dns_zone_recordsets_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client,
+        "list_dns_zone_recordsets",
+        return_value=expected_raw_response,
+    )
+
+    human_readable, context_entry, raw_response = list_dns_zone_recordsets_command(
+        client=akamai_waf_client, zone=zone
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_cps_active_certificates_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_cps_active_certificates_command with a specific contract_id.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_cps_active_certificates_command
+
+    contract_id = "contract123"
+    test_data = util_load_json("test_data/list_cps_active_certificates_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client,
+        "list_cps_active_certificates",
+        return_value=expected_raw_response,
+    )
+
+    human_readable, context_entry, raw_response = list_cps_active_certificates_command(
+        client=akamai_waf_client, contract_id=contract_id
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry

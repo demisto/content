@@ -1,36 +1,34 @@
 IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 This integration was integrated and tested with version 14-20 of QRadar v3
 
-## Configure IBM QRadar v3 on Cortex XSOAR
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IBM QRadar v3.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure IBM QRadar v3 in Cortex
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | -- | --- |
-    | Server URL | \(e.g., https://1.1.1.1\) | True |
-    | Username |  | True |
-    | Password |  | True |
-    | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
-    | Incident Type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | if no offenses are found within the range of first fetch, will be set to fetch the earliest offense. | False |
-    | Fetch mode |  | True |
-    | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than \`event_count\`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5 | False |
-    | Maximum number of events per incident. | The maximal amount of events to pull per incident. | False |
-    | Number of offenses to pull per API call (max 50) | In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value. | False |
-    | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity &gt;= 4 AND id &gt; 5". filtering by status in the query may result in unexpected behavior when changing an incident's status. | False |
-    | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
-    | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
-    | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev. | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
-    | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
-    | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
-    | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
-4. Click **Test** to validate the URLs, token, and connection.
+
+| **Parameter** | **Description** | **Required** |
+| --- | -- | --- |
+| Server URL | \(e.g., https://1.1.1.1\) | True |
+| Username |  | True |
+| Password |  | True |
+| QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
+| Incident Type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | if no offenses are found within the range of first fetch, will be set to fetch the earliest offense. | False |
+| Fetch mode |  | True |
+| Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than \`event_count\`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5 | False |
+| Maximum number of events per incident. | The maximal amount of events to pull per incident. | False |
+| Number of offenses to pull per API call (max 50) | In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value. | False |
+| Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity &gt;= 4 AND id &gt; 5". filtering by status in the query may result in unexpected behavior when changing an incident's status. | False |
+| Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
+| Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
+| Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev. | False |
+| Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
+| The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
+| Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
+| Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
 
 ## Required Permissions
 | Component | Permission |
@@ -85,7 +83,7 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 | qradar-update-reference-set-value | qradar-reference-set-value-upsert |  | 
 | qradar-delete-reference-set-value |  qradar-reference-set-value-delete | | 
 | qradar-get-domains | qradar-domains-list |  | 
-| qradar-domains-list | qradar-get-domain-by-id | Specify the *domain_id* argument in the command. |  |
+| qradar-get-domain-by-id| qradar-domains-list | Specify the *domain_id* argument in the command. |  |
 
 
 ## Mirroring
@@ -127,9 +125,17 @@ Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
 
 
+### API Call Metrics
+
+This feature collects metadata on QRadar API calls and their success status.
+
+API Call metrics are not available for long-running commands such as `fetch incidents`.
+
+API Metrics are shown in the built-in **API Execution Metrics** dashboard, and are available to use in custom widgets.
+
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### qradar-offenses-list
@@ -1485,6 +1491,40 @@ Retrieves search results.
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
 
+### qradar-search-delete
+
+***
+Deleted search from Qradar, based on the search ID.
+
+#### Base Command
+
+`qradar-search-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
+
+### qradar-reference-sets-list
+
+### qradar-search-cancel
+
+***
+Cancelled search in QRadar based on search_id.
+
+#### Base Command
+
+`qradar-search-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
+
 ### qradar-reference-sets-list
 
 ***
@@ -1665,6 +1705,7 @@ Adds or updates an element in a reference set.
 | source | An indication of where the data originated. Default is reference data api. | Optional | 
 | date_value | True if the specified value  type was date. Possible values are: true, false. | Optional | 
 | fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html. | Optional | 
+| quiet_mode | If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -1832,6 +1873,7 @@ Uploads indicators to QRadar.
 | limit | The maximum number of indicators to fetch from Cortex XSOAR. Default is 50. | Optional | 
 | page | The page from which to get the indicators. | Optional | 
 | fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-maps-bulk_load-namespace-name-domain_id-POST.html. | Optional | 
+| quiet_mode | If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -1972,6 +2014,7 @@ Retrieves a list of log sources.
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter log sources, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
 | fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-log_source_management-log_sources-GET.html. | Optional | 
+| id | ID of a specific log source. | Optional | 
 
 #### Context Output
 
@@ -1994,6 +2037,7 @@ Retrieves a list of log sources.
 | QRadar.LogSource.LastEventTime | Date | Date when the last event was received by the log source. | 
 | QRadar.LogSource.Gateway | Boolean | Whether log source is configured as a gateway. | 
 | QRadar.LogSource.Status | Unknown | Status of the log source. | 
+
 
 #### Command example
 ```!qradar-log-sources-list qrd_encryption_algorithm=AES128 range=0-2```
@@ -2359,7 +2403,7 @@ Gets offense with matching offense ID from qradar.
 | offense_id | Offense ID. | Required | 
 | filter | Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html. | Optional | 
 | fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html. | Optional | 
-| headers | Table headers to use the human readable output (if none provided, will show all table headers). | Optional | 
+| headers | Table headers to use in the human readable output (if none provided, will show all table headers). | Optional | 
 
 #### Context Output
 
@@ -2370,8 +2414,8 @@ Gets offense with matching offense ID from qradar.
 | QRadar.Offense.Relevance | number | The relevance of the offense. | 
 | QRadar.Offense.Severity | number | The severity of the offense. | 
 | QRadar.Offense.SourceAddress | Unknown | The source addresses that are associated with the offense. | 
-| QRadar.Offense.DestinationAddress | Unknown | The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip | 
-| QRadar.Offense.RemoteDestinationCount | Unknown | The remote destination that are associated with the offesne. If this value is greater than 0, it means that your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip | 
+| QRadar.Offense.DestinationAddress | Unknown | The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip. | 
+| QRadar.Offense.RemoteDestinationCount | Unknown | The remote destination that are associated with the offesne. If this value is greater than 0, it means that your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip. | 
 | QRadar.Offense.AssignedTo | string | The user the offense is assigned to. | 
 | QRadar.Offense.StartTime | date | The time \(ISO\) when the offense was started. | 
 | QRadar.Offense.ID | int | The ID of the offense. | 
@@ -2391,56 +2435,6 @@ Gets offense with matching offense ID from qradar.
 | QRadar.Offense.OffenseType | string | A number that represents the offense type. | 
 | QRadar.Offense.Protected | boolean | Is the offense protected. | 
 
-### qradar-update-offense
-
-***
-Update an offense.
-
-#### Base Command
-
-`qradar-update-offense`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| offense_id | The ID of the offense to update. | Required | 
-| protected | Set to true to protect the offense. Possible values are: true, false. | Optional | 
-| follow_up | Set to true to set the follow up flag on the offense. Possible values are: true, false. | Optional | 
-| status | The new status for the offense. Possible values are: OPEN, HIDDEN, CLOSED. | Optional | 
-| closing_reason_id | The id of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation. | Optional | 
-| closing_reason_name | The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation. | Optional | 
-| assigned_to | A user to assign the offense to. | Optional | 
-| fields | Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object  separated by commas. Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| QRadar.Offense.Followup | boolean | Offense followup. | 
-| QRadar.Offense.Credibility | number | The credibility of the offense. | 
-| QRadar.Offense.Relevance | number | The relevance of the offense. | 
-| QRadar.Offense.Severity | number | The severity of the offense. | 
-| QRadar.Offense.SourceAddress | Unknown | The source addresses that are associated with the offense. | 
-| QRadar.Offense.DestinationAddress | Unknown | The destination addresses that are associated with the offense. | 
-| QRadar.Offense.AssignedTo | string | The user the offense is assigned to. | 
-| QRadar.Offense.StartTime | date | The time \(ISO\) when the offense was started. | 
-| QRadar.Offense.ID | int | The ID of the offense. | 
-| QRadar.Offense.DestinationHostname | Unknown | Destintion hostname. | 
-| QRadar.Offense.Description | string | The description of the offense. | 
-| QRadar.Offense.EventCount | number | The number of events that are associated with the offense. | 
-| QRadar.Offense.OffenseSource | string | The source of the offense. | 
-| QRadar.Offense.Status | string | The status of the offense. One of "OPEN", "HIDDEN", or "CLOSED". | 
-| QRadar.Offense.Magnitude | number | The magnitude of the offense. | 
-| QRadar.Offense.ClosingUser | string | The user that closed the offense. | 
-| QRadar.Offense.ClosingReason | string | The offense closing reason. | 
-| QRadar.Offense.CloseTime | date | The time when the offense was closed. | 
-| QRadar.Offense.LastUpdatedTime | date | The time \(ISO\) when the offense was last updated. | 
-| QRadar.Offense.Categories | Unknown | Event categories that are associated with the offense. | 
-| QRadar.Offense.FlowCount | number | The number of flows that are associated with the offense. | 
-| QRadar.Offense.FollowUp | boolean | Offense followup. | 
-| QRadar.Offense.OffenseType | string | A number that represents the offense type. | 
-| QRadar.Offense.Protected | boolean | Is the offense protected. | 
 | QRadar.Offense.RemoteDestinationCount | Unknown | The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense\(&lt;offenseID&gt;\) GROUP BY destinationip | 
 
 ### qradar-searches
@@ -2683,7 +2677,7 @@ Information about the reference set that had data added or updated. This returns
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ref_name | The name of the requestered reference. | Required | 
-| headers | Table headers to use the human readable output (if none provided, will show all table headers). | Optional | 
+| headers | Table headers to use in the human readable output (if none provided, will show all table headers). | Optional | 
 | date_value | If set to true will try to convert the data values to ISO-8601 string. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
@@ -2695,8 +2689,9 @@ Information about the reference set that had data added or updated. This returns
 | QRadar.Reference.ElementType | string | Reference element type. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements. | 
 | QRadar.Reference.TimeToLive | string | Reference time to live. | 
-| QRadar.Reference.TimeoutType | string | Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN | 
+| QRadar.Reference.TimeoutType | string | Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN. | 
 | QRadar.Reference.Data | Unknown | Reference set items. | 
+
 
 ### qradar-create-reference-set
 
@@ -2799,6 +2794,33 @@ Adds or updates a value in a reference set.
 | QRadar.Reference.ElementType | string | Reference element type. | 
 | QRadar.Reference.NumberOfElements | number | Number of elements. | 
 | QRadar.Reference.TimeoutType | string | Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN | 
+
+### qradar-delete-reference-set-value
+
+***
+Deletes a value in a reference set.
+
+#### Base Command
+
+`qradar-delete-reference-set-value`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ref_name | The name of the reference set to remove a value from. | Required | 
+| value | The value to remove from the reference set. | Required | 
+| date_value | If set to True will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g.,  '2018-11-06T08:56:41.000000Z') to epoch. Possible values are: True, False. Default is False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.Reference.Name | string | The name of the reference set. | 
+| QRadar.Reference.CreationTime | date | The creation time \(ISO\) of the reference. | 
+| QRadar.Reference.ElementType | string | Reference element type. | 
+| QRadar.Reference.NumberOfElements | number | Number of elements. | 
+| QRadar.Reference.TimeoutType | string | Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN. | 
 
 ### qradar-delete-reference-set-value
 
@@ -3205,3 +3227,377 @@ Potentially harmful: This API command executes any waiting system deployments in
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.deploy.status | String | The deployment status \(INITIALIZING, IN_PROGRESS, COMPLETE\). | 
+### qradar-log-source-extensions-list
+
+***
+Retrieves a list of log source extensions.
+
+#### Base Command
+
+`qradar-log-source-extensions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_extensions-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceExtension.Name | String | The name of the log source extension. | 
+| QRadar.LogSourceExtension.Description | String | The description of the log source extension. | 
+| QRadar.LogSourceExtension.ID | Number | The ID of the extension. | 
+| QRadar.LogSourceExtension.UUID | String | The UUID string of the log source extension. | 
+
+### qradar-log-source-delete
+
+***
+Deletes a log source by ID or name. One of the arguments must be provided.
+
+#### Base Command
+
+`qradar-log-source-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the log source to be deleted. If this argument is not provided, name must be provided. | Optional | 
+| name | The unique name of the log source to be deleted. If this argument is not provided, the ID must be provided. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### qradar-wincollect-destinations-list
+
+***
+Retrieves a list of WinCollect destinations. 
+In order to get wincollect_internal_destination_ids - filter internal=true needs to be used
+In order to get wincollect_external_destination_ids - filter internal=false needs to be used.
+
+#### Base Command
+
+`qradar-wincollect-destinations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter wincollect destinations, e.g., "internal=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,host". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-wincollect-wincollect_destinations-GET.html. | Optional | 
+| id | ID of a specific WinCollect destination. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.WinCollectDestination.ID | Number | The ID of the WinCollect destination. | 
+| QRadar.WinCollectDestination.Name | String | The name of the WinCollect destination. | 
+| QRadar.WinCollectDestination.Host | String | The IP or hostname of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this host. | 
+| QRadar.WinCollectDestination.TlsCertificate | String | The TLS Certificate of the WinCollect destination. | 
+| QRadar.WinCollectDestination.Port | Number | The listen port of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this port. | 
+| QRadar.WinCollectDestination.TransportProtocol | String | The protocol that is used to send event data to this WinCollect destination. Possible values are TCP or UDP. | 
+| QRadar.WinCollectDestination.IsInternal | Boolean | Set to "true" if the destination corresponds to a QRadar event collector process from this deployment; otherwise, it is set to false if it is any other host. | 
+| QRadar.WinCollectDestination.EventRateThrottle | Number | The events-per-second rate that is used to throttle the event flow to this destination. | 
+
+### qradar-log-source-create
+
+***
+Creates a new log source.
+
+#### Base Command
+
+`qradar-log-source-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The unique name of the log source. | Required | 
+| protocol_type_id | The type of protocol that is used by the log source. Must correspond to an existing protocol type. | Required | 
+| type_id | The type of the log source. Must correspond to an existing log source type. | Required | 
+| protocol_parameters | The list of protocol parameters corresponding with the selected protocol type ID. The syntax for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the protocol parameter. The command qradar-log-source-protocol-types-list can be used to list all available protocol types. | Required | 
+| target_event_collector_id | The ID of the event collector where the log source sends its data. The ID must correspond to an existing event collector. | Required | 
+| sending_ip | The IP of the system which the log source is associated to, or fed by. | Optional | 
+| description | The description of the log source. | Optional | 
+| coalesce_events | Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true. | Optional | 
+| enabled | Determines if the log source is enabled. Defaults to true. | Optional | 
+| parsing_order | The order in which log sources will parse if multiples exist with a common identifier. | Optional | 
+| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html). | Optional | 
+| credibility | On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source. | Optional | 
+| store_event_payload | If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'. | Optional | 
+| disconnected_log_collector_id | The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector. | Optional | 
+| language_id | The language of the events that are being processed by this log source. Must correspond to an existing log source language. | Optional | 
+| requires_deploy | Set to 'true' if you need to deploy changes to enable the log source for use; otherwise, set to 'false' if the log source is already active. | Optional | 
+| wincollect_internal_destination_id | The internal WinCollect destination for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination. | Optional | 
+| wincollect_external_destination_ids | The set of external WinCollect destinations for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Each ID must correspond to an existing WinCollect destination. | Optional | 
+| gateway | If the log source is configured as a gateway, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a standalone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSource.SendingIP | String | IP of the system which the log source is associated with, or fed by. | 
+| QRadar.LogSource.Internal | Boolean | Whether log source is internal. | 
+| QRadar.LogSource.ProtocolParameters | Unknown | Protocol parameters. | 
+| QRadar.LogSource.Description | String | Description of the log source. | 
+| QRadar.LogSource.Enabled | Boolean | Whether log source is enabled. | 
+| QRadar.LogSource.GroupIDs | Number | Log source group IDs. | 
+| QRadar.LogSource.Credibility | Number | Credibility of the log source. | 
+| QRadar.LogSource.ID | Number | ID of the log source. | 
+| QRadar.LogSource.ProtocolTypeID | Number | Protocol type used by log source. | 
+| QRadar.LogSource.CreationDate | Date | Date when log source was created. | 
+| QRadar.LogSource.Name | String | Name of the log source. | 
+| QRadar.LogSource.AutoDiscovered | Boolean | Whether log source was auto discovered. | 
+| QRadar.LogSource.ModifiedDate | Date | Date when log source was last modified. | 
+| QRadar.LogSource.TypeID | Number | The log source type. | 
+| QRadar.LogSource.LastEventTime | Date | Date when the last event was received by the log source. | 
+| QRadar.LogSource.Gateway | Boolean | Whether log source is configured as a gateway. | 
+| QRadar.LogSource.Status | unknown | Status of the log source. | 
+| QRadar.LogSource.TargetEventCollectorID | Number | The ID of the event collector where the log source sends its data. | 
+
+### qradar-log-source-languages-list
+
+***
+Retrieves a list of log source languages.
+
+#### Base Command
+
+`qradar-log-source-languages-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceLanguage.ID | Number | The ID of the language. This ID does not change across deployments. | 
+| QRadar.LogSourceLanguage.Name | String | The display name of the language. | 
+
+### qradar-log-source-protocol-types-list
+
+***
+Retrieves the list of protocol types.
+
+#### Base Command
+
+`qradar-log-source-protocol-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol_parameters". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceProtocolType.GatewaySupported | Boolean | If this protocol type can be configured for a gateway log source, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a standalone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a 'gateway' for events from multiple systems to enter the event pipeline. Not all protocol types can be used as a gateway if they don't support collecting event data from multiple sources. | 
+| QRadar.LogSourceProtocolType.ID | Number | The ID of the protocol type. | 
+| QRadar.LogSourceProtocolType.Inbound | Boolean | Indicates whether this is an inbound protocol. | 
+| QRadar.LogSourceProtocolType.LatestVersion | String | The latest version available of the protocol type component. | 
+| QRadar.LogSourceProtocolType.Name | String | The unique name of the protocol type. | 
+| QRadar.LogSourceProtocolType.ParameterGroups.id | Number | The ID of the protocol parameter group. | 
+| QRadar.LogSourceProtocolType.ParameterGroups.name | String | The name of the protocol parameter group. | 
+| QRadar.LogSourceProtocolType.ParameterGroups.required | Boolean | If at least one parameter in this group must be set, the condition is set to true; otherwise, the condition is set to false. | 
+| QRadar.LogSourceProtocolType.Parameters.allowed_values.name | String | An allowed value for the name of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.allowed_values.value | String | An allowed value for the value of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.default_value | String | The optional default parameter value. | 
+| QRadar.LogSourceProtocolType.Parameters.description | String | The description of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.group_id | Number | The ID of the protocol parameter group that this parameter belongs to. The group_id is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.id | Number | The ID of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.label | String | The label of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.max_length | Number | The maximum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.max_value | String | The maximum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.min_length | Number | The minimum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.min_value | String | The minimum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.name | String | The name of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.pattern | String | An optional Java regex pattern restriction on the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD. | 
+| QRadar.LogSourceProtocolType.Parameters.pattern_description | String | The description of the pattern of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.required | Boolean | If the parameter is mandatory, the condition is set to true; otherwise, the condition is set to false. | 
+| QRadar.LogSourceProtocolType.Parameters.rules.affected_property | String | The affected property. For possible values visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html | 
+| QRadar.LogSourceProtocolType.Parameters.rules.affected_property_value | String | The value to be applied to the affected parameter when the rule is triggered. For further info visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html | 
+| QRadar.LogSourceProtocolType.Parameters.rules.parameter_id | Number | The ID of the parameter affected by the rule. | 
+| QRadar.LogSourceProtocolType.Parameters.rules.trigger_parameter_id | Number | The ID of the trigger parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.rules.trigger_pattern | String | The pattern that triggers the rule. For example, if the value of trigger_parameter_id matches the regular expression of this field, the rule triggers. | 
+| QRadar.LogSourceProtocolType.Parameters.type | String | The type of the parameter. Possible values are: STRING, TEXT, INTEGER, REAL, BOOLEAN, DATE, TIME, DATETIME, INTERVAL, HOST, PASSWORD, REGEX. | 
+| QRadar.LogSourceProtocolType.TestingCapabilities.can_accept_sample_events | Boolean | Indicates whether the protocol type can accept sample events \(only applicable to inbound protocol types\). | 
+| QRadar.LogSourceProtocolType.TestingCapabilities.can_collect_events | Boolean | Indicates whether the protocol type can collect test events. | 
+| QRadar.LogSourceProtocolType.TestingCapabilities.testable | Boolean | Indicates whether the protocol type is testable. | 
+| QRadar.LogSourceProtocolType.Version | String | The version of the protocol type component. | 
+
+### qradar-disconnected-log-collectors-list
+
+***
+Retrieves a list of disconnected log collectors.
+
+#### Base Command
+
+`qradar-disconnected-log-collectors-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-disconnected_log_collectors-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.DisconnectedLogCollector.ID | Number | The ID of the disconnected log collector. | 
+| QRadar.DisconnectedLogCollector.Name | String | The name of the disconnected log Collector. | 
+| QRadar.DisconnectedLogCollector.Description | String | The description of the disconnected log collector. | 
+| QRadar.DisconnectedLogCollector.Protocol | String | The transport protocol used by the disconnected log collector to send events to QRadar. Possible values are TLS and UDP. | 
+| QRadar.DisconnectedLogCollector.UUID | String | The UUID of the disconnected log collector. | 
+| QRadar.DisconnectedLogCollector.Version | String | The version of the disconnected log collector. | 
+
+### qradar-log-source-update
+
+***
+Updates an exising log source.
+
+#### Base Command
+
+`qradar-log-source-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the log source. | Required | 
+| name | The unique name of the log source. | Optional | 
+| protocol_type_id | The type of protocol that is used by the log source. Must correspond to an existing protocol type. | Optional | 
+| type_id | The type of the log source. Must correspond to an existing log source type. | Optional | 
+| protocol_parameters | The list of protocol parameters corresponding with the selected protocol type ID. The syntax for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the protocol parameter. The command qradar-log-source-protocol-types-list can be used to list all available protocol types. | Optional | 
+| target_event_collector_id | The ID of the event collector where the log source sends its data. The ID must correspond to an existing event collector. | Optional | 
+| sending_ip | The IP of the system which the log source is associated to, or fed by. | Optional | 
+| description | The description of the log source. | Optional | 
+| coalesce_events | Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true. | Optional | 
+| enabled | Determines if the log source is enabled. Defaults to true. | Optional | 
+| parsing_order | The order in which log sources will parse if multiples exist with a common identifier. | Optional | 
+| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html). | Optional | 
+| credibility | On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source. | Optional | 
+| store_event_payload | If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'. | Optional | 
+| disconnected_log_collector_id | The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector. | Optional | 
+| language_id | The language of the events that are being processed by this log source. Must correspond to an existing log source language. | Optional | 
+| requires_deploy | Set to 'true' if you need to deploy changes to enable the log source for use; otherwise, set to 'false' if the log source is already active. | Optional | 
+| wincollect_internal_destination_id | The internal WinCollect destination for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination. | Optional | 
+| wincollect_external_destination_ids | The set of external WinCollect destinations for this log source, if applicable. Log Sources without an associated WinCollect agent have a null value. Each ID must correspond to an existing WinCollect destination. | Optional | 
+| gateway | If the log source is configured as a gateway, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a standalone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### qradar-log-source-types-list
+
+***
+Retrieves a list of log sources types.
+
+#### Base Command
+
+`qradar-log-source-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_types-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceTypesList.Custom | Boolean | The condition is set to true if this is a custom log source type; otherwise, the condition is set to false. | 
+| QRadar.LogSourceTypesList.DefaultProtocolID | Number | The ID of the default protocol type for this log source type. The ID must correspond to an existing protocol type. See the Protocol Type API \(/api/config/event_sources/log_source_management/protocol_types/\). | 
+| QRadar.LogSourceTypesList.ID | Number | The ID of the log source type. | 
+| QRadar.LogSourceTypesList.Internal | Boolean | The condition is set to true if the log source type is an internal log source type \(for example, System Notification, SIM Audit, Asset Profiler, and so on\) for which log sources cannot be created, edited, or deleted. If this is a user configurable log source type, the condition is set to false. | 
+| QRadar.LogSourceTypesList.LatestVersion | String | The latest available version of the log source type component. | 
+| QRadar.LogSourceTypesList.LogSourceExtensionID | Number | The log source extension that is associated with the log source type. The ID must correspond to an existing log source extension or be set to null. See the Log Source Extension API \(/api/config/event_sources/log_source_management/log_source_extensions/\). | 
+| QRadar.LogSourceTypesList.Name | String | The unique name of the log source type. The name is not localized. | 
+| QRadar.LogSourceTypesList.protocol_types.documented | Boolean | Indicates whether the protocol is documented/fully supported for this log source type. | 
+| QRadar.LogSourceTypesList.protocol_types.protocol_id | Number | ID of the protocol type. | 
+| QRadar.LogSourceTypesList.supported_language_ids | List | The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-id-GET.html | 
+| QRadar.LogSourceTypesList.uuid | String | A UUID string of the log source type. | 
+| QRadar.LogSourceTypesList.version | String | The log source type plugin version. | 
+
+### qradar-log-source-groups-list
+
+***
+Retrieves a list of log source languages.
+
+#### Base Command
+
+`qradar-log-source-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceGroup.Assignable | Boolean | If log sources can be assigned to this group, the condition is set to true; otherwise, the condition is set to false. Log sources cannot be assigned directly to the "Other" group or to the root log source group node. | 
+| QRadar.LogSourceGroup.ChildGroupIDs | List | The list of IDs of any child log source groups that belong to this group. | 
+| QRadar.LogSourceGroup.Description | String | The description of the group. | 
+| QRadar.LogSourceGroup.ID | Number | The ID of the group. | 
+| QRadar.LogSourceGroup.ModificationDate | Number | The date and time \(expressed as milliseconds since epoch\) that the group was last modified. | 
+| QRadar.LogSourceGroup.Name | String | The name of the group. | 
+| QRadar.LogSourceGroup.Owner | String | The name of the user who owns the group. | 
+| QRadar.LogSourceGroup.ParentID | Number | The ID of the group's parent group. The root node group has a null parent_ID. | 
+
+### qradar-event-collectors-list
+
+***
+Retrieves a list of event collectors.
+
+#### Base Command
+
+`qradar-event-collectors-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter event collectors, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-event_collectors-GET.html. | Optional | 
+| id | ID of a specific event collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.EventCollector.Name | String | The display name of the event collector. Not localized because it is derived from a process/component name and the hostname of the managed host it runs on, neither of which are translatable. | 
+| QRadar.EventCollector.HostID | Number | The ID of the host on which this event collector process runs. | 
+| QRadar.EventCollector.ComponentName | String | The name of the component backing this event collector process. Also contained in the "name" field. | 
+| QRadar.EventCollector.ID | Number | The unique ID of the event collector. | 

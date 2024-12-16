@@ -1,0 +1,117 @@
+category: Utilities
+commonfields:
+  id: Palo Alto Networks AIOps
+  version: -1
+configuration:
+- section: Connect
+  display: Pan-OS/Panorama Server URL
+  name: url
+  type: 0
+  required: true
+- section: Connect
+  display: ""
+  displaypassword: Pan-OS/Panorama API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- section: Connect
+  display: TSG ID
+  name: tsg_id
+  type: 0
+  required: true
+  additionalinfo: |-
+    The Tennant Service Group must contain an active “AIOps for NGFW (Free)” application.
+    For more information about the service activation, visit the following link: https://docs.paloaltonetworks.com/ngfw/aiops/about/activate-aiops-for-ngfw#activate-aiops-for-ngfw_section_xjs_p55_fyb
+- section: Connect
+  name: credentials-aiops
+  display: Client ID
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo: Client ID and Client Secret for AIOps instance.
+  displaypassword: Client Secret
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
+display: Palo Alto Networks AIOps
+name: Palo Alto Networks AIOps
+script:
+  commands:
+  - name: aiops-bpa-report-generate
+    arguments:
+    - name: entry_id
+      description: |-
+        - Optional: Use this argument if you prefer to upload a configuration file instead of generating the report from Panorama/PAN-OS.
+        - Entry_id from Cortex XSOAR War Room after uploading a file - should be a config file in xml format.
+        - Ensure that the XML file begins with the '<?xml version="XX"?>' tag and all tags are valid.
+        - If you used this argument and the process failed or reached a timeout, make sure the config file is in xml format and with correct tags.
+    - name: requester_email
+      required: true
+      description: Requester email. Make sure the email is in a valid email format (includes a @).
+    - name: requester_name
+      required: true
+      description: Requester name.
+    - name: interval_in_seconds
+      description: Interval for polling mechanism.
+      defaultValue: "30"
+    - name: timeout
+      default: true
+      description: Timeout (in seconds) for downloading the file.
+      defaultValue: "600"
+    - name: export_as_file
+      auto: PREDEFINED
+      description: Whether to export the generated report as a file.
+      defaultValue: true
+      predefined: 
+      - 'true'
+      - 'false'
+    - name: show_in_context
+      auto: PREDEFINED
+      description: Whether to show the report data inside the context.
+      defaultValue: false
+      predefined: 
+      - 'true'
+      - 'false'
+    description: |- 
+      Generates a bpa report.
+      Steps:
+      - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
+      - Use the information retrieved above to generate a BPA report.
+      - During this process the API also generates a report_id.
+    polling: true
+    outputs:
+    - contextPath: AiOps.BPAReport
+      description: The generated report data, report_id and report_status.
+      type: Array
+  - name: aiops-polling-upload-report
+    arguments:
+    - name: report_id
+      description: Report_id recieved from generate_bpa_report_request.
+      required: true
+    - name: hide_polling_output
+      description: Whether to hide polling output from the War Room.
+      required: true
+      defaultValue: true
+    - name: export_as_file
+      description: Whether to export the generated report as a file.
+      defaultValue: true
+    - name: show_in_context
+      description: Whether to show the report data inside the context.
+      defaultValue: false
+    - name: first_round
+      description: Whether this polling round is the first round.
+      defaultValue: false
+    description: Polling mechanism to upload report.
+    polling: true
+    hidden: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.113941
+fromversion: 6.9.0
+tests:
+- PaloAltoNetworksAIOps-Test

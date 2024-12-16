@@ -826,5 +826,84 @@ def test_test_credentials_command(mocker):
 
     with patch("Active_Directory_Query.create_connection", side_effect=mock_create_connection), \
             patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind):
-        command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'], ntlm_connection='true')
+        command_results = Active_Directory_Query.test_credentials_command(
+            BASE_TEST_PARAMS['server_ip'], "server", ntlm_connection='true', auto_bind="auto_bind")
         assert command_results.readable_output == 'Credential test with username username_test_credentials succeeded.'
+
+
+@pytest.mark.parametrize('dn,expected', [
+    ('CN=name, lastname,OU=Test1,DC=dc1,DC=dc2', 'CN=name, lastname'),
+    ('CN=name\\ lastname,OU=Test1,DC=dc1,DC=dc2', 'CN=name lastname'),
+    ('CN=name,DC=dc1,DC=dc2', 'CN=name')])
+def test_modify_user_ou(mocker, dn, expected):
+    """
+       Given:
+            - user with CN contains //
+            - user with CN contains comma
+            - user without ou
+       When:
+           Run the 'ad-modify-ou' command
+       Then:
+            Validate the cn extracted as expected
+       """
+    import Active_Directory_Query
+
+    class MockConnection:
+        def modify_dn(self, dn, cn, new_superior):
+            pass
+
+    Active_Directory_Query.connection = MockConnection()
+    new_ou = 'OU=Test2'
+    connection_mocker = mocker.patch.object(Active_Directory_Query.connection, 'modify_dn', return_value=True)
+    Active_Directory_Query.modify_user_ou(dn, new_ou)
+    assert connection_mocker.call_args[0][1] == expected
+
+
+def test_search_users_with_msDSUserAccountControlComputed(mocker):
+    """
+    Given:
+        The 'msDSUserAccountControlComputed' was returned.
+    When:
+        Run the 'ad-get-user' command
+    Then:
+        The user_account_to_boolean_fields_msDS_user_account_control_computed was called.
+    """
+
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return (
+                '{"attributes": {"displayName": [], "mail": [], "manager": [], "memberOf": ["memberOf"], '
+                '"name": ["Guest"], "sAMAccountName": ["Guest"], "userAccountControl": [0], \
+                   "msDS-User-Account-Control-Computed": [0]},"dn": "test_dn"}'
+            )
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {"controls": {"": {"value": {"cookie": b"<cookie>"}}}}
+
+        def search(self, *args, **kwargs):
+            time.sleep(1)
+
+    mocker.patch.object(demisto, "args", return_value={"page-size": "1"})
+    mocker.patch.object(demisto, "results")
+    mocker_msDSUserAccountControlComputed = mocker.patch.object(
+        Active_Directory_Query,
+        "user_account_to_boolean_fields_msDS_user_account_control_computed",
+        return_value={"PASSWORD_EXPIRED": True, "LOCKOUT": True},
+    )
+
+    Active_Directory_Query.connection = ConnectionMocker()
+
+    Active_Directory_Query.search_users("dc", 1)
+    mocker_msDSUserAccountControlComputed.assert_called_once()
+    assert "msDS-User-Account-Control-Computed" in demisto.results.call_args[0][0][
+        "Contents"
+    ][0].get("attributes")
+    assert (
+        demisto.results.call_args[0][0]["EntryContext"]
+        .get("ActiveDirectory.Users(obj.dn == val.dn)", {})[0]
+        .get("userAccountControlFields")
+        .get("PASSWORD_EXPIRED") is True
+    )

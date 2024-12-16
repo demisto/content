@@ -1,0 +1,47 @@
+{
+    "name": "CertStream",
+    "description": "Gets a stream of newly created certificates from Certificate Transparency (https://certificate.transparency.dev/)",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Certificates",
+        "X.509",
+        "X509",
+        "Free"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "dependencies": {
+        "CortexXpanse": {
+            "mandatory": false,
+            "display_name": "Cortex Xpanse"
+        },
+        "CommonScripts": {
+            "mandatory": false,
+            "display_name": "Common Scripts"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "OpenAI": {
+            "mandatory": false,
+            "display_name": "OpenAI"
+        }
+    },
+    "displayedImages": [
+        "CortexXpanse",
+        "CommonScripts",
+        "FiltersAndTransformers",
+        "OpenAI"
+    ]
+}

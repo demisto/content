@@ -46,4 +46,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1057 - Process Discovery](../doc_files/MITRE_ATT&CK_CoA_-_T1057_-_Process_Discovery.png)
+![MITRE ATT&CK CoA - T1057 - Process Discovery](../doc_files/MITRE_ATTandCK_CoA_-_T1057_-_Process_Discovery.png)

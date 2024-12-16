@@ -119,8 +119,8 @@ EXTRAHOP_MARKDOWN_REGEX = r"(\[[^\]]+\]\(\#\/[^\)]+\))+"
 
 class ExtraHopClient(BaseClient):
 
-    def __init__(self, base_url: str, api_key: str, client_id: str, client_secret: str, verify: bool, ok_codes: tuple,
-                 on_cloud: bool) -> None:
+    def __init__(self, base_url: str, api_key: str, client_id: str, client_secret: str, verify: bool, use_proxy: bool,
+                 ok_codes: tuple, on_cloud: bool) -> None:
         """
        Prepare constructor for Client class.
 
@@ -132,9 +132,10 @@ class ExtraHopClient(BaseClient):
            client_id: The Client ID to use for authentication.
            client_secret: The Client Secret to use for authentication.
            verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
+           use_proxy: True if the proxy server needs to be used, False otherwise.
        """
 
-        super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes)
+        super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes, proxy=use_proxy)
 
         # Setting up access token in headers.
         if on_cloud:
@@ -995,8 +996,8 @@ def get_protocols(client: ExtraHopClient, ip_or_id, query_from, query_until) -> 
 
     activitymap = client.get_peers(body)
 
-    client_protocols = defaultdict(int)  # type: DefaultDict[str, int]
-    server_protocols = defaultdict(int)  # type: DefaultDict[str, int]
+    client_protocols: DefaultDict[str, int] = defaultdict(int)
+    server_protocols: DefaultDict[str, int] = defaultdict(int)
     for edge in activitymap["edges"]:
         if "annotations" in edge and "protocols" in edge.get("annotations"):
             for protocol_list in edge.get("annotations", {}).get("protocols"):
@@ -1060,11 +1061,11 @@ def peers_get(client: ExtraHopClient, ip_or_id: Optional[Any], query_from: Optio
 
     activitymap = client.get_peers(body)
 
-    peers = defaultdict(lambda: {
+    peers: DefaultDict[str, dict] = defaultdict(lambda: {
         "weight": 0,
         "client_protocols": defaultdict(int),
         "server_protocols": defaultdict(int)
-    })  # type: DefaultDict[str, dict]
+    })
 
     for edge in activitymap["edges"]:
         if edge["to"] == api_id:
@@ -2343,7 +2344,7 @@ def main():
         client_id = params.get("client_id", "")
         client_secret = params.get("client_secret", "")
         verify_certificate = not params.get("insecure", False)
-        handle_proxy()
+        use_proxy: bool = params.get('proxy', False)
 
         if on_cloud and (not client_id or not client_secret):
             raise DemistoException("If On Cloud is marked true, Client ID and Client Secret is required field.")
@@ -2353,6 +2354,7 @@ def main():
                                 client_id=client_id,
                                 client_secret=client_secret,
                                 verify=verify_certificate,
+                                use_proxy=use_proxy,
                                 ok_codes=(200, 201, 204),
                                 on_cloud=on_cloud)
 

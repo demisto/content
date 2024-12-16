@@ -58,4 +58,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK - Courses of Action](../doc_files/MITRE_ATT&CK_-_Courses_of_Action.png)
+![MITRE ATT&CK - Courses of Action](../doc_files/MITRE_ATTandCK_-_Courses_of_Action.png)

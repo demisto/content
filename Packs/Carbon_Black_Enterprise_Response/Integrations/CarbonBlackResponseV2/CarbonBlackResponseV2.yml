@@ -79,23 +79,23 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
+description: VMware Carbon Black EDR (formerly known as Carbon Black Response).
 display: VMware Carbon Black EDR v2
 name: VMware Carbon Black EDR v2
 script:
   commands:
   - arguments:
-    - description: The name of the process
+    - description: The name of the process.
       name: process_name
-    - description: The CB Host group this sensor is assigned to
+    - description: The CB Host group this sensor is assigned to.
       name: group
-    - description: The hostname of the computer for this process
+    - description: The hostname of the computer for this process.
       name: hostname
-    - description: The parent process name
+    - description: The parent process name.
       name: parent_name
-    - description: The process path
+    - description: The process path.
       name: process_path
-    - description: The md5 of the binary image backing the process
+    - description: The md5 of the binary image backing the process.
       name: md5
     - description: Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided.
       name: query
@@ -128,7 +128,7 @@ script:
       name: limit
     - description: Start at this row, 0 by default.
       name: start
-    description: Process search
+    description: Process search.
     name: cb-edr-processes-search
     outputs:
     - contextPath: CarbonBlackEDR.ProcessSearch.Terms
@@ -225,7 +225,7 @@ script:
       description: The count of cross process events launched by this process.
       type: Number
     - contextPath: CarbonBlackEDR.ProcessSearch.Results.segment_id
-      description: The process segment id (processes are identified by this segment id and their id)
+      description: The process segment id (processes are identified by this segment id and their id).
       type: String
     - contextPath: CarbonBlackEDR.ProcessSearch.Results.watchlists.segments_hit
       description: Number of segment hits associated with the watchlist.
@@ -361,7 +361,7 @@ script:
       description: The pid of the process's parent.
       type: Number
     - contextPath: CarbonBlackEDR.Process.process.segment_id
-      description: The process segment id (processes are identified by this segment id and their id)
+      description: The process segment id (processes are identified by this segment id and their id).
       type: Date
     - contextPath: CarbonBlackEDR.Process.process.min_last_server_update
       description: When the process was last updated in the server.
@@ -379,7 +379,7 @@ script:
       description: The count of child processes launched by this process.
       type: Number
     - contextPath: CarbonBlackEDR.Process.process.unique_id
-      description: An internal CB process id combining of the process id and segment id
+      description: An internal CB process id combining of the process id and segment id.
       type: String
     - contextPath: CarbonBlackEDR.Process.siblings.process_md5
       description: The md5 of the binary image backing the sibling process.
@@ -394,7 +394,7 @@ script:
       description: Internal CB process id of the sibling process's parent.
       type: String
     - contextPath: CarbonBlackEDR.Process.siblings.cmdline
-      description: The command line of the sibling process
+      description: The command line of the sibling process.
       type: String
     - contextPath: CarbonBlackEDR.Process.siblings.id
       description: The id of the process.
@@ -433,7 +433,7 @@ script:
       description: The pid of the sibling process's parent.
       type: Number
     - contextPath: CarbonBlackEDR.Process.siblings.segment_id
-      description: The sibling process segment id (processes are identified by this segment id and their id)
+      description: The sibling process segment id (processes are identified by this segment id and their id).
       type: Date
     - contextPath: CarbonBlackEDR.Process.siblings.host_type
       description: The type of the host associated with the process.
@@ -445,7 +445,7 @@ script:
       description: The type of the child process associated with the process.
       type: String
     - contextPath: CarbonBlackEDR.Process.siblings.unique_id
-      description: An internal CB process id combining of the sibling process id and segment id
+      description: An internal CB process id combining of the sibling process id and segment id.
       type: String
     - contextPath: CarbonBlackEDR.Process.children.process_md5
       description: The md5 of the binary image backing the children process.
@@ -460,7 +460,7 @@ script:
       description: Internal CB process id of the child process's parent.
       type: String
     - contextPath: CarbonBlackEDR.Process.children.cmdline
-      description: The command line of the child process
+      description: The command line of the child process.
       type: String
     - contextPath: CarbonBlackEDR.Process.children.id
       description: The id of the process.
@@ -499,7 +499,7 @@ script:
       description: The pid of the child process's parent.
       type: Number
     - contextPath: CarbonBlackEDR.Process.children.segment_id
-      description: The child process segment id (processes are identified by this segment id and their id)
+      description: The child process segment id (processes are identified by this segment id and their id).
       type: Date
     - contextPath: CarbonBlackEDR.Process.children.host_type
       description: The host type of the children process.
@@ -511,7 +511,7 @@ script:
       description: The type of the host associated with the process.
       type: String
     - contextPath: CarbonBlackEDR.Process.children.unique_id
-      description: An internal CB process id combining of the child process id and segment id
+      description: An internal CB process id combining of the child process id and segment id.
       type: String
   - arguments:
     - description: The internal CB process id; this is the id field in search results.
@@ -547,7 +547,7 @@ script:
 
         For Windows- A ZIP archive which includes a signed Windows EXE or MSI sensor installer and settings file
         For Mac OS X- A ZIP archive which includes a signed OSX PKG sensor installer and settings file
-        For Linux- A compressed tarball (tar.gz) archive which includes a Linux sensor installer and settings file
+        For Linux- A compressed tarball (tar.gz) archive which includes a Linux sensor installer and settings file.
       name: os_type
       predefined:
       - windows_exe
@@ -562,17 +562,17 @@ script:
     name: cb-edr-sensor-installer-download
   - arguments:
     - default: true
-      description: The internal CB process id; this is the id field in search results
+      description: The internal CB process id; this is the id field in search results.
       name: process_id
       required: true
     - description: |-
         The process segment id. This is the segment_id field in search results.
-        If this is set to 0, the API will merge all segments in results
+        If this is set to 0, the API will merge all segments in results.
       name: segment_id
       required: true
     - description: |-
         Return events starting with this offset.
-        If not provided, offset will be 0 (returns events starting from the beginning)
+        If not provided, offset will be 0 (returns events starting from the beginning).
       name: start
     - description: How many events to fetch.
       name: count
@@ -765,34 +765,34 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The sensor ID to quarantine
+      description: The sensor ID to quarantine.
       name: sensor_id
       required: true
-    description: Unquarantine the endpoint
+    description: Unquarantine the endpoint.
     name: cb-edr-unquarantine-device
   - arguments:
     - default: true
-      description: The sensor ID to quarantine
+      description: The sensor ID to quarantine.
       name: sensor_id
       required: true
-    description: Isolate the endpoint from the network
+    description: Isolate the endpoint from the network.
     name: cb-edr-quarantine-device
   - arguments:
-    - description: The sensor ID
+    - description: The sensor ID.
       name: id
-    - description: Returns the sensor registration(s) with specified IP address
+    - description: Returns the sensor registration(s) with specified IP address.
       name: ip
       predefined:
       - ''
-    - description: Retruns the sensor registration(s) in the specified sensor group id
+    - description: Retruns the sensor registration(s) in the specified sensor group id.
       name: group_id
-    - description: ' only returns sensors that have been inactive for less than the specified number of days'
+    - description: 'only returns sensors that have been inactive for less than the specified number of days.'
       name: inactive_filter_days
-    - description: Returns the sensor registration(s) with matching hostname
+    - description: Returns the sensor registration(s) with matching hostname.
       name: hostname
     - description: The maximum amount of sensors to be returned.
       name: limit
-    description: List the CarbonBlack sensors
+    description: List the CarbonBlack sensors.
     name: cb-edr-sensors-list
     outputs:
     - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
@@ -958,10 +958,10 @@ script:
     name: cb-edr-watchlist-delete
   - arguments:
     - default: true
-      description: The watchlist ID
+      description: The watchlist ID.
       name: id
       required: true
-    - description: The raw Carbon Black query that this watchlist matches
+    - description: The raw Carbon Black query that this watchlist matches.
       name: search_query
     - description: A description of the update.
       name: description
@@ -972,7 +972,7 @@ script:
     name: cb-edr-watchlist-update
   - arguments:
     - default: true
-      description: The watchlist ID
+      description: The watchlist ID.
       name: id
       required: true
     - description: Action type specified for the watchlist. Options for action_type are syslog, email and alert.
@@ -994,25 +994,25 @@ script:
       Updates a Watchlist action that is specified using ID.
     name: cb-edr-watchlist-update-action
   - arguments:
-    - description: Name of the watchlist
+    - description: Name of the watchlist.
       name: name
       required: true
-    - description: The raw Carbon Black query that this watchlist matches
+    - description: The raw Carbon Black query that this watchlist matches.
       name: search_query
       required: true
     - description: A description of the update.
       name: description
     - description: the type of watchlist. Valid values are ‘modules’ and ‘events’ for binary and process watchlists, respectively. Deafult is 'events'.
       name: index_type
-    description: Creates a new Watchlist within EDR,
+    description: Creates a new Watchlist within EDR,.
     name: cb-edr-watchlist-create
     outputs:
     - contextPath: CarbonBlackEDR.Watchlist.id
-      description: An ID for the new watchlist
+      description: An ID for the new watchlist.
       type: Number
   - arguments:
     - default: true
-      description: The watchlist ID
+      description: The watchlist ID.
       name: id
     - description: The maximum amount of watchlists to be returned.
       name: limit
@@ -1064,26 +1064,26 @@ script:
       description: The name of this watchlist.
       type: String
   - arguments:
-    - description: The banned hash
+    - description: The banned hash.
       name: md5
       required: true
-    - description: Text description of block list
+    - description: Text description of block list.
       name: text
       required: true
-    - description: The last time the hash was blocked or prevented from being executed
+    - description: The last time the hash was blocked or prevented from being executed.
       name: last_ban_time
-    - description: Total number of blocks on the banned list
+    - description: Total number of blocks on the banned list.
       name: ban_count
-    - description: Last hostname to block this hash
+    - description: Last hostname to block this hash.
       name: last_ban_host
-    description: Prevent execution of a specified md5 hash
+    description: Prevent execution of a specified md5 hash.
     name: cb-edr-binary-ban
   - arguments:
     - description: The maximum hashs of result to retrieve.
       name: limit
       required: true
     description: |-
-      Returns a list of banned hashes
+      Returns a list of banned hashes.
     name: cb-edr-binary-bans-list
     outputs:
     - contextPath: CarbonBlackEDR.BinaryBan.username
@@ -1132,11 +1132,11 @@ script:
       description: The last hostname to block this hash.
       type: String
   - arguments:
-    - description: Alert unique identifier
+    - description: Alert unique identifier.
       isArray: true
       name: alert_ids
       required: true
-    - description: "The requested status to \n"
+    - description: "The requested status to."
       name: status
       auto: PREDEFINED
       predefined:
@@ -1157,7 +1157,7 @@ script:
       Updating Alerts requires an API key with Global Administrator privileges.
     name: cb-edr-alert-update
   - arguments:
-    - description: Alert status to filter by
+    - description: Alert status to filter by.
       name: status
       auto: PREDEFINED
       predefined:
@@ -1165,13 +1165,13 @@ script:
       - In Progress
       - Resolved
       - False Positive
-    - description: Alert username to filter by
+    - description: Alert username to filter by.
       name: username
-    - description: Alert feedname to filter by
+    - description: Alert feedname to filter by.
       name: feedname
-    - description: Alert hostname to filter by
+    - description: Alert hostname to filter by.
       name: hostname
-    - description: Alert report name (watchlist_id) to filter by
+    - description: Alert report name (watchlist_id) to filter by.
       name: report
     - description: Advanced query string. Accepts the same data as the search box. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided.
       name: query
@@ -1212,7 +1212,7 @@ script:
       description: The id of the sensor.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.feed_name
-      description: The name of the source feed
+      description: The name of the source feed.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.created_time
       description: The alert creation time.
@@ -1322,10 +1322,10 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The md5 of the binary
+      description: The md5 of the binary.
       name: md5
       required: true
-    description: Returns the metadata for the binary with the provided md5
+    description: Returns the metadata for the binary with the provided md5.
     name: cb-edr-binary-summary
     outputs:
     - contextPath: CarbonBlackEDR.BinaryMetadata.host_count
@@ -1459,7 +1459,7 @@ script:
       type: Date
   - arguments:
     - default: true
-      description: The md5 hash of the binary
+      description: The md5 hash of the binary.
       name: md5
       required: true
     description: Download the binary with this md5 hash.
@@ -1467,9 +1467,9 @@ script:
   - arguments:
     - description: Gets the name of the product this file is distributed with.
       name: product_name
-    - description: The md5 hash of this binary
+    - description: The md5 hash of this binary.
       name: md5
-    - description: Digital signature status
+    - description: Digital signature status.
       name: digital_signature
       auto: PREDEFINED
       predefined:
@@ -1488,11 +1488,11 @@ script:
     - description: |-
         Sensor group this sensor was
         assigned to at the time of process
-        execution
+        execution.
       name: group
     - description: |-
         Hostname of the computer on
-        which the process was executed
+        which the process was executed.
       name: hostname
     - description: Sort rows by this field and order. server_added_timestamp desc by default.
       name: sort
@@ -1510,7 +1510,7 @@ script:
       name: limit
     - description: Start at this row, 0 by default.
       name: start
-    description: Binary search
+    description: Binary search.
     name: cb-edr-binary-search
     outputs:
     - contextPath: CarbonBlackEDR.BinarySearch.terms
@@ -1654,15 +1654,15 @@ script:
       description: If present, Private build from FileVersionInformation. For more information check https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
       type: String
   - arguments:
-    - description: The sensor ID
+    - description: The sensor ID.
       name: id
     - default: true
-      description: Query sensors with specified IP address
+      description: Query sensors with specified IP address.
       isArray: true
       name: ip
-    - description: Query sensors with matching hostname
+    - description: Query sensors with matching hostname.
       name: hostname
-    description: Display information about the given sensor
+    description: Display information about the given sensor.
     name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname
@@ -1728,7 +1728,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,31 @@
+args:
+- description: The XSOAR list with stored metrics.
+  name: listname
+  required: true
+- description: XSOAR list with manual and automated effort by incident type.
+  name: efflistname
+- description: 'Type of metric: "SLA Metrics", "Closed Incidents", "Incidents", "Incident Open Duration", "Effort Reduction".'
+  name: metrictype
+  required: true
+commonfields:
+  id: XMetrics
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.113941
+enabled: true
+engineinfo: {}
+name: XMetrics
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+timeout: 300ns
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

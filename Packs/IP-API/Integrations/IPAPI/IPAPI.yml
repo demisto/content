@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Use of HTTPS requires an API key
-  defaultvalue: "false"
+  defaultvalue: 'false'
   display: Use HTTPS to communicate with the API
   name: https
   type: 8
@@ -15,17 +15,17 @@ configuration:
   type: 4
   required: false
 - additionalinfo: See https://members.ip-api.com/docs/json for details
-  defaultvalue: "536608767"
+  defaultvalue: '536608767'
   display: Fields to return
   name: fields
   required: true
   type: 0
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -59,10 +59,12 @@ configuration:
   display: ''
   type: 1
   required: false
-description: |
-  This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
+description: 'This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
+
 
   This service is available for free (with a throttle) - or paid.
+
+  '
 display: IP-API
 name: IP-API
 script:
@@ -172,8 +174,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

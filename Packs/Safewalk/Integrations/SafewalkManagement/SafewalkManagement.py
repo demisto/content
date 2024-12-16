@@ -19,11 +19,11 @@ class Client(BaseClient):
 
         p_locked = ""
         if locked is not None and locked:
-            p_locked = '&locked=%s' % "true"
+            p_locked = '&locked={}'.format("true")
 
         return self._http_request(
             method='GET',
-            url_suffix='/transactionlog/?page=%s%s%s' % (page, p_search, p_locked),
+            url_suffix=f'/transactionlog/?page={page}{p_search}{p_locked}',
             resp_type='text'
         )
 
@@ -37,11 +37,11 @@ class Client(BaseClient):
 
         p_locked = ""
         if locked is not None and locked:
-            p_locked = '&locked=%s' % "true"
+            p_locked = '&locked={}'.format("true")
 
         return self._http_request(
             method='GET',
-            url_suffix='/userlist/?page=%s%s%s' % (page, p_search, p_locked),
+            url_suffix=f'/userlist/?page={page}{p_search}{p_locked}',
             resp_type='text'
         )
 
@@ -55,11 +55,11 @@ class Client(BaseClient):
 
         p_locked = ""
         if locked is not None and locked:
-            p_locked = '&locked=%s' % "true"
+            p_locked = '&locked={}'.format("true")
 
         return self._http_request(
             method='GET',
-            url_suffix='/userlist/%s/?page=%s%s%s' % (ldap, page, p_search, p_locked),
+            url_suffix=f'/userlist/{ldap}/?page={page}{p_search}{p_locked}',
             resp_type='text'
         )
 
@@ -118,7 +118,7 @@ class Client(BaseClient):
     def update_user_token(self, username, token_devicetype, token_serialnumber, post_params) -> Dict[str, Any]:
         return self._http_request(
             method='PUT',
-            url_suffix='/user/%s/devices/%s/%s/' % (username, token_devicetype, token_serialnumber),
+            url_suffix=f'/user/{username}/devices/{token_devicetype}/{token_serialnumber}/',
             json_data=post_params,
             resp_type='text'
         )
@@ -133,21 +133,21 @@ class Client(BaseClient):
     def delete_user_token(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
-            url_suffix='/user/%s/devices/%s/%s/' % (username, token_devicetype, token_serialnumber),
+            url_suffix=f'/user/{username}/devices/{token_devicetype}/{token_serialnumber}/',
             resp_type='text'
         )
 
     def send_user_token(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
-            url_suffix='/user/%s/devices/%s/%s/send/' % (username, token_devicetype, token_serialnumber),
+            url_suffix=f'/user/{username}/devices/{token_devicetype}/{token_serialnumber}/send/',
             resp_type='text'
         )
 
     def send_user_virtualtoken(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
-            url_suffix='/devices/%s/%s/code/' % (token_devicetype, token_serialnumber),
+            url_suffix=f'/devices/{token_devicetype}/{token_serialnumber}/code/',
             resp_type='text'
         )
 
@@ -188,7 +188,7 @@ class Client(BaseClient):
     def remove_user_group(self, username, old_group_name) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
-            url_suffix='/group/%s/member/%s/' % (old_group_name, username),
+            url_suffix=f'/group/{old_group_name}/member/{username}/',
             resp_type='text'
         )
 
@@ -1449,6 +1449,7 @@ def test_module(client):
                 return 'Failed to run test, invalid credentials.'
             else:
                 return 'ok'
+        return None
     else:
         return 'Failed to run test.'
 

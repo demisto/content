@@ -4,7 +4,7 @@ commonfields:
 name: SafewalkManagement
 display: Safewalk Management
 category: Authentication & Identity Management
-description: Safewalk server integration
+description: Safewalk server integration.
 configuration:
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -116,52 +116,52 @@ script:
   - name: safewalk-get-transactionlog
     outputs:
     - contextPath: Safewalk.management.transactionlist.count
-      description: 'Number of transactions'
+      description: 'Number of transactions.'
       type: Number
     - contextPath: Safewalk.management.transactionlist.next
-      description: 'Next page'
+      description: 'Next page.'
       type: String
     - contextPath: Safewalk.management.transactionlist.previous
-      description: 'Previous page'
+      description: 'Previous page.'
       type: Unknown
     - contextPath: Safewalk.management.transactionlist.results.reason_detail
-      description: 'Reason'
+      description: 'Reason.'
       type: Unknown
     - contextPath: Safewalk.management.transactionlist.results.is_locked
-      description: 'Is locked'
+      description: 'Is locked.'
       type: Boolean
     - contextPath: Safewalk.management.transactionlist.results.id
-      description: 'Result ID'
+      description: 'Result ID.'
       type: Number
     - contextPath: Safewalk.management.transactionlist.results.type
-      description: 'Result type'
+      description: 'Result type.'
       type: String
     - contextPath: Safewalk.management.transactionlist.results.timestamp
-      description: 'Results timestamp'
+      description: 'Results timestamp.'
       type: Date
     - contextPath: Safewalk.management.transactionlist.results.user
-      description: 'Results user'
+      description: 'Results user.'
       type: String
     - contextPath: Safewalk.management.transactionlist.results.username
-      description: 'Results username'
+      description: 'Results username.'
       type: String
     - contextPath: Safewalk.management.transactionlist.results.serial_number
-      description: 'Serial Number'
+      description: 'Serial Number.'
       type: Unknown
     - contextPath: Safewalk.management.transactionlist.results.code
-      description: 'Code'
+      description: 'Code.'
       type: String
     - contextPath: Safewalk.management.transactionlist.results.transaction_id
-      description: 'Transaction ID'
+      description: 'Transaction ID.'
       type: String
     - contextPath: Safewalk.management.transactionlist.results.result
-      description: 'Result'
+      description: 'Result.'
       type: String
     - contextPath: Safewalk.management.transactionlist.results.reason
-      description: 'Reason'
+      description: 'Reason.'
       type: Unknown
     - contextPath: Safewalk.management.transactionlist.results.caller
-      description: 'Caller'
+      description: 'Caller.'
       type: String
     arguments:
     - name: page
@@ -169,160 +169,160 @@ script:
     - name: search
       description: User to search.
     - name: locked
-      description: locked
+      description: locked.
     description: Display transaction log.
   - name: safewalk-get-users
     outputs:
     - contextPath: Safewalk.management.userlist.count
-      description: 'Count'
+      description: 'Count.'
       type: Number
     - contextPath: Safewalk.management.userlist.next
-      description: 'Next'
+      description: 'Next.'
       type: Unknown
     - contextPath: Safewalk.management.userlist.previous
-      description: 'Previous'
+      description: 'Previous.'
       type: Unknown
     - contextPath: Safewalk.management.userlist.results.username
-      description: 'username'
+      description: 'username.'
       type: String
     - contextPath: Safewalk.management.userlist.results.first_name
-      description: 'First Name'
+      description: 'First Name.'
       type: String
     - contextPath: Safewalk.management.userlist.results.last_name
-      description: 'Last Name'
+      description: 'Last Name.'
       type: String
     - contextPath: Safewalk.management.userlist.results.mobile
-      description: 'Mobile number'
+      description: 'Mobile number.'
       type: String
     - contextPath: Safewalk.management.userlist.results.email
-      description: 'Email'
+      description: 'Email.'
       type: String
     - contextPath: Safewalk.management.userlist.results.is_locked
-      description: 'Is Locked'
+      description: 'Is Locked.'
       type: Boolean
     arguments:
     - name: page
-      description: page
+      description: page.
     - name: search
-      description: search
+      description: search.
     - name: locked
-      description: locked
+      description: locked.
     description: Search local users.
   - name: safewalk-get-ldap-users
     outputs:
     - contextPath: Safewalk.management.ldapusers.count
-      description: 'Count'
+      description: 'Count.'
       type: Number
     - contextPath: Safewalk.management.ldapusers.next
-      description: 'Next'
+      description: 'Next.'
       type: Unknown
     - contextPath: Safewalk.management.ldapusers.previous
-      description: 'Previous'
+      description: 'Previous.'
       type: Unknown
     - contextPath: Safewalk.management.ldapusers.results.username
-      description: 'username'
+      description: 'username.'
       type: String
     - contextPath: Safewalk.management.ldapusers.results.first_name
-      description: 'First Name'
+      description: 'First Name.'
       type: String
     - contextPath: Safewalk.management.ldapusers.results.last_name
-      description: 'Last Name'
+      description: 'Last Name.'
       type: String
     - contextPath: Safewalk.management.ldapusers.results.mobile
-      description: 'Mobile number'
+      description: 'Mobile number.'
       type: String
     - contextPath: Safewalk.management.ldapusers.results.email
-      description: 'Email'
+      description: 'Email.'
       type: String
     - contextPath: Safewalk.management.ldapusers.results.is_locked
-      description: 'Is locked'
+      description: 'Is locked.'
       type: Boolean
     arguments:
     - name: page
-      description: page
+      description: page.
     - name: search
-      description: search
+      description: search.
     - name: locked
-      description: locked
+      description: locked.
     - name: ldap
-      description: ldap
-    description: Search LDAP users
+      description: ldap.
+    description: Search LDAP users.
   - name: safewalk-get-ldaps
     outputs:
     - contextPath: Safewalk.management.ldaps.id
-      description: 'ID'
+      description: 'ID.'
       type: Number
     - contextPath: Safewalk.management.ldaps.is_active
-      description: 'Is active'
+      description: 'Is active.'
       type: Boolean
     - contextPath: Safewalk.management.ldaps.ldap_type
-      description: 'Type'
+      description: 'Type.'
       type: String
     - contextPath: Safewalk.management.ldaps.name
-      description: 'Name'
+      description: 'Name.'
       type: String
     - contextPath: Safewalk.management.ldaps.domain
-      description: 'Domain'
+      description: 'Domain.'
       type: String
     - contextPath: Safewalk.management.ldaps.server
-      description: 'LDAP Server'
+      description: 'LDAP Server.'
       type: String
     - contextPath: Safewalk.management.ldaps.port
-      description: 'LDAP port'
+      description: 'LDAP port.'
       type: Number
     - contextPath: Safewalk.management.ldaps.secondary_server
-      description: 'Secondary Server'
+      description: 'Secondary Server.'
       type: String
     - contextPath: Safewalk.management.ldaps.secondary_port
-      description: 'Secondary server port'
+      description: 'Secondary server port.'
       type: Unknown
     - contextPath: Safewalk.management.ldaps.bind_dn
-      description: 'Bind DN'
+      description: 'Bind DN.'
       type: String
     - contextPath: Safewalk.management.ldaps.bind_password
-      description: 'Bind password'
+      description: 'Bind password.'
       type: String
     - contextPath: Safewalk.management.ldaps.root_dn
-      description: 'Root DN'
+      description: 'Root DN.'
       type: String
     - contextPath: Safewalk.management.ldaps.user_search
-      description: 'User search'
+      description: 'User search.'
       type: String
     - contextPath: Safewalk.management.ldaps.search_filter
-      description: 'Search filter'
+      description: 'Search filter.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_uid_attr
-      description: 'uid attribute'
+      description: 'uid attribute.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_secondary_uid_attr
-      description: 'Secondary uid attribute'
+      description: 'Secondary uid attribute.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_first_name_attr
-      description: 'Name attr'
+      description: 'Name attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_last_name_attr
-      description: 'Last Name attr'
+      description: 'Last Name attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_email_attr
-      description: 'Email attr'
+      description: 'Email attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_mobile_attr
-      description: 'Mobile attr'
+      description: 'Mobile attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_user_status_attr
-      description: 'User status attr'
+      description: 'User status attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_pwd_last_set_attr
-      description: 'map_pwd_last_set_attr'
+      description: 'map_pwd_last_set_attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_maximum_password_age
-      description: 'map_maximum_password_age'
+      description: 'map_maximum_password_age.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_swisscom_mobile_id_sn_attr
-      description: 'map_swisscom_mobile_id_sn_attr'
+      description: 'map_swisscom_mobile_id_sn_attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.map_immutableid_attr
-      description: 'map_immutableid_attr'
+      description: 'map_immutableid_attr.'
       type: String
     - contextPath: Safewalk.management.ldaps.priority
       description: 'ldaps.priority'
@@ -332,420 +332,420 @@ script:
   - name: safewalk-get-user-personalinformation
     outputs:
     - contextPath: Safewalk.management.userpersonalinformation.username
-      description: 'Username'
+      description: 'Username.'
       type: String
     - contextPath: Safewalk.management.userpersonalinformation.first_name
-      description: 'First name'
+      description: 'First name.'
       type: String
     - contextPath: Safewalk.management.userpersonalinformation.last_name
-      description: 'Last name'
+      description: 'Last name.'
       type: String
     - contextPath: Safewalk.management.userpersonalinformation.dn
-      description: 'DN'
+      description: 'DN.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.db_mobile_phone
-      description: 'Mobile phone'
+      description: 'Mobile phone.'
       type: String
     - contextPath: Safewalk.management.userpersonalinformation.db_email
-      description: 'Email'
+      description: 'Email.'
       type: String
     - contextPath: Safewalk.management.userpersonalinformation.ldap_mobile_phone
-      description: 'LDAP mobile phone'
+      description: 'LDAP mobile phone.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.ldap_email
-      description: 'LDAP email'
+      description: 'LDAP email.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.user_storage
-      description: 'User storage'
+      description: 'User storage.'
       type: String
     - contextPath: Safewalk.management.userpersonalinformation.is_locked
-      description: 'Is locked'
+      description: 'Is locked.'
       type: Boolean
     - contextPath: Safewalk.management.userpersonalinformation.has_password_expired
-      description: 'Password expired'
+      description: 'Password expired.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.is_required_to_change_password
-      description: 'Is required to change password'
+      description: 'Is required to change password.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.user_disabled
-      description: 'User disabled'
+      description: 'User disabled.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.user_lockout
-      description: 'User lockout'
+      description: 'User lockout.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.password_expiration_date
-      description: 'Password expiration date'
+      description: 'Password expiration date.'
       type: Unknown
     - contextPath: Safewalk.management.userpersonalinformation.last_authentication_attempt
-      description: 'Last authentication attempt'
+      description: 'Last authentication attempt.'
       type: Date
     arguments:
     - name: username
-      description: Username
+      description: Username.
     description: Get users personal information.
   - name: safewalk-set-user-personalinformation
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: email
-      description: email
+      description: email.
     - name: mobile_phone
-      description: mobile_phone
+      description: mobile_phone.
     description: Set user personal information.
   - name: safewalk-get-user-accessattempts
     outputs:
     - contextPath: Safewalk.management.accessattempts.failures_since_start
-      description: 'Since start'
+      description: 'Since start.'
       type: Number
     - contextPath: Safewalk.management.accessattempts.attempt_time
-      description: 'Attempt time'
+      description: 'Attempt time.'
       type: Date
     - contextPath: Safewalk.management.accessattempts.is_locked
-      description: 'Is locked'
+      description: 'Is locked.'
       type: Boolean
     arguments:
     - name: username
-      description: Username
-    description: Get user access attempts
+      description: Username.
+    description: Get user access attempts.
   - name: safewalk-delete-user-accessattempts
     arguments:
     - name: username
-      description: Username
-    description: Delete user access attempts
+      description: Username.
+    description: Delete user access attempts.
   - name: safewalk-get-user-tokens
     outputs:
     - contextPath: Safewalk.management.usertokens.serial_number
-      description: 'Usertokens serial number'
+      description: 'Usertokens serial number.'
       type: Date
     - contextPath: Safewalk.management.usertokens.type
-      description: 'User tokens type'
+      description: 'User tokens type.'
       type: String
     - contextPath: Safewalk.management.usertokens.confirmed
-      description: 'User tokens confirmed'
+      description: 'User tokens confirmed.'
       type: Boolean
     - contextPath: Safewalk.management.usertokens.password_required
-      description: 'User tokens password required'
+      description: 'User tokens password required.'
       type: Unknown
     - contextPath: Safewalk.management.usertokens.physical_token
-      description: 'User tokens physical token'
+      description: 'User tokens physical token.'
       type: Unknown
     - contextPath: Safewalk.management.usertokens.status
-      description: 'User tokens status'
+      description: 'User tokens status.'
       type: String
     - contextPath: Safewalk.management.usertokens.status_change_date
-      description: 'User tokens status change date'
+      description: 'User tokens status change date.'
       type: Unknown
     arguments:
     - name: username
-      description: Username
-    description: Get user tokens
+      description: Username.
+    description: Get user tokens.
   - name: safewalk-delete-user-token
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: devicetype
-      description: devicetype
+      description: devicetype.
     - name: serialnumber
-      description: serialnumber
+      description: serialnumber.
     description: Delete user token.
   - name: safewalk-send-user-virtualtoken
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: token_devicetype
-      description: token_devicetype
+      description: token_devicetype.
     - name: token_serialnumber
-      description: token_serialnumber
+      description: token_serialnumber.
     description: Send user virtual token.
   - name: safewalk-get-user-settings
     outputs:
     - contextPath: Safewalk.management.usersettings.backuptoken_attempts
-      description: 'Backup token attempts'
+      description: 'Backup token attempts.'
       type: Number
     - contextPath: Safewalk.management.usersettings.backuptoken_timeout
-      description: 'Backup token timeout'
+      description: 'Backup token timeout.'
       type: Number
     - contextPath: Safewalk.management.usersettings.backuptoken_gateways
-      description: 'Backup token gateways'
+      description: 'Backup token gateways.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.backup_password_required
-      description: 'Backup password requiered'
+      description: 'Backup password requiered.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_backuptoken_attempts.value
-      description: 'Backup token attempts value'
+      description: 'Backup token attempts value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_backuptoken_attempts.level
-      description: 'Backup token attempts level'
+      description: 'Backup token attempts level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_backuptoken_timeout.value
-      description: 'Backup token timeout value'
+      description: 'Backup token timeout value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_backuptoken_timeout.level
-      description: 'Backup token timeout level'
+      description: 'Backup token timeout level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_backuptoken_gateways.level
-      description: 'Backup token gateways level'
+      description: 'Backup token gateways level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_backup_password_required.value
-      description: 'Backup password required value'
+      description: 'Backup password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_backup_password_required.level
-      description: 'Backup password required level'
+      description: 'Backup password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.registration_token_attempts
-      description: 'Registration token attempts'
+      description: 'Registration token attempts.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.registration_token_timeout
-      description: 'Registration token timeout'
+      description: 'Registration token timeout.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.registration_token_gateways
-      description: 'Registration token gateways'
+      description: 'Registration token gateways.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_registration_token_attempts.value
-      description: 'Registration token attempts value'
+      description: 'Registration token attempts value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_registration_token_attempts.level
-      description: 'Registration token attempts level'
+      description: 'Registration token attempts level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_registration_token_timeout.value
-      description: 'Registration token timeout value'
+      description: 'Registration token timeout value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_registration_token_timeout.level
-      description: 'Registration token timeout level'
+      description: 'Registration token timeout level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_registration_token_gateways.level
-      description: 'Registration token gateways level'
+      description: 'Registration token gateways level.'
       type: String
     - contextPath: Safewalk.management.usersettings.gaia_ttw_level
-      description: 'gaia ttw level'
+      description: 'gaia ttw level.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_gaia_ttw_level.value
-      description: 'gaia ttw level value'
+      description: 'gaia ttw level value.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_gaia_ttw_level.level
-      description: 'gaia ttw level level'
+      description: 'gaia ttw level level.'
       type: String
     - contextPath: Safewalk.management.usersettings.sesami_mobile_password_required
-      description: 'sesami mobile password required'
+      description: 'sesami mobile password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.sesami_slim_password_required
-      description: 'sesami slim password required'
+      description: 'sesami slim password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.hotp_password_required
-      description: 'hotp password required'
+      description: 'hotp password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.hotp_flex_password_required
-      description: 'hotp flex password required'
+      description: 'hotp flex password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.hotp_flex_pin_password_required
-      description: 'hotp flex pin password required'
+      description: 'hotp flex pin password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.totp_password_required
-      description: 'totp password required'
+      description: 'totp password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.totp_flex_password_required
-      description: 'totp flex password required'
+      description: 'totp flex password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.totp_flex_pin_password_required
-      description: 'totp flex pin password required'
+      description: 'totp flex pin password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.totp_mobile_password_required
-      description: 'totp mobile password required'
+      description: 'totp mobile password required.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_sesami_mobile_password_required.value
-      description: 'sesami mobile password required value'
+      description: 'sesami mobile password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_sesami_mobile_password_required.level
-      description: 'sesami mobile password required level'
+      description: 'sesami mobile password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_sesami_slim_password_required.value
-      description: 'sesami slim password required value'
+      description: 'sesami slim password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_sesami_slim_password_required.level
-      description: 'sesami slim password required level'
+      description: 'sesami slim password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_hotp_password_required.value
-      description: 'hotp password required value'
+      description: 'hotp password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_hotp_password_required.level
-      description: 'hotp password required level'
+      description: 'hotp password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_password_required.value
-      description: 'hotp flex password required value'
+      description: 'hotp flex password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_password_required.level
-      description: 'hotp flex password required level'
+      description: 'hotp flex password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_pin_password_required.value
-      description: 'hotp flex pin password required value'
+      description: 'hotp flex pin password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_pin_password_required.level
-      description: 'hotp flex pin password required level'
+      description: 'hotp flex pin password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_totp_password_required.value
-      description: 'totp password required value'
+      description: 'totp password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_totp_password_required.level
-      description: 'totp password required level'
+      description: 'totp password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_totp_flex_password_required.value
-      description: 'totp flex password required value'
+      description: 'totp flex password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_totp_flex_password_required.level
-      description: 'totp flex password required level'
+      description: 'totp flex password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_totp_flex_pin_password_required.value
-      description: 'totp flex pin password required value'
+      description: 'totp flex pin password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_totp_flex_pin_password_required.level
-      description: 'totp flex pin password required level'
+      description: 'totp flex pin password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_totp_mobile_password_required.value
-      description: 'totp mobile password required value'
+      description: 'totp mobile password required value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_totp_mobile_password_required.level
-      description: 'totp mobile password required level'
+      description: 'totp mobile password required level.'
       type: String
     - contextPath: Safewalk.management.usersettings.allow_password
-      description: 'allow password'
+      description: 'allow password.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.allow_password_for_registration
-      description: 'allow password for registration'
+      description: 'allow password for registration.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.allow_access_when_pwd_expired
-      description: 'allow access when pwd expired'
+      description: 'allow access when pwd expired.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.allow_password_reset_when_forgot_pwd
-      description: 'allow password reset when forgot pwd'
+      description: 'allow password reset when forgot pwd.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.min_otp_length
-      description: 'min otp length'
+      description: 'min otp length.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.max_otp_length
-      description: 'max otp length'
+      description: 'max otp length.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_allow_password.value
-      description: 'allow password value'
+      description: 'allow password value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_allow_password.level
-      description: 'allow password level'
+      description: 'allow password level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_allow_password_for_registration.value
-      description: 'allow password for registration value'
+      description: 'allow password for registration value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_allow_password_for_registration.level
-      description: 'allow password for registration level'
+      description: 'allow password for registration level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_allow_access_when_pwd_expired.value
-      description: 'allow access when pwd expired value'
+      description: 'allow access when pwd expired value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_allow_access_when_pwd_expired.level
-      description: 'allow access when pwd expired level'
+      description: 'allow access when pwd expired level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_allow_password_reset_when_forgot_pwd.value
-      description: 'allow password reset when forgot pwd value'
+      description: 'allow password reset when forgot pwd value.'
       type: Boolean
     - contextPath: Safewalk.management.usersettings.inherited_allow_password_reset_when_forgot_pwd.level
-      description: 'allow password reset when forgot pwd level'
+      description: 'allow password reset when forgot pwd level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_min_otp_length.value
-      description: 'min otp length value'
+      description: 'min otp length value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_min_otp_length.level
-      description: 'min otp length level'
+      description: 'min otp length level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_max_otp_length.value
-      description: 'max otp length value'
+      description: 'max otp length value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_max_otp_length.level
-      description: 'max otp length level'
+      description: 'max otp length level.'
       type: String
     - contextPath: Safewalk.management.usersettings.max_allowed_failures
-      description: 'max allowed failures'
+      description: 'max allowed failures.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_max_allowed_failures.value
-      description: 'max allowed failures value'
+      description: 'max allowed failures value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_max_allowed_failures.level
-      description: 'max allowed failures level'
+      description: 'max allowed failures level.'
       type: String
     - contextPath: Safewalk.management.usersettings.totp_accept_tolerance
-      description: 'totp accept tolerance'
+      description: 'totp accept tolerance.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.totp_resend_tolerance
-      description: 'totp resend tolerance'
+      description: 'totp resend tolerance.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.totp_resend_timeout
-      description: 'totp resend timeout'
+      description: 'totp resend timeout.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_totp_accept_tolerance.value
-      description: 'totp accept tolerance value'
+      description: 'totp accept tolerance value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_totp_accept_tolerance.level
-      description: 'totp accept tolerance level'
+      description: 'totp accept tolerance level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_totp_resend_tolerance.value
-      description: 'totp resend tolerance value'
+      description: 'totp resend tolerance value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_totp_resend_tolerance.level
-      description: 'totp resend tolerance level'
+      description: 'totp resend tolerance level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_totp_resend_timeout.value
-      description: 'totp resend timeout value'
+      description: 'totp resend timeout value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_totp_resend_timeout.level
-      description: 'totp resend timeout level'
+      description: 'totp resend timeout level.'
       type: String
     - contextPath: Safewalk.management.usersettings.hotp_accept_tolerance
-      description: 'hotp accept tolerance'
+      description: 'hotp accept tolerance.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.hotp_resend_tolerance
-      description: 'hotp resend tolerance'
+      description: 'hotp resend tolerance.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.hotp_resend_timeout
-      description: 'hotp resend timeout'
+      description: 'hotp resend timeout.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_hotp_accept_tolerance.value
-      description: 'hotp accept tolerance value'
+      description: 'hotp accept tolerance value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_hotp_accept_tolerance.level
-      description: 'hotp accept tolerance level'
+      description: 'hotp accept tolerance level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_tolerance.value
-      description: 'hotp resend tolerance value'
+      description: 'hotp resend tolerance value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_tolerance.level
-      description: 'inherited hotp resend tolerance level'
+      description: 'inherited hotp resend tolerance level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_timeout.value
-      description: 'hotp resend timeout value'
+      description: 'hotp resend timeout value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_timeout.level
-      description: 'hotp resend timeout level'
+      description: 'hotp resend timeout level.'
       type: String
     - contextPath: Safewalk.management.usersettings.virtual_device_gateways
-      description: 'virtual device gateways'
+      description: 'virtual device gateways.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.virtual_device_accept_tolerance
-      description: 'virtual device accept tolerance'
+      description: 'virtual device accept tolerance.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_virtual_device_gateways.level
-      description: 'virtual device gateways level'
+      description: 'virtual device gateways level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_virtual_device_accept_tolerance.value
-      description: 'virtual device accept tolerance value'
+      description: 'virtual device accept tolerance value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_virtual_device_accept_tolerance.level
-      description: 'virtual device accept tolerance level'
+      description: 'virtual device accept tolerance level.'
       type: String
     - contextPath: Safewalk.management.usersettings.dos_tmp_lockdown_max_fail_authentications
-      description: 'dos_tmp_lockdown_max_fail_authentications'
+      description: 'dos_tmp_lockdown_max_fail_authentications.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.dos_tmp_lockdown_time_interval_in_seconds
-      description: 'dos_tmp_lockdown_time_interval_in_seconds'
+      description: 'dos_tmp_lockdown_time_interval_in_seconds.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.dos_tmp_lockdown_time_in_seconds
-      description: 'dos_tmp_lockdown_time_in_seconds'
+      description: 'dos_tmp_lockdown_time_in_seconds.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_dos_tmp_lockdown_max_fail_authentications.value
       description: 'dos_tmp_lockdown_max_fail_authentications.value'
@@ -766,292 +766,292 @@ script:
       description: 'dos_tmp_lockdown_time_in_seconds.level'
       type: String
     - contextPath: Safewalk.management.usersettings.user_storage
-      description: 'User storage'
+      description: 'User storage.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.multiple_step_auth_timeout
-      description: 'multiple step auth timeout'
+      description: 'multiple step auth timeout.'
       type: Unknown
     - contextPath: Safewalk.management.usersettings.inherited_user_storage.value
-      description: 'user storage value'
+      description: 'user storage value.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_user_storage.level
-      description: 'user storage level'
+      description: 'user storage level.'
       type: String
     - contextPath: Safewalk.management.usersettings.inherited_multiple_step_auth_timeout.value
-      description: 'multiple step auth timeout value'
+      description: 'multiple step auth timeout value.'
       type: Number
     - contextPath: Safewalk.management.usersettings.inherited_multiple_step_auth_timeout.level
       description: 'usersettings_inherited_multiple_step_auth_timeout.level'
       type: String
     arguments:
     - name: username
-      description: Username
+      description: Username.
     description: Get user settings.
   - name: safewalk-get-user-group
     outputs:
     - contextPath: Safewalk.management.usergroup.default_group.name
-      description: 'default group name'
+      description: 'default group name.'
       type: String
     - contextPath: Safewalk.management.usergroup.default_group.is_member
-      description: 'default group is member'
+      description: 'default group is member.'
       type: Boolean
     - contextPath: Safewalk.management.usergroup.default_group.dn
-      description: 'default group dn'
+      description: 'default group dn.'
       type: Unknown
     - contextPath: Safewalk.management.usergroup.default_group.priority
-      description: 'default group priority'
+      description: 'default group priority.'
       type: Number
     - contextPath: Safewalk.management.usergroup.groups.name
-      description: 'groups name'
+      description: 'groups name.'
       type: String
     - contextPath: Safewalk.management.usergroup.groups.is_member
-      description: 'groups is member'
+      description: 'groups is member.'
       type: Boolean
     - contextPath: Safewalk.management.usergroup.groups.dn
-      description: 'groups dn'
+      description: 'groups dn.'
       type: String
     - contextPath: Safewalk.management.usergroup.groups.priority
-      description: 'groups priority'
+      description: 'groups priority.'
       type: Number
     arguments:
     - name: username
-      description: Username
+      description: Username.
     description: Get user group.
   - name: safewalk-add-user-group
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: new-group-name
-      description: new-group-name
+      description: new-group-name.
     description: Add user group.
   - name: safewalk-remove-user-group
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: old-group-name
-      description: old-group-name
+      description: old-group-name.
     description: Remove user group.
   - name: safewalk-get-user-registrationcode
     outputs:
     - contextPath: Safewalk.management.registrationcode.expiration
-      description: 'registration code expiration'
+      description: 'registration code expiration.'
       type: Date
     - contextPath: Safewalk.management.registrationcode.attempts_left
-      description: 'registration code attempts left'
+      description: 'registration code attempts left.'
       type: Number
     - contextPath: Safewalk.management.registrationcode.sent_by
-      description: 'registration code sent by'
+      description: 'registration code sent by.'
       type: Unknown
     - contextPath: Safewalk.management.registrationcode.sent_on
-      description: 'registration code sent on'
+      description: 'registration code sent on.'
       type: Unknown
     - contextPath: Safewalk.management.registrationcode.token
-      description: 'registration code token'
+      description: 'registration code token.'
       type: String
     - contextPath: Safewalk.management.registrationcode.purpose
-      description: 'registration code purpose'
+      description: 'registration code purpose.'
       type: String
     arguments:
     - name: username
-      description: Username
-    description: Get user registration code
+      description: Username.
+    description: Get user registration code.
   - name: safewalk-set-user-registrationcode
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: expiration
-      description: Expiration
+      description: Expiration.
     - name: attempts-left
-      description: attempts-left
-    description: Set user registration code
+      description: attempts-left.
+    description: Set user registration code.
   - name: safewalk-send-user-registrationcode
     arguments:
     - name: username
-      description: Username
-    description: Send user registration code
+      description: Username.
+    description: Send user registration code.
   - name: safewalk-create-user-token-virtual
     arguments:
     - name: username
-      description: Username
-    description: Create user virtual token
+      description: Username.
+    description: Create user virtual token.
   - name: safewalk-create-user-token-fastauth
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: serial-number
-      description: Serial number
-    description: Create user FastAuth Token
+      description: Serial number.
+    description: Create user FastAuth Token.
   - name: safewalk-create-user-token-totpmobile
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: serial-number
-      description: Serail number
+      description: Serail number.
     - name: password-required
-      description: Password required
-    description: Create user TopMobile Token
+      description: Password required.
+    description: Create user TopMobile Token.
   - name: safewalk-create-user-token-totmobilehybrid
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: serial-number
-      description: Serial number
-    description: Create user TotMobileHybrid
+      description: Serial number.
+    description: Create user TotMobileHybrid.
   - name: safewalk-create-user-token-physical
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: serial-number
-      description: serial-number
+      description: serial-number.
     - name: password-required
-      description: password-required
-    description: Create user Physical Token
+      description: password-required.
+    description: Create user Physical Token.
   - name: safewalk-create-user-token-backup
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: password-required
-      description: password-required
+      description: password-required.
     - name: backuptoken-timeout
-      description: backuptoken-timeout
+      description: backuptoken-timeout.
     - name: backuptoken_attempts
-      description: backuptoken_attempts
-    description: Create user Backup Token
+      description: backuptoken_attempts.
+    description: Create user Backup Token.
   - name: safewalk-set-user-backuptoken-settings
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: backup-password-required
-      description: backup-password-required
+      description: backup-password-required.
     - name: backuptoken-attempts
-      description: backuptoken-attempts
+      description: backuptoken-attempts.
     - name: backuptoken-timeout
-      description: backuptoken-timeout
-    description: Set user backup token
+      description: backuptoken-timeout.
+    description: Set user backup token.
   - name: safewalk-set-user-general-settings
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: user-storage
-      description: User storage
-    description: Set user general settings
+      description: User storage.
+    description: Set user general settings.
   - name: safewalk-set-user-hotpauthentication-settings
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: hotp-accept-tolerance
-      description: hotp-accept-tolerance
+      description: hotp-accept-tolerance.
     - name: hotp-resend-tolerance
-      description: hotp-resend-tolerance
+      description: hotp-resend-tolerance.
     - name: hotp-resend-timeout
-      description: hotp-resend-timeout
+      description: hotp-resend-timeout.
     - name: hotp-password_required
-      description: hotp-password_required
+      description: hotp-password_required.
     - name: hotp-flex-password-required
-      description: hotp-flex-password-required
+      description: hotp-flex-password-required.
     - name: hotp-flex-pin-password-required
-      description: hotp-flex-pin-password-required
-    description: Set user hotpauthentication settings
+      description: hotp-flex-pin-password-required.
+    description: Set user hotpauthentication settings.
   - name: safewalk-set-user-sesamiauthentication-settings
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: sesami_mobile_password_required
-      description: sesami_mobile_password_required
+      description: sesami_mobile_password_required.
     - name: sesami_slim_password_required
-      description: sesami_slim_password_required
+      description: sesami_slim_password_required.
     - name: gaia_ttw_level
-      description: gaia_ttw_level
-    description: Set user sesamiauthentication setttings
+      description: gaia_ttw_level.
+    description: Set user sesamiauthentication setttings.
   - name: safewalk-set-user-totpauthentication-settings
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: totp-accept-tolerance
-      description: totp-accept-tolerance
+      description: totp-accept-tolerance.
     - name: totp-resend-tolerance
-      description: totp-resend-tolerance
+      description: totp-resend-tolerance.
     - name: totp-resend-timeout
-      description: totp-resend-timeout
+      description: totp-resend-timeout.
     - name: totp-password-required
-      description: totp-password-required
+      description: totp-password-required.
     - name: totp-flex-password-required
-      description: totp-flex-password-required
+      description: totp-flex-password-required.
     - name: totp-flex-pin-password-required
-      description: totp-flex-pin-password-required
+      description: totp-flex-pin-password-required.
     - name: totp-mobile-password-required
-      description: totp-mobile-password-required
-    description: Set user  totpauthentication settings
+      description: totp-mobile-password-required.
+    description: Set user  totpauthentication settings.
   - name: safewalk-set-user-userauthentication-settings
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: multiple-step-auth-timeout
-      description: multiple-step-auth-timeout
+      description: multiple-step-auth-timeout.
     - name: allow-password
-      description: allow-password
+      description: allow-password.
     - name: allow-password-for-registration
-      description: allow-password-for-registration
+      description: allow-password-for-registration.
     - name: max-allowed-failures
-      description: max-allowed-failures
+      description: max-allowed-failures.
     - name: allow-access-when-pwd-expired
-      description: allow-access-when-pwd-expired
+      description: allow-access-when-pwd-expired.
     - name: allow-password-reset-when-forgot-pwd
-      description: allow-password-reset-when-forgot-pwd
+      description: allow-password-reset-when-forgot-pwd.
     - name: min-otp-length
-      description: min-otp-length
+      description: min-otp-length.
     - name: max-otp-length
-      description: max-otp-length
+      description: max-otp-length.
     - name: dos-tmp-lockdown-max-fail-authentications
-      description: dos-tmp-lockdown-max-fail-authentications
+      description: dos-tmp-lockdown-max-fail-authentications.
     - name: dos-tmp-lockdown-time-interval-in-seconds
-      description: dos-tmp-lockdown-time-interval-in-seconds
+      description: dos-tmp-lockdown-time-interval-in-seconds.
     - name: dos-tmp-lockdown-time-in-seconds
-      description: dos-tmp-lockdown-time-in-seconds
-    description: Set user userauthentication settings
+      description: dos-tmp-lockdown-time-in-seconds.
+    description: Set user userauthentication settings.
   - name: safewalk-set-user-virtualauthentication-settings
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: virtual-device-accept-tolerance
-      description: Virtual device accept tolerance
+      description: Virtual device accept tolerance.
     - name: virtual-device-gateways
-      description: Virtual device gateways
-    description: Set user virtualauthentication settings
+      description: Virtual device gateways.
+    description: Set user virtualauthentication settings.
   - name: safewalk-create-user
     arguments:
     - name: username
-      description: Username
+      description: Username.
       required: true
     - name: password
-      description: Password
+      description: Password.
       required: true
     - name: firstname
-      description: First Name
+      description: First Name.
       required: true
     - name: lastname
-      description: Last Name
+      description: Last Name.
       required: true
     - name: mobilephone
-      description: Mobile Phone
+      description: Mobile Phone.
       required: true
     - name: email
-      description: email
+      description: email.
       required: true
-    description: Create user
+    description: Create user.
   - name: safewalk-delete-user
     arguments:
     - name: username
       description: Username.
-    description: Delete user
+    description: Delete user.
   - name: safewalk-update-user-group
     arguments:
     - name: username
       description: Username.
     - name: new-group-name
       description: New user group.
-    description: Update user group
-  dockerimage: demisto/python3:3.10.12.63474
+    description: Update user group.
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

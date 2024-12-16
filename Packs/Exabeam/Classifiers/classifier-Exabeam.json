@@ -1,0 +1,19 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Exabeam Classifier",
+    "keyTypeMap": {
+        "Exabeam Incident": "Exabeam Incident",
+        "Exabeam Notable User": "Exabeam Notable User"
+    },
+    "name": "Exabeam Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "incident_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

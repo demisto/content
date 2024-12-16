@@ -25,10 +25,44 @@ args:
   - base64
   description: Encoding type of the input data or contents.
   defaultValue: raw
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: Number
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The name of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The SSDeep hash of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The entry ID of the file.
+  type: String
+- contextPath: File.Info
+  description: File information.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.Extension
+  description: The file extension.
+  type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
-fromversion: 6.2.0
+fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- FileCreateAndUploadV2-Test

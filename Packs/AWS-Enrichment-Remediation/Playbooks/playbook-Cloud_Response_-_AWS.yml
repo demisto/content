@@ -595,32 +595,7 @@ tasks:
                 iscontext: true
       region:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: alertJson._all_events.referenced_resource_name
-                iscontext: true
-              right:
-                value:
-                  simple: remediateResourceList
-                iscontext: true
-              ignorecase: true
-          accessor: region
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.region
-                iscontext: true
+          root: inputs.region
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -672,31 +647,7 @@ tasks:
                 iscontext: true
       region:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: alertJson._all_events.referenced_resource_name
-                iscontext: true
-              right:
-                value:
-                  simple: remediateResourceList
-                iscontext: true
-          accessor: region
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.region
-                iscontext: true
+          root: inputs.region
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -881,26 +832,7 @@ tasks:
     scriptarguments:
       accessKeyId:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alertJson._all_events.actor_effective_username
-                iscontext: true
-              right:
-                value:
-                  simple: Manual access key remediation.Answers.0
-                iscontext: true
-          accessor: _aws_specific_fields.access_key_id
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.accessKeyId
-                iscontext: true
+          root: inputs.accessKeyId
       status:
         simple: Inactive
       userName:
@@ -1010,26 +942,7 @@ tasks:
     scriptarguments:
       AccessKeyId:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alertJson._all_events.actor_effective_username
-                iscontext: true
-              right:
-                value:
-                  simple: Manual access key remediation.Answers.0
-                iscontext: true
-          accessor: _aws_specific_fields.access_key_id
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.accessKeyId
-                iscontext: true
+          root: inputs.accessKeyId
       userName:
         complex:
           root: Manual access key remediation.Answers
@@ -1115,9 +1028,9 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Credentials Remediation
+        simple: Cloud Response - AWS - Credentials Remediation
       body:
         simple: Analyst interaction is needed for the credentials remediation.
       methods: []
@@ -1235,7 +1148,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Resource Remediation
+        simple: Cloud Response - AWS - Resource Remediation
       body:
         simple: Analyst interaction is needed for the resource remediation.
       methods:
@@ -1412,7 +1325,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - User Remediation
+        simple: Cloud Response - AWS - User Remediation
       body:
         simple: Analyst interaction is needed for the user remediation.
       methods:
@@ -1665,9 +1578,9 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Block Indicators
+        simple: Cloud Response - AWS - Block Indicators
       body:
         simple: Analyst interaction is needed for the indicators remediation.
       methods: []

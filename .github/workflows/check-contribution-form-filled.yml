@@ -15,19 +15,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       - name: Install Python Dependencies
         run: |
-           poetry install --with ci
+          poetry install --with github-actions
       - name: Check if contribution form needs to be filled
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Checking if contribution form needs to be filled for PR: $PR_NUMBER"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run ./check_if_needs_to_fill_contribution_form.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN

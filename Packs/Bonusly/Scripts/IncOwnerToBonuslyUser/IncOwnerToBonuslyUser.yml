@@ -25,7 +25,7 @@ tags:
 - Utilities
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

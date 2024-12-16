@@ -250,10 +250,10 @@ script:
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
   - arguments:
-    - description: Group SCIM data with displayName
+    - description: Group SCIM data with displayName.
       name: scim
       required: true
-    description: Creates an empty group
+    description: Creates an empty group.
     name: iam-create-group
     outputs:
     - contextPath: CreateGroup.id
@@ -272,7 +272,7 @@ script:
       description: Reason why the API failed.
       type: String
   - arguments:
-    - description: Group SCIM Data
+    - description: Group SCIM Data.
       name: scim
       required: true
     - auto: PREDEFINED
@@ -282,7 +282,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Retrieves the group information including members
+    description: Retrieves the group information including members.
     name: iam-get-group
     outputs:
     - contextPath: GetGroup.id
@@ -307,7 +307,7 @@ script:
       description: Reason why the API failed.
       type: String
   - arguments:
-    - description: Group SCIM with id in it
+    - description: Group SCIM with id in it.
       name: scim
       required: true
     description: Permanently removes a group.
@@ -329,16 +329,16 @@ script:
       description: Reason why the API failed.
       type: String
   - arguments:
-    - description: Group SCIM data
+    - description: Group SCIM data.
       name: scim
       required: true
-    - description: List of members ids to add. A maximum of 15,000 users per call can be modified using this command
+    - description: List of members ids to add. A maximum of 15,000 users per call can be modified using this command.
       isArray: true
       name: memberIdsToAdd
-    - description: List of members ids to be deleted from the group. A maximum of 15,000 users per call can be modified using this command
+    - description: List of members ids to be deleted from the group. A maximum of 15,000 users per call can be modified using this command.
       isArray: true
       name: memberIdsToDelete
-    description: Updates an existing group resource. This command allows individual (or groups of) users to be added or removed from the group with a single operation. A max of 15,000 users can be modified in 1 call
+    description: Updates an existing group resource. This command allows individual (or groups of) users to be added or removed from the group with a single operation. A max of 15,000 users can be modified in 1 call.
     name: iam-update-group
     outputs:
     - contextPath: UpdateGroup.id
@@ -356,7 +356,7 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Reason why the API failed.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.113941
   runonce: false
   script: '-'
   subtype: python3

@@ -2,7 +2,7 @@
     "name": "Graylog",
     "description": "Integration with Graylog",
     "support": "community",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.8",
     "author": "Harri Ruuttila",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

@@ -48,8 +48,8 @@ def test_aws_secrets_manager_secret_list_command(mocker):
     aws_client = create_client()
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'list_secrets',
-                        return_value={'SecretList': [{'ARN': 'arn:aws:secretsmanager:eu-central-1:654338056632:secret:'
-                                                             'test_for_moishy-fVYXb6', 'Name': 'test_for_moishy',
+                        return_value={'SecretList': [{'ARN': 'arn:aws:secretsmanager:eu-central-1:123456789012:secret:'
+                                                             'test_account', 'Name': 'test_for_moishy',
                                                       'Description': 'new description', 'LastChangedDate': None,
                                                       'Tags': [], 'SecretVersionsToStages':
                                                           {'01cba660-28be-45d7-8597-d1ab295b0f35': ['AWSCURRENT'],
@@ -57,7 +57,7 @@ def test_aws_secrets_manager_secret_list_command(mocker):
                                                       'CreatedDate': None}]})
     mocker.patch.object(demisto, 'results')
 
-    AWS_SECRETSMANAGER.aws_secrets_manager_secret_list_command(aws_client, dict())
+    AWS_SECRETSMANAGER.aws_secrets_manager_secret_list_command(aws_client, {})
 
     results = demisto.results.call_args[0][0]
 
@@ -153,3 +153,13 @@ def test_aws_secrets_manager_secret_policy_get_command(mocker, args, expected_re
         assert results == expected_results
     else:
         return_error_method.assert_called_with(expected_results)
+
+
+@pytest.mark.parametrize('secret, should_create', [
+    ({}, False),
+    ({'username', "somevalue"}, True),
+    ({'randomvalue', "somevalue"}, False),
+    ({'username': "somevalue", "password": 'somevalue'}, True)
+])
+def test_should_create_credential(secret, should_create):
+    assert AWS_SECRETSMANAGER.should_create_credential(secret) == should_create

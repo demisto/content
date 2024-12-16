@@ -165,6 +165,46 @@ def test_list_of_indicators_with_no_json_object():
         assert indicators[1].get('rawJSON') == {'indicator': '2.2.2.2'}
 
 
+def test_fetch_indicators_with_exclude_enrichment():
+    """
+    Given:
+        - Exclude enrichment parameter is used
+    When:
+        - Calling the fetch_indicators_command
+    Then:
+        - The indicators should include the enrichmentExcluded field if exclude is True.
+    """
+
+    feed_name_to_config = {
+        'Github': {
+            'url': 'https://api.github.com/meta',
+            'extractor': "hooks",
+            'indicator': None,
+            'remove_ports': "true"
+        }
+    }
+
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', json=json.loads(FLAT_LIST_OF_INDICATORS))
+
+        client = Client(
+            url='https://api.github.com/meta',
+            feed_name_to_config=feed_name_to_config,
+            insecure=True
+        )
+
+        indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'],
+                                                 auto_detect=True, remove_ports=True, enrichment_excluded=True)
+
+        assert len(indicators) == 3
+        assert indicators[0].get('value') == '1.1.1.1'
+        assert indicators[0].get('type') == 'IP'
+        assert indicators[1].get('rawJSON') == {'indicator': '2.2.2.2'}
+
+        for ind in indicators:
+            assert ind['enrichmentExcluded']
+
+
 def test_post_of_indicators_with_no_json_object():
     feed_name_to_config = {
         'Github': {

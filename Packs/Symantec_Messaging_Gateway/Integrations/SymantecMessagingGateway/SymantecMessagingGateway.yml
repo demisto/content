@@ -34,13 +34,13 @@ script:
     - name: email
       required: true
       default: true
-      description: Email address to block
+      description: Email address to block.
     outputs:
     - contextPath: Email.Address
-      description: Email address that was blocked
+      description: Email address that was blocked.
       type: string
     - contextPath: Email.Blocked
-      description: True if blocked, False if unblocked
+      description: True if blocked, False if unblocked.
       type: boolean
     description: Adds email address to the Local Bad Sender Domains.
     execution: true
@@ -49,13 +49,13 @@ script:
     - name: email
       required: true
       default: true
-      description: Email address to unblock
+      description: Email address to unblock.
     outputs:
     - contextPath: Email.Address
-      description: Email address that was unblocked
+      description: Email address that was unblocked.
       type: string
     - contextPath: Email.Blocked
-      description: True if blocked, False if unblocked
+      description: True if blocked, False if unblocked.
       type: boolean
     description: Removes email address from the Local Bad Sender Domains.
     execution: true
@@ -64,13 +64,13 @@ script:
     - name: domain
       required: true
       default: true
-      description: Domain to block
+      description: Domain to block.
     outputs:
     - contextPath: Domain.Name
-      description: Domain name that was blocked
+      description: Domain name that was blocked.
       type: string
     - contextPath: Domain.Blocked
-      description: True if blocked, False if unblocked
+      description: True if blocked, False if unblocked.
       type: boolean
     description: Adds domain to the Local Bad Sender Domains group.
     execution: true
@@ -79,13 +79,13 @@ script:
     - name: ip
       required: true
       default: true
-      description: IP address to block
+      description: IP address to block.
     outputs:
     - contextPath: IP.Address
-      description: IP address that was blocked
+      description: IP address that was blocked.
       type: string
     - contextPath: IP.Blocked
-      description: True if blocked, False if unblocked
+      description: True if blocked, False if unblocked.
       type: boolean
     description: Adds IP address to the Local Bad Sender IPs  group.
     execution: true
@@ -94,7 +94,7 @@ script:
     - name: ip
       required: true
       default: true
-      description: IP address to unblock
+      description: IP address to unblock.
     description: Removes IP address from the Local Bad Sender IPs  group.
     execution: true
   - name: smg-unblock-domain
@@ -102,13 +102,13 @@ script:
     - name: domain
       required: true
       default: true
-      description: Domain to unblock
+      description: Domain to unblock.
     outputs:
     - contextPath: Domain.Name
-      description: Domain name that was unblocked
+      description: Domain name that was unblocked.
       type: string
     - contextPath: Domain.Blocked
-      description: True if blocked, False if unblocked
+      description: True if blocked, False if unblocked.
       type: boolean
     description: Removes domain from the Local Bad Sender Domains group.
     execution: true
@@ -118,7 +118,7 @@ script:
   - name: smg-get-blocked-ips
     arguments: []
     description: Returns a list of all blocked IP addresses.
-  dockerimage: demisto/bs4-py3:1.0.0.48637
+  dockerimage: demisto/bs4-py3:1.0.0.117152
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

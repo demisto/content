@@ -1,4 +1,3 @@
-import json
 import numpy as np
 import pandas as pd
 import pytest
@@ -35,16 +34,17 @@ def get_related_indicators(incident_id: str):
 
 
 def mock_execute_command(command: str, args: dict):
-    query: str = args.get("query") or ""
-    from_date: str = args.get("fromDate") or ""
     match command:
-        case "GetIncidentsByQuery":
-            match = re.search(r"incident\.id:\((.*)\)", query)
+        case "getIncidents":
+            query: str = args.get("query") or ""
+            from_date: str = args.get("fromdate") or ""
+            match = re.search(r"incident\.id:\(([^\)]*)\)", query)
             incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
-            res = json.dumps([
+            res = {"data": [
                 {k: v for k, v in i.items() if k in args["populateFields"] or k == "id"} for i in INCIDENTS_LIST
-                if i["id"] in incident_ids and (not from_date or parse(i["created"]) >= parse(from_date))
-            ])
+                if i["id"] in incident_ids
+                and (not from_date or parse(i["created"]) >= parse(from_date).replace(tzinfo=None))
+            ]}
         case _:
             raise Exception(f"Unmocked command: {command}")
     return [{"Contents": res, "Type": "json"}]
@@ -347,3 +347,84 @@ def test_score():
     scores = res.values.tolist()
     assert (all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)))
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
+
+
+def test_enrich_incidents_with_data(mocker):
+    """
+    Given:
+        A DataFrame of incidents and a list of fields to display.
+    When:
+        The enrich_incidents function is called.
+    Then:
+        The function should return an enriched DataFrame with the specified fields.
+    """
+    incidents = pd.DataFrame({
+        'id': ['1', '2'],
+        'name': ['Incident 1', 'Incident 2']
+    })
+    fields_to_display = ['created', 'status', 'type']
+
+    mock_get_incidents = mocker.patch('DBotFindSimilarIncidentsByIndicators.get_incidents_by_query')
+    mock_get_incidents.return_value = [
+        {'id': '1', 'created': '2023-05-01T10:00:00Z', 'status': 1, 'type': 'Malware'},
+        {'id': '2', 'created': '2023-05-02T11:00:00Z', 'status': 2, 'type': 'Phishing'}
+    ]
+
+    result = enrich_incidents(incidents, fields_to_display)
+
+    assert 'created' in result.columns
+    assert 'status' in result.columns
+    assert 'type' in result.columns
+    assert result['created'].tolist() == ['2023-05-01', '2023-05-02']
+    assert result['status'].tolist() == ['Active', 'Closed']
+    assert result['type'].tolist() == ['Malware', 'Phishing']
+
+
+def test_enrich_incidents_empty_dataframe(mocker):
+    """
+    Given:
+        An empty DataFrame of incidents and a list of fields to display.
+    When:
+        The enrich_incidents function is called.
+    Then:
+        The function should return the empty DataFrame without modifications.
+    """
+    incidents = pd.DataFrame()
+    fields_to_display = ['created', 'status', 'type']
+
+    result = enrich_incidents(incidents, fields_to_display)
+
+    assert result.empty
+
+
+def test_enrich_incidents_missing_field(mocker):
+    """
+    Given:
+        A DataFrame of incidents and a list of fields to display, including a field not returned by get_incidents_by_query.
+    When:
+        The enrich_incidents function is called.
+    Then:
+        The function should return the DataFrame with empty values for the missing field.
+    """
+    incidents = pd.DataFrame({
+        'id': ['1', '2'],
+        'name': ['Incident 1', 'Incident 2']
+    })
+    fields_to_display = ['created', 'status', 'type', 'missing_field']
+
+    mock_get_incidents = mocker.patch('DBotFindSimilarIncidentsByIndicators.get_incidents_by_query')
+    mock_get_incidents.return_value = [
+        {'id': '1', 'created': '2023-05-01T10:00:00Z', 'status': 1, 'type': 'Malware'},
+        {'id': '2', 'created': '2023-05-02T11:00:00Z', 'status': 2, 'type': 'Phishing'}
+    ]
+
+    result = enrich_incidents(incidents, fields_to_display)
+
+    assert 'created' in result.columns
+    assert 'status' in result.columns
+    assert 'type' in result.columns
+    assert 'missing_field' in result.columns
+    assert result['created'].tolist() == ['2023-05-01', '2023-05-02']
+    assert result['status'].tolist() == ['Active', 'Closed']
+    assert result['type'].tolist() == ['Malware', 'Phishing']
+    assert result['missing_field'].tolist() == ['', '']

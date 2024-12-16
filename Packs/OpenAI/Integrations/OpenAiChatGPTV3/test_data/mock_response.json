@@ -1,0 +1,22 @@
+{
+        "id": "chatcmpl-XXXX",
+        "object": "chat.completion",
+        "created": 1717171717,
+        "model": "gpt-4-turbo-2024-04-09",
+        "choices": [
+            {
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": "Hello! How can I assist you today?"},
+                "logprobs": null,
+                "finish_reason": "stop"
+            }
+        ],
+        "usage": {
+            "prompt_tokens": 9,
+            "completion_tokens": 9,
+            "total_tokens": 18
+        },
+        "system_fingerprint": "fp_0000000"
+}

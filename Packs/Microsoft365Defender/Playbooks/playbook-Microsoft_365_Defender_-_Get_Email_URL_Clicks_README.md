@@ -1,4 +1,4 @@
-This playbook retrieves email data based on the `URLDomain` and `MessageID` inputs. It uses the Microsoft 365 Defender's Advanced Hunting to search only for URL click events based on the playbook inputs and enriches it with the full email data.
+This playbook retrieves email data based on the `URLDomain` and `MessageID` inputs. It uses the Microsoft Defender XDR's Advanced Hunting to search only for URL click events based on the playbook inputs and enriches it with the full email data.
 
 **URLDomain** - If the “URLDomain” value is found as a substring of the URL(s) in the body of the email, the email is retrieved.
 
@@ -76,4 +76,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Microsoft 365 Defender - Get Email URL Clicks](../doc_files/Microsoft_365_Defender_-_Get_Email_URL_Clicks.png)
+![Microsoft Defender XDR - Get Email URL Clicks](../doc_files/Microsoft_365_Defender_-_Get_Email_URL_Clicks.png)

@@ -128,7 +128,7 @@ RESPONSE_LIST_INCIDENT = {
                     "watchlisted": False,
                     "policystarttime": 1692950376801,
                     "policyendtime": 1695613655539,
-                    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+                    "solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
                 }
             ]
         }
@@ -162,7 +162,7 @@ RESPONSE_GET_INCIDENT = {
                     "watchlisted": False,
                     "policystarttime": 1692950376801,
                     "policyendtime": 1695613655539,
-                    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+                    "solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
                 }
             ]
         }
@@ -330,7 +330,7 @@ RESPONSE_FETCH_INCIDENT_ITEM = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 
 RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4 = {
@@ -366,7 +366,7 @@ RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4 = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 
 RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL = {
@@ -400,7 +400,7 @@ RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "assignedGroup": "SECURITYOPERATIONS",
@@ -438,7 +438,7 @@ RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "workflowName": "SOCTeamReview",
     "policystarttime": 1692950376801,
     "policyendtime": 1695613655539,
-    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
 }
 RESPONSE_FETCH_INCIDENTS = {
     "totalIncidents": 1.0,
@@ -456,7 +456,22 @@ RESPONSE_FETCH_INCIDENTS = {
             "reason": [
                 "Resource: Symantec Email DLP",
                 "Policy: Emails with large File attachments",
-                "Threat: Data egress attempts"
+                "Threat: Data egress attempts",
+                {
+                    "Policies": {
+                        "stage1": {
+                            "s1": [
+                                "TestEmailTemplate1",
+                                "TestEmailTemplate2"
+                            ]
+                        },
+                        "stage2": {
+                            "s2": [
+                                "TestEmailtemplate3"
+                            ]
+                        }
+                    }
+                }
             ],
             "violatorSubText": "1096",
             "entity": "Users",
@@ -466,7 +481,7 @@ RESPONSE_FETCH_INCIDENTS = {
             "watchlisted": False,
             "policystarttime": 1692950376801,
             "policyendtime": 1695613655539,
-            "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
+            "solrquery": "index = violation and ( ( @policyname = \"Response-*PB?-Resources-\\AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""  # noqa: E501
         }
     ]
 }
@@ -635,11 +650,184 @@ RESPONSE_LIST_VIOLATION_6_4 = {
     "inputParams": {
         "generationtime_from": "01/17/2022 00:00:00",
         "max": "50",
-        "query": "index = violation",
+        "query": f"index = violation and policy=\"Response-Account-\\\\\\{chr(92)}?{chr(92)}*AutoPlay\"",
         "generationtime_to": "01/17/2023 00:00:20"
     },
     "index": "violation",
     "nextCursorMarker": "test-cursor-marker"
+}
+
+RESPONSE_LIST_ACTIVITY = {
+    "totalDocuments": 4,
+    "events": [
+        {
+            "accountname": "ACCOUNT_001",
+            "accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-1",
+            "agentfilename": "test.txt",
+            "categorybehavior": "Account Create",
+            "categoryobject": "Account Management",
+            "categoryseverity": "0",
+            "collectionmethod": "file",
+            "collectiontimestamp": "1690803374000",
+            "destinationusername": "TEST134044",
+            "devicehostname": "HOST.com",
+            "eventid": "00000000-0000-0000-0000-000000000001",
+            "eventoutcome": "Success",
+            "filepath": "N/A",
+            "ingestionnodeid": "CONSOLE",
+            "jobstarttime": "1690803374000",
+            "message": "A user account was created.",
+            "publishedtime": "1690803374572",
+            "receivedtime": "1690803420706",
+            "resourcename": "HOST.com",
+            "sourceusername": "USER",
+            "tenantid": "2",
+            "tenantname": "Response-Automation",
+            "timeline": "1670911200000"
+        },
+        {
+            "_indexed_at_tdt": "Thu Aug 29 15:04:10 UTC 2024",
+            "_version_": "0000000000000000001",
+            "accountname": "ACCOUNT_002",
+            "accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-2",
+            "agentfilename": "test.txt",
+            "baseeventid": "0001",
+            "categorizedtime": "Afternoon",
+            "categorybehavior": "Account Create",
+            "categoryobject": "Account Management",
+            "categoryoutcome": "Success",
+            "categoryseverity": "0",
+            "collectionmethod": "file",
+            "collectiontimestamp": "1690803374000",
+            "customnumber1": "3.0",
+            "customstring13": "String",
+            "customtime1": "1595257341000",
+            "customtime2": "1595257341000",
+            "datetime": "1724766983279",
+            "dayofmonth": "27",
+            "dayofweek": "3",
+            "dayofyear": "240",
+            "destinationntdomain": "XYZ",
+            "destinationprocessname": "Test123",
+            "destinationservicename": "Test123",
+            "destinationuserid": "0-0-0-00-0000000000-00002",
+            "destinationusername": "TEST134044",
+            "destinationuserprivileges": "Impersonation",
+            "devicecustomstring4": "Custom",
+            "deviceeventcategory": "Category",
+            "devicehostname": "HOST.com",
+            "ehash": "00000000000000000000000000000000000000000000000000000000000000001",
+            "eventid": "00000000-0000-0000-0000-000000000002",
+            "eventoutcome": "Success",
+            "filepath": "N/A",
+            "filepermission": "Yes",
+            "hour": "13",
+            "id": "-1",
+            "ingestionnodeid": "CONSOLE",
+            "ipaddress": "0.0.0.2",
+            "ipaddress_long": "000000002",
+            "jobid": "002",
+            "jobstarttime": "1690803374000",
+            "message": "A user account was created.",
+            "minute": "29",
+            "month": "7",
+            "oldfileid": "002",
+            "oldfilepath": "-",
+            "others": "additionaldetails19=-",
+            "poprocessedtime": "1724766960000",
+            "publishedtime": "1690803374572",
+            "rawevent": "0000000000000002|0.0.0.2|002|Temp2024",
+            "raweventsize": "2346",
+            "receivedtime": "1690803420500",
+            "resourcegroupid": "3955",
+            "resourcegroupname": "Group_2",
+            "resourcehostname": "0.0.0.2",
+            "resourcehostname_long": "172433163",
+            "resourcename": "HOST.com",
+            "resourcetype": "Type",
+            "rg_category": "os",
+            "rg_functionality": "Computer",
+            "rg_resourcetypeid": "120",
+            "rg_timezoneoffset": "UTC",
+            "rg_vendor": "Vendor",
+            "sessionid": "0x0",
+            "sourceaddress": "0.0.0.2",
+            "sourceaddress_long": "172433207",
+            "sourcehostname": "HOST.com",
+            "sourcentdomain": "-",
+            "sourceport": "0001",
+            "sourceprocessname": "-",
+            "sourceuserid": "0-1-0-0",
+            "sourceusername": "USER",
+            "tenantid": "2",
+            "tenantname": "Response-Automation",
+            "timeline": "1670911200000",
+            "timeline_by_hour": "1724763600000",
+            "timeline_by_minute": "1724766960000",
+            "timeline_by_month": "1722488400000",
+            "timeline_by_week": "1724562000000",
+            "timestamp": "Tue Aug 27 14:24:25 UTC 2024",
+            "transactionstring1": "Events",
+            "transactionstring2": "{00000000-0000-0000-0000-000000000000}",
+            "transactionstring3": "-",
+            "userid": "-1",
+            "week": "35",
+            "year": "2024"
+        },
+        {
+            "accountname": "ACCOUNT_002",
+            "accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-2",
+            "agentfilename": "test.txt",
+            "categorybehavior": "Account Create",
+            "categoryobject": "Account Management",
+            "categoryseverity": "0",
+            "collectionmethod": "file",
+            "collectiontimestamp": "1690803374000",
+            "destinationusername": "TEST134044",
+            "devicehostname": "HOST.com",
+            "eventid": "00000000-0000-0000-0000-000000000002",
+            "eventoutcome": "Success",
+            "filepath": "N/A",
+            "ingestionnodeid": "CONSOLE",
+            "jobstarttime": "1690803374000",
+            "message": "A user account was created.",
+            "publishedtime": "1690803374572",
+            "receivedtime": "1690803420500",
+            "resourcename": "HOST.com",
+            "sourceusername": "USER",
+            "tenantid": "2",
+            "tenantname": "Response-Automation",
+            "timeline": "1670911200000"
+        }
+    ],
+    "error": False,
+    "available": False,
+    "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+    "applicationTz": "WEB",
+    "inputParams": {
+        "eventtime_from": "01/12/2024 10:00:00",
+        "query": f"index = activity and hostname = \"HOST\\\\{chr(92)}?{chr(92)}*.com\"",
+        "eventtime_to": "01/15/2024 12:01:00",
+    },
+    "index": "activity",
+    "nextCursorMarker": "00000000-0000-0000-0000-000000000001="
+}
+
+RESPONSE_LIST_ACTIVITY_NO_DATA = {
+    "totalDocuments": 4,
+    "events": [],
+    "error": False,
+    "available": False,
+    "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+    "applicationTz": "WEB",
+    "inputParams": {
+        "eventtime_from": "01/12/2024 10:00:00",
+        "query": "index = activity",
+        "eventtime_to": "01/15/2024 12:01:00",
+    },
+    "index": "activity",
+    "message": "All records have been retrieved. No more results to be fetched.",
+    "nextCursorMarker": "00000000-0000-0000-0000-000000000001="
 }
 
 RESPONSE_LIST_WHITELISTS_ENTRY = {

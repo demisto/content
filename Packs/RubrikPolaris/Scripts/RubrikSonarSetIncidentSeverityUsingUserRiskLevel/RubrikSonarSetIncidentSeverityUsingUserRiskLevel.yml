@@ -1,0 +1,27 @@
+args:
+- description: "The comma-separated list of risk levels.\n\nSupported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK."
+  name: risk_levels
+  auto: PREDEFINED
+  predefined:
+  - UNKNOWN_RISK
+  - HIGH_RISK
+  - MEDIUM_RISK
+  - LOW_RISK
+  - NO_RISK
+  isArray: true
+comment: 'Script used to set the incident severity using the risk level(s) provided from the argument.'
+commonfields:
+  id: RubrikSonarSetIncidentSeverityUsingUserRiskLevel
+  version: -1
+enabled: false
+name: RubrikSonarSetIncidentSeverityUsingUserRiskLevel
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -15,14 +15,19 @@ urllib3.disable_warnings()
 
 
 """PARAMETERS"""
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
+PARAMS = demisto.params()
+AWS_DEFAULT_REGION = PARAMS.get('defaultRegion')
+AWS_ROLE_ARN = PARAMS.get('roleArn')
+AWS_ROLE_SESSION_NAME = PARAMS.get('roleSessionName')
+AWS_ROLE_SESSION_DURATION = PARAMS.get('sessionDuration')
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+AWS_ACCESS_KEY_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('access_key')
+AWS_SECRET_ACCESS_KEY = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret_key')
+VERIFY_CERTIFICATE = not PARAMS.get('insecure', True)
+AWS_STS_REGIONAL_ENDPOINTS = PARAMS.get('sts_regional_endpoint') or None
+if AWS_STS_REGIONAL_ENDPOINTS:
+    demisto.debug(f"Sets the environment variable AWS_STS_REGIONAL_ENDPOINTS={AWS_STS_REGIONAL_ENDPOINTS}")
+    os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = AWS_STS_REGIONAL_ENDPOINTS.lower()
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,

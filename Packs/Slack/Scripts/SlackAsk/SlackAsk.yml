@@ -33,7 +33,7 @@ args:
 - description: A comma-separated list of additional options in the format of "option#color", for example, "maybe#red". The default color is "black".
   name: additionalOptions
 - defaultValue: Thank you for your response.
-  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e. "Thank you {user}. You have answered {response}.")
+  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e. "Thank you {user}. You have answered {response}.").
   name: reply
 - defaultValue: 1 day
   description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
@@ -53,7 +53,7 @@ tags:
 - slack
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - no test - Untestable
 dependson:

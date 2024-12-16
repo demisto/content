@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Expanse Enrich Cloud Assets
+deprecated: true
 description: |-
+  Deprecated. No available replacement.
   Subplaybook for Handle Expanse Incident playbooks.
   This Playbook is meant to be used as a subplaybook to enrich Public Cloud Assets (i.e. IP addresses and FQDNs) by:
   - Searching the corresponding Region and Service by correlating the provided IPs with IP range feeds retrieved from Public Cloud Providers (require TIM and Public Cloud feeds such as AWS Feed integrations to be enabled).

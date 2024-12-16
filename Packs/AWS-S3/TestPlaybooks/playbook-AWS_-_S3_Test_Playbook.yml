@@ -85,7 +85,7 @@ tasks:
       - "6"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12345
       entryID:
         simple: ${File.EntryID}
       key:
@@ -124,7 +124,7 @@ tasks:
       - "5"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12345
       key:
         simple: ${File.Name}
     separatecontext: false
@@ -161,7 +161,7 @@ tasks:
       - "9"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12345
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -196,7 +196,7 @@ tasks:
       - "4"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12345
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -304,7 +304,7 @@ tasks:
       brand: AWS - S3
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12345
     separatecontext: false
     continueonerrortype: ""
     view: |-

@@ -1,0 +1,126 @@
+[
+    {
+        "Event": {
+            "Attribute": [
+                {
+                    "Galaxy": [],
+                    "category": "Payload delivery",
+                    "comment": "",
+                    "first_seen": null,
+                    "fpid": "0000000000000000000001",
+                    "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
+                    "last_seen": null,
+                    "timestamp": "1717128199",
+                    "type": "sha256",
+                    "uuid": "00000000-0000-0000-0000-0001",
+                    "value": {
+                        "comment": "",
+                        "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+                    }
+                }
+            ],
+            "CryptographicKey": [],
+            "EventReport": [],
+            "Object": [],
+            "Tag": [
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "mitre:T1001",
+                    "numerical_value": null
+                }
+            ],
+            "attribute_count": "5",
+            "benign_attributes_found": 0,
+            "date": "2024-05-31",
+            "event_creator_email": "info@flashpoint-intel.com",
+            "info": "Observation: strike \"0000000000000000000000000000000000000000000000000000000000000001\" [2024-05-31 03:49:12]",
+            "protected": null,
+            "publish_timestamp": "1717128204",
+            "timestamp": "1717128199",
+            "total_attributes": 5,
+            "uuid": "00000000-0000-0000-0000-0001"
+        },
+        "attack_ids": [
+            "T1001"
+        ],
+        "basetypes": [
+            "indicator"
+        ],
+        "fpid": "0000000000000000000001",
+        "header_": {
+            "indexed_at": 1717128272,
+            "ingested_at": 1717128208,
+            "is_visible": true,
+            "observed_at": 1717128208,
+            "pipeline_duration": 63884347472,
+            "source": "urn:fp:component:exporter"
+        },
+        "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
+        "malware_description": "This malicious adoption has caused difficulties in determining whether observed activity is related to an ongoing criminal attack."
+    },
+    {
+        "Event": {
+            "Attribute": [
+                {
+                    "Galaxy": [],
+                    "category": "Payload delivery",
+                    "comment": "",
+                    "first_seen": null,
+                    "fpid": "0000000000000000000002",
+                    "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000002",
+                    "last_seen": null,
+                    "timestamp": "1717117256",
+                    "type": "sha256",
+                    "uuid": "53cafc74-0d90-4faf-b3ec-5057fbb43f8b",
+                    "value": {
+                        "comment": "",
+                        "sha256": "0000000000000000000000000000000000000000000000000000000000000002"
+                    }
+                }
+            ],
+            "CryptographicKey": [],
+            "EventReport": [],
+            "Object": [],
+            "Tag": [
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "mitre:T1001",
+                    "numerical_value": null
+                }
+            ],
+            "attribute_count": "5",
+            "benign_attributes_found": 0,
+            "date": "2024-05-31",
+            "event_creator_email": "info@flashpoint-intel.com",
+            "info": "Observation: strike \"0000000000000000000000000000000000000000000000000000000000000002\" [2024-05-31 00:01:14]",
+            "protected": null,
+            "publish_timestamp": "1717117259",
+            "timestamp": "1717117256",
+            "total_attributes": 5,
+            "uuid": "00000000-0000-0000-0000-0002"
+        },
+        "attack_ids": [
+            "T1001"
+        ],
+        "basetypes": [
+            "indicator"
+        ],
+        "fpid": "0000000000000000000002",
+        "header_": {
+            "indexed_at": 1717117323,
+            "ingested_at": 1717117295,
+            "is_visible": true,
+            "observed_at": 1717117295,
+            "pipeline_duration": 63884336523,
+            "source": "urn:fp:component:exporter"
+        },
+        "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000002",
+        "malware_description": "Strike became popular among threat actors as an initial access payload, as well as a second-stage tool threat actors use once access is achieved."
+    }
+]

@@ -183,7 +183,7 @@ tasks:
       description: Get a hostname's list of prefetches from job results
       id: 866f81ea-54f2-48d8-8f88-248d96db40a2
       iscommand: true
-      name: harfanglab-result-prefetechlist
+      name: harfanglab-result-prefetchlist
       script: Hurukai|||harfanglab-result-prefetchlist
       type: regular
       version: -1

@@ -1,9 +1,9 @@
 args:
 - default: true
-  description: 'The IPv4 to vriefy.'
+  description: The IPv4 to vriefy.
   isArray: true
   name: input
-comment: 'Verify that the address is a valid IPv4 address.'
+comment: Verify that the address is a valid IPv4 address.
 commonfields:
   id: VerifyIPv4Indicator
   version: -1
@@ -15,7 +15,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 5.5.0
 tests:
 - No test

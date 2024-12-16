@@ -172,6 +172,7 @@ def check_edl(cmd, start_time, EDL, edl_user, edl_pwd, verify_certificate, email
         return ["Success"]
     elif cmd == "get-edl-contents":
         return [csv_string, pull_time]
+    return None
 
 
 ''' MAIN FUNCTION '''

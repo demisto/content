@@ -1,0 +1,16 @@
+{
+    "data": {
+        "content": [
+            {
+                "comment": "Tal Domain Test",
+                "id": "1108",
+                "modifiedOn": 1705242267719,
+                "type": "Domain",
+                "value": "tal.com"
+            }
+        ]
+    },
+    "status": "DONE",
+    "statusCode": 200,
+    "statusType": 2
+}

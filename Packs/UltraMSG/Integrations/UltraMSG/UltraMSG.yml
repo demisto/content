@@ -3,12 +3,12 @@ commonfields:
   id: UltraMSG
   version: -1
 configuration:
-- additionalinfo: "When creating an instance, you'll get a token Example: ty37deadbeef37xx"
+- additionalinfo: 'When creating an instance, you''ll get a token Example: ty37deadbeef37xx'
   display: Token
   name: token
   required: true
   type: 4
-- additionalinfo: "When creating an instance, you'll get an instance id. Example: instance12345"
+- additionalinfo: 'When creating an instance, you''ll get an instance id. Example: instance12345'
   display: Instance
   name: instance
   required: true
@@ -27,7 +27,7 @@ script:
       required: true
     description: Send WhatsApp Message
     name: send-whatsapp
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

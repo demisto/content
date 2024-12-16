@@ -13,7 +13,7 @@ description: |-
   * Sophos
   * Forcepoint
   * Checkpoint
-  * Netcraft
+  * Netcraft.
 starttaskid: "0"
 tasks:
   "0":
@@ -814,7 +814,8 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst
+        simple: Analyst
+        simple:marketplacev2: Investigator
       subject:
         simple: 'User Verification - Block URLs (Inc #${incident.id})'
       body:
@@ -1138,9 +1139,7 @@ tasks:
       - "41"
     scriptarguments:
       brandname:
-        simple: Netcraft
-    results:
-    - brandInstances
+        simple: Netcraft V2
     separatecontext: false
     view: |-
       {
@@ -1165,11 +1164,13 @@ tasks:
       id: 0e06c863-2829-4749-8d1a-6daeb34d89c6
       version: -1
       name: Block URL with Netcraft
-      description: Reports an attack to Netcraft.
-      script: Netcraft|||netcraft-report-attack
+      description: |
+        Report a new attack or authorize an existing attack in the Takedown Service.
+        If a takedown for the attack already exists in the Netcraft system it will be authorized, otherwise, a new takedown will be added and authorized.
+      script: '|||netcraft-attack-report'
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -1411,9 +1412,9 @@ inputs:
     For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
     Remember, this input will only be used when there is no input to the CategoryName.
     Default: Shared
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-- Send Investigation Summary Reports - Test
+- No tests (auto formatted)
 fromversion: 6.5.0
 system: true

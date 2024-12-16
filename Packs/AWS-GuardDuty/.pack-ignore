@@ -1,5 +1,5 @@
 [file:AWSGuardDuty.yml]
-ignore=IN126,BA108,BA109,IN124
+ignore=IN126,BA108,BA109
 
 [known_words]
 gd

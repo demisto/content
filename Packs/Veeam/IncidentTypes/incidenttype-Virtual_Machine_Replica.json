@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#8c7b94",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Virtual Machine Replica",
+    "layout": "Triggered Alarm",
+    "locked": false,
+    "name": "Virtual Machine Replica",
+    "onChangeRepAlg": 1,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "weeks": 0,
+    "weeksR": 0
+}

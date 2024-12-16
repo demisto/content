@@ -8,12 +8,12 @@ ignore=PA116
 ignore=IN126,BA108,BA109
 
 [file:README.md]
-ignore=RM104
-
+ignore=RM104,RM112
 
 [file:Cylance_Protect_v2_image.png]
 ignore=IM111
 
 [known_words]
-Cylance
+cylance
 instaquery
+

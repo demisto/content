@@ -1,0 +1,16 @@
+{
+    "successful_creation": {
+        "args": {
+            "name": "acme",
+            "description": "description"
+        },
+        "command": "safebreach-generate-api-key"
+    },
+    "failed_creation": {
+        "args": {
+            "name": "acme",
+            "description": "description"
+        },
+        "command": "safebreach-generate-api-key"
+    }
+}

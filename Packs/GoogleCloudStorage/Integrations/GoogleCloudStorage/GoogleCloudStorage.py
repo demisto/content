@@ -1,10 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 ''' IMPORTS '''
 
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 from typing import Any
 import requests
 import traceback
@@ -264,6 +263,17 @@ def upload_blob(client, file_path, bucket_name, object_name):
     return blob
 
 
+def copy_blob(client, source_bucket_name, destination_bucket_name, source_object_name, destination_object_name):
+    source_bucket = client.get_bucket(source_bucket_name)
+    destination_bucket = client.get_bucket(destination_bucket_name)
+    source_blob = source_bucket.blob(source_object_name)
+    destination_blob_name = destination_object_name
+
+    blob_copy = source_bucket.copy_blob(source_blob, destination_bucket, destination_blob_name)
+
+    return blob_copy
+
+
 def gcs_list_bucket_objects(client, default_bucket, args):
     bucket_name = get_bucket_name(args, default_bucket)
     prefix = args.get('prefix', None)
@@ -308,6 +318,21 @@ def gcs_upload_file(client, default_bucket, args):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': f'File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}'
+    })
+
+
+def gcs_copy_file(client, default_bucket, args):
+    source_object_name = args['source_object_name']
+    source_bucket_name = args.get('source_bucket_name', default_bucket)
+    destination_bucket_name = args['destination_bucket_name']
+    destination_object_name = args.get('destination_object_name', source_object_name)
+
+    copy_blob(client, source_bucket_name, destination_bucket_name, source_object_name, destination_object_name)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': f'File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}'
     })
 
 
@@ -417,6 +442,24 @@ def gcs_delete_bucket_policy(client, default_bucket, args):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': f'Removed entity {entity} from ACL of bucket {bucket_name}'
+    })
+
+
+def gcs_block_public_access_bucket(client, default_bucket, args):
+    public_access_prevention = args.get('public_access_prevention', 'enforced')
+
+    if public_access_prevention not in ['enforced', 'inherited']:
+        raise ValueError('Invalid value for public_access_prevention. Accepted values are "enforced" and "inherited".')
+
+    bucket_name = get_bucket_name(args, default_bucket)
+    bucket = client.get_bucket(bucket_name)
+    bucket.iam_configuration.public_access_prevention = public_access_prevention
+    bucket.patch()
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': f'Public access prevention is set to {public_access_prevention} for {bucket_name}.'
     })
 
 
@@ -552,6 +595,9 @@ def main():
         elif command == 'gcs-upload-file':
             gcs_upload_file(client, default_bucket, args)
 
+        elif command == 'gcs-copy-file':
+            gcs_copy_file(client, default_bucket, args)
+
         #
         # Bucket policy (ACL)
         #
@@ -566,6 +612,9 @@ def main():
 
         elif command == 'gcs-delete-bucket-policy':
             gcs_delete_bucket_policy(client, default_bucket, args)
+
+        elif command == 'gcs-block-public-access-bucket':
+            gcs_block_public_access_bucket(client, default_bucket, args)
 
         #
         # Object policy (ACL)

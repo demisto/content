@@ -1,0 +1,59 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.security.huntingQueryResults",
+    "schema": [
+        {
+            "name": "Timestamp",
+            "type": "DateTime"
+        },
+        {
+            "name": "AlertId",
+            "type": "String"
+        },
+        {
+            "name": "Title",
+            "type": "String"
+        },
+        {
+            "name": "Category",
+            "type": "String"
+        },
+        {
+            "name": "Severity",
+            "type": "String"
+        },
+        {
+            "name": "ServiceSource",
+            "type": "String"
+        },
+        {
+            "name": "DetectionSource",
+            "type": "String"
+        },
+        {
+            "name": "AttackTechniques",
+            "type": "String"
+        }
+    ],
+    "results": [
+        {
+            "Timestamp": "2024-02-28T04:45:11Z",
+            "AlertId": "",
+            "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)",
+            "Category": "Exfiltration",
+            "Severity": "Medium",
+            "ServiceSource": "Microsoft Data Loss Prevention",
+            "DetectionSource": "Microsoft Data Loss Prevention",
+            "AttackTechniques": ""
+        },
+        {
+            "Timestamp": "2024-02-28T06:30:12Z",
+            "AlertId": "",
+            "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)",
+            "Category": "Exfiltration",
+            "Severity": "Medium",
+            "ServiceSource": "Microsoft Data Loss Prevention",
+            "DetectionSource": "Microsoft Data Loss Prevention",
+            "AttackTechniques": ""
+        }
+    ]
+}

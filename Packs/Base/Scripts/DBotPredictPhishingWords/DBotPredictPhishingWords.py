@@ -1,9 +1,12 @@
 # pylint: disable=no-member
-
 from CommonServerPython import *
 from string import punctuation
 import demisto_ml
 import numpy as np
+import logging
+
+# Suppress logging for a specific library
+logging.getLogger('transformers').setLevel(logging.ERROR)
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
@@ -14,27 +17,30 @@ def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
 
-def get_model_data(model_name, store_type, is_return_error):
-    res_model_list = demisto.executeCommand("getList", {"listName": model_name})[0]
-    res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-    if is_error(res_model_list) and not is_error(res_model):
-        model_data = res_model['Contents']['modelData']
-        try:
-            model_type = res_model['Contents']['model']["type"]["type"]
-            return model_data, model_type
-        except Exception:
-            return model_data, UNKNOWN_MODEL_TYPE
-    elif not is_error(res_model_list) and is_error(res_model):
-        return res_model_list["Contents"], UNKNOWN_MODEL_TYPE
-    elif not is_error(res_model_list) and not is_error(res_model):
-        if store_type == "list":
-            return res_model_list["Contents"], UNKNOWN_MODEL_TYPE
-        elif store_type == "mlModel":
-            model_data = res_model['Contents']['modelData']
-            model_type = res_model['Contents']['model']["type"]["type"]
-            return model_data, model_type
-    else:
-        handle_error("error reading model %s from Demisto" % model_name, is_return_error)
+def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[dict, str]:
+
+    def load_from_models(model_name: str) -> None | tuple[dict, str]:
+        res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})
+        if is_error(res_model):
+            demisto.debug(get_error(res_model))
+            return None
+        model_data = res_model[0]['Contents']['modelData']
+        model_type = dict_safe_get(res_model, [0, 'Contents', 'model', "type", "type"], UNKNOWN_MODEL_TYPE)
+        return model_data, model_type
+
+    def load_from_list(model_name):
+        res_model = demisto.executeCommand("getList", {"listName": model_name})
+        if is_error(res_model):
+            demisto.debug(get_error(res_model))
+            return None
+        return res_model[0]["Contents"], UNKNOWN_MODEL_TYPE
+
+    if store_type == "mlModel":
+        res = load_from_models(model_name) or load_from_list(model_name)
+    elif store_type == "list":
+        res = load_from_list(model_name) or load_from_models(model_name)
+
+    return res or handle_error(f"error reading model {model_name} from Demisto", is_return_error)  # type: ignore
 
 
 def handle_error(message, is_return_error):
@@ -88,6 +94,7 @@ def preprocess_text(text, model_type, is_return_error):
         else:
             words_to_token_maps = tokenized_text_result['originalWordsToTokens']
         return input_text, words_to_token_maps
+    return None
 
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
@@ -97,7 +104,9 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         model_type = FASTTEXT_MODEL_TYPE
     if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
         model_type = UNKNOWN_MODEL_TYPE
+
     phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
+
     is_model_applied_on_a_single_incidents = isinstance(email_subject, str) and isinstance(email_body, str)
     if is_model_applied_on_a_single_incidents:
         return predict_single_incident_full_output(email_subject, email_body, is_return_error, label_threshold,
@@ -110,7 +119,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
 
 
 def predict_batch_incidents_light_output(email_subject, email_body, phishing_model, model_type, min_text_length):
-    text_list = [{'text': "%s \n%s" % (subject, body)} for subject, body in zip(email_subject, email_body)]
+    text_list = [{'text': f"{subject} \n{body}"} for subject, body in zip(email_subject, email_body)]
     preprocessed_text_list = preprocess_text(text_list, model_type, is_return_error=False)
     batch_predictions = []
     for input_text in preprocessed_text_list:
@@ -132,14 +141,14 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
         'Type': entryTypes['note'],
         'Contents': batch_predictions,
         'ContentsFormat': formats['json'],
-        'HumanReadable': 'Applied predictions on {} incidents.'.format(len(batch_predictions)),
+        'HumanReadable': f'Applied predictions on {len(batch_predictions)} incidents.',
     }
 
 
 def predict_single_incident_full_output(email_subject, email_body, is_return_error, label_threshold, min_text_length,
                                         model_type, phishing_model, set_incidents_fields, top_word_limit,
                                         word_threshold):
-    text = "%s \n%s" % (email_subject, email_body)
+    text = f"{email_subject} \n{email_body}"
     input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
     filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
     if filtered_text_number_of_words == 0:
@@ -163,14 +172,14 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     negative_tokens = OrderedSet(explain_result['NegativeWords'])
     positive_words = find_words_contain_tokens(positive_tokens, words_to_token_maps)
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
-    positive_words = list(OrderedSet([s.strip(punctuation) for s in positive_words]))
-    negative_words = list(OrderedSet([s.strip(punctuation) for s in negative_words]))
+    positive_words = OrderedSet([s.strip(punctuation) for s in positive_words])
+    negative_words = OrderedSet([s.strip(punctuation) for s in negative_words])
     positive_words = [w for w in positive_words if w.isalnum()]
     negative_words = [w for w in negative_words if w.isalnum()]
     highlighted_text_markdown = text.strip()
     for word in positive_words:
         for cased_word in [word.lower(), word.title(), word.upper()]:
-            highlighted_text_markdown = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word),
+            highlighted_text_markdown = re.sub(fr'(?<!\w)({cased_word})(?!\w)', f'**{cased_word}**',
                                                highlighted_text_markdown)
     highlighted_text_markdown = re.sub(r'\n+', '\n', highlighted_text_markdown)
     explain_result['PositiveWords'] = [w.lower() for w in positive_words]
@@ -178,7 +187,7 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     explain_result['OriginalText'] = text.strip()
     explain_result['TextTokensHighlighted'] = highlighted_text_markdown
     predicted_label = explain_result["Label"]
-    explain_result_hr = dict()
+    explain_result_hr = {}
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr['Label'] = predicted_label
     explain_result_hr['Probability'] = "%.2f" % predicted_prob

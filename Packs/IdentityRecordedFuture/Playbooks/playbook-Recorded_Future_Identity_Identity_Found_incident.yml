@@ -1,7 +1,8 @@
 id: 'Recorded Future Identity - Identity Found (incident)'
 version: -1
 name: 'Recorded Future Identity - Identity Found (incident)'
-description: This playbook was developed as a template response when an Identity has been found and a Recorded Future Identity Incident has been created.
+deprecated: true
+description: Deprecated. Use Recorded Future - Identity Exposure instead. This playbook was developed as a template response when an Identity has been found and a Recorded Future Identity Incident has been created.
 starttaskid: "0"
 tasks:
   "0":

@@ -12,8 +12,8 @@ from requests.exceptions import ReadTimeout
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
-    Client, ASSET_PROPERTIES_NAME_MAP, \
+from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, \
+    Client, ASSET_PROPERTIES_NAME_MAP, REFERENCE_SETS_RAW_FORMATTED, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
     MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
@@ -35,8 +35,14 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, is_positive, \
     qradar_remote_network_cidr_delete_command, qradar_remote_network_cidr_update_command, \
     qradar_remote_network_deploy_execution_command, qradar_indicators_upload_command, migrate_integration_ctx, \
-    enrich_offense_with_events, perform_long_running_loop, validate_integration_context, FetchMode, \
-    MIRRORED_OFFENSES_FETCHED_CTX_KEY, IndicatorsSearcher
+    qradar_event_collectors_list_command, qradar_wincollect_destinations_list_command, \
+    qradar_disconnected_log_collectors_list_command, qradar_log_source_types_list_command, \
+    qradar_log_source_protocol_types_list_command, qradar_log_source_extensions_list_command, \
+    qradar_log_source_languages_list_command, qradar_log_source_groups_list_command, qradar_log_source_create_command, \
+    qradar_log_source_delete_command, qradar_log_source_update_command, convert_dict_to_actual_values, \
+    enrich_offense_with_events, perform_long_running_loop, validate_integration_context, convert_list_to_actual_values, \
+    qradar_search_cancel_command, \
+    MIRRORED_OFFENSES_FETCHED_CTX_KEY, FetchMode, IndicatorsSearcher
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
@@ -333,7 +339,7 @@ def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected, mock
 
 @pytest.mark.parametrize('outputs, key_replace_dict, expected',
                          [({'a': 2, 'number_of_elements': 3, 'creation_time': 1600000000000},
-                           REFERENCE_SETS_OLD_NEW_MAP,
+                           REFERENCE_SETS_RAW_FORMATTED,
                            [{'NumberOfElements': 3, 'CreationTime': '2020-09-13T12:26:40+00:00'}]),
                           ({'a': 2, 'number_of_elements': 3, 'creation_time': 1600000000000},
                            None,
@@ -418,7 +424,7 @@ def test_poll_offense_events_with_retry(mocker, requests_mock, status_exception,
         f'{client.server}/api/ariel/searches/{search_id}/results',
         json=results_response
     )
-    assert poll_offense_events(client, search_id, 16, 1) == expected
+    assert poll_offense_events(client, search_id, True, 16) == expected
 
 
 @pytest.mark.parametrize('search_exception, fetch_mode, search_response',
@@ -520,7 +526,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
          3,
          ),
     ])
-def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode, mock_search_response: dict,
+def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode: FetchMode, mock_search_response: dict,
                                     poll_events_response, events_limit):
     """
     Given:
@@ -563,9 +569,9 @@ def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode, mock_sear
     if poll_events and num_events >= min(events_limit, offense.get('event_count')):
         events = poll_events[:min(events_limit, len(poll_events))] if poll_events else []
         num_events = sum(event.get('eventcount', 1) for event in poll_events)
-        expected_offense = dict(offense, events=events,
-                                events_fetched=num_events,
-                                )
+        expected_offense: dict[str, list | int] = dict(offense, events=events,
+                                                       events_fetched=num_events,
+                                                       )
     else:
         expected_offense = dict(offense,
                                 events_fetched=num_events,
@@ -841,6 +847,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_search_create_command, 'search_create'),
                              (qradar_search_status_get_command, 'search_status_get'),
                              (qradar_search_results_get_command, 'search_results_get'),
+                             (qradar_search_cancel_command, 'search_cancel'),
                              (qradar_reference_sets_list_command, 'reference_sets_list'),
                              (qradar_reference_set_create_command, 'reference_set_create'),
                              (qradar_reference_set_delete_command, 'reference_set_delete'),
@@ -848,7 +855,6 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_reference_set_value_upsert_command, 'reference_set_bulk_load'),
                              (qradar_domains_list_command, 'domains_list'),
                              (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
-                             (qradar_log_sources_list_command, 'log_sources_list'),
                              (qradar_get_custom_properties_command, 'custom_properties'),
                              (qradar_remote_network_cidr_list_command, 'get_remote_network_cidr'),
                              (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr'),
@@ -1385,6 +1391,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         mirror_direction=mirror_direction,
         first_fetch='3 days',
         mirror_options=mirror_options,
+        assets_limit=100,
+        long_running_container_id="12345"
     )
     expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY:
                                 {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
@@ -1423,6 +1431,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         mirror_direction=mirror_direction,
         first_fetch='3 days',
         mirror_options=mirror_options,
+        assets_limit=100,
+        long_running_container_id="12345"
     )
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():
@@ -1645,3 +1655,325 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
     # make sure when status is COMPLETED that outputs are returned
     assert result.outputs
+
+
+@pytest.mark.parametrize('command_func, endpoint, resource_id', [
+    (qradar_event_collectors_list_command, '/config/event_sources/event_collectors', 0),
+    (qradar_wincollect_destinations_list_command, '/config/event_sources/wincollect/wincollect_destinations', 0),
+    (qradar_disconnected_log_collectors_list_command, '/config/event_sources/disconnected_log_collectors', 0),
+    (qradar_log_source_types_list_command, '/config/event_sources/log_source_management/log_source_types', 0),
+    (qradar_log_source_protocol_types_list_command, '/config/event_sources/log_source_management/protocol_types', 0),
+    (qradar_log_source_extensions_list_command, '/config/event_sources/log_source_management/log_source_extensions', 0),
+    (qradar_log_source_languages_list_command, '/config/event_sources/log_source_management/log_source_languages', 0),
+    (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups', 0)
+])
+def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str, resource_id: int):
+    """
+    Given:
+        - A command an endpoint and an ID.
+    When:
+        - Running the command with the corresponding endpoint and ID packed in an args object.
+    Then:
+        - Verify that the correct GET function is called with the ID and the endpoint.
+    """
+    args = {"id": resource_id}
+    get_by_id_mock = mocker.patch.object(client, 'get_resource_by_id', return_value={})
+    try:
+        command_func(client, args)
+    except KeyError:
+        demisto.log(f'command {command_func.__name__} raised key error')
+    get_by_id_mock.assert_called_with(resource_id, endpoint, None, None)
+
+
+@pytest.mark.parametrize('command_func, endpoint', [
+    (qradar_event_collectors_list_command, '/config/event_sources/event_collectors'),
+    (qradar_wincollect_destinations_list_command, '/config/event_sources/wincollect/wincollect_destinations'),
+    (qradar_disconnected_log_collectors_list_command, '/config/event_sources/disconnected_log_collectors'),
+    (qradar_log_source_types_list_command, '/config/event_sources/log_source_management/log_source_types'),
+    (qradar_log_source_protocol_types_list_command, '/config/event_sources/log_source_management/protocol_types'),
+    (qradar_log_source_extensions_list_command, '/config/event_sources/log_source_management/log_source_extensions'),
+    (qradar_log_source_languages_list_command, '/config/event_sources/log_source_management/log_source_languages'),
+    (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups',)
+])
+def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str):
+    """
+    Given:
+        - A command and an endpoint.
+    When:
+        - Running the command with the corresponding endpoint.
+    Then:
+        - Verify that the correct GET function is called with the correct endpoint
+    """
+    args = {'range': '0-49'}
+    get_list_mock = mocker.patch.object(client, 'get_resource_list', return_value=[{}])
+    try:
+        command_func(client, args)
+    except KeyError:
+        demisto.log(f'command {command_func.__name__} raised key error')
+    get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None, None)
+
+
+@pytest.mark.parametrize('id', [(0), (None)])
+def test_get_resource(mocker, id: int | None):
+    """
+    Given:
+        - An existing ID or None.
+    When:
+        - Running the get_resource function with the int or None value.
+    Then:
+        - Verify that the correct GET function is called.
+    """
+    endpoint = 'example.com'
+    range = 'items=0-49'
+    get_resource_by_id_mock = mocker.patch.object(client, 'get_resource_by_id')
+    get_resource_list_mock = mocker.patch.object(client, 'get_resource_list')
+
+    client.get_resource(id, range, endpoint)
+    if id is not None:
+        get_resource_by_id_mock.assert_called()
+    else:
+        get_resource_list_mock.assert_called()
+
+
+def test_get_log_sources_list(mocker):
+    """
+    Given:
+        - An endpoint, a range, an algorithm and a password.
+    When:
+        - Running the qradar_log_sources_list command with the corresponding arguments.
+    Then:
+        - Verify that the get_resource_list function is called with the correct parameters.
+    """
+    qrd_encryption_details = {
+        'qrd_encryption_algorithm': 'algorithm',
+        'qrd_encryption_password': 'password'
+    }
+    args = {'range': '0-49', **qrd_encryption_details}
+    get_list_mock = mocker.patch.object(client, 'get_resource_list', return_value=[{}])
+    endpoint = '/config/event_sources/log_source_management/log_sources'
+    expected_additional_headers = {'x-qrd-encryption-algorithm': 'algorithm', 'x-qrd-encryption-password': 'password'}
+    try:
+        qradar_log_sources_list_command(client, args)
+    except KeyError:
+        demisto.log('command log_sources_list_command raised key error')
+    get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None, expected_additional_headers)
+
+
+def test_get_log_source_by_id(mocker):
+    """
+    Given:
+        - An endpoint, a range, an algorithm a password and an id.
+    When:
+        - Running the qradar_log_sources_list command with the corresponding arguments and an id.
+    Then:
+        - Verify that the get_resource_by_id function is called with the correct parameters.
+    """
+    mock_id = 1880
+    qrd_encryption_details = {
+        'qrd_encryption_algorithm': 'algorithm',
+        'qrd_encryption_password': 'password'
+    }
+    args = {'id': mock_id, **qrd_encryption_details}
+    get_by_id_mock = mocker.patch.object(client, 'get_resource_by_id', return_value={})
+    endpoint = '/config/event_sources/log_source_management/log_sources'
+    expected_additional_headers = {'x-qrd-encryption-algorithm': 'algorithm', 'x-qrd-encryption-password': 'password'}
+    try:
+        qradar_log_sources_list_command(client, args)
+    except KeyError:
+        demisto.log('command log_sources_list_command raised key error')
+    get_by_id_mock.assert_called_with(mock_id, endpoint, None, expected_additional_headers)
+
+
+def test_create_log_source(mocker):
+    """
+    Given:
+        - The required arguments for creating a log source.
+    When:
+        - Running the qradar_log_source_create command with the required arguments.
+    Then:
+        - Verify that the create_log_source function is called with the body correctly parsed and formatted.
+    """
+    args = command_test_data['create_log_source']['args']
+    expected_body = command_test_data['create_log_source']['expected_body']
+    return_value = command_test_data['create_log_source']['response']
+    create_log_source_mock = mocker.patch.object(client, 'create_log_source', return_value=return_value)
+    qradar_log_source_create_command(client, args)
+    create_log_source_mock.assert_called_with(expected_body)
+
+
+def test_update_log_source(mocker):
+    """
+    Given:
+        - The required arguments for updating a log source.
+    When:
+        - Running the qradar_log_source_update command with the required arguments.
+    Then:
+        - Verify that the update_log_source function is called with nothing but the correct fields.
+    """
+    args = command_test_data['update_log_source']['args']
+    expected_body = command_test_data['update_log_source']['expected_body']
+    update_log_source_mock = mocker.patch.object(client, 'update_log_source', return_value={})
+    qradar_log_source_update_command(client, args)
+    update_log_source_mock.assert_called_with(expected_body)
+
+
+def test_delete_log_source(mocker):
+    """
+    Given:
+        - An id.
+    When:
+        - Running the qradar_log_source_delete command with the id.
+    Then:
+        - Verify that the delete_log_source function is called with the correct id.
+    """
+    id = 0
+    args = {"id": id}
+    update_log_source_mock = mocker.patch.object(client, 'delete_log_source')
+
+    qradar_log_source_delete_command(client, args)
+    update_log_source_mock.assert_called_with(id)
+
+
+def test_dict_converter():
+    """
+    Given:
+        - A dictionary with string represented values.
+    When:
+        - Converting the dictionary to actual values using the conversion function.
+    Then:
+        - Verify that the outputted dictionary contains the expected values.
+    """
+    input_dict = {'enabled': 'true', 'year': '2024', 'name': 'Moshe'}
+    expected_output = {'enabled': True, 'year': 2024, 'name': 'Moshe'}
+    assert convert_dict_to_actual_values(input_dict) == expected_output
+
+    input_nested_dict = {'enabled': 'true', 'year': '2024', 'name': 'Moshe', 'details': {'age': '30', 'score': '95.5'}}
+    expected_nested_output = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'details': {'age': 30, 'score': 95.5}}
+    assert convert_dict_to_actual_values(input_nested_dict) == expected_nested_output
+
+    input_dict_with_list = {'enabled': 'true', 'year': '2024', 'name': 'Moshe', 'lst': ['true', '22', 'str']}
+    expected_output_with_list = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'lst': [True, 22, 'str']}
+    assert convert_dict_to_actual_values(input_dict_with_list) == expected_output_with_list
+
+    input_nested_with_list_dict = {
+        'enabled': 'true',
+        'year': '2024',
+        'name': 'Moshe',
+        'details': {'age': '30', 'score': '95.5'},
+        'lst': [{'age': '30', 'score': '95'}, {'name': 'Moshe'}]
+    }
+    expected_nested_with_list_output = {
+        'enabled': True,
+        'year': 2024,
+        'name': 'Moshe',
+        'details': {'age': 30, 'score': 95.5},
+        'lst': [{'age': 30, 'score': 95}, {'name': 'Moshe'}],
+    }
+    assert convert_dict_to_actual_values(input_nested_with_list_dict) == expected_nested_with_list_output
+
+
+def test_list_converter():
+    """
+    Given:
+        - A list with string represented values.
+    When:
+        - Converting the list to actual values using the conversion function.
+    Then:
+        - Verify that the outputted list contains the expected values.
+    """
+    simple_input_list = ['true', '2024', 'moshe']
+    expected_output = [True, 2024, 'moshe']
+    assert convert_list_to_actual_values(simple_input_list) == expected_output
+
+    expected_nested_output = [True, 2024, 'Moshe', [30, 95.5, False, 'string']]
+    input_nested_list = ['true', '2024', 'Moshe', ['30', '95.5', 'false', 'string']]
+    assert convert_list_to_actual_values(input_nested_list) == expected_nested_output
+
+    input_list_with_dict = ['true', '2024', 'Moshe', {'enabled': 'true', 'year': '2024', 'name': 'Moshe'}]
+    expected_output_with_dict = [True, 2024, 'Moshe', {'enabled': True, 'year': 2024, 'name': 'Moshe'}]
+    assert convert_list_to_actual_values(input_list_with_dict) == expected_output_with_dict
+
+
+def test_recovery_lastrun(mocker):
+    """
+    Given:
+        - Last run is more up-to-date than the integration context.
+        - Last run is the same as the integration context.
+
+    When:
+        - The container starts and the recovery method is called
+
+    Then:
+        - Ensure that the integration context is updated to the last run.
+        - If there are not changes, make sure that the context is not updated
+    """
+    set_integration_context({LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {
+                            0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}})
+    mocker.patch.object(QRadar_v3.demisto, "getLastRun", return_value={LAST_FETCH_KEY: 4})
+    QRadar_v3.recover_from_last_run()
+    context_data = get_integration_context()
+    assert context_data[LAST_FETCH_KEY] == 4
+
+    # now the last run and the integration context are the same, make sure that update context is not called
+    update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data")
+    set_integration_context({LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {
+                            0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}})
+    mocker.patch.object(QRadar_v3.demisto, "getLastRun", return_value={LAST_FETCH_KEY: 2})
+    QRadar_v3.recover_from_last_run()
+    context_data = get_integration_context()
+    assert context_data[LAST_FETCH_KEY] == 2
+    assert not update_context_mock.called
+
+
+@pytest.mark.parametrize('quiet_mode', [False, True])
+def test_qradar_reference_set_value_upsert_command_quiet_mode(mocker, quiet_mode):
+    """
+    Given:
+        - A reference set with data
+    When:
+        - Running qradar-reference-set-value-upsert with quiet_mode, once set to true and once to false
+        - The polling status is "completed" (i.e. the results should be returned in the current interval)
+    Then:
+        - Ensure the command does not output the reference set data iff quiet_mode=true
+        - Ensure the data is always in the raw response
+    """
+    args = {"ref_name": "test_ref", "value": "value1", "task_id": "test", "quiet_mode": quiet_mode}
+
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
+    mock_response = command_test_data["reference_set_bulk_load"]['response'] | {"data": ["some_data"]}
+    mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
+
+    result = qradar_reference_set_value_upsert_command(args, client=client, params={"api_version": "17.0"})
+
+    assert all("Name" in i for i in result.outputs)
+    assert all("Data" not in i for i in result.outputs) or not quiet_mode
+    assert "data" in result.raw_response
+
+
+@pytest.mark.parametrize('quiet_mode', [False, True])
+def test_qradar_indicators_upload_command_quiet_mode(mocker, quiet_mode):
+    """
+    Given:
+        - A reference set with data
+    When:
+        - Running qradar-indicators-upload with quiet_mode, once set to true and once to false
+        - The polling status is "completed" (i.e. the results should be returned in the current interval)
+    Then:
+        - Ensure the command does not output the reference set data iff quiet_mode=true
+        - Ensure the data is always in the raw response
+    """
+    args = {"ref_name": "test_ref", "quiet_mode": quiet_mode, "task_id": "test"}
+
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
+    mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version",
+                        return_value={"iocs": [{"value": "test", "indicator_type": "ip"}]})
+    mock_response = command_test_data["reference_set_bulk_load"]['response'] | {"data": ["some_data"]}
+    mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
+
+    result = qradar_indicators_upload_command(args, client=client, params={"api_version": "17.0"})
+
+    assert all("Name" in i for i in result.outputs)
+    assert all("Data" not in i for i in result.outputs) or not quiet_mode
+    assert "data" in result.raw_response

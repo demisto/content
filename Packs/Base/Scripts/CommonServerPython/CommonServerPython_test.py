@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import urllib
+import uuid
 import warnings
 
 import dateparser
@@ -17,18 +18,22 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam
+from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+                                flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
+                                remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
+                                get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
+                                b64_encode, parse_date_range, return_outputs, is_filename_valid, convert_dict_values_bytes_to_str,
+                                argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
+                                FeedIndicatorType, encode_string_results, safe_load_json, remove_empty_elements,
+                                aws_table_to_markdown, is_demisto_version_ge, appendContext, auto_detect_indicator_type,
+                                handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, url_to_clickable_markdown,
+                                WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
+                                DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
+                                response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
+                                is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
+                                get_engine_base_url, is_integration_instance_running_on_engine
+                                )
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -64,7 +69,7 @@ Parameters used:
         "instance-name": "test_integration_instance",
         "final-reporting-device": "www.test_url.com",
         "collector-type": "assets",
-        "snapshot-id": "123000",
+        "snapshot-id": "123000test_integration_instance",
         "total-items-count": "2"
 }}
 
@@ -1272,9 +1277,10 @@ def test_get_error_need_raise_error_on_non_error_input():
     (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected, filename):
-    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
-    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
-    file_name = "1_test_file_result"
+    file_id = str(uuid.uuid4())
+    mocker.patch.object(demisto, 'uniqueFile', return_value="fileresult")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+    file_name = "{}_fileresult".format(file_id)
 
     def cleanup():
         try:
@@ -1452,7 +1458,7 @@ def test_build_curl_post_noproxy():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"data": "value"}\''
     ]
 
@@ -1479,7 +1485,7 @@ def test_build_curl_post_xml():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'<?xml version=\"1.0\" encoding=\"utf-8\"?>'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'<?xml version="1.0" encoding="utf-8"?>\''
     ]
 
@@ -1511,7 +1517,7 @@ def test_build_curl_get_withproxy(mocker):
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X GET https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--proxy http://proxy -k -d \'{"data": "value"}\''
     ]
 
@@ -1548,9 +1554,9 @@ def test_build_curl_multiple_queries():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api/post -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"postdata": "value"}\'',
-        'curl -X GET https://demisto.com/api/get -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"getdata": "value"}\''
     ]
 
@@ -1563,6 +1569,48 @@ def test_is_mac_address():
 
     assert (is_mac_address(mac_address_false) is False)
     assert (is_mac_address(mac_address_true))
+
+
+def test_return_error_truncated_message(mocker):
+    """
+    Given
+    - invalid error message due to longer than max length (50,000)
+
+    When
+    - return_error function is called
+
+    Then
+    - Return a truncated message that contains clarification about the truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * (MAX_ERROR_MESSAGE_LENGTH + 1)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
+        len("...This error body was truncated...")
+    assert "This error body was truncated" in results.call_args[0][0]["Contents"]
+
+
+def test_return_error_valid_message(mocker):
+    """
+    Given
+    - A valid error message
+
+    When
+    - return_error function is called
+
+    Then
+    - Ensure the same message is returned
+    - Ensure the error message does not contain clarification about a truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * int(MAX_ERROR_MESSAGE_LENGTH * 0.9)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == len(err_msg)
+    assert "This error body was truncated" not in results.call_args[0][0]["Contents"]
 
 
 def test_return_error_command(mocker):
@@ -2974,10 +3022,19 @@ class TestBaseClient:
         with raises(DemistoException, match="Proxy Error"):
             self.client._http_request('get', 'event', resp_type='response')
 
-    def test_http_request_connection_error(self, requests_mock):
+    def test_http_request_connection_error_with_errno(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
-        with raises(DemistoException, match="Verify that the server URL parameter"):
+        err = requests.exceptions.ConnectionError()
+        err.errno = 104
+        err.strerror = "Connection reset by peer test"
+        requests_mock.get('http://example.com/api/v2/event', exc=err)
+        with raises(DemistoException, match="Error Number: \[104\]\\nMessage: Connection reset by peer test"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_connection_error_without_errno(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError("Generic error"))
+        with raises(DemistoException, match="Generic error"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_text_exception_parsing(self, requests_mock):
@@ -3133,6 +3190,242 @@ class TestBaseClient:
         mock_client._http_request('get', params={'key': 'value with spaces'})
 
         assert mock_request.last_request.query == 'key=value+with+spaces'
+
+    def test_http_request_execution_metrics_success(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A successful response.
+        Then: Verify the successful execution metrics is incremented.
+        """
+        requests_mock.get('http://example.com/api/v2/event', text="success")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.success == 1
+
+    def test_http_request_execution_metrics_success_but_polling_in_progress(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A successful response.
+        - Response is determined as polling in progress.
+        Then: Verify the successful execution metrics is not incremented.
+        """
+        requests_mock.get('http://example.com/api/v2/event', text="success")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        client.is_polling_in_progress = lambda _: True
+        client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.success == 0
+
+    def test_http_request_execution_metrics_timeout(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A timeout error is returned.
+        Then: Verify the timeout error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.timeout_error == 1
+
+    def test_http_request_execution_metrics_ssl_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - An SSL error is returned.
+        Then: Verify the ssl error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.ssl_error == 1
+
+    def test_http_request_execution_metrics_proxy_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A proxy error is returned.
+        Then: Verify the proxy error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.proxy_error == 1
+
+    def test_http_request_execution_metrics_connection_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A connection error is returned.
+        Then: Verify the connection error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.connection_error == 1
+
+    def test_http_request_execution_metrics_retry_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A retry error is returned.
+        Then: Verify the retry error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.RetryError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.retry_error == 1
+
+    def test_http_request_execution_metrics_auth_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - An auth error (401 status code) is returned.
+        Then: Verify the auth error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=401, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.auth_error == 1
+
+    def test_http_request_execution_metrics_quota_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A quota error (429 status code) is returned.
+        Then: Verify the quota error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=429, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.quota_error == 1
+
+    def test_http_request_execution_metrics_service_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A service error (500 status code) is returned.
+        Then: Verify the service error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.service_error == 1
+
+    def test_http_request_execution_metrics_general_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A general error (400 status code) is returned.
+        Then: Verify the general error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.general_error == 1
+
+    def test_http_request_execution_metrics_not_found_error_but_ok(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A not found error (404 status code) is returned.
+        - 404 is considered ok
+        Then: Verify the success execution metrics is incremented, and not the general error metrics.
+        """
+        requests_mock.get('http://example.com/api/v2/event', status_code=404, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201, 404), verify=False)
+        res = client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert res.status_code == 404
+        assert client.execution_metrics.success == 1
+        assert client.execution_metrics.general_error == 0
+
+    def test_http_request_execution_metrics_results(cls, requests_mock, mocker):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - An general error is returned
+        - The client object is then deleted
+        Then: Verify an execution metrics entry is sent to demisto.results() accordingly.
+        """
+        from CommonServerPython import DemistoException, EntryType, ErrorTypes
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        del client
+        demisto_results_mock.assert_called_once
+        entry = demisto_results_mock.call_args[0][0]
+        assert entry["Type"] == EntryType.EXECUTION_METRICS
+        assert entry["APIExecutionMetrics"] == [{
+            "Type": ErrorTypes.GENERAL_ERROR,
+            "APICallsCount": 1,
+        }]
+
+    def test_http_request_no_execution_metrics_results(cls, requests_mock, mocker):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function without metrics
+        - An general error is returned
+        - The client object is then deleted
+        Then: Verify demisto.results() is not called.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event')
+        del client
+        demisto_results_mock.assert_not_called
+
+    def test_base_client_subclass_without_execution_metrics_initialized(self):
+        """
+        Given: A BaseClient object and a subclass of it that does not initialize execution_metrics
+        When: deleting the client object
+        Then: Ensure the deletion does not raise any exception
+        """
+        from CommonServerPython import BaseClient
+
+        class Client(BaseClient):
+            def __init__(self):
+                pass
+
+        client = Client()
+        del client
 
     @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     def test_http_request_params_parser_quote(self, requests_mock):
@@ -3527,6 +3820,26 @@ data_test_b64_encode = [
 def test_b64_encode(_input, expected_output):
     output = b64_encode(_input)
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
+
+
+B64_STR = 'This is a test!'
+DECODED_B64 = b'N\x18\xac\x8a\xc6\xadz\xcb'
+CASE_NO_PADDING = (B64_STR, DECODED_B64)
+CASE_LESS_PADDING = (B64_STR + '=', DECODED_B64)
+CASE_WITH_PADDING = (B64_STR + '==', DECODED_B64)
+CASE_TOO_MUCH_PADDING = (B64_STR + '===', DECODED_B64)
+
+
+@pytest.mark.parametrize('str_to_decode, expected_encoded',
+                         (CASE_NO_PADDING, CASE_WITH_PADDING, CASE_LESS_PADDING, CASE_TOO_MUCH_PADDING))
+def test_b64_decode(str_to_decode, expected_encoded):
+    """
+    Given: A base 64 encoded str that represents an image, with different paddings.
+    When: Decoding it to an image file.
+    Then: The str is decoded to binary.
+    """
+    encoded = b64_decode(str_to_decode)
+    assert encoded == expected_encoded
 
 
 def test_traceback_in_return_error_debug_mode_on(mocker):
@@ -4457,6 +4770,41 @@ def test_integration_return_results_execution_metrics_command_results(mocker):
 
     assert execution_metrics_entry_found
     assert demisto_results_mock.call_count == 3
+
+
+def test_dynamic_section_script_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains execution metrics entries
+      - The command currently running is a dynamic-section script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 2 times (without the 2 execution metrics entries)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ScriptName': 'some_script_name'}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        # CommandResults metrics entry: Should not be returned.
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        # CommandResults regular entry: Should be returned.
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        # Dict metrics entry: Should not be returned.
+        {'MockContext': 1, "Type": 19},
+        # Dict regular entry: Should be returned.
+        {'MockContext': 1, "Type": 1},
+    ]
+    return_results(mock_command_results)
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
+
+    assert demisto_results_mock.call_count == 2
 
 
 def test_return_results_multiple_command_results(mocker):
@@ -5492,6 +5840,7 @@ class TestCommonTypes:
             dns='dns.somedomain',
             detection_engines=10,
             positive_detections=5,
+            first_seen_by_source='2024-10-06T09:50:50.555Z',
             organization='Some Organization',
             admin_phone='18000000',
             admin_email='admin@test.com',
@@ -5569,6 +5918,7 @@ class TestCommonTypes:
                         'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com', 'AbusePhone': None},
                         'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
                         'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                        'FirstSeenBySource': '2024-10-06T09:50:50.555Z',
                         'Organization': 'Some Organization',
                         'Subdomains': ['sub-domain1.somedomain.com', 'sub-domain2.somedomain.com',
                                        'sub-domain3.somedomain.com'], 'DomainStatus': 'ACTIVE',
@@ -5667,6 +6017,7 @@ class TestCommonTypes:
             certificates=None,
             description='description test',
             stix_id='stix_id',
+            organization_first_seen='2024-11-04T14:48:23.456Z',
         )
 
         results = CommandResults(
@@ -5706,6 +6057,7 @@ class TestCommonTypes:
                         'ASOwner': 'test_as_owner',
                         'Geo': {'Country': 'test_geo_country'},
                         'Organization': 'test_organization',
+                        'OrganizationFirstSeen': '2024-11-04T14:48:23.456Z',
                         'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
                         'Publications': [
                             {'source': 'source',
@@ -5791,7 +6143,8 @@ class TestCommonTypes:
             creation_date='test_creation_date',
             description='test_description',
             hashes=None,
-            stix_id='test_stix_id'
+            stix_id='test_stix_id',
+            organization_prevalence=0,
         )
 
         results = CommandResults(
@@ -5837,6 +6190,7 @@ class TestCommonTypes:
                                       'threatcategoryconfidence': 'threat_category_confidence'}],
                      'Imphash': 'test_imphash',
                      'Organization': 'test_organization',
+                     'OrganizationPrevalence': 0,
                      'Malicious': {'Vendor': 'Test', 'Description': 'malicious!'}
                      }
                 ],
@@ -5972,7 +6326,11 @@ class TestCommonTypes:
             stix_id='test_stix_id',
             tags=['tag1', 'tag2'],
             traffic_light_protocol='traffic_light_protocol',
-            user_id='test_user_id'
+            user_id='test_user_id',
+            manager_email='test_manager_email@test.com',
+            manager_display_name='test_manager_display_name',
+            risk_level='test_risk_level',
+            **{'some_undefinedKey': 'value'}
         )
 
         results = CommandResults(
@@ -5989,7 +6347,7 @@ class TestCommonTypes:
             'HumanReadable': None,
             'EntryContext': {
                 'Account(val.id && val.id == obj.id)': [
-                    {'Id': 'test_account_id',
+                    {'ID': 'test_account_id',
                      'Type': 'test_account_type',
                      'Blocked': True,
                      'CreationDate': 'test_creation_date',
@@ -6010,7 +6368,13 @@ class TestCommonTypes:
                      'Tags': ['tag1', 'tag2'],
                      'TrafficLightProtocol': 'traffic_light_protocol',
                      'UserId': 'test_user_id',
-                     'Username': 'test_username'
+                     'Username': 'test_username',
+                     'Manager': {
+                         'Email': 'test_manager_email@test.com',
+                         'DisplayName': 'test_manager_display_name'
+                     },
+                     'RiskLevel': 'test_risk_level',
+                     'some_undefinedKey': 'value'
                      }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
@@ -6659,13 +7023,13 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-            {'Address': 'user@example.com',
+            {"Email": {'Address': 'user@example.com'},
              'Domain': 'example.com',
-                'Description': 'test',
-                'Internal': True,
-                'STIXID': 'stix_id_test',
-                'Tags': ['tag1', 'tag2'],
-                'TrafficLightProtocol': 'traffic_light_protocol_test'}
+             'Description': 'test',
+             'Internal': True,
+             'STIXID': 'stix_id_test',
+             'Tags': ['tag1', 'tag2'],
+             'TrafficLightProtocol': 'traffic_light_protocol_test'}
 
     @pytest.mark.parametrize('item', [
         'CommunityNotes', 'Publications', 'ThreatTypes'
@@ -7738,7 +8102,8 @@ class TestFetchWithLookBack:
         fetch_limit = last_run.get('limit') or fetch_limit_param
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
-                                                                    look_back=look_back, timezone=time_zone, date_format=date_format)
+                                                                    look_back=look_back, timezone=time_zone,
+                                                                    date_format=date_format)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
         incidents_res = self.get_incidents_request(query, date_format)
@@ -7788,14 +8153,17 @@ class TestFetchWithLookBack:
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]], {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created'],
                                      'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
-        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+         [],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'],
+          'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
          {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'],
+          'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
     ])
     @freeze_time("2022-11-03 13:40:00 UTC")
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
@@ -8665,6 +9033,49 @@ class TestSendEventsToXSIAMTest:
             assert arguments_called['headers']['snapshot-id'] == '123000'
             assert arguments_called['headers']['total-items-count'] == '2'
 
+    @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
+        ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
+        ('assets', '12345', 25, {'snapshot_id': '12345', 'items_count': '25'})
+    ])
+    def test_send_data_to_xsiam_custom_snapshot_id_and_items_count(self, mocker, data_type, snapshot_id, items_count, expected):
+        """
+        Test the send_data_to_xsiam with and without custom snapshot_id and items_count
+        Given:
+            Case a: no custom snapshot_id and items_count.
+            Case b: custom snapshot_id and items_count.
+
+        When:
+            Case a: Calling the send_assets_to_xsiam function without custom snapshot_id and items_count.
+            Case b: Calling the send_assets_to_xsiam function with custom snapshot_id and items_count.
+
+        Then ensure that:
+            Case a: The headers was set with the default data.
+            Case b: The headers was set with the custom data
+        """
+        if not IS_PY3:
+            return
+
+        from CommonServerPython import BaseClient
+        from requests import Response
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        items = self.test_data['json_assets'][data_type]
+        send_data_to_xsiam(data=items, vendor='some vendor', product='some product', data_type=data_type, snapshot_id=snapshot_id,
+                           items_count=items_count)
+
+        arguments_called = _http_request_mock.call_args[1]
+        assert arguments_called['headers']['collector-type'] == data_type
+        assert arguments_called['headers']['snapshot-id'] == expected['snapshot_id']
+        assert arguments_called['headers']['total-items-count'] == expected['items_count']
+
     @pytest.mark.parametrize('error_msg, data_type', [(None, "events"), ({'error': 'error'}, "events"), ('', "events"),
                                                       ({'error': 'error'}, "assets")])
     def test_send_data_to_xsiam_error_handling(self, mocker, requests_mock, error_msg, data_type):
@@ -8719,8 +9130,8 @@ class TestSendEventsToXSIAMTest:
         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
-                DemistoException,
-                match=re.escape(expected_error_header + expected_error_msg),
+            DemistoException,
+            match=re.escape(expected_error_header + expected_error_msg),
         ):
             send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type=data_type)
 
@@ -9171,6 +9582,7 @@ class TestIsIntegrationCommandExecution:
     def test_with_integration_exec(self, mocker):
         mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
         assert is_integration_command_execution() == True
+
     data_test_problematic_cases = [
         None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
         {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
@@ -9222,8 +9634,12 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
     ("3:Wg8oEIjOH9+KS3qvRBTdRi690oVqzBUGyT0/n:Vx0HgKnTdE6eoVafY8", "ssdeep"),
     ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
     ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
-    ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069", "sha512"),
-    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211", "sha512"),
+    (
+        "eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069",
+        "sha512"),
+    (
+        "a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211",
+        "sha512"),
     ("@", None)
 ])
 def test_detect_file_indicator_type(indicator, expected_result):
@@ -9318,3 +9734,263 @@ def test_create_clickable_test_wrong_text_value():
 
     assert e.type == AssertionError
     assert 'The URL list and the text list must be the same length.' in e.value.args
+
+
+@pytest.mark.parametrize("request_log, expected_output", [
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer token123\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: session_id=123\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: token123\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: <XX_REPLACED>\\r\\n'"
+    ),
+    (
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer token123\\r\\n",
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer <XX_REPLACED>\\r\\n"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'",
+        str("send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'")
+    ),
+])
+def test_censor_request_logs(request_log, expected_output):
+    """
+    Given:
+        A request log.
+        case 1: A request log with a sensitive data under the 'Authorization' header, but the 'Authorization' is not capitalized and within a string.
+        case 2: A request log with a sensitive data under the 'Cookie' header, but with a 'Set_Cookie' prefix.
+        case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
+        case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
+        case 5: A request log with no sensitive data.
+    When:
+        Running censor_request_logs function.
+    Then:
+        Assert the function returns the exactly same log with the sensitive data masked. 
+    """
+    assert censor_request_logs(request_log) == expected_output
+
+
+@pytest.mark.parametrize("request_log", [
+    ('send: hello\n'),
+    ('header: Authorization\n')
+])
+def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
+    """
+    Given:
+        A request log that starts with 'send' or 'header' that may contains sensitive data.
+    When:
+        Running logger.write function when using debug-mode.
+    Then:
+        Assert the censor_request_logs function has been called.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    mock_censor = mocker.patch('CommonServerPython.censor_request_logs')
+    mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
+    ilog = IntegrationLogger()
+    ilog.set_buffering(False)
+    ilog.write(request_log)
+    assert mock_censor.call_count == 1
+
+
+def test_replace_send_preffix(mocker):
+    """
+    Given:
+        - A string that contains 'send: b"' in it.
+    When:
+        - The write function is called to add this string to the logs.
+    Then:
+        - Verify that the text 'send: b"' has been replaced with "send: b'" to standardize the log format for easier log handling.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    mock_censor = mocker.patch('CommonServerPython.censor_request_logs')
+    mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
+    ilog = IntegrationLogger()
+    ilog.set_buffering(False)
+    ilog.write('send: b"hello\n')
+    assert mock_censor.call_args[0][0] == "send: b\'hello"
+
+
+@freeze_time(datetime(2024, 4, 10, 10, 0, 10))
+def test_sleep_exceeds_ttl(mocker):
+    """
+   Given: a sleep duration exceeding the remaining TTL.
+
+    When: The `sleep` method is called with that duration.
+
+   Then:
+    - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+  """
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
+
+    with pytest.raises(ValueError) as excinfo:
+        safe_sleep(duration_seconds=350)
+    assert str(excinfo.value) == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds."
+
+
+def test_sleep_not_supported(mocker):
+    """
+       Given: a sleep duration in not supported server version.
+
+        When: The `sleep` method is called with that duration.
+
+       Then:
+        - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+        - Sleep the requested time.
+      """
+    mocker.patch.object(demisto, 'callingContext', {"context": {}})
+    logger_mocker = mocker.patch.object(demisto, 'info')
+
+    sleep_mocker = mocker.patch('time.sleep')
+
+    safe_sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 1
+    assert logger_mocker.call_args[0][0] == "Safe sleep is not supported in this server version, sleeping for the requested time."
+
+
+def test_sleep_mocked_time(mocker):
+    """
+    Given:  a method using sleep.
+
+   When:  The `sleep` method is called with a specific duration.
+
+   Then:
+    - The sleep duration should be based on the difference between the mocked time calls.
+    - No exception should be raised if the sleep duration is within the remaining TTL based on mocked time.
+    """
+
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
+    sleep_mocker = mocker.patch('time.sleep')
+
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 10)):
+        safe_sleep(duration_seconds=5)  # Sleep for 5 seconds
+
+    # Advance mocked time by the sleep duration
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 25)):
+        safe_sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 2
+
+
+def test_get_server_config(mocker):
+    mock_response = {
+        'body': '{"sysConf":{"incident.closereasons":"CustomReason1, CustomReason 2, Foo","versn":40},"defaultMap":{}}\n',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    server_config = get_server_config()
+    assert server_config == {'incident.closereasons': 'CustomReason1, CustomReason 2, Foo', 'versn': 40}
+
+
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+def test_get_server_config_fail(mocker):
+    mock_response = {
+        'body': 'NOT A VALID JSON',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    mocked_error = mocker.patch.object(demisto, 'error')
+    assert get_server_config() == {}
+    assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'
+
+
+@pytest.mark.parametrize('instance_name, expected_result',
+                         [('instance_name1', 'engine_id'),
+                          ('instance_name2', '')
+                          ], ids=[
+                              "Test-instanec-with-xsoar-engine-configures",
+                              "Test-instanec-without-xsoar-engine-configures"
+                         ])
+def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
+    """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
+
+        Given:  
+                1. A name of an instance that has an engine configured (and relevant mocked responses).
+                2. A name of an instance that doesn't have an engine configured (and relevant mocked responses).
+
+        When:  
+            - Running the 'is_integration_instance_running_on_engine' funcution. 
+
+        Then:
+            - Verify that: 
+                1. The result is the engine's id. 
+                2. The result is an empty string.
+    """
+    mock_response = {
+        'body': """{"instances": [
+            {"id": "1111", "name": "instance_name1", "engine": "engine_id"},
+            {"id": "2222", "name": "instance_name2", "engine": ""}
+        ]}""",
+    }
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    mocker.patch.object(demisto, 'integrationInstance', return_value=instance_name)
+    res = is_integration_instance_running_on_engine()
+    assert res == expected_result
+
+
+def test_get_engine_base_url(mocker):
+    """ Tests the 'get_engine_base_url' function's logic. 
+
+        Given:  
+            - Mocked response of the internalHttpRequest call for the '/engines' endpoint, including 2 engines.
+            - An id of an engine. 
+
+        When:  
+            - Running the 'is_integration_instance_running_on_engine' funcution. 
+
+        Then:
+            - Verify that base url of the given engine id was returened.
+
+    """
+    mock_response = {
+        'body': """{"engines": [
+            {"id": "1111", "baseUrl": "11.111.111.33:443"},
+            {"id": "2222", "baseUrl": "11.111.111.44:443"}
+        ]}""",
+    }
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    res = get_engine_base_url('1111')
+    assert res == '11.111.111.33:443'

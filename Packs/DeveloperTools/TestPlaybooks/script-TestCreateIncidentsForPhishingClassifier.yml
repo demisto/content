@@ -16,13 +16,13 @@ script: >+
 
   incident1_template = {
       'type': 'Simulation',
-      'emailclassification': 'Tag1',
+      'tags': 'Tag1',
   }
 
 
   incident2_template = {
       'type': 'Simulation',
-      'emailclassification': 'Tag2',
+      'tags': 'Tag2',
   }
 
 
@@ -38,7 +38,7 @@ script: >+
   for i in range(0, NUMBER_OF_INCIDENTS):
       incidents.append({
           'type': 'Simulation',
-          'emailclassification': 'Tag3',
+          'tags': 'Tag3',
           'dbot_processed_text': " ".join([words_tag3[i] for i in [random.randint(0, len(words_tag3)-1) for i in range(30)]])
       })
 
@@ -53,9 +53,9 @@ script: >+
       'Contents': 'Done crete incidents',
       'ContentsFormat': formats['text'],
       'EntryContext': {
-          'EmailSujbectKey': 'emailclassification',
+          'EmailSujbectKey': 'tags',
           'EmailBodyKey': 'details',
-          'EmailTagKey': 'emailclassification',
+          'EmailTagKey': 'tags',
           'IncidentsQuery': 'type:Simulation'
       }
   })

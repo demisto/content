@@ -1,0 +1,52 @@
+{
+    "entry_type": 1,
+    "ignore_auto_extract": "False",
+    "mark_as_note": "False",
+    "outputs":
+    {
+        "GSuite.ChromeBrowserDevices(val.deviceId && val.deviceId == obj.deviceId)":
+        [
+            {
+                "deviceId": "e8403671-d8e1-1111-b107-11111111",
+                "kind": "admin#directory#browserdevice",
+                "osPlatform": "Windows",
+                "osVersion": "111",
+                "machineName": "WIN10-test",
+                "lastRegistrationTime": "2024-02-20T21:16:00.902Z",
+                "lastActivityTime": "2024-02-20T21:16:00.902Z",
+                "osPlatformVersion": "Windows 10",
+                "serialNumber": "VMware-42",
+                "virtualDeviceId": "0089ea7e-1111-469c-1111-6823faec8350",
+                "orgUnitPath": "/testing",
+                "deviceIdentifiersHistory": {}
+            }
+        ],
+        "GSuite(true)":
+        {
+            "ChromeBrowserNextToken": ""
+        }
+    },
+    "raw_response": 
+    {
+        "kind": "admin#directory#browserdevices", 
+        "browsers": 
+        [
+            {
+                "deviceId": "e8403671-d8e1-1111-b107-11111111",
+                "kind": "admin#directory#browserdevice", 
+                "osPlatform": "Windows", 
+                "osVersion": "111",
+                "machineName": "WIN10-test",
+                "lastRegistrationTime": "2024-02-20T21:16:00.902Z", 
+                "lastActivityTime": "2024-02-20T21:16:00.902Z", 
+                "osPlatformVersion": "Windows 10", 
+                "serialNumber": "VMware-42",
+                "virtualDeviceId": "0089ea7e-1111-469c-1111-6823faec8350",
+                "orgUnitPath": "/testing", 
+                "deviceIdentifiersHistory": {}
+            }
+        ]
+    },
+    "readable_output": "### Chrome Browser Device List\n|Device Id|Os Platform|Os Version|Machine Name|Serial Number|Org Unit Path|\n|---|---|---|---|---|---|\n| e8403671-d8e1-1111-b107-11111111 | Windows | 111 | WIN10-test | VMware-42 | /testing |\n",
+    "replace_existing": "False"
+}

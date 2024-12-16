@@ -1,6 +1,6 @@
 import json
 
-from pytest import mark
+import pytest
 
 import demistomock as demisto
 from CrowdStrikeFalconStreamingV2 import (get_sample_events,
@@ -57,8 +57,8 @@ def test_get_sample_events_with_results(mocker):
             'event': {
                 'CommandLine': 'choice  /m crowdstrike_sample_detection',
                 'ComputerName': 'FALCON-CROWDSTR',
-                'DetectDescription': 'For evaluation only - benign, no action needed.',
-                'DetectName': 'Suspicious Activity',
+                'Description': 'For evaluation only - benign, no action needed.',
+                'Name': 'Suspicious Activity',
                 'FileName': 'choice.exe',
                 'FilePath': '\\Device\\HarddiskVolume1\\Windows\\System32',
                 'GrandparentCommandLine': 'C:\\Windows\\Explorer.EXE',
@@ -140,7 +140,7 @@ def test_get_sample_events_integration_param(mocker):
                       'be enabled for this command to return results.'
 
 
-@mark.parametrize('current_integration_context, updated_integration_context', [
+@pytest.mark.parametrize('current_integration_context, updated_integration_context', [
     ({'offset': 1}, {'offset': '1'}),
     ({'sample_events': [{'event': {}}]}, {'sample_events': '[{"event": {}}]'}),
     ({'offset': '1', 'sample_events': '[{"event": {}}]'}, {})

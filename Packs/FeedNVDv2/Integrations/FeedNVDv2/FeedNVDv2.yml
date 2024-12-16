@@ -1,0 +1,165 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedNVDv2
+  version: -1
+configuration:
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: apiKey
+  required: false
+  type: 9
+- name: keyword_search
+  display: Keyword Search
+  type: 0
+  additionalinfo: Returns only the CVEs where the word or phrase is found in the description.
+  required: false
+- name: cvssv3severity
+  display: CVSS 3 Severity Filter
+  additionalinfo: Select the severities you wish to get back from the feed.
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  defaultvalue:
+  required: false
+  type: 16
+- defaultvalue: 90 days
+  display: First fetch time
+  additionalinfo: How far back should the integration fetch in its first run (1 day, 2 weeks, 3 months, etc.)
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: "See the following for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection."
+  defaultvalue: "false"
+  display: Return Known Exploited Vulnerabilities (KEV) only.
+  name: hasKev
+  required: false
+  type: 8
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental feed
+  hidden: true
+  name: feedIncremental
+  type: 8
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- defaultvalue: never
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  required: false
+  type: 17
+- defaultvalue: '60'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: "true"
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nRejected CVEs are not ingested as part of this integration.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023."
+display: National Vulnerability Database Feed v2
+image: ''
+name: FeedNVDv2
+script:
+  commands:
+  - description: Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
+    name: nvd-get-indicators
+    arguments:
+    - auto: PREDEFINED
+      description: Time back to retrieve CVEs, e.g. `7 days`.
+      name: history
+      predefined:
+      - "7 days"
+      required: true
+    - name: keyword
+      description: Keywords to query CVEs by.
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+  dockerimage: demisto/python3:3.11.10.115186
+  feed: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -591,6 +591,12 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
@@ -1404,6 +1410,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
-    "marketplaces": ["marketplacev2"],
+    "marketplaces": [
+        "marketplacev2"
+    ],
     "description": ""
 }

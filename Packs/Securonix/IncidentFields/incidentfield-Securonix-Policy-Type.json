@@ -1,0 +1,32 @@
+{
+    "id": "incident_securonixpolicytype",
+    "version": -1,
+    "modified": "2024-04-04T10:00:13.774127852+05:30",
+    "name": "Securonix Policy Type",
+    "ownerOnly": false,
+    "description": "The incident policy type.",
+    "cliName": "securonixpolicytype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Securonix Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

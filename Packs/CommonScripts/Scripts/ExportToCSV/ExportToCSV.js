@@ -66,7 +66,7 @@ function convertToCSV(objArray, headers) {
     }
 
     // create file content
-    var fileContent = headers.join() + '\r';
+    var fileContent = headers.join();
     for (var i = 0; i < rows.length;  i++) {
         var line = rows[i].join();
         fileContent += '\n' + line ;
@@ -99,6 +99,10 @@ if (args.headers && !Array.isArray(args.headers)){
 }
 
 var csvString = convertToCSV(args.csvArray, args.headers);
+if (args.codec === 'UTF-16-BOM') {
+    var utf16Bom = '\uFEFF';
+    csvString = utf16Bom + csvString;
+}
 var createdFileID = saveFile(csvString);
 
 return {

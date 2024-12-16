@@ -1,6 +1,6 @@
 id: Prisma SASE - Quarantine Host With Active Threat
 version: -1
-name: Prisma SASE - Quarantine Host With Active Threat
+name: Prisma SASE - Quarantine a SentinelOne Host With Active Threat
 description: |
   ## Goal
   This playbook is designed to automatically quarantine a SentinelOne host in response to a new threat incident trigger using Prisma SASE.

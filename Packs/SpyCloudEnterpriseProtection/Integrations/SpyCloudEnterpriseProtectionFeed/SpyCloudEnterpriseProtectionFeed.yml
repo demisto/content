@@ -1,0 +1,133 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SpyCloudEnterpriseProtectionFeed
+  version: -1
+configuration:
+- defaultvalue: https://api.spycloud.io/enterprise-v2/
+  display: API URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  hidden: false
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Fetch incidents
+  name: isFetch
+  required: true
+  type: 8
+- additionalinfo: |-
+    This parameter allows you to define the starting point for a date range query on the spycloud_publish_date field.
+    Example: -1days, now, YYYY-MM-DD.
+  defaultvalue: -1days
+  display: Since
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: |-
+    This parameter allows you to define the ending point for a date range query on the spycloud_publish_date field.
+    Example: -1days, now, YYYY-MM-DD.
+  defaultvalue: -1days
+  display: Until
+  hidden: false
+  name: until
+  required: false
+  type: 0
+- additionalinfo: |-
+    This parameter allows you to define the starting point for a date range query on the when an already published record was modified (record_modification_date).
+    Example: -1days, now, YYYY-MM-DD.
+  defaultvalue: -1days
+  display: Since Modification Date
+  hidden: false
+  name: since_modification_date
+  required: false
+  type: 0
+- additionalinfo: |-
+    This parameter allows you to define the ending point for a date range query on the when an already published record was modified (record_modification_date).
+    Example: -1days, now, YYYY-MM-DD.
+  defaultvalue: -1days
+  display: Until Modification Date
+  hidden: false
+  name: until_modification_date
+  required: false
+  type: 0
+- additionalinfo: This parameter allows you to filter based on the numeric severity code.
+  defaultvalue: 20,25
+  display: Severity
+  hidden: false
+  name: severity
+  options:
+  - '25'
+  - '20'
+  - '5'
+  - '2'
+  required: false
+  type: 16
+- additionalinfo: This parameter allows you to filter based on a particular breach source.This parameter allows you to filter based on a particular breach source.
+  display: Source ID
+  hidden: false
+  name: source_id
+  required: false
+  type: 0
+- additionalinfo: If hashing is enabled for your API key, you have the option to provide a 10 to 24 character, high entropy salt otherwise the pre-configured salt will be used.
+  display: Salt
+  hidden: false
+  name: salt
+  required: false
+  type: 0
+- additionalinfo: This parameter lets you filter results by type. The allowed values are 'corporate' for corporate records, and 'infected' for infected user records (from botnet data). If no value has been provided the API function will, by default, return all record types.
+  display: Type
+  hidden: false
+  name: type
+  options:
+  - corporate
+  - infected
+  required: false
+  type: 15
+- additionalinfo: 'This parameters lets you filter results for only emails or only domains on your watchlist. The allowed values are: [''email'', ''domain'', ''subdomain'', ''ip'']. If no value has been provided, the API will return all watchlist types.'
+  display: Watchlist Type
+  hidden: false
+  name: watchlist_type
+  options:
+  - email
+  - domain
+  - subdomain
+  - ip
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '2'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Fetch SpyCloud watchlist data (breach and malware records) for daily monitoring, incident response, and mitigation.
+display: SpyCloud Enterprise Protection Feed
+name: SpyCloudEnterpriseProtectionFeed
+script:
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetch: true
+  dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+defaultclassifier: SpyCloud - Classifier
+defaultmapperin: SpyCloud - Incoming Mapper

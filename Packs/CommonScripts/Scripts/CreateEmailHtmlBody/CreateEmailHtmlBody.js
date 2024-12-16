@@ -15,6 +15,8 @@ var getLabel = function(incident,path) {
 };
 
 var res = executeCommand("getList", {"listName": args.listTemplate});
+var platform = getDemistoVersion().platform // Could be 'xsoar' (for XSOAR) or 'x2' (for XSIAM).
+var XSIAM = 'x2'
 
 if (res[0].Type == entryTypes.error) {
     return res;
@@ -28,17 +30,29 @@ var map = {};
 while (found = reg.exec(html)) {
     var path = found[1];
 
-    if (path.indexOf('incident.labels.') === 0) {
+    if (path.indexOf('incident.labels.') === 0 && platform !== XSIAM) {
         logDebug("Field " + path + " is handled as label.")
         map[path] = getLabel(incidents[0], path);
 
-    } else if (path.indexOf('incident.') === 0) {
+    } else if (path.indexOf('incident.') === 0 && platform !== XSIAM) {
         map[path] = dq({'incident': incidents[0]}, path);
         // check if this path is actually in custom fields (not found directly under incident)
         if (map[path] === null) {
             logDebug("Field " + path + " is either custom or null. Handling as custom.")
             var customFieldPath = path.replace('incident.', 'incident.CustomFields.');
             map[path] = dq({'incident': incidents[0]}, customFieldPath);
+        }
+    } else if (path.indexOf('alert.labels.') === 0 && platform === XSIAM) {
+        logDebug("Field " + path + " is handled as label.")
+        map[path] = getLabel(incidents[0], path);
+
+    } else if (path.indexOf('alert.') === 0 && platform === XSIAM) {
+        map[path] = dq({'alert': incidents[0]}, path);
+        // check if this path is actually in custom fields (not found directly under incident)
+        if (map[path] === null) {
+            logDebug("Field " + path + " is either custom or null. Handling as custom.")
+            var customFieldPath = path.replace('alert.', 'alert.CustomFields.');
+            map[path] = dq({'alert': incidents[0]}, customFieldPath);
         }
     } else if (path.indexOf('object.') === 0) {
         logDebug("Field " + path + " is part of object.")

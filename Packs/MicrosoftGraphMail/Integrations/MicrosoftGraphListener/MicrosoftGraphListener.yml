@@ -1,4 +1,4 @@
-category: Cloud Services
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - name: creds_auth_id
   type: 9
-  displaypassword: ID or Client ID
+  displaypassword: Application ID or Client ID
   hiddenusername: true
   section: Connect
   required: false
@@ -17,7 +17,7 @@ configuration:
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - name: creds_enc_key
   type: 9
@@ -70,7 +70,7 @@ configuration:
   displaypassword: Authorization code (required for self-deployed Azure app)
   hiddenusername: true
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
@@ -83,29 +83,36 @@ configuration:
   name: redirect_uri
   type: 0
   section: Connect
-  advanced: true
+  advanced: false
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
+  name: self_deployed
+  type: 8
+  section: Connect
+  advanced: false
   required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-  display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   section: Connect
   advanced: true
   required: false
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
-  hiddenusername: true
+  display: Use Azure Managed Identities
+- name: managed_identities_client_id
   type: 9
   section: Connect
-  advanced: true
   required: false
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
+  advanced: true
 - display: Fetch incidents
   name: isFetch
+  required: false
   type: 8
   section: Collect
-  required: false
-- display: Email address from which to fetch incidents (e.g., "example@demisto.com")
+- display: Email address from which to fetch incidents (e.g., "example@mail.com")
   name: mailbox_to_fetch
   required: true
   type: 0
@@ -113,21 +120,57 @@ configuration:
   additionalinfo: During authentication, ensure you are logged in to this email address.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
-  required: true
   type: 0
   defaultvalue: Inbox
   section: Collect
+  required: true
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
+  defaultvalue: '15 minutes'
   type: 0
-  defaultvalue: 15 minutes
   section: Collect
   required: false
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
-  defaultvalue: '50'
   type: 0
   section: Collect
+  required: false
+  defaultvalue: '50'
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- additionalinfo: If not active, only a preview of the email will be fetched.
+  display: Display full email body
+  name: display_full_email_body
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+- display: Fetch emails in HTML format
+  name: fetch_html_formatting
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities.
+  defaultvalue: 'false'
+  advanced: false
+- display: Mark fetched emails as read
+  name: mark_fetched_read
+  defaultvalue: 'false'
+  type: 8
+  additionalinfo: Relevant only if fetch incidents is active.
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
@@ -141,49 +184,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure application
-  name: self_deployed
-  type: 8
-  section: Connect
-  advanced: false
-  required: false
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Connect
-  required: false
-- display: Display full email body
-  name: display_full_email_body
-  defaultvalue: 'false'
-  type: 8
-  additionalinfo: If not active, only a preview of the email will be fetched.
+- display: Use legacy attachment name
+  name: legacy_name
   section: Collect
+  type: 8
   advanced: true
-  required: false
-- additionalinfo: Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities.
   defaultvalue: 'false'
-  display: Fetch emails in HTML format
-  name: fetch_html_formatting
-  type: 8
-  section: Collect
-  advanced: false
-  required: false
-- display: Mark fetched emails as read
-  name: mark_fetched_read
-  defaultvalue: 'false'
-  type: 8
-  section: Collect
-  advanced: true
-  required: false
-  additionalinfo: Relevant only if fetch incidents is active.
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  defaultvalue: '1'
-  type: 19
-  section: Collect
-  advanced: true
-  required: false
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
@@ -376,6 +382,8 @@ script:
       required: true
     - description: The contents (body) of the email.
       name: body
+    - description: The content in html format (htmlBody) of the email.
+      name: htmlBody
     - auto: PREDEFINED
       description: 'The body type of the email. Can be: "text", or "HTML".'
       name: body_type
@@ -922,7 +930,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.80694
+  dockerimage: demisto/crypto:1.0.0.114611
   isfetch: true
   script: ''
   type: python

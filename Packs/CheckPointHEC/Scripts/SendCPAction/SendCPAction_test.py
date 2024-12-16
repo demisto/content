@@ -1,9 +1,6 @@
 import demistomock as demisto
 from SendCPAction import send_action_and_update_incident
 
-FARM = 'mt-rnd-ng-6'
-CUSTOMER = 'avananlab'
-
 
 def test_send_action_and_update_incident(mocker):
     def execute_command(name, args):
@@ -17,5 +14,5 @@ def test_send_action_and_update_incident(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
-    result = send_action_and_update_incident(FARM, CUSTOMER, '0000', 'quarantine')
+    result = send_action_and_update_incident('0000', 'quarantine', 'CheckPointHEC-instance-1')
     assert result == [{'Contents': {'task': 1}}]

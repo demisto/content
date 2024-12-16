@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Any query error in the ***splunk-search*** command will now throw an exception instead of ignoring it."}

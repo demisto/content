@@ -1,0 +1,27 @@
+{
+    "id": "incident_stellarcybercasescore",
+    "version": -1,
+    "name": "Stellar Cyber Case Score",
+    "ownerOnly": false,
+    "cliName": "stellarcybercasescore",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "associatedTypes": [
+        "Stellar Cyber Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.6.0"
+}

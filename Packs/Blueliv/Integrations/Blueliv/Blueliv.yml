@@ -22,27 +22,33 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Blueliv reduces risk through actionable, dynamic and targeted threat intelligence, trusted by your organization.
-display: Blueliv (Beta)
+description: Deprecated. No available replacement.
+display: Blueliv (Beta) (Deprecated)
 name: Blueliv_Beta
 script:
   commands:
   - description: Data set collection that gives the latest STIX Indicators about bot ips gathered by Blueliv.
     name: blueliv-get-botips-feed
+    deprecated: true
   - description: Data set collection that gives the latest STIX Indicators about known malicious servers gathered by Blueliv.
     name: blueliv-get-crimeservers-feed
+    deprecated: true
   - description: Data set collection that gives the latest STIX Indicators about malware hashes gathered and analyzed by Blueliv.
     name: blueliv-get-malware-feed
+    deprecated: true
   - description: Data set collection that gives the latest STIX Indicators about attacking IPs gathered and analyzed by Blueliv.
     name: blueliv-get-attackingips-feed
+    deprecated: true
   - description: 'Data related to the number of hacktivism tweets recently created. Blueliv provides two types of feeds: the first one contains the most popular hacktivism hashtags and the second one contains the countries where more number of hacktivism tweets are coming from.'
     name: blueliv-get-hacktivism-feed
-  dockerimage: demisto/blueliv:1.0.0.52588
+    deprecated: true
+  dockerimage: demisto/blueliv:1.0.0.76921
   runonce: false
   script: ''
   type: python
   subtype: python2
 beta: true
 tests:
-- no test
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true

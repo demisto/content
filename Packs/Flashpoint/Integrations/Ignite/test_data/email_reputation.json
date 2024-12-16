@@ -1,0 +1,29 @@
+[
+    {
+        "Attribute": {
+            "Event": {
+                "RelatedEvent": [],
+                "Tags": [
+                    "sample_tags"
+                ],
+                "attack_ids": [],
+                "event_uuid": "dummy_uuid",
+                "fpid": "dummy_fpid",
+                "href": "https://mock_dummy.com/technical-intelligence/v1/event/00000001",
+                "info": "sample info",
+                "reports": [],
+                "timestamp": "00001"
+            },
+            "category": "sample_category",
+            "fpid": "dummy_fpid",
+            "href": "https://mock_dummy.com/technical-intelligence/v1/attribute/0000001",
+            "timestamp": "00001",
+            "type": "email",
+            "uuid": "dummy_uuid",
+            "value": {
+                "comment": "sample comment",
+                "email": "dummy@dummy.com"
+            }
+        }
+    }
+]

@@ -17,7 +17,7 @@ args:
   description: The model target accuracy, between 0 and 1.
   name: modelTargetAccuracy
 - defaultValue: '*'
-  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
+  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious.'
   name: phishingLabels
 - description: A comma-separated list of incident field names to include in the results file.
   name: additionalFields
@@ -42,7 +42,7 @@ outputs:
 script: '-'
 subtype: python3
 type: python
-dockerimage: demisto/ml:1.0.0.45981
+dockerimage: demisto/pandas:1.0.0.117209
 runas: DBotWeakRole
 fromversion: 5.0.0
 tags:

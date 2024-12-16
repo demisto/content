@@ -2,7 +2,7 @@
     "name": "Rapid7 - Threat Command (IntSights)",
     "description": "Use Threat Command to manage alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.",
     "support": "partner",
-    "currentVersion": "3.1.2",
+    "currentVersion": "3.1.5",
     "author": "Rapid7",
     "url": "https://www.rapid7.com/for-customers/",
     "email": "support@rapid7.com",

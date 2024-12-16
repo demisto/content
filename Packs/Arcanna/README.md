@@ -1,10 +1,10 @@
-[Arcanna.ai](https://www.arcanna.ai/)  is a Cognitive Automation platform designed and built to enhance teams of experts with the power of AI.
+[Arcanna.ai](https://www.arcanna.ai/)  Handle threats with decision assistance. Enhance your team's capability, streamlines threat handling and mitigates risk associated with alert fatigue.
 
 
 
 ### What does this pack do?
 
-Communicates with Arcanna.AI SaaS instance
+Communicates with Arcanna.AI Instances ( On-prem, Cloud, SaaS)
 
 Pack is providing one playbook for alert triage, an integration and one script which helps prepare incident data for Arcanna usage
 

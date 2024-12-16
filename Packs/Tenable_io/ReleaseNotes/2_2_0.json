@@ -1,0 +1,6 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Deleted the Tenable.io Event Collector integration, and moved its commands to Tenable Vulnerability Management (Tenable.io previously) integration.\nChanged the *Access Key* and *Secret Key* parameters to be mandatory."
+
+
+}

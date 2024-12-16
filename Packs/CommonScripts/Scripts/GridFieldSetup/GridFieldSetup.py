@@ -2,10 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, List
-
-
-def grid_field_setup(keys: List[str], vals: Dict, res_list: List) -> List[str]:
+def grid_field_setup(keys: list[str], vals: dict, res_list: list) -> list[str]:
     """Returns a list of dictionaries based on the key/values provided.
     :type keys: ``str``
     :type vals: ``dict``
@@ -29,7 +26,7 @@ def grid_field_setup(keys: List[str], vals: Dict, res_list: List) -> List[str]:
 ''' COMMAND FUNCTION '''
 
 
-def grid_field_setup_command(args: Dict[str, str]) -> CommandResults:
+def grid_field_setup_command(args: dict[str, str]) -> CommandResults:
     keys = argToList(args.pop('keys', []))
     overwrite = args.pop('overwrite', False)
     gridfield = args.pop('gridfield', None)

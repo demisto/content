@@ -1824,7 +1824,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "URLs \u0026 Domains",
+                        "name": "URLs & Domains",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -3020,7 +3020,7 @@
                         "y": 0
                     },
                     {
-                        "description": "Instructions: \ncopy-paste email headers into the argument.\nThe emails headers are found in the view\u003esource of your email.",
+                        "description": "Instructions: \ncopy-paste email headers into the argument.\nThe emails headers are found in the view>source of your email.",
                         "displayType": "ROW",
                         "h": 2,
                         "hideItemTitleOnlyOne": false,
@@ -3356,6 +3356,12 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },

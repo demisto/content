@@ -219,71 +219,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: b772f110-939d-4f2b-8850-088e8cf36343
-    type: condition
-    task:
-      id: b772f110-939d-4f2b-8850-088e8cf36343
-      version: -1
-      name: Should continue with the investigation?
-      description: Asks the user whether the alert investigation should continue.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "44"
-      "yes":
-      - "60"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": 2530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
-    taskid: a0697551-115b-4674-8204-ba39af9247f5
-    type: regular
-    task:
-      id: a0697551-115b-4674-8204-ba39af9247f5
-      version: -1
-      name: Continue with the incident investigation
-      description: Continue with the incident investigation.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "60"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 2700
+          "y": 3380
         }
       }
     note: false
@@ -338,7 +274,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "43"
+      - "60"
       "yes":
       - "83"
     separatecontext: false
@@ -387,7 +323,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 2870
+          "y": 2530
         }
       }
     note: false
@@ -689,7 +625,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 3540
+          "y": 3200
         }
       }
     note: false
@@ -735,7 +671,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3005
+          "y": 2665
         }
       }
     note: false
@@ -781,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3360
+          "y": 3020
         }
       }
     note: false
@@ -827,7 +763,7 @@ tasks:
       {
         "position": {
           "x": 760,
-          "y": 3180
+          "y": 2840
         }
       }
     note: false
@@ -963,7 +899,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "43"
+      - "60"
     scriptarguments:
       AutoContainment:
         complex:
@@ -1055,7 +991,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "43"
+      - "60"
     scriptarguments:
       AutoEradicate:
         complex:
@@ -1218,10 +1154,7 @@ tasks:
       id: f77aa4eb-f400-4a50-829f-4ce59cad479f
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or
-        update comments to the existing ticket in the following ticketing systems:\n-ServiceNow
-        \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk
-        - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
@@ -1309,9 +1242,6 @@ view: |-
   {
     "linkLabelsPosition": {
       "10_12_#default#": 0.52,
-      "43_44_#default#": 0.49,
-      "43_60_yes": 0.54,
-      "54_43_#default#": 0.19,
       "54_83_yes": 0.41,
       "73_74_#default#": 0.44,
       "73_75_yes": 0.41,
@@ -1321,7 +1251,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3895,
+        "height": 3555,
         "width": 1770,
         "x": -230,
         "y": -110
@@ -1536,6 +1466,6 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test Playbook - IOC Alert
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0

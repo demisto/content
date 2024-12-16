@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bc3d4f03-06bb-4d3f-89c6-92b3dbf72c00
+    taskid: 06b15505-8fae-4a67-8ade-3e99ec9b3e0e
     type: start
     task:
-      id: bc3d4f03-06bb-4d3f-89c6-92b3dbf72c00
+      id: 06b15505-8fae-4a67-8ade-3e99ec9b3e0e
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -32,12 +32,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 54be4c1e-bf44-4cee-8535-cb1334e6a633
+    taskid: 813a9c3b-183b-4c88-86aa-620011dad9ee
     type: regular
     task:
-      id: 54be4c1e-bf44-4cee-8535-cb1334e6a633
+      id: 813a9c3b-183b-4c88-86aa-620011dad9ee
       version: -1
       name: azure-sc-list-aps
       description: Lists auto provisioning settings in the subscription.
@@ -47,12 +48,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "12"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -63,12 +64,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 0ba02cf8-862a-4f60-8502-41bde0bd47fa
+    taskid: 8be95de8-4f59-47cc-8436-6d0e8437d73c
     type: regular
     task:
-      id: 0ba02cf8-862a-4f60-8502-41bde0bd47fa
+      id: 8be95de8-4f59-47cc-8436-6d0e8437d73c
       version: -1
       name: azure-sc-get-aps
       description: Returns details of a specific auto provisioning setting.
@@ -87,40 +89,6 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: b389eb60-22af-484a-8bd1-6db69f54ea14
-    type: regular
-    task:
-      id: b389eb60-22af-484a-8bd1-6db69f54ea14
-      version: -1
-      name: azure-sc-list-alert
-      description: Lists alerts for the subscription according to the specified filters.
-      script: '|||azure-sc-list-alert'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      asc_location:
-        simple: centralus
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
           "y": 545
         }
       }
@@ -131,16 +99,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: fc03a1a4-213d-41ad-8cf8-292cf12412b3
+    continueonerrortype: ""
+  "3":
+    id: "3"
+    taskid: 674f2830-d5ba-468c-8a62-4119436df554
     type: regular
     task:
-      id: fc03a1a4-213d-41ad-8cf8-292cf12412b3
+      id: 674f2830-d5ba-468c-8a62-4119436df554
+      version: -1
+      name: azure-sc-list-alert
+      description: Lists alerts for the subscription according to the specified filters.
+      script: '|||azure-sc-list-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      asc_location:
+        simple: centralus
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "4":
+    id: "4"
+    taskid: b89609e4-f42a-4662-872f-a573cac8d70a
+    type: regular
+    task:
+      id: b89609e4-f42a-4662-872f-a573cac8d70a
       version: -1
       name: azure-sc-list-jit
-      description: Lists all policies for protecting resources using Just-in-Time
-        access control.
+      description: Lists all policies for protecting resources using Just-in-Time access control.
       script: '|||azure-sc-list-jit'
       type: regular
       iscommand: true
@@ -152,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
@@ -163,16 +166,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 5e5dd517-22c6-4bb7-8f22-fc32dbf51b01
+    taskid: d04a4f05-c1f5-46f3-81d7-5e8127fd2e02
     type: regular
     task:
-      id: 5e5dd517-22c6-4bb7-8f22-fc32dbf51b01
+      id: d04a4f05-c1f5-46f3-81d7-5e8127fd2e02
       version: -1
       name: azure-sc-list-location
-      description: The location of the responsible ASC of the specific subscription.
-        For each subscription there is only one responsible location.
+      description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
       script: '|||azure-sc-list-location'
       type: regular
       iscommand: true
@@ -184,8 +187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
@@ -195,12 +198,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: d9522e7a-384c-46e7-8219-ff348cc35d22
+    taskid: 70175fcb-e2bd-42d9-883c-e3576dac3a7c
     type: regular
     task:
-      id: d9522e7a-384c-46e7-8219-ff348cc35d22
+      id: 70175fcb-e2bd-42d9-883c-e3576dac3a7c
       version: -1
       name: azure-sc-list-storage
       description: Lists all the storage accounts available under the subscription.
@@ -215,8 +219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 162.5,
+          "y": 1595
         }
       }
     note: false
@@ -226,12 +230,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 2b0b8474-4d96-4603-84f8-4fe501d2116a
+    taskid: 1604627d-4cd9-4895-86dd-270f87cb4de1
     type: regular
     task:
-      id: 2b0b8474-4d96-4603-84f8-4fe501d2116a
+      id: 1604627d-4cd9-4895-86dd-270f87cb4de1
       version: -1
       name: azure-sc-update-aps
       description: Updates a specific auto provisioning setting.
@@ -251,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 162.5,
+          "y": 1770
         }
       }
     note: false
@@ -262,12 +267,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: d6af1cb9-4845-42e6-8b7c-43b91a68bc6e
+    taskid: d8392127-a4e1-4d02-896d-f206e3348eb2
     type: regular
     task:
-      id: d6af1cb9-4845-42e6-8b7c-43b91a68bc6e
+      id: d8392127-a4e1-4d02-896d-f206e3348eb2
       version: -1
       name: azure-list-subscriptions
       description: Lists available subscriptions for this application.
@@ -282,8 +288,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 162.5,
+          "y": 1945
         }
       }
     note: false
@@ -293,12 +299,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 7cfb5ba1-c7a0-4638-8385-9681dbde59e2
+    taskid: 2c78185a-f937-4189-83d2-58d3bacad075
     type: regular
     task:
-      id: 7cfb5ba1-c7a0-4638-8385-9681dbde59e2
+      id: 2c78185a-f937-4189-83d2-58d3bacad075
       version: -1
       name: azure-sc-get-alert
       description: Get an alert that is associated a resource group or a subscription.
@@ -323,7 +330,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -333,16 +340,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 6089a836-2ce7-45cc-8ce7-d116d6693190
+    taskid: 687b08db-bf0a-4028-8c59-07ead2b1d528
     type: regular
     task:
-      id: 6089a836-2ce7-45cc-8ce7-d116d6693190
+      id: 687b08db-bf0a-4028-8c59-07ead2b1d528
       version: -1
       name: azure-get-secure-score
-      description: Retrieve the Secure Score for the provided subscription and score
-        name
+      description: Retrieve the Secure Score for the provided subscription and score name
       script: '|||azure-get-secure-score'
       type: regular
       iscommand: true
@@ -351,8 +358,89 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1760
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "11":
+    id: "11"
+    taskid: 3da95f14-3b4e-4095-8974-4805e589d8ce
+    type: condition
+    task:
+      id: 3da95f14-3b4e-4095-8974-4805e589d8ce
+      version: -1
+      name: Check list alert result not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureSecurityCenter.Alert.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 48bb73c0-aa6c-4a83-8040-40827670d36d
+    type: condition
+    task:
+      id: 48bb73c0-aa6c-4a83-8040-40827670d36d
+      version: -1
+      name: Check list aps not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureSecurityCenter.AutoProvisioningSetting.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
         }
       }
     note: false
@@ -364,11 +452,13 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "11_9_yes": 0.15
+    },
     "paper": {
       "dimensions": {
-        "height": 1805,
-        "width": 380,
+        "height": 2165,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }

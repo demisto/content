@@ -14,3 +14,15 @@
 !reversinglabs-a1000-upload-sample entryId="7469@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59" comment="this_is_a_comment" tags="one_tag"
 !reversinglabs-a1000-upload-sample-and-get-results entryId="7469@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59" comment="this_is_a_comment" tags="one_tag"
 !reversinglabs-a1000-url-report url="http://akiwinds.duckdns.org/chats/fre.php"
+!reversinglabs-a1000-user-tags hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" tags="tag3,tag4" action="CREATE"
+!reversinglabs-a1000-file-analysis-status hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" analysis_status="processed"
+!reversinglabs-a1000-pdf-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"
+!reversinglabs-a1000-static-analysis-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06"
+!reversinglabs-a1000-dynamic-analysis-report report_format="pdf" hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"
+!reversinglabs-a1000-sample-classification hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="GET CLASSIFICATION" system="local" local_only="true" av_scanners="false" classification="malicious"
+!reversinglabs-a1000-yara action="GET RULESETS"
+!reversinglabs-a1000-yara-retro action="LOCAL SCAN STATUS" ruleset_name="get_money3"
+!reversinglabs-a1000-list-containers sample_hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06,661566e9131c39a1b34cabde9a14877d9bcb3d90"
+!reversinglabs-a1000-upload-from-url-actions action="UPLOAD" file_url="https://download.sublimetext.com/sublime_text_build_4169_x64_setup.exe" crawler="local" sandbox_platform="windows10"
+
+

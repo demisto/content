@@ -1,30 +1,26 @@
 Amazon Web Services Elastic Compute Cloud (EC2).
 
-## Configure AWS - EC2 on Cortex XSOAR
+## Configure AWS - EC2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - EC2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | AWS Default Region |  | False |
-    | Role Arn |  | False |
-    | Role Session Name |  | False |
-    | Role Session Duration |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | PrivateLink service URL |  | False |
-    | STS PrivateLink URL |  | False |
-    | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. This feature is explained below. | False |
-    | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. This feature is explained below. | False |
-    | Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts". | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AWS Default Region |  | False |
+| Role Arn |  | False |
+| Role Session Name |  | False |
+| Role Session Duration |  | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| PrivateLink service URL |  | False |
+| STS PrivateLink URL |  | False |
+| AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. This feature is explained below. | False |
+| Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. This feature is explained below. | False |
+| Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts". | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Run commands in multiple AWS accounts
 
@@ -53,7 +49,7 @@ The script ***AwsEC2SyncAccounts*** can be used to configure an AWS - EC2 instan
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-ec2-describe-instances
@@ -3538,3 +3534,72 @@ Gets the public IP addresses that have been discovered by IPAM.
 >|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscoveryId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|SubnetId|Tags|VpcId|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupName': 'example_sg', 'GroupId': 'sg-11111111111111111'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |
+
+### aws-ec2-create-vpc-endpoint
+
+***
+Creates a VPC endpoint.
+
+#### Base Command
+
+`aws-ec2-create-vpc-endpoint`
+
+#### Input
+
+| **Argument Name**   | **Description** | **Required** |
+|---------------------| --- | --- |
+| vpcId               | The ID of the VPC in which the endpoint will be used. | Required | 
+| serviceName         | The service name for the service that you want to create an endpoint. | Required | 
+| endpointType        | The type of endpoint. | Optional | 
+| subnetIds           | One or more subnet IDs in which to create the endpoint. | Optional | 
+| securityGroupIds    | One or more security group IDs to associate with the endpoint. | Optional | 
+| dryRun              | Checks whether you have the required permissions for the action, without actually making the request. Possible values are: true, false. | Optional | 
+| vpcEndpointType     | The type of endpoint. Possible values are: Interface, Gateway, GatewayLoadBalancer. | Optional | 
+| policyDocument      | A policy document to attach to the endpoint. A JSON policy document that controls access to the service from the endpoint. | Optional | 
+| routeTableIds       | One or more route table IDs. | Optional | 
+| clientToken         | Unique, case-sensitive identifier to ensure the idempotency of the request. | Optional | 
+| privateDnsEnabled   | Indicates whether to associate a private hosted zone with the specified VPC. Possible values are: true, false. | Optional | 
+| tagSpecifications   | One or more tags to associate with the endpoint. Should be Json string of key-value tags. | Optional |
+| region              | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn             | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName     | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Vpcs.VpcEndpoint.VpcEndpointId | String | The ID of the endpoint. | 
+| AWS.EC2.Vpcs.VpcEndpoint.State | String | The state of the VPC endpoint. | 
+| AWS.EC2.Vpcs.VpcEndpoint.ServiceName | String | The service name of the VPC endpoint. | 
+| AWS.EC2.Vpcs.VpcEndpoint.VpcId | String | The ID of the VPC to which the endpoint is associated. | 
+| AWS.EC2.Vpcs.VpcEndpoint.EndpointType | String | The type of the VPC endpoint. | 
+
+#### Command example
+```!aws-ec2-create-vpc-endpoint service-name=test_service_name vpc-id=test_id```
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "Vpcs": {
+                "VpcEndpoint":
+                {
+                    "ServiceName": "test_service_name",
+                    "State": "PendingAcceptance",
+                    "VpcEndpointId": "test_endpoint_id",
+                    "VpcEndpointType": "Interface",
+                    "VpcId": "test_id"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### VPC Endpoint
+>|Service Name|State|Vpc Endpoint Id|Vpc Endpoint Type|Vpc Id|
+>|---|---|---|---|---|
+>| test_service_name | PendingAcceptance | test_endpoint_id | Interface | test_id |

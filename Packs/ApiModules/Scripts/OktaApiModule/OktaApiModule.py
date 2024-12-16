@@ -1,9 +1,10 @@
 from CommonServerPython import *
 
-import jwt
 import uuid
 from datetime import datetime, timedelta
 from enum import Enum
+
+import jwt
 
 
 TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
@@ -26,13 +27,13 @@ class AuthType(Enum):
 
 
 class OktaClient(BaseClient):
-    def __init__(self, api_token: str, auth_type: AuthType = AuthType.API_TOKEN,
+    def __init__(self, auth_type: AuthType = AuthType.API_TOKEN, api_token: str | None = None,
                  client_id: str | None = None, scopes: list[str] | None = None, private_key: str | None = None,
-                 jwt_algorithm: JWTAlgorithm | None = None, *args, **kwargs):
+                 jwt_algorithm: JWTAlgorithm | None = None, key_id: str | None = None, *args, **kwargs):
         """
         Args:
-            api_token (str): API token for authentication.
             auth_type (AuthType, optional): The type of authentication to use.
+            api_token (str | None, optional): API token for authentication (required if 'auth_type' is AuthType.API_TOKEN).
             client_id (str | None, optional): Client ID for OAuth authentication (required if 'auth_type' is AuthType.OAUTH).
             scopes (list[str] | None, optional): A list of scopes to request for the token
                 (required if 'auth_type' is AuthType.OAUTH).
@@ -41,36 +42,38 @@ class OktaClient(BaseClient):
                 (required if 'auth_type' is AuthType.OAUTH).
         """
         super().__init__(*args, **kwargs)
-        self.api_token = api_token
         self.auth_type = auth_type
+
+        self.api_token = api_token
+
+        self.client_id = client_id
+        self.scopes = scopes
+        self.jwt_algorithm = jwt_algorithm
+        self.private_key = private_key
+        self.key_id = key_id
 
         missing_required_params = []
 
+        if self.auth_type == AuthType.API_TOKEN and not api_token:
+            raise ValueError('API token is missing')
+
         if self.auth_type == AuthType.OAUTH:
-            if not client_id:
+            if not self.client_id:
                 missing_required_params.append('Client ID')
 
-            if not scopes:
+            if not self.scopes:
                 missing_required_params.append('Scopes')
 
-            if not jwt_algorithm:
+            if not self.jwt_algorithm:
                 missing_required_params.append('JWT algorithm')
 
-            if not private_key:
+            if not self.private_key:
                 missing_required_params.append('Private key')
 
             if missing_required_params:
                 raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
 
-            # Set type of variables non-optional after we assured they're assigned for mypy
-            self.client_id: str = client_id  # type: ignore
-            self.scopes: list[str] = scopes  # type: ignore
-            self.private_key: str = private_key  # type: ignore
-            self.jwt_algorithm: JWTAlgorithm = jwt_algorithm  # type: ignore
-
-        self.initial_setup()
-
-    def assign_app_role(self, client_id: str, role: str, auth_type: AuthType = AuthType.API_TOKEN) -> dict:
+    def assign_app_role(self, client_id: str, role: str, auth_type: AuthType) -> dict:
         """
         Assign a role to a client application.
 
@@ -104,17 +107,24 @@ class OktaClient(BaseClient):
         current_time = datetime.utcnow()
         expiration_time = current_time + timedelta(minutes=TOKEN_EXPIRATION_TIME)
 
+        payload = {
+            'aud': url,
+            'iat': int((current_time - datetime(1970, 1, 1)).total_seconds()),
+            'exp': int((expiration_time - datetime(1970, 1, 1)).total_seconds()),
+            'iss': self.client_id,
+            'sub': self.client_id,
+            'jti': str(uuid.uuid4()),
+        }
+
+        headers = {}
+        if self.key_id:
+            headers['kid'] = self.key_id
+
         return jwt.encode(
-            payload={
-                'aud': url,
-                'iat': int((current_time - datetime(1970, 1, 1)).total_seconds()),
-                'exp': int((expiration_time - datetime(1970, 1, 1)).total_seconds()),
-                'iss': self.client_id,
-                'sub': self.client_id,
-                'jti': str(uuid.uuid4()),
-            },
-            key=self.private_key,
-            algorithm=self.jwt_algorithm.value,
+            payload=payload,
+            key=self.private_key,  # type: ignore[arg-type]
+            algorithm=self.jwt_algorithm.value,  # type: ignore[union-attr]
+            headers=headers
         )
 
     def generate_oauth_token(self, scopes: list[str]) -> dict:
@@ -148,7 +158,7 @@ class OktaClient(BaseClient):
 
     def get_token(self):
         """
-        Get an API token for authentication.
+        Get an OAuth token for authentication.
         If there isn't an existing one, or the existing one is expired, a new one will be generated.
         """
         expiration_time_format = '%Y-%m-%dT%H:%M:%S'
@@ -170,7 +180,7 @@ class OktaClient(BaseClient):
         else:
             demisto.debug('No existing token was found. A new token will be generated.')
 
-        token_generation_response = self.generate_oauth_token(scopes=self.scopes)
+        token_generation_response = self.generate_oauth_token(scopes=self.scopes)  # type: ignore[arg-type]
         token: str = token_generation_response['access_token']
         expires_in: int = token_generation_response['expires_in']
         token_expiration = datetime.utcnow() + timedelta(seconds=expires_in)
@@ -181,36 +191,6 @@ class OktaClient(BaseClient):
         demisto.debug(f'New token generated. Expiration time: {token_expiration}')
 
         return token
-
-    def initial_setup(self):
-        """
-        Initial setup for the first time the integration is used.
-        """
-        integration_context = get_integration_context()
-
-        if integration_context.get('initialized', False):  # If the initial setup was already done, do nothing
-            return
-
-        if self.auth_type == AuthType.OAUTH:
-            # Add "SUPER_ADMIN" role to client application, which is required for OAuth authentication
-            try:
-                self.assign_app_role(client_id=self.client_id, role="SUPER_ADMIN", auth_type=AuthType.API_TOKEN)
-                demisto.debug("'SUPER_ADMIN' role has been assigned to the client application.")
-
-            except DemistoException as e:
-                # If the client application already has the "SUPER_ADMIN" role, ignore the error.
-                # E0000090 Error code official docs description: Duplicate role assignment exception.
-                if e.res.headers.get('content-type') == 'application/json' and e.res.json().get('errorCode') == 'E0000090':
-                    demisto.debug('The client application already has the "SUPER_ADMIN" role assigned.')
-
-                else:
-                    raise e
-
-            self.get_token()
-
-        integration_context = get_integration_context()
-        integration_context['initialized'] = True
-        set_integration_context(integration_context)
 
     def http_request(self, auth_type: AuthType | None = None, **kwargs):
         """

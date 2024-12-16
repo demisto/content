@@ -1,5 +1,5 @@
 [file:AWS-CloudTrail.yml]
-ignore=BA108,BA109,IN124,BA124
+ignore=BA108,BA109,BA124
 
 [known_words]
 cloudtrail

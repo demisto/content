@@ -1,0 +1,30 @@
+{
+    "id": "incident_xmcoserenetymonitoring",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "name": "XMCO Serenety monitoring",
+    "ownerOnly": false,
+    "cliName": "xmcoserenetymonitoring",
+    "type": "shortText",
+    "closeForm": true,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "XMCO Serenety Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

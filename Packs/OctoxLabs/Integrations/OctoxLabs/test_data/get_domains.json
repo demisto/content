@@ -1,0 +1,12 @@
+{
+    "count": 1,
+    "results": [
+        {
+            "id": 1,
+            "domain": "localhost",
+            "tenant": 1,
+            "is_primary": true,
+            "tenant_name": "Octoxlabs"
+        }
+    ]
+}

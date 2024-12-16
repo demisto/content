@@ -1,0 +1,334 @@
+commonfields:
+  id: Zoom Mail
+  version: -1
+name: Zoom Mail
+display: Zoom Mail
+category: Email
+description: Enables interaction with the Zoom Mail API.
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- section: Connect
+  display: 'Server URL (e.g., https://api.zoom.us/v2)'
+  name: url
+  defaultvalue: 'https://api.zoom.us/v2/'
+  type: 0
+  required: true
+- section: Connect
+  display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  type: 9
+  required: true
+- section: Connect
+  display: Account ID
+  name: account_id
+  type: 0
+  required: true
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- section: Connect
+  display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- section: Collect
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  defaultvalue: "10"
+  type: 0
+  required: false
+- section: Collect
+  display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Default Mailbox
+  name: fetch_from
+  type: 0
+  required: false
+  additionalinfo: When provided, this mailbox is used for fetching as well as the default email for any command.
+- display: Fetch Query
+  name: fetch_query
+  type: 0
+  required: false
+  additionalinfo: Elastic query to filter messages in the specified inbox.
+- display: Fetch Labels
+  name: fetch_labels
+  type: 0
+  required: false
+  defaultvalue: "INBOX"
+  additionalinfo: Specify the folder that the messages will be fetched from.
+- display: Include Threads when Fetching
+  name: fetch_threads
+  type: 8
+  required: false
+  defaultvalue: "false"
+  additionalinfo: When enabled, email replies (threads) are fetched as their own incident.
+script:
+  script: ""
+  type: python
+  commands:
+  - name: zoom-mail-email-move-trash
+    arguments:
+    - name: email
+      required: false
+      description: The target mailbox to delete the email from.
+    - name: message_id
+      description: The message_id of the message to delete.
+      required: true
+    description: Move a message to the trash.
+  - name: zoom-mail-email-list
+    arguments:
+    - name: email
+      required: false
+      description: The target mailbox to list emails.
+    - name: query
+      description: Query to filter emails within the given mailbox.
+    - name: max_results
+      description: Maximum number of emails to list.
+    - name: page_token
+      description: The token for the next page of results.
+    - name: include_spam_trash
+      description: Whether or not to include spam or trash messages in the results.
+    - name: message_id
+      required: false
+      description: The immutable message ID.
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - full
+      - metadata
+      - minimal
+      description: The format to return the message with.
+    description: Lists the messages in the user's mailbox.
+    outputs:
+    - contextPath: ZoomMail.Email.messages.id
+      description: The ID of the email message.
+      type: string
+    - contextPath: ZoomMail.Email.messages.threadId
+      description: The ID of the email thread.
+      type: string
+    - contextPath: ZoomMail.Email.resultSizeEstimate
+      description: The estimated amount of messages found.
+      type: number
+    - contextPath: ZoomMail.Email.messages.id
+      description: The ID of the email message.
+      type: string
+    - contextPath: ZoomMail.Email.messages.threadId
+      description: The ID of the email thread.
+      type: string
+    - contextPath: ZoomMail.Email.resultSizeEstimate
+      description: The estimated amount of messages found.
+      type: number
+    - contextPath: ZoomMail.Email.messages.labelIds
+      description: The labels assigned to the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.snippet
+      description: A snippet of the email content.
+      type: string
+    - contextPath: ZoomMail.Email.messages.historyId
+      description: The history ID of the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.internalDate
+      description: The internal date of the email.
+      type: date
+    - contextPath: ZoomMail.Email.messages.expiration
+      description: The expiration time of the email.
+      type: number
+    - contextPath: ZoomMail.Email.messages.lastMoved
+      description: The last moved timestamp of the email.
+      type: date
+    - contextPath: ZoomMail.Email.messages.sendTime
+      description: The send time of the email.
+      type: date
+    - contextPath: ZoomMail.Email.messages.userScheduled
+      description: Indicates if the email was user scheduled.
+      type: boolean
+    - contextPath: ZoomMail.Email.messages.manifest
+      description: The manifest of the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.originalMime
+      description: The original MIME of the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.partId
+      description: The part ID of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.mimeType
+      description: The MIME type of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.filename
+      description: The filename of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.headers
+      description: The headers of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.body.attachmentId
+      description: The attachment ID of the email body.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.body.size
+      description: The size of the email body.
+      type: number
+    - contextPath: ZoomMail.Email.messages.payload.body.data
+      description: The data of the email body.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.parts
+      description: The parts of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.sizeEstimate
+      description: The size estimate of the email.
+      type: number
+    - contextPath: ZoomMail.Email.raw
+      description: The raw content of the email.
+      type: string
+  - name: zoom-mail-thread-list
+    arguments:
+    - name: email
+      required: false
+      description: The target mailbox to list emails.
+    - name: thread_id
+      description: Unique identifier for the email thread you want to retrieve.
+      required: true
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - full
+      - metadata
+      - minimal
+      description: Specifies the format in which the email messages in the thread should be returned.
+    - name: metadata_headers
+      description: When the format is set to metadata, this argument allows you to specify which email headers should be included in the response.
+    - name: max_results
+      description: Default is 50.
+    - name: page_token
+      description: The token for the next page of results.
+    description: Get an email thread.
+    outputs:
+    - contextPath: ZoomMail.Thread.id
+      description: The ID of the email thread.
+      type: string
+    - contextPath: ZoomMail.Thread.status
+      description: The status of the email thread.
+      type: string
+    - contextPath: ZoomMail.Thread.threadName
+      description: The name of the email thread.
+      type: string
+    - contextPath: ZoomMail.Thread.messages
+      description: The messages found in the email thread.
+      type: unknown
+  - name: zoom-mail-email-attachment-get
+    arguments:
+    - name: email
+      required: false
+      description: The email address of the inbox.
+    - name: message_id
+      required: true
+      description: The immutable message ID.
+    - name: attachment_id
+      description: The immutable attachment ID.
+      required: true
+    description: Get an email attachment.
+  - name: zoom-mail-send-email
+    arguments:
+    - name: from
+      required: false
+      description: The sender address.
+    - name: to
+      required: true
+      description: The recipient address.
+      isArray: true
+    - name: subject
+      description: The subject of the email.
+      required: true
+    - name: body
+      description: The plain text body of the email.
+    - name: html_body
+      description: The HTML body of the email.
+    - name: attachments
+      description: Comma-separated list of War Room entry IDs.
+      isArray: true
+    description: Sends an email message with support for plain text, HTML, and attachments.
+    outputs:
+    - contextPath: ZoomMail.Email.id
+      description: The id of the sent email.
+      type: string
+    - contextPath: ZoomMail.Email.threadId
+      description: The id for the thread of the sent email.
+      type: string
+  - name: zoom-mail-mailbox-profile-get
+    arguments:
+    - name: email
+      description: The target mailbox.
+    outputs:
+    - contextPath: ZoomMail.Profile.status
+      description: The status of the mailbox profile.
+      type: string
+    - contextPath: ZoomMail.Profile.emailAddress
+      description: The email address assigned to the mailbox profile.
+      type: string
+    - contextPath: ZoomMail.Profile.messagesTotal
+      description: The total number of messages.
+      type: number
+    - contextPath: ZoomMail.Profile.threadsTotal
+      description: The total number of threads.
+      type: number
+    description: Retrieves the mailbox profile.
+  - name: zoom-mail-user-list
+    description: Lists the available users.
+    arguments:
+    - name: status
+      description: The status of the User.
+    - name: limit
+      description: The max amount of users to return per page.
+    - name: role_id
+      description: The ID for the role of the User.
+    - name: page_number
+      description: The page number of results.
+    - name: include_fields
+      description: Indicates whether or not to include fields.
+    - name: next_token
+      description: The token used to fetch the next page.
+    - name: license
+      description: Indicates if the user is licensed or not.
+    outputs:
+    - contextPath: ZoomMail.User.role_id
+      description: The ID of the users role.
+      type: string
+    - contextPath: ZoomMail.User.display_name
+      description: The display name of the user.
+      type: string
+    - contextPath: ZoomMail.User.id
+      description: The ID of the user.
+      type: string
+    - contextPath: ZoomMail.User.email
+      description: The email for the user.
+      type: unknown
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: true
+  runonce: false
+  subtype: python3
+fromversion: 6.10.0
+tests:
+- ZoomMailTest

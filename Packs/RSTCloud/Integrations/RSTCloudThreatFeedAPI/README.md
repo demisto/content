@@ -3,38 +3,39 @@ This integration was integrated and tested with RST Cloud - Threat Feed API v1
 
 Please contact the RST Cloud team via email support@rstcloud.net to obtain a key and ask any questions you have.
 Also, the following contact details can be used:
+
 - **URL**: [https://www.rstcloud.net/contact](https://www.rstcloud.net/contact)
 
 
 Each indicator is ranked from 0 to 100. Indicators are being collected from multiple sources and are cross-verified using multiple criteria. 
 Please check indicator tags and malware family fields. An indicator may describe a known malware or a scanning host. Therefore, different actions may be required based on the context.
 
-## Configure RST Cloud - Threat Feed API on Cortex XSOAR
+## Configure RST Cloud - Threat Feed API in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RST Cloud - Threat Feed API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://api.rstcloud.net/v1) |  | True |
-    | API Key |  | True |
-    | Score threshold for IP reputation command | Set this to determine the RST Threat Feed score that will determine if an IP is malicious \(0-100\) | True |
-    | Score threshold for domain reputation command | Set this to determine the RST Threat Feed score that will determine if a domain is malicious \(0-100\) | True |
-    | Score threshold for url reputation command | Set this to determine the RST Threat Feed score that will determine if a url is malicious \(0-100\) | True |
-    | Score threshold for file reputation command | Set this to determine the RST Threat Feed score that will determine if a file is malicious \(0-100\) | True |
-    | IP Indicator Expiration (days) | Mark IP indicators older than indicator_expiration_ip value in days as Suspicious ignoring the last available score | True |
-    | Domain Indicator Expiration (days) | Mark domain indicators older than indicator_expiration_domain value in days as Suspicious ignoring the last available score | True |
-    | URL Indicator Expiration (days) | Mark URL indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
-    | Hash Indicator Expiration (days) | Mark Hash indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. <https://api.rstcloud.net/v1>) |  | True |
+| API Key |  | True |
+| Score threshold for IP reputation command | Set this to determine the RST Threat Feed score that will determine if an IP is malicious \(0-100\) | True |
+| Score threshold for domain reputation command | Set this to determine the RST Threat Feed score that will determine if a domain is malicious \(0-100\) | True |
+| Score threshold for url reputation command | Set this to determine the RST Threat Feed score that will determine if a url is malicious \(0-100\) | True |
+| Score threshold for file reputation command | Set this to determine the RST Threat Feed score that will determine if a file is malicious \(0-100\) | True |
+| IP Indicator Expiration (days) | Mark IP indicators older than indicator_expiration_ip value in days as Suspicious ignoring the last available score | True |
+| Domain Indicator Expiration (days) | Mark domain indicators older than indicator_expiration_domain value in days as Suspicious ignoring the last available score | True |
+| URL Indicator Expiration (days) | Mark URL indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
+| Hash Indicator Expiration (days) | Mark Hash indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Returns IP information and reputation.
 
@@ -42,6 +43,7 @@ Returns IP information and reputation.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,44 +56,46 @@ Returns IP information and reputation.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested | 
-| DBotScore.Score | Number | The actual score | 
-| DBotScore.Type | String | The indicator type | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | IP.Address | String | IP address. | 
 | IP.Geo.Country | String | Country of origin. | 
-| IP.Tags | String | The associated tags | 
+| IP.Tags | String | The associated tags. | 
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
-| IP.Malicious.Score | String | The score calculated for the indicator by the vendor | 
+| IP.Malicious.Score | String | The score calculated for the indicator by the vendor. | 
 | RST.IP.Address | String | The actual IP address. | 
-| RST.IP.Geo.Country | String | The country name | 
-| RST.IP.Geo.Region | String | The geo region name | 
-| RST.IP.Geo.City | String | The city name | 
+| RST.IP.Geo.Country | String | The country name. | 
+| RST.IP.Geo.Region | String | The geo region name. | 
+| RST.IP.Geo.City | String | The city name. | 
 | RST.IP.ASN | String | The autonomous system name for the IP address. | 
 | RST.IP.Organization | String | The organisation name for the autonomous system name for the IP address. | 
 | RST.IP.ISP | String | The Internet Service Provider name for the autonomous system name for the IP address. | 
 | RST.IP.CloudHosting | String | The Cloud Provider name for the IP address. | 
 | RST.IP.NumberOfDomainInASN | String | The number of domain names for the IP address. | 
-| RST.IP.FirstSeen | Date | First Seen | 
-| RST.IP.LastSeen | Date | Last Seen | 
-| RST.IP.Tags | String | The associated tags | 
-| RST.IP.Threat | String | The associated Malware Family or threat name | 
-| RST.IP.Score | Number | The total score | 
-| RST.IP.UUID | String | The unique ID for the indicator | 
-| RST.IP.RSTReference | String | The link to the raw JSON indicator | 
-| RST.IP.Related | String | The associated domains | 
-| RST.IP.FalsePositive | String | true if it is likely a False Positive | 
-| RST.IP.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
+| RST.IP.FirstSeen | Date | First Seen. | 
+| RST.IP.LastSeen | Date | Last Seen. | 
+| RST.IP.Tags | String | The associated tags. | 
+| RST.IP.Threat | String | The associated Malware Family or threat name. | 
+| RST.IP.Score | Number | The total score. | 
+| RST.IP.UUID | String | The unique ID for the indicator. | 
+| RST.IP.RSTReference | String | The link to the raw JSON indicator. | 
+| RST.IP.Related | String | The associated domains. | 
+| RST.IP.FalsePositive | String | true if it is likely a False Positive. | 
+| RST.IP.FalsePositiveDesc | String | Description why we think it may be a False Positive. | 
 | RST.IP.CVE | String | Related CVE \(vulnerabilities\) | 
-| RST.IP.Industry | String | Related Industry | 
-| RST.IP.Report | String | Collected from | 
+| RST.IP.Industry | String | Related Industry. | 
+| RST.IP.Report | String | Collected from. | 
 
 
 #### Command Example
+
 ```!ip ip=1.2.3.4 threshold=50```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -155,6 +159,7 @@ Returns IP information and reputation.
 
 
 ### domain
+
 ***
 Returns Domain information and reputation.
 
@@ -162,6 +167,7 @@ Returns Domain information and reputation.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,33 +188,35 @@ Returns Domain information and reputation.
 | Domain.Tags | String | The associated tags | 
 | Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. | 
 | Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
-| Domain.Malicious.Score | String | The score calculated for the indicator by the vendor | 
+| Domain.Malicious.Score | String | The score calculated for the indicator by the vendor. | 
 | RST.Domain.Name | String | The domain name. | 
-| RST.Domain.WhoisAge | Number | Days since creation | 
+| RST.Domain.WhoisAge | Number | Days since creation. | 
 | RST.Domain.WhoisDomainCreationDate | Date | Creation date. Format is ISO8601. | 
 | RST.Domain.WhoisDomainUpdateDate | Date | Update date. Format is ISO8601. | 
 | RST.Domain.WhoisDomainExpireDate | Date | Expiration date. Format is ISO8601. | 
-| RST.Domain.WhoisRegistrar | String | Domain Registrar | 
-| RST.Domain.WhoisRegistrant | String | Domain Registrant | 
-| RST.Domain.FirstSeen | Date | First Seen | 
-| RST.Domain.LastSeen | Date | Last Seen | 
-| RST.Domain.Tags | String | The associated tags | 
-| RST.Domain.Threat | String | The associated Malware Family or threat name | 
-| RST.Domain.Score | Number | The total score | 
-| RST.Domain.UUID | String | The unique ID for the indicator | 
-| RST.Domain.RSTReference | String | The link to the raw JSON indicator | 
-| RST.Domain.Related | String | The associated IP addresses | 
-| RST.Domain.FalsePositive | String | true if it is likely a False Positive | 
-| RST.Domain.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
+| RST.Domain.WhoisRegistrar | String | Domain Registrar. | 
+| RST.Domain.WhoisRegistrant | String | Domain Registrant. | 
+| RST.Domain.FirstSeen | Date | First Seen. | 
+| RST.Domain.LastSeen | Date | Last Seen. | 
+| RST.Domain.Tags | String | The associated tags. | 
+| RST.Domain.Threat | String | The associated Malware Family or threat name. | 
+| RST.Domain.Score | Number | The total score. | 
+| RST.Domain.UUID | String | The unique ID for the indicator. | 
+| RST.Domain.RSTReference | String | The link to the raw JSON indicator. | 
+| RST.Domain.Related | String | The associated IP addresses. | 
+| RST.Domain.FalsePositive | String | true if it is likely a False Positive. | 
+| RST.Domain.FalsePositiveDesc | String | Description why we think it may be a False Positive. | 
 | RST.Domain.CVE | String | Related CVE \(vulnerabilities\) | 
-| RST.Domain.Industry | String | Related Industry | 
-| RST.Domain.Report | String | Collected from | 
+| RST.Domain.Industry | String | Related Industry. | 
+| RST.Domain.Report | String | Collected from. | 
 
 
 #### Command Example
+
 ```!domain domain="domaintovalidate.local" threshold=40```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -264,6 +272,7 @@ Returns Domain information and reputation.
 
 
 ### url
+
 ***
 Returns URL information and reputation.
 
@@ -271,6 +280,7 @@ Returns URL information and reputation.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -283,36 +293,38 @@ Returns URL information and reputation.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested | 
-| DBotScore.Score | Number | The actual score | 
-| DBotScore.Type | String | The indicator type | 
-| DBotScore.Vendor | String | The vendor used to calculate the score | 
-| URL.Data | String | The URL | 
-| URL.Tags | String | The associated tags | 
-| URL.Malicious.Vendor | String | The vendor reporting the URL as malicious | 
-| URL.Malicious.Description | String | A description explaining why the URL was reported as malicious | 
-| URL.Malicious.Score | String | The score calculated for the URL indicator by the vendor | 
-| RST.URL.Data | String | The URL | 
-| RST.URL.Status | String | Last HTTP status code | 
-| RST.URL.FirstSeen | Date | First Seen | 
-| RST.URL.LastSeen | Date | Last Seen | 
-| RST.URL.Tags | String | The associated tags | 
-| RST.URL.Threat | String | The associated Malware Family or threat name | 
-| RST.URL.Score | Number | The total score | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| URL.Data | String | The URL. | 
+| URL.Tags | String | The associated tags. | 
+| URL.Malicious.Vendor | String | The vendor reporting the URL as malicious. | 
+| URL.Malicious.Description | String | A description explaining why the URL was reported as malicious. | 
+| URL.Malicious.Score | String | The score calculated for the URL indicator by the vendor. | 
+| RST.URL.Data | String | The URL. | 
+| RST.URL.Status | String | Last HTTP status code. | 
+| RST.URL.FirstSeen | Date | First Seen. | 
+| RST.URL.LastSeen | Date | Last Seen. | 
+| RST.URL.Tags | String | The associated tags. | 
+| RST.URL.Threat | String | The associated Malware Family or threat name. | 
+| RST.URL.Score | Number | The total score. | 
 | RST.URL.UUID | String | The unique ID for the indicator | 
-| RST.URL.Description | String | The associated Description provided by the vendor | 
-| RST.URL.FalsePositive | String | true if it is likely a False Positive | 
-| RST.URL.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
-| RST.URL.Parsed | String | Parsed URL components | 
+| RST.URL.Description | String | The associated Description provided by the vendor. | 
+| RST.URL.FalsePositive | String | true if it is likely a False Positive. | 
+| RST.URL.FalsePositiveDesc | String | Description why we think it may be a False Positive. | 
+| RST.URL.Parsed | String | Parsed URL components. | 
 | RST.URL.CVE | String | Related CVE \(vulnerabilities\) | 
-| RST.URL.Industry | String | Related Industry | 
-| RST.URL.Report | String | Collected from | 
+| RST.URL.Industry | String | Related Industry. | 
+| RST.URL.Report | String | Collected from. | 
 
 
 #### Command Example
+
 ```!url url="https://domain.local/testurl" threshold=30```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -369,6 +381,7 @@ Returns URL information and reputation.
 
 
 ### file
+
 ***
 Returns File information and reputation.
 
@@ -376,6 +389,7 @@ Returns File information and reputation.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -388,40 +402,42 @@ Returns File information and reputation.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested | 
-| DBotScore.Score | Number | The actual score | 
-| DBotScore.Type | String | The indicator type | 
-| DBotScore.Vendor | String | The vendor used to calculate the score | 
-| File.Name | String | The file name | 
-| File.MD5 | String | MD5 for the the file name | 
-| File.SHA1 | String | SHA1 for the the file name  | 
-| File.SHA256 | String | The URL | 
-| File.Tags | String | The associated tags | 
-| File.Malicious.Vendor | String | The vendor reporting the File as malicious | 
-| File.Malicious.Description | String | A description explaining why the File was reported as malicious | 
-| File.Malicious.Score | String | The score calculated for the File indicator by the vendor | 
-| RST.File.Name | String | The file name | 
-| RST.File.MD5 | String | MD5 for the the file name | 
-| RST.File.SHA1 | String | SHA1 for the the file name  | 
-| RST.File.SHA256 | String | SHA256 for the the file name  | 
-| RST.File.FirstSeen | Date | First Seen | 
-| RST.File.LastSeen | Date | Last Seen | 
-| RST.File.Tags | String | The associated tags | 
-| RST.File.Threat | String | The associated Malware Family or threat name | 
-| RST.File.Score | Number | The total score | 
-| RST.File.UUID | String | The unique ID for the indicator | 
-| RST.File.Description | String | The associated Description provided by the vendor | 
-| RST.File.FalsePositive | String | true if it is likely a False Positive | 
-| RST.File.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| File.Name | String | The file name. | 
+| File.MD5 | String | MD5 for the the file name. | 
+| File.SHA1 | String | SHA1 for the the file name. | 
+| File.SHA256 | String | The URL. | 
+| File.Tags | String | The associated tags. | 
+| File.Malicious.Vendor | String | The vendor reporting the File as malicious. | 
+| File.Malicious.Description | String | A description explaining why the File was reported as malicious. | 
+| File.Malicious.Score | String | The score calculated for the File indicator by the vendor. | 
+| RST.File.Name | String | The file name. | 
+| RST.File.MD5 | String | MD5 for the the file name. | 
+| RST.File.SHA1 | String | SHA1 for the the file name. | 
+| RST.File.SHA256 | String | SHA256 for the the file name. | 
+| RST.File.FirstSeen | Date | First Seen. | 
+| RST.File.LastSeen | Date | Last Seen. | 
+| RST.File.Tags | String | The associated tags. | 
+| RST.File.Threat | String | The associated Malware Family or threat name. | 
+| RST.File.Score | Number | The total score. | 
+| RST.File.UUID | String | The unique ID for the indicator. | 
+| RST.File.Description | String | The associated Description provided by the vendor. | 
+| RST.File.FalsePositive | String | true if it is likely a False Positive. | 
+| RST.File.FalsePositiveDesc | String | Description why we think it may be a False Positive. | 
 | RST.File.CVE | String | Related CVE \(vulnerabilities\) | 
-| RST.File.Industry | String | Related Industry | 
-| RST.File.Report | String | Collected from | 
+| RST.File.Industry | String | Related Industry. | 
+| RST.File.Report | String | Collected from. | 
 
 
 #### Command Example
+
 ```!file file="fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc"threshold=5```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -475,6 +491,7 @@ Returns File information and reputation.
 
 
 ### rst-submit-new
+
 ***
 Submits an indicator to RST Threat Feed.
 
@@ -482,6 +499,7 @@ Submits an indicator to RST Threat Feed.
 #### Base Command
 
 `rst-submit-new`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -495,6 +513,7 @@ Submits an indicator to RST Threat Feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!rst-submit-new ioc="thisisamaliciouswebsite.com" description="a user downloaded a trojan"```
 
 #### Human Readable Output
@@ -503,6 +522,7 @@ There is no context output for this command.
 
 
 ### rst-submit-fp
+
 ***
 Submits a potential False Positive to RST Threat Feed.
 
@@ -510,6 +530,7 @@ Submits a potential False Positive to RST Threat Feed.
 #### Base Command
 
 `rst-submit-fp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -523,9 +544,9 @@ Submits a potential False Positive to RST Threat Feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!rst-submit-fp ioc="thisisnotamaliciousdomain.com" description="a decent website"```
 
 #### Human Readable Output
 
 >Indicator: thisisnotamaliciousdomain.com was submitted as False Positive to RST Cloud
-

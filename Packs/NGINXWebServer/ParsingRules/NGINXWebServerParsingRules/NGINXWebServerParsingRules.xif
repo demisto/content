@@ -1,21 +1,13 @@
 [INGEST:vendor="nginx", product="nginx", target_dataset="nginx_nginx_raw", no_hit=keep]
 // Support only date time of format: dd/MMM/yyyy:hh:mm:ss [+|-]nnnn or format: yyyy/MM/dd hh:mm:ss. For example: "18/Jul/2021:10:00:00 +0000" or "2020/01/19 10:00:00".
-filter _raw_log ~= "\[\d+\/\w+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]" or _raw_log ~= "\d{4,}/\d{2}/\d{2}\s*\d{2}:\d{2}:\d{2}"
+filter _raw_log ~= "\[\d+\/\w+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]" or _raw_log ~= "\d{4,}\/\d{2}\/\d{2}\s*\d{2}:\d{2}:\d{2}"
 | alter
-    tmp_date_part1 = arraystring(regextract(_raw_log, "\d{4}\/\d{2}\/\d{2}"), ""),
-    tmp_time_part1 = arraystring(regextract(_raw_log, "\s(\d{2}\:\d{2}\:\d{2})\s"), ""),
-    tmp_date_part2 = arraystring(regextract(_raw_log, "\[(\d{2}\/\w{3}\/\d{4})\:"), ""),
-    tmp_time_part2 = arraystring(regextract(_raw_log, "\:(\d{2}\:\d{2}\:\d{2})\s"), ""),
-    tmp_zone_part2 = arraystring(regextract(_raw_log, "\[\d{2}\/\w{3}\/\d{4}\:\d{2}\:\d{2}\:\d{2}\s([\+|\-]\d{4})\]"), "")
+    tmp_get_timestamp = arrayindex(regextract(_raw_log, "(?:\:\s|\[)(\d+(?:[^>]|\s)?(?:[Jj]an|[Ff]eb|[Mm]ar|[Aa]pr|[Mm]ay|[Jj]un|[Jj]ul|[Aa]ug|[Ss]ep|[Oo]ct|[Nn]ov|[Dd]ec|\d{1,4})[\W\s]?(?:\d{1,4}|\s?)[A-Z\W\s]{1}\d{1,2}:\d{2}:\d{2}[\.\d]*\s?(?:\d{4}|\s?)\s*(?:[+-]\d{4}|\s?))"), 0)
 | alter
-    tmp_timestamp1 = parse_timestamp("%Y/%m/%d %H:%M:%S", arraystring(arraycreate(tmp_date_part1, tmp_time_part1), " ")),
-    tmp_date_time2 = arraystring(arraycreate(tmp_date_part2, tmp_time_part2), " ")
+    // Error logs - Change the time zone according to your needs.
+    tmp_timestamp1 = if(tmp_get_timestamp ~= "[+-]", null, parse_timestamp("%Y/%m/%d %H:%M:%S", tmp_get_timestamp, "+00:00")),
+    // All other logs
+    tmp_timestamp2 = if(tmp_get_timestamp ~= "[+-]", parse_timestamp("%d/%b/%Y:%H:%M:%S %z", tmp_get_timestamp), null)
 | alter
-    tmp_timestamp_zone2 = arraystring(arraycreate(tmp_date_time2, tmp_zone_part2), " ")
-| alter
-    tmp_timestamp2 = parse_timestamp("%d/%b/%Y %H:%M:%S %z", tmp_timestamp_zone2)
-| alter
-    tmp_coalsce = coalesce(tmp_timestamp2, tmp_timestamp1)
-| alter
-    _time = tmp_coalsce
-| fields -tmp_date_part1, tmp_time_part1, tmp_date_part2, tmp_time_part2, tmp_zone_part2, tmp_timestamp1, tmp_date_time2, tmp_timestamp_zone2, tmp_timestamp2, tmp_coalsce;
+    _time = coalesce(tmp_timestamp1, tmp_timestamp2)
+| fields -tmp_*;

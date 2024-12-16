@@ -1,0 +1,32 @@
+args:
+- name: task_name
+  required: true
+  description: 'The name of the Ask task in the playbook to generate links.'
+- name: inc_id
+  description: 'The investigation id for which generate the links. When omitted, the current investigation is used.'
+comment: 'Creates external ask links for the `Ask` task with the given name.'
+commonfields:
+  id: GetAskLinks
+  version: -1
+name: GetAskLinks
+outputs:
+- contextPath: Ask.Links.taskName
+  description: 'The name of the task in the playbook for which this link is created.'
+  type: String
+- contextPath: Ask.Links.link
+  description: 'The link generated for the option.'
+  type: String
+- contextPath: Ask.Links.option
+  description: 'The option for which this link is created.'
+  type: String
+- contextPath: Ask.Links.taskID
+  type: Number
+  description: 'The id of the task in the playbook for which this link is created.'
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -621,3 +621,36 @@ def test_not_found_private_file_command(mocker, requests_mock):
     assert results[0].execution_metrics is None
     assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
     assert results[0].indicator.dbot_score.score == 0
+
+
+def test_not_found_file_sandbox_report_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing hash
+
+    When:
+    - Running the !vt-file-sandbox-report command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from VirusTotalV3 import file_sandbox_report_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    sha256 = 'Example_sha256_with_64_characters_000000000000000000000000000000'
+    mocker.patch.object(demisto, 'args', return_value={'file': sha256, 'limit': '10'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/files/{sha256}/behaviours',
+                      json=mock_response)
+
+    results = file_sandbox_report_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'

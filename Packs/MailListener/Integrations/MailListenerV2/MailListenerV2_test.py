@@ -250,7 +250,7 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
 
     mail_mocker = mocker.patch('MailListenerV2.Email', return_value=mock_email())
     mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
@@ -272,7 +272,7 @@ def test_fetch_mail__default_uid(mocker,):
 
     mocker.patch('MailListenerV2.Email')
     mocker.patch.object(demisto, 'debug')
-    search_mocker = mocker.patch.object(IMAPClient, 'search')
+    search_mocker = mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch')
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
@@ -301,7 +301,7 @@ def test_invalid_mail_object_handling(mocker):
 
     mocker.patch('MailListenerV2.Email', side_effect=[mock_email_1, Exception('Invalid Mail'), mock_email_3])
     mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     mails_fetched, messages_fetched, _ = fetch_mails(IMAPClient('http://example_url.com'))
@@ -325,39 +325,48 @@ def test_get_eml_attachments():
     res = Email.get_eml_attachments(msg.as_bytes())
     assert res[0]['filename'] == 'Test with an image.eml'
 
+    # Test an email with EML attachment with an EML attachment
+    with open(
+            'test_data/eml_test_with_attachment_with_eml_attachment.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+
+    assert res[0]['filename'] == 'Fwd: MOIS DE MARSè.eml'
+    assert isinstance(res[0]['payload'], bytes)
+
 
 @pytest.mark.parametrize('cert_and_key', [
     # - cert and key are in the integration instance parameters
     # - private key is OpenSSL format
     # *** The cert and key below are not used in the real services, and only used for testing.
     ({
-        'password': '-----BEGIN CERTIFICATE----- '\
-                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
-                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
-                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
-                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
-                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
-                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
-                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
-                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
-                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
-                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
-                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
-                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
-                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
-                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
-                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
-                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
-                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
-                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
-                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
-                    'OzZEXmZyHr121wY= '\
-                    '-----END CERTIFICATE----- '\
-                    '-----BEGIN EC PRIVATE KEY----- '\
-                    'MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v '\
-                    'OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy '\
-                    '5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ '\
-                    'f8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
+        'password': '-----BEGIN CERTIFICATE----- '
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '
+                    'OzZEXmZyHr121wY= '
+                    '-----END CERTIFICATE----- '
+                    '-----BEGIN EC PRIVATE KEY----- '
+                    'MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v '
+                    'OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy '
+                    '5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ '
+                    'f8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '
                     '-----END EC PRIVATE KEY-----'
     }
     ),
@@ -403,33 +412,33 @@ f8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
     # - private key is PKCS#8 PEM
     # *** The cert and key below are not used in the real services, and only used for testing.
     ({
-        'password': '-----BEGIN CERTIFICATE----- '\
-                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
-                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
-                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
-                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
-                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
-                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
-                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
-                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
-                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
-                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
-                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
-                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
-                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
-                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
-                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
-                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
-                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
-                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
-                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
-                    'OzZEXmZyHr121wY= '\
-                    '-----END CERTIFICATE----- '\
-                    '-----BEGIN PRIVATE KEY----- '\
-                    'MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA '\
-                    '47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO '\
-                    'kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx '\
-                    'dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
+        'password': '-----BEGIN CERTIFICATE----- '
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '
+                    'OzZEXmZyHr121wY= '
+                    '-----END CERTIFICATE----- '
+                    '-----BEGIN PRIVATE KEY----- '
+                    'MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA '
+                    '47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO '
+                    'kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx '
+                    'dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '
                     '-----END PRIVATE KEY-----'
     }
     ),
@@ -599,7 +608,7 @@ def test_replace_spaces_in_credentials(input_credentials, output_credentials):
     assert (json.dumps(replace_spaces_in_credentials(input_credentials)) == json.dumps(output_credentials))
 
 
-def test_fetch_incidents_last_uid_as_int(mocker):
+def test_fetch_incidents__last_uid_as_int(mocker):
     """
     Given:
         - A mock client and last run with 'last_uid' as an integer - 8
@@ -629,7 +638,7 @@ def test_fetch_incidents_last_uid_as_int(mocker):
     assert isinstance(next_run['last_uid'], str)
 
 
-def test_fetch_incidents_last_uid_as_string(mocker):
+def test_fetch_incidents__last_uid_as_string(mocker):
     """
     Given:
         - A mock client and last run with 'last_uid' as a string - "8"
@@ -643,7 +652,7 @@ def test_fetch_incidents_last_uid_as_string(mocker):
     mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
     fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 5))
 
-    next_run, incidents = fetch_incidents(
+    next_run, _ = fetch_incidents(
         client=mocker.Mock(),
         last_run={'last_uid': "8"},
         first_fetch_time='2022-01-01 00:00:00',
@@ -657,3 +666,100 @@ def test_fetch_incidents_last_uid_as_string(mocker):
     )
     assert isinstance(fetch_mail_mocker.call_args[1]['uid_to_fetch_from'], int)
     assert isinstance(next_run['last_uid'], str)
+
+
+def test_fetch_incidents__last_uid_was_zero(mocker):
+    """
+    Given:
+        - A mock client and last run with 'last_uid' as a string - "0"
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the next run is None, since setting it to "0" will cause an error in the next cycle.
+
+    """
+    from MailListenerV2 import fetch_incidents
+    mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
+    mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 0))
+
+    next_run, _ = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={'last_uid': "0"},
+        first_fetch_time='2022-01-01 00:00:00',
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses='test@example.com',
+        permitted_from_domains='example.com',
+        delete_processed=False,
+        limit=10,
+        save_file=False
+    )
+    assert next_run is None
+
+
+def test_fetch_mails__mail_id_is_greater(mocker):
+    """
+    Given:
+        - A mock client and last run with uid_to_fetch_from == 2
+        - The email UID returend from the client are  [1, 2, 3]
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that next_uid_to_fetch_from is 3 since it is greater than the last run
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1, 2, 3])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=2)
+    assert next_uid_to_fetch_from == 3
+
+
+def test_fetch_mails__last_run_is_greater(mocker):
+    """
+    Given:
+        - A mock client and last run with uid_to_fetch_from == 4
+        - The email UID returend from the client are  [1, 2, 3]
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the next_uid_to_fetch_from is 4 since it is greater than the greatest email UID
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1, 2, 3])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=4)
+    assert next_uid_to_fetch_from == 4
+
+
+def test_fetch_mails__uid_is_str(mocker):
+    """
+    Given:
+        - The email UIDs returend from the client are strings ['1', '2', '3']
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the next_uid_to_fetch_from is 4 since it is greater than the greatest email UID
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=['1', '2', '3'])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from='4')
+    assert next_uid_to_fetch_from == 4

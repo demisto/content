@@ -1,0 +1,21 @@
+[
+    {
+        "id": "N_24329156",
+        "organizationId": "2930418",
+        "name": "Main Office",
+        "productTypes": [
+            "appliance",
+            "switch",
+            "wireless"
+        ],
+        "timeZone": "America/Los_Angeles",
+        "tags": [
+            "tag1",
+            "tag2"
+        ],
+        "enrollmentString": "my-enrollment-string",
+        "url": "http://www.example.com",
+        "notes": "Additional description of the network",
+        "isBoundToConfigTemplate": false
+    }
+]

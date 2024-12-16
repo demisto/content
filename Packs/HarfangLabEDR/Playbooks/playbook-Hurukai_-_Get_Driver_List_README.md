@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Driver List](./doc_files/Hurukai_-_Get_Driver_List.png)
+![Hurukai - Get Driver List](../doc_files/Hurukai_-_Get_Driver_List.png)

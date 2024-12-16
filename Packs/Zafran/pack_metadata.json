@@ -1,0 +1,37 @@
+{
+    "name": "Zafran",
+    "description": "Integrate with Zafran to automate high-impact mitigations for exposure risks at scale.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Zafran",
+    "url": "https://www.zafran.io",
+    "videos": [
+        "https://vimeo.com/992474252"
+    ],
+    "email": "support@zafran.io",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Security",
+        "Threat Intelligence",
+        "Feed",
+        "Incident Handling",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Vulnerability Management",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "Zafran",
+        "Mitigations",
+        "Risk Mitigations",
+        "Proactive Exposure Hunting"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

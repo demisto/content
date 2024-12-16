@@ -2,12 +2,14 @@
     "name": "UpdateEntriesBySearch",
     "description": "Update WarRoom entries with setting tags, mark as note or mark as evidence by search with a pattern",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
     "created": "2021-02-13T07:03:03Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

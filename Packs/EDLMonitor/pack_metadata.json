@@ -2,12 +2,14 @@
     "name": "EDL Monitor",
     "description": "This content pack can monitor EDL contents a by emailing the content of an EDL as a zipped file to a specified user at an interval (simply configure a job to run the playbook included), and/or simply monitor the EDL for availability and email the user if the EDL is not available",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Andrew Murret",
     "url": "",
     "email": "",
     "created": "2023-04-03T14:42:50Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

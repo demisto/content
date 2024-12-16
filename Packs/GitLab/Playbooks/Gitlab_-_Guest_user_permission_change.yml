@@ -512,7 +512,7 @@ tasks:
       RuleName:
         simple: XSOAR - Block IP playbook - ${alert.alertid}
       UserVerification:
-        simple: "False"
+        simple: ${inputs.UserVerification}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -601,7 +601,7 @@ tasks:
       Tag:
         simple: Bad Account
       UserVerification:
-        simple: "True"
+        simple: ${inputs.UserVerification}
       Username:
         complex:
           root: alert
@@ -644,13 +644,32 @@ view: |-
   }
 inputs:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
   description: List of Internal IP ranges
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: "Whether to provide user verification for blocking those IPs. \nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:

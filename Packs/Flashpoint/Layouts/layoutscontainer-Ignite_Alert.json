@@ -1,0 +1,3302 @@
+{
+    "description": "Ignite Alerts Layout.",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "36d795b0-2cac-11ef-9cca-a7ee18bacda3",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 53,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 53,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 53,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 53,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 106,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-cde50360-f9ca-11eb-b6c4-21962e827363",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointalertid",
+                                "height": 53,
+                                "id": "ca739e00-1c32-11ec-b4cd-a3eb8267777a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointalerttext",
+                                "height": 106,
+                                "id": "f0733c30-2ca3-11ef-8284-87a4aba2fa4a",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "ntyuvwepxy",
+                "name": "Alert Information",
+                "sections": [
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-c0a36420-ea0d-11eb-ba35-536dc8b5ff33",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointalertid",
+                                "height": 53,
+                                "id": "e36dd010-1c32-11ec-b4cd-a3eb8267777a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointsource",
+                                "height": 53,
+                                "id": "da2330a0-2ca5-11ef-bb1c-53300ddaaede",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointstatus",
+                                "height": 53,
+                                "id": "01101e90-2d72-11ef-861b-cbc0a0b8fe1d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointdatatype",
+                                "height": 53,
+                                "id": "984783c0-2d72-11ef-bb31-5ff2ffd2abd4",
+                                "index": 3,
+                                "listId": "caseinfoid-ntyuvwepxy-c0a36420-ea0d-11eb-ba35-536dc8b5ff33",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointparentdatatype",
+                                "height": 53,
+                                "id": "ab87a550-2d72-11ef-bb31-5ff2ffd2abd4",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointreadstatus",
+                                "height": 53,
+                                "id": "c2fb5e70-2d72-11ef-bb31-5ff2ffd2abd4",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-1bede670-eab8-11eb-9783-b30efc136dbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointreasonid",
+                                "height": 53,
+                                "id": "a3e927f0-2d73-11ef-8eac-af4838de91e9",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointreasonname",
+                                "height": 53,
+                                "id": "b7413e50-2d73-11ef-8eac-af4838de91e9",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointreasontext",
+                                "height": 53,
+                                "id": "dc5d90e0-2ec1-11ef-a42c-8932e0a8b086",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointreasonorigin",
+                                "height": 53,
+                                "id": "ba1e1f80-2d73-11ef-8eac-af4838de91e9",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointreasonsources",
+                                "height": 53,
+                                "id": "bdf4ca00-2d73-11ef-8eac-af4838de91e9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointreasontype",
+                                "height": 53,
+                                "id": "cc4bb020-391a-11ef-ae9c-e1848d17d14f",
+                                "index": 5,
+                                "listId": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-1bede670-eab8-11eb-9783-b30efc136dbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointentityid",
+                                "height": 53,
+                                "id": "dd37b800-2d73-11ef-8eac-af4838de91e9",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointentityname",
+                                "height": 53,
+                                "id": "e0120120-2d73-11ef-8eac-af4838de91e9",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointentitytype",
+                                "height": 53,
+                                "id": "e27fa5c0-2d73-11ef-8eac-af4838de91e9",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Reason Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointsourceid",
+                                "height": 53,
+                                "id": "35b93560-2ec5-11ef-a42c-8932e0a8b086",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointsourcename",
+                                "height": 53,
+                                "id": "1739fd20-2d73-11ef-bb31-5ff2ffd2abd4",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointsourcerepo",
+                                "height": 53,
+                                "id": "70cab700-f697-11eb-9de5-7575374647b1",
+                                "index": 2,
+                                "listId": "caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointsourcefile",
+                                "height": 53,
+                                "id": "6760e4f0-f697-11eb-9de5-7575374647b1",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointresourceurl",
+                                "height": 53,
+                                "id": "79c7a230-2d73-11ef-bb31-5ff2ffd2abd4",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointsourceowner",
+                                "height": 53,
+                                "id": "6e7be500-f697-11eb-9de5-7575374647b1",
+                                "index": 5,
+                                "listId": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointsourcesnippet",
+                                "height": 106,
+                                "id": "3d0b7ca0-2ec6-11ef-893b-b96c86e19e29",
+                                "index": 6,
+                                "listId": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "flashpointsitenativeid",
+                                "height": 53,
+                                "id": "38088720-2ec6-11ef-893b-b96c86e19e29",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointsitename",
+                                "height": 53,
+                                "id": "c9ccc550-2ec5-11ef-a42c-8932e0a8b086",
+                                "index": 1,
+                                "listId": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointsiteactorname",
+                                "height": 53,
+                                "id": "0e53ccf0-2ec6-11ef-893b-b96c86e19e29",
+                                "index": 2,
+                                "listId": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointbasetypes",
+                                "height": 53,
+                                "id": "38920f80-2d73-11ef-bb31-5ff2ffd2abd4",
+                                "index": 3,
+                                "listId": "caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "flashpointparentbasetypes",
+                                "height": 53,
+                                "id": "7ddb1700-2ec5-11ef-a42c-8932e0a8b086",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "flashpointsourcesortdate",
+                                "height": 53,
+                                "id": "8fc174f0-2ec5-11ef-a42c-8932e0a8b086",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert Resource Information",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-a1b007c0-00ed-11ec-88f6-1f794d158658",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointalerttext",
+                                "height": 44,
+                                "id": "b3422550-2ca4-11ef-8284-87a4aba2fa4a",
+                                "index": 0,
+                                "listId": "caseinfoid-a1b007c0-00ed-11ec-88f6-1f794d158658",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert Snippet",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-fb9422f0-2d39-11ef-8b34-757e2b9daeb5",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointcreateddate",
+                                "height": 53,
+                                "id": "54891dc0-2d3a-11ef-8b34-757e2b9daeb5",
+                                "index": 0,
+                                "listId": "ntyuvwepxy-caseinfoid-fb9422f0-2d39-11ef-8b34-757e2b9daeb5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointgenerateddate",
+                                "height": 53,
+                                "id": "f6555090-2d73-11ef-8eac-af4838de91e9",
+                                "index": 1,
+                                "listId": "caseinfoid-fb9422f0-2d39-11ef-8b34-757e2b9daeb5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Date and Time Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-dc8c9de0-2ec6-11ef-893b-b96c86e19e29",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointmediatype",
+                                "height": 53,
+                                "id": "143a7640-2ec7-11ef-893b-b96c86e19e29",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointmimetype",
+                                "height": 53,
+                                "id": "189ee1d0-2ec7-11ef-893b-b96c86e19e29",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointphash",
+                                "height": 53,
+                                "id": "62c6cca0-2ec7-11ef-893b-b96c86e19e29",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "sha1",
+                                "height": 53,
+                                "id": "1c8347f0-2ec7-11ef-893b-b96c86e19e29",
+                                "index": 0,
+                                "listId": "caseinfoid-dc8c9de0-2ec6-11ef-893b-b96c86e19e29",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointmediastorageuri",
+                                "height": 53,
+                                "id": "12381690-2ec7-11ef-893b-b96c86e19e29",
+                                "index": 1,
+                                "listId": "caseinfoid-dc8c9de0-2ec6-11ef-893b-b96c86e19e29",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Media  Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-e0242710-2ec7-11ef-893b-b96c86e19e29",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointimagesafesearch",
+                                "height": 22,
+                                "id": "1306bbc0-2ec8-11ef-893b-b96c86e19e29",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Image Safe Search",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-faf0a820-2ec7-11ef-893b-b96c86e19e29",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointcontainer",
+                                "height": 106,
+                                "id": "27c87440-2ec8-11ef-893b-b96c86e19e29",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Resource Container",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-426cc7e0-3910-11ef-8e50-559813be2708",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointports",
+                                "height": 106,
+                                "id": "75303bd0-3910-11ef-8e50-559813be2708",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointservices",
+                                "height": 106,
+                                "id": "7b53e390-3910-11ef-8e50-559813be2708",
+                                "index": 0,
+                                "listId": "caseinfoid-426cc7e0-3910-11ef-8e50-559813be2708",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Flashpoint Highlights",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "caseinfoid-3d0589f0-391e-11ef-ae9c-e1848d17d14f",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "flashpointshodanhost",
+                                "height": 106,
+                                "id": "b60c3140-391a-11ef-ae9c-e1848d17d14f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Flashpoint Shodan Host",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 10
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_asn",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_asnname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_accountmemberof",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_accountstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionaldata",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionalindicators",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_affectedhosts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_affectedusers",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentsid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alerttypeid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_app",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appmessage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assigneduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assignmentgroup",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attackpatterns",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_birthday",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_blockindicatorsstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_caller",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_campaignname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_categories",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_changed",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_childprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_classification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudaccountid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudinstanceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudoperationtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_commandline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_commandlineverdict",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_country",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycode",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycodenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_customqueryresults",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationhostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detecteduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceinternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicelocalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemacaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceou",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_domainname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dsts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpoint",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpointisolationstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpointsdetails",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_escalation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalconfidence",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externallink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalseverity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstarttime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsystemid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_failedlogonevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_failedlogoneventstimeframe",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filemd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filenames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filerelationships",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesize",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_fileupload",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_firstname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_fullname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_highriskyhosts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_highriskyusers",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_hostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_huntresultscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ipblockedstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ipreputation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_identitytype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incidentlink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incomingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_investigationstage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_isactive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastmirroredtimestamp",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_logsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lowlevelcategoriesevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_macaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniquename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mobiledevicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberoffoundrelatedalerts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofrelatedincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofsimilarfiles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_os",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ostype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_osversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_objective",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_operationname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel2",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel3",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orgunit",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_outgoingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_pid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentcmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesscmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessfilepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessids",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesspath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesssha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_passwordchangeddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phonenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_policyactions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcreationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processsha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_projectid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocolnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_referencedresourceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_referencedresourcename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryhive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registrykey",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvalue",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvaluetype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedalerts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedcampaign",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedreport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_renderedhtml",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reportname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_rulename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha512",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ssdeep",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_scenario",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_selectedindicators",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidentsdbot",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatedby",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcehostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcepriority",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcestatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceupdatedby",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_srcs",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_state",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_statusreason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_stringsimilarityresults",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_subcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_suspiciousexecutions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_suspiciousexecutionsfound",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tactic",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_teamname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_technique",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_techniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenantname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatfamilyname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedhostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketacknowledgeddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketcloseddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketnumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketopeneddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_title",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_toolusagefound",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tools",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urlsslverification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urls",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usecasedescription",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_useragent",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_userblockstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usercreationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_userengagementresponse",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usersid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_users",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usersdetails",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_verdict",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appchannelname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_samaccountname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_useraccountcontrol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Ignite Alert",
+    "name": "Ignite Alert",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointdatatype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointparentdatatype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointreadstatus",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Alert Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointsourceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsourcename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsourcerepo",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsourcefile",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointresourceurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsourceowner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsourcesnippet",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointbasetypes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointparentbasetypes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsourcesortdate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsiteactorname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsitename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointsitenativeid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Alert Resource Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointreasonid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointreasonname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointreasontext",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointreasonorigin",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointreasonsources",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointentityid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointentityname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointentitytype",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Reason Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointalerttext",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Alert Snippet",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointmediatype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointmimetype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointphash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointmediastorageuri",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Media Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointimagesafesearch",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Image Safe Search",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointcontainer",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Resource Container",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointcreateddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointgenerateddate",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Alert Date and Time Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointports",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_flashpointservices",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Flashpoint Highlights",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_flashpointshodanhost",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Flashpoint Shodan Host",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_asn",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_asnname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_accountmemberof",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_accountstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionaldata",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionalindicators",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_affectedhosts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_affectedusers",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentsid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alerttypeid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_app",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appmessage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assigneduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assignmentgroup",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attackpatterns",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_birthday",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_blockindicatorsstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_caller",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_campaignname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_categories",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_changed",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_childprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_classification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudaccountid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudinstanceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudoperationtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_commandline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_commandlineverdict",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_containmentsla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_country",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycode",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycodenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_customqueryresults",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationhostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detecteduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionsla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceinternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicelocalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemacaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceou",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_domainname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dsts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpoint",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpointisolationstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpointsdetails",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_escalation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalconfidence",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externallink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalseverity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstarttime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsystemid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_failedlogonevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_failedlogoneventstimeframe",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filemd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filenames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filerelationships",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesize",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_fileupload",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_firstname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_fullname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_highriskyhosts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_highriskyusers",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_hostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_huntresultscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ipblockedstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ipreputation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_identitytype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incidentduration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incidentlink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incomingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_investigationstage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_isactive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastmirroredtimestamp",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_logsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lowlevelcategoriesevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_macaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_md5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniquename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mobiledevicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberoffoundrelatedalerts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofrelatedincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofsimilarfiles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_os",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ostype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_osversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_objective",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_operationname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel2",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel3",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orgunit",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_outgoingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_pid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentcmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesscmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessfilepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessids",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesspath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesssha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_passwordchangeddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phonenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_policyactions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcreationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processsha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_projectid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocolnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_referencedresourceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_referencedresourcename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryhive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registrykey",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvalue",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvaluetype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedalerts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedcampaign",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedreport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_remediationsla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_renderedhtml",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reportname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_rulename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha512",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ssdeep",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_scenario",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_selectedindicators",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidentsdbot",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatedby",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcehostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcepriority",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcestatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceupdatedby",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_srcs",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_state",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_statusreason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_stringsimilarityresults",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_subcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_suspiciousexecutions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_suspiciousexecutionsfound",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tactic",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_teamname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_technique",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_techniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenantname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatfamilyname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedhostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketacknowledgeddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketcloseddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketnumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketopeneddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_timetoassignment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_toolusagefound",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tools",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_triagesla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urlsslverification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urls",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usecasedescription",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_useragent",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_userblockstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usercreationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_userengagementresponse",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usersid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_users",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usersdetails",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_verdict",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appchannelname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_samaccountname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_useraccountcontrol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

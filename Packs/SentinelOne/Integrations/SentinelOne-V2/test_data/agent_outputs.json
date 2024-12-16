@@ -12,8 +12,10 @@
     "EncryptedApplications": false,
     "OSName": "Windows Server 2016",
     "ComputerName": "EC2AMAZ-AJ0KANC",
+    "MachineType": "server",
     "Domain": "WORKGROUP",
     "CreatedAt": "2019-06-27T08:01:05.571895Z",
-    "SiteName": "demisto"
+    "SiteName": "demisto",
+    "Tags": ["my-custom-tag"]
   }
 ]

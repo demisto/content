@@ -1,7 +1,7 @@
 id: Run Panorama Best Practice Assessment
 version: -1
-name: Run Panorama Best Practice Assessment
-description: This playbook runs the Palo Alto Best Practice Assessment checks for a PAN-OS instance.
+name: Run Panorama Best Practice Assessment (Deprecated)
+description: Deprecated. Use Palo Alto Networks AIops instead, run aiops-bpa-report-generate command.
 starttaskid: "0"
 tasks:
   "0":
@@ -183,6 +183,7 @@ view: |-
   }
 inputs: []
 outputs: []
+deprecated: true
 fromversion: 5.0.0
 tests:
-- Test-BPA_Integration
+- No tests (deprecated)

@@ -1,20 +1,18 @@
-Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
-## Configure OpenCTI on Cortex XSOAR
+Manages indicators from OpenCTI.  
+This integration was tested with version 5.12.17 of OpenCTI.  
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OpenCTI.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure OpenCTI in Cortex
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | API Key (leave empty. Fill in the API key in the password field.) | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| Base URL | True |
+| API Key (leave empty. Fill in the API key in the password field.) | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### opencti-get-indicators
 ***
@@ -29,8 +27,8 @@ Gets indicators from OpenCTI.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. Default value is 50. Maximum value is 500. | Optional | 
-| score_start | Score minimum value to filter by. Values range is 1-100. | Optional | 
-| score_end | Score maximum value to filter by. Values range is 1-100.| Optional | 
+| score_start | Score minimum value to filter by. Values range is 0-100. | Optional | 
+| score_end | Score maximum value to filter by. Values range is 0-100.| Optional | 
 | indicator_types | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
 | last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path. | Optional | 
 
@@ -632,4 +630,3 @@ Get a list of all marking definitions.
 >|---|---|
 >| TLP:GREEN | dc911977-796a-4d96-95e4-615bd1c41263 |
 >| TLP:AMBER | 9128e411-c759-4af0-aeb0-b65f12082648 |
-

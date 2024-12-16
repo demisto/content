@@ -161,9 +161,9 @@ STIX_ATTACK_PATTERN = {
     'map_result': {
         'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
         'firstseenbysource': '2017-05-31T21:30:44.329Z',
-        'stixkillchainphases': ['Defense Evasion', 'Privilege Escalation'],
+        'killchainphases': ['Defense Evasion', 'Privilege Escalation'],
         'modified': "2020-05-13T22:50:51.258Z",
-        'stixdescription': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
+        'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
         'operatingsystemrefs': ['Windows'],
         'mitreid': 'T1047',
         'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",

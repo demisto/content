@@ -428,6 +428,11 @@ contentSecrets = {
 }
 
 
+def initialize():
+    """Runs some initializations to the demisto object. Should not be used in integration code"""
+    pass
+
+
 def params():
     """(Integration only)
     Retrieves the integration parameters object
@@ -804,13 +809,13 @@ def getIntegrationContextVersioned(refresh=False):
 
 def incidents(incidents=None):
     """In script, retrieves the `Incidents` list from the context
-    In integration, used to return incidents to the server
+    In integration, used to return incidents to the server.
 
     Args:
-      incidents (list): In integration only, list of incident objects (Default value = None)
+      incidents (list): In integration only, list of incident objects (Default value = None).
 
     Returns:
-      list: List of incident objects
+      list: List containing the current incident object.
 
     """
     if incidents is None:
@@ -1062,7 +1067,7 @@ def createIndicators(indicators_batch, noUpdate=False):
 
 
 def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
-                     populateFields=None):
+                     populateFields=None, **kwargs):
     """Searches for indicators according to given query.
     If using Elasticsearch with Cortex XSOAR 6.1 or later,
     the searchAfter argument must be used instead of the page argument.
@@ -1074,7 +1079,7 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       page (int): Response paging (Default value = 0)
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
-      searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      searchAfter (list): Use the last searchIndicators() outputs for search batch (Default value = None)
       populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
@@ -1304,7 +1309,7 @@ def searchRelationships(args):
     return {'data': []}
 
 
-def _apiCall(name, params=None, data=None):
+def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None, timeout=None, response_data_type=None):
     """
     Special apiCall to internal xdr api. Only available to OOB content.
 
@@ -1312,7 +1317,13 @@ def _apiCall(name, params=None, data=None):
         name: name of the api (currently only wfReportIncorrectVerdict is supported)
         params: url query args to pass. Use a dictionary such as: `{"key":"value"}
         data: POST data as a string. Make sure to json.dumps.
-        Note: if data is empty then a GET request is performed instead of a POST.
+        headers: headers to pass. Use a dictionary such as: `{"key":"value"}`
+        method: HTTP method to use.
+        path: path to append to the base url.
+        timeout: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted.
+        response_data_type: The type of the response. should be None unless the response value is binary then it should be 'bin'.
+
+        *Note if data is empty then a GET request is performed instead of a POST.
 
     Returns:
         dict: The response of the api call
@@ -1348,3 +1359,11 @@ def setAssetsLastRun(obj):
 
 def getAssetsLastRun():
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
+
+
+def isTimeSensitive():
+    """
+    This function will indicate whether the command reputation (auto-enrichment) is called as auto-extract=inline.
+    So for default the function return False.
+    """
+    return False

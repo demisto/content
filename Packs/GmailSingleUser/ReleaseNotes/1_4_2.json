@@ -1,0 +1,4 @@
+{
+    "breakingChanges":true,
+    "breakingChangesNotes":"From version 1.4.1 attachments names format was changed and now will appear in the following format: <attachment ID>-attachmentName-<attachment name>."
+}

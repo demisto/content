@@ -111,18 +111,18 @@ script:
       description: A dictionary of CPE strings with `cpe` key for a grid.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score of the indicator.
+      description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

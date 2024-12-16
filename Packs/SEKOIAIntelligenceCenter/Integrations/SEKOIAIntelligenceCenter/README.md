@@ -3,25 +3,25 @@ To use this integration, please create an API Key with the right permissions.
 
 This integration was integrated and tested with version 2.20220712 of SEKOIA.IO Intelligence Center.
 
-## Configure SEKOIAIntelligenceCenter on Cortex XSOAR
+## Configure SEKOIAIntelligenceCenter in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SEKOIAIntelligenceCenter.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | None | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| None | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### GetObservable
+
 ***
 Query SEKOIA.IO Intelligence Center for information about this observable. 
 
@@ -29,6 +29,7 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 #### Base Command
 
 `GetObservable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,8 +55,11 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 | SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
 
 #### Command example
+
 ```!GetObservable value="eicar@sekoia.io" type="email-addr"```
+
 #### Context Example
+
 ```json
 {
     "SEKOIAIntelligenceCenter": {
@@ -87,15 +91,19 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 #### Human Readable Output
 
 >### Observable eicar@sekoia.io
+
 >|modified|created|
 >|---|---|
 >| 2020-11-04T00:27:15.9801Z | 2020-11-04T00:27:15.9801Z |
+
 >### Associated tags
+
 >**No entries.**
 >Please consult the [dedicated page](https://app.sekoia.io/intelligence/objects/email-addr--cd6440d1-725c-5eb9-bff0-5e62c65ee263) for more information.
 
 
 ### GetIndicator
+
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
@@ -103,6 +111,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 #### Base Command
 
 `GetIndicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -140,8 +149,11 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 | SEKOIAIntelligenceCenter.items.indicator_types | String | STIX indicator types | 
 
 #### Command example
+
 ```!GetIndicator value="eicar@sekoia.io" type="email-addr"```
+
 #### Context Example
+
 ```json
 {
     "SEKOIAIntelligenceCenter": {
@@ -198,7 +210,9 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 >### Indicator eicar@sekoia.io is categorized as ['benign']
 >
 >SEKOIA EICAR unit is known to have used in the past this email address to distribute EICAR dropper during phishing campaign.
+
 >### Kill chain
+
 >|kill_chain_name|phase_name|
 >|---|---|
 >| lockheed-martin-cyber-kill-chain | delivery |
@@ -208,6 +222,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 
 ### ip
+
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
@@ -215,6 +230,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -284,8 +300,11 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!ip ip="206.189.85.18"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1340,12 +1359,14 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 #### Human Readable Output
 
 >### Indicator 206.189.85.18 is linked to the following:
+
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| FinFisher | [FinFisher](https://attack.mitre.org/software/S0182) is a government-grade commercial surveillance spyware reportedly sold exclusively to government agencies for use in targeted and lawful criminal investigations. It is heavily obfuscated and uses multiple anti-analysis techniques. It has other variants including [Wingbird](https://attack.mitre.org/software/S0176). (Citation: FinFisher Citation) (Citation: Microsoft SIR Vol 21) (Citation: FireEye FinSpy Sept 2017) (Citation: Securelist BlackOasis Oct 2017) (Citation: Microsoft FinFisher March 2018) | malware | FinFisher |  | false | 2019-07-19T15:25:38.820741Z | 2021-11-23T09:13:59.891896Z | [More info about FinFisher on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--a36a2045-61dd-4462-8d5a-95d6732b74c3) |
 
 
 ### url
+
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
@@ -1354,6 +1375,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1423,8 +1445,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!url url="http://truesec.pro/"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -5938,13 +5963,15 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### Indicator http://truesec.pro/ is linked to the following:
+>### Indicator <http://truesec.pro/> is linked to the following:
+
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| Phishing | Adversaries may send phishing messages to gain access to victim systems. All forms of phishing are electronically delivered social engineering. Phishing can be targeted, known as spearphishing. In spearphishing, a specific individual, company, or industry will be targeted by the adversary. More generally, adversaries can conduct non-targeted phishing, such as in mass malware spam campaigns.<br/><br/>Adversaries may send victims emails containing malicious attachments or links, typically to execute malicious code on victim systems or to gather credentials for use of [Valid Accounts](https://attack.mitre.org/techniques/T1078). Phishing may also be conducted via third-party services, like social media platforms. | attack-pattern |  |  | false | 2020-08-27T16:06:57.165806Z | 2022-01-28T08:06:15.568392Z | [More info about Phishing on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/attack-pattern--a5911dd1-af0e-4164-a099-a1fa4909e42e) |
 
 
 ### domain
+
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
@@ -5953,6 +5980,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6022,8 +6050,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!domain domain="eicar.sekoia.io"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6483,12 +6514,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Indicator eicar.sekoia.io is linked to the following:
+
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| Dropper TEST EICAR SEKOIA.IO | *Context*<br/>This Dropper is used by SEKOIA Red Team as a demonstration to illustrate how an inoculated file could also be used as a malicious file to install dangerous content onto the corporate  environment.<br/><br/>*Execution stages*<br/>This dropper is known to be distributed as a Powershell script.<br/>- At execution, it drops a text payload (inoculated payload part of the EICAR campaign)<br/>- If Internet connectivity is available, the dropper contacts a Command and control server to  install additional modules (deactivated in the EICAR campaign) <br/> | malware | EICAR,<br/>Malware TEST EICAR SEKOIA.IO,<br/>Dropper TEST EICAR SEKOIA.IO |  | false | 2020-05-26T13:19:41.236073Z | 2020-06-22T09:09:28.349981Z | [More info about Dropper TEST EICAR SEKOIA.IO on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--2850a39e-39a1-4701-a3cc-185478464dc5) |
 
 
 ### file
+
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
@@ -6496,6 +6529,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6568,8 +6602,11 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!file file="e1d4d2e829885b322f7e619cbfc2615f"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -8857,16 +8894,20 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 #### Human Readable Output
 
 >### Indicator [file:hashes.'SHA-256' = '8fdc11e44341c3df5a8020b3313eb0a33b2d77fa05d4af0168f911b3a4d3b74a' OR file:hashes.MD5 = 'e1d4d2e829885b322f7e619cbfc2615f' OR file:hashes.'SHA-1' = 'cb6dfb7d8732a74187f61db80aa9f31a29c10888'] is linked to the following:
+
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| Agent Tesla | # Resume<br/><br/>Agent Tesla is a spyware that steals passwords and collects information about the actions of its victims by recording keystrokes and user interactions. The malware can be used by attackers to spy on victims, allowing them to see everything that has been typed in supported programs and web-browsers. The spyware has been observed in the world since 2014 and has become extremely popular in the cybercriminal community in recent years.<br/><br/># Chain of infection<br/><br/>The most widespread delivery method for Agent Tesla is malicious spam, via Microsoft Word documents that contain an embedded executed file or exploit. The email accounts used to spread the spyware are often legitimate accounts that have been compromised. Agent Tesla operators act out of opportunism and lack the sophistication seen in elaborate operations such as big game hunting.<br/><br/>Once the user has clicked on the malicious document, the executable is downloaded and renamed. The downloaded file runs itself and creates a child process. Before taking actions on objectives, Agent Tesla checks the environment of the compromised machine to avoid being deployed in a Virtual Machine and therefore bypass sandbox analysis. Multiple sandbox evasion techniques are performed - such as reading hardware parameters, disabling AMSI scans, checking for user input or using sleeping functions.<br/><br/>Agent Tesla establishes persistence by creating a registry RUN key to run at boot, or creating a scheduled task via schtasks.exe. Once well installed, the malware takes actions on objectives and sends data to the Command & Control server. Latest Agent Tesla versions offer different means of communication - over SMTP, FTP or HTTP, but also using Telegram, Discord or Tor network.<br/>According to SEKOIA research, most Agent Tesla operators employ SMTP communications on port 587 using compromised email accounts.<br/><br/># Capacity<br/><br/>* Taking fingerprint:<br/>For example, it corresponds to the footprint of an infected machine:<br/>\`\`\`<br/>Time: 02/11/2021 08:45:53<br/>User Name: JohnDoe<br/>Computer Name: ACME-JOHN-DOE-PC<br/>OSFullName: Microsoft Windows 7 Édition Intégrale<br/>CPU: Intel(R) Core(TM)2 Duo CPU E8400 @ 3.00GHz<br/>RAM: 3931,59 MB<br/>IP Address:<br/>\`\`\`<br/>In some cases, Agent Tesla requests \`api.ipify[.]org\`, a simple public IP address API, to retrieve the victim IP address.<br/>The body of each email sent to C2 begins with the fingerprint.<br/><br/>* Stealing password (from many applications):<br/>Those information are sent by email whose subject is \`PW_JohnDoe/ACME-JOHN-DOE-PC\`, \`PW\` for password.<br/><br/>* Keystroke logging:<br/>The subject of the email is \`KL_JohnDoe/ACME-JOHN-DOE-PC\`, \`KL\` for Keystroke logging.<br/><br/>* Stealing cookies:<br/>Agent Tesla archives the directories that store the cookies of different browsers, e.g.: \`C:\Users\JohnDoe\AppData\Local\Google\Chrome\User Data\Default\`, and adds it as attachment to emails whose subject is \`CO_JohnDoe/ACME-JOHN-DOE-PC\`, \`CO\` for Cookies.<br/><br/>* Capturing clipboard:<br/>Screenshots are taken by the spyware and sent by email whose subject is \`SC_JohnDoe/ACME-JOHN-DOE-PC\`, \`SC\` for SCreenshot.<br/><br/>Other capabilities are available, but are less used. | malware | Agent Tesla,<br/>AgentTesla,<br/>AgenTesla,<br/>Negasteal |  | false | 2019-07-19T15:25:33.745282Z | 2021-12-23T19:52:16.428429Z | [More info about Agent Tesla on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--1db42657-baba-4ada-a07b-a55d21bfdb9f) |
+
 >### Indicator [file:hashes.MD5 = 'e1d4d2e829885b322f7e619cbfc2615f' OR file:hashes.'SHA-1' = 'cb6dfb7d8732a74187f61db80aa9f31a29c10888' OR file:hashes.'SHA-256' = '8fdc11e44341c3df5a8020b3313eb0a33b2d77fa05d4af0168f911b3a4d3b74a' OR file:hashes.'SHA-512' = '346c463b203b4aa72b5a6a3dee547d29aa03b85027f8dbb6ae61b4a81dd1f3c939f0e21b041124a0a070c1d82ef39820e191bc551d44bde8153df9a24e2f002b'] is linked to the following:
+
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| Agent Tesla | # Resume<br/><br/>Agent Tesla is a spyware that steals passwords and collects information about the actions of its victims by recording keystrokes and user interactions. The malware can be used by attackers to spy on victims, allowing them to see everything that has been typed in supported programs and web-browsers. The spyware has been observed in the world since 2014 and has become extremely popular in the cybercriminal community in recent years.<br/><br/># Chain of infection<br/><br/>The most widespread delivery method for Agent Tesla is malicious spam, via Microsoft Word documents that contain an embedded executed file or exploit. The email accounts used to spread the spyware are often legitimate accounts that have been compromised. Agent Tesla operators act out of opportunism and lack the sophistication seen in elaborate operations such as big game hunting.<br/><br/>Once the user has clicked on the malicious document, the executable is downloaded and renamed. The downloaded file runs itself and creates a child process. Before taking actions on objectives, Agent Tesla checks the environment of the compromised machine to avoid being deployed in a Virtual Machine and therefore bypass sandbox analysis. Multiple sandbox evasion techniques are performed - such as reading hardware parameters, disabling AMSI scans, checking for user input or using sleeping functions.<br/><br/>Agent Tesla establishes persistence by creating a registry RUN key to run at boot, or creating a scheduled task via schtasks.exe. Once well installed, the malware takes actions on objectives and sends data to the Command & Control server. Latest Agent Tesla versions offer different means of communication - over SMTP, FTP or HTTP, but also using Telegram, Discord or Tor network.<br/>According to SEKOIA research, most Agent Tesla operators employ SMTP communications on port 587 using compromised email accounts.<br/><br/># Capacity<br/><br/>* Taking fingerprint:<br/>For example, it corresponds to the footprint of an infected machine:<br/>\`\`\`<br/>Time: 02/11/2021 08:45:53<br/>User Name: JohnDoe<br/>Computer Name: ACME-JOHN-DOE-PC<br/>OSFullName: Microsoft Windows 7 Édition Intégrale<br/>CPU: Intel(R) Core(TM)2 Duo CPU E8400 @ 3.00GHz<br/>RAM: 3931,59 MB<br/>IP Address:<br/>\`\`\`<br/>In some cases, Agent Tesla requests \`api.ipify[.]org\`, a simple public IP address API, to retrieve the victim IP address.<br/>The body of each email sent to C2 begins with the fingerprint.<br/><br/>* Stealing password (from many applications):<br/>Those information are sent by email whose subject is \`PW_JohnDoe/ACME-JOHN-DOE-PC\`, \`PW\` for password.<br/><br/>* Keystroke logging:<br/>The subject of the email is \`KL_JohnDoe/ACME-JOHN-DOE-PC\`, \`KL\` for Keystroke logging.<br/><br/>* Stealing cookies:<br/>Agent Tesla archives the directories that store the cookies of different browsers, e.g.: \`C:\Users\JohnDoe\AppData\Local\Google\Chrome\User Data\Default\`, and adds it as attachment to emails whose subject is \`CO_JohnDoe/ACME-JOHN-DOE-PC\`, \`CO\` for Cookies.<br/><br/>* Capturing clipboard:<br/>Screenshots are taken by the spyware and sent by email whose subject is \`SC_JohnDoe/ACME-JOHN-DOE-PC\`, \`SC\` for SCreenshot.<br/><br/>Other capabilities are available, but are less used. | malware | Agent Tesla,<br/>AgentTesla,<br/>AgenTesla,<br/>Negasteal |  | false | 2019-07-19T15:25:33.745282Z | 2021-12-23T19:52:16.428429Z | [More info about Agent Tesla on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--1db42657-baba-4ada-a07b-a55d21bfdb9f) |
 
 
 ### email
+
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
@@ -8874,6 +8915,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -8943,8 +8985,11 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
+
 ```!email email="eicar@sekoia.io"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -9174,12 +9219,14 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 #### Human Readable Output
 
 >### Indicator eicar@sekoia.io is linked to the following:
+
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| EICAR Unit of SEKOIA | This Intrusion Set is known to be operated by SEKOIA by its EICAR unit. This unit aims at creating fictitious environment mimicking real attackers to present how threat intelligence can help real organizations to protect themselves.<br/> | intrusion-set | EICAR,<br/>TEST EICAR SEKOIA.IO,<br/>EICAR Unit of SEKOIA | Simulation of real Threat Actor for Test purpose | false | 2020-05-26T13:18:26.429787Z | 2020-06-02T13:28:51.131904Z | [More info about EICAR Unit of SEKOIA on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/intrusion-set--4d1fd514-d9a4-45f3-988a-d811df72df2f) |
 
 
 ### GetIndicatorContext
+
 ***
 Query SEKOIA.IO Intelligence Center for context around this indicator
 
@@ -9187,6 +9234,7 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 #### Base Command
 
 `GetIndicatorContext`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -9261,8 +9309,11 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 | File.SHA256 | String | The SHA256 hash of the file. | 
 
 #### Command example
+
 ```!GetIndicatorContext value="eicar@sekoia.io" type="email-addr"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -9492,7 +9543,7 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 #### Human Readable Output
 
 >### Indicator eicar@sekoia.io is linked to the following:
+
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| EICAR Unit of SEKOIA | This Intrusion Set is known to be operated by SEKOIA by its EICAR unit. This unit aims at creating fictitious environment mimicking real attackers to present how threat intelligence can help real organizations to protect themselves.<br/> | intrusion-set | EICAR,<br/>TEST EICAR SEKOIA.IO,<br/>EICAR Unit of SEKOIA | Simulation of real Threat Actor for Test purpose | false | 2020-05-26T13:18:26.429787Z | 2020-06-02T13:28:51.131904Z | [More info about EICAR Unit of SEKOIA on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/intrusion-set--4d1fd514-d9a4-45f3-988a-d811df72df2f) |
-

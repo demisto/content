@@ -6,14 +6,14 @@ script: ''
 type: python
 tags:
 - indicator-format
-comment: Extract Domain(s) from URL(s) and/or Email(s)
+comment: Extract Domain(s) from URL(s) and/or Email(s).
 enabled: true
 args:
 - name: input
-  description: The URL(s) or Email(s) to process
+  description: The URL(s) or Email(s) to process.
   isArray: true
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.49703
+dockerimage: demisto/py3-tools:1.0.0.114656
 runas: DBotWeakRole
 subtype: python3
 tests:

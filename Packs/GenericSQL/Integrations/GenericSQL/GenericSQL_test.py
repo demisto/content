@@ -1,6 +1,7 @@
 import os
 from typing import Any
 
+import demistomock as demisto
 import pytest
 import sqlalchemy
 import pyodbc
@@ -8,6 +9,41 @@ import cx_Oracle
 
 from test_data import input_data
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
+
+
+class MockedClient(Client):
+    """
+    This class presents a client object for testing the cache engines mechanism.
+    """
+
+    def __init__(self, mocker, global_cache: dict, cache_string: str, dialect: str, host: str, username: str, password: str,
+                 port: str, database: str, connect_parameters: str, ssl_connect: bool, use_pool: bool):
+        self.global_cache = global_cache
+        self.cache_string = cache_string
+        super().__init__(dialect, host, username, password, port, database, connect_parameters, ssl_connect, use_pool)
+
+    def _convert_dialect_to_module(self, dialect: str = None):
+        return
+
+    def _generate_db_url(self, module: str = None):
+        return
+
+    def _get_global_cache(self):
+        return self.global_cache
+
+    def _get_cache_string(self, url: str = None, connect_args: dict = None):
+        return self.cache_string
+
+
+class Engine:
+    def __init__(self, name: str):
+        self.name = name
+
+    def connect(self):
+        return self.name
+
+    def dispose(self):
+        return
 
 
 class ResultMock:
@@ -63,7 +99,6 @@ ARGS3 = {
     'limit': 5,
     'skip': 0
 }
-
 
 RAW1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
 
@@ -211,6 +246,8 @@ EMPTY_OUTPUT = {
     }
 }
 
+GLOBAL_ENGINE_CACHE_ATTR = '_generic_sql_engines'
+
 
 @pytest.mark.parametrize('command, args, response, expected_result, header', [
     # Classic sql query, showing a table from database and convert it to readable data
@@ -239,6 +276,66 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
+@pytest.mark.parametrize('use_ldap, expected_url', [
+    pytest.param(True, "teradatasql://username:password@host:/?logmech=LDAP", id="LDAP"),
+    pytest.param(False, "teradatasql://host:/?user=username&password=password", id="Username & Password"),
+])
+def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
+    """
+    Given
+    - All required arguments for the client
+    - The use_ldap parameter
+    When
+    - Executing _create_engine_url_for_teradata client's method
+    Then
+    - Ensure the engine url is generated correctly according to use_ldap
+    """
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
+           database='', ssl_connect=False, use_ldap=use_ldap)
+    assert mock_create_engine.mock_calls[0][1][0] == expected_url
+
+
+@pytest.mark.parametrize('port, expected_url', [
+    ('', pytest.param("trino://username:password@host:8080/schema")),
+    ('1234', pytest.param("trino://username:password@host:1234/schema"))])
+def test_trino_connection(mocker, port: str, expected_url: str):
+    """
+    Given
+    - All required arguments for the client
+    When
+    - Creating a Generic SQL client with the Trino dialect
+    Then
+    - The client creation is successful
+    - The engine url is generated correctly per the Trino specification
+    """
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Trino', host='host', username='username', password='password', port=port, connect_parameters='',
+           database='schema', ssl_connect=False, use_ldap=False)
+    assert mock_create_engine.called_once_with(expected_url)
+
+
+@pytest.mark.parametrize('dialect, expected_port', [
+    ("Microsoft SQL Server", "1433"),
+    ("ODBC Driver 18 for SQL Server", "1433"),
+    ("Teradata", "1025"),
+    ("DB_NOT_EXIST", None),
+])
+def test_generate_default_port_by_dialect(dialect: str, expected_port: str):
+    """
+    Given
+    - a dialect (DB)
+    When
+    - Executing generate_default_port_by_dialect() function
+    Then
+    - Ensure the right port is generated or None in case of DB not found
+    """
+
+    assert generate_default_port_by_dialect(dialect) == expected_port
+
+
 def test_sql_queries_with_empty_table(mocker):
     """Unit test
     Given
@@ -255,6 +352,7 @@ def test_sql_queries_with_empty_table(mocker):
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = sql_query_execute(client, ARGS3)
     assert result[1] == EMPTY_OUTPUT  # entry context is found in the 2nd place in the result of the command
+    assert result[2] == []  # just ensuring a valid table is returned
 
 
 def test_mysql_integration():
@@ -272,7 +370,9 @@ def test_mysql_integration():
     if not host:
         pytest.skip('Skipping mysql integration test as MYSQL_HOST is not set')
     dialect = 'MySQL'
-    client = Client(dialect, host, 'root', 'password', generate_default_port_by_dialect(dialect), 'mysql', "", False, True)
+    port = generate_default_port_by_dialect(dialect)
+    assert port is not None
+    client = Client(dialect, host, 'root', 'password', port, 'mysql', "", False, True)
     res = client.sql_query_execute_request('show processlist', {})
     assert len(res) >= 1
 
@@ -583,3 +683,71 @@ def test_generate_variable_names_and_mapping(bind_variables_values_list: list, q
     result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
     assert expected_result[0] == result[0]
     assert expected_result[1] == result[1]
+
+
+def test_create_engine_and_connect_engine_exists(mocker):
+    """
+    Given
+    - An engine is in the cache
+    When
+    - running create_engine_and_connect
+    Then
+    - Ensure it uses the existing engine
+    """
+
+    client = MockedClient(mocker=mocker, global_cache={'1': Engine('Demo Engine')}, cache_string='1',
+                          dialect='Teradata', host='host', username='username', password='password',
+                          port='', connect_parameters='', database='', ssl_connect=False, use_pool=True)
+
+    assert client.connection == 'Demo Engine'
+
+
+def test_create_engine_and_connect_new_engine(mocker):
+    """
+    Given
+    - No engine is in the cache
+    When
+    - running create_engine_and_connect
+    Then
+    - Ensure a new engine is created and replaces the old one in cache
+    - Ensure the old engine is disposed and removed from the cache
+    """
+
+    old_engine = Engine('Old Engine')
+    new_engine = Engine('New Engine')
+    setattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {'1': old_engine})
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine', return_value=new_engine)
+    mock_engine_dispose = mocker.patch.object(Engine, 'dispose')
+
+    client = MockedClient(mocker=mocker, global_cache={}, cache_string='1',
+                          dialect='Teradata', host='host', username='username', password='password',
+                          port='', connect_parameters='', database='', ssl_connect=False, use_pool=True)
+
+    mock_create_engine.assert_called_once()
+    mock_engine_dispose.assert_called_once()
+    cache = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR)
+    assert client.connection == 'New Engine'
+    assert cache['1'] != old_engine
+    assert cache['1'] == new_engine
+
+
+@pytest.mark.parametrize('response, result', [
+    ("success", [{'Type': 'Successful', 'APICallsCount': 1}]),
+    ("general_error", [{'Type': 'GeneralError', 'APICallsCount': 1}]),
+    ("connection_error", [{'Type': 'ConnectionError', 'APICallsCount': 1}])
+])
+def test_create_api_metrics(mocker, response, result):
+    """
+    Test create_api_metrics function, make sure metrics are reported according to the response
+    """
+    mocker.patch.object(Client, '_create_engine_and_connect', return_value=ConnectionMock())
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Generic SQL'}]}})
+    client.create_api_metrics(status_type=response)
+
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == result

@@ -1,40 +1,36 @@
 CrowdStrike Falcon Intel Indicator Feed
 
-## Configure CrowdStrike Indicator Feed on Cortex XSOAR
+## Configure CrowdStrike Indicator Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CrowdStrike Indicator Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch indicators |  | False |
-    | CrowdStrike Base URL |  | True |
-    | CrowdStrike API Client ID | For non 6.1 - enter your CrowdStrike API Client Secret in the password field. | True |
-    | Type | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
-    | First fetch time | The time range to consider for the initial data fetch. Leave empty to fetch from the first available indicator. | False |
-    | Max. indicators per fetch | Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout. | False |
-    | Malicious confidence | Malicious confidence level to filter by. | False |
-    | Include deleted indicators |  | False |
-    | Filter | Advanced: FQL query. For more information visit the CrowdStrike documentation. | False |
-    | Generic phrase match | Generic phrase match search across all indicator fields. | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-    | Indicator Expiration Method | The feed's expiration method. | False |
-    | Feed Fetch Interval | The interval after which the feed expires. | False |
-    | Tags | Supports CSV values. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch indicators |  | False |
+| CrowdStrike Base URL |  | True |
+| CrowdStrike API Client ID | For non 6.1 - enter your CrowdStrike API Client Secret in the password field. | True |
+| Type | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
+| First fetch time | The time range to consider for the initial data fetch. Leave empty to fetch from the first available indicator. | False |
+| Max. indicators per fetch | Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout. | False |
+| Malicious confidence | Malicious confidence level to filter by. | False |
+| Include deleted indicators |  | False |
+| Filter | Advanced: FQL query. For more information visit the CrowdStrike documentation. For example: published_date:>"now-3d" can be used to only pull indicators published in the last 3 days. | False |
+| Generic phrase match | Generic phrase match search across all indicator fields. | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+| Indicator Expiration Method | The feed's expiration method. | False |
+| Feed Fetch Interval | The interval after which the feed expires. | False |
+| Tags | Supports CSV values. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     
-4. Click **Test** to validate the URLs, token, and connection.
 
 **Note**: To change the fetch start time , use the `crowdstrike-reset-fetch-indicators` command after setting the desired time in `First Fetch Time` parameter.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you
 successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### crowdstrike-indicators-list

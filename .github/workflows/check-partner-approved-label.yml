@@ -14,14 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       - name: Install python dependencies
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: set pythonpath
         run: |
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -33,5 +33,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Checking label Partner-Approved for: $PR_NUMBER"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run python check_if_partner_approved_label_exists.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN

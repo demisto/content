@@ -1,0 +1,89 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Cohesity Helios Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://helios.cohesity.com
+  display: Server URL (e.g. https://helios.cohesity.com)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: api_key
+  required: false
+  section: Connect
+  hiddenusername: true
+  type: 9
+- display: The maximum number of events per type. Default is 50000.
+  additionalinfo: The collector pulls both Audit Logs and Alerts. This parameter sets the the maximum fetch number limit for each type.
+  name: max_fetch
+  required: false
+  advanced: false
+  section: Collect
+  defaultvalue: 50000
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  advanced: true
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  advanced: true
+  type: 8
+  section: Connect
+description: This is the Cohesity Helios Event Collector integration for XSIAM.
+display: Cohesity Helios Event Collector
+name: Cohesity Helios Event Collector
+supportlevelheader: xsoar
+marketplaces:
+- marketplacev2
+fromversion: '8.2.0'
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it only displays them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: false
+      description: Maximum results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      name: start_time
+      description: Specifies the start time of the alerts to be returned.
+      isArray: false
+      required: true
+    - default: false
+      name: end_time
+      description: Specifies the end time of the alerts to be returned.
+      isArray: false
+      required: true
+      defaultValue: 'Now'
+    deprecated: false
+    description: Gets events from Cohesity Helios.
+    execution: false
+    name: cohesity-helios-get-events
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)

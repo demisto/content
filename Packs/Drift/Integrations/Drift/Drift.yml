@@ -86,7 +86,7 @@ script:
     - contextPath: Drift.Contacts.Attributes
       description: Attributes of the contact (JSON dict).
     description: 'Post New Contact using a new contact Email '
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   subtype: python3
 fromversion: 6.2.0

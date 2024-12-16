@@ -620,10 +620,6 @@ inputs:
   description: The departure date (in YYYY-MM-DD format) provided in a stand-down
     ticket from Jira, Zendesk, etc.
   playbookInputQuery: null
-- key: ticket_key
-  value: {}
-  required: false
-  description: The unique identifier of a stand-down ticket from Jira, Zendesk, etc.
-    (optional).
-  playbookInputQuery: null
 outputs: []
+tests:
+- No tests

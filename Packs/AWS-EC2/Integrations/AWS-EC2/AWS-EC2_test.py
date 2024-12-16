@@ -3,7 +3,6 @@ import demistomock as demisto  # noqa: F401
 import importlib
 import pytest
 
-
 AWS_EC2 = importlib.import_module("AWS-EC2")
 
 VALID_ARGS = {"groupId": "sg-0566450bb5ae17c7d",
@@ -46,6 +45,9 @@ class Boto3Client:
     def get_ipam_discovered_public_addresses(self, **kwargs):
         pass
 
+    def create_vpc_endpoint(self, **kwargs):
+        pass
+
 
 AWS_EC2.build_client = lambda _: Boto3Client
 
@@ -55,7 +57,7 @@ def validate_kwargs(*args, **kwargs):
                      'GroupId': 'sg-0566450bb5ae17c7d'}
     ippermsfull_kwargs = {'GroupId': 'sg-0566450bb5ae17c7d', 'IpPermissions':
                           [{'IpProtocol': '-1', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
-                           'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': []}]}
+                            'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': []}]}
     if kwargs in (normal_kwargs, ippermsfull_kwargs):
         return {'ResponseMetadata': {'HTTPStatusCode': 200}, 'Return': "some_return_value"}
     else:
@@ -128,8 +130,8 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker):
 
 
 @pytest.mark.parametrize('filter, expected_results', [
-    ("Name=iam-instance-profile.arn,Values=arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole",
-     [{'Name': 'iam-instance-profile.arn', 'Values': ['arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole']}])
+    ("Name=iam-instance-profile.arn,Values=arn:aws:iam::123456789012:instance-profile/AmazonEKSNodeRole",
+     [{'Name': 'iam-instance-profile.arn', 'Values': ['arn:aws:iam::123456789012:instance-profile/AmazonEKSNodeRole']}])
 ])
 def test_parse_filter_field(filter, expected_results):
     """
@@ -246,10 +248,10 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
             "Tags": []
         }
       }, "### Ipam Resource Discoveries\n"
-         "|IpamResourceDiscoveryArn|IpamResourceDiscoveryId|IpamResourceDiscoveryRegion|IsDefault|OperatingRegions|OwnerId|"
-         "State|Tags|\n|---|---|---|---|---|---|---|---|\n"
-         "| arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111 | ipam-res-disco-111111111"
-         "11111111 | us-east-1 | true | {'RegionName': 'ap-south-1'} | 222222222222 | create-complete |  |\n")
+        "|IpamResourceDiscoveryArn|IpamResourceDiscoveryId|IpamResourceDiscoveryRegion|IsDefault|OperatingRegions|OwnerId|"
+        "State|Tags|\n|---|---|---|---|---|---|---|---|\n"
+        "| arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111 | ipam-res-disco-111111111"
+        "11111111 | us-east-1 | true | {'RegionName': 'ap-south-1'} | 222222222222 | create-complete |  |\n")
 ])
 def test_describe_ipam_resource_discoveries_command(mocker, return_boto, expected_results):
     """
@@ -286,12 +288,12 @@ def test_describe_ipam_resource_discoveries_command(mocker, return_boto, expecte
             "Tags": []
         }
       }, "### Ipam Resource Discovery Associations\n"
-         "|IpamArn|IpamId|IpamRegion|IpamResourceDiscoveryAssociationArn|IpamResourceDiscoveryAssociationId|"
-         "IpamResourceDiscoveryId|IsDefault|OwnerId|ResourceDiscoveryStatus|State|Tags|\n"
-         "|---|---|---|---|---|---|---|---|---|---|---|\n"
-         "| arn:aws:ec2::222222222222:ipam/ipam-11111111111111111 | ipam-11111111111111111 | us-east-1 | example:arn | ipam-"
-         "res-disco-assoc-11111111111111111 | ipam-res-disco-11111111111111111 | true | 222222222222 | active | associate-comp"
-         "lete |  |\n")
+        "|IpamArn|IpamId|IpamRegion|IpamResourceDiscoveryAssociationArn|IpamResourceDiscoveryAssociationId|"
+        "IpamResourceDiscoveryId|IsDefault|OwnerId|ResourceDiscoveryStatus|State|Tags|\n"
+        "|---|---|---|---|---|---|---|---|---|---|---|\n"
+        "| arn:aws:ec2::222222222222:ipam/ipam-11111111111111111 | ipam-11111111111111111 | us-east-1 | example:arn | ipam-"
+        "res-disco-assoc-11111111111111111 | ipam-res-disco-11111111111111111 | true | 222222222222 | active | associate-comp"
+        "lete |  |\n")
 ])
 def test_describe_ipam_resource_discovery_associations_command(mocker, return_boto, expected_results):
     """
@@ -341,12 +343,12 @@ def test_describe_ipam_resource_discovery_associations_command(mocker, return_bo
             "VpcId": "vpc-11111111111111111"
         }
       }, "### Ipam Discovered Public Addresses\n"
-         "|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscover"
-         "yId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|Subnet"
-         "Id|Tags|VpcId|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-         "| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111"
-         " | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupId':"
-         " 'sg-11111111111111111', 'GroupName': 'example_sg'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |\n")
+        "|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscover"
+        "yId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|Subnet"
+        "Id|Tags|VpcId|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+        "| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111"
+        " | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupId':"
+        " 'sg-11111111111111111', 'GroupName': 'example_sg'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |\n")
 ])
 def test_get_ipam_discovered_public_addresses_command(mocker, return_boto, expected_results):
     """
@@ -367,3 +369,76 @@ def test_get_ipam_discovered_public_addresses_command(mocker, return_boto, expec
             "Filters": "Name=address,Values=1.1.1.1"}
     results = AWS_EC2.get_ipam_discovered_public_addresses_command(args)
     assert results.readable_output == expected_results
+
+
+def test_create_vpc_endpoint_command(mocker):
+    """
+    Given
+    - aws-ec2-aws-ec2-create-vpc-endpoint arguments and aws client
+
+    When
+    - running aws-ec2-aws-ec2-create-vpc-endpoint command.
+    Then
+    - Ensure that the information was parsed correctly
+    - Ensure that the correct response was returned
+
+    """
+
+    return_boto = {
+        'VpcEndpoint': {
+            'VpcEndpointId': 'test_endpoint_id',
+            'VpcEndpointType': 'Interface',
+            'VpcId': 'test_id',
+            'ServiceName': 'test_service_name',
+            'State': 'PendingAcceptance',
+            'PolicyDocument': 'test',
+            'RouteTableIds': [
+                'test',
+            ],
+            'SubnetIds': [
+                'test',
+            ],
+            'Groups': [
+                {
+                    'GroupId': 'test',
+                    'GroupName': 'test'
+                },
+            ],
+            'IpAddressType': 'ipv4',
+            'DnsOptions': {
+                'DnsRecordIpType': 'ipv4',
+                'PrivateDnsOnlyForInboundResolverEndpoint': True
+            },
+            'PrivateDnsEnabled': True,
+            'RequesterManaged': True,
+            'NetworkInterfaceIds': [
+                'test',
+            ],
+            'DnsEntries': [
+                {
+                    'DnsName': 'test',
+                    'HostedZoneId': 'test'
+                },
+            ],
+            'CreationTimestamp': datetime(2015, 1, 1),
+            'Tags': [
+                {
+                    'Key': 'test',
+                    'Value': 'test'
+                },
+            ],
+            'OwnerId': 'test',
+            'LastError': {
+                'Message': 'test',
+                'Code': 'test'
+            }
+        },
+        'ClientToken': 'test'
+    }
+
+    mocker.patch.object(Boto3Client, 'create_vpc_endpoint', return_value=return_boto)
+    results = AWS_EC2.create_vpc_endpoint_command({'vpcId': 'test_endpoint_id',
+                                                   'serviceName': 'test',
+                                                   'tagSpecifications': '{"test": "test-tag"}'})
+
+    assert results.outputs == return_boto.get('VpcEndpoint')

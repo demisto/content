@@ -23,3 +23,9 @@ avg
 mappers
 crowdstrike
 
+# GR103 is temporary, see CIAC-11656
+[file:XMCyberIntegration-Test.yml]
+ignore=GR103
+
+[file:Scan_and_Isolate_XM_Cyber.yml]
+ignore=GR107

@@ -13,3 +13,12 @@ ignore=BA101
 [file:playbook-HandleDarktraceModelBreach.yml]
 ignore=PB121
 
+# GR103 is temporary, see CIAC-11656
+[file:classifier-Darktrace_Model_Breach.json]
+ignore=GR103,GR107
+
+[file:layoutscontainer-Darktrace_MBs_Layout.json]
+ignore=GR103
+
+[file:incidenttype-Darktrace_Model_Breach.json]
+ignore=GR107

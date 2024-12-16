@@ -57,4 +57,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1204 - User Execution](../doc_files/MITRE_ATT&CK_CoA_-_T1204_-_User_Execution.png)
+![MITRE ATT&CK CoA - T1204 - User Execution](../doc_files/MITRE_ATTandCK_CoA_-_T1204_-_User_Execution.png)

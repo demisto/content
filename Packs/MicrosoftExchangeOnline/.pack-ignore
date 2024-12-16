@@ -1,5 +1,5 @@
 [file:EWSO365.yml]
-ignore=IN126,DS107,IN124
+ignore=IN126,DS107
 
 [file:README.md]
 ignore=RM102,RM106
@@ -11,7 +11,7 @@ ignore=PB118
 ignore=IN128
 
 [file:SecurityAndComplianceV2.yml]
-ignore=IN124
+ignore=IN145
 
 [file:playbook-Get_Mails_By_Folder_Paths.yml]
 ignore=PB119
@@ -21,7 +21,11 @@ ignore=PB118
 
 [known_words]
 powershell
+attachmentName
 
 [file:GetEWSFolder.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Office_365_Search_and_Delete.yml]
+ignore=GR103

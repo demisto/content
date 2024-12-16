@@ -1,0 +1,22 @@
+{
+    "uuid": "7114c307-d86c-4c55",
+    "firstname": "Joe",
+    "lastname": "done",
+    "company_name": "sekoia.io",
+    "email": "joe.done@test.io",
+    "picture_mode": "initials",
+    "created_at": "2023-05-15 15:42:16.266135",
+    "updated_at": "2024-04-18 09:04:46.748669",
+    "invitation_v2": null,
+    "mfa_enabled": true,
+    "last_activity": "2024-05-02T12:32:27.196065+00:00",
+    "auth_provider": "local",
+    "communities": [
+        {
+            "uuid": "52bd045f-4199-4361",
+            "name": "Sandbox",
+            "avatar_uuid": "d03d90b1-39f6-4da5",
+            "disabled": false
+        }
+    ]
+}

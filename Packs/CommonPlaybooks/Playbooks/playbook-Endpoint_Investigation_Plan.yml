@@ -1572,7 +1572,7 @@ tasks:
       - "9"
     scriptarguments:
       query:
-        simple: agentsid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -2134,7 +2134,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Endpoint Investigation Plan - Test
 marketplaces:
 - marketplacev2
 - xpanse

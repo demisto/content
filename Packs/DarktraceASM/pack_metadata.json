@@ -1,0 +1,32 @@
+{
+    "name": "DarktraceASM",
+    "description": "Populates Darktrace ASM Risks in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
+    "support": "partner",
+    "currentVersion": "1.0.2",
+    "fromVersion": "6.6.0",
+    "author": "Darktrace",
+    "githubUser": "",
+    "url": "https://customerportal.darktrace.com",
+    "email": "integrationsupport@darktrace.com",
+    "created": "",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Compliance",
+        "Attack",
+        "Alerts",
+        "Malware",
+        "Network"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Darktrace",
+        "Attack Surface Management"
+    ],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

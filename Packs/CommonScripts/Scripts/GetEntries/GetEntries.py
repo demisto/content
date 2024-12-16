@@ -5,10 +5,22 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         args = demisto.args()
-        ents = demisto.executeCommand('getEntries',
-                                      assign_params(id=args.get('id'),
-                                                    filter=assign_params(tags=argToList(args.get('tags')),
-                                                                         categories=argToList(args.get('categories')))))
+
+        params = assign_params(id=args.get('id'),
+                               filter=assign_params(
+                                   tags=argToList(args.get('tags')),
+                                   categories=argToList(args.get('categories')),
+                                   pageSize=arg_to_number(args.get('page_size')),
+                                   lastId=args.get('last_id'),
+                                   firstID=args.get('first_id'),
+                                   selectedEntryID=args.get('selected_entry_id'),
+                                   users=argToList(args.get('users')),
+                                   tagsAndOperator=argToBoolean(args.get('tags_and_operator', False)),
+                                   fromTime=args.get('from_time'),
+                                   parentID=args.get('parent_id')
+        ))
+
+        ents = demisto.executeCommand('getEntries', params)
         if not ents:
             return_results('No matching entries')
         else:

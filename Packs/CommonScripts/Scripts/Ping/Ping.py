@@ -29,6 +29,8 @@ def main():
             msg = e.output  # pylint: disable=no-member
         else:
             msg = str(e)
+        if not is_xsoar_on_prem() and "ping: socket: Operation not permitted" in msg:
+            msg = "The Ping script can be executed only on custom engines"
         return_error(msg)
 
 

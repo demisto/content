@@ -7,7 +7,7 @@ sectionOrder:
 name: Github Event Collector
 display: Github Event Collector
 category: Analytics & SIEM
-description: Github logs event collector integration for XSIAM.
+description: Github logs event collector integration for Cortex XSIAM.
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
   name: url
@@ -31,9 +31,10 @@ configuration:
 - display: First fetch time interval
   name: after
   type: 0
-  defaultvalue: 3 days
+  defaultvalue: 1 minute
   section: Collect
   required: false
+  hidden: true
 - display: The event types to include.
   additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include
@@ -65,7 +66,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
       - 'True'
@@ -73,7 +74,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: github-get-events
-  dockerimage: demisto/fastapi:1.0.0.64474
+  dockerimage: demisto/py3-tools:1.0.0.114656
   isfetchevents: true
   subtype: python3
 marketplaces:

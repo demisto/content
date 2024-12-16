@@ -1,0 +1,681 @@
+category: "IT Services"
+commonfields:
+  id: AtlassianJiraServiceManagement
+  version: -1
+configuration:
+- defaultvalue: https://api.atlassian.com/jsm/assets/workspace/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Token
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Use this integration to manage Jira objects and attach files to Jira objects from Cortex XSOAR.
+display: Atlassian Jira Service Management
+name: AtlassianJiraServiceManagement
+script:
+  commands:
+  - arguments:
+    - description: The maximum amount of schemas to retrieve. Cannot be used alongside the *page* and *page_size* arguments.
+      name: limit
+    - description: Whether to retrieve all object schemas with no limit.
+      name: all_results
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    name: jira-asset-object-schema-list
+    description: List all object schemas.
+    outputs:
+    - contextPath: JiraAsset.Schema.ID
+      description: The ID of the object schema.
+      type: Number
+    - contextPath: JiraAsset.Schema.Name
+      description: The name of the object schema.
+      type: String
+    - contextPath: JiraAsset.Schema.Key
+      description: The key of the object schema.
+      type: String
+    - contextPath: JiraAsset.Schema.Status
+      description: The status of the object schema.
+      type: String
+    - contextPath: JiraAsset.Schema.Created
+      description: The date in which this object schema was created.
+      type: Date
+    - contextPath: JiraAsset.Schema.Updated
+      description: The date in which this object schema was updated.
+      type: Date
+    - contextPath: JiraAsset.Schema.ObjectCount
+      description: The number of objects in the schema.
+      type: Number
+    - contextPath: JiraAsset.Schema.ObjectTypeCount
+      description: The number of different object types in the schema.
+      type: Number
+  - arguments:
+    - description: The schema from which the command will retrieve object types. Values can be received by running the `jira-asset-object-schema-list` command.
+      name: schema_id
+      required: true
+    - description: Object types with that name will be excluded from the results.
+      name: exclude
+    - description: The maximum amount of object types to retrieve.
+      name: limit
+    - description: Whether to retrieve all object types with no limit.
+      name: all_results
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    name: jira-asset-object-type-list
+    description: List all object types.
+    outputs:
+    - contextPath: JiraAsset.ObjectType.ID
+      description: The ID of the object type.
+      type: Number
+    - contextPath: JiraAsset.ObjectType.Name
+      description: The name of the object type.
+      type: String
+    - contextPath: JiraAsset.ObjectType.Type
+      description: The type of the object type.
+      type: Number
+    - contextPath: JiraAsset.ObjectType.Position
+      description: The position of the object type among other object types with the same level in the schema hierarchy.
+      type: Number
+    - contextPath: JiraAsset.ObjectType.Created
+      description: The date the object type was created.
+      type: Date
+    - contextPath: JiraAsset.ObjectType.Updated
+      description: The date the object type was last updated.
+      type: Date
+    - contextPath: JiraAsset.ObjectType.ObjectCount
+      description: The amount of objects listed under this object type.
+      type: Number
+    - contextPath: JiraAsset.ObjectType.ObjectSchemaId
+      description: The ID of the schema this object type is listed under.
+      type: Number
+    - contextPath: JiraAsset.ObjectType.Inherited
+      description: Whether this object type inherits from a parent object type.
+      type: Boolean
+    - contextPath: JiraAsset.ObjectType.AbstractObjectType
+      description: Is this object type abstract (can only be inherited).
+      type: Boolean
+    - contextPath: JiraAsset.ObjectType.ParentObjectTypeInherited
+      description: Whether this object type inherits from a parent object type.
+      type: Boolean
+  - arguments:
+    - description: The object type for which the command will retrieve attributes. Values can be received by running the `jira-asset-object-type-list` command.
+      name: object_type_id
+      required: true
+    - description: Whether to only return attributes that can be edited.
+      name: is_editable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: Whether to sort the results by the attribute name.
+      name: order_by_name
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: Query to filter on available object type attributes. Filter attributes that start with the query.
+      name: query
+    - description: Should the response only include attributes where attribute values exists.
+      name: include_value_exist
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: Should the response exclude parent attributes.
+      name: exclude_parent_attributes
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: Should the response include child attributes.
+      name: include_children
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: Should the response be ordered by the number of required attributes.
+      name: order_by_required
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: The maximum amount of object types to retrieve.
+      name: limit
+    - name: all_results
+      description: Whether to retrieve all object types with no limit.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    name: jira-asset-object-type-attribute-list
+    description: List all attributes for an object type.
+    outputs:
+    - contextPath: JiraAsset.Attribute.ID
+      description: The ID of the attribute.
+      type: Number
+    - contextPath: JiraAsset.Attribute.Name
+      description: The name of the attribute.
+      type: String
+    - contextPath: JiraAsset.Attribute.Label
+      description: Whether this attribute is used as the label for objects of that type.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.Type
+      description: The type of the attribute (Default, Reference, User, Project etc.).
+      type: String
+    - contextPath: JiraAsset.Attribute.DefaultType.id
+      description: ID for the sub-type of the default type.
+      type: Number
+    - contextPath: JiraAsset.Attribute.DefaultType.name
+      description: Name for the sub-type of the default type.
+      type: String
+    - contextPath: JiraAsset.Attribute.Editable
+      description: Whether this attribute is editable.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.System
+      description: Whether this attribute is a system attribute or a custom one.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.Sortable
+      description: Can the objects be sorted by that attribute.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.Summable
+      description: Can this attribute be summarized.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.Indexed
+      description: Is this attribute indexed.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.MinimumCardinality
+      description: The minimum amount of elements this attribute should populate.
+      type: Number
+    - contextPath: JiraAsset.Attribute.MaximumCardinality
+      description: The maximum amount of elements this attribute should populate.
+      type: Number
+    - contextPath: JiraAsset.Attribute.Removable
+      description: Whether this attribute can be removed from the object.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.Hidden
+      description: Whether this attribute is a hidden attribute.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.IncludeChildObjectTypes
+      description: Whether this attribute includes child object types.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.UniqueAttribute
+      description: Whether this attribute is unique to its object.
+      type: Boolean
+    - contextPath: JiraAsset.Attribute.Options
+      description: Options for the attributes.
+      type: String
+    - contextPath: JiraAsset.Attribute.Position
+      description: The position of the attribute in relation to other object attributes.
+      type: Number
+  - arguments:
+    - description: The object type for which a new object will be created.
+      name: object_type_id
+      required: true
+    - description: 'Provide this field if attributes_json is not provided. A key-value map of object attributes. The structure of the field is: { "attributeId1": [ "value1", "value2"] , "attributeId2":["value1", "value2"] }. You can run the `jira-asset-object-type-attribute-list` command to retrieve the list of available attributes.'
+      name: attributes
+      type: keyValue
+    - description: Provide this field if attributes is not provided. A JSON string of object attributes to be added to the new object. Take a look at https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject for the structure of this field. You can use the `jira-asset-object-type-attribute-list` command  to retrieve the list of available attributes.
+      name: attributes_json
+    name: jira-asset-object-create
+    description: Create a new object of the specified object type ID. Either attributes or attributes_json must be provided.
+    outputs:
+    - contextPath: JiraAsset.Object.ID
+      description: ID of the newly created object.
+      type: Number
+    - contextPath: JiraAsset.Object.Label
+      description: The value of the attribute that is marked as Label for this object type.
+      type: String
+    - contextPath: JiraAsset.Object.ObjectKey
+      description: The auto-generated object key.
+      type: String
+    - contextPath: JiraAsset.Object.Avatar.objectId
+      description: ID of the newly created object.
+      type: Number
+    - contextPath: JiraAsset.Object.Created
+      description: The date in which this object was created.
+      type: Date
+    - contextPath: JiraAsset.Object.Updated
+      description: The date in which this object was last updated.
+      type: Date
+    - contextPath: JiraAsset.Object.HasAvatar
+      description: Does this object have an Avatar.
+      type: Boolean
+    - contextPath: JiraAsset.Object.Timestamp
+      description: Epoch version of the object's creation date.
+      type: Date
+    - contextPath: JiraAsset.Object.Links.self
+      description: The link to view this object in the Jira web app.
+      type: String
+    - contextPath: JiraAsset.Object.Name
+      description: The name of the newly created object.
+      type: String
+  - arguments:
+    - description: ID of the object that will be updated.
+      name: object_id
+      required: true
+    - description: 'Provide this field if attributes_json is not provided. A key-value map of object attributes. The structure of the field is: { "attributeId1": [ "value1", "value2"] , "attributeId2":["value1", "value2"] }. You can use the `jira-asset-object-type-attribute-list` command to retrieve the list of available attributes.'
+      name: attributes
+      type: keyValue
+    - description: Provide this field if attributes is not provided. A JSON string of object attributes to be added to the new object. Take a look at https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject for the structure of this field. You can use the `jira-asset-object-type-attribute-list` command to retrieve the list of available attributes.
+      name: attributes_json
+    name: jira-asset-object-update
+    description: Updates an existing object of specified object type ID. Either attributes or attributes_json must be provided.
+  - arguments:
+    - description: ID of the object that will be deleted.
+      name: object_id
+      required: true
+    name: jira-asset-object-delete
+    description: Deletes an existing object of the specified object ID.
+  - arguments:
+    - description: ID of the object that will be retrieved.
+      name: object_id
+      required: true
+    name: jira-asset-object-get
+    description: Retrieves the object with the specified object ID.
+    outputs:
+    - contextPath: JiraAsset.Object.ID
+      description: ID of the retrieved object.
+      type: Number
+    - contextPath: JiraAsset.Object.Label
+      description: The value of the attribute that is marked as Label for this object type.
+      type: String
+    - contextPath: JiraAsset.Object.ObjectKey
+      description: The auto-generated object key.
+      type: String
+    - contextPath: JiraAsset.Object.Created
+      description: The date in which this object was created.
+      type: Date
+    - contextPath: JiraAsset.Object.Updated
+      description: The date in which this object was last updated.
+      type: Date
+    - contextPath: JiraAsset.Object.HasAvatar
+      description: Does this object have an Avatar.
+      type: Boolean
+    - contextPath: JiraAsset.Object.Timestamp
+      description: Epoch version of the object's creation date.
+      type: Date
+    - contextPath: JiraAsset.Object.ExtendedInfo.openIssuesExists
+      description: Does this object appear in any open issues.
+      type: Boolean
+    - contextPath: JiraAsset.Object.ExtendedInfo.attachmentsExists
+      description: Does this object have any attachments.
+      type: Boolean
+    - contextPath: JiraAsset.Object.Links.self
+      description: The link to view this object in the Jira web app.
+      type: String
+    - contextPath: JiraAsset.Object.Name
+      description: The name of the object.
+      type: String
+  - arguments:
+    - description: An aql query to search objects by. View https://support.atlassian.com/jira-service-management-cloud/docs/use-assets-query-language-aql/ for further details.
+      name: ql_query
+      required: true
+    - description: Whether to include the attributes structure in the response.
+      name: include_attributes
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: Page number.
+      name: page
+    - description: Use this argument or limit, but not both. Size of the page. Defaults to 50.
+      name: page_size
+    - description: Use this argument or a combination of page and page_size, but not both. Limit the number of entries returned by the command.
+      name: limit
+    name: jira-asset-object-search
+    description: Searches for objects of the specified object type.
+    outputs:
+    - contextPath: JiraAsset.Object.ID
+      description: ID of the retrieved object.
+      type: Number
+    - contextPath: JiraAsset.Object.Label
+      description: The value of the attribute that is marked as Label for this object type.
+      type: String
+    - contextPath: JiraAsset.Object.ObjectKey
+      description: The auto-generated object key.
+      type: String
+    - contextPath: JiraAsset.Object.Created
+      description: The date in which this object was created.
+      type: Date
+    - contextPath: JiraAsset.Object.Updated
+      description: The date in which this object was last updated.
+      type: Date
+    - contextPath: JiraAsset.Object.HasAvatar
+      description: Does this object have an Avatar.
+      type: Boolean
+    - contextPath: JiraAsset.Object.Timestamp
+      description: Epoch version of the object's creation date.
+      type: Date
+    - contextPath: JiraAsset.Object.Attributes.id
+      description: The ID of the attribute.
+      type: Number
+    - contextPath: JiraAsset.Object.Attributes.objectTypeAttributeId
+      description: The ID of the attribute, not relative to the object type.
+      type: Number
+    - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.value
+      description: The value of the specific attribute for this object.
+      type: String
+    - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.referencedType
+      description: Whether this attribute is referenced by other types.
+      type: Boolean
+    - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.displayValue
+      description: The display value for this attribute.
+      type: String
+    - contextPath: JiraAsset.Object.Attributes.objectAttributeValues.searchValue
+      description: The search value for this attribute.
+      type: String
+    - contextPath: JiraAsset.Object.Attributes.objectId
+      description: The ID of the object this attribute is assigned to.
+      type: Number
+    - contextPath: JiraAsset.Object.Links.self
+      description: The link to view this object in the Jira web app.
+      type: String
+    - contextPath: JiraAsset.Object.Name
+      description: The name of the object.
+      type: String
+  - arguments:
+    - description: ID of the object type that attributes JSON will be created for. You could use the jira-asset-object-type-list command to find object types.
+      name: object_type_id
+      required: true
+    - description: Whether to fetch only editable attributes.
+      name: is_editable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: Whether to fetch only required attributes.
+      name: is_required
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    name: jira-asset-attribute-json-create
+    description: Utility command used to create a JSON file with all attributes of the specified object type. All that is left is to fill in the values of each attribute.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+  - arguments:
+    - description: ID of the object that the comment will be added to. You could use the jira-asset-object-search command to find objects.
+      name: object_id
+      required: true
+    - description: Body of the comment that will be created.
+      name: comment
+      required: true
+    name: jira-asset-comment-create
+    description: Creates a comment for the specified object.
+    outputs:
+    - contextPath: JiraAsset.Comment.Created
+      description: The date in which this comment was created.
+      type: Date
+    - contextPath: JiraAsset.Comment.Updated
+      description: The date in which this object was last updated.
+      type: Date
+    - contextPath: JiraAsset.Comment.Id
+      description: The ID of the newly created comment.
+      type: Number
+    - contextPath: JiraAsset.Comment.Actor.AvatarUrl
+      description: URL to the avatar of the author of the comment.
+      type: String
+    - contextPath: JiraAsset.Comment.Actor.DisplayName
+      description: Display name of the author of the comment.
+      type: String
+    - contextPath: JiraAsset.Comment.Actor.Name
+      description: Name of the author of the comment.
+      type: String
+    - contextPath: JiraAsset.Comment.Actor.Key
+      description: Key of the author of the comment.
+      type: String
+    - contextPath: JiraAsset.Comment.Actor.RenderedLink
+      description: A link to the author's Jira profile.
+      type: String
+    - contextPath: JiraAsset.Comment.Actor.IsDeleted
+      description: Is the author of the comment deleted.
+      type: Boolean
+    - contextPath: JiraAsset.Comment.Role
+      description: The role of the author of the comment.
+      type: Number
+    - contextPath: JiraAsset.Comment.Comment
+      description: The body of the comment that was newly added.
+      type: String
+    - contextPath: JiraAsset.Comment.CommentOutput
+      description: The body of the comment that was newly added.
+      type: String
+    - contextPath: JiraAsset.Comment.ObjectId
+      description: The ID of the object the new comment was added to.
+      type: Number
+    - contextPath: JiraAsset.Comment.CanEdit
+      description: Whether the comment is editable.
+      type: Boolean
+    - contextPath: JiraAsset.Comment.CanDelete
+      description: Whether the comment can be deleted.
+      type: Boolean
+  - arguments:
+    - description: ID of the object for which connected tickets will be fetched.
+      name: object_id
+      required: true
+    name: jira-asset-connected-ticket-list
+    description: Returns a list of all connected tickets for the specified object.
+    outputs:
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Key
+      description: Key for the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.ID
+      description: The ID of the connected ticket.
+      type: Number
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Reporter
+      description: The user who reported the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Created
+      description: The date in which this connected ticket was created.
+      type: Date
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Updated
+      description: The date in which this connected ticket was last updated.
+      type: Date
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Title
+      description: Title of the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Status.Name
+      description: The name of the status of the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Status.Colorname
+      description: The color of the connected tikcet.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Type.Name
+      description: The type of the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Type.Description
+      description: The description of the type of the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Type.Iconurl
+      description: The URL to the icon representing the type of the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Priority.Name
+      description: Priority of the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Tickets.Priority.Iconurl
+      description: The URL to the icon representing the priority of the connected ticket.
+      type: String
+    - contextPath: JiraAsset.ConnectedTicket.Allticketsquery
+      description: The query used to fetch the connected tickets.
+      type: String
+  - arguments:
+    - description: ID of the object that comments will be retrieved for. You could use the jira-asset-object-search command to find objects.
+      name: object_id
+      required: true
+    name: jira-asset-comment-list
+    description: Returns a list of comments for the specified object.
+    outputs:
+    - contextPath: JiraAsset.Comment.Created
+      description: The date in which this comment was created.
+      type: Date
+    - contextPath: JiraAsset.Comment.Updated
+      description: The date in which this object was last updated.
+      type: Date
+    - contextPath: JiraAsset.Comment.ID
+      description: The ID of the newly created comment.
+      type: Number
+    - contextPath: JiraAsset.Comment.Role
+      description: The role of the author of the comment.
+      type: Number
+    - contextPath: JiraAsset.Comment.Comment
+      description: The body of the comment that was newly added.
+      type: String
+    - contextPath: JiraAsset.Comment.CommentOutput
+      description: The body of the comment that was newly added.
+      type: String
+    - contextPath: JiraAsset.Comment.ObjectId
+      description: The ID of the object the new comment was added to.
+      type: Number
+    - contextPath: JiraAsset.Comment.CanEdit
+      description: Whether the comment is editable.
+      type: Boolean
+    - contextPath: JiraAsset.Comment.CanDelete
+      description: Whether the comment can be deleted.
+  - arguments:
+    - description: ID of the object that the file will be attached to.
+      name: object_id
+      required: true
+    - description: ID of the file to upload.
+      name: entry_id
+      required: true
+    name: jira-asset-attachment-add
+    description: Uploads a file attachment to the specified object.
+    outputs:
+    - contextPath: JiraAsset.Attachment.ID
+      description: ID of the attachment.
+      type: Number
+    - contextPath: JiraAsset.Attachment.Author
+      description: Author of the attachment.
+      type: String
+    - contextPath: JiraAsset.Attachment.MimeType
+      description: The file's MIME type.
+      type: String
+    - contextPath: JiraAsset.Attachment.Filename
+      description: The file's name.
+      type: String
+    - contextPath: JiraAsset.Attachment.Filesize
+      description: The size of the file.
+      type: String
+    - contextPath: JiraAsset.Attachment.Created
+      description: The date in which this attachment was created.
+      type: Date
+    - contextPath: JiraAsset.Attachment.Comment
+      description: The comment attached to the attachment, if there is one.
+      type: String
+    - contextPath: JiraAsset.Attachment.CommentOutput
+      description: The comment output of the attachment, if there is one.
+      type: String
+    - contextPath: JiraAsset.Attachment.Url
+      description: URL to the attachment.
+      type: String
+  - arguments:
+    - description: ID of the object that attachments will be fetched for.
+      name: object_id
+      required: true
+    - description: Whether to download the attachments for this object in a zipped format.
+      name: download_file
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    name: jira-asset-attachment-list
+    description: Returns a list of attachments for the specified object. You can also download the files in a zipped format.
+    outputs:
+    - contextPath: JiraAsset.Attachment.ID
+      description: ID of the attachment.
+      type: Number
+    - contextPath: JiraAsset.Attachment.Author
+      description: Author of the attachment.
+      type: String
+    - contextPath: JiraAsset.Attachment.MimeType
+      description: The file's MIME type.
+      type: String
+    - contextPath: JiraAsset.Attachment.Filename
+      description: The file's name.
+      type: String
+    - contextPath: JiraAsset.Attachment.Filesize
+      description: The size of the file.
+      type: String
+    - contextPath: JiraAsset.Attachment.Created
+      description: The date in which this attachment was created.
+      type: Date
+    - contextPath: JiraAsset.Attachment.Comment
+      description: The comment attached to the attachment, if there is one.
+      type: String
+    - contextPath: JiraAsset.Attachment.CommentOutput
+      description: The comment output of the attachment, if there is one.
+      type: String
+    - contextPath: JiraAsset.Attachment.Url
+      description: URL to the attachment.
+      type: String
+  - arguments:
+    - description: ID of the attachment that will be deleted.
+      name: id
+      required: true
+    name: jira-asset-attachment-remove
+    description: Removes an attachment from a specific object.
+    outputs:
+    - contextPath: JiraAsset.Attachment.ID
+      description: ID of the attachment that was deleted.
+      type: Number
+    - contextPath: JiraAsset.Attachment.Author
+      description: Author of the attachment.
+      type: String
+    - contextPath: JiraAsset.Attachment.MimeType
+      description: The file's MIME type.
+      type: String
+    - contextPath: JiraAsset.Attachment.Filename
+      description: The file's name.
+      type: String
+    - contextPath: JiraAsset.Attachment.Filesize
+      description: The size of the file.
+      type: String
+    - contextPath: JiraAsset.Attachment.Created
+      description: The date in which this attachment was created.
+      type: Date
+    - contextPath: JiraAsset.Attachment.Comment
+      description: The comment attached to the attachment, if there is one.
+      type: String
+    - contextPath: JiraAsset.Attachment.CommentOutput
+      description: The comment output of the attachment, if there is one.
+      type: String
+    - contextPath: JiraAsset.Attachment.Url
+      description: URL to the attachment.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,31 @@
+{
+    "id": "incident_vectradetectionprofile",
+    "version": -1,
+    "modified": "2024-08-05T11:04:19.520448224+05:30",
+    "name": "Vectra Detection Profile",
+    "ownerOnly": false,
+    "cliName": "vectradetectionprofile",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra Host"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

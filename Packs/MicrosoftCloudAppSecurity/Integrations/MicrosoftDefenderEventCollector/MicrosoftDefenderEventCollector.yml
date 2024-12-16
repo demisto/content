@@ -59,8 +59,8 @@ configuration:
   type: 0
   section: Collect
   required: false
-  defaultvalue: '1000'
-  additionalinfo: Due to API limitations, the maximum is 10,000.
+  defaultvalue: '100'
+  additionalinfo: Due to API limitations, the maximum is 100.
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -79,6 +79,15 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Event types to fetch
+  name: event_types_to_fetch
+  section: Collect
+  type: 16
+  defaultvalue: Alerts,Admin activities,Login activities
+  options:
+  - Alerts
+  - Admin activities
+  - Login activities
 description: Collects the events log for alerts and activities provided Microsoft Defender for Cloud Apps API.
 display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector
@@ -87,8 +96,8 @@ script:
   - description: Returns a list of alerts.
     name: microsoft-defender-cloud-apps-get-events
     arguments:
-    - description: The maximum number of alerts per fetch.
-      defaultValue: '10000'
+    - description: The maximum number of alerts per fetch, due to API limitations the max events to fetch is 100.
+      defaultValue: '100'
       isArray: true
       name: limit
     - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
@@ -110,7 +119,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.84760
+  dockerimage: demisto/auth-utils:1.0.0.115527
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2

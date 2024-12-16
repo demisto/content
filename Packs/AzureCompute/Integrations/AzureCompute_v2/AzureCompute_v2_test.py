@@ -3,7 +3,8 @@ import json
 
 from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command, \
     create_vm_parameters, get_network_interface_command, get_public_ip_details_command, \
-    get_all_public_ip_details_command, create_nic_command, get_single_ip_details_from_list_of_ip_details
+    get_all_public_ip_details_command, create_nic_command, get_single_ip_details_from_list_of_ip_details, \
+    get_vm_command
 
 # test_create_vm_parameters data:
 CREATE_VM_PARAMS_ARGS = {"nic_name": "test-compute-integration-nic",
@@ -70,6 +71,14 @@ VM_LIST_EC = {'Azure.Compute(val.Name && val.Name == obj.Name)': [
      'ProvisioningState': 'Succeeded', 'ResourceGroup': 'resource_group'},
     {'Name': 'vm2_name', 'ID': 'vm2_id', 'Size': 32, 'OS': 'Linux', 'Location': 'westeurope',
      'ProvisioningState': 'Succeeded', 'ResourceGroup': 'resource_group'}]}
+
+SINGLE_VM_EC = {'Azure.Compute(val.Name && val.Name == obj.Name)':
+                {'Name': 'test-vm-1',
+                 'ID': 'aabbccd-123a-123d-a1a1-123aaabb123b',
+                 'Size': 30, 'OS': 'Linux', 'Location': 'westeurope',
+                 'ProvisioningState': 'Succeeded', 'ResourceGroup': 'fake-rg-1', 'Tags': {'owner': 'fake@email.com', 'env': 'dev'}
+                 }
+                }
 
 INTERFACE_EC = {
     'Azure.Network.Interfaces(val.ID && val.ID == obj.ID)':
@@ -227,6 +236,13 @@ def test_list_vms_command(mocker):
     mocker.patch.object(client, 'list_vms', return_value=vms_data)
     command_results = list_vms_command(client, {'resource_group': 'resource_group'}, {})
     assert command_results.to_context()['EntryContext'] == VM_LIST_EC
+
+
+def test_get_vm_command(mocker):
+    vms_data = load_test_data('./test_data/get_vm_command.json')
+    mocker.patch.object(client, 'get_vm', return_value=vms_data)
+    command_results = get_vm_command(client, params={}, args={'virtual_machine_name': 'test-vm-1', 'resource_group': 'fake-rg-1'})
+    assert command_results.to_context().get('Contents').get('tags') == {'owner': 'fake@email.com', 'env': 'dev'}
 
 
 def test_get_network_interface_command(mocker):

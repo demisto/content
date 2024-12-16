@@ -8,7 +8,8 @@ def is_between_hours(value, begin_time, end_time):
     input_time = dateparser.parse(value, settings={'TIMEZONE': 'UTC'}).time()  # type: ignore
     start_time = dateparser.parse(begin_time, settings={'TIMEZONE': 'UTC'}).time()  # type: ignore
     end_time = dateparser.parse(end_time, settings={'TIMEZONE': 'UTC'}).time()  # type: ignore
-
+    if start_time >= end_time:  # if the time range crosses midnight.
+        return start_time <= input_time or input_time <= end_time
     return start_time <= input_time <= end_time
 
 

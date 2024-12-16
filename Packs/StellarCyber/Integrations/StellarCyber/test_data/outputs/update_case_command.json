@@ -1,0 +1,20 @@
+{
+    "outputs": {
+        "_id": "65d5ef5f7d0f9a18d1d7477b",
+        "assignee": "",
+        "created_at": 1708519263554,
+        "created_by": "System",
+        "cust_id": "6aeb2aae7d8d4ef0820136f42d107db4",
+        "modified_at": 1710866249442,
+        "modified_by": "9887e386323148ea8c68d4cf0bc1cdf6",
+        "name": "Proofpoint TAP messagesBlocked: Phishing and 1 other",
+        "size": 2,
+        "status": "New",
+        "tags": [],
+        "ticket_id": 5812,
+        "version": 2,
+        "priority": "High",
+        "incident_score": 1,
+        "assignee_name": "Unassigned"
+    }
+}

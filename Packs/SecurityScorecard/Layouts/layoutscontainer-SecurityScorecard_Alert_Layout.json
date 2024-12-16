@@ -314,46 +314,6 @@
                         "i": "caseinfoid-d1958ba0-dca7-11eb-b7f7-87923feabb22",
                         "items": [
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "scoreimpact",
-                                "height": 22,
-                                "id": "e827e570-dca7-11eb-b7f7-87923feabb22",
-                                "index": 0,
-                                "listId": "caseinfoid-d1958ba0-dca7-11eb-b7f7-87923feabb22",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "grade",
-                                "height": 22,
-                                "id": "ea85d2a0-dca7-11eb-b7f7-87923feabb22",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "score",
-                                "height": 22,
-                                "id": "e5c90de0-dca7-11eb-b7f7-87923feabb22",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "factor",
-                                "height": 22,
-                                "id": "eecd6760-dca7-11eb-b7f7-87923feabb22",
-                                "index": 0,
-                                "listId": "caseinfoid-d1958ba0-dca7-11eb-b7f7-87923feabb22",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "securityscorecardfactor",
                                 "height": 22,

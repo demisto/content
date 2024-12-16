@@ -104,6 +104,14 @@ INCIDENTS = [
     }
 ]
 
+INCIDENTS_IN_CONTEXT = {
+    'XSOARMirror_mirror_reset': {
+        4: True,
+        5: True,
+        6: True,
+    }
+}
+
 INCIDENTS_MIRRORING_PLAYBOOK_ID = [
     {"id": 1,
      "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
@@ -126,19 +134,61 @@ def test_fetch_incidents(mocker):
         - Running the fetch_incidents and getting these incidents.
 
     Then:
-        - Ensure the incidents result and the last_fetch in the LastRun object as expected.
+        - Ensure
+            1. The incidents result and the last_fetch in the LastRun object as expected.
+            2. The integration context is updated as expected.
     """
     mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
+    mock_integration_context = mocker.patch('XSOARmirroring.set_to_integration_context_with_retries')
 
     first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
     client = Client("")
 
     next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, last_fetch=first_fetch,
                                                  first_fetch_time=first_fetch,
-                                                 query='', mirror_direction='None', mirror_tag=[])
+                                                 query='', mirror_direction='None', mirror_tag=[], fetch_incident_history=True)
 
     assert len(incidents_result) == 3
     assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created'])
+    assert mock_integration_context.call_args.kwargs['context'] == {'XSOARMirror_mirror_reset': {1: True, 2: True, 3: True}}
+
+
+def test_fetch_incidents_with_integration_context(mocker):
+    """
+    Given:
+        - List of incidents + List of incident IDs in context (from previous fetch).
+
+    When:
+        - Running the fetch_incidents and getting these incidents.
+
+    Then:
+        - Ensure
+            1. The incidents result and the last_fetch in the LastRun object as expected.
+            2. The integration context is updated as expected.
+    """
+    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
+    mocker.patch('XSOARmirroring.get_integration_context', return_value=INCIDENTS_IN_CONTEXT)
+    mock_integration_context = mocker.patch('XSOARmirroring.set_to_integration_context_with_retries')
+
+    first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
+    client = Client("")
+
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, last_fetch=first_fetch,
+                                                 first_fetch_time=first_fetch,
+                                                 query='', mirror_direction='None', mirror_tag=[], fetch_incident_history=True)
+
+    assert len(incidents_result) == 3
+    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created'])
+    assert mock_integration_context.call_args.kwargs['context'] == {
+        'XSOARMirror_mirror_reset': {
+            4: True,
+            5: True,
+            6: True,
+            1: True,
+            2: True,
+            3: True,
+        }
+    }
 
 
 @pytest.mark.parametrize('mirror_playbook_id', (True, False))

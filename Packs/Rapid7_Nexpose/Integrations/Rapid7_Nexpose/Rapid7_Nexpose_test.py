@@ -1293,7 +1293,7 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str, 
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    results = search_assets_command(client=mock_client, risk_score="8000")
+    results = search_assets_command(client=mock_client, risk_score_higher_than="8000")
 
     assert isinstance(results, list)  # Assure a list of CommandResults has been received instead of a single one.
     # Using `sorted` to not fail test in case the order of CommandResults changes
@@ -1706,3 +1706,380 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, host
         resp_type="json",
         json_data=expected_post_data,
     )
+
+
+@pytest.mark.parametrize(
+    "name, type, color, ip_address_is, match, expected_post_data",
+    [
+        ("test", "custom", "red", "3.3.3.3", "Any",
+            {
+                "name": "test",
+                "type": "custom",
+                "color": "red",
+                "searchCriteria": {
+                    "filters": [
+                        {"field": "ip-address", "operator": "is", "value": "3.3.3.3"}
+                    ],
+                    "match": "Any",
+                },
+            },
+         )
+    ],
+)
+def test_create_tag_command(
+    mocker, mock_client, name, type, color, ip_address_is, match, expected_post_data
+):
+    http_request = mocker.patch.object(
+        BaseClient, "_http_request", return_value={"id": 1}
+    )
+    result = create_tag_command(
+        client=mock_client,
+        name=name,
+        type=type,
+        color=color,
+        ip_address_is=ip_address_is,
+        match=match,
+    )
+
+    http_request.assert_called_with(
+        url_suffix="/tags",
+        method="POST",
+        resp_type="json",
+        json_data=expected_post_data,
+    )
+    assert result.outputs == {"id": 1}
+
+
+@pytest.mark.parametrize("tag_id", [(1)])
+def test_delete_tag_command(mocker, mock_client, tag_id):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    delete_tag_command(client=mock_client, id=tag_id)
+
+    http_request.assert_called_with(
+        url_suffix=f"/tags/{tag_id}",
+        method="DELETE",
+        resp_type="json",
+    )
+
+
+@pytest.mark.parametrize("name, type, tag_id, page_size, api_mock_file", [
+    ("test", "owner", None, "2", "client_get_list_tag"),
+    (None, None, "1", None, "client_get_list_tag")
+])
+def test_get_list_tag_command(mocker, mock_client, name, type, tag_id, page_size, api_mock_file):
+    api_data = load_test_data("api_mock", api_mock_file)
+    paged_http_request = mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
+    http_request = mocker.patch.object(Client, "_http_request", return_value=api_data["resources"][0])
+    get_list_tag_command(client=mock_client, name=name, type=type, id=tag_id, page_size=page_size)
+
+    if tag_id is None:
+        paged_http_request.assert_called_with(
+            url_suffix="/tags",
+            method="GET",
+            resp_type="json",
+            params={"name": "test", "type": "owner"},
+            page_size=2,
+            page=None,
+            limit=None
+        )
+    else:
+        http_request.assert_called_with(
+            url_suffix=f"/tags/{tag_id}",
+            method="GET",
+            resp_type="json"
+        )
+
+
+@pytest.mark.parametrize("tag_id, risk_score_higher_than, match, overwrite", [("1", "8000", "all", "no")])
+def test_update_tag_search_criteria(mocker, mock_client, tag_id, risk_score_higher_than, match, overwrite):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+
+    update_tag_search_criteria_command(client=mock_client, overwrite=overwrite,
+                                       tag_id=tag_id, risk_score_higher_than=risk_score_higher_than, match=match)
+
+    expected_calls = [
+        mocker.call(
+            method="GET",
+            url_suffix=f"/tags/{tag_id}",
+            resp_type="json"
+        ),
+        mocker.call(
+            method="PUT",
+            url_suffix=f"/tags/{tag_id}/search_criteria",
+            json_data={"filters": [{"field": "risk-score", "operator": "is-greater-than", "value": 8000.0}], "match": "all"},
+            resp_type="json"
+        )
+    ]
+
+    http_request.assert_has_calls(expected_calls)
+
+
+@pytest.mark.parametrize("tag_id", [(1)])
+def test_get_list_tag_asset_group_command(mocker, mock_client, tag_id):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [1, 2, 5]})
+    get_list_tag_asset_group_command(client=mock_client, tag_id=tag_id)
+
+    http_request.assert_called_with(
+        method="GET",
+        url_suffix=f"/tags/{tag_id}/asset_groups",
+        resp_type="json"
+    )
+
+
+@pytest.mark.parametrize("tag_id, asset_group_ids", [("1", "2,3,4"),])
+def test_add_tag_asset_group_command(mocker, mock_client, tag_id, asset_group_ids):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [1, 2, 3]})
+
+    add_tag_asset_group_command(client=mock_client, tag_id=tag_id, asset_group_ids=asset_group_ids)
+
+    expected_calls = [
+        mocker.call(
+            method="GET",
+            url_suffix=f"/tags/{tag_id}/asset_groups",
+            resp_type="json"
+        ),
+        mocker.call(
+            method="PUT",
+            url_suffix=f"/tags/{tag_id}/asset_groups",
+            json_data=[1, 2, 3, 4],
+            resp_type="json"
+        )
+    ]
+    http_request.assert_has_calls(expected_calls)
+
+
+@pytest.mark.parametrize("tag_id, asset_group_id", [("1", "5")])
+def test_remove_tag_asset_group_command(mocker, mock_client, tag_id, asset_group_id,):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+
+    remove_tag_asset_group_command(client=mock_client, tag_id=tag_id, asset_group_id=asset_group_id)
+
+    http_request.assert_called_with(
+        method="DELETE",
+        url_suffix=f"/tags/{tag_id}/asset_groups/{asset_group_id}",
+        resp_type="json"
+    )
+
+
+@pytest.mark.parametrize("tag_id, expected_output", [("1", {"resources": [{"id": 12, "sources": ["asset-group"]}]})])
+def test_get_list_tag_asset_command(mocker, mock_client, tag_id, expected_output):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value=expected_output)
+
+    result = get_list_tag_asset_command(client=mock_client, tag_id=tag_id)
+
+    http_request.assert_called_with(
+        method="GET",
+        url_suffix=f"/tags/{tag_id}/assets",
+        resp_type="json"
+    )
+
+    assert result.outputs == expected_output.get("resources")
+
+
+@pytest.mark.parametrize("tag_id, asset_id", [("1", "123")])
+def test_add_tag_asset_command(mocker, mock_client, tag_id, asset_id):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+
+    add_tag_asset_command(client=mock_client, tag_id=tag_id, asset_id=asset_id)
+
+    http_request.assert_called_with(
+        method="PUT",
+        url_suffix=f"/tags/{tag_id}/assets/{asset_id}",
+        resp_type="json"
+    )
+
+
+@pytest.mark.parametrize("tag_id, asset_id", [("1", "123")])
+def test_remove_tag_asset_command(mocker, mock_client, tag_id, asset_id):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+
+    remove_tag_asset_command(client=mock_client, tag_id=tag_id, asset_id=asset_id)
+
+    http_request.assert_called_with(
+        method="DELETE",
+        url_suffix=f"/tags/{tag_id}/assets/{asset_id}",
+        resp_type="json"
+    )
+
+
+@pytest.mark.parametrize("target_type, site_id, assets, asset_group_ids", [
+    ("included", "1", "8.8.8.8,www", None),  # test add included asset
+    ("included", "2", None, "789,612"),  # test add included asset group
+    ("excluded", "1", "8.8.8.8,www", None),  # test add excluded asset
+    ("excluded", "2", None, "789,612")  # test add excluded asset group
+])
+def test_add_site_asset_command(mocker, mock_client, site_id, target_type, assets, asset_group_ids):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+
+    add_site_asset_command(client=mock_client, target_type=target_type, site_id=site_id,
+                           assets=assets, asset_group_ids=asset_group_ids)
+
+    if assets is not None:
+        http_request.assert_called_with(
+            method="POST",
+            url_suffix=f"/sites/{site_id}/{target_type}_targets",
+            json_data=["8.8.8.8", "www"],
+            resp_type='json'
+        )
+    else:
+        http_request.assert_called_with(
+            method="PUT",
+            url_suffix=f"/sites/{site_id}/{target_type}_asset_groups",
+            json_data=[789, 612],
+            resp_type='json',
+        )
+
+
+@pytest.mark.parametrize("target_type, site_id, assets, asset_group_ids", [
+    ("included", "1", "8.8.8.8,www", None),  # test remove included asset
+    ("included", "2", None, "789,612"),  # test remove included asset group
+    ("excluded", "1", "8.8.8.8,www", None),  # test remove excluded asset
+    ("excluded", "2", None, "789,612")  # test remove excluded asset group
+])
+def test_remove_site_asset_command(mocker, mock_client, target_type, site_id, assets, asset_group_ids):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+
+    remove_site_asset_command(client=mock_client, target_type=target_type, site_id=site_id,
+                              assets=assets, asset_group_ids=asset_group_ids)
+
+    if assets:
+        http_request.assert_called_with(
+            method="DELETE",
+            url_suffix=f"/sites/{site_id}/{target_type}_targets",
+            json_data=["8.8.8.8", "www"],
+            resp_type='json'
+        )
+    else:
+        http_request.assert_called_with(
+            method="DELETE",
+            url_suffix=f"/sites/{site_id}/{target_type}_asset_groups",
+            json_data=[789, 612],
+            resp_type='json'
+        )
+
+
+@pytest.mark.parametrize("site_id, asset_type, target_type, expected_url_suffix", [
+    ("1", "assets", "included", "/sites/1/included_targets"),
+    ("1", "asset_groups", "included", "/sites/1/included_asset_groups"),
+    ("1", "assets", "excluded", "/sites/1/excluded_targets"),
+    ("1", "asset_groups", "excluded", "/sites/1/excluded_asset_groups")
+])
+def test_list_site_assets_command(mocker, mock_client, site_id, asset_type, target_type, expected_url_suffix):
+    response_data = (
+        {"addresses": ["1.1.1.1", "www"]}
+        if asset_type == "assets"
+        else {"resources": [{
+            "assets": 768,
+            "description": "Assets with unacceptable high risk required immediate remediation.",
+            "id": 61,
+            "links": [],
+            "name": "High Risk Assets",
+            "riskScore": 4457823.78,
+            "searchCriteria": {},
+            "type": "dynamic",
+            "vulnerabilities": {},
+        }]}
+    )
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value=response_data)
+
+    list_site_assets_command(client=mock_client, site_id=site_id, asset_type=asset_type, target_type=target_type)
+
+    http_request.assert_called_with(
+        method="GET",
+        url_suffix=expected_url_suffix,
+        resp_type="json"
+    )
+
+
+@pytest.mark.parametrize("kwargs, expected_output", [
+    ({
+        "ip_address_is": "192.168.1.1",
+        "host_name_is": "hostname1",
+        "risk_score_higher_than": "70",
+        "vulnerability_title_contains": "vuln-title",
+        "query": "ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost",
+        "site_id_in": "1,2",
+        "site_name_in": "site1"
+    }, [
+        "ip-address is 192.168.1.1",
+        "host-name is hostname1",
+        "risk-score is-greater-than 70",
+        "vulnerability-title contains vuln-title",
+        "ip-address in-range 192.0.2.0,192.0.2.1",
+        "host-name is myhost",
+        "site-id in 1,2,site1_Id"
+    ])])
+def test_parse_filters(mocker, mock_client, kwargs, expected_output):
+    mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [{"name": "site1", "id": "site1_Id"}]})
+
+    result = parse_asset_filters(client=mock_client, **kwargs)
+
+    assert result == expected_output
+
+
+@pytest.mark.parametrize(
+    "name, type, description, ip_address_is, match, expected_post_data",
+    [
+        ("test", "dynamic", "description test", "1.1.1.1", "Any",
+            {
+                "name": "test",
+                "type": "dynamic",
+                "description": "description test",
+                "searchCriteria": {
+                    "filters": [
+                        {"field": "ip-address", "operator": "is", "value": "1.1.1.1"}
+                    ],
+                    "match": "Any",
+                },
+            },
+         )
+    ],
+)
+def test_create_asset_group_command(mocker, mock_client, name, type, description, ip_address_is, match, expected_post_data):
+    http_request = mocker.patch.object(
+        BaseClient, "_http_request", return_value={"id": 1}
+    )
+    result = create_asset_group_command(
+        client=mock_client,
+        name=name,
+        type=type,
+        description=description,
+        ip_address_is=ip_address_is,
+        match=match,
+    )
+    http_request.assert_called_with(
+        url_suffix="/asset_groups",
+        method="POST",
+        resp_type="json",
+        json_data=expected_post_data,
+    )
+    assert result.outputs == {"id": 1}
+
+
+@pytest.mark.parametrize("name, type, group_id, limit, api_mock_file", [
+    ("test", "dynamic", None, "2", "client_get_asset_groups"),
+    (None, None, "1", None, "client_get_asset_groups")
+])
+def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limit, api_mock_file):
+    api_data = load_test_data("api_mock", api_mock_file)
+    paged_http_request = mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
+    http_request = mocker.patch.object(Client, "_http_request", return_value=api_data[0])
+    get_list_asset_group_command(client=mock_client, group_name=name, type=type, group_id=group_id, limit=limit)
+
+    if group_id is None:
+        paged_http_request.assert_called_with(
+            url_suffix="/asset_groups",
+            method="GET",
+            resp_type="json",
+            params={"name": "test", "type": "dynamic"},
+            page_size=None,
+            page=None,
+            limit=2,
+            sort=None
+        )
+    else:
+        http_request.assert_called_with(
+            url_suffix=f"/asset_groups/{group_id}",
+            method="GET",
+            resp_type="json"
+        )

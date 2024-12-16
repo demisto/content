@@ -95,7 +95,7 @@ tasks:
       - "29"
     scriptarguments:
       gridfield:
-        simple: asmserviceowner
+        simple: asmserviceownerunrankedraw
       keys:
         simple: name,email,source,timestamp
       val1:

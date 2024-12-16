@@ -43,6 +43,28 @@ def test_fetch_indicators_command(category_list, expected_indicators):
         assert len(indicators) == expected_indicators
 
 
+def test_fetch_indicators_command__exclude_enrichment():
+    """
+    Given:
+        - Exclude enrichment parameter is used
+    When:
+        - Calling the fetch_indicators_command
+    Then:
+        - The indicators should include the enrichmentExcluded field if exclude is True.
+    """
+    with requests_mock.Mocker() as mock:
+        url_dict = {
+            "FeedURL": 'https://endpoints.office.com/endpoints/worldwide',
+            "Region": 'Worldwide',
+            "Service": 'Any'
+        }
+        mock.get(url_dict.get('FeedURL'), json=RESPONSE_DATA)
+        client = Client([url_dict], ALL_CATEGORY_LIST)
+        indicators = fetch_indicators_command(client, enrichment_excluded=True)
+        for ind in indicators:
+            assert ind['enrichmentExcluded']
+
+
 @pytest.mark.parametrize('command, args, response, length', [
     (get_indicators_command, {'limit': 2, 'indicator_type': 'IPs'}, RESPONSE_DATA, 4),
     (get_indicators_command, {'limit': 2, 'indicator_type': 'URLs'}, RESPONSE_DATA, 6),
@@ -131,9 +153,8 @@ class TestClient(unittest.TestCase):
             category_list = ['category1']
             client = Client(urls_list, category_list)
             result = client.build_iterator()
-            self.assertEqual(result, [
-                {'ips': ['1.1.1.1'], 'category': 'category1', 'Region': 'Region1', 'Service': 'Service1',
-                 'FeedURL': 'http://example.com'}])
+            assert result == [{'ips': ['1.1.1.1'], 'category': 'category1',
+                               'Region': 'Region1', 'Service': 'Service1', 'FeedURL': 'http://example.com'}]
 
     def test_build_iterator_connection_error(self):
         # Mock the requests library to raise a ConnectionError

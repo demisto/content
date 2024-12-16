@@ -6,7 +6,7 @@ configuration:
 - name: url
   display: Server URL
   required: true
-  defaultvalue: https://jbxcloud.joesecurity.org/api
+  defaultvalue: https://jbxcloud.joesecurity.org
   type: 0
 - name: credentials
   displaypassword: API Key
@@ -27,6 +27,12 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- name: onprem
+  display: On-Premise
+  type: 8
+  additionalinfo: Only use Features that are available in On-Premise installations
+  required: false
+  defaultvalue: 'false'
 - name: create_relationships
   display: Create relationships
   type: 8
@@ -619,6 +625,7 @@ script:
     arguments:
     - name: submission_ids
       description: A comma-separated list of submission IDs.
+      required: true
     - name: full_display
       description: When set to true, indicators information, including their DBot Scores, will be displayed.
       defaultValue: "true"
@@ -753,6 +760,8 @@ script:
     - name: entry_id
       description: The War Room entry ID of the file to submit.
       required: true
+    - name: file_name
+      description: The filename of the submitted sample.
     - name: full_display
       description: When is set to true, indicators information, including their DBot Scores, will be displayed.
       defaultValue: "true"
@@ -882,6 +891,7 @@ script:
     - name: export_to_jbxview
       description: Whether to export the analysis to JBXView.
       defaultValue: 'false'
+      deprecated: true
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'
@@ -1144,6 +1154,7 @@ script:
     - name: export_to_jbxview
       description: Whether to export the analysis to JBXView.
       defaultValue: 'false'
+      deprecated: true
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'
@@ -1252,7 +1263,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.76365
+  dockerimage: demisto/vendors-sdk:1.0.0.115493
 fromversion: 6.8.0
 tests:
-- testplaybook- JoeSecuirtyV2
+- testplaybook-JoeSecuirtyV2

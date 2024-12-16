@@ -1,0 +1,37 @@
+{
+    "name": "Azure Logs",
+    "description": "Normalize various Azure Logs to the Cortex Data Model (XDM) schema, including Azure Entra ID events ingested via the Office 365 data source, and Azure Logs ingested via the Azure Event Hub data source.",
+    "support": "xsoar",
+    "currentVersion": "1.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Cloud Service Provider"
+    ],
+    "tags": [
+        "IAM",
+        "marketplacev2:Data Source"
+    ],
+    "useCases": [
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "AAD",
+        "Azure",
+        "Azure Logs",
+        "Active Directory",
+        "Entra",
+        "EntraID",
+        "Entra ID"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ],
+    "dependencies": {
+        "AzureFirewall": {
+            "mandatory": false,
+            "display_name": "Azure Firewall"
+        }
+    }
+}

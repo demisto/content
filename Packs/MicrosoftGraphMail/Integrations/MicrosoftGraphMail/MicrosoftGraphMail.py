@@ -158,6 +158,7 @@ def main():  # pragma: no cover
         display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
         mark_fetched_read = argToBoolean(params.get("mark_fetched_read", "false"))
         look_back = arg_to_number(params.get('look_back', 0))
+        legacy_name = argToBoolean(params.get('legacy_name', False))
 
         client: MsGraphMailClient = MsGraphMailClient(
             self_deployed=self_deployed,
@@ -173,6 +174,7 @@ def main():  # pragma: no cover
             folder_to_fetch=folder_to_fetch,
             first_fetch_interval=first_fetch_interval,
             emails_fetch_limit=emails_fetch_limit,
+            legacy_name=legacy_name,
 
             timeout=timeout,
             endpoint=endpoint,
@@ -181,7 +183,8 @@ def main():  # pragma: no cover
             display_full_email_body=display_full_email_body,
             mark_fetched_read=mark_fetched_read,
             look_back=look_back,
-            managed_identities_client_id=managed_identities_client_id)
+            managed_identities_client_id=managed_identities_client_id
+        )
 
         command = demisto.command()
         LOG(f'Command being called is {command}')

@@ -1,0 +1,46 @@
+commonfields:
+  id: PCComputeContainerComplianceIssuesButton
+  version: -1
+name: PCComputeContainerComplianceIssuesButton
+script: ''
+type: python
+tags: []
+comment: "This script runs the \"prisma-cloud-compute-container-scan-results-list\" command for a specific container ID and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called \"Detailed Compliance Issues\" showing the issues details.\nReturns the following fields for each compliance ID:\n- Compliance ID\n- Cause\n- Severity\n- Title\n- Description."
+enabled: true
+args:
+- name: container_id
+  required: true
+  description: The container ID to be enriched.
+- name: compliance_ids
+  description: A comma-separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
+outputs:
+- contextPath: PrismaCloudCompute.PCC_ContainerComplianceIssues.container_id
+  description: The container ID.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ContainerComplianceIssues.compliance_issues
+  description: A list of the container's compliance issues.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ContainerComplianceIssues.Cause
+  description: Additional information regarding the root cause for the vulnerability.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ContainerComplianceIssues.ComplianceID
+  description: ID of the violation.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ContainerComplianceIssues.Severity
+  description: Textual representation of the vulnerability's severity.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ContainerComplianceIssues.Title
+  description: Compliance issue title.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ContainerComplianceIssues.Description
+  description: Compliance issue description.
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

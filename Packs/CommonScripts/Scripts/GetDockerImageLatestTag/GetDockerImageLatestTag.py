@@ -30,7 +30,7 @@ def parse_www_auth(www_auth):
     return (match.group(1), match.group(2))
 
 
-def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
+def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY, gateway_creds=""):
     """
     Authenticate to the docker service. Return an authentication token if authentication is required.
     """
@@ -55,9 +55,12 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
         else:
             demisto.info('Failed extracting www-authenticate header from registry: {}, final url: {}'.format(
                 registry, res.url))
+        headers = ACCEPT_HEADER.copy()
+        if gateway_creds and registry != DEFAULT_REGISTRY:
+            headers['Authorization'] = "Basic {}".format(gateway_creds)
         res = requests.get(
             '{}?scope=repository:{}:pull&service={}'.format(realm, image_name, service),
-            headers=ACCEPT_HEADER,
+            headers=headers,
             timeout=TIMEOUT,
             verify=verify_ssl
         )
@@ -143,12 +146,13 @@ def main():
         del os.environ['https_proxy']
     verify_ssl = demisto.args().get('trust_any_certificate') != 'yes'
     docker_full_name = demisto.args()['docker_image']
+    gateway_creds = demisto.args().get('creds_for_opp', "")
     registry = DEFAULT_REGISTRY
     image_name = docker_full_name
     if docker_full_name.count('/') > 1:
         registry, image_name = docker_full_name.split('/', 1)
     try:
-        auth_token = docker_auth(image_name, verify_ssl, registry)
+        auth_token = docker_auth(image_name, verify_ssl, registry, gateway_creds)
         headers = ACCEPT_HEADER.copy()
         if auth_token:
             headers['Authorization'] = "Bearer {}".format(auth_token)

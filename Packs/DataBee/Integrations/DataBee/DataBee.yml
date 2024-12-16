@@ -1,0 +1,711 @@
+category: Analytics & SIEM
+commonfields:
+  id: DataBee
+  version: -1
+configuration:
+  - name: url
+    display: Base URL
+    required: true
+    type: 0
+    section: Connect
+  - display: Incident type
+    name: incidentType
+    type: 13
+    defaultvalue: DataBee Finding
+    section: Connect
+    required: false
+  - name: credentials
+    display: Username
+    displaypassword: Password
+    required: true
+    type: 9
+    section: Connect
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    type: 8
+    section: Connect
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    type: 8
+    section: Connect
+  - display: Additional findings context outputs
+    name: additional_context
+    type: 16
+    required: false
+    additionalinfo: Choose additional context data to retrieve from the API. Be aware that requesting extensive context data may impact your server's performance.
+    options:
+      - Finding.Evidence
+      - Finding.Finding.RelatedEvent
+      - Finding.Finding.Remediation
+      - Finding.Metadata
+      - Finding.Observable
+      - Finding.Process
+    defaultvalue:
+  - name: isFetch
+    display: Fetch incidents
+    required: false
+    defaultvalue: "false"
+    type: 8
+    section: Collect
+  - name: max_fetch
+    display: Maximum incidents per fetch
+    required: true
+    defaultvalue: 10
+    type: 0
+    section: Collect
+  - name: first_fetch
+    display: First fetch timestamp
+    additionalinfo: Timestamp in ISO format or <number> <time unit>, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+    required: true
+    defaultvalue: 1 day
+    type: 0
+    section: Collect
+  - name: severity
+    display: Severity Filter
+    additionalinfo: Filter findings based on their severity level. For example, a level such as "High" is acceptable.
+    required: false
+    type: 0
+    section: Collect
+  - name: impact
+    display: Impact Filter
+    additionalinfo: Filter findings based on their impact level. For example, a level such as "High" is acceptable.
+    required: false
+    type: 0
+    section: Collect
+description: DataBee, from Comcast Technology Solutions, is a cloud-native security and compliance data fabric that ingests data from multiple disparate feeds and then aggregates, compresses, standardizes, enriches, correlates, and normalizes the data before transferring a full time-series dataset to your data lake of choice.
+display: DataBee
+name: DataBee
+script:
+  commands:
+    - name: databee-device-search
+      description: Search for devices based on filters.
+      arguments:
+        - name: page
+          description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
+          defaultValue: 0
+        - name: page_size
+          description: The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0.
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: 50
+        - name: search_operator
+          description: The search operator applied to filter criteria such as the hostname, MAC address, name, and IP address. It accommodates list objects for filter values, enabling the specification of multiple filter values separated by commas. Specifically, when using the "In" or "Not In" operators, you can input values in formats like "test.com" for a single entry or "test.com,test2.com" for multiple entries.
+          auto: PREDEFINED
+          predefined:
+            - In
+            - Not In
+        - name: hostname
+          description: 'Filter devices based on their hostname, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "test.com" is acceptable. For "In" or "Not In," you can specify a single hostname or a list of hostnames separated by commas, such as "test.com" or "test.com,test2.com".'
+          isArray: true
+        - name: uid
+          description: 'Filter devices based on their UID, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single ID such as "aa3437c2-a938-419e-95ea-15c04e8bdb98" is acceptable. For "In" or "Not In," you can specify a single hostname or a list of hostnames separated by commas, such as "aa3437c2-a938-419e-95ea-15c04e8bdb98" or "aa3437c2-a938-419e-95ea-15c04e8bdb98,ed3437c2-a938-419e-95ea-15c04e8bdb98".'
+          isArray: true
+        - name: mac
+          description: 'Filter devices based on their MAC address, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "00-00-00-00-00-00" is acceptable. For "In" or "Not In," you can specify a single MAC address or a list of MAC addresses separated by commas, such as "00-00-00-00-00-00" or "00-00-00-00-00-00,11-11-11-11-11-11".'
+          isArray: true
+        - name: name
+          description: 'Filter devices based on their name, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "test" is acceptable. For "In" or "Not In," you can specify a single name or a list of names separated by commas, such as "test" or "test,test2".'
+          isArray: true
+        - name: ip
+          description: 'Filter devices based on their IP address, using one of the following operators: "CIDR Block", "In", or "Not In". The default is "CIDR Block”.Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "1.2.3.4" is acceptable. For "In" or "Not In," you can specify a single IP address or a list of IP addresses separated by commas, such as "1.2.3.4,1.2.3.5".'
+          isArray: true
+        - name: query
+          description: Insert a query instead of using the filters. The format should be {filter} {operator} {value}. “and” separates between queries. Wrap with brackets when the value has special letters. Using this argument overrides the other filter arguments. For example, hostname contains test and mac in (00-00-00-00-00-00) and domain in (test.com).
+        - name: time_range
+          description: "Filter to devices with a verbal time range. The verbal field are: X Minutes, X Hour, X Days, X Months. For example, 1 Week. Using the time range automatically cancels the start time and end time arguments."
+        - name: start_time
+          description: Filter to devices that was created between the start_time and the end_time arguments. For example, 2024-03-26T11:03:18Z.
+        - name: end_time
+          description: Filter to devices that was created between the start_time and the end_time arguments. For example, 2024-03-26T11:03:18Z.
+      outputs:
+        - contextPath: DataBee.Device.uid
+          description: A unique identifier for the device.
+          type: String
+        - contextPath: DataBee.Device.type
+          description: The type of the device.
+          type: String
+        - contextPath: DataBee.Device.region
+          description: The region where the virtual machine is located. For example, an AWS Region.
+          type: String
+        - contextPath: DataBee.Device.owner
+          description: The primary owner of a device.
+          type: String
+        - contextPath: DataBee.Device.name
+          description: The alternate device name.
+          type: String
+        - contextPath: DataBee.Device.ip
+          description: The device IP address, in either IPv4 or IPv6 format.
+          type: String
+        - contextPath: DataBee.Device.mac
+          description: The device MAC address.
+          type: String
+        - contextPath: DataBee.Device.interface_uid
+          description: The unique identifier of the network interface.
+          type: String
+        - contextPath: DataBee.Device.interface_name
+          description: The name of the network interface (e.g., eth2).
+          type: String
+        - contextPath: DataBee.Device.instance_uid
+          description: The unique identifier of a VM instance.
+          type: String
+        - contextPath: DataBee.Device.hostname
+          description: The device hostname.
+          type: String
+        - contextPath: DataBee.Device.end_time
+          description: The end time of when a particular state of the user was valid.
+          type: String
+        - contextPath: DataBee.Device.start_time
+          description: The start time when a particular state of the user became valid.
+          type: String
+        - contextPath: DataBee.Device.modified_time
+          description: The time when the device was modified.
+          type: String
+    - name: databee-user-search
+      description: Search for users based on filters.
+      arguments:
+        - name: page
+          description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
+          defaultValue: 0
+        - name: page_size
+          description: The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0.
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: 50
+        - name: search_operator
+          description: The search operator applied to filter criteria such as the email address, full name, and name. It accommodates list objects for filter values, enabling the specification of multiple filter values separated by commas. Specifically, when using the "In" or "Not In" operators, you can input values in formats like "test" for a single entry or "test,test2" for multiple entries.
+          auto: PREDEFINED
+          predefined:
+            - In
+            - Not In
+        - name: email_address
+          description: 'Filter users based on their email address, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "test@test.com" is acceptable. For "In" or "Not In," you can specify a single email address or a list of email addresses separated by commas, such as "test@test.com" or "test@test.com,test2@test.com".'
+          isArray: true
+        - name: full_name
+          description: 'Filter users based on their full name, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "Bob Dan" is acceptable. For "In" or "Not In," you can specify a single full name or a list of full names separated by commas, such as "Bob Dan" or "Bob Dan,Alice Dan".'
+          isArray: true
+        - name: name
+          description: 'Filter users based on their name, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single hostname such as "Bob" is acceptable. For "In" or "Not In," you can specify a single name or a list of names separated by commas, such as "Bob" or "Bob,Alice".'
+          isArray: true
+        - name: query
+          description: Insert a query instead of using the filters. The format should be {filter} {operator} {value}. “and” separates between queries. Wrap with brackets when the value has special letters. Using this argument overrides the other filter arguments. For example, hostname contains test and mac in (00-00-00-00-00-00).
+        - name: time_range
+          description: "Filter to devices with a verbal time range. The verbal field are: X Minutes, X Hour, X Days, X Months. For example, 1 Week. Using the time range automatically cancels the start time and end time arguments."
+        - name: start_time
+          description: Filter to devices that was created between the start_time and the end_time arguments. For example, 2024-03-26T11:03:18Z.
+        - name: end_time
+          description: Filter to devices that was created between the start_time and the end_time arguments. For example, 2024-03-26T11:03:18Z.
+      outputs:
+        - contextPath: DataBee.User.uid
+          description: The unique user identifier.
+          type: String
+        - contextPath: DataBee.User.type
+          description: The type of the user. For example, System, AWS IAM User, etc.
+          type: String
+        - contextPath: DataBee.User.name
+          description: The username.
+          type: String
+        - contextPath: DataBee.User.start_time
+          description: The start time when a particular state of the user became valid.
+          type: String
+        - contextPath: DataBee.User.end_time
+          description: The end time of when a particular state of the user was valid.
+          type: String
+        - contextPath: DataBee.User.modified_time
+          description: The time when the user was modified.
+          type: String
+    - name: databee-finding-search
+      description: Search for security findings based on filters.
+      arguments:
+        - name: page
+          description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
+          defaultValue: 0
+        - name: page_size
+          description: The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0.
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: 50
+        - name: search_operator
+          description: The search operator applied to filter criteria such as the analytic name, confidence level, device environment, device risk level, impact, risk level, and severity. It accommodates list objects for filter values, enabling the specification of multiple filter values separated by commas. Specifically, when using the "In" or "Not In" operators, you can input values in formats like "High" for a single entry or "High,Low" for multiple entries.
+          auto: PREDEFINED
+          predefined:
+            - In
+            - Not In
+        - name: analytic_name
+          description: 'Filter findings based on their analytic name, using one of the following operators: "In", or "Not In". The default operator is "In". You can specify a single analytic name or a list of analytic names separated by commas, such as "about" or "about, matter".'
+          isArray: true
+        - name: confidence
+          description: 'Filter findings based on their confidence level, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single confidence level such as "High" is acceptable. For "In" or "Not In," you can specify a single confidence level or a list of confidence levels separated by commas, such as "High" or "High,Medium".'
+          auto: PREDEFINED
+          predefined:
+            - High
+            - Medium
+            - Low
+            - Other
+            - Unknown
+            - Stable
+          isArray: true
+        - name: device_environment
+          description: 'Filter findings based on their device environment, using one of the following operators: "In", or "Not In". The default operator is "In". You can specify a single device environment or a list of device environments separated by commas, such as "Development" or "Development,Production".'
+          isArray: true
+        - name: device_risk_level
+          description: 'Filter findings on their device environment, using one of the following operators: "In", or "Not In". The default operator is "In". You can specify a single device risk level or a list of device risk levels separated by commas, such as "Critical" or "Critical,High".'
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Info
+          isArray: true
+        - name: impact
+          description: 'Filter findings based on their impact level, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single impact level such as "High" is acceptable. For "In" or "Not In," you can specify a single impact level or a list of impact levels separated by commas, such as "High" or "High,Medium".'
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+            - Other
+            - Unknown
+          isArray: true
+        - name: risk_level
+          description: 'Filter findings based on their risk level, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single risk level such as "High" is acceptable. For "In" or "Not In," you can specify a single risk level or a list of risk levels separated by commas, such as "High" or "High,Medium".'
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+            - Info
+          isArray: true
+        - name: severity
+          description: 'Filter findings based on their severity level, using one of the following operators: "Contains", "In", or "Not In". The default operator is "Contains". Depending on the selected operator, the format for the value varies. For "Contains", a single severity level such as "High" is acceptable. For "In" or "Not In," you can specify a single severity level or a list of severity levels separated by commas, such as "High" or "High,Medium".'
+          auto: PREDEFINED
+          predefined:
+            - Fatal
+            - Critical
+            - High
+            - Medium
+            - Low
+            - Information
+            - Other
+            - Unknown
+          isArray: true
+        - name: query
+          description: Insert a query instead of using the filters. The format should be {filter} {operator} {value}. “and” separates between queries. Wrap with brackets when the value has special letters. Using this argument overrides the other filter arguments. For example, hostname contains test and mac in (00-00-00-00-00-00).
+          isArray: true
+        - name: time_range
+          description: "Filter to devices with a verbal time range. The verbal field are: X Minutes, X Hour, X Days, X Months. For example, 1 Week. Using the time range automatically cancels the start time and end time arguments."
+        - name: start_time
+          description: Filter to devices that was created between the start_time and the end_time arguments. For example, 2024-03-26T11:03:18Z.
+        - name: end_time
+          description: Filter to devices that was created between the start_time and the end_time arguments. For example, 2024-03-26T11:03:18Z.
+      outputs:
+        - contextPath: DataBee.Finding.device_id
+          description: Unique identifier of the device involved in the finding.
+          type: Integer
+
+        - contextPath: DataBee.Finding.user_id
+          description: Unique identifier of the user involved in the finding.
+          type: Integer
+
+        - contextPath: DataBee.Finding.activity_id
+          description: Identifier for the activity associated with the finding.
+          type: Integer
+
+        - contextPath: DataBee.Finding.activity_name
+          description: Name of the activity related to the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Analytic.category
+          description: Category of the analytics used in the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Analytic.desc
+          description: Detailed description of the analytic approach or rule.
+          type: String
+
+        - contextPath: DataBee.Finding.Analytic.name
+          description: Name of the analytic rule or method used.
+          type: String
+
+        - contextPath: DataBee.Finding.Analytic.type
+          description: Type of analytic method employed, such as rule-based or heuristic.
+          type: String
+
+        - contextPath: DataBee.Finding.Analytic.uid
+          description: Unique identifier for the specific analytic method used.
+          type: String
+
+        - contextPath: DataBee.Finding.Attack.Tactic.id
+          description: Unique identifier for each tactic involved in the attack.
+          type: String
+
+        - contextPath: DataBee.Finding.Attack.Tactic.name
+          description: Name of the tactic used in the attack.
+          type: String
+
+        - contextPath: DataBee.Finding.Attack.Tactic.uid
+          description: Unique identifier (UID) of the tactic used in the attack.
+          type: String
+
+        - contextPath: DataBee.Finding.Attack.Technique.id
+          description: Unique identifier for the technique used within the attack.
+          type: String
+
+        - contextPath: DataBee.Finding.Attack.Technique.name
+          description: Name of the technique employed in the attack.
+          type: String
+
+        - contextPath: DataBee.Finding.Attack.Technique.uid
+          description: Unique identifier (UID) for the technique used in the attack.
+          type: String
+
+        - contextPath: DataBee.Finding.category_name
+          description: Name of the category to which the finding is classified.
+          type: String
+
+        - contextPath: DataBee.Finding.CisCsc.control
+          description: Description of the control measure from CIS CSC associated with the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.CisCsc.id
+          description: Identifier for the CIS CSC control relevant to the finding.
+          type: Integer
+
+        - contextPath: DataBee.Finding.CisCsc.version
+          description: Version information of the CIS CSC control relevant to the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.class_name
+          description: Classification of the finding that indicates its nature and type.
+          type: String
+
+        - contextPath: DataBee.Finding.confidence
+          description: Confidence level of the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.data_source
+          description: List of data sources that provided information for the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Device.ip
+          description: IP address of the device associated with the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Device.mac
+          description: MAC address of the device associated with the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Device.hostname
+          description: Hostname of the device involved in the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Device.os
+          description: Operating system running on the device at the time of the finding.
+          type: Unknown
+
+        - contextPath: DataBee.Finding.duration
+          description: Duration over which the finding was active or observed.
+          type: String
+
+        - contextPath: DataBee.Finding.end_time
+          description: Timestamp marking the end of the occurrence or observation of the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Evidence
+          description: Comprehensive details of all evidence related to the finding, documenting the activities, actors, devices, and processes involved.
+          type: Unkonwn
+
+        - contextPath: DataBee.Finding.Finding.created_time
+          description: The timestamp when the finding was initially created in the monitoring or detection system.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.desc
+          description: A brief description of the finding, outlining the main observations or conclusions.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.first_seen_time
+          description: The first time the issue or behavior described in the finding was observed.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.last_seen_time
+          description: The last time the issue or behavior described in the finding was observed, marking the duration of its known activity.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.modified_time
+          description: The timestamp when the finding record was last updated or modified.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.product_uid
+          description: Unique identifier for the product or system associated with the finding, which can be used to track back to specific tools or systems.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.RelatedEvent
+          description: Any events that are related to the finding, providing connections or correlations with other incidents or activities.
+          type: Unkonwn
+
+        - contextPath: DataBee.Finding.Finding.Remediation
+          description: Remediation steps or recommendations provided to address or mitigate the finding.
+          type: Unkonwn
+
+        - contextPath: DataBee.Finding.Finding.src_url
+          description: A URL or link to more detailed information or a full report concerning the finding, often pointing to an internal knowledge base or external resource.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.supporting_data
+          description: Supporting data or additional documentation that helps to substantiate or explain the finding, which may include logs, images, or other forensic materials.
+          type: Unknown
+
+        - contextPath: DataBee.Finding.Finding.title
+          description: The title of the finding, which typically summarizes the issue or key point in a concise format.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.types_
+          description: The types or categories of the finding, which help to classify the nature of the issue within established frameworks or standards.
+          type: String
+
+        - contextPath: DataBee.Finding.Finding.uid
+          description: A unique identifier assigned to the finding, used for tracking and management within the system.
+          type: String
+
+        - contextPath: DataBee.Finding.id
+          description: Unique identifier of the finding.
+          type: Integer
+
+        - contextPath: DataBee.Finding.impact
+          description: Describes the impact of the finding on the organization or system.
+          type: String
+
+        - contextPath: DataBee.Finding.impact_score
+          description: Numerical score representing the severity of the impact from the finding.
+          type: Integer
+
+        - contextPath: DataBee.Finding.KillChain
+          description: Identifies the stages of the kill chain that the finding relates to.
+          type: String
+
+        - contextPath: DataBee.Finding.message
+          description: Summary or detailed message explaining the finding.
+          type: String
+
+        - contextPath: DataBee.Finding.Metadata
+          description: Metadata associated with the finding that provides additional context or background information.
+          type: Unkonwn
+
+        - contextPath: DataBee.Finding.Observable.name
+          description: The name or identifier of the observable item, providing a descriptor of the observable's nature or purpose.
+          type: String
+
+        - contextPath: DataBee.Finding.Observable.Reputation
+          description: Reputation details associated with the observable, including scores and source information.
+          type: Unkonwn
+
+        - contextPath: DataBee.Finding.Observable.type
+          description: The type of observable, such as IP address, URL, file hash, etc., classifying the observable's format or domain.
+          type: String
+
+        - contextPath: DataBee.Finding.Observable.value
+          description: The value of the observable, which could be an IP address, a file hash, a URL, or any other relevant data point.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.cmd_line
+          description: The command line used to initiate the process, providing insights into the process's function or purpose.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.container
+          description: Identifies whether the process is running within a container, specifying the container environment if applicable.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.created_time
+          description: The timestamp when the process was initiated or first observed.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File
+          description: Details about files associated with the process, including names, paths, and security details.
+          type: Unkonwn
+
+        - contextPath: DataBee.Finding.Process.File.company_name
+          description: The name of the company associated with the file, often indicating software ownership or authorship.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.desc
+          description: A description of the file's purpose or functionality.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.Hashes
+          description: Contains hash values of the file for integrity and identification purposes, such as MD5, SHA-1, or SHA-256.
+          type: Unkonwn
+
+        - contextPath: DataBee.Finding.Process.File.is_system
+          description: Indicates whether the file is a system file, helping to identify its criticality and origin within the operating system.
+          type: Boolean
+
+        - contextPath: DataBee.Finding.Process.File.md5
+          description: MD5 hash of the file, used for verifying the file's integrity and for quick identification in threat intelligence databases.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.mime_type
+          description: MIME type of the file, describing the file's format and potentially its intended use or behavior.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.modified_time
+          description: Timestamp of the last modification made to the file, providing context for its use or alteration.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.name
+          description: Name of the file involved in the process, which may indicate its functionality or relevance.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.owner
+          description: Owner of the file, which could be a user name or system account under whose authority the file operates.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.parent_folder
+          description: The directory in which the file resides, providing context for its location within the file system.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.path
+          description: Full path to the file, detailing its exact location on the file system.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.security_descriptor
+          description: Security settings and permissions associated with the file, outlining access controls and protection mechanisms.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.sha1
+          description: SHA-1 hash of the file, used for more secure integrity checking compared to MD5.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.sha256
+          description: SHA-256 hash of the file, providing a highly reliable method for verifying the file's integrity.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.sha512
+          description: SHA-512 hash of the file, offering an even more robust hashing option for security purposes.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.signature
+          description: Information about any digital signatures attached to the file, which can verify its authenticity and source.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.size
+          description: The size of the file in bytes, providing a basic measure of its content and potential load when processed.
+          type: Integer
+
+        - contextPath: DataBee.Finding.Process.File.type
+          description: Type of file, such as executable, document, or archive, which helps classify its role and usage.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.File.xattributes
+          description: Extended attributes of the file, offering additional metadata or control flags specific to certain operating systems.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.name
+          description: Name of the process associated with the finding, often indicative of the process's purpose or origin.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.namespace_pid
+          description: Process ID specific to a particular namespace, used in environments where processes are isolated or containerized.
+          type: Integer
+
+        - contextPath: DataBee.Finding.Process.parent_process
+          description: Identifier of the parent process from which the current process was spawned.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.pid
+          description: Process ID (PID) of the process, uniquely identifying it within the system at the time of observation.
+          type: Integer
+
+        - contextPath: DataBee.Finding.Process.sandbox
+          description: Indicates whether the process is running within a sandboxed environment, which can affect its ability to interact with the system.
+          type: String
+
+        - contextPath: DataBee.Finding.Process.user
+          description: User account under which the process is running, providing insights into the process's permissions and role within the system.
+          type: String
+
+        - contextPath: DataBee.Finding.risk_level
+          description: Categorizes the finding by the level of risk it poses to the organization or system.
+          type: String
+
+        - contextPath: DataBee.Finding.risk_score
+          description: A calculated score that quantifies the risk level of the finding.
+          type: Integer
+
+        - contextPath: DataBee.Finding.severity
+          description: The severity rating of the finding, which helps prioritize responses and remediation efforts.
+          type: String
+
+        - contextPath: DataBee.Finding.start_time
+          description: The time when the incident or activity that led to the finding began.
+          type: String
+
+        - contextPath: DataBee.Finding.state
+          description: The current state of the finding within the incident response or review process.
+          type: String
+
+        - contextPath: DataBee.Finding.status
+          description: Current status of the finding, indicating where it is in the workflow or lifecycle.
+          type: String
+
+        - contextPath: DataBee.Finding.status_detail
+          description: Provides additional details on the status of the finding, offering more granular insights into its processing state.
+          type: String
+
+        - contextPath: DataBee.Finding.time
+          description: The timestamp documenting when the finding was last observed or updated.
+          type: String
+
+        - contextPath: DataBee.Finding.type_name
+          description: The type name categorizes the finding according to a predefined classification system.
+          type: String
+
+        - contextPath: DataBee.Finding.User
+          description: Information about the user associated with the finding, if applicable.
+          type: Unkonwn
+    - name: endpoint
+      arguments:
+        - description: The endpoint ID.
+          name: id
+          isArray: true
+        - default: true
+          description: The endpoint IP address.
+          name: ip
+          isArray: true
+        - description: The endpoint hostname.
+          name: hostname
+          isArray: true
+      description: Returns information about an endpoint.
+      outputs:
+        - contextPath: Endpoint.Hostname
+          description: The endpoint's hostname.
+          type: String
+        - contextPath: Endpoint.OS
+          description: The endpoint's operation system.
+          type: String
+        - contextPath: Endpoint.IPAddress
+          description: The endpoint's IP address.
+          type: String
+        - contextPath: Endpoint.ID
+          description: The endpoint's ID.
+          type: String
+        - contextPath: Endpoint.MACAddress
+          description: The endpoint's MAC address.
+          type: String
+        - contextPath: Endpoint.Vendor
+          description: The integration name of the endpoint vendor.
+          type: String
+        - contextPath: Endpoint.OSVersion
+          description: The endpoint's operation system version.
+          type: String
+
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: true
+  script: ""
+defaultmapperin: DataBee - Incoming Mapper
+fromversion: 6.10.0
+tests:
+  - No tests (auto formatted)

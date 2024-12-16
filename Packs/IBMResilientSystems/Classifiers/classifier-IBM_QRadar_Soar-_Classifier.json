@@ -1,0 +1,15 @@
+{
+    "defaultIncidentType": "IBM QRadar SOAR Incident",
+    "description": "",
+    "feed": false,
+    "id": "IBM QRadar SOAR - Classifier",
+    "keyTypeMap": {},
+    "name": "IBM QRadar SOAR - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {},
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

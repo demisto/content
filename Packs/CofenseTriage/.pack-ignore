@@ -62,3 +62,7 @@ commentable
 jpg
 png
 rgba
+
+[file:playbook-Report_Categorization_-_Cofense_Triage_v3.yml]
+ignore=GR107
+

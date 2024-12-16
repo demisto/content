@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3d92e4a6-7255-4e59-801c-5a4e5dc3e522
+    taskid: a7f4a4df-1d85-4cda-8a12-40806356cb34
     type: start
     task:
-      id: 3d92e4a6-7255-4e59-801c-5a4e5dc3e522
+      id: a7f4a4df-1d85-4cda-8a12-40806356cb34
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 20
+          "x": 947.5,
+          "y": -20
         }
       }
     note: false
@@ -36,17 +36,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f6ed9bb6-999e-478c-8481-8b23b52fc24a
+    taskid: 162b493c-548e-4c93-8ebe-19bb5426b2e7
     type: playbook
     task:
-      id: f6ed9bb6-999e-478c-8481-8b23b52fc24a
+      id: 162b493c-548e-4c93-8ebe-19bb5426b2e7
       version: -1
       name: GCP - Enrichment
       description: Given the IP address this playbook enriches GCP and Firewall information.
-      playbookName: GCP - Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: GCP - Enrichment
     nexttasks:
       '#none#':
       - "2"
@@ -54,6 +54,14 @@ tasks:
       GcpIP:
         complex:
           root: inputs.RemoteIP
+      port:
+        complex:
+          accessor: remoteport
+          root: alert
+          transformers:
+          - operator: FirstArrayElement
+      protocol:
+        simple: ${alert.asmprotocol}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -64,8 +72,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 165
+          "x": 947.5,
+          "y": 125
         }
       }
     note: false
@@ -77,10 +85,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 559b4cce-1e6a-4e18-8600-1383bb615dfb
+    taskid: a937c47c-4420-4973-818d-abe4c250d716
     type: title
     task:
-      id: 559b4cce-1e6a-4e18-8600-1383bb615dfb
+      id: a937c47c-4420-4973-818d-abe4c250d716
       version: -1
       name: Set Field
       type: title
@@ -92,13 +100,15 @@ tasks:
       - "4"
       - "5"
       - "3"
+      - "31"
+      - "68"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 340
+          "x": 947.5,
+          "y": 300
         }
       }
     note: false
@@ -110,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b2338e4c-17f4-4dbd-8c0f-5ff6e8aca888
+    taskid: 5b2e18a9-e97f-4118-8bf8-66fffd6983ea
     type: condition
     task:
-      id: b2338e4c-17f4-4dbd-8c0f-5ff6e8aca888
+      id: 5b2e18a9-e97f-4118-8bf8-66fffd6983ea
       version: -1
       name: Is there VM and IAM information?
       description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
@@ -144,8 +154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2010,
-          "y": 540
+          "x": 2040,
+          "y": 445
         }
       }
     note: false
@@ -157,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0adfefac-bc38-43c7-848b-27b19a3a4cfb
+    taskid: 14eb1bb7-8317-41bd-8c6b-4d0f3f650e3a
     type: condition
     task:
-      id: 0adfefac-bc38-43c7-848b-27b19a3a4cfb
+      id: 14eb1bb7-8317-41bd-8c6b-4d0f3f650e3a
       version: -1
       name: Is there IAM information?
       description: Determines if there is IAM information to set in the service owner field.
@@ -198,8 +208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 485
+          "x": -600,
+          "y": 445
         }
       }
     note: false
@@ -211,10 +221,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ca9a1f8a-a200-42ff-869a-bc9dcef19c7b
+    taskid: a0e844cb-694d-4582-8e31-0eaa804d1644
     type: condition
     task:
-      id: ca9a1f8a-a200-42ff-869a-bc9dcef19c7b
+      id: a0e844cb-694d-4582-8e31-0eaa804d1644
       version: -1
       name: Is there VM and firewall information?
       description: Determines if there is EC2 and security group information to set in the system IDs field.
@@ -239,19 +249,12 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: GoogleCloudCompute
-                accessor: Firewalls
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 485
+          "x": 947.5,
+          "y": 445
         }
       }
     note: false
@@ -263,27 +266,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: bef7481c-215b-4bbe-8e09-dd53062f8fd6
+    taskid: fd8a1168-af15-4c3c-8bd6-8f78f88b3f93
     type: regular
     task:
-      id: bef7481c-215b-4bbe-8e09-dd53062f8fd6
+      id: fd8a1168-af15-4c3c-8bd6-8f78f88b3f93
       version: -1
       name: Set service owner grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "42"
     scriptarguments:
       gridfield:
-        simple: asmserviceowner
+        simple: asmserviceownerunrankedraw
       keys:
-        simple: name,email,source,timestamp
+        simple: name,email,source,timestamp,accounttype
       val1:
         simple: n/a
       val2:
@@ -311,13 +314,15 @@ tasks:
         simple: GCP
       val4:
         simple: TIMESTAMP
+      val5:
+        simple: USER-ACCOUNT
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 850
+          "x": -600,
+          "y": 825
         }
       }
     note: false
@@ -329,10 +334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 7962748a-77b4-4ad3-818a-d802ae90bd22
+    taskid: 8bd81e9e-e2d7-4536-8ef6-635513703be2
     type: title
     task:
-      id: 7962748a-77b4-4ad3-818a-d802ae90bd22
+      id: 8bd81e9e-e2d7-4536-8ef6-635513703be2
       version: -1
       name: Service Owner
       type: title
@@ -347,8 +352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 700
+          "x": -600,
+          "y": 670
         }
       }
     note: false
@@ -360,19 +365,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: dd117e4d-5b23-4398-8611-adb85c205a9e
+    taskid: ed311cd3-4761-418b-8b4b-6f2dfd7141df
     type: regular
     task:
-      id: dd117e4d-5b23-4398-8611-adb85c205a9e
+      id: ed311cd3-4761-418b-8b4b-6f2dfd7141df
       version: -1
       name: Set private IP grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "50"
@@ -394,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 1005
+          "x": 2322.5,
+          "y": 935
         }
       }
     note: false
@@ -407,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: e41bfa6d-8627-4f70-836c-7bb648573d7d
+    taskid: 333606d0-0e81-47a0-8271-e4aea8cf500c
     type: title
     task:
-      id: e41bfa6d-8627-4f70-836c-7bb648573d7d
+      id: 333606d0-0e81-47a0-8271-e4aea8cf500c
       version: -1
       name: Private IP
       type: title
@@ -425,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 865
+          "x": 2322.5,
+          "y": 795
         }
       }
     note: false
@@ -438,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 871c4cdb-a485-4a9f-8c22-d5c514bc5b51
+    taskid: e12c58e4-ccb6-4466-864c-c995a51d8263
     type: title
     task:
-      id: 871c4cdb-a485-4a9f-8c22-d5c514bc5b51
+      id: e12c58e4-ccb6-4466-864c-c995a51d8263
       version: -1
       name: Cloud
       type: title
@@ -456,7 +461,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1557.5,
+          "x": 1597.5,
           "y": 765
         }
       }
@@ -469,19 +474,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 471875e5-872f-4927-8fda-28dca3f159c9
+    taskid: c1a2a66d-5801-4b08-89df-5f652b3cf512
     type: regular
     task:
-      id: 471875e5-872f-4927-8fda-28dca3f159c9
+      id: c1a2a66d-5801-4b08-89df-5f652b3cf512
       version: -1
       name: Set cloud grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "60"
@@ -499,17 +504,24 @@ tasks:
           root: GoogleCloudCompute.Instances.networkInterfaces
           accessor: network
           transformers:
-          - operator: RegexExtractAll
+          - operator: ExtractInbetween
             args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
+              from:
                 value:
-                  simple: (?<=projects/)[^/]+(?=/global)
-              unpack_matches: {}
-          - operator: uniq
+                  simple: projects/
+              to:
+                value:
+                  simple: /global
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.natIP
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.RemoteIP
       val4:
         complex:
           root: GoogleCloudCompute.Instances
@@ -526,7 +538,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
+          "x": 1597.5,
           "y": 1300
         }
       }
@@ -539,10 +551,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a9848e8b-60f4-4cea-896f-6d9d100bfac8
+    taskid: 0fc1baf0-f47a-479a-8199-67587eab8bc3
     type: title
     task:
-      id: a9848e8b-60f4-4cea-896f-6d9d100bfac8
+      id: 0fc1baf0-f47a-479a-8199-67587eab8bc3
       version: -1
       name: Tags
       type: title
@@ -557,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 820
+          "x": 2822.5,
+          "y": 760
         }
       }
     note: false
@@ -570,19 +582,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: ae3aba7b-d7d5-435a-850e-a25f2131fe4b
+    taskid: 08ca29ff-e683-466b-878c-ee8f8f9a8c18
     type: regular
     task:
-      id: ae3aba7b-d7d5-435a-850e-a25f2131fe4b
+      id: 08ca29ff-e683-466b-878c-ee8f8f9a8c18
       version: -1
       name: Set tags grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "52"
@@ -618,8 +630,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 1170
+          "x": 2822.5,
+          "y": 1110
         }
       }
     note: false
@@ -631,10 +643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 51b764c7-ae01-44e0-8ace-21cc9cb5d4dc
+    taskid: 894c4730-4a93-4507-8c79-cf6b7c85ad97
     type: title
     task:
-      id: 51b764c7-ae01-44e0-8ace-21cc9cb5d4dc
+      id: 894c4730-4a93-4507-8c79-cf6b7c85ad97
       version: -1
       name: System IDs
       type: title
@@ -662,22 +674,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: dadd311d-7a01-437b-8827-ff70d10e3330
+    taskid: 4527aaa0-800d-4ba0-8400-e3ac86961070
     type: regular
     task:
-      id: dadd311d-7a01-437b-8827-ff70d10e3330
+      id: 4527aaa0-800d-4ba0-8400-e3ac86961070
       version: -1
       name: Set system IDs grid field (VPC)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
-      - "21"
+      - "23"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -709,54 +721,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 1030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: d747cea6-9883-4960-8c1a-5bb9f22fbeb7
-    type: regular
-    task:
-      id: d747cea6-9883-4960-8c1a-5bb9f22fbeb7
-      version: -1
-      name: Set system IDs grid field (firewall)
-      description: "Automation used to more easily populate a grid field. \n\nWhile GCP doesn't use the term \"security group (SG)\" like some other cloud providers (such as AWS), the functionality provided by GCP's Firewall Rules is similar to the security group concept in other platforms."
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: type,id,link
-      val1:
-        simple: ASSET-SG
-      val2:
-        complex:
-          root: GoogleCloudCompute.Firewalls
-          accessor: id
-          transformers:
-          - operator: uniq
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 1205
+          "y": 980
         }
       }
     note: false
@@ -768,19 +733,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 9f8c4eec-0703-4427-8724-71326629c4e0
+    taskid: 291e0df4-8fa2-455a-8f1c-7e5650410df7
     type: regular
     task:
-      id: 9f8c4eec-0703-4427-8724-71326629c4e0
+      id: 291e0df4-8fa2-455a-8f1c-7e5650410df7
       version: -1
       name: Set system IDs grid field (subnet name)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "47"
@@ -805,7 +770,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 2280
+          "y": 1990
         }
       }
     note: false
@@ -817,19 +782,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4456d5d5-61ca-4aec-8502-e54800d8b0b2
+    taskid: f8a65ca8-ac84-47d7-8824-7ea7b74fa7b7
     type: regular
     task:
-      id: 4456d5d5-61ca-4aec-8502-e54800d8b0b2
+      id: f8a65ca8-ac84-47d7-8824-7ea7b74fa7b7
       version: -1
       name: Set system IDs grid field (NIC)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "24"
@@ -854,7 +819,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 1370
+          "y": 1140
         }
       }
     note: false
@@ -866,19 +831,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 6f8180eb-c6b3-47ab-89cd-bc2592b8bac6
+    taskid: 7b6dd98e-7ab7-4be9-83f2-010da1920e7a
     type: regular
     task:
-      id: 6f8180eb-c6b3-47ab-89cd-bc2592b8bac6
+      id: 7b6dd98e-7ab7-4be9-83f2-010da1920e7a
       version: -1
       name: Set system IDs grid field (GCE ID)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "26"
@@ -903,7 +868,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 1545
+          "y": 1300
         }
       }
     note: false
@@ -915,19 +880,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: df4adbfe-5588-49e7-8814-03440608b973
+    taskid: 16b767f4-9546-443c-88a4-3fe414f97515
     type: regular
     task:
-      id: df4adbfe-5588-49e7-8814-03440608b973
+      id: 16b767f4-9546-443c-88a4-3fe414f97515
       version: -1
       name: Set system IDs grid field (ZONE)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "27"
@@ -962,7 +927,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 1720
+          "y": 1460
         }
       }
     note: false
@@ -974,19 +939,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 1039922c-33ac-4aa4-8a82-149c1f700b9c
+    taskid: 92592bc9-b6c9-4332-8fb1-105fb18bfde9
     type: regular
     task:
-      id: 1039922c-33ac-4aa4-8a82-149c1f700b9c
+      id: 92592bc9-b6c9-4332-8fb1-105fb18bfde9
       version: -1
       name: Set system IDs grid field (GCE name)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "59"
@@ -1011,7 +976,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 1895
+          "y": 1635
         }
       }
     note: false
@@ -1023,10 +988,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 27e8adfb-124a-43bb-8892-6a3aecdcd242
+    taskid: cafe0fad-1e84-44e7-82d5-62155b7996ca
     type: condition
     task:
-      id: 27e8adfb-124a-43bb-8892-6a3aecdcd242
+      id: cafe0fad-1e84-44e7-82d5-62155b7996ca
       version: -1
       name: Are there any tags?
       description: |+
@@ -1038,6 +1003,7 @@ tasks:
     nexttasks:
       '#default#':
       - "49"
+      - "71"
       "yes":
       - "18"
     separatecontext: false
@@ -1057,8 +1023,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 950
+          "x": 2822.5,
+          "y": 890
         }
       }
     note: false
@@ -1070,10 +1036,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e049ee0a-a4b2-44b0-88a2-416a4638c116
+    taskid: 19477a1f-2d00-41aa-859a-d39358141f0f
     type: condition
     task:
-      id: e049ee0a-a4b2-44b0-88a2-416a4638c116
+      id: 19477a1f-2d00-41aa-859a-d39358141f0f
       version: -1
       name: Is service account field set?
       description: Determines if a service account associated with the Cloud Compute Instance was discovered and set on the alert.
@@ -1082,9 +1048,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "40"
+      - "41"
       "yes":
-      - "32"
+      - "63"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1098,8 +1064,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1205
+          "x": 240,
+          "y": 445
         }
       }
     note: false
@@ -1111,27 +1077,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 8470bc44-8694-4f3c-87c1-2fc5bd65c30b
+    taskid: efaa05b2-b7e8-496e-8327-ab96f0bac60e
     type: regular
     task:
-      id: 8470bc44-8694-4f3c-87c1-2fc5bd65c30b
+      id: efaa05b2-b7e8-496e-8327-ab96f0bac60e
       version: -1
       name: Add service account to unranked service owner list
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
-      - "40"
+      - "65"
     scriptarguments:
       gridfield:
         simple: asmserviceownerunrankedraw
       keys:
-        simple: name,email,source,timestamp
+        simple: name,email,source,timestamp,accounttype
       val1:
         simple: n/a
       val2:
@@ -1148,13 +1114,15 @@ tasks:
         simple: GCP
       val4:
         simple: TIMESTAMP
+      val5:
+        simple: SERVICE-ACCOUNT
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1425
+          "x": 240,
+          "y": 815
         }
       }
     note: false
@@ -1166,10 +1134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 65cc8136-d6c5-4ffc-8a57-21bc21ef2301
+    taskid: c6687057-c22e-4f73-8f80-8f6e642413d7
     type: condition
     task:
-      id: 65cc8136-d6c5-4ffc-8a57-21bc21ef2301
+      id: c6687057-c22e-4f73-8f80-8f6e642413d7
       version: -1
       name: Is there GCP project hierarchy information?
       description: Determines if there is GCP hierarchy information to set in the system IDs field.
@@ -1206,7 +1174,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 2650
+          "y": 2710
         }
       }
     note: false
@@ -1218,19 +1186,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 2a1b652a-5e9d-42e7-8673-2ad48e63d947
+    taskid: 6b7418b0-5146-4568-839b-6111991e4306
     type: regular
     task:
-      id: 2a1b652a-5e9d-42e7-8673-2ad48e63d947
+      id: 6b7418b0-5146-4568-839b-6111991e4306
       version: -1
       name: Set system IDs grid field (Project-Number)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "35"
@@ -1270,7 +1238,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 2880
+          "y": 2950
         }
       }
     note: false
@@ -1282,10 +1250,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 56415a77-b61e-4abb-8d66-babc1dd0ee90
+    taskid: 936fd977-c6e1-451f-88b5-710fccd7c9ca
     type: condition
     task:
-      id: 56415a77-b61e-4abb-8d66-babc1dd0ee90
+      id: 936fd977-c6e1-451f-88b5-710fccd7c9ca
       version: -1
       name: Is there GCP folder hierarchy information?
       description: Determines if there is GCP folder hierarchy information to set in the system IDs field.
@@ -1321,7 +1289,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 3090
+          "y": 3110
         }
       }
     note: false
@@ -1333,19 +1301,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 77e16236-6023-43a2-8d6b-09805e68a44f
+    taskid: e67121bb-d75b-4fcb-8d31-fc8d82046071
     type: regular
     task:
-      id: 77e16236-6023-43a2-8d6b-09805e68a44f
+      id: e67121bb-d75b-4fcb-8d31-fc8d82046071
       version: -1
       name: Set system IDs grid field (Folder-Number)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "43"
@@ -1384,7 +1352,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 3330
+          "y": 3300
         }
       }
     note: false
@@ -1396,17 +1364,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: b09ef410-6d9c-4e35-83c5-3790f9fe0c85
+    taskid: 2185f514-b618-4943-8d08-b73bf84800be
     type: regular
     task:
-      id: b09ef410-6d9c-4e35-83c5-3790f9fe0c85
+      id: 2185f514-b618-4943-8d08-b73bf84800be
       version: -1
       name: Set Folders
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "16"
@@ -1449,17 +1417,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 3df98c3e-16bf-44ee-88bd-32b674e4fe81
+    taskid: bd4d883b-4ccb-4b16-8dfe-f4ebbe0bd9aa
     type: regular
     task:
-      id: 3df98c3e-16bf-44ee-88bd-32b674e4fe81
+      id: bd4d883b-4ccb-4b16-8dfe-f4ebbe0bd9aa
       version: -1
       name: Set Folders to n/a
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "16"
@@ -1486,10 +1454,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: f6cf2504-671d-4bc8-8cbd-5d189301538b
+    taskid: 6006ad53-3848-424f-88cd-0099d5d9c0e8
     type: condition
     task:
-      id: f6cf2504-671d-4bc8-8cbd-5d189301538b
+      id: 6006ad53-3848-424f-88cd-0099d5d9c0e8
       version: -1
       name: Are there any folders?
       description: Determines if there is GCP folder information to set in the cloud field.
@@ -1524,7 +1492,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1557.5,
+          "x": 1597.5,
           "y": 875
         }
       }
@@ -1537,10 +1505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 20bb9298-5550-4101-8048-1160bc7efbd2
+    taskid: 4b0cefec-3f9e-4cdd-853e-23124ccf0356
     type: title
     task:
-      id: 20bb9298-5550-4101-8048-1160bc7efbd2
+      id: 4b0cefec-3f9e-4cdd-853e-23124ccf0356
       version: -1
       name: Service Owner - End
       type: title
@@ -1555,8 +1523,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1665
+          "x": -610,
+          "y": 1365
         }
       }
     note: false
@@ -1568,21 +1536,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 3af103b6-cfc3-48bc-85ad-a81713b584a5
+    taskid: 92e883bc-8f0b-475c-8563-83c54e67738e
     type: regular
     task:
-      id: 3af103b6-cfc3-48bc-85ad-a81713b584a5
+      id: 92e883bc-8f0b-475c-8563-83c54e67738e
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "43"
       - "40"
+      - "64"
     scriptarguments:
       append:
         simple: "true"
@@ -1595,8 +1564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1205
+          "x": -190,
+          "y": 1075
         }
       }
     note: false
@@ -1608,20 +1577,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 78853ae1-0109-4973-889f-e47802a02ed9
+    taskid: d4a8acf0-5ce6-41f6-8303-8380f6987003
     type: regular
     task:
-      id: 78853ae1-0109-4973-889f-e47802a02ed9
+      id: d4a8acf0-5ce6-41f6-8303-8380f6987003
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
-      - "31"
+      - "40"
     scriptarguments:
       append:
         simple: "true"
@@ -1634,8 +1603,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1030
+          "x": -600,
+          "y": 995
         }
       }
     note: false
@@ -1647,10 +1616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 9b7517ac-596d-4a50-82eb-2d7d017655c9
+    taskid: 10062154-9400-408e-82bd-bbcdfdc3426c
     type: title
     task:
-      id: 9b7517ac-596d-4a50-82eb-2d7d017655c9
+      id: 10062154-9400-408e-82bd-bbcdfdc3426c
       version: -1
       name: System IDs - End
       type: title
@@ -1665,8 +1634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 3520
+          "x": 680,
+          "y": 3550
         }
       }
     note: false
@@ -1678,10 +1647,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: a88cde79-b96d-490a-88c9-19def4d2fb89
+    taskid: 44d96677-4291-4292-82b3-314126bddbbe
     type: title
     task:
-      id: a88cde79-b96d-490a-88c9-19def4d2fb89
+      id: 44d96677-4291-4292-82b3-314126bddbbe
       version: -1
       name: Complete
       type: title
@@ -1706,10 +1675,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: a73a191c-627b-4d73-8601-f2c2c0f6408a
+    taskid: d5f18e36-63f0-4cd6-86fe-87eabda25991
     type: title
     task:
-      id: a73a191c-627b-4d73-8601-f2c2c0f6408a
+      id: d5f18e36-63f0-4cd6-86fe-87eabda25991
       version: -1
       name: Closing Steps
       description: |-
@@ -1739,20 +1708,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: ea02266f-ae26-4a22-860f-ed3e1a47f5a0
+    taskid: 7d7fa5d5-761e-40ea-83e8-7d385850c32b
     type: regular
     task:
-      id: ea02266f-ae26-4a22-860f-ed3e1a47f5a0
+      id: 7d7fa5d5-761e-40ea-83e8-7d385850c32b
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
-      - "33"
+      - "61"
     scriptarguments:
       append:
         simple: "true"
@@ -1766,7 +1735,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 2470
+          "y": 2150
         }
       }
     note: false
@@ -1778,17 +1747,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 605fdd07-8857-4e92-8b19-c77eb948ad50
+    taskid: 897b04ae-8a53-4fc3-8795-382575d10131
     type: regular
     task:
-      id: 605fdd07-8857-4e92-8b19-c77eb948ad50
+      id: 897b04ae-8a53-4fc3-8795-382575d10131
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "45"
@@ -1804,8 +1773,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2010,
-          "y": 1520
+          "x": 2040,
+          "y": 1655
         }
       }
     note: false
@@ -1817,10 +1786,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: db653cd9-6004-40e6-845f-5f884d08a651
+    taskid: b70ac807-5790-4911-8857-6a8ffdb790ba
     type: title
     task:
-      id: db653cd9-6004-40e6-845f-5f884d08a651
+      id: b70ac807-5790-4911-8857-6a8ffdb790ba
       version: -1
       name: Tags - End
       type: title
@@ -1835,8 +1804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 1535
+          "x": 2822.5,
+          "y": 1475
         }
       }
     note: false
@@ -1848,17 +1817,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 7f6510f5-0595-4816-871b-f486792ef99a
+    taskid: af1aed61-69fb-4e57-8356-44b6f20a506a
     type: regular
     task:
-      id: 7f6510f5-0595-4816-871b-f486792ef99a
+      id: af1aed61-69fb-4e57-8356-44b6f20a506a
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "51"
@@ -1874,8 +1843,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 1170
+          "x": 2322.5,
+          "y": 1100
         }
       }
     note: false
@@ -1887,10 +1856,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: dac4b39d-f266-479b-8778-6ad6ba2dd12e
+    taskid: aa8a0056-ecda-4b29-8724-685bf5d06e38
     type: title
     task:
-      id: dac4b39d-f266-479b-8778-6ad6ba2dd12e
+      id: aa8a0056-ecda-4b29-8724-685bf5d06e38
       version: -1
       name: Private IP - End
       type: title
@@ -1905,8 +1874,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 1370
+          "x": 2322.5,
+          "y": 1325
         }
       }
     note: false
@@ -1918,17 +1887,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 064712e8-0586-4b72-834a-de58a9652471
+    taskid: 506d3fe5-bdec-49b2-861c-849b19e0f305
     type: regular
     task:
-      id: 064712e8-0586-4b72-834a-de58a9652471
+      id: 506d3fe5-bdec-49b2-861c-849b19e0f305
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "49"
@@ -1944,8 +1913,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 1340
+          "x": 2822.5,
+          "y": 1280
         }
       }
     note: false
@@ -1957,17 +1926,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 37644ea9-348f-4a94-8deb-21f573be270f
+    taskid: e3e7da5f-a1ad-4430-8164-45628affa501
     type: regular
     task:
-      id: 37644ea9-348f-4a94-8deb-21f573be270f
+      id: e3e7da5f-a1ad-4430-8164-45628affa501
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "54"
@@ -1983,8 +1952,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
-          "y": 1705
+          "x": 1597.5,
+          "y": 1645
         }
       }
     note: false
@@ -1996,10 +1965,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: fe2c5846-41cd-4a39-876c-0e360a24f1f0
+    taskid: 81501384-d33f-4d7a-802e-8f74eaf24eb0
     type: title
     task:
-      id: fe2c5846-41cd-4a39-876c-0e360a24f1f0
+      id: 81501384-d33f-4d7a-802e-8f74eaf24eb0
       version: -1
       name: Cloud - End
       type: title
@@ -2014,8 +1983,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
-          "y": 1870
+          "x": 1597.5,
+          "y": 1800
         }
       }
     note: false
@@ -2027,19 +1996,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 7384a454-2ea2-492a-8d65-b04330f1143e
+    taskid: e34b7dcb-5b10-4446-8660-6eaea683ec37
     type: regular
     task:
-      id: 7384a454-2ea2-492a-8d65-b04330f1143e
+      id: e34b7dcb-5b10-4446-8660-6eaea683ec37
       version: -1
       name: Set ASM enrichment status to true
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "44"
@@ -2072,10 +2041,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: ee5d636a-5b87-475e-8ceb-c02fbec77866
+    taskid: 3a2dbe45-2862-4aa4-8b4b-44a1ed6ac1b2
     type: condition
     task:
-      id: ee5d636a-5b87-475e-8ceb-c02fbec77866
+      id: 3a2dbe45-2862-4aa4-8b4b-44a1ed6ac1b2
       version: -1
       name: Was enrichment performed?
       description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
@@ -2117,19 +2086,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: dd64ebcd-d230-4865-80b3-fb7b2ffc5895
+    taskid: 04e9afaa-2d98-4384-86d6-06985fbed673
     type: regular
     task:
-      id: dd64ebcd-d230-4865-80b3-fb7b2ffc5895
+      id: 04e9afaa-2d98-4384-86d6-06985fbed673
       version: -1
       name: Set ASM enrichment status to false
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "44"
@@ -2162,17 +2131,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 895dd0ef-da96-44a7-838d-1e0b7fc37313
+    taskid: 11662ef5-6612-43ca-84d2-3a9f86bb9eee
     type: regular
     task:
-      id: 895dd0ef-da96-44a7-838d-1e0b7fc37313
+      id: 11662ef5-6612-43ca-84d2-3a9f86bb9eee
       version: -1
       name: Set system IDs grid field (type)
       description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "20"
@@ -2193,7 +2162,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 835
+          "y": 820
         }
       }
     note: false
@@ -2205,10 +2174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 83f2b2a8-169d-4993-8e78-14bfa1cadb6e
+    taskid: 9abad720-b44e-4dac-897a-8a3a52a82612
     type: condition
     task:
-      id: 83f2b2a8-169d-4993-8e78-14bfa1cadb6e
+      id: 9abad720-b44e-4dac-897a-8a3a52a82612
       version: -1
       name: Is there GCP subnet information?
       description: Determines if there is GCP subnet information to set in the system IDs field.
@@ -2238,7 +2207,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 2060
+          "y": 1800
         }
       }
     note: false
@@ -2250,10 +2219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 12b466a5-b53d-4190-800b-cac067479c4e
+    taskid: a7181458-aac4-4e37-830c-2244ea8b7d73
     type: regular
     task:
-      id: 12b466a5-b53d-4190-800b-cac067479c4e
+      id: a7181458-aac4-4e37-830c-2244ea8b7d73
       version: -1
       name: Set hierarchy field
       description: commands.local.cmd.set.incident
@@ -2286,8 +2255,431 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
-          "y": 1505
+          "x": 1597.5,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GCPOffendingFirewallRule
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "62"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there are GCP potential offending firewall rule(s) found.
+      id: fb420c9a-7183-4b06-8393-1415ad5a83a1
+      iscommand: false
+      name: Were GCP offending firewall rule(s) found?
+      type: condition
+      version: -1
+    taskid: fb420c9a-7183-4b06-8393-1415ad5a83a1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 2330
+        }
+      }
+  "62":
+    continueonerrortype: ""
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: FIREWALL-RULE-NAME
+      val2:
+        simple: ${GCPOffendingFirewallRule}
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: d170a931-fa76-44bd-888d-d11c8cee7129
+      iscommand: false
+      name: Set system IDs grid field (offending firewall rule(s))
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: d170a931-fa76-44bd-888d-d11c8cee7129
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 2520
+        }
+      }
+  "63":
+    continueonerrortype: ""
+    id: "63"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 79f1ad51-fb19-4d1d-8bcb-22a7151424d5
+      iscommand: false
+      name: Service Account
+      type: title
+      version: -1
+      description: ''
+    taskid: 79f1ad51-fb19-4d1d-8bcb-22a7151424d5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 670
+        }
+      }
+  "64":
+    continueonerrortype: ""
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 34d9f121-780c-4f0f-828b-a27747c78a54
+      iscommand: false
+      name: Service Account - End
+      type: title
+      version: -1
+      description: ''
+    taskid: 34d9f121-780c-4f0f-828b-a27747c78a54
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1375
+        }
+      }
+  "65":
+    continueonerrortype: ""
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_gcp
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8f779ad1-6ea9-4afc-8809-42eb232bf1b4
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8f779ad1-6ea9-4afc-8809-42eb232bf1b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 995
+        }
+      }
+  "66":
+    id: "66"
+    taskid: 8cefe8b2-308b-4c4c-8c2d-e8990d6dbf62
+    type: regular
+    task:
+      id: 8cefe8b2-308b-4c4c-8c2d-e8990d6dbf62
+      version: -1
+      name: Set tags grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: Key,Value,Source
+      val1:
+        complex:
+          root: GCPIAM.TagBindings
+          accessor: key
+      val2:
+        complex:
+          root: GCPIAM.TagBindings
+          accessor: value
+      val3:
+        simple: GCP-project-folder-tags
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 56b8ffb8-2d9b-4da1-8f4b-548a40413724
+    type: title
+    task:
+      id: 56b8ffb8-2d9b-4da1-8f4b-548a40413724
+      version: -1
+      name: Tags - Project/Folder/Organization Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 7b04a11e-74ef-453c-860f-e5e6bc1e2b9c
+    type: condition
+    task:
+      id: 7b04a11e-74ef-453c-860f-e5e6bc1e2b9c
+      version: -1
+      name: Is there tagbinding information?
+      description: Determines if there is GCP-IAM tagbindings information to populate tags field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GCPIAM
+                accessor: TagBindings
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: e49dccfa-8c0a-408b-891e-180eaed2184e
+    type: title
+    task:
+      id: e49dccfa-8c0a-408b-891e-180eaed2184e
+      version: -1
+      name: Project/Folder/Organization Tags - End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 1315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 60e38ace-498e-4f4e-83eb-8f5045a20a18
+    type: regular
+    task:
+      id: 60e38ace-498e-4f4e-83eb-8f5045a20a18
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_gcp
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: ae25e477-1620-46d4-8e72-1a7328216c5a
+    type: regular
+    task:
+      id: ae25e477-1620-46d4-8e72-1a7328216c5a
+      version: -1
+      name: Set false flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_gcp
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3342.5,
+          "y": 1350
         }
       }
     note: false
@@ -2301,7 +2693,8 @@ view: |-
   {
     "linkLabelsPosition": {
       "29_18_yes": 0.56,
-      "31_32_yes": 0.68,
+      "29_71_#default#": 0.52,
+      "31_41_#default#": 0.47,
       "33_34_yes": 0.5,
       "33_43_#default#": 0.11,
       "35_36_yes": 0.54,
@@ -2309,15 +2702,17 @@ view: |-
       "39_37_yes": 0.63,
       "39_38_#default#": 0.65,
       "3_17_yes": 0.76,
-      "4_41_#default#": 0.31,
-      "5_41_#default#": 0.41
+      "4_41_#default#": 0.4,
+      "59_22_yes": 0.49,
+      "5_41_#default#": 0.41,
+      "68_71_#default#": 0.45
     },
     "paper": {
       "dimensions": {
-        "height": 4325,
-        "width": 3152.5,
-        "x": 100,
-        "y": 20
+        "height": 4365,
+        "width": 4750,
+        "x": -610,
+        "y": -20
       }
     }
   }
@@ -2334,3 +2729,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}

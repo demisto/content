@@ -1595,19 +1595,18 @@ Get the list of projects of a given group.
 
 ### gitlab-raw-file-get
 ***
-Get file the file in a raw format.
-
+Get the file in a raw format.
 
 #### Base Command
 
 `gitlab-raw-file-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_path | The file path. | Required | 
-| ref | The branch to retrieve the file from, default is master. | Optional | 
-
+| ref | The branch to retrieve the file from. Default is master. | Optional | 
 
 #### Context Output
 
@@ -1616,6 +1615,7 @@ Get file the file in a raw format.
 | GitLab.File.ref | String | The branch the file's content was taken from. | 
 | GitLab.File.path | String | The file path. | 
 | GitLab.File.content | String | The file content. | 
+
 
 #### Command Example
 

@@ -280,7 +280,7 @@ def main():
         elif demisto.command() == 'test-module':
             test_module()
     except Exception as e:
-        demisto.debug(e)
+        demisto.debug(f'exception was thrown: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

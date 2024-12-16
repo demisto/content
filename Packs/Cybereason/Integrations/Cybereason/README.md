@@ -1,29 +1,25 @@
 Endpoint detection and response to manage and query malops, connections and processes.
 This integration was integrated and tested with version 21.2 of Cybereason
 
-## Configure Cybereason on Cortex XSOAR
+## Configure Cybereason in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cybereason.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. <https://192.168.0.1>) | True |
-    | Credentials | False |
-    | Password | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-    | Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. <https://192.168.0.1>) | True |
+| Credentials | False |
+| Password | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+| Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cybereason-query-processes
@@ -1609,5 +1605,83 @@ Get the results related to machines.
     "MachineFQDN": "example-machine-fqdn",
     "GroupID": "example-group-id",
     "GroupName": "example-group-name"
+}
+```
+
+#### Base Command
+
+`cybereason-query-malop-management`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | malopGuid of the Cybereason Malop. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | The unique globally unique identifier \(guid\) for the Malop. | 
+| Cybereason.Malops.CreationTime | string | The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason. |
+| Cybereason.Malops.Link | string | Link to the Malop on Cybereason. | 
+| Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
+| Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
+| Cybereason.Malops.Status | string | Malop managemant status | 
+
+#### Command example
+
+```!cybereason-query-malop-management malopGuid=<malop-guid>```
+
+#### Context Example
+
+```json
+{
+    "GUID": "malop-guid",
+    "Link": "malop-url",
+    "CreationTime": 1686720403740,
+    "LastUpdateTime": 1686720403743,
+    "Status": "Pending",
+    "InvolvedHash": "involed-hash"
+}
+```
+
+#### Base Command
+
+`cybereason_process_attack_tree_command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | malopGuid of the Cybereason Malop | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+|Cybereason.Process.ProcessID | string | Cybereason Process ID |
+|Cybereason.Process.URL | string | Attack tree url for a given Process |
+
+#### Command example
+
+```!cybereason-process-attack-tree processGuid=<process-guid>```
+
+#### Context Example
+
+```json
+{
+    "Process": [
+        {
+        "ProcessID": "<process-id>",
+        "URL": "<url>"
+        },
+        {
+        "ProcessID": "<process-id>",
+        "URL": "<url>"
+        } 
+    ]
 }
 ```

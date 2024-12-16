@@ -1,29 +1,92 @@
 Use the Azure Data Explorer integration to collect and analyze data inside Azure Data Explorer clusters, and to manage search queries.
 This integration was integrated and tested with version V1 of AzureDataExplorer.
 
-## Configure Azure Data Explorer on Cortex XSOAR
+# Authorization
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Data Explorer.
-3. Click **Add instance** to create and configure a new integration instance.
+In order to connect to the Azure Data Explorer using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Cluster URL (e.g. https://help.kusto.windows.net) |  | True |
-    | Application ID |  | True |
-    | Client Activity Prefix | A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;&amp;lt;UUID&amp;gt;'. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\) or Device Code Flow | False |
-    | Tenant ID (for Authorization Code mode) |  | False |
-    | Client Secret (for Authorization Code mode) |  | False |
-    | Client Secret (for Authorization Code mode) |  | False |
-    | Application redirect URI (for Authorization Code mode) |  | False |
-    | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+1. *Authorization Code Flow* (Recommended).
+2. *Device Code Flow*.
+3. *Client Credentials Flow*.
 
-4. Click **Test** to validate the URLs, token, and connection.
+## Self-Deployed Azure App
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
+
+### Required permissions
+
+- Azure Data Explorer - permission `user_impersonation` of type Delegated.
+- Microsoft Graph - permission `offline_access` of type Delegated.
+
+To add a permission:
+
+1. Navigate to **Azure Poral** > **Home** > **App registrations**.
+2. Search for your app under 'all applications'.
+3. Click **API permissions** > **Add permission**.
+4.  Search for the specific Microsoft API and select the specific permission of type Delegated.
+
+### Authentication Using the Authorization Code Flow (recommended)
+
+1. In the *Authentication Type* field, select the **Authorization Code** option.
+2. In the *Application ID* field, enter your Client/Application ID. 
+3. In the *Client Secret* field, enter your Client Secret.
+4. In the *Tenant ID* field, enter your Tenant ID .
+5. In the *Application redirect URI* field, enter your Application redirect URI.
+6. Save the instance.
+7. Run the `!azure-data-explorer-generate-login-url` command in the War Room and follow the instruction.
+8. Save the instance.
+   
+### Authentication Using the Device Code Flow
+
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
+to link Azure Data Explorer with Cortex XSOAR.
+
+1. Fill in the required parameters.
+2. In the *Authentication Type* field, select the **Device Code** option.
+3. Run the ***!azure-data-explorer-auth-start*** command.
+4. Follow the instructions that appear.
+5. Run the ***!azure-data-explorer-auth-complete*** command.
+
+At end of the process you'll see a message that you've logged in successfully.
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (a9ce8db2-847a-46af-9bfb-725d8a8d3c53).
+
+### Authentication Using the Client Credentials Flow
+
+1. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+
+   *Note:* In the *Select members* section, assign the application you created earlier.
+
+2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+   a. In the *Authentication Type* field, select the **Client Credentials** option.
+   b. In the *Application ID* field, enter your Client/Application ID.
+   e. In the *Tenant ID* field, enter your Tenant ID .
+   f. In the *Client Secret* field, enter your Client Secret.
+   g. Click **Test** to validate the URLs, token, and connection
+   h. Save the instance.
+
+
+## Configure Azure Data Explorer in Cortex
+
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Cluster URL (e.g. https://help.kusto.windows.net) |  | True |
+| Application ID |  | True |
+| Client Activity Prefix | A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;&amp;lt;UUID&amp;gt;'. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\), Device Code Flow or Client Credentials Flow. | False |
+| Tenant ID | For Authorization Code or Client Credentials Flows. | False |
+| Client Secret | For Authorization Code or Client Credentials Flows. | False |
+| Application redirect URI (for Authorization Code mode) |  | False |
+| Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-data-explorer-search-query-execute
 ***

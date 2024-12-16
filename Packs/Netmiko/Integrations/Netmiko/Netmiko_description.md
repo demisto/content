@@ -7,11 +7,12 @@ This integration provides ssh-based access to network devices, servers, and othe
 
 ## Configuration Parameters
 
- - *Name* - Integration instance name.
- - *Platform* - The Netmiko-specific platform name.
- - *Hostname* - The IP address, hostname, or FQDN to connect to over SSH.
- - *Port* - The port to use for the SSH connection.
- - *Credentials* - The credentials should be the same as the Tanium client.
+ - ***Name*** - Integration instance name
+ - ***Platform*** - The Netmiko-specific platform name
+ - ***Hostname*** - The IP address, Hostname, or FQDN to connect to over SSH
+ - ***Port*** - The port to use for the SSH connection
+ - ***Credentials*** - The credentials should be the same as the Tanium client.
+ - ***Override the default timeout value*** - Override the default read timeout value used for a SSH connection (useful for slow-responding devices).
 
 **NOTE**: Platform names are taken from the supported
 [SSH](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-ssh-device_type-values) or [Telnet](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-telnet-device_type-values) device type lists on GitHub.

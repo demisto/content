@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"The commands: show-only-recipients, ews-o365-start-compliance-search, ews-o365-show-only-recipients, ews-o365-purge-compliance-search-results, ews-o365-get-compliance-search-purge-status, ews-o365-remove-compliance-search, ews-o365-get-compliance-search-purge-status were deleted. Please use the commands from Security And Compliance V2 instead."
+}

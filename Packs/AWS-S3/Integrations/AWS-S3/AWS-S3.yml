@@ -40,7 +40,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
-  required: false
+  required: true
 - display: Role Session Duration
   name: sessionDuration
   type: 0
@@ -93,6 +93,15 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -105,7 +114,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Amazon Web Services Simple Storage Service (S3)
+description: Amazon Web Services Simple Storage Service (S3).
 display: AWS - S3
 name: AWS - S3
 script:
@@ -174,7 +183,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: List all S3 buckets in AWS account
+    description: List all S3 buckets in AWS account.
     name: aws-s3-list-buckets
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName
@@ -195,7 +204,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Get AWS S3 Bucket Policy
+    description: Get AWS S3 Bucket Policy.
     name: aws-s3-get-bucket-policy
     outputs:
     - contextPath: AWS.S3.Buckets.Policy.Version
@@ -319,7 +328,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Get AWS S3 Bucket Encryption
+    description: Get AWS S3 Bucket Encryption.
     name: aws-s3-get-bucket-encryption
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName.ServerSideEncryptionConfiguration.Rules.ApplyServerSideEncryptionByDefault.SSEAlgorithm
@@ -332,13 +341,13 @@ script:
       description: S3 Bucket Encryption Key Enabled.
       type: boolean
   - arguments:
-    - description: Entry ID of the file to upload
+    - description: Entry ID of the file to upload.
       name: entryID
       required: true
-    - description: The name of the bucket to upload to
+    - description: The name of the bucket to upload to.
       name: bucket
       required: true
-    - description: The name of the key to upload to
+    - description: The name of the key to upload to.
       name: key
       required: true
     - description: The AWS Region, if not specified the default region will be used.
@@ -349,7 +358,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Upload file to S3 bucket
+    description: Upload file to S3 bucket.
     name: aws-s3-upload-file
   - arguments:
     - description: The name of the Amazon S3 bucket whose PublicAccessBlock configuration you want to retrieve.
@@ -388,7 +397,7 @@ script:
       required: true
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     name: aws-s3-put-public-access-block
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  dockerimage: demisto/boto3py3:1.0.0.115129
   runonce: false
   script: ''
   type: python

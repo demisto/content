@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import dateparser
 import urllib3
@@ -27,19 +27,19 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def get_file_reputation(self, file: str) -> Dict[str, Any]:
+    def get_file_reputation(self, file: str) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f'/hashes/{file}'
         )
 
-    def get_health(self) -> Dict[str, Any]:
+    def get_health(self) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/health'
         )
 
-    def submit_file(self, files: Dict[str, Any], data: Dict[str, Any]) -> Dict[str, Any]:
+    def submit_file(self, files: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/files',
@@ -47,7 +47,7 @@ class Client(BaseClient):
             data=data
         )
 
-    def submit_urls(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def submit_urls(self, data: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/urls',
@@ -55,7 +55,7 @@ class Client(BaseClient):
             data=None
         )
 
-    def get_report_url(self, report_id: str, expiration: int) -> Dict[str, Any]:
+    def get_report_url(self, report_id: str, expiration: int) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f'/presigned-url/{report_id}',
@@ -64,7 +64,7 @@ class Client(BaseClient):
             }
         )
 
-    def report_status(self, report_id: str, extended: str) -> Dict[str, Any]:
+    def report_status(self, report_id: str, extended: str) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f'/reports/{report_id}',
@@ -73,7 +73,7 @@ class Client(BaseClient):
             }
         )
 
-    def report_artifact(self, report_id: str, artifact_type: str) -> Dict[str, Any]:
+    def report_artifact(self, report_id: str, artifact_type: str) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f'/artifacts/{report_id}',
@@ -99,7 +99,7 @@ def convert_to_demisto_severity(severity: str) -> int:
     }[severity]
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> int | None:
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
@@ -113,7 +113,7 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
@@ -132,7 +132,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -162,7 +162,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, Any]:
+def get_hashes_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, Any]:
 
     hashes = argToList(args.get('md5_hashes'))
     if len(hashes) == 0:
@@ -173,9 +173,9 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
             continue
         raise Exception('Invalid hash. Only MD5 is supported.')
 
-    dbot_score_list: List[Dict[str, Any]] = []
-    file_standard_list: List[Dict[str, Any]] = []
-    file_data_list: List[Dict[str, Any]] = []
+    dbot_score_list: list[dict[str, Any]] = []
+    file_standard_list: list[dict[str, Any]] = []
+    file_data_list: list[dict[str, Any]] = []
 
     for hash in hashes:
         file_data = client.get_file_reputation(hash)
@@ -183,7 +183,7 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
         del file_data['md5']
         # demisto.results(file_data)
         engines = file_data.get('engine_results', {})
-        for key in engines.keys():
+        for key in engines:
             if engines[key].get('sha256'):
                 file_data['SHA256'] = engines[key].get('sha256')
                 del engines[key]['sha256']
@@ -193,7 +193,7 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
             score = 3  # bad
         else:
             score = 0  # unknown
-            for key in engines.keys():
+            for key in engines:
                 verdict = engines[key].get('verdict', 'not_found')
                 if verdict != "not_found" and verdict != "malicious":
                     score = 1  # good
@@ -250,7 +250,7 @@ def get_hashes_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
     )
 
 
-def generate_report_url(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def generate_report_url(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     report_id = str(args.get('report_id'))
     expiration = arg_to_int(arg=args.get('expiration'), arg_name='expiration', required=True)
     if expiration:
@@ -271,7 +271,7 @@ def generate_report_url(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
     )
 
 
-def submit_file_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def submit_file_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     entry_id = demisto.args().get('entryID')
     file_entry = demisto.getFilePath(entry_id)  # .get('path')
     file_name = file_entry['name']
@@ -308,13 +308,13 @@ def submit_file_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
     )
 
 
-def submit_urls_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def submit_urls_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     urls = argToList(args.get('urls'))
     if len(urls) == 0:
         raise ValueError('hash(es) not specified')
 
     # Format the URLs into a string list, which the API understands
-    formatted_urls = "[" + ",".join(list(map(lambda url: url.replace(url, f'"{url}"'), urls))) + "]"
+    formatted_urls = "[" + ",".join([url.replace(url, f'"{url}"') for url in urls]) + "]"
     data = {'urls': formatted_urls}
 
     scan = client.submit_urls(data=data)
@@ -338,7 +338,7 @@ def submit_urls_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
     )
 
 
-def get_reports_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, Any]:
+def get_reports_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, Any]:
     report_id_list = argToList(args.get('report_ids', []))
     extended = args.get('extended_report', "False")
     screenshot = args.get('get_screenshot', "false")
@@ -346,7 +346,7 @@ def get_reports_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
     if len(report_id_list) == 0:
         raise ValueError('report_id(s) not specified')
 
-    report_list: List[Dict[str, Any]] = []
+    report_list: list[dict[str, Any]] = []
     for report_id in report_id_list:
         report = client.report_status(report_id=report_id, extended=extended)
         if screenshot.lower() == "true":

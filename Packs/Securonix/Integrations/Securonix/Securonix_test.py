@@ -15,7 +15,7 @@ from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_
     get_incident_attachments, list_violation_data, get_incident_workflow, get_incident_status, \
     get_incident_available_actions, add_comment_to_incident, get_modified_remote_data_command, \
     get_remote_data_command, update_remote_system, create_xsoar_to_securonix_state_mapping, delete_lookup_table_entries, \
-    main, validate_mirroring_parameters, filter_attachment_activity_entries
+    main, validate_mirroring_parameters, filter_attachment_activity_entries, list_activity_data
 
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE, \
     RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT, \
@@ -29,12 +29,12 @@ from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAU
     RESPONSE_ADD_WHITELIST_ENTRY_6_4, RESPONSE_LOOKUP_TABLE_LIST, RESPONSE_DELETE_WHITELIST_ENTRY, \
     RESPONSE_LOOKUP_TABLE_ENTRY_ADD, RESPONSE_LOOKUP_TABLE_ENTRIES_LIST, get_mock_attachment_response, \
     RESPONSE_LIST_VIOLATION_6_4, RESPONSE_GET_INCIDENT_WORKFLOW, RESPONSE_GET_INCIDENT_STATUS, \
-    RESPONSE_GET_INCIDENT_AVAILABLE_ACTIONS, RESPONSE_ADD_COMMENT_TO_INCIDENT, \
+    RESPONSE_GET_INCIDENT_AVAILABLE_ACTIONS, RESPONSE_ADD_COMMENT_TO_INCIDENT, RESPONSE_LIST_ACTIVITY, \
     MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY, MIRROR_ENTRIES, RESPONSE_DELETE_LOOKUP_ENTRIES_DELETE, \
     DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_NAME, DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_KEYS, \
-    MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_ATTACHMENT
+    MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_ATTACHMENT, RESPONSE_LIST_ACTIVITY_NO_DATA
 
-from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
+from test_data.result_constants import EXPECTED_FETCH_INCIDENT, EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
     EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT, \
     EXPECTED_GET_INCIDENT, EXPECTED_CREATE_INCIDENT, EXPECTED_PERFORM_ACTION_ON_INCIDENT, \
     EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST, EXPECTED_CREATE_WATCHLIST, EXPECTED_ENTITY_IN_WATCHLIST, \
@@ -42,10 +42,10 @@ from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT
     EXPECTED_LIST_WHITELISTS_ENTRY, EXPECTED_GET_WHITELIST_ENTRY, EXPECTED_CREATE_WHITELIST, \
     EXPECTED_DELETE_LOOKUP_TABLE_CONFIG_AND_DATA, EXPECTED_ADD_WHITELIST_ENTRY_6_4, EXPECTED_LOOKUP_TABLE_LIST, \
     EXPECTED_DELETE_WHITELIST_ENTRY, EXPECTED_LOOKUP_TABLE_ENTRY_ADD, EXPECTED_LOOKUP_TABLE_ENTRIES_LIST, \
-    EXPECTED_CREATE_LOOKUP_TABLE, \
+    EXPECTED_CREATE_LOOKUP_TABLE, EXPECTED_LIST_ACTIVITY_NO_DATA, \
     EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4, EXPECTED_LIST_VIOLATION_DATA_6_4, EXPECTED_GET_INCIDENT_WORKFLOW, \
     EXPECTED_GET_INCIDENT_STATUS, EXPECTED_GET_INCIDENT_AVAILABLE_ACTIONS, EXPECTED_ADD_COMMENT_TO_INCIDENT, \
-    EXPECTED_XSOAR_STATE_MAPPING, EXPECTED_DELETE_LOOKUP_ENTRIES_DELETE
+    EXPECTED_XSOAR_STATE_MAPPING, EXPECTED_DELETE_LOOKUP_ENTRIES_DELETE, EXPECTED_LIST_ACTIVITY
 
 
 @pytest.fixture()
@@ -150,6 +150,7 @@ def test_fetch_securonix_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Emails with large File attachments: 100107'
     assert incidents[0].get('severity') == 1
+    assert json.loads(incidents[0].get('rawJSON')) == EXPECTED_FETCH_INCIDENT
 
 
 def test_fetch_securonix_incidents_with_default_severity(mocker):
@@ -286,7 +287,7 @@ def test_module(mocker):
                                   'action_parameters': "assigntouserid={user_id},assignedTo=USER"},
      RESPONSE_PERFORM_ACTION_ON_INCIDENT, EXPECTED_PERFORM_ACTION_ON_INCIDENT),
     (list_watchlists, {}, RESPONSE_LIST_WATCHLISTS, EXPECTED_LIST_WATCHLISTS),
-    (get_watchlist, {'watchlist_name': 'test'}, RESPONSE_GET_WATCHLIST, EXPECTED_GET_WATCHLIST),
+    (get_watchlist, {'watchlist_name': "Flight RiskUsers"}, RESPONSE_GET_WATCHLIST, EXPECTED_GET_WATCHLIST),
     (create_watchlist, {'watchlist_name': 'test234'}, RESPONSE_CREATE_WATCHLIST, EXPECTED_CREATE_WATCHLIST),
     (check_entity_in_watchlist, {'watchlist_name': 'test234', 'entity_name': '1002'}, RESPONSE_ENTITY_IN_WATCHLIST,
      EXPECTED_ENTITY_IN_WATCHLIST),
@@ -318,12 +319,18 @@ def test_module(mocker):
     (create_lookup_table,
      {'name': 'test_table', 'field_names': 'accname,id', 'key': 'accname,id', 'tenant_name': 'test_tenant',
       'scope': 'Global'}, get_mock_create_lookup_table_response().text, EXPECTED_CREATE_LOOKUP_TABLE),
-    (list_violation_data, {'from': "01/17/2022 00:00:00", 'query': 'policy="Response-Account-AutoPlay"',
+    (list_violation_data, {'from': "01/17/2022 00:00:00", 'query': 'policy="Response-Account-\\?*AutoPlay"',
                            'to': "01/17/2023 00:00:20"}, RESPONSE_LIST_VIOLATION_6_4,
      EXPECTED_LIST_VIOLATION_DATA_6_4),
     (list_violation_data, {'query': ' index  = violation and policy="Response-Account-AutoPlay"',
                            'from': "01/17/2022 00:00:00", 'to': "01/17/2023 00:00:20"}, RESPONSE_LIST_VIOLATION_6_4,
      EXPECTED_LIST_VIOLATION_DATA_6_4),
+    (list_activity_data, {'from': "01/12/2024 10:00:00", 'query': 'hostname = "HOST\\?*.com"',
+                          'to': "01/15/2024 12:01:00"}, RESPONSE_LIST_ACTIVITY, EXPECTED_LIST_ACTIVITY),
+    (list_activity_data, {'query': ' index  = activity and hostname = "HOST.com"', 'from': "01/12/2024 10:00:00",
+                          'to': "01/15/2024 12:01:00"}, RESPONSE_LIST_ACTIVITY, EXPECTED_LIST_ACTIVITY),
+    (list_activity_data, {'query': ' index  = activity and hostname = "HOST.com"', 'from': "01/12/2024 10:00:00",
+                          'to': "01/15/2024 12:01:00"}, RESPONSE_LIST_ACTIVITY_NO_DATA, EXPECTED_LIST_ACTIVITY_NO_DATA),
     (get_incident_attachments, {'incident_id': 'test_id'}, get_mock_attachment_response(),
      EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4),
     (get_incident_workflow, {'incident_id': '123456'}, RESPONSE_GET_INCIDENT_WORKFLOW, EXPECTED_GET_INCIDENT_WORKFLOW),
@@ -862,7 +869,9 @@ def test_whitelist_entry_add_for_invalid_arguments(mock_client, args, err_msg):
      'Failed to add entity {\'test_entity\'} to the watchlist test_watchlist.\nError from Securonix is: Error in '
      'command.'),
     (create_watchlist, {'watchlist_name': 'test_watchlist'}, 'Error in command.',
-     'Failed to list watchlists.\nResponse from Securonix is:Error in command.')
+     'Failed to list watchlists.\nResponse from Securonix is:Error in command.'),
+    (list_activity_data, {}, {"error": True, 'errorMessage': 'Invalid Query'},
+     'Failed to get activity data in the given time frame.\nError from Securonix is: Invalid Query'),
 ])
 def test_exceptions_in_command(command_name, args, response, err_msg, mocker):
     """Test case scenario to validate Exceptions for the commands."""

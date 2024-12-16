@@ -1,0 +1,13 @@
+{
+    "outputs": {
+        "success": {
+            "data": [
+                {
+                    "nodeId": "0000000-0000-0000-0000-00000000",
+                    "status": "success"
+                }
+            ]
+        },
+        "fail": {}
+    }
+}

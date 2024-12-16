@@ -161,7 +161,7 @@ script:
     - contextPath: FortiSIEM.Events.NATIP
       description: NAT source IP.
       type: string
-    description: Get events by incidents
+    description: Get events by incidents.
   - name: fortisiem-clear-incident
     arguments:
     - name: incident_id
@@ -279,7 +279,7 @@ script:
     - contextPath: FortiSIEM.Events.SourceCountry
       description: Event source country.
       type: Unknown
-    description: Returns event list filtered by query
+    description: Returns event list filtered by query.
   - name: fortisiem-get-lists
     arguments: []
     description: Get all FortiSIEM resource lists hierarchy.
@@ -290,7 +290,7 @@ script:
       description: ID of the resource group. Run the "fortisiem-get-lists" command to get the ID. command.
     - name: object-info
       required: true
-      description: 'CSV list of key-value pairs of attributes, for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2'
+      description: 'CSV list of key-value pairs of attributes (for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2).'
     - name: resource_type
       required: true
       auto: PREDEFINED
@@ -311,7 +311,7 @@ script:
       - Anonymity Network
       - User Agents
       - Remediations
-      description: Resource Type
+      description: Resource Type.
     outputs:
     - contextPath: FortiSIEM.Resource
       description: 'Resource object in fortiSIEM lists. '
@@ -342,7 +342,7 @@ script:
       - Anonymity Network
       - User Agents
       - Remediations
-      description: Resource Type
+      description: Resource Type.
     description: Removes elements from a resource list.
   - name: fortisiem-get-resource-list
     arguments:
@@ -373,7 +373,7 @@ script:
     description: Lists all elements in a resource list.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.116439
 tests:
 - No Test
 fromversion: 5.0.0

@@ -2,7 +2,7 @@ comment: 'Dynamic section that will display the Labels for an Incident in a mark
 commonfields:
   id: CaseMgmtDisplayLabels
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: CaseMgmtDisplayLabels
 runas: DBotWeakRole

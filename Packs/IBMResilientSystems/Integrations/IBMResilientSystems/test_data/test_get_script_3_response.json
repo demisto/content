@@ -1,0 +1,14 @@
+{
+    "id": 3,
+    "name": "test-script",
+    "description": "Testing",
+    "language": "python",
+    "object_type": 0,
+    "uuid": "0000-0000-0000-0000-0000",
+    "actions": [],
+    "tags": [],
+    "script_text": "...",
+    "creator_id": 9,
+    "last_modified_by": 9,
+    "last_modified_time": 1720356945680
+}

@@ -679,6 +679,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    client = create_client()
 
     params = {
         'managed_identities_client_id': {'password': client_id},
@@ -689,6 +690,10 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     mocker.patch.object(jwt, 'decode', return_value={'tid': 'test'})
     mocker.patch.object(MicrosoftManagementActivity, 'return_results')
     mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    list_subscriptions_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/list'.format(
+        client.tenant_id)
+    requests_mock.get(list_subscriptions_endpoint, json=LIST_SUBSCRIPTIONS_RESPONSE_NO_SUBSCRIPTIONS)
 
     main()
 

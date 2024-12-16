@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Akamai WAF SIEM
   version: -1
@@ -8,72 +11,133 @@ configuration:
   name: host
   required: true
   type: 0
+  section: Connect
 - display: Client token
   name: clientToken
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: clienttoken_creds
   type: 9
   displaypassword: Client token
   hiddenusername: true
   required: false
+  section: Connect
 - display: Access token
   name: accessToken
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: accesstoken_creds
   type: 9
   displaypassword: Access token
   hiddenusername: true
   required: false
+  section: Connect
 - display: Client secret
   name: clientSecret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: clientsecret_creds
   type: 9
   displaypassword: Client secret
   hiddenusername: true
   required: false
+  section: Connect
 - defaultvalue: '50170'
   display: Config IDs to fetch
   name: configIds
   required: true
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   type: 0
   defaultvalue: 1 hours
   required: false
+  section: Collect
+  hidden:
+  - marketplacev2
 - display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
   defaultvalue: '20'
   required: false
+  additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
+  section: Collect
+- display: Akamai Page size
+  name: page_size
+  type: 0
+  required: false
+  section: Collect
+  defaultvalue: '20000'
+  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80k. Note that if your API has higher ingestion rate, the integration will be able to detect it and immediately starts the next run in order to fetch events quicker.
+  hidden:
+  - xsoar
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
+  required: false
+  type: 8
+  section: Connect
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  hidden:
+  - marketplacev2
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  defaultvalue: '1'
+  advanced: true
+- display: Fetch Events
+  name: isFetchEvents
   type: 8
   required: false
+  section: Collect
+  hidden:
+  - xsoar
+- display: Skip events decoding
+  name: should_skip_decode_events
+  additionalinfo: Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate.
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
 script:
   commands:
+  - description: Reset the last offset in case the offset is invalid.
+    name: akamai-siem-reset-offset
   - arguments:
     - description: 'Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912.'
       name: config_ids
@@ -89,7 +153,7 @@ script:
       name: to_epoch
     - description: Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
       name: time_stamp
-    description: Get security events from Akamai WAF
+    description: Get security events from Akamai WAF.
     name: akamai-siem-get-events
     outputs:
     - contextPath: Akamai.SIEM.AttackData.clientIP
@@ -164,8 +228,11 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.76157
+  dockerimage: demisto/auth-utils:1.0.0.116930
   isfetch: true
+  isfetch:marketplacev2: false
+  isfetchevents: true
+  isfetchevents:xsoar: false
   runonce: false
   script: '-'
   subtype: python3

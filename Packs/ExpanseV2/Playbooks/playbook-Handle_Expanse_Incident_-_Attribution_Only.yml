@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Handle Expanse Incident - Attribution Only
+deprecated: true
 description: |2-
+   Deprecated. No available replacement.
    Shorter version of Handle Expanse Incident playbook with only the Attribution part.
 
   There are several phases:

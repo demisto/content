@@ -1,0 +1,26 @@
+{
+    "name": "XMCO",
+    "description": "XMCO is a cybersecurity consulting firm",
+    "support": "partner",
+    "currentVersion": "1.0.2",
+    "author": "XMCO",
+    "url": "https://xmco.freshdesk.com/",
+    "email": "leportail@xmco.fr",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "factory@xmco.fr",
+        "palberteau@xmco.fr"
+    ],
+    "githubUser": [
+        "pal-xmco"
+    ]
+}

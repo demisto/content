@@ -280,10 +280,10 @@ tasks:
     continueonerrortype: ""
   '9':
     id: '9'
-    taskid: 4e6cdd2e-5ef1-49a9-8905-aa8088bbc0c0
+    taskid: 9f17bc5d-8609-4fb8-8d07-637b1aa26394
     type: regular
     task:
-      id: 4e6cdd2e-5ef1-49a9-8905-aa8088bbc0c0
+      id: 9f17bc5d-8609-4fb8-8d07-637b1aa26394
       version: -1
       name: Tag Indicators
       description: commands.local.cmd.set.indicators
@@ -296,9 +296,14 @@ tasks:
       - '10'
     scriptarguments:
       indicatorsValues:
-        simple: ${Indicators to block.Answers.0}
+        complex:
+          root: Indicators to block.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
       tags:
-        simple: ${inputs.BlockIOCTagName}
+        complex:
+          root: inputs.BlockIOCTagName
     separatecontext: false
     view: |-
       {
@@ -398,7 +403,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1540
+          "y": 1560
         }
       }
     note: false
@@ -435,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 1370
+          "y": 1390
         }
       }
     note: false
@@ -474,7 +479,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 1370
+          "y": 1390
         }
       }
     note: false
@@ -528,7 +533,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1200
+          "y": 1220
         }
       }
     note: false
@@ -560,8 +565,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: ServiceNow v2
-    results:
-    - brandInstances
     separatecontext: false
     view: |-
       {
@@ -599,8 +602,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: jira-v2
-    results:
-    - brandInstances
     separatecontext: false
     view: |-
       {
@@ -1154,10 +1155,10 @@ tasks:
     continueonerrortype: ""
   '49':
     id: '49'
-    taskid: 5fd58b06-c350-42d4-808e-3f60fd486eb0
+    taskid: 7ff4b4ce-3878-4104-8698-356105dd43ac
     type: condition
     task:
-      id: 5fd58b06-c350-42d4-808e-3f60fd486eb0
+      id: 7ff4b4ce-3878-4104-8698-356105dd43ac
       version: -1
       name: Were values provided?
       type: condition
@@ -1174,19 +1175,16 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: '1'
+              simple: 'Indicators to block.Answers.0'
             iscontext: true
-          right:
-            value:
-              simple: '1'
     view: |-
       {
         "position": {
           "x": 1330,
-          "y": 315
+          "y": 320
         }
       }
     note: false
@@ -1856,7 +1854,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3145,
+        "height": 3165,
         "width": 2760,
         "x": -360,
         "y": -1540
@@ -2012,3 +2010,5 @@ tests:
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+marketplaces:
+- xsoar

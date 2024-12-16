@@ -46,7 +46,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: "Define user's active status:  false = Disabled, true = enabled"
+      description: 'Define user''s active status:  false = Disabled, true = enabled'
       name: active
       predefined:
       - 'true'
@@ -66,7 +66,7 @@ script:
       description: The username that is defined in the User Information on FortiAuthenticator.
     name: fortiauthenticator-update-user
     description: Update the active status for specific user by email
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

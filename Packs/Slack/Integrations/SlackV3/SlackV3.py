@@ -8,6 +8,9 @@ import threading
 from distutils.util import strtobool
 import aiohttp
 import slack_sdk
+from urllib.parse import urlparse
+from typing import TypedDict, Literal, get_args
+
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -18,6 +21,7 @@ from slack_sdk.web.slack_response import SlackResponse
 
 ''' CONSTANTS '''
 
+ALLOWED_HTTP_VERBS = Literal['POST', 'GET']
 SEVERITY_DICT = {
     'Unknown': 0,
     'Low': 1,
@@ -53,6 +57,15 @@ SYNC_CONTEXT = True
 PROFILING_DUMP_ROWS_LIMIT = 20
 MAX_SAMPLES = 10
 
+
+class FileUploadParams(TypedDict):
+    filename: str
+    file: str                       # file path
+    initial_comment: Optional[str]
+    channel: str                    # channel ID
+    thread_ts: Optional[str]        # thread ID
+
+
 ''' GLOBALS '''
 
 USER_TOKEN: str
@@ -85,6 +98,7 @@ BOT_ID: str
 CACHED_INTEGRATION_CONTEXT: dict
 CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
+FILE_MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
 DEMISTO_URL: str
@@ -92,6 +106,24 @@ IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_war_room_url(url: str) -> str:
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
+    if is_xsiam():
+        incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
+        incident_url = urlparse(url)
+        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
+        # executed from the incident War Room
+        if incident_id and incident_id.startswith('INCIDENT-'):
+            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
+        # executed from the alert War Room
+        else:
+            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+        return war_room_url
+
+    return url
 
 
 def get_bot_id() -> str:
@@ -134,6 +166,14 @@ def test_module():
     if MIRRORING_ENABLED and not LONG_RUNNING_ENABLED:
         demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
                       ' long running must be enabled.')
+
+    # validation for permitted_notifications since not all the options are supported by xsiam
+    if is_xsiam():
+        xsiam_permitted_notification_types = {"investigationClosed", "investigationDeleted", "incidentReminderSLA",
+                                              "taskCompleted", "failedFetchIncidents", "mentionNew", "mentionOld"}
+
+        if not_allowed := set(CUSTOM_PERMITTED_NOTIFICATION_TYPES).difference(xsiam_permitted_notification_types):
+            demisto.error(f"The {','.join(sorted(not_allowed))} 'Types of Notifications to Send' are not supported in XSIAM.")
 
     demisto.results('ok')
 
@@ -429,21 +469,53 @@ def set_name_and_icon(body: dict, method: str):
             body['icon_url'] = BOT_ICON_URL
 
 
-def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                            body: dict = None) -> SlackResponse:
+def validate_slack_request_args(
+    http_verb: str,
+    method: Optional[str],
+    file_upload_params: Optional[FileUploadParams],
+) -> None:
+    """
+    Performs basic pre-validation on the Slack request arguments
+
+    Args:
+        http_verb: The HTTP method to use.
+        method: The Slack web API method to use (not relevant when file_upload_params are specified).
+        file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
+
+    Raises:
+        ValueError: If neither method nor file_upload_params are specified, or if an invalid http_verb is used.
+    """
+    if not method and not file_upload_params:
+        # empty method is only allowed when uploading a file
+        raise ValueError('Either a Slack web API method or file_upload_params need to specified')
+
+    allowed_http_verb_values: tuple = get_args(ALLOWED_HTTP_VERBS)
+    if http_verb not in allowed_http_verb_values:
+        raise ValueError(f'Invalid http_verb: {http_verb}. Allowed values: {", ".join(allowed_http_verb_values)}.')
+
+
+def send_slack_request_sync(
+    client: slack_sdk.WebClient,
+    method: str = '',  # irrelevant when file_upload_params are specified
+    http_verb: ALLOWED_HTTP_VERBS = 'POST',
+    body: Optional[dict] = None,
+    file_upload_params: Optional[FileUploadParams] = None,
+) -> SlackResponse:
     """
     Sends a request to slack API while handling rate limit errors.
 
     Args:
-        client: The slack client.
-        method: The method to use.
+        client: The Synchronous Slack client.
+        method: The Slack web API method to use (irrelevant when file_upload_params are specified).
         http_verb: The HTTP method to use.
-        file_: A file path to send.
         body: The request body.
+        file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
 
     Returns:
-        The slack API response.
+        The Slack API response.
     """
+    validate_slack_request_args(http_verb=http_verb, method=method, file_upload_params=file_upload_params)
+
     if body is None:
         body = {}
 
@@ -452,11 +524,12 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
     while True:
         try:
             demisto.debug(f'Sending slack {method} (sync). Body is: {str(body)}')
-            if http_verb == 'POST':
-                if file_:
-                    response = client.api_call(method, files={"file": file_}, data=body)
-                else:
-                    response = client.api_call(method, json=body)
+            if file_upload_params:
+                # When file_upload_params provided, use three-stage `file_upload_v2` wrapper method in Slack's SDK client
+                # https://tools.slack.dev/python-slack-sdk/web/#uploading-files
+                response = client.files_upload_v2(**file_upload_params)
+            elif http_verb == 'POST':
+                response = client.api_call(method, json=body)
             else:
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
@@ -475,21 +548,28 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
     return response  # type: ignore
 
 
-async def send_slack_request_async(client: AsyncWebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                                   body: dict = None) -> SlackResponse:
+async def send_slack_request_async(
+    client: AsyncWebClient,
+    method: str = '',    # irrelevant when file_upload_params are specified
+    http_verb: ALLOWED_HTTP_VERBS = 'POST',
+    body: Optional[dict] = None,
+    file_upload_params: Optional[FileUploadParams] = None,
+) -> SlackResponse:
     """
     Sends an async request to slack API while handling rate limit errors.
 
     Args:
-        client: The slack client.
-        method: The method to use.
+        client: The Asynchronous Slack client.
+        method: The Slack web API method to use (irrelevant when file_upload_params are specified).
         http_verb: The HTTP method to use.
-        file_: A file path to send.
         body: The request body.
+        file_upload_params: An instance of FileUploadParams (for uploading using the file upload APIs).
 
     Returns:
-        The slack API response.
+        The Slack API response.
     """
+    validate_slack_request_args(http_verb=http_verb, method=method, file_upload_params=file_upload_params)
+
     if body is None:
         body = {}
 
@@ -498,13 +578,14 @@ async def send_slack_request_async(client: AsyncWebClient, method: str, http_ver
     while True:
         try:
             demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
-            if http_verb == 'POST':
-                if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
-                else:
-                    response = await client.api_call(method, json=body)  # type: ignore
+            if file_upload_params:
+                # When file_upload_params provided, use three-stage `file_upload_v2` wrapper method in Slack's SDK client
+                # https://tools.slack.dev/python-slack-sdk/web/#uploading-files
+                response = await client.files_upload_v2(**file_upload_params)
+            elif http_verb == 'POST':
+                response = await client.api_call(method, json=body)
             else:
-                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
+                response = await client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
             demisto.debug(f'Got rate limit error (async). Body is: {str(body)}\n{api_error}')
             response = api_error.response
@@ -1006,6 +1087,10 @@ class SlackLogger(IntegrationLogger):
         self.messages.append(text)
 
     def error(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
+
+    def exception(self, message):
         text = self.encode(message)
         self.messages.append(text)
 
@@ -1767,6 +1852,31 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     return conversation
 
 
+def send_mirrored_file_to_slack(entry: str, message: str, original_channel: str, channel_id: str, comment: Optional[str] = None):
+    """
+    Sends a file from xsoar investigation to a mirrored slack channel
+
+    Args:
+        entry: the entry ID of the file
+        message: the message from the war-room when uploading file
+        original_channel: the channel name to upload the file
+        channel_id: the channel ID to upload the file
+        comment: a comment that was added when uploading the file
+    """
+    file_name = demisto.getFilePath(entry)["name"]
+    if FILE_MIRRORING_ENABLED:
+        demisto.debug(
+            f'file {file_name} has been uploaded to a mirrored incident, '
+            f'uploading the file to slack channel {original_channel}'
+        )
+        if comment:
+            # if a comment was added when uploading the file, add it to the message
+            message = f'{message}\nComment: {comment}'
+        slack_send_file(original_channel, channel_id, entry, message)
+    else:
+        demisto.debug(f'file {file_name} will not be mirrored because file mirroring is not enabled')
+
+
 def slack_send():
     """
     Sends a message to slack
@@ -1805,6 +1915,16 @@ def slack_send():
 
         # return if the entry tags is not containing any of the filtered_tags
         if tags and not any(elem in entry_tags for elem in tags):
+            return
+
+        if entry:
+            send_mirrored_file_to_slack(
+                entry,
+                message=message,
+                original_channel=original_channel,
+                channel_id=channel_id,
+                comment=entry_object.get("contents")
+            )
             return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
@@ -1910,17 +2030,50 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
     set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
-def slack_send_file():
+SEND_FILE_ERROR_EXPLANATIONS = {
+    'access_denied': 'Access to a resource specified in the request is denied.',
+    'channel_not_found': 'The value passed for channel_id was invalid.',
+    'file_not_found': 'Could not find the file from the upload ticket.',
+    'file_update_failed': 'Failure occurred when attempting to update the file.',
+    'invalid_channel': 'The channel could not be found or the channel specified is invalid.',
+    'posting_to_channel_denied': 'The user is not authorized to post to the target channel(s).',
+    'account_inactive': 'The authentication token is for a deleted user or workspace when using a bot token.',
+    'deprecated_endpoint': 'The endpoint has been deprecated.',
+    'ekm_access_denied': 'Administrators have suspended the ability to post a message.',
+    'enterprise_is_restricted': 'The method cannot be called from an Enterprise.',
+    'invalid_auth': 'The provided token is invalid or the request originates from a disallowed IP address.',
+    'method_deprecated': 'The method has been deprecated.',
+    'missing_scope': 'The token used is not granted the specific scope permissions required to complete this request.',
+    'not_allowed_token_type': 'The token type used in this request is not allowed.',
+    'not_authed': 'No authentication token provided.',
+    'not_in_channel': 'The user or bot used is not in the target channel(s). Ensure they are invited to the channel(s).',
+    'no_permission': 'The workspace token used in this request does not have the permissions necessary to complete the request.',
+    'org_login_required': 'The workspace is undergoing an enterprise migration and is temporarily unavailable.',
+    'token_expired': 'The authentication token has expired.',
+    'token_revoked': 'The authentication token is for a deleted user or workspace or the app has been removed.',
+    'two_factor_setup_required': 'Two factor setup is required.',
+    'team_access_not_granted': 'The token used is not granted the specific workspace access required to complete this request.',
+    'accesslimited': 'Access to this method is limited on the current network.',
+    'fatal_error': 'The Slack server could not complete this operation(s).',
+    'internal_error': 'The Slack server could not complete this operation(s), likely due to a transient issue on our end.',
+    'ratelimited': 'The request has been rate limited.',
+    'request_timeout': 'Data was either missing or truncated for the POST request.',
+    'service_unavailable': 'The Slack service is temporarily unavailable.',
+    'team_added_to_org': 'The Slack workspace is currently undergoing migration to an Enterprise Organization.'
+}
+
+
+def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_id: str | None = None, _comment: str = ""):
     """
     Sends a file to slack
     """
     to = demisto.args().get('to')
-    channel = demisto.args().get('channel')
-    channel_id = demisto.args().get('channel_id', '')
+    channel = _channel or demisto.args().get('channel')
+    channel_id = _channel_id or demisto.args().get('channel_id', '')
     group = demisto.args().get('group')
-    entry_id = demisto.args().get('file')
+    entry_id = _entry_id or demisto.args().get('file')
     thread_id = demisto.args().get('threadID')
-    comment = demisto.args().get('comment', '')
+    comment = _comment or demisto.args().get('comment', '')
 
     if not (to or channel or group):
         mirror = find_mirror_by_investigation()
@@ -1938,11 +2091,20 @@ def slack_send_file():
         'comment': comment
     }
 
-    response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
-    if response:
-        demisto.results('File sent to Slack successfully.')
-    else:
-        demisto.results('Could not send the file to Slack.')
+    error_message = f'Failed to send file: {file_path["name"]} to Slack.'
+    try:
+        response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
+        if response:
+            return_results(CommandResults(readable_output='File sent to Slack successfully.'))
+        else:
+            raise DemistoException(message=error_message)
+    except SlackApiError as e:
+        demisto.debug(f'{error_message} {e}')
+        if error_code := e.response.get('error'):
+            error_explanation = SEND_FILE_ERROR_EXPLANATIONS.get(error_code, error_code.replace('_', ' ').capitalize())
+            error_message += f' {error_explanation}'
+
+        raise DemistoException(message=error_message)
 
 
 def handle_tags_in_message_sync(message: str) -> str:
@@ -1998,6 +2160,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                 if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
                     link = server_links.get('warRoom')
                     if link:
+                        link = get_war_room_url(link)
                         if entry:
                             link += '/' + entry
                         message += f'\nView it on: {link}'
@@ -2095,19 +2258,16 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
         The Slack send response.
     """
     response: Optional[SlackResponse] = None
-    body = {
-        'filename': file_dict['name']
-    }
-
-    if 'comment' in file_dict:
-        body['initial_comment'] = file_dict['comment']
 
     for destination in destinations:
-        body['channels'] = destination
-        if thread_id:
-            body['thread_ts'] = thread_id
-
-        response = send_slack_request_sync(CLIENT, 'files.upload', file_=file_dict['path'], body=body)
+        file_upload_params = FileUploadParams(
+            filename=file_dict['name'],
+            file=file_dict['path'],
+            initial_comment=file_dict.get('comment'),
+            channel=destination,
+            thread_ts=thread_id,
+        )
+        response = send_slack_request_sync(CLIENT, file_upload_params=file_upload_params)
 
     return response
 
@@ -2747,7 +2907,7 @@ def init_globals(command_name: str = ''):
     """
 
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, USER_CLIENT, \
-        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, USER_TOKEN
+        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, FILE_MIRRORING_ENABLED, USER_TOKEN
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
@@ -2784,6 +2944,7 @@ def init_globals(command_name: str = ''):
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
+    FILE_MIRRORING_ENABLED = demisto.params().get('enable_outbound_file_mirroring', False)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
     demisto_urls = demisto.demistoUrls()
@@ -2791,7 +2952,7 @@ def init_globals(command_name: str = ''):
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)
-    COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(',')) if common_channels else {}
+    COMMON_CHANNELS = parse_common_channels(common_channels)
     DISABLE_CACHING = demisto.params().get('disable_caching', False)
 
     # Formats the error message for the 'Channel Not Found' errors
@@ -2816,6 +2977,7 @@ def init_globals(command_name: str = ''):
 
     # Handle Long-Running Specific Globals
     if command_name == 'long-running-execution':
+        demisto.debug('in long running execution init globals')
         # Bot identification
         integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('bot_user_id'):
@@ -2831,6 +2993,24 @@ def init_globals(command_name: str = ''):
         # Pull initial Cached context and set the Expiry
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
+
+
+def parse_common_channels(common_channels: str):
+    common_channels = (common_channels or '').strip()
+    if not common_channels:
+        return {}
+    try:
+        stripped_channels = {}
+        for pair in re.split(r',|\n', common_channels):
+            stripped = pair.strip()
+            if stripped:
+                key, val = stripped.split(':')
+                stripped_channels[key.strip()] = val.strip()
+    except Exception as e:
+        demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
+        raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') \
+            from e
+    return stripped_channels
 
 
 def print_thread_dump():
@@ -2946,13 +3126,16 @@ def main() -> None:
         demisto.info(f'{command_name} started.')
         command_func = commands[command_name]
         init_globals(command_name)
+        demisto.info('after init globals')
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
         support_multithreading()
-        command_func()
+        command_func()  # type: ignore
     except Exception as e:
-        demisto.debug(e)
+        demisto.error(f'Error occured error: {e}')
+        demisto.error(traceback.format_exc())
         return_error(str(e))
+
     finally:
         demisto.info(f'{command_name} completed.')  # type: ignore
         if EXTENSIVE_LOGGING:

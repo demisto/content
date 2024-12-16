@@ -44,7 +44,7 @@ def test_fetch_events_few_events(mocker):
     mocker.patch('CyberArkIdentityEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.post(f'{URL}oauth2/platformtoken', json={'access_token': '123456abc'})
         m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkIdentityEventCollector import main
@@ -74,7 +74,7 @@ def test_fetch_events_no_events(mocker):
     mocker.patch('CyberArkIdentityEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.post(f'{URL}oauth2/platformtoken', json={'access_token': '123456abc'})
         m.post(f'{URL}RedRock/Query', json={'Result': {}})
 
         from CyberArkIdentityEventCollector import main
@@ -106,7 +106,7 @@ def test_fetch_events_limit_set_to_one(mocker):
     mocker.patch('CyberArkIdentityEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.post(f'{URL}oauth2/platformtoken', json={'access_token': '123456abc'})
         m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkIdentityEventCollector import main

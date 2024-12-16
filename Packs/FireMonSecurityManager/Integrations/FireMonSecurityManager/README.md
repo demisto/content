@@ -1,25 +1,21 @@
 FireMon Security Manager delivers comprehensive rule lifecycle management to help you manage and automate every stage of the change management process. Workflows can be customized and automated to conform to your security goals and standards, with tools at your disposal to evolve policy and protection over time.
 
-## Configure FireMon Security Manager on Cortex XSOAR
+## Configure FireMon Security Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireMon Security Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://example.net) | True |
-    | Username | True |
-    | Password | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Incidents Fetch Interval | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://example.net) | True |
+| Username | True |
+| Password | True |
+| Fetch incidents | False |
+| Incident type | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Incidents Fetch Interval | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### firemon-user-authentication
 ***
@@ -115,3 +111,38 @@ Searches for security rules using the SIQL language query (limit to 10k)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireMonSecurityManager.SIQL.matchId | Unknown | Resposne for the SIQL query | 
+
+
+#### Base Command
+
+`firemon-collector-get-all`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pageSize | Number of results in the page. | Optional | 
+| page | Page in which to retrieve results. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireMonSecurityManager.Collector | Unknown | Firemon Collector Infomation. | 
+
+
+#### Base Command
+
+`firemon-collector-get-status-byid`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Collector id. | true | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireMonSecurityManager.CollectorStatus | Unknown | Firemon Collector Status. | 

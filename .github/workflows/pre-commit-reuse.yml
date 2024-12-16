@@ -12,15 +12,18 @@ jobs:
       contents: write
     steps:
     - name: Install poetry
-      uses: Gr1N/setup-poetry@v8
+      uses: Gr1N/setup-poetry@v9
 
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: 'poetry'
@@ -39,20 +42,70 @@ jobs:
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        BRANCH_NAME: ${{ github.head_ref }}
       run: |
+        LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        if echo "$LABEL_NAMES" | grep -q "Contribution"; then
+            echo "Label 'Contribution' found!"
+            export DEMISTO_SDK_XSOAR_LINTER_WARNING_ANNOTATIONS=true
+        else
+          echo "Label 'Contribution' not found."
+        fi
+
         source .venv/bin/activate
-        demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+        if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
+          echo "In docker auto update branch, pre commit on docker_autoupdate mode."
+          demisto-sdk pre-commit -g --mode=docker_autoupdate --show-diff-on-failure --verbose
+        elif [[ "$BRANCH_NAME" =~ ^packwise/.* ]]; then
+          echo "In packwise branch, pre commit with ignore flag."
+          demisto-sdk pre-commit -g --mode=packwise --show-diff-on-failure --verbose
+        else
+          echo "Not in docker auto update branch, pre commit on CI mode."
+          demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=ci
+        fi
 
     - name: "Check coverage.xml exists"
       if: always()
-      id: check_files
+      id: check-coverage-xml-exists
       uses: andstor/file-existence-action@v2
       with:
         files: "coverage_report/coverage.xml"
 
+    - name: "Check pytest report exists"
+      if: always()
+      id: check-pytest-junit-exists
+      uses: andstor/file-existence-action@v2
+      with:
+        files: ".report_pytest.xml"
+
+    - name: Create pack-wise pytest report
+      run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
+      if: |
+        always() && 
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        github.event.pull_request.head.repo.fork == false
+
+    - name: Upload junit & pack-wise pytest report
+      uses: actions/upload-artifact@v4
+      if: |
+        always() && 
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        github.event.pull_request.head.repo.fork == false
+      with:
+        name: pytest
+        path: |
+          packwise_pytest_time.csv
+          .report_pytest.xml
+        if-no-files-found: error
+
     - name: Pytest coverage comment
-      if: always() && steps.check_files.outputs.files_exists == 'true' && github.event.pull_request.head.repo.fork == false
+      if: |
+        always() && 
+        steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        ! github.event.pull_request.head.repo.fork
       uses: MishaKav/pytest-coverage-comment@main
+      continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
         junitxml-path: .report_pytest.xml

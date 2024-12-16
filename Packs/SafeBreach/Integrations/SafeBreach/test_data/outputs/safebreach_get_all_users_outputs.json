@@ -1,0 +1,120 @@
+{
+    "outputs": {
+        "details_and_deleted": {
+            "data": [
+                {
+                    "id": 123432,
+                    "name": "user1",
+                    "accountId": 121312413,
+                    "email": "user1@acme.com",
+                    "mustChangePassword": true,
+                    "roles": {
+                        "read": true
+                    },
+                    "mustReadTerms": true,
+                    "showStudioDisclaimer": true,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "showCloudAttacksDisclaimer": true,
+                    "showCloneCustomizeDisclaimer": true,
+                    "extendedData": null,
+                    "description": null,
+                    "role": "viewer",
+                    "isActive": true,
+                    "createdAt": "2023-09-06T08:00:20.094Z",
+                    "updatedAt": "2023-09-06T08:00:20.094Z",
+                    "deletedAt": null,
+                    "deployments": []
+                },
+                {
+                    "id": 45678,
+                    "name": "user2",
+                    "accountId": 234567,
+                    "email": "user2@acme.com",
+                    "mustChangePassword": true,
+                    "roles": {
+                        "read": true
+                    },
+                    "mustReadTerms": true,
+                    "showStudioDisclaimer": true,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "showCloudAttacksDisclaimer": true,
+                    "showCloneCustomizeDisclaimer": true,
+                    "extendedData": null,
+                    "description": null,
+                    "role": "viewer",
+                    "isActive": false,
+                    "createdAt": "2023-09-07T07:58:30.695Z",
+                    "updatedAt": "2023-09-07T07:58:30.695Z",
+                    "deletedAt": "2023-09-07T07:58:30.695Z",
+                    "deployments": []
+                }
+            ]
+        },
+        "just_details": {
+            "data": [
+                {
+                    "id": 13433,
+                    "name": "user1",
+                    "accountId": 1234567890,
+                    "email": "acme1@acme.com",
+                    "mustChangePassword": true,
+                    "roles": {
+                        "read": true
+                    },
+                    "mustReadTerms": true,
+                    "showStudioDisclaimer": true,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "showCloudAttacksDisclaimer": true,
+                    "showCloneCustomizeDisclaimer": true,
+                    "extendedData": null,
+                    "description": null,
+                    "role": "viewer",
+                    "isActive": true,
+                    "createdAt": "2023-09-06T08:00:20.094Z",
+                    "updatedAt": "2023-09-06T08:00:20.094Z",
+                    "deletedAt": null,
+                    "deployments": []
+                },
+                {
+                    "id": 123,
+                    "name": "user2",
+                    "accountId": 4567,
+                    "email": "user2@acme.com",
+                    "mustChangePassword": true,
+                    "roles": {
+                        "read": true
+                    },
+                    "mustReadTerms": true,
+                    "showStudioDisclaimer": true,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "showCloudAttacksDisclaimer": true,
+                    "showCloneCustomizeDisclaimer": true,
+                    "extendedData": null,
+                    "description": null,
+                    "role": "viewer",
+                    "isActive": false,
+                    "createdAt": "2023-09-07T07:58:30.695Z",
+                    "updatedAt": "2023-09-07T07:58:30.695Z",
+                    "deletedAt": null,
+                    "deployments": []
+                }
+            ]
+        },
+        "just_deleted": {
+            "data": [
+                {
+                    "id": 123456789,
+                    "name": "acme1"
+                },
+                {
+                    "id": 9765432,
+                    "name": "acme2"
+                }
+            ]
+        }
+    }
+}

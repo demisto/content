@@ -9,7 +9,8 @@ from CommonServerUserPython import *
 
 
 import tempfile
-from typing import Optional, List, Dict, Union, Iterator, Any, Iterable, Tuple
+from typing import Any
+from collections.abc import Iterator, Iterable
 import uuid
 
 from xmltodict import parse
@@ -54,8 +55,8 @@ class TaxiiClient:
         'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1'
     }
 
-    def __init__(self, pem: str, crt: str, collection: str, base_url: Optional[str] = None,
-                 verify: Optional[Union[str, bool]] = True):
+    def __init__(self, pem: str, crt: str, collection: str, base_url: str | None = None,
+                 verify: str | bool | None = True):
 
         self.base_url = base_url.strip('/') if base_url else 'https://taxii.dhs.gov:8443'
         self._pem = TempFile(pem, '.pem')
@@ -64,7 +65,7 @@ class TaxiiClient:
         self._collection = collection
 
         if verify:
-            self.verify: Optional[Union[str, bool]] = os.getenv('SSL_CERT_FILE') or os.getenv('REQUESTS_CA_BUNDLE')
+            self.verify: str | bool | None = os.getenv('SSL_CERT_FILE') or os.getenv('REQUESTS_CA_BUNDLE')
             if not self.verify:
                 self._verify = TempFile(CA, '.crt')
                 self.verify = self._verify.path
@@ -82,23 +83,23 @@ class TaxiiClient:
             cert=self.cert
         ).text
 
-    def discovery_request(self) -> Dict:
+    def discovery_request(self) -> dict:
         url = f'{self.base_url}/flare/taxii11/discovery'
         data = '<Discovery_Request xmlns = "http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{ID}"/>'
         data = insert_id(data)
         return parse(self._request(url, data))
 
-    def poll_request(self, start: str, end: str) -> Dict:
+    def poll_request(self, start: str, end: str) -> dict:
         url = f'{self.base_url}/flare/taxii11/poll'
         data = insert_id(copy(self.poll_data).replace('{START_TIME}', start).replace('{END_TIME}', end))
         return parse(self._request(url, data)).get("taxii_11:Poll_Response", {})
 
 
-def safe_data_get(data: Dict, keys: Union[Iterable[str], str], prefix: str = '',
-                  default: Optional[Any] = None):
+def safe_data_get(data: dict, keys: Iterable[str] | str, prefix: str = '',
+                  default: Any | None = None):
     keys = [keys] if isinstance(keys, str) else keys
     if prefix:
-        keys = map(lambda x: ':'.join([prefix, x]), keys)
+        keys = (':'.join([prefix, x]) for x in keys)
     temp_data = data
     try:
         for key in keys:
@@ -116,7 +117,7 @@ class Indicators:
         pass
 
     @staticmethod
-    def _tlp_color_from_header(stix_header: Dict) -> str:
+    def _tlp_color_from_header(stix_header: dict) -> str:
         try:
             ais = safe_data_get(stix_header.get('stix:Handling', {}), ['Marking', 'Marking_Structure'], 'marking')
             return safe_data_get(ais, ['Not_Proprietary', 'TLPMarking'], 'AIS').get('@color')
@@ -124,7 +125,7 @@ class Indicators:
             return ''
 
     @staticmethod
-    def _source_from_header(stix_header: Dict) -> str:
+    def _source_from_header(stix_header: dict) -> str:
         info_source = stix_header.get('stix:Information_Source', {})
         info_source = safe_data_get(info_source, ['Contributing_Sources', 'Source', 'Identity'],
                                     'stixCommon', default={})
@@ -132,19 +133,19 @@ class Indicators:
         return safe_data_get(info_source, ['OrganisationName', 'NameElement'], 'xnl')
 
     @staticmethod
-    def _indicators(block: Dict) -> Iterator[Dict]:
+    def _indicators(block: dict) -> Iterator[dict]:
         indicator = safe_data_get(block, ['Indicators', 'Indicator'], prefix='stix', default={})
-        if isinstance(indicator, List):
+        if isinstance(indicator, list):
             yield from indicator
         else:
             yield indicator
 
     @staticmethod
-    def _create_file_indicator(indicator: Dict) -> Dict:
+    def _create_file_indicator(indicator: dict) -> dict:
         indicator = safe_data_get(indicator, ['FileObj:Hashes', 'cyboxCommon:Hash'])
         value = None
         hash_types = {}
-        if not isinstance(indicator, List):
+        if not isinstance(indicator, list):
             indicator = [indicator]
         for hash_block in indicator:
             hash_types[safe_data_get(hash_block, ['cyboxCommon:Type', '#text'])] =\
@@ -161,24 +162,24 @@ class Indicators:
         }
 
     @staticmethod
-    def _create_ip_indicator(indicator: Dict) -> Dict:
+    def _create_ip_indicator(indicator: dict) -> dict:
         return {
             'value': safe_data_get(indicator, ['AddressObj:Address_Value', '#text']),
             'type': FeedIndicatorType.IP
         }
 
     @staticmethod
-    def _create_url_indicator(indicator: Dict) -> Dict:
+    def _create_url_indicator(indicator: dict) -> dict:
         return {
             'value': safe_data_get(indicator, ['URIObj:Value', '#text']),
             'type': FeedIndicatorType.URL
         }
 
     @staticmethod
-    def _create_email_indicator(indicator: Dict) -> Dict:
+    def _create_email_indicator(indicator: dict) -> dict:
         email = safe_data_get(indicator, ['Header', 'From'], prefix='EmailMessageObj').get(
             'AddressObj:Address_Value', {})
-        if isinstance(email, Dict):
+        if isinstance(email, dict):
             email = email.get('#text', '')
         return {
             'value': email,
@@ -186,14 +187,14 @@ class Indicators:
         }
 
     @staticmethod
-    def _create_domain_indicator(indicator: Dict) -> Dict:
+    def _create_domain_indicator(indicator: dict) -> dict:
         return {
             'value': indicator.get('DomainNameObj:Value', {}).get('#text', ''),
             'type': FeedIndicatorType.Domain
         }
 
     @staticmethod
-    def _indicator_data(indicator: Dict, source: str, tlp_color: str, tags: Optional[List[str]] = None) -> Dict:
+    def _indicator_data(indicator: dict, source: str, tlp_color: str, tags: list[str] | None = None) -> dict:
         indicator_data = safe_data_get(indicator.get('indicator:Observable', {}), ['Object', 'Properties'], 'cybox')
         if not indicator_data:
             return {}
@@ -208,7 +209,7 @@ class Indicators:
         return indicator
 
     @staticmethod
-    def _get_indicator_by_type(indicator_type: str, indicator_data: Dict) -> Dict:
+    def _get_indicator_by_type(indicator_type: str, indicator_data: dict) -> dict:
         if indicator_type.startswith('Address'):
             indicator = Indicators._create_ip_indicator(indicator_data)
         elif indicator_type.startswith('File'):
@@ -226,23 +227,22 @@ class Indicators:
         return indicator
 
     @staticmethod
-    def _blocks(data: Dict) -> List[Dict]:
+    def _blocks(data: dict) -> list[dict]:
         blocks = safe_data_get(data, 'Content_Block', 'taxii_11', default=[])
-        if not isinstance(blocks, List):
+        if not isinstance(blocks, list):
             blocks = [blocks]
-        return list(filter(None, map(
-            lambda x: safe_data_get(x, ['taxii_11:Content', 'stix:STIX_Package'], default={}), blocks)))
+        return list(filter(None, (safe_data_get(x, ['taxii_11:Content', 'stix:STIX_Package'], default={}) for x in blocks)))
 
     @staticmethod
-    def indicators_from_data(data: Dict, filter_tlp_color: Optional[str] = None,
-                             tags: Optional[List[str]] = None) -> Iterator[Dict]:
+    def indicators_from_data(data: dict, filter_tlp_color: str | None = None,
+                             tags: list[str] | None = None) -> Iterator[dict]:
         if int(data.get('taxii_11:Record_Count', 0)) == 0:
             raise EmptyData
         for block in Indicators._blocks(data):
             stix_header = block.get('stix:STIX_Header', {})
             tlp_color = Indicators._tlp_color_from_header(stix_header)
 
-            if filter_tlp_color and not filter_tlp_color == tlp_color:
+            if filter_tlp_color and filter_tlp_color != tlp_color:
                 continue
             source = Indicators._source_from_header(stix_header)
             for indicator in Indicators._indicators(block):
@@ -254,7 +254,7 @@ def header_transform(header: str) -> str:
     return 'reported by' if header == 'reportedby' else header
 
 
-def indicator_to_context(indicator: Dict) -> Dict:
+def indicator_to_context(indicator: dict) -> dict:
     reported_by = safe_data_get(indicator, ['fields', 'reportedby'], default='')
     context_indicator = {
         'value': indicator.get('value', ''),
@@ -286,8 +286,8 @@ def command_test_module(client: TaxiiClient, private_key: str, public_key: str, 
         raise DemistoException('unknown error.')
 
 
-def fetch_indicators(client: TaxiiClient, tlp_color: Optional[str] = None, hours_back: str = '24 hours',
-                     tags: Optional[List[str]] = None):
+def fetch_indicators(client: TaxiiClient, tlp_color: str | None = None, hours_back: str = '24 hours',
+                     tags: list[str] | None = None):
     time_field = 'time'
     end = datetime.utcnow()
     start = demisto.getLastRun().get(time_field)
@@ -315,7 +315,7 @@ def get_indicators_results(indicators):
     )
 
 
-def batch_time(start_at: datetime, time_frame_size: int, days: int) -> Iterable[Tuple[str, str]]:
+def batch_time(start_at: datetime, time_frame_size: int, days: int) -> Iterable[tuple[str, str]]:
     i = 0
     hours = days * 24
     while i * time_frame_size < hours:
@@ -325,9 +325,9 @@ def batch_time(start_at: datetime, time_frame_size: int, days: int) -> Iterable[
         i += 1
 
 
-def get_indicators(client: TaxiiClient, tlp_color: Optional[str] = None,
+def get_indicators(client: TaxiiClient, tlp_color: str | None = None,
                    limit: int = 20, offset: int = 6, days_back: int = 20,
-                   tags: Optional[List[str]] = None):
+                   tags: list[str] | None = None):
     t_time = datetime.utcnow()
     all_indicators = {}
     # for over the last {days_back} days using the poll_request(start, end) method

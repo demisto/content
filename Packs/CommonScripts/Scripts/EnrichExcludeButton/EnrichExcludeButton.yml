@@ -1,0 +1,19 @@
+commonfields:
+  id: enrich_exclude_button
+  version: -1
+name: enrich_exclude_button
+script: ''
+type: python
+tags:
+- indicator-action-button
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0
+comment: This script is only meant to be used to disable the Enrich Excluded button in an indicator. It should not be used otherwise.

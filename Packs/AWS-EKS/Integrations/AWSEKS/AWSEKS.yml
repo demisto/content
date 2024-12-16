@@ -1,0 +1,544 @@
+category: Cloud Services
+commonfields:
+  id: AWS-EKS
+  version: -1
+configuration:
+- display: AWS Default Region
+  name: defaultRegion
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+  type: 15
+  section: Connect
+  required: true
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  section: Connect
+  required: true
+- display: Timeout
+  name: timeout
+  defaultvalue: 60,10
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
+  type: 0
+  required: false
+  section: Connect
+- display: Retries
+  name: retries
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  type: 0
+  section: Connect
+  required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
+display: AWS-EKS
+name: AWS-EKS
+script:
+  commands:
+  - name: aws-eks-list-clusters
+    description: Lists the Amazon EKS clusters in your Amazon Web Services account in the specified Amazon Web Services Region.
+    arguments:
+    - name: limit
+      description: The maximum number of clusters to return.
+      defaultValue: 50
+    - name: next_token
+      description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+    outputs:
+    - contextPath: AWS.EKS.Cluster.ClustersNames
+      description: A list of all of the clusters for your account in the specified Amazon Web Services Region.
+      type: List
+    - contextPath: AWS.EKS.Cluster.NextToken
+      description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
+      type: List
+  - name: aws-eks-update-cluster-config
+    description: "Updates an Amazon EKS cluster configuration. Only one type of update is allowed. Potentially harmful: once the authentication mode is updated to 'API' it is irreversible."
+    execution: true
+    arguments:
+    - name: cluster_name
+      description: The name of the Amazon EKS cluster to update.
+      required: true
+      isArray: false
+    - name: resources_vpc_config
+      description: "A JSON representation of the VPC configuration used by the cluster control plane. An example: \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
+      required: false
+      isArray: false
+    - name: logging
+      description: "A JSON representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
+      required: false
+      isArray: false
+    - name: authentication_mode
+      description: Whether to update the authentication mode to 'API_AND_CONFIG_MAP' or not.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+    outputs:
+    - contextPath: AWS.EKS.UpdateCluster.clusterName
+      description: The name of the cluster.
+      type: String
+    - contextPath: AWS.EKS.UpdateCluster.id
+      description: The ID of the update.
+      type: Integer
+    - contextPath: AWS.EKS.UpdateCluster.status
+      description: The status of the update.
+      type: String
+    - contextPath: AWS.EKS.UpdateCluster.type
+      description: The type of the update.
+      type: String
+    - contextPath: AWS.EKS.UpdateCluster.params
+      description: The parameters of the update.
+      type: Object
+    - contextPath: AWS.EKS.UpdateCluster.createdAt
+      description: The creation date of the object.
+      type: String
+    - contextPath: AWS.EKS.UpdateCluster.errors
+      description: Any errors associated with a failed update.
+      type: Object
+  - name: aws-eks-describe-cluster
+    description: Describes an Amazon EKS cluster.
+    arguments:
+    - name: cluster_name
+      description: The name of the cluster to describe.
+      required: true
+      isArray: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+    outputs:
+    - contextPath: AWS.EKS.DescribeCluster.name
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.arn
+      description: The Amazon Resource Name (ARN) of the cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.createdAt
+      description: The creation date of the object.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.version
+      description: The Kubernetes server version for the cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.endpoint
+      description: The endpoint for your Kubernetes API server.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.roleArn
+      description: The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.subnetIds
+      description: The subnets associated with your cluster.
+      type: List
+    - contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.securityGroupIds
+      description: The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane.
+      type: List
+    - contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.clusterSecurityGroupId
+      description: The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.vpcId
+      description: The VPC associated with your cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPublicAccess
+      description: Whether the public API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPrivateAccess
+      description: This parameter indicates whether the Amazon EKS private API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.publicAccessCidrs
+      description: The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint.
+      type: List
+    - contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv4Cidr
+      description: The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv6Cidr
+      description: The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.ipFamily
+      description: The IP family used to assign Kubernetes Pod and Service objects IP addresses.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.logging.clusterLogging
+      description: The cluster control plane logging configuration for your cluster.
+      type: Object
+    - contextPath: AWS.EKS.DescribeCluster.identity
+      description: The identity provider information for the cluster.
+      type: Object
+    - contextPath: AWS.EKS.DescribeCluster.status
+      description: The current status of the cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.certificateAuthority.data
+      description: The Base64-encoded certificate data required to communicate with your cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.clientRequestToken
+      description: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.platformVersion
+      description: The platform version of your Amazon EKS cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.tags
+      description: A dictionary containing metadata for categorization and organization.
+      type: Object
+    - contextPath: AWS.EKS.DescribeCluster.encryptionConfig.resources
+      description: Specifies the resources to be encrypted. The only supported value is secrets.
+      type: List
+    - contextPath: AWS.EKS.DescribeCluster.encryptionConfig.provider
+      description: Key Management Service (KMS) key.
+      type: Object
+    - contextPath: AWS.EKS.DescribeCluster.connectorConfig.activationId
+      description: A unique ID associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.connectorConfig.activationCode
+      description: A unique code associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.connectorConfig.activationExpiry
+      description: The expiration time of the connected cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.connectorConfig.provider
+      description: The cluster’s cloud service provider.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.connectorConfig.roleArn
+      description: The Amazon Resource Name (ARN) of the role to communicate with services from the connected Kubernetes cluster.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.id
+      description: The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.health.issues
+      description: An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: List
+    - contextPath: AWS.EKS.DescribeCluster.outpostConfig.outpostArns
+      description: An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.DescribeCluster.outpostConfig.controlPlaneInstanceType
+      description: The Amazon EC2 instance type used for the control plane.
+      type: String
+    - contextPath: AWS.EKS.DescribeCluster.outpostConfig.controlPlanePlacement
+      description: An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.DescribeCluster.accessConfig.bootstrapClusterCreatorAdminPermissions
+      description: Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time.
+      type: Boolean
+    - contextPath: AWS.EKS.DescribeCluster.accessConfig.authenticationMode
+      description: The current authentication mode of the cluster.
+      type: String
+  - name: aws-eks-create-access-entry
+    description: Creates an access entry.
+    arguments:
+    - name: cluster_name
+      description: The name of the cluster for which to create an access entry.
+      required: true
+      isArray: false
+    - name: principal_arn
+      description: ARN of the IAM principal for the AccessEntry.
+      required: true
+      isArray: false
+    - name: kubernetes_groups
+      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      required: false
+      isArray: false
+    - name: tags
+      description: A dictionary containing metadata for categorization and organization. Each tag consists of a key and an optional value.
+      required: false
+      isArray: false
+    - name: client_request_token
+      description: Unique identifier for idempotency.
+      required: false
+      isArray: false
+    - name: username
+      description: Username for Kubernetes authentication.
+      required: false
+      isArray: false
+    - name: type
+      description: The type of access entry to create.
+      required: false
+      isArray: false
+      defaultValue: Standard
+      auto: PREDEFINED
+      predefined:
+      - Standard
+      - FARGATE_LINUX
+      - EC2_LINUX
+      - EC2_WINDOWS
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+    outputs:
+    - contextPath: AWS.EKS.CreateAccessEntry.clusterName
+      description: The name of the cluster.
+      type: String
+    - contextPath: AWS.EKS.CreateAccessEntry.principalArn
+      description: The ARN of the IAM principal for the access entry.
+      type: String
+    - contextPath: AWS.EKS.CreateAccessEntry.kubernetesGroups
+      description: A list of names that you’ve specified in a Kubernetes RoleBinding or ClusterRoleBinding object so that Kubernetes authorizes the principalARN access to cluster objects.
+      type: String
+    - contextPath: AWS.EKS.CreateAccessEntry.accessEntryArn
+      description: The ARN of the access entry.
+      type: String
+    - contextPath: AWS.EKS.CreateAccessEntry.createdAt
+      description: The creation date of the object.
+      type: String
+    - contextPath: AWS.EKS.CreateAccessEntry.modifiedAt
+      description: The date and time for the last modification to the object.
+      type: String
+    - contextPath: AWS.EKS.CreateAccessEntry.tags
+      description: A dictionary containing metadata for categorization and organization.
+      type: Object
+    - contextPath: AWS.EKS.CreateAccessEntry.username
+      description: The name of a user that can authenticate to the cluster.
+      type: String
+    - contextPath: AWS.EKS.CreateAccessEntry.type
+      description: The type of the access entry.
+      type: String
+  - name: aws-eks-associate-access-policy
+    description: Associates an access policy and its scope to an access entry.
+    arguments:
+    - name: cluster_name
+      description: The name of the cluster for which to create an access entry.
+      required: true
+      isArray: false
+    - name: principal_arn
+      description: The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.
+      required: true
+      isArray: false
+    - name: policy_arn
+      description: The ARN of the AccessPolicy that you’re associating.
+      required: true
+      isArray: false
+    - name: type
+      description: The scope type of an access policy.
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - cluster
+      - namespace
+    - name: namespaces
+      description: A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+    outputs:
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.principalArn
+      description: The ARN of the IAM principal for the AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.policyArn
+      description: The ARN of the AccessPolicy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.type
+      description: The scope type of an access policy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces
+      description: A Kubernetes namespace that an access policy is scoped to.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.associatedAt
+      description: The date and time the AccessPolicy was associated with an AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.modifiedAt
+      description: The date and time for the last modification to the object.
+      type: String
+  - name: aws-eks-update-access-entry
+    description: Updates an access entry.
+    arguments:
+    - name: cluster_name
+      description: The name of the cluster.
+      required: true
+      isArray: false
+    - name: principal_arn
+      description: ARN of the IAM principal for the AccessEntry.
+      required: true
+      isArray: false
+    - name: kubernetes_groups
+      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      required: false
+      isArray: false
+    - name: client_request_token
+      description: Unique identifier for idempotency.
+      required: false
+      isArray: false
+    - name: username
+      description: Username for Kubernetes authentication.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+    outputs:
+    - contextPath: AWS.EKS.UpdateAccessEntry.clusterName
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.UpdateAccessEntry.principalArn
+      description: The ARN of the IAM principal for the access entry.
+      type: String
+    - contextPath: AWS.EKS.UpdateAccessEntry.kubernetesGroups
+      description: A list of names that you’ve specified in a Kubernetes RoleBinding or ClusterRoleBinding object so that Kubernetes authorizes the principalARN access to cluster objects.
+      type: List
+    - contextPath: AWS.EKS.UpdateAccessEntry.accessEntryArn
+      description: The ARN of the access entry.
+      type: String
+    - contextPath: AWS.EKS.UpdateAccessEntry.createdAt
+      description: The creation date of the object.
+      type: String
+    - contextPath: AWS.EKS.UpdateAccessEntry.modifiedAt
+      description: The date and time for the last modification to the object.
+      type: String
+    - contextPath: AWS.EKS.UpdateAccessEntry.tags
+      description: Metadata that assists with categorization and organization. Each tag consists of a key and an optional value.
+      type: Object
+    - contextPath: AWS.EKS.UpdateAccessEntry.username
+      description: The name of a user that can authenticate to your cluster.
+      type: String
+    - contextPath: AWS.EKS.UpdateAccessEntry.type
+      description: The type of the access entry.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/boto3py3:1.0.0.115129
+fromversion: 6.9.0
+tests:
+- AWSEKS-Test

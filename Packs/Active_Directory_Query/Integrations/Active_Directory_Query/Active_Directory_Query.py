@@ -193,6 +193,18 @@ def user_account_to_boolean_fields(user_account_control):
     }
 
 
+def user_account_to_boolean_fields_msDS_user_account_control_computed(user_account_control):
+    """
+    parse the msDS-User-Account-Control-Computed into boolean values.
+    following the values from:
+    https://learn.microsoft.com/en-us/windows/win32/adschema/a-msds-user-account-control-computed
+    """
+    return {
+        'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
+        'LOCKOUT': bool(user_account_control & 0x0010),
+    }
+
+
 def account_entry(person_object, custom_attributes):
     # create an account entry from a person objects
     account = {
@@ -286,7 +298,7 @@ def base_dn_verified(base_dn):
     # search AD with a simple query to test base DN is configured correctly
     try:
         search(
-            "(objectClass=user)",
+            "(objectClass=*)",
             base_dn,
             size_limit=1
         )
@@ -399,7 +411,11 @@ def get_user_dn_by_email(default_base_dn, email):
 
 def modify_user_ou(dn, new_ou):
     assert connection is not None
-    cn = dn.split(',', 1)[0]
+    cn = dn.split(',OU=', 1)[0]
+    cn = cn.split(',DC=', 1)[0]
+    # removing // to fix customers bug
+    cn = cn.replace('\\', '')
+    dn = dn.replace('\\', '')
 
     success = connection.modify_dn(dn, cn, new_superior=new_ou)
     return success
@@ -662,7 +678,8 @@ def search_users(default_base_dn, page_size):
 
     attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES)
                       - set(argToList(args.get('attributes-to-exclude'))))
-
+    if 'userAccountControl' in attributes:
+        attributes.append('msDS-User-Account-Control-Computed')
     entries = search_with_paging(
         query,
         default_base_dn,
@@ -683,6 +700,13 @@ def search_users(default_base_dn, page_size):
                 if args.get('user-account-control-out', '') == 'true':
                     user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
                         user_account_control) or user_account_control
+
+            if user.get("msDS-User-Account-Control-Computed"):
+                user_account_control_msDS = user.get("msDS-User-Account-Control-Computed")[0]
+                user_account_to_boolean_dict = user_account_to_boolean_fields_msDS_user_account_control_computed(
+                    user_account_control_msDS)
+                user.setdefault("userAccountControlFields", {}).update(user_account_to_boolean_dict)
+
     entry_context = {
         'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
         # 'backward compatability' with ADGetUser script
@@ -1593,7 +1617,7 @@ def add_member_to_group(default_base_dn):
     if not success:
         raise Exception("Failed to add {} to group {}".format(
             args.get('username') or args.get('computer-name'),
-            args.get('group_name')
+            args.get('group-cn')
         ))
 
     demisto_entry = {
@@ -1630,7 +1654,7 @@ def remove_member_from_group(default_base_dn):
     if not success:
         raise Exception("Failed to remove {} from group {}".format(
             args.get('username') or args.get('computer-name'),
-            args.get('group_name')
+            args.get('group-cn')
         ))
 
     demisto_entry = {
@@ -1769,10 +1793,9 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials_command(server_ip, ntlm_connection):
+def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
     args = demisto.args()
     username = args.get('username')
-    server = Server(server_ip, get_info='ALL')
     try:
         connection = create_connection(
             server=server,
@@ -1780,7 +1803,7 @@ def test_credentials_command(server_ip, ntlm_connection):
             username=username,
             password=args.get('password'),
             ntlm_connection=argToBoolean(ntlm_connection),
-            auto_bind=True,
+            auto_bind=auto_bind,
         )
         connection.unbind()
     except LDAPBindError:
@@ -1980,7 +2003,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(test_credentials_command(server_ip, ntlm_connection=ntlm_auth))
+            return return_results(test_credentials_command(server_ip, server, ntlm_connection=ntlm_auth, auto_bind=auto_bind))
 
         # IAM commands
         elif command == 'iam-get-user':

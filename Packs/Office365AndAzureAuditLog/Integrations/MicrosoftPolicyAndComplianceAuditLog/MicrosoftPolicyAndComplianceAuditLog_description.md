@@ -14,4 +14,4 @@ To view and run Office 365 unified audit log searches, admins or users must be a
 -------
 ##### Note
 If the credentials object is used, make sure to set the `certificate` value as the `username` property and not as the certificate field
-![](../../doc_files/credentials_example.png)
+![credentials_example](../../doc_files/credentials_example.png)

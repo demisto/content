@@ -1,0 +1,676 @@
+category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: FortiSandboxv2
+  version: -1
+configuration:
+- name: base_url
+  display: Base URL
+  additionalinfo: The API base URL.
+  required: true
+  type: 0
+  section: Connect
+  defaultvalue: www.example.com
+- name: credentials
+  display: Username
+  additionalinfo: The login credentials.
+  required: true
+  type: 9
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  section: Connect
+  defaultvalue: 'false'
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  required: true
+  type: 15
+  section: Collect
+  defaultvalue: C - Fairly reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+description: FortiSandbox is an advanced security tool that goes beyond standard sandboxing. It combines proactive mitigation, enhanced threat detection, and in-depth reporting, using Fortinet's dynamic antivirus technology, dual-level sandboxing, and FortiGuard cloud integration to counter advanced threats. It effectively detects viruses, Advanced Persistent Threats (APTs), and malicious URLs, integrating seamlessly with existing Fortinet devices like FortiGate and FortiMail for comprehensive network protection.
+display: FortiSandbox v2
+name: FortiSandboxv2
+script:
+  commands:
+  - name: file
+    description: Runs reputation on files.
+    arguments:
+    - name: file
+      description: List of files. Supports sha256, sha1, md5.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Message
+      description: Optional message to show an API response. For example, "Not found".
+      type: String
+  - name: url
+    description: Runs reputation on URLs.
+    arguments:
+    - name: url
+      description: List of URLs.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Message
+      description: Optional message to show an API response. For example, "Not found".
+      type: String
+  - name: fortisandbox-submission-file-upload
+    description: Scheduled command to upload any file type to be sandboxed. The system swiftly identifies and mitigates threats in files.
+    polling: true
+    arguments:
+    - name: entry_id
+      description: An entry ID of any file to be uploaded for analysis.
+      required: true
+      default: true
+    - name: comment
+      description: 'Comment field, max characters allowed: 255.'
+    - name: process_timeout
+      description: Cancel processing a submission when timeout in seconds before entering virtual machine.
+    - name: skip_steps
+      description: Comma-separated list of steps to skip from file analysis. Do not use this parameter if no step to skip.
+      auto: PREDEFINED
+      predefined:
+      - anti_virus
+      - cloud
+      - sandbox
+      - static_scan
+      isArray: true
+    - name: archive_passwords
+      description: Comma-separated list of passwords needed for extracting archived/zipped files. Non-ASCII passwords are invalid.
+      isArray: true
+      secret: true
+    - name: overwrite_vm_list
+      description: Comma-separated list of virtual machines to use. If this field is not set, default ones will be used.
+      isArray: true
+    - name: force_vm_scan
+      description: Whether to force the file to be scanned in a virtual machine.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: add_to_threat_package
+      description: Specifies whether the uploaded sample should be included in the threat package, based on meeting certain malware criteria. When set to true, the system will evaluate the sample and, if it qualifies, add it to the malware package. The default setting is false, indicating that the sample will not be added unless explicitly requested.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: record
+      description: Record scan process in video if VMs are involved.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: enable_ai
+      description: Enable Deep-AI mode for this scanning.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: get_scan_report
+      description: Whether to return a PDF scan report at the end of the file analysis.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: interval
+      description: The interval between each poll in seconds. Min value is `10`.
+      defaultValue: '30'
+    - name: timeout
+      description: The timeout for the polling in seconds.
+      defaultValue: '600'
+    - name: sid
+      description: The submission ID. Hidden argument.
+      hidden: true
+    outputs:
+    - contextPath: FortiSandbox.Submission.name
+      description: The input file name.
+      type: String
+    - contextPath: FortiSandbox.Submission.sid
+      description: The ID of the submission.
+      type: String
+    - contextPath: FortiSandbox.Submission.jid
+      description: The ID of the job.
+      type: String
+    - contextPath: FortiSandbox.Submission.start_ts
+      description: Start scan time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.finish_ts
+      description: Finish scan time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.now
+      description: FortiSandbox's time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.untrusted
+      description: '0: the result can be trusted 1: since this file''s scan, scan environment has changed.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.rating
+      description: 'The rating can be one or more of the following: Clean, Low Risk, Medium Risk, High Risk, Malicious, or Other. For archive files, the possible ratings of all files in the archive are displayed. During the file scan, the rating is displayed as N/A. If a scan times out or is terminated by the system, the file will have an Other rating.'
+      type: String
+    - contextPath: FortiSandbox.Submission.score
+      description: 'One of the following: `RISK_UNKNOWN -1`, `RISK_CLEAN 0`, `RISK_MALICIOUS 1`, `RISK_HIGH 2`, `RISK_MEDIUM 3`, `RISK_LOW 4`.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.sha256
+      description: The SHA256 of the submitted file.
+      type: String
+    - contextPath: FortiSandbox.Submission.sha1
+      description: The SHA1 of the submitted file.
+      type: String
+    - contextPath: FortiSandbox.Submission.malware_name
+      description: Virus name if it's a known virus.
+      type: String
+    - contextPath: FortiSandbox.Submission.vid
+      description: 'The virus ID. Detailed information of the virus can be found at: `http://www.fortiguard.com/encyclopedia/virus/#id=virus_id` by replacing `virus_id` with the given value.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.infected_os
+      description: The OS version of the FortiSandbox VM that was used to make the suspicious verdict.
+      type: String
+    - contextPath: FortiSandbox.Submission.detection_os
+      description: The name of the virtual machine images that scanned the file.
+      type: String
+    - contextPath: FortiSandbox.Submission.rating_source
+      description: 'One of: `AV Scan`, `Cloud Query`, `Sandboxing`, `Static Scan`, `Other`.'
+      type: String
+    - contextPath: FortiSandbox.Submission.category
+      description: 'One of: `Clean`, `Unknown`, `Infector`, `Worm`, `Botnet`, `Hijack`, `Stealer`, `Backdoor`, `Injector`, `Rootkit`, `Adware`, `Dropper`, `Downloader`, `Trojan`, `Riskware`, `Grayware`, or `Attacker`.'
+      type: String
+    - contextPath: FortiSandbox.Submission.detail_url
+      description: URL to the job overview.
+      type: String
+    - contextPath: FortiSandbox.Submission.download_url
+      description: The input file name encoded in Base64.
+      type: String
+    - contextPath: FortiSandbox.Submission.false_positive_negative
+      description: 'Not false positive or false negative, 1: false positive, 2: false negative.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.file_name
+      description: The name of the submitted file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Message
+      description: Optional message to show an API response. For example, "Not found".
+      type: String
+  - name: fortisandbox-submission-url-upload
+    description: Scheduled command to upload URLs through a text file or directly to be sandboxed individually. The system rigorously examines URLs for online security hazards.
+    polling: true
+    arguments:
+    - name: entry_id
+      description: An entry ID of a text file to be uploaded for analysis. Each URL within file the must be separated with new lines.
+      default: true
+    - name: urls
+      description: Comma-separated list of URLs to upload to scan.
+      isArray: true
+    - name: comment
+      description: 'Comment field, max characters allowed: 255.'
+    - name: process_timeout
+      description: The time period to stop the URLs scan, in seconds (between 30 and 1200 seconds).
+    - name: depth
+      description: The recursive depth in which URLs are examined. Level 0 for original URL page (between 0 and 5).
+    - name: overwrite_vm_list
+      description: Comma-separated list of virtual machines to use. If this field is not set, default ones will be used.
+      isArray: true
+    - name: force_vm_scan
+      description: Whether to force the file to be scanned in a virtual machine.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: add_to_threat_package
+      description: Specifies whether the uploaded sample should be included in the threat package, based on meeting certain malware criteria. When set to true, the system will evaluate the sample and, if it qualifies, add it to the malware package. The default setting is false, indicating that the sample will not be added unless explicitly requested.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: record
+      description: Record scan process in video if VMs are involved.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: enable_ai
+      description: Enable Deep-AI mode for this scanning.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: get_scan_report
+      description: 'Whether to return a PDF scan report at the end of the file analysis. Notice: Generating PDF scan reports can be time-consuming, especially when analyzing multiple URLs.'
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: interval
+      description: The interval between each poll in seconds. Min value is `10`.
+      defaultValue: '30'
+    - name: timeout
+      description: The timeout for the polling in seconds.
+      defaultValue: '600'
+    - name: sid
+      description: The submission ID. Hidden argument.
+      hidden: true
+    outputs:
+    - contextPath: FortiSandbox.Submission.name
+      description: The input URL/file name.
+      type: String
+    - contextPath: FortiSandbox.Submission.sid
+      description: The ID of the submission.
+      type: String
+    - contextPath: FortiSandbox.Submission.jid
+      description: The ID of the job.
+      type: String
+    - contextPath: FortiSandbox.Submission.start_ts
+      description: Start scan time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.finish_ts
+      description: Finish scan time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.now
+      description: FortiSandbox's time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.untrusted
+      description: '0: the result can be trusted 1: since this file''s scan, scan environment has changed.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.rating
+      description: 'The rating can be one or more of the following: Clean, Low Risk, Medium Risk, High Risk, Malicious, or Other. For archive files, the possible ratings of all files in the archive are displayed. During the file scan, the rating is displayed as N/A. If a scan times out or is terminated by the system, the file will have an Other rating.'
+      type: String
+    - contextPath: FortiSandbox.Submission.score
+      description: 'One of the following: `RISK_UNKNOWN -1`, `RISK_CLEAN 0`, `RISK_MALICIOUS 1`, `RISK_HIGH 2`, `RISK_MEDIUM 3`, `RISK_LOW 4`.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.sha256
+      description: The SHA256 of the submitted file.
+      type: String
+    - contextPath: FortiSandbox.Submission.sha1
+      description: The SHA1 of the submitted file.
+      type: String
+    - contextPath: FortiSandbox.Submission.malware_name
+      description: Virus name if it's a known virus.
+      type: String
+    - contextPath: FortiSandbox.Submission.vid
+      description: 'The virus ID. Detailed information of the virus can be found at: `http://www.fortiguard.com/encyclopedia/virus/#id=virus_id` by replacing `virus_id` with the given value.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.infected_os
+      description: The OS version of the FortiSandbox VM that was used to make the suspicious verdict.
+      type: String
+    - contextPath: FortiSandbox.Submission.detection_os
+      description: The name of the virtual machine images that scanned the file.
+      type: String
+    - contextPath: FortiSandbox.Submission.rating_source
+      description: 'One of: `AV Scan`, `Cloud Query`, `Sandboxing`, `Static Scan`, `Other`.'
+      type: String
+    - contextPath: FortiSandbox.Submission.category
+      description: 'One of: `Clean`, `Unknown`, `Infector`, `Worm`, `Botnet`, `Hijack`, `Stealer`, `Backdoor`, `Injector`, `Rootkit`, `Adware`, `Dropper`, `Downloader`, `Trojan`, `Riskware`, `Grayware`, or `Attacker`.'
+      type: String
+    - contextPath: FortiSandbox.Submission.detail_url
+      description: URL to the job overview.
+      type: String
+    - contextPath: FortiSandbox.Submission.download_url
+      description: The input URL encoded in Base64.
+      type: String
+    - contextPath: FortiSandbox.Submission.false_positive_negative
+      description: 'Not false positive or false negative, 1: false positive, 2: false negative.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.file_name
+      description: The name of the submitted file.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Message
+      description: Optional message to show an API response. For example, "Not found".
+      type: String
+  - name: fortisandbox-submission-cancel
+    description: 'Cancel a running job submission. Note: Jobs that are already being processed cannot be canceled, only jobs that are in the queue.'
+    arguments:
+    - name: id
+      description: The submission ID.
+      required: true
+      default: true
+  - name: fortisandbox-submission-job-verdict
+    description: Get the verdict of the provided job.
+    arguments:
+    - name: id
+      description: The job ID. Use `!forisandbox-submission-job-list` to fetch a list of job IDs.
+      required: true
+      default: true
+    outputs:
+    - contextPath: FortiSandbox.Submission.name
+      description: The input URL/file name.
+      type: String
+    - contextPath: FortiSandbox.Submission.start_ts
+      description: Start scan time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.finish_ts
+      description: Finish scan time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.now
+      description: FortiSandbox's time in epoch, UTC.
+      type: Number
+    - contextPath: FortiSandbox.Submission.behavior_info
+      description: '0: There is no analytic report for this URL. 1: There is an analytic report for this URL.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.category
+      description: 'One of: `Clean`, `Unknown`, `Infector`, `Worm`, `Botnet`, `Hijack`, `Stealer`, `Backdoor`, `Injector`, `Rootkit`, `Adware`, `Dropper`, `Downloader`, `Trojan`, `Riskware`, `Grayware`, or `Attacker`.'
+      type: String
+    - contextPath: FortiSandbox.Submission.detection_os
+      description: The name of the virtual machine images that scanned the file.
+      type: String
+    - contextPath: FortiSandbox.Submission.false_positive_negative
+      description: 'Not false positive or false negative, 1: false positive, 2: false negative.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.infected_os
+      description: The OS version of the FortiSandbox VM that was used to make the suspicious verdict.
+      type: String
+    - contextPath: FortiSandbox.Submission.malware_name
+      description: Virus name if it's a known virus.
+      type: String
+    - contextPath: FortiSandbox.Submission.rating
+      description: 'The rating can be one or more of the following: Clean, Low Risk, Medium Risk, High Risk, Malicious, or Other. For archive files, the possible ratings of all files in the archive are displayed. During the file scan, the rating is displayed as N/A. If a scan times out or is terminated by the system, the file will have an Other rating.'
+      type: String
+    - contextPath: FortiSandbox.Submission.rating_source
+      description: 'One of: `AV Scan`, `Cloud Query`, `Sandboxing`, `Static Scan`, `Other`.'
+      type: String
+    - contextPath: FortiSandbox.Submission.score
+      description: 'One of the following: `RISK_UNKNOWN -1`, `RISK_CLEAN 0`, `RISK_MALICIOUS 1`, `RISK_HIGH 2`, `RISK_MEDIUM 3`, `RISK_LOW 4`.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.untrusted
+      description: '0: the result can be trusted 1: since this files'' scan, scan environment has changed.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.vid
+      description: 'The virus ID. Detailed information of the virus can be found at: `http://www.fortiguard.com/encyclopedia/virus/#id=virus_id` by replacing `virus_id` with the given value.'
+      type: Number
+    - contextPath: FortiSandbox.Submission.detail_url
+      description: URL to the job overview.
+      type: String
+    - contextPath: FortiSandbox.Submission.download_url
+      description: The input URL/file name encoded in Base64.
+      type: String
+    - contextPath: FortiSandbox.Submission.jid
+      description: The ID of the job.
+      type: String
+    - contextPath: FortiSandbox.Submission.sha1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: FortiSandbox.Submission.sha256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Message
+      description: Optional message to show an API response. For example, "Not found".
+      type: String
+  - name: fortisandbox-submission-job-list
+    description: Get a list of jobs that were created from a submission.
+    arguments:
+    - name: id
+      description: The submission ID. Use `!fortisandbox-submission-file-upload` or `!fortisandbox-submission-url-upload` to create a submission.
+      required: true
+      default: true
+    outputs:
+    - contextPath: FortiSandbox.Submission.sid
+      description: The ID of the submission.
+      type: String
+    - contextPath: FortiSandbox.Submission.jid
+      description: The ID of the job.
+      type: String
+  - name: fortisandbox-submission-job-report
+    description: Get a PDF report of the provided submission.
+    arguments:
+    - name: identifier
+      description: The job ID or SHA256 of the scanned file or URL.
+      required: true
+      default: true
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: String
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: Number
+    - contextPath: InfoFile.Type
+      description: File type "pdf".
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: String
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: false
+  script: ''
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

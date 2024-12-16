@@ -468,7 +468,7 @@ tasks:
       context_path:
         simple: OOOusers
       grid_id:
-        simple: outofftheoffice
+        simple: outoftheoffice
       keys:
         simple: user,offuntil,addedby
       overwrite: {}
@@ -882,7 +882,7 @@ tasks:
       os: {}
       osversion: {}
       outgoingmirrorerror: {}
-      outofftheoffice: {}
+      outoftheoffice: {}
       owner: {}
       parentprocessid: {}
       pcapencryptionkey: {}
@@ -1408,7 +1408,7 @@ tasks:
       os: {}
       osversion: {}
       outgoingmirrorerror: {}
-      outofftheoffice: {}
+      outoftheoffice: {}
       owner: {}
       parentprocessid: {}
       pcapencryptionkey: {}

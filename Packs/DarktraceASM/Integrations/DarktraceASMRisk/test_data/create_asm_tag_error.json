@@ -1,0 +1,19 @@
+{
+    "errors": [
+      {
+        "message": "Tag matching query does not exist.",
+        "locations": [
+          {
+            "line": 1,
+            "column": 24
+          }
+        ],
+        "path": [
+          "createTag"
+        ]
+      }
+    ],
+    "data": {
+      "createTag": null
+    }
+  }

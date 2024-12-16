@@ -1,154 +1,177 @@
-Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.
-This integration was integrated and tested with version 1.0.0 of Rapid7 InsightIDR.
-## Configure Rapid7 InsightIDR on Cortex XSOAR
+Rapid7’s InsightIDR is your security center for incident detection and response, authentication monitoring, and endpoint visibility. Together, these form Extended Detection and Response (XDR). InsightIDR identifies unauthorized access from external and internal threats and highlights suspicious activity so you don’t have to weed through thousands of data streams.
+This integration was integrated and tested with cloud version of Rapid7 InsightIDR.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rapid7 InsightIDR.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Rapid7 InsightIDR in Cortex
+
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| region | Insight cloud server region \(i.e EU\) | True |
-| apiKey | InsightIDR API key | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
-| max_fetch | Fetch Limit | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| Insight cloud server region |  | True |
+| InsightIDR API key |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch Limit | Max number of alerts per fetch. Default is 50. | False |
+| Multi customer | Indicates whether the requester has multi-customer access. | False |
+| Use API Version 2 by default | Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument). | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### rapid7-insight-idr-list-investigations
-***
-List open/closed investigations
 
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### rapid7-insight-idr-list-investigations
+
+***
+List all investigations. Retrieve a list of investigations matching the given request parameters. The investigations are sorted by investigation created_time in descending order. Investigations are an aggregate of the applicable alert data in a single place and are closely tied to Alerts and Detection Rules.
 
 #### Base Command
 
 `rapid7-insight-idr-list-investigations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| time_range | An optional time range string (i.e 1 week, 1 day) | Optional | 
-| start_time | An optional ISO formatted timestamp. Only investigations whose createTime is after this date will be returned by the api. If this parameter is omitted investigations with any create_time may be returned - Use ISO time format (i.e 2018-07-01T00:00:00Z) | Optional | 
-| end_time | An optional ISO formatted timestamp. Only investigations whose createTime is before this date will be returned by the api. If this parameter is omitted investigations with any create_time may be returned - Use ISO time format (i.e 2018-07-01T00:00:00Z) | Optional | 
-| statuses | Only an investigation whose status matches one of the entries in the list will be returned. If this parameter is omitted investigations with any status may be returned. | Optional | 
-| index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0 | Optional | 
-| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000 | Optional | 
-
+| --- | --- |--------------|
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default. | Optional     |
+| index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional     |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional     |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional     |
+| statuses | A comma-separated list of investigation statuses to include in the result. For example, Open,Closed. Possible values are: open, investigating, closed. | Optional     |
+| sources | A comma-separated list of investigation sources to include in the result. For example, User,Alert. Relevant when api_version is V2 only. Possible values are: User, Alert. | Optional     |
+| priorities | A comma-separated list of investigation priorities to include in the result. For example, Low,Medium. Relevant when api_version is V2 only. Possible values are: Unspecified, Low, Medium, High, Critical. | Optional     |
+| assignee_email | A user's email address. Only investigations assigned to that user will be included. For example, test@test.com. | Optional     |
+| time_range | An optional time range string (i.e., 1 week, 1 day). | Optional     |
+| start_time | The time an investigation is opened. Only investigations whose created_time is after this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-01T00:00:00Z. Default is 28 days prior. Relevant when api_version is V2 only. | Optional     |
+| end_time | The time an investigation is closed. Only investigations whose created_time is before this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-28T23:59:00Z. Default is the current time. Relevant when api_version is V2 only. | Optional     |
+| sort_field | A field for investigations to be sorted by. Relevant when api_version is V2 only. Possible values are: Created time, Priority, RRN Last Created Alert, Last Detection Alert. Default is Created time. | Optional     |
+| sort_direction | The sorting direction. Relevant when api_version is V2 only. Possible values are: ASC, DESC. Default is DESC. | Optional     |
+| tags | A comma-separated list of tags to include in the result. Only investigations who have all specified tags will be included. For example, my_teg,test_tag. Relevant when api_version is V2 only. | Optional     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Investigation.title | String | Title of investigation | 
-| Rapid7InsightIDR.Investigation.id | String | ID of investigation | 
-| Rapid7InsightIDR.Investigation.status | String | Whether it is open or closed | 
-| Rapid7InsightIDR.Investigation.created_time | String | Time the investigation was created | 
-| Rapid7InsightIDR.Investigation.source | String | Source of the investigation | 
-| Rapid7InsightIDR.Investigation.assignee.email | String | Email of investigation assignee | 
-| Rapid7InsightIDR.Investigation.assignee.name | String | Name of investigation assignee | 
-| Rapid7InsightIDR.Investigation.alert.type | String | Type of alert in the investigation | 
-| Rapid7InsightIDR.Investigation.alert.type_description | String | Type description of alert in the investigation | 
-| Rapid7InsightIDR.Investigation.alert.first_event_time | String | first event time of alert in the investigation | 
+| Rapid7InsightIDR.Investigation.responsibility | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. |
+| Rapid7InsightIDR.Investigation.first_alert_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.latest_alert_time | Date | The create time of the most recent alert belonging to this investigation \(if any\). Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.assignee.email | String | The email of the assigned user \(if any\). |
+| Rapid7InsightIDR.Investigation.assignee.name | String | The name of the assigned user \(if any\). |
+| Rapid7InsightIDR.Investigation.disposition | String | The disposition of this investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.created_time | Date | The time this investigation was created. |
+| Rapid7InsightIDR.Investigation.last_accessed | Date | The time this investigation was last viewed or modified. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.priority | String | The priority of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.status | String | The status of the investigation. |
+| Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
+| Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
+| Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type | String | Type of alert in the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of the type of alert in the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.first_event_time | String | First event time of the alert in the investigation. Relevant when api_version is V1 only. |
 
-
-#### Command Example
-```!rapid7-insight-idr-list-investigations time_range="27 days"```
-
+#### Command example
+```!rapid7-insight-idr-list-investigations api_version=V2 limit=1```
 #### Context Example
 ```json
 {
     "Rapid7InsightIDR": {
-        "Investigation": [
-            {
-                "alerts": [],
-                "created_time": "2020-12-29T10:00:00.526Z",
-                "id": "15229912-517a-4bc7-8257-3e7da8205df6",
-                "source": "HUNT",
-                "status": "CLOSED",
-                "title": "forensics 1 job at 20201229T100000.346Z"
+        "Investigation": {
+            "assignee": {
+                "email": "test@test.com",
+                "name": "test"
             },
-            {
-                "alerts": [],
-                "created_time": "2020-12-04T10:00:00.515Z",
-                "id": "d3e4c470-1472-49ad-839b-fefa9b0683c5",
-                "source": "HUNT",
-                "status": "CLOSED",
-                "title": "forensics 1 job at 20201204T100000.288Z"
-            },
-            {
-                "alerts": [],
-                "created_time": "2020-12-03T10:00:00.873Z",
-                "id": "ed14f1a1-6806-49a6-8ee4-9f9b7ef1701c",
-                "source": "HUNT",
-                "status": "OPEN",
-                "title": "forensics 1 job at 20201203T100000.405Z"
-            }
-        ]
+            "created_time": "2024-03-05T12:53:02.722Z",
+            "disposition": "NOT_APPLICABLE",
+            "first_alert_time": null,
+            "last_accessed": "2024-03-05T16:18:19.186Z",
+            "latest_alert_time": null,
+            "organization_id": "123-123-123",
+            "priority": "HIGH",
+            "responsibility": null,
+            "rrn": "rrn:investigation:eu:123-123-123:investigation:SF6PGC3DEOLJ",
+            "source": "USER",
+            "status": "CLOSED",
+            "title": "demo2025"
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### Requested Investigations
->|title|id|status|created_time|source|
->|---|---|---|---|---|
->| forensics 1 job at 20201229T100000.346Z | 15229912-517a-4bc7-8257-3e7da8205df6 | CLOSED | 2020-12-29T10:00:00.526Z | HUNT |
->| forensics 1 job at 20201204T100000.288Z | d3e4c470-1472-49ad-839b-fefa9b0683c5 | CLOSED | 2020-12-04T10:00:00.515Z | HUNT |
->| forensics 1 job at 20201203T100000.405Z | ed14f1a1-6806-49a6-8ee4-9f9b7ef1701c | OPEN | 2020-12-03T10:00:00.873Z | HUNT |
+>### Investigations
+>|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
+>|---|---|---|---|---|---|---|
+>| demo2025 | rrn:investigation:eu:123-123-123:investigation:SF6PGC3DEOLJ | CLOSED | 2024-03-05T12:53:02.722Z | USER | name: test<br/>email: test@test.com | HIGH |
 
 
 ### rapid7-insight-idr-get-investigation
-***
-Get a single open/closed investigation
 
+***
+Get a specific investigation. This investigation is specified by either ID or Rapid7 Resource Names (RRN). (If multi-customer is set to true, the investigation_id must be in the RRN format).
 
 #### Base Command
 
 `rapid7-insight-idr-get-investigation`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| investigation_id | ID of the investigation to get | Required | 
-
+| **Argument Name** | **Description**                                                                                                                                                                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default.                                                                                                                               | Optional |
+| investigation_id | The ID or Rapid7 Resource Names (RRN) of the investigation to retrieve. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Investigation.title | String | Title of investigation | 
-| Rapid7InsightIDR.Investigation.id | String | ID of investigation | 
-| Rapid7InsightIDR.Investigation.status | String | Whether it is open or closed | 
-| Rapid7InsightIDR.Investigation.created_time | String | Time the investigation was created | 
-| Rapid7InsightIDR.Investigation.source | String | Source of the investigation | 
-| Rapid7InsightIDR.Investigation.assignee.email | String | Email of investigation assignee | 
-| Rapid7InsightIDR.Investigation.assignee.name | String | Name of investigation assignee | 
-| Rapid7InsightIDR.Investigation.alert.type | String | Type of alert in the investigation | 
-| Rapid7InsightIDR.Investigation.alert.type_description | String | Type description of alert in the investigation | 
-| Rapid7InsightIDR.Investigation.alert.first_event_time | String | first event time of alert in the investigation | 
+| Rapid7InsightIDR.Investigation.responsibility | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. |
+| Rapid7InsightIDR.Investigation.first_alert_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.latest_alert_time | Date | The create time of the most recent alert belonging to this investigation \(if any\). Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.assignee.email | String | The email of the assigned user \(if any\). |
+| Rapid7InsightIDR.Investigation.assignee.name | String | The name of the assigned user \(if any\). |
+| Rapid7InsightIDR.Investigation.disposition | String | The disposition of this investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.created_time | Date | The time this investigation was created. |
+| Rapid7InsightIDR.Investigation.last_accessed | Date | The time this investigation was last viewed or modified. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.priority | String | The priority of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.status | String | The status of the investigation. |
+| Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
+| Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
+| Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type | String | Type of alert in the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of the alert type in the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.first_event_time | String | First event time of alert in the investigation. Relevant when api_version is V1 only. |
 
-
-#### Command Example
-```!rapid7-insight-idr-get-investigation investigation_id=15229912-517a-4bc7-8257-3e7da8205df6```
-
+#### Command example
+```!rapid7-insight-idr-get-investigation investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 api_version=V2```
 #### Context Example
 ```json
 {
     "Rapid7InsightIDR": {
         "Investigation": {
-            "alerts": [],
-            "created_time": "2020-12-29T10:00:00.526Z",
-            "id": "15229912-517a-4bc7-8257-3e7da8205df6",
-            "source": "HUNT",
-            "status": "CLOSED",
-            "title": "forensics 1 job at 20201229T100000.346Z"
+            "assignee": {
+                "email": "test@test.com",
+                "name": "test"
+            },
+            "created_time": "2024-03-05T19:02:28.419Z",
+            "disposition": "UNDECIDED",
+            "first_alert_time": null,
+            "last_accessed": "2024-03-05T19:07:07.790Z",
+            "latest_alert_time": null,
+            "organization_id": "123-123-123",
+            "priority": "UNSPECIFIED",
+            "responsibility": null,
+            "rrn": "rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2",
+            "source": "USER",
+            "status": "OPEN",
+            "title": "test1"
         }
     }
 }
@@ -156,117 +179,110 @@ Get a single open/closed investigation
 
 #### Human Readable Output
 
->### Investigation Information (id: 15229912-517a-4bc7-8257-3e7da8205df6)
->|title|id|status|created_time|source|
->|---|---|---|---|---|
->| forensics 1 job at 20201229T100000.346Z | 15229912-517a-4bc7-8257-3e7da8205df6 | CLOSED | 2020-12-29T10:00:00.526Z | HUNT |
+>### Investigation "3793645a-6484-4a7e-9228-7aeb4ba97472" Information
+>|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
+>|---|---|---|---|---|---|---|
+>| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
 
 
 ### rapid7-insight-idr-close-investigations
-***
-Close several investigations in bulk by time range
 
+***
+Close all investigations that match the provided request parameters. If there are any investigations found associated with Threat Command alerts within the given request parameters, they will be closed in Threat Command with the close reason, "Other".
 
 #### Base Command
 
 `rapid7-insight-idr-close-investigations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | An ISO formatted timestamp. Only investigations whose createTime is after this date will be returned by the API. If this parameter is omitted investigations with any create_time may be returned - Use ISO time format (i.e 2018-07-01T00:00:00Z) | Required | 
-| end_time | An ISO formatted timestamp. Only investigations whose createTime is before this date will be returned by the API. If this parameter is omitted investigations with any create_time may be returned - Use ISO time format (i.e 2018-07-01T00:00:00Z) | Required | 
-| source | The name of an investigation source. Only investigations from this source will be closed. If the source is ALERT, an alert type must be specified as well. | Required | 
-| alert_type | The category of alerts that should be closed. This parameter is required if the source is ALERT and ignored for other sources. This value must exactly match the alert type returned by the List Investigations response. | Optional | 
-| max_investigations_to_close | An optional maximum number of alerts to close with this request. If this parameter is not specified then there is no maximum. If this limit is exceeded, then a 400 error response is returned. The minimum value is 0. | Optional | 
-
+| source | The name of an investigation source. Only investigations from this source will be closed. If the source is ALERT, an alert type or a detection rule RRN must be specified as well. Possible values are: ALERT, MANUAL, HUNT. | Required |
+| end_time | An ISO formatted timestamp. Only investigations whose createTime is before this date will be returned by the API. For example, 2018-07-28T23:59:00Z. Default is the current time. | Required |
+| start_time | An ISO formatted timestamp. Only investigations whose createTime is after this date will be returned by the API. For example, 2018-07-01T00:00:00Z. | Required |
+| alert_type | The category of types of alerts that should be closed. Use rapid7-insight-idr-list-investigations or rapid7-insight-idr-list-investigation-alerts to get the alert types. Required when sourceis ALERT. | Optional |
+| disposition | A disposition to set the investigation to. Possible values are: Undecided, Benign, Malicious, Not Applicable. Default is Not Applicable. | Optional |
+| detection_rule_rrn | The Rapid7 Resource Names (RRN) of the detection rule. Only investigations that are associated with this detection rule will be closed. If a detection rule RRN is given, thealert_typeis required to be 'Attacker Behavior Detected'.  Userapid7-insight-idr-get-investigationto retrieve the investigationdetection_rule_rrn. | Optional |
+| max_investigations_to_close | The maximum number of alerts to close. If this parameter is not specified then there is no maximum. The minimum description is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Investigation.id | String | ID of investigation | 
+| Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. |
+| Rapid7InsightIDR.Investigation.status | String | The new status (Closed) of the investigation. |
 
-
-#### Command Example
+#### Command example
 ```!rapid7-insight-idr-close-investigations source=HUNT start_time=2020-12-04T10:00:00.515Z end_time=2020-12-29T10:00:00.526Z```
-
-#### Context Example
-```json
-{
-    "Rapid7InsightIDR": {
-        "Investigation": [
-            {
-                "id": "15229912-517a-4bc7-8257-3e7da8205df6",
-                "status": "CLOSED"
-            },
-            {
-                "id": "d3e4c470-1472-49ad-839b-fefa9b0683c5",
-                "status": "CLOSED"
-            }
-        ]
-    }
-}
-```
-
 #### Human Readable Output
 
->### Closed Investigations IDs
->|id|
->|---|
->| 15229912-517a-4bc7-8257-3e7da8205df6,<br/>d3e4c470-1472-49ad-839b-fefa9b0683c5 |
+>### Investigation '[]' (0) was successfully closed.
+>**No entries.**
 
 
 ### rapid7-insight-idr-assign-user
-***
-Assign a user by email to an investigation
 
+***
+Assign a user by email to an investigation. Users will receive an email whenever they are assigned to a new investigation
 
 #### Base Command
 
 `rapid7-insight-idr-assign-user`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| investigation_id | ID of the investigation to assign the user to | Required | 
-| user_email_address | The email address of the user to assign to this Investigation. Same email used to log into the insight platform | Required | 
-
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                     | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default.                                                                                                                                                                 | Optional |
+| investigation_id | Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to assign the user to. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
+| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. For example, test@test.com. Use rapid7-insight-idr-list-users to retrieve the user email list. Relevant when api_version is V2 only.   | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Investigation.title | String | Title of investigation | 
-| Rapid7InsightIDR.Investigation.id | String | ID of investigation | 
-| Rapid7InsightIDR.Investigation.status | String | Whether it is open or closed | 
-| Rapid7InsightIDR.Investigation.created_time | String | Time the investigation was created | 
-| Rapid7InsightIDR.Investigation.source | String | Source of the investigation | 
-| Rapid7InsightIDR.Investigation.assignee.email | String | Email of investigation assignee | 
-| Rapid7InsightIDR.Investigation.assignee.name | String | Name of investigation assignee | 
-| Rapid7InsightIDR.Investigation.alert.type | String | Type of alert in the investigation | 
-| Rapid7InsightIDR.Investigation.alert.type_description | String | Type description of alert in the investigation | 
-| Rapid7InsightIDR.Investigation.alert.first_event_time | String | first event time of alert in the investigation | 
+| Rapid7InsightIDR.Investigation.responsibility | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.latest_alert_time | String | The create time of the most recent alert belonging to this investigation \(if any\). Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.assignee.email | String | The email of the assigned user. |
+| Rapid7InsightIDR.Investigation.assignee.name | String | The name of the assigned user. |
+| Rapid7InsightIDR.Investigation.disposition | String | The disposition of this investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.created_time | String | The time this investigation was created. |
+| Rapid7InsightIDR.Investigation.last_accessed | String | The time this investigation was last viewed or modified. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.priority | String | The investigations priority. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.status | String | The status of the investigation. |
+| Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
+| Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
+| Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of this type of alert \(if any\). Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type | String | The alert's type. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.first_event_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V1 only. |
 
-
-#### Command Example
-```!rapid7-insight-idr-assign-user investigation_id=ed475853-05da-4a8a-9f99-b9139d0fe8c0  user_email_address=test@panw.com```
-
+#### Command example
+```!rapid7-insight-idr-assign-user investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 user_email_address=test@test.com api_version=V2```
 #### Context Example
 ```json
 {
     "Rapid7InsightIDR": {
         "Investigation": {
-            "alerts": [],
             "assignee": {
-                "email": "test@panw.com",
-                "name": "Yoel Katzir"
+                "email": "test@test.com",
+                "name": "test"
             },
-            "created_time": "2020-11-15T10:00:00.448Z",
-            "id": "ed475853-05da-4a8a-9f99-b9139d0fe8c0",
-            "source": "HUNT",
-            "status": "CLOSED",
-            "title": "forensics 1 job at 20201115T100000.120Z"
+            "created_time": "2024-03-05T19:02:28.419Z",
+            "disposition": "UNDECIDED",
+            "first_alert_time": null,
+            "last_accessed": "2024-03-05T19:07:30.382Z",
+            "latest_alert_time": null,
+            "organization_id": "123-123-123",
+            "priority": "UNSPECIFIED",
+            "responsibility": null,
+            "rrn": "rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2",
+            "source": "USER",
+            "status": "OPEN",
+            "title": "test1"
         }
     }
 }
@@ -274,121 +290,133 @@ Assign a user by email to an investigation
 
 #### Human Readable Output
 
->### Investigation Information (id: ed475853-05da-4a8a-9f99-b9139d0fe8c0)
->|title|id|status|created_time|source|assignee|
->|---|---|---|---|---|---|
->| forensics 1 job at 20201115T100000.120Z | ed475853-05da-4a8a-9f99-b9139d0fe8c0 | CLOSED | 2020-11-15T10:00:00.448Z | HUNT | name: Yoel Katzir<br/>email: test@panw.com |
+>### Investigation '3793645a-6484-4a7e-9228-7aeb4ba97472' was successfully assigned to test@test.com.
+>|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
+>|---|---|---|---|---|---|---|
+>| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
 
 
 ### rapid7-insight-idr-set-status
-***
-Set investigation status to open/closed
 
+***
+Set the status of the investigation, which is specified by ID or Rapid7 Resource Names (RRN).
 
 #### Base Command
 
 `rapid7-insight-idr-set-status`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| investigation_id | ID of the investigation to set the status of | Required | 
-| status | The new status for the investigation | Required | 
-
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                       | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default.                                                                                                                                                                                                                                                                                                                                                                   | Optional |
+| investigation_id | Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to be changed.  (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.                                                                                                                                                                                                          | Required |
+| status | The new status for the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Waiting - Progress on the investigation has paused while more information is gathered. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: open, closed, investigating, waiting.                                                                             | Required |
+| threat_command_free_text | Additional information provided by the user when closing a Threat Command alert. Relevant when status=closed and api_version is V2 only.                                                                                                                                                                                                                                                                                                                              | Optional |
+| threat_command_close_reason | The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type. Relevant when status=closed and api_version is V2 only. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Not Related To My Company, False Positive, Legitimate Application/ Profile, Company Owned Domain, Other. | Optional |
+| disposition | A disposition to set the investigation to. Relevant when status=closed and api_version is V2 only. Possible values are: benign, malicious, not_applicable.                                                                                                                                                                                                                                                                                                            | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Rapid7InsightIDR.Investigation.title | String | Title of investigation | 
-| Rapid7InsightIDR.Investigation.id | String | ID of investigation | 
-| Rapid7InsightIDR.Investigation.status | String | Whether it is open or closed | 
-| Rapid7InsightIDR.Investigation.created_time | String | Time the investigation was created | 
-| Rapid7InsightIDR.Investigation.source | String | Source of the investigation | 
-| Rapid7InsightIDR.Investigation.assignee_email | String | Email of investigation assignee | 
-| Rapid7InsightIDR.Investigation.assignee_name | String | Name of investigation assignee | 
-| Rapid7InsightIDR.Investigation.alert_type | String | Type of alert in the investigation | 
+| **Path**                                              | **Type** | **Description**                                                                                                                                                                                                               |
+|-------------------------------------------------------| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Rapid7InsightIDR.Investigation.responsibility         | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.latest_alert_time      | String | The create time of the most recent alert belonging to this investigation \(if any\). Relevant when api_version is V2 only.                                                                                                    |
+| Rapid7InsightIDR.Investigation.assignee.email         | String | The email of the assigned user Relevant when api_version is V2 only.                                                                                                                                                          |
+| Rapid7InsightIDR.Investigation.assignee_email         | String | The email of the assigned user. Relevant when api_version is V2 only.                                                                                                                                                         |
+| Rapid7InsightIDR.Investigation.assignee_name          | String | The name of the assigned user. Relevant when api_version is V1 only.                                                                                                                                                          |
+| Rapid7InsightIDR.Investigation.alert.type | String | The alert's type. Relevant when api_version is V1 only.                                                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.assignee.name          | String | The name of the assigned user. Relevant when api_version is V2 only.                                                                                                                                                          |
+| Rapid7InsightIDR.Investigation.disposition            | String | The disposition of this investigation. Relevant when api_version is V2 only.                                                                                                                                                  |
+| Rapid7InsightIDR.Investigation.created_time           | String | The time this investigation was created.                                                                                                                                                                                      |
+| Rapid7InsightIDR.Investigation.last_accessed          | String | The time this investigation was last viewed or modified. Relevant when api_version is V2 only.                                                                                                                                |
+| Rapid7InsightIDR.Investigation.priority               | String | The investigations priority. Relevant when api_version is V2 only.                                                                                                                                                            |
+| Rapid7InsightIDR.Investigation.status                 | String | The status of the investigation.                                                                                                                                                                                              |
+| Rapid7InsightIDR.Investigation.source                 | String | How this investigation was generated.                                                                                                                                                                                         |
+| Rapid7InsightIDR.Investigation.title                  | String | The name of the investigation.                                                                                                                                                                                                |
+| Rapid7InsightIDR.Investigation.organization_id        | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only.                                                                                                                                |
+| Rapid7InsightIDR.Investigation.rrn                    | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only.                                                                                                                                         |
+| Rapid7InsightIDR.Investigation.id                     | String | The ID of the investigation. Relevant when api_version is V1 only.                                                                                                                                                            |
+| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of this type of alert \(if any\). Relevant when api_version is V1 only.                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.alert.type             | String | The alert's type. Relevant when api_version is V2 only.                                                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.alert_type             | String | The alert's type. Relevant when api_version is V1 only.                                                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.alert.first_event_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V1 only.                                                                                                          |
 
-
-#### Command Example
-```!rapid7-insight-idr-set-status status=open investigation_id=15229912-517a-4bc7-8257-3e7da8205df6,d3e4c470-1472-49ad-839b-fefa9b0683c5```
-
+#### Command example
+```!rapid7-insight-idr-set-status status=open investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 api_version=V2```
 #### Context Example
 ```json
 {
     "Rapid7InsightIDR": {
-        "Investigation": [
-            {
-                "alerts": [],
-                "created_time": "2020-12-29T10:00:00.526Z",
-                "id": "15229912-517a-4bc7-8257-3e7da8205df6",
-                "source": "HUNT",
-                "status": "OPEN",
-                "title": "forensics 1 job at 20201229T100000.346Z"
+        "Investigation": {
+            "assignee": {
+                "email": "test@test.com",
+                "name": "test"
             },
-            {
-                "alerts": [],
-                "created_time": "2020-12-04T10:00:00.515Z",
-                "id": "d3e4c470-1472-49ad-839b-fefa9b0683c5",
-                "source": "HUNT",
-                "status": "OPEN",
-                "title": "forensics 1 job at 20201204T100000.288Z"
-            }
-        ]
+            "created_time": "2024-03-05T19:02:28.419Z",
+            "disposition": "UNDECIDED",
+            "first_alert_time": null,
+            "last_accessed": "2024-03-05T19:07:33.509Z",
+            "latest_alert_time": null,
+            "organization_id": "123-123-123",
+            "priority": "UNSPECIFIED",
+            "responsibility": null,
+            "rrn": "rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2",
+            "source": "USER",
+            "status": "OPEN",
+            "title": "test1"
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### Investigation Information (id: 15229912-517a-4bc7-8257-3e7da8205df6,d3e4c470-1472-49ad-839b-fefa9b0683c5)
->|title|id|status|created_time|source|
->|---|---|---|---|---|
->| forensics 1 job at 20201229T100000.346Z | 15229912-517a-4bc7-8257-3e7da8205df6 | OPEN | 2020-12-29T10:00:00.526Z | HUNT |
->| forensics 1 job at 20201204T100000.288Z | d3e4c470-1472-49ad-839b-fefa9b0683c5 | OPEN | 2020-12-04T10:00:00.515Z | HUNT |
+>### Investigation '3793645a-6484-4a7e-9228-7aeb4ba97472' status was successfully updated to open.
+>|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
+>|---|---|---|---|---|---|---|
+>| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
 
 
 ### rapid7-insight-idr-add-threat-indicators
-***
-Add new indicators to a threat
 
+***
+Adds new indicators to a threat (IP addresses, hashes, domains, and URLs).
 
 #### Base Command
 
 `rapid7-insight-idr-add-threat-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | Key of the threat (or threats) to add indicators to | Required | 
-| ip_addresses | IPs indicators to add | Optional | 
-| hashes | hashes indicators to add | Optional | 
-| domain_names | Domain indicators to add | Optional | 
-| url | URL indicators to add | Optional | 
-
+| key | Key of the threat (or threats) to add indicators to. | Required |
+| ip_addresses | IP address indicators to add. | Optional |
+| hashes | Hash indicators to add. | Optional |
+| domain_names | Domain indicators to add. | Optional |
+| url | URL indicators to add. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Threat.name | String | Name of the Threat. | 
-| Rapid7InsightIDR.Threat.note | String | Notes for the Threat. | 
-| Rapid7InsightIDR.Threat.indicator_count | Number | How many indicators the threat has. | 
-| Rapid7InsightIDR.Threat.published | Boolean | Whether or not the threat is published. | 
+| Rapid7InsightIDR.Threat.name | String | Name of the threat. |
+| Rapid7InsightIDR.Threat.note | String | Notes for the threat. |
+| Rapid7InsightIDR.Threat.indicator_count | Number | How many indicators the threat has. |
+| Rapid7InsightIDR.Threat.published | Boolean | Whether or not the threat is published. |
 
-
-#### Command Example
-```!rapid7-insight-idr-add-threat-indicators key=75fd98f3-a88c-475e-be39-ad9e44ecc6db ip_addresses=x.x.x.x```
-
+#### Command example
+```!rapid7-insight-idr-add-threat-indicators key=76b06783-83cb-4018-b828-82a917278940 ip_addresses=20.20.20.20```
 #### Context Example
 ```json
 {
     "Rapid7InsightIDR": {
         "Threat": {
             "indicator_count": 2,
-            "name": "Threat2",
-            "note": "This is Threat2 desciption",
-            "published": false
+            "name": "test",
+            "note": "",
+            "published": true
         }
     }
 }
@@ -396,53 +424,51 @@ Add new indicators to a threat
 
 #### Human Readable Output
 
->### Threat Information (key: 75fd98f3-a88c-475e-be39-ad9e44ecc6db)
->|name|note|indicator_count|published|
->|---|---|---|---|
->| Threat2 | This is Threat2 desciption | 2 | false |
+>### Threat Information (key: 76b06783-83cb-4018-b828-82a917278940)
+>|name|indicator_count|published|
+>|---|---|---|
+>| test | 2 | true |
 
 
 ### rapid7-insight-idr-replace-threat-indicators
-***
-Delete existing indicators and insert new ones.
 
+***
+Deletes existing indicators from a threat and adds new indicators to the threat.
 
 #### Base Command
 
 `rapid7-insight-idr-replace-threat-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | Key of the threat (or threats) to replace indicators for | Required | 
-| ip_addresses | IPs indicators to add | Optional | 
-| hashes | hashes indicators to add | Optional | 
-| domain_names | Domain indicators to add | Optional | 
-| url | URL indicators to add | Optional | 
-
+| key | Key of the threat (or threats) to replace indicators for. | Required |
+| ip_addresses | IP address indicators to add. | Optional |
+| hashes | Hash indicators to add. | Optional |
+| domain_names | Domain indicators to add. | Optional |
+| url | URL indicators to add. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Threat.name | String | Name of the Threat. | 
-| Rapid7InsightIDR.Threat.note | String | Notes for the Threat. | 
-| Rapid7InsightIDR.Threat.indicator_count | Number | How many indicators the threat has. | 
-| Rapid7InsightIDR.Threat.published | Boolean | Whether or not the threat is published. | 
+| Rapid7InsightIDR.Threat.name | String | Name of the threat. |
+| Rapid7InsightIDR.Threat.note | String | Notes for the threat. |
+| Rapid7InsightIDR.Threat.indicator_count | Number | How many indicators the threat has. |
+| Rapid7InsightIDR.Threat.published | Boolean | Whether or not the threat is published. |
 
-
-#### Command Example
-```!rapid7-insight-idr-replace-threat-indicators key=75fd98f3-a88c-475e-be39-ad9e44ecc6db ip_addresses=x.x.x.x```
-
+#### Command example
+```!rapid7-insight-idr-replace-threat-indicators key=76b06783-83cb-4018-b828-82a917278940 ip_addresses=30.30.30.30```
 #### Context Example
 ```json
 {
     "Rapid7InsightIDR": {
         "Threat": {
             "indicator_count": 1,
-            "name": "Threat2",
-            "note": "This is Threat2 desciption",
-            "published": false
+            "name": "test",
+            "note": "",
+            "published": true
         }
     }
 }
@@ -450,102 +476,96 @@ Delete existing indicators and insert new ones.
 
 #### Human Readable Output
 
->### Threat Information (key: 75fd98f3-a88c-475e-be39-ad9e44ecc6db)
->|name|note|indicator_count|published|
->|---|---|---|---|
->| Threat2 | This is Threat2 desciption | 1 | false |
+>### Threat Information (key: 76b06783-83cb-4018-b828-82a917278940)
+>|name|indicator_count|published|
+>|---|---|---|
+>| test | 1 | true |
 
 
 ### rapid7-insight-idr-list-logs
-***
-List all existing logs for an account
 
+***
+Lists all existing logs for an account.
 
 #### Base Command
 
 `rapid7-insight-idr-list-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Log.name | String | Log name | 
-| Rapid7InsightIDR.Log.id | String | Log ID | 
+| Rapid7InsightIDR.Log.name | String | Log name. |
+| Rapid7InsightIDR.Log.id | String | Log ID. |
 
-
-#### Command Example
+#### Command example
 ```!rapid7-insight-idr-list-logs```
-
 #### Context Example
 ```json
 {
     "Rapid7InsightIDR": {
         "Log": [
             {
-                "id": "a668beb0-a769-4329-9c95-eeef55fb33d3",
+                "id": "ee919c89-22c7-490e-be3e-db8994ee21cb",
                 "links": [
                     {
-                        "href": "https://us.api.insight.rapid7.com/log_search/management/logs/a668beb0-a769-4329-9c95-eeef55fb33d3/topkeys",
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/ee919c89-22c7-490e-be3e-db8994ee21cb/topkeys",
                         "rel": "Related"
                     }
                 ],
                 "logsets_info": [
                     {
-                        "id": "c826ff7f-683a-4f9c-9167-9edec6979bbb",
+                        "id": "ef427412-18cb-4f23-af30-a36e8efb4efb",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logsets/c826ff7f-683a-4f9c-9167-9edec6979bbb",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/ef427412-18cb-4f23-af30-a36e8efb4efb",
                                 "rel": "Self"
                             }
                         ],
-                        "name": "Unparsed Data",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:c826ff7f-683a-4f9c-9167-9edec6979bbb"
+                        "name": "Audit Logs",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:ef427412-18cb-4f23-af30-a36e8efb4efb"
                     }
                 ],
-                "name": "Windows Defender",
+                "name": "InsightIDR Investigations",
                 "retention_period": "default",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:a668beb0-a769-4329-9c95-eeef55fb33d3",
-                "source_type": "token",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:ee919c89-22c7-490e-be3e-db8994ee21cb",
+                "source_type": "internal",
                 "structures": [
-                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                    "fa6a4440-4579-4a03-be08-c259a84db062"
                 ],
                 "token_seed": null,
-                "tokens": [
-                    "3fcfc8c1-32f7-4d97-9a1b-bd372236dfe5"
-                ],
-                "user_data": {
-                    "platform_managed": "true"
-                }
+                "tokens": [],
+                "user_data": {}
             },
             {
-                "id": "82b2969c-8597-41a3-9e2a-4bce4d0f6ab6",
+                "id": "17803c57-9124-43d1-a5d1-1e974042b481",
                 "links": [
                     {
-                        "href": "https://us.api.insight.rapid7.com/log_search/management/logs/82b2969c-8597-41a3-9e2a-4bce4d0f6ab6/topkeys",
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/17803c57-9124-43d1-a5d1-1e974042b481/topkeys",
                         "rel": "Related"
                     }
                 ],
                 "logsets_info": [
                     {
-                        "id": "f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
+                        "id": "e4f0787b-ff40-4587-986f-42ee27e7ffc0",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logsets/f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/e4f0787b-ff40-4587-986f-42ee27e7ffc0",
                                 "rel": "Self"
                             }
                         ],
                         "name": "Internal Logs",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:f6e6410d-deb4-4b56-9c90-300f4cdaf46d"
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:e4f0787b-ff40-4587-986f-42ee27e7ffc0"
                     }
                 ],
                 "name": "Web Access Log",
                 "retention_period": "default",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:82b2969c-8597-41a3-9e2a-4bce4d0f6ab6",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:17803c57-9124-43d1-a5d1-1e974042b481",
                 "source_type": "internal",
                 "structures": [],
                 "token_seed": null,
@@ -553,29 +573,29 @@ List all existing logs for an account
                 "user_data": {}
             },
             {
-                "id": "bd65dfa8-7ddf-42b0-bf8c-27853bca1618",
+                "id": "fdf33f7b-edf9-4e2c-98f3-527ab62e124c",
                 "links": [
                     {
-                        "href": "https://us.api.insight.rapid7.com/log_search/management/logs/bd65dfa8-7ddf-42b0-bf8c-27853bca1618/topkeys",
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/fdf33f7b-edf9-4e2c-98f3-527ab62e124c/topkeys",
                         "rel": "Related"
                     }
                 ],
                 "logsets_info": [
                     {
-                        "id": "f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
+                        "id": "e4f0787b-ff40-4587-986f-42ee27e7ffc0",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logsets/f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/e4f0787b-ff40-4587-986f-42ee27e7ffc0",
                                 "rel": "Self"
                             }
                         ],
                         "name": "Internal Logs",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:f6e6410d-deb4-4b56-9c90-300f4cdaf46d"
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:e4f0787b-ff40-4587-986f-42ee27e7ffc0"
                     }
                 ],
                 "name": "Alert Audit Log",
                 "retention_period": "default",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:bd65dfa8-7ddf-42b0-bf8c-27853bca1618",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:fdf33f7b-edf9-4e2c-98f3-527ab62e124c",
                 "source_type": "internal",
                 "structures": [
                     "fa6a4440-4579-4a03-be08-c259a84db062"
@@ -585,101 +605,183 @@ List all existing logs for an account
                 "user_data": {}
             },
             {
-                "id": "ab5a7594-5fde-4c5c-9ee6-e67291f0a40c",
+                "id": "3a813f0d-a3a8-47f8-b69e-67ff327f4383",
                 "links": [
                     {
-                        "href": "https://us.api.insight.rapid7.com/log_search/management/logs/ab5a7594-5fde-4c5c-9ee6-e67291f0a40c/topkeys",
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/3a813f0d-a3a8-47f8-b69e-67ff327f4383/topkeys",
                         "rel": "Related"
                     }
                 ],
                 "logsets_info": [
                     {
-                        "id": "74c4af9d-2673-4bc2-b8e8-afe3d1354987",
+                        "id": "86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logsets/74c4af9d-2673-4bc2-b8e8-afe3d1354987",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
                                 "rel": "Self"
                             }
                         ],
-                        "name": "Asset Authentication",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:74c4af9d-2673-4bc2-b8e8-afe3d1354987"
+                        "name": "Endpoint Activity",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:86484c1c-7aa8-4316-bb0d-bdb8e479e65b"
                     }
                 ],
-                "name": "Endpoint Agents",
+                "name": "Netbios Poisoning",
                 "retention_period": "default",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:ab5a7594-5fde-4c5c-9ee6-e67291f0a40c",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:3a813f0d-a3a8-47f8-b69e-67ff327f4383",
                 "source_type": "token",
                 "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
                     "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
                 ],
                 "token_seed": null,
                 "tokens": [
-                    "b6c9d703-d3b5-4752-b24f-2aaf76bb7932"
+                    "6db7d337-b7ca-435b-babf-63efb6f8a9c3"
                 ],
                 "user_data": {
+                    "le_expire_backup": "false",
+                    "le_log_type": "eet",
                     "platform_managed": "true"
                 }
             },
             {
-                "id": "7efaf894-cf8a-4ed2-9495-77395bf2e5a6",
+                "id": "f1242448-a2ae-436a-925e-adebd71cbce5",
                 "links": [
                     {
-                        "href": "https://us.api.insight.rapid7.com/log_search/management/logs/7efaf894-cf8a-4ed2-9495-77395bf2e5a6/topkeys",
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/f1242448-a2ae-436a-925e-adebd71cbce5/topkeys",
                         "rel": "Related"
                     }
                 ],
                 "logsets_info": [
                     {
-                        "id": "5e6303c5-ef5e-4384-b1f7-13668a4a0d39",
+                        "id": "27bf96d8-4ec0-49ad-a3a7-4f6cdfb24354",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logsets/5e6303c5-ef5e-4384-b1f7-13668a4a0d39",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/27bf96d8-4ec0-49ad-a3a7-4f6cdfb24354",
                                 "rel": "Self"
                             }
                         ],
-                        "name": "Raw Log",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:5e6303c5-ef5e-4384-b1f7-13668a4a0d39"
+                        "name": "Endpoint Health",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:27bf96d8-4ec0-49ad-a3a7-4f6cdfb24354"
                     }
                 ],
-                "name": "PersonalLogs",
+                "name": "Job Status",
                 "retention_period": "default",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:7efaf894-cf8a-4ed2-9495-77395bf2e5a6",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:f1242448-a2ae-436a-925e-adebd71cbce5",
                 "source_type": "token",
                 "structures": [
-                    "fa6a4440-4579-4a03-be08-c259a84db062"
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
                 ],
                 "token_seed": null,
                 "tokens": [
-                    "47b697be-f283-4257-876e-c4c716563ef7"
+                    "9a9d3e69-44f2-4233-beae-ecc766c93b90"
+                ],
+                "user_data": {
+                    "le_expire_backup": "false",
+                    "le_log_type": "eet",
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "676e5e4e-638e-4df5-b6a5-3a92a5c858ac",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/676e5e4e-638e-4df5-b6a5-3a92a5c858ac/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "0d1b319d-d2ca-4427-945c-5af8fc9c9f59",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/0d1b319d-d2ca-4427-945c-5af8fc9c9f59",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Unparsed Data",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:0d1b319d-d2ca-4427-945c-5af8fc9c9f59"
+                    }
+                ],
+                "name": "Windows Defender",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:676e5e4e-638e-4df5-b6a5-3a92a5c858ac",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "b8566a56-d0f6-4898-ab33-0edeeb223941"
                 ],
                 "user_data": {
                     "platform_managed": "true"
                 }
             },
             {
-                "id": "c5f51e68-809f-4272-b714-275f3019ddd5",
+                "id": "8b780f32-a897-42e9-a0ef-d48278e7ea89",
                 "links": [
                     {
-                        "href": "https://us.api.insight.rapid7.com/log_search/management/logs/c5f51e68-809f-4272-b714-275f3019ddd5/topkeys",
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/8b780f32-a897-42e9-a0ef-d48278e7ea89/topkeys",
                         "rel": "Related"
                     }
                 ],
                 "logsets_info": [
                     {
-                        "id": "f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
+                        "id": "86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logsets/f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Endpoint Activity",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:86484c1c-7aa8-4316-bb0d-bdb8e479e65b"
+                    }
+                ],
+                "name": "Local Service Creation",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:8b780f32-a897-42e9-a0ef-d48278e7ea89",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "e6ef532f-47cb-42f6-be41-e8f767768279"
+                ],
+                "user_data": {
+                    "le_expire_backup": "false",
+                    "le_log_type": "eet",
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "196d3f6e-d92c-40df-88b0-5c622da6396b",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/196d3f6e-d92c-40df-88b0-5c622da6396b/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "e4f0787b-ff40-4587-986f-42ee27e7ffc0",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/e4f0787b-ff40-4587-986f-42ee27e7ffc0",
                                 "rel": "Self"
                             }
                         ],
                         "name": "Internal Logs",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:f6e6410d-deb4-4b56-9c90-300f4cdaf46d"
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:e4f0787b-ff40-4587-986f-42ee27e7ffc0"
                     }
                 ],
                 "name": "Log Updates",
                 "retention_period": "default",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:c5f51e68-809f-4272-b714-275f3019ddd5",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:196d3f6e-d92c-40df-88b0-5c622da6396b",
                 "source_type": "internal",
                 "structures": [
                     "fa6a4440-4579-4a03-be08-c259a84db062"
@@ -687,6 +789,304 @@ List all existing logs for an account
                 "token_seed": null,
                 "tokens": [],
                 "user_data": {}
+            },
+            {
+                "id": "ed3599b4-a857-47ed-bde5-4e9baf9c6864",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/ed3599b4-a857-47ed-bde5-4e9baf9c6864/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "0122d7b5-6632-47c0-abf0-68c8545a6fd4",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/0122d7b5-6632-47c0-abf0-68c8545a6fd4",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Virus Alert",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:0122d7b5-6632-47c0-abf0-68c8545a6fd4"
+                    }
+                ],
+                "name": "Endpoint Agents",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:ed3599b4-a857-47ed-bde5-4e9baf9c6864",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "3ddf97fb-d590-4b9f-a312-1ca8aebbba76"
+                ],
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "d04903f1-a710-4c6c-ac16-0bf2e39f411d",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/d04903f1-a710-4c6c-ac16-0bf2e39f411d/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Endpoint Activity",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:86484c1c-7aa8-4316-bb0d-bdb8e479e65b"
+                    }
+                ],
+                "name": "Process Start Events",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:d04903f1-a710-4c6c-ac16-0bf2e39f411d",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "ba013edf-2877-4a80-819c-006b5e8c06de"
+                ],
+                "user_data": {
+                    "le_expire_backup": "false",
+                    "le_log_type": "eet",
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "7bd5dbe6-9745-4386-8ff9-44c3cc2d5883",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/7bd5dbe6-9745-4386-8ff9-44c3cc2d5883/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "e4a59aa9-d8ef-45ee-af04-eb6fc929c1cf",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/e4a59aa9-d8ef-45ee-af04-eb6fc929c1cf",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Active Directory Admin Activity",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:e4a59aa9-d8ef-45ee-af04-eb6fc929c1cf"
+                    }
+                ],
+                "name": "Endpoint Agents",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:7bd5dbe6-9745-4386-8ff9-44c3cc2d5883",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "a84f5643-f816-47bb-9133-fc8c3add4359"
+                ],
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "b4d09423-9d8f-4eb3-9638-657a3b6824d5",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/b4d09423-9d8f-4eb3-9638-657a3b6824d5/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "78677867-e594-462a-aaad-923fe45d6efe",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/78677867-e594-462a-aaad-923fe45d6efe",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Host To IP Observations",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:78677867-e594-462a-aaad-923fe45d6efe"
+                    }
+                ],
+                "name": "Endpoint Agents",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:b4d09423-9d8f-4eb3-9638-657a3b6824d5",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "3e99ac75-0c5d-4472-83a6-ace858ebbba4"
+                ],
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "0a6a2612-e8c8-454a-a1bf-62e4d3f17304",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/0a6a2612-e8c8-454a-a1bf-62e4d3f17304/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "91de4b59-8324-45ed-8994-4604d918eb8d",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/91de4b59-8324-45ed-8994-4604d918eb8d",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Asset Authentication",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:91de4b59-8324-45ed-8994-4604d918eb8d"
+                    }
+                ],
+                "name": "Endpoint Agents",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:0a6a2612-e8c8-454a-a1bf-62e4d3f17304",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "c596d84d-9e56-4d98-9b2b-7fcb347376ef"
+                ],
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "1dc31fad-20e9-4946-856e-7da6ddf8910e",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/1dc31fad-20e9-4946-856e-7da6ddf8910e/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "0122d7b5-6632-47c0-abf0-68c8545a6fd4",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/0122d7b5-6632-47c0-abf0-68c8545a6fd4",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Virus Alert",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:0122d7b5-6632-47c0-abf0-68c8545a6fd4"
+                    }
+                ],
+                "name": "Carbon",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:1dc31fad-20e9-4946-856e-7da6ddf8910e",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "4581d7af-ea5b-40fc-b119-c57bf473b44f"
+                ],
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "9355519b-cbc7-4e78-82aa-70e468ee2599",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/9355519b-cbc7-4e78-82aa-70e468ee2599/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "665aa34b-e489-4b78-a020-76203dbb2eea",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/665aa34b-e489-4b78-a020-76203dbb2eea",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "File Access Activity",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:665aa34b-e489-4b78-a020-76203dbb2eea"
+                    }
+                ],
+                "name": "Endpoint Agents",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:9355519b-cbc7-4e78-82aa-70e468ee2599",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "69106621-037b-4040-91f2-8a6d2d074f9b"
+                ],
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "id": "a679d822-bd3c-4807-a16d-4efd8ca248ab",
+                "links": [
+                    {
+                        "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/a679d822-bd3c-4807-a16d-4efd8ca248ab/topkeys",
+                        "rel": "Related"
+                    }
+                ],
+                "logsets_info": [
+                    {
+                        "id": "02f12c43-91b8-44d4-969e-8a5216781a5c",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logsets/02f12c43-91b8-44d4-969e-8a5216781a5c",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "File Modification Activity",
+                        "rrn": "rrn:logsearch:eu:123-123-123:logset:02f12c43-91b8-44d4-969e-8a5216781a5c"
+                    }
+                ],
+                "name": "Endpoint Agents",
+                "retention_period": "default",
+                "rrn": "rrn:logsearch:eu:123-123-123:log:a679d822-bd3c-4807-a16d-4efd8ca248ab",
+                "source_type": "token",
+                "structures": [
+                    "9bceaf29-b72b-4259-94e4-0300e170157d",
+                    "12d8ca9d-3b1b-4a36-b564-45de5f8425e9"
+                ],
+                "token_seed": null,
+                "tokens": [
+                    "91e38fb4-3e44-4c42-80d2-ba50a73944be"
+                ],
+                "user_data": {
+                    "platform_managed": "true"
+                }
             }
         ]
     }
@@ -698,39 +1098,47 @@ List all existing logs for an account
 >### List Logs
 >|name|id|
 >|---|---|
->| Windows Defender | a668beb0-a769-4329-9c95-eeef55fb33d3 |
->| Web Access Log | 82b2969c-8597-41a3-9e2a-4bce4d0f6ab6 |
->| Alert Audit Log | bd65dfa8-7ddf-42b0-bf8c-27853bca1618 |
->| Endpoint Agents | ab5a7594-5fde-4c5c-9ee6-e67291f0a40c |
->| PersonalLogs | 7efaf894-cf8a-4ed2-9495-77395bf2e5a6 |
->| Log Updates | c5f51e68-809f-4272-b714-275f3019ddd5 |
+>| InsightIDR Investigations | ee919c89-22c7-490e-be3e-db8994ee21cb |
+>| Web Access Log | 17803c57-9124-43d1-a5d1-1e974042b481 |
+>| Alert Audit Log | fdf33f7b-edf9-4e2c-98f3-527ab62e124c |
+>| Netbios Poisoning | 3a813f0d-a3a8-47f8-b69e-67ff327f4383 |
+>| Job Status | f1242448-a2ae-436a-925e-adebd71cbce5 |
+>| Windows Defender | 676e5e4e-638e-4df5-b6a5-3a92a5c858ac |
+>| Local Service Creation | 8b780f32-a897-42e9-a0ef-d48278e7ea89 |
+>| Log Updates | 196d3f6e-d92c-40df-88b0-5c622da6396b |
+>| Endpoint Agents | ed3599b4-a857-47ed-bde5-4e9baf9c6864 |
+>| Process Start Events | d04903f1-a710-4c6c-ac16-0bf2e39f411d |
+>| Endpoint Agents | 7bd5dbe6-9745-4386-8ff9-44c3cc2d5883 |
+>| Endpoint Agents | b4d09423-9d8f-4eb3-9638-657a3b6824d5 |
+>| Endpoint Agents | 0a6a2612-e8c8-454a-a1bf-62e4d3f17304 |
+>| Carbon | 1dc31fad-20e9-4946-856e-7da6ddf8910e |
+>| Endpoint Agents | 9355519b-cbc7-4e78-82aa-70e468ee2599 |
+>| Endpoint Agents | a679d822-bd3c-4807-a16d-4efd8ca248ab |
 
 
 ### rapid7-insight-idr-list-log-sets
-***
-List all existing log sets for an account
 
+***
+Lists all existing log sets for your InsightsIDR instance.
 
 #### Base Command
 
 `rapid7-insight-idr-list-log-sets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.LogSet.name | String | Log name | 
-| Rapid7InsightIDR.LogSet.id | String | Log ID | 
+| Rapid7InsightIDR.LogSet.name | String | Log name. |
+| Rapid7InsightIDR.LogSet.id | String | Log ID. |
 
-
-#### Command Example
+#### Command example
 ```!rapid7-insight-idr-list-log-sets```
-
 #### Context Example
 ```json
 {
@@ -738,108 +1146,293 @@ List all existing log sets for an account
         "LogSet": [
             {
                 "description": null,
-                "id": "f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
+                "id": "665aa34b-e489-4b78-a020-76203dbb2eea",
                 "logs_info": [
                     {
-                        "id": "82b2969c-8597-41a3-9e2a-4bce4d0f6ab6",
+                        "id": "9355519b-cbc7-4e78-82aa-70e468ee2599",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logs/82b2969c-8597-41a3-9e2a-4bce4d0f6ab6",
-                                "rel": "Self"
-                            }
-                        ],
-                        "name": "Web Access Log",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:82b2969c-8597-41a3-9e2a-4bce4d0f6ab6"
-                    },
-                    {
-                        "id": "bd65dfa8-7ddf-42b0-bf8c-27853bca1618",
-                        "links": [
-                            {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logs/bd65dfa8-7ddf-42b0-bf8c-27853bca1618",
-                                "rel": "Self"
-                            }
-                        ],
-                        "name": "Alert Audit Log",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:bd65dfa8-7ddf-42b0-bf8c-27853bca1618"
-                    },
-                    {
-                        "id": "c5f51e68-809f-4272-b714-275f3019ddd5",
-                        "links": [
-                            {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logs/c5f51e68-809f-4272-b714-275f3019ddd5",
-                                "rel": "Self"
-                            }
-                        ],
-                        "name": "Log Updates",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:c5f51e68-809f-4272-b714-275f3019ddd5"
-                    }
-                ],
-                "name": "Internal Logs",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:f6e6410d-deb4-4b56-9c90-300f4cdaf46d",
-                "user_data": {}
-            },
-            {
-                "description": null,
-                "id": "74c4af9d-2673-4bc2-b8e8-afe3d1354987",
-                "logs_info": [
-                    {
-                        "id": "ab5a7594-5fde-4c5c-9ee6-e67291f0a40c",
-                        "links": [
-                            {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logs/ab5a7594-5fde-4c5c-9ee6-e67291f0a40c",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/9355519b-cbc7-4e78-82aa-70e468ee2599",
                                 "rel": "Self"
                             }
                         ],
                         "name": "Endpoint Agents",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:ab5a7594-5fde-4c5c-9ee6-e67291f0a40c"
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:9355519b-cbc7-4e78-82aa-70e468ee2599"
                     }
                 ],
-                "name": "Asset Authentication",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:74c4af9d-2673-4bc2-b8e8-afe3d1354987",
+                "name": "File Access Activity",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:665aa34b-e489-4b78-a020-76203dbb2eea",
                 "user_data": {
                     "platform_managed": "true"
                 }
             },
             {
                 "description": null,
-                "id": "c826ff7f-683a-4f9c-9167-9edec6979bbb",
+                "id": "ef427412-18cb-4f23-af30-a36e8efb4efb",
                 "logs_info": [
                     {
-                        "id": "a668beb0-a769-4329-9c95-eeef55fb33d3",
+                        "id": "ee919c89-22c7-490e-be3e-db8994ee21cb",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logs/a668beb0-a769-4329-9c95-eeef55fb33d3",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/ee919c89-22c7-490e-be3e-db8994ee21cb",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "InsightIDR Investigations",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:ee919c89-22c7-490e-be3e-db8994ee21cb"
+                    }
+                ],
+                "name": "Audit Logs",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:ef427412-18cb-4f23-af30-a36e8efb4efb",
+                "user_data": {}
+            },
+            {
+                "description": null,
+                "id": "27bf96d8-4ec0-49ad-a3a7-4f6cdfb24354",
+                "logs_info": [
+                    {
+                        "id": "f1242448-a2ae-436a-925e-adebd71cbce5",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/f1242448-a2ae-436a-925e-adebd71cbce5",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Job Status",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:f1242448-a2ae-436a-925e-adebd71cbce5"
+                    }
+                ],
+                "name": "Endpoint Health",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:27bf96d8-4ec0-49ad-a3a7-4f6cdfb24354",
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "description": null,
+                "id": "0122d7b5-6632-47c0-abf0-68c8545a6fd4",
+                "logs_info": [
+                    {
+                        "id": "1dc31fad-20e9-4946-856e-7da6ddf8910e",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/1dc31fad-20e9-4946-856e-7da6ddf8910e",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Carbon",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:1dc31fad-20e9-4946-856e-7da6ddf8910e"
+                    },
+                    {
+                        "id": "ed3599b4-a857-47ed-bde5-4e9baf9c6864",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/ed3599b4-a857-47ed-bde5-4e9baf9c6864",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Endpoint Agents",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:ed3599b4-a857-47ed-bde5-4e9baf9c6864"
+                    }
+                ],
+                "name": "Virus Alert",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:0122d7b5-6632-47c0-abf0-68c8545a6fd4",
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "description": null,
+                "id": "02f12c43-91b8-44d4-969e-8a5216781a5c",
+                "logs_info": [
+                    {
+                        "id": "a679d822-bd3c-4807-a16d-4efd8ca248ab",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/a679d822-bd3c-4807-a16d-4efd8ca248ab",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Endpoint Agents",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:a679d822-bd3c-4807-a16d-4efd8ca248ab"
+                    }
+                ],
+                "name": "File Modification Activity",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:02f12c43-91b8-44d4-969e-8a5216781a5c",
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "description": null,
+                "id": "91de4b59-8324-45ed-8994-4604d918eb8d",
+                "logs_info": [
+                    {
+                        "id": "0a6a2612-e8c8-454a-a1bf-62e4d3f17304",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/0a6a2612-e8c8-454a-a1bf-62e4d3f17304",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Endpoint Agents",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:0a6a2612-e8c8-454a-a1bf-62e4d3f17304"
+                    }
+                ],
+                "name": "Asset Authentication",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:91de4b59-8324-45ed-8994-4604d918eb8d",
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "description": null,
+                "id": "0d1b319d-d2ca-4427-945c-5af8fc9c9f59",
+                "logs_info": [
+                    {
+                        "id": "676e5e4e-638e-4df5-b6a5-3a92a5c858ac",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/676e5e4e-638e-4df5-b6a5-3a92a5c858ac",
                                 "rel": "Self"
                             }
                         ],
                         "name": "Windows Defender",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:a668beb0-a769-4329-9c95-eeef55fb33d3"
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:676e5e4e-638e-4df5-b6a5-3a92a5c858ac"
                     }
                 ],
                 "name": "Unparsed Data",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:c826ff7f-683a-4f9c-9167-9edec6979bbb",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:0d1b319d-d2ca-4427-945c-5af8fc9c9f59",
                 "user_data": {
                     "platform_managed": "true"
                 }
             },
             {
                 "description": null,
-                "id": "5e6303c5-ef5e-4384-b1f7-13668a4a0d39",
+                "id": "e4f0787b-ff40-4587-986f-42ee27e7ffc0",
                 "logs_info": [
                     {
-                        "id": "7efaf894-cf8a-4ed2-9495-77395bf2e5a6",
+                        "id": "17803c57-9124-43d1-a5d1-1e974042b481",
                         "links": [
                             {
-                                "href": "https://us.api.insight.rapid7.com/log_search/management/logs/7efaf894-cf8a-4ed2-9495-77395bf2e5a6",
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/17803c57-9124-43d1-a5d1-1e974042b481",
                                 "rel": "Self"
                             }
                         ],
-                        "name": "PersonalLogs",
-                        "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:log:7efaf894-cf8a-4ed2-9495-77395bf2e5a6"
+                        "name": "Web Access Log",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:17803c57-9124-43d1-a5d1-1e974042b481"
+                    },
+                    {
+                        "id": "196d3f6e-d92c-40df-88b0-5c622da6396b",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/196d3f6e-d92c-40df-88b0-5c622da6396b",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Log Updates",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:196d3f6e-d92c-40df-88b0-5c622da6396b"
+                    },
+                    {
+                        "id": "fdf33f7b-edf9-4e2c-98f3-527ab62e124c",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/fdf33f7b-edf9-4e2c-98f3-527ab62e124c",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Alert Audit Log",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:fdf33f7b-edf9-4e2c-98f3-527ab62e124c"
                     }
                 ],
-                "name": "Raw Log",
-                "rrn": "rrn:logsearch:us:7a6865a8-3594-43c2-9625-93dbcd0e1f78:logset:5e6303c5-ef5e-4384-b1f7-13668a4a0d39",
+                "name": "Internal Logs",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:e4f0787b-ff40-4587-986f-42ee27e7ffc0",
+                "user_data": {}
+            },
+            {
+                "description": null,
+                "id": "e4a59aa9-d8ef-45ee-af04-eb6fc929c1cf",
+                "logs_info": [
+                    {
+                        "id": "7bd5dbe6-9745-4386-8ff9-44c3cc2d5883",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/7bd5dbe6-9745-4386-8ff9-44c3cc2d5883",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Endpoint Agents",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:7bd5dbe6-9745-4386-8ff9-44c3cc2d5883"
+                    }
+                ],
+                "name": "Active Directory Admin Activity",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:e4a59aa9-d8ef-45ee-af04-eb6fc929c1cf",
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "description": null,
+                "id": "86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
+                "logs_info": [
+                    {
+                        "id": "3a813f0d-a3a8-47f8-b69e-67ff327f4383",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/3a813f0d-a3a8-47f8-b69e-67ff327f4383",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Netbios Poisoning",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:3a813f0d-a3a8-47f8-b69e-67ff327f4383"
+                    },
+                    {
+                        "id": "8b780f32-a897-42e9-a0ef-d48278e7ea89",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/8b780f32-a897-42e9-a0ef-d48278e7ea89",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Local Service Creation",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:8b780f32-a897-42e9-a0ef-d48278e7ea89"
+                    },
+                    {
+                        "id": "d04903f1-a710-4c6c-ac16-0bf2e39f411d",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/d04903f1-a710-4c6c-ac16-0bf2e39f411d",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Process Start Events",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:d04903f1-a710-4c6c-ac16-0bf2e39f411d"
+                    }
+                ],
+                "name": "Endpoint Activity",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:86484c1c-7aa8-4316-bb0d-bdb8e479e65b",
+                "user_data": {
+                    "platform_managed": "true"
+                }
+            },
+            {
+                "description": null,
+                "id": "78677867-e594-462a-aaad-923fe45d6efe",
+                "logs_info": [
+                    {
+                        "id": "b4d09423-9d8f-4eb3-9638-657a3b6824d5",
+                        "links": [
+                            {
+                                "href": "https://eu.api.insight.rapid7.com/log_search/management/logs/b4d09423-9d8f-4eb3-9638-657a3b6824d5",
+                                "rel": "Self"
+                            }
+                        ],
+                        "name": "Endpoint Agents",
+                        "rrn": "rrn:logsearch:eu:123-123-123:log:b4d09423-9d8f-4eb3-9638-657a3b6824d5"
+                    }
+                ],
+                "name": "Host To IP Observations",
+                "rrn": "rrn:logsearch:eu:123-123-123:logset:78677867-e594-462a-aaad-923fe45d6efe",
                 "user_data": {
                     "platform_managed": "true"
                 }
@@ -854,56 +1447,528 @@ List all existing log sets for an account
 >### List Log Sets
 >|name|id|
 >|---|---|
->| Internal Logs | f6e6410d-deb4-4b56-9c90-300f4cdaf46d |
->| Asset Authentication | 74c4af9d-2673-4bc2-b8e8-afe3d1354987 |
->| Unparsed Data | c826ff7f-683a-4f9c-9167-9edec6979bbb |
->| Raw Log | 5e6303c5-ef5e-4384-b1f7-13668a4a0d39 |
+>| File Access Activity | 665aa34b-e489-4b78-a020-76203dbb2eea |
+>| Audit Logs | ef427412-18cb-4f23-af30-a36e8efb4efb |
+>| Endpoint Health | 27bf96d8-4ec0-49ad-a3a7-4f6cdfb24354 |
+>| Virus Alert | 0122d7b5-6632-47c0-abf0-68c8545a6fd4 |
+>| File Modification Activity | 02f12c43-91b8-44d4-969e-8a5216781a5c |
+>| Asset Authentication | 91de4b59-8324-45ed-8994-4604d918eb8d |
+>| Unparsed Data | 0d1b319d-d2ca-4427-945c-5af8fc9c9f59 |
+>| Internal Logs | e4f0787b-ff40-4587-986f-42ee27e7ffc0 |
+>| Active Directory Admin Activity | e4a59aa9-d8ef-45ee-af04-eb6fc929c1cf |
+>| Endpoint Activity | 86484c1c-7aa8-4316-bb0d-bdb8e479e65b |
+>| Host To IP Observations | 78677867-e594-462a-aaad-923fe45d6efe |
 
 
 ### rapid7-insight-idr-download-logs
-***
-Download up to 10 logs for an account.
 
+***
+Downloads logs from your InsightsIDR instance. The maximum number of logs per call is 10.
 
 #### Base Command
 
 `rapid7-insight-idr-download-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_ids | IDs of the logs to download - up to 10 logs allowed. | Required | 
-| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied. | Optional | 
-| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. | Optional | 
-| time_range | The relative time range in a readable format. Optional if from is supplied. Example: Last 4 Days. Note that if start_time, end_time and time_range is not provided - The default will be Last 3 days. | Optional | 
-| query | The LEQL query to match desired log events. Do not use a calculation.more info: https://docs.rapid7.com/insightidr/build-a-query/ | Optional | 
-| limit | Max number of log events to download; cannot exceed 20 million. The default is 20 million (Note that a number should be written like "10 thousand" or "2 million") | Optional | 
-
+| log_ids | IDs of the logs to download - up to 10 logs allowed. | Required |
+| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied. | Optional |
+| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. | Optional |
+| time_range | The relative time range in a readable format. Optional if "from" \ is supplied. For example: Last 4 Days. Note that if start_time, end_time and\ \ time_range is not provided the default will be Last 3 days. | Optional |
+| query | The LEQL query to match desired log events. Do not use a calculation. For more information: https://docs.rapid7.com/insightidr/build-a-query/. | Optional |
+| limit | The maximum number of log events to download; cannot exceed 20 million. The default is 20 million. The argument value should be written like this: "10 thousand" or "2 million"). | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-
-
-#### Command Example
-```!rapid7-insight-idr-download-logs log_ids=ab5a7594-5fde-4c5c-9ee6-e67291f0a40c time_range="last 7 days"```
-
+There is no context output for this command.
+#### Command example
+```!rapid7-insight-idr-download-logs log_ids=ee919c89-22c7-490e-be3e-db8994ee21cb time_range="last 7 days"```
 #### Context Example
 ```json
 {
     "InfoFile": {
-        "EntryID": "8090@e5ab5eb3-dafd-4dbc-8239-201263c94952",
+        "EntryID": "692@3eb6b0b2-d80d-4c3a-8c97-1d191f5a42fe",
         "Extension": "log",
-        "Info": "log",
-        "Name": "EndpointAgents_2020-12-22_114727_2020-12-29_114727.log",
-        "Size": 0,
-        "Type": "empty"
+        "Info": "text/x-log; charset=utf-8",
+        "Name": "InsightIDRInvestigations_2024-02-27_190751_2024-03-05_190751.log",
+        "Size": 70908,
+        "Type": "ASCII text, with very long lines"
     }
 }
 ```
 
 #### Human Readable Output
+
+
+
+### rapid7-insight-idr-query-log
+
+***
+Queries within a log for certain values.
+
+#### Base Command
+
+`rapid7-insight-idr-query-log`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| log_id | Log entries log key. | Required |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/. | Required |
+| time_range | A time range string (i.e., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed. | Optional |
+| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000. | Optional |
+| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000. | Optional |
+| logs_per_page | The maximum number of log entries to return per page. Default of 50. | Optional |
+| sequence_number | The earlier sequence number of a log entry to start searching from. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Event.log_id | String | ID of the log the event appears in. |
+| Rapid7InsightIDR.Event.message | String | Event message. |
+| Rapid7InsightIDR.Event.timestamp | Number | Time when the event was triggered. |
+
+### rapid7-insight-idr-query-log-set
+
+***
+Queries within a log set for certain values.
+
+#### Base Command
+
+`rapid7-insight-idr-query-log-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| log_set_id | ID of the log set. | Required |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/. | Required |
+| time_range | A time range string (e.g., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed. | Optional |
+| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000. | Optional |
+| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000. | Optional |
+| logs_per_page | The maximum number of log entries to return per page. Default of 50. | Optional |
+| sequence_number | The earlier sequence number of a log entry to start searching from. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Event.log_id | String | ID of the log the event appears in. |
+| Rapid7InsightIDR.Event.message | String | Event message. |
+| Rapid7InsightIDR.Event.timestamp | Number | Time when the event was triggered. |
+
+### rapid7-insight-idr-create-investigation
+
+***
+Create a new investigation manually.
+
+#### Base Command
+
+`rapid7-insight-idr-create-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | The name of the investigation. | Required |
+| status | The status of the investigation. Open - The default status for all new investigations. Investigating - The investigation is in progress. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: Open, Investigating, Closed. Default is Open. | Optional |
+| priority | The priority for the investigation. Investigation priority is the scale given to an investigation based on the impact and urgency of the detections and assets associated with it. Possible values are: Unspecified, Low, Medium, High, Critical. Default is Unspecified. | Optional |
+| disposition | The disposition for the investigation. Select a disposition to indicate whether the investigation represented a legitimate threat. Possible values are: Undecided, Benign, Malicious, Not Applicable. Default is Undecided. | Optional |
+| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. Use rapid7-insight-idr-list-users to retrieve the user email list. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Investigation.responsibility | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. |
+| Rapid7InsightIDR.Investigation.latest_alert_time | String | The create time of the most recent alert belonging to this investigation \(if any\). |
+| Rapid7InsightIDR.Investigation.first_alert_time | String | The create time of the first alert belonging to this investigation \(if any\). |
+| Rapid7InsightIDR.Investigation.assignee.email | String | The email of the assigned user \(if any\). |
+| Rapid7InsightIDR.Investigation.assignee.name | String | The name of the assigned user \(if any\). |
+| Rapid7InsightIDR.Investigation.disposition | String | The disposition of this investigation. |
+| Rapid7InsightIDR.Investigation.created_time | Date | The time this investigation was created. |
+| Rapid7InsightIDR.Investigation.last_accessed | Date | The time this investigation was last viewed or modified. |
+| Rapid7InsightIDR.Investigation.priority | String | The priority of the investigation. |
+| Rapid7InsightIDR.Investigation.status | String | The status of the investigation. |
+| Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
+| Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
+| Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
+
+#### Command example
+```!rapid7-insight-idr-create-investigation title=test limit=1```
+#### Context Example
+```json
+{
+    "Rapid7InsightIDR": {
+        "Investigation": {
+            "assignee": null,
+            "created_time": "2024-03-05T19:07:04.610Z",
+            "disposition": "UNDECIDED",
+            "first_alert_time": null,
+            "last_accessed": "2024-03-05T19:07:04.610Z",
+            "latest_alert_time": null,
+            "organization_id": "123-123-123",
+            "priority": "UNSPECIFIED",
+            "responsibility": null,
+            "rrn": "rrn:investigation:eu:123-123-123:investigation:U92BZEYO124T",
+            "source": "USER",
+            "status": "OPEN",
+            "title": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Investigation 'rrn:investigation:eu:123-123-123:investigation:U92BZEYO124T' was successfuly created.
+>|Title|Rrn|Status|Created Time|Source|Priority|
+>|---|---|---|---|---|---|
+>| test | rrn:investigation:eu:123-123-123:investigation:U92BZEYO124T | OPEN | 2024-03-05T19:07:04.610Z | USER | UNSPECIFIED |
+
+
+### rapid7-insight-idr-update-investigation
+
+***
+Updates multiple fields in a single operation for an investigation, specified by ID or Rapid7 Resource Names (RRN). (If multi-customer set to true, the investigation_id must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs
+
+#### Base Command
+
+`rapid7-insight-idr-update-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_id | The ID or Rapid7 Resource Names (RRN) of the investigation to to update. (If api_version=V2, the ID of the investigation must be in the RRN format). | Required |
+| title | The name of the investigation. | Optional |
+| status | The status of the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: Open, Investigating, Closed. | Optional |
+| priority | The priority for the investigation. Investigation priority is the scale given to an investigation based on the impact and urgency of the detections and assets associated with it. Possible values are: Unspecified, Low, Medium, High, Critical. | Optional |
+| disposition | The disposition for the investigation. Select a disposition to indicate whether the investigation represented a legitimate threat. Possible values are: Undecided, Benign, Malicious, Not Applicable. | Optional |
+| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. | Optional |
+| threat_command_free_text | Additional information provided by the user when closing a Threat Command alert. Relevant when status=Closed. | Optional |
+| threat_command_close_reason | The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type.  Relevant when status=Closed. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Not Related To My Company, False Positive, Legitimate Application/ Profile, Company Owned Domain, Other. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Investigation.responsibility | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. |
+| Rapid7InsightIDR.Investigation.latest_alert_time | String | The create time of the most recent alert belonging to this investigation \(if any\). |
+| Rapid7InsightIDR.Investigation.first_alert_time | String | The create time of the first alert belonging to this investigation \(if any\). |
+| Rapid7InsightIDR.Investigation.assignee_email | String | The email of the assigned user. |
+| Rapid7InsightIDR.Investigation.assignee_name | String | The name of the assigned user. |
+| Rapid7InsightIDR.Investigation.disposition | String | The disposition of this investigation. |
+| Rapid7InsightIDR.Investigation.created_time | Date | The time this investigation was created. |
+| Rapid7InsightIDR.Investigation.last_accessed | Date | The time this investigation was last viewed or modified. |
+| Rapid7InsightIDR.Investigation.priority | String | The priority of the investigation. |
+| Rapid7InsightIDR.Investigation.status | String | The status of the investigation. |
+| Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
+| Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
+| Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
+
+#### Command example
+```!rapid7-insight-idr-update-investigation investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 title=test1```
+#### Context Example
+```json
+{
+    "Rapid7InsightIDR": {
+        "Investigation": {
+            "assignee": {
+                "email": "test@test.com",
+                "name": "test"
+            },
+            "created_time": "2024-03-05T19:02:28.419Z",
+            "disposition": "UNDECIDED",
+            "first_alert_time": null,
+            "last_accessed": "2024-03-05T19:07:07.790Z",
+            "latest_alert_time": null,
+            "organization_id": "123-123-123",
+            "priority": "UNSPECIFIED",
+            "responsibility": null,
+            "rrn": "rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2",
+            "source": "USER",
+            "status": "OPEN",
+            "title": "test1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Investigation '3793645a-6484-4a7e-9228-7aeb4ba97472' was successfuly updated.
+>|Title|Rrn|Status|Created Time|Source|Assignee|Priority|
+>|---|---|---|---|---|---|---|
+>| test1 | rrn:investigation:eu:123-123-123:investigation:UFBFNSRZG4N2 | OPEN | 2024-03-05T19:02:28.419Z | USER | name: test<br/>email: test@test.com | UNSPECIFIED |
+
+
+### rapid7-insight-idr-search-investigation
+
+***
+Search for investigations matching the given search/sort criteria.
+
+#### Base Command
+
+`rapid7-insight-idr-search-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_time | An optional ISO formatted timestamp for the start of the time period to search for matching investigations. Only investigations whose created_time is after this date will be returned. For example, 2018-07-01T00:00:00Z. Default is 28 days ago. | Optional |
+| end_time | An optional ISO formatted timestamp for the end of the time period to search for matching investigations. Only investigations whose created_time is before this date will be returned. For example,2018-07-28T23:59:00Z. Default is the current time. | Optional |
+| actor_asset_hostname | A comma-separated list of hostnames. | Optional |
+| actor_user_name | A comma-separated list of user names. | Optional |
+| alert_mitre_t_codes | A comma-separated list of mitre_t_codes. | Optional |
+| alert_rule_rrn | A comma-separated list of Rapid7 Resource Names. | Optional |
+| assignee_id | A comma-separated list of assignee IDs. | Optional |
+| organization_id | A comma-separated list of organization IDs. | Optional |
+| priority | A comma-separated list of priorities. | Optional |
+| rrn | A comma-separated list of Rapid7 Resource Names. | Optional |
+| source | A comma-separated list of sources. | Optional |
+| status | A comma-separated list of statuses. | Optional |
+| title | A comma-separated list of titles. | Optional |
+| sort | Comma-separated list of fields to sort by. Possible values are: Created time, Priority, RRN, Alert created time, Alert detection created time. | Optional |
+| sort_direction | The sorting direction. Relevant when sort is chosen. Possible values are: asc, desc, asc,desc. Default is asc. | Optional |
+| index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Investigation.responsibility | Unknown | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. |
+| Rapid7InsightIDR.Investigation.latest_alert_time | Date | The create time of the most recent alert belonging to this investigation \(if any\). |
+| Rapid7InsightIDR.Investigation.first_alert_time | Date | The create time of the first alert belonging to this investigation \(if any\). |
+| Rapid7InsightIDR.Investigation.assignee.email | Unknown | The email of the assigned user. |
+| Rapid7InsightIDR.Investigation.assignee.name | String | The name of the assigned user. |
+| Rapid7InsightIDR.Investigation.disposition | String | The disposition of this investigation. |
+| Rapid7InsightIDR.Investigation.created_time | Date | The time this investigation was created. |
+| Rapid7InsightIDR.Investigation.last_accessed | Date | The time this investigation was last viewed or modified. |
+| Rapid7InsightIDR.Investigation.priority | String | The priority of the investigation. |
+| Rapid7InsightIDR.Investigation.status | String | The status of the investigation. |
+| Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
+| Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
+| Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
+
+#### Command example
+```!rapid7-insight-idr-search-investigation limit=1```
+#### Context Example
+```json
+{
+    "Rapid7InsightIDR": {
+        "Investigation": {
+            "assignee": null,
+            "created_time": "2024-03-05T19:07:04.61Z",
+            "disposition": "UNDECIDED",
+            "first_alert_time": null,
+            "last_accessed": "2024-03-05T19:07:04.61Z",
+            "latest_alert_time": null,
+            "organization_id": "244e0f2e-2e23-43de-9910-da818cdf9ef8",
+            "priority": "UNMAPPED",
+            "responsibility": null,
+            "rrn": "rrn:investigation:eu:244e0f2e-2e23-43de-9910-da818cdf9ef8:investigation:U92BZEYO124T",
+            "source": "USER",
+            "status": "OPEN",
+            "title": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Investigations
+>|Title|Rrn|Status|Created Time|Source|Priority|
+>|---|---|---|---|---|---|
+>| test | rrn:investigation:eu:244e0f2e-2e23-43de-9910-da818cdf9ef8:investigation:U92BZEYO124T | OPEN | 2024-03-05T19:07:04.61Z | USER | UNMAPPED |
+
+
+
+### rapid7-insight-idr-list-investigation-alerts
+
+***
+Retrieve and list all alerts associated with an investigation, with the given ID or Rapid7 Resource Names (RRN). The listed alerts are sorted in descending order by alert create time. Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+
+#### Base Command
+
+`rapid7-insight-idr-list-investigation-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_id | The ID of the investigation (If api_version=V2, the ID of the investigation must be in the RRN format). | Required |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. Default is false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Investigation.alert.rule_rrn | String | The Rapid7 Resource Names of the investigation. |
+| Rapid7InsightIDR.Investigation.alert.rule_name | String | The name of the detection rule. |
+| Rapid7InsightIDR.Investigation.alert.alert_source | String | The source of the alert. |
+| Rapid7InsightIDR.Investigation.alert.latest_event_time | String | The time the most recent event involved in this alert occurred. |
+| Rapid7InsightIDR.Investigation.alert.first_event_time | String | The time the first event involved in this alert occurred. |
+| Rapid7InsightIDR.Investigation.alert.created_time | String | The time the alert was created. |
+| Rapid7InsightIDR.Investigation.alert.alert_type_description | String | A description of this type of alert. |
+| Rapid7InsightIDR.Investigation.alert.alert_type | String | The alert's type. |
+| Rapid7InsightIDR.Investigation.alert.title | String | The alert's title. |
+| Rapid7InsightIDR.Investigation.alert.id | String | The alert's ID. |
+| Rapid7InsightIDR.Investigation.rrn | String | The ID of the investigation. |
+
+#### Command example
+```!rapid7-insight-idr-list-investigation-alerts investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472```
+#### Context Example
+```json
+{
+    "Rapid7InsightIDR": {
+        "Investigation": {
+            "alert": [],
+            "rrn": "3793645a-6484-4a7e-9228-7aeb4ba97472"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Investigation "3793645a-6484-4a7e-9228-7aeb4ba97472" alerts
+>**No entries.**
+
+
+### rapid7-insight-idr-list-investigation-product-alerts
+
+***
+Retrieve and list all Rapid7 product alerts associated with an investigation, with the given ID or the Rapid7 Resource Names. These alerts are generated by Rapid7 products other than InsightIDR that you have an active license for.
+
+#### Base Command
+
+`rapid7-insight-idr-list-investigation-product-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_id | The ID of the investigation (If api_version=V2, the ID of the investigation must be in the Rapid7 Resource Names format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. Default is false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Investigation.rrn | String | The ID of the investigation. |
+| Rapid7InsightIDR.Investigation.ProductAlert.name | String | The investigation product name |
+| Rapid7InsightIDR.Investigation.ProductAlert.Alert.name | String | The investigation product alert name. |
+| Rapid7InsightIDR.Investigation.ProductAlert.Alert.alert_id | String | The investigation product alert ID. |
+| Rapid7InsightIDR.Investigation.ProductAlert.Alert.alert_type | String | The investigation product alert type. |
+
+#### Command example
+```!rapid7-insight-idr-list-investigation-product-alerts investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472```
+#### Context Example
+```json
+{
+    "Rapid7InsightIDR": {
+        "Investigation": {
+            "ProductAlert": [
+                {
+                    "agent_action_taken": "Block",
+                    "alert_id": "972bef1b-72c9-48d2-9e33-ca9056cfe086",
+                    "alert_type": "Endpoint Prevention",
+                    "name": "THREAT_COMMAND"
+                },
+                {
+                    "alert_id": "620ba5123b2aff3303ed65f3",
+                    "alert_type": "Phishing",
+                    "applicable_close_reasons": [
+                        "ProblemSolved",
+                        "InformationalOnly",
+                        "Other"
+                    ],
+                    "name": "THREAT_COMMAND"
+                }
+            ],
+            "rrn": "3793645a-6484-4a7e-9228-7aeb4ba97472"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Investigation "3793645a-6484-4a7e-9228-7aeb4ba97472" product alerts
+>|Name|Alert Type|Alert Id|
+>|---|---|---|
+>| THREAT_COMMAND | Endpoint Prevention | 972bef1b-72c9-48d2-9e33-ca9056cfe086 |
+>| THREAT_COMMAND | Phishing | 620ba5123b2aff3303ed65f3 |
+
+
+### rapid7-insight-idr-list-users
+
+***
+List all users matching the given search/sort criteria or retrieve a user with the given RRN.
+
+#### Base Command
+
+`rapid7-insight-idr-list-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rrn | The Rapid7 Resource Names (unique identifier for user.) of the user to retrieve. When using this argument, all the other irrelevant. | Optional |
+| first_name | A comma-separated list of first names. Choose search operator to define the operator type. | Optional |
+| last_name | A comma-separated list of last names. Choose search operator to define the operator type. | Optional |
+| name | A comma-separated list of names. Choose search operator to define the operator type. | Optional |
+| search_operator | The filtering operator. Relevant when first_name / last_name / is name / domain chosen. Possible values are: contains, equals. | Optional |
+| sort | Comma-separated list of fields to sort by. Possible values are: first_name, last_name, name. | Optional |
+| sort_direction | The sorting direction. Relevant when sort is chosen. Possible values are: asc, desc, asc & desc. Default is asc. | Optional |
+| index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.User.domain | String | The domain this user is associated with. |
+| Rapid7InsightIDR.User.name | String | The name of this user. |
+| Rapid7InsightIDR.User.first_name | String | The first name of this user, if known. |
+| Rapid7InsightIDR.User.last_name | String | The last name of this user, if known. |
+| Rapid7InsightIDR.User.rrn | String | The unique identifier for this user. |
+
+#### Command example
+```!rapid7-insight-idr-list-users limit=1```
+#### Context Example
+```json
+{
+    "Rapid7InsightIDR": {
+        "User": {
+            "domain": "azuread",
+            "name": "nirvaron",
+            "rrn": "rrn:uba:eu:244e0f2e-2e23-43de-9910-da818cdf9ef8:user:15N2NECIYNFB"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Users
+>|Rrn|Name|Domain|
+>|---|---|---|
+>| rrn:uba:eu:244e0f2e-2e23-43de-9910-da818cdf9ef8:user:15N2NECIYNFB | nirvaron | azuread |
 
 
 
@@ -919,22 +1984,22 @@ Query inside a log for certain values.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_id | Logentries log key | Required | 
-| query | A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/ | Required | 
-| time_range | An optional time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed | Optional | 
-| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000 | Optional | 
-| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000 | Optional | 
-| logs_per_page | The number of log entries to return per page. Default of 50 | Optional | 
-| sequence_number | the earlier sequence number of a log entry to start searching from | Optional | 
+| log_id | Logentries log key | Required |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/ | Required |
+| time_range | An optional time range string (i.e., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed | Optional |
+| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000 | Optional |
+| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000 | Optional |
+| logs_per_page | The number of log entries to return per page. Default of 50 | Optional |
+| sequence_number | The earlier sequence number of a log entry to start searching from. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Event.log_id | String | Event message | 
-| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in | 
-| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired | 
+| Rapid7InsightIDR.Event.log_id | String | Event message. |
+| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in. |
+| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired. |
 
 
 #### Command Example
@@ -1629,22 +2694,22 @@ Query inside a log set for certain values.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_set_id | log set ID | Required | 
-| query | A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/ | Required | 
-| time_range | An optional time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed | Optional | 
-| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000 | Optional | 
-| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000 | Optional | 
-| logs_per_page | The number of log entries to return per page. Default of 50 | Optional | 
-| sequence_number | the earlier sequence number of a log entry to start searching from | Optional | 
+| log_set_id | log set ID | Required |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/ | Required |
+| time_range | An optional time range string (i.e., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed | Optional |
+| start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000 | Optional |
+| end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000 | Optional |
+| logs_per_page | The number of log entries to return per page. Default of 50 | Optional |
+| sequence_number | The earlier sequence number of a log entry to start searching from. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Event.log_id | String | Event message | 
-| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in | 
-| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired | 
+| Rapid7InsightIDR.Event.log_id | String | Event message. |
+| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in. |
+| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired. |
 
 
 #### Command Example
@@ -2325,4 +3390,3 @@ Query inside a log set for certain values.
 >| ab5a7594-5fde-4c5c-9ee6-e67291f0a40c | {"timestamp":"2020-11-19T08:50:50.403Z","destination_asset":"jenkinsnode.someorganiztion.co","source_asset_address":"x.x.x.x","destination_asset_address":"jenkinsnode.someorganiztion.co","destination_local_account":"someuser","logon_type":"NETWORK","result":"FAILED_OTHER","new_authentication":"false","service":"/usr/sbin/sshd","source_json":{"audit_id":1002858,"pid":23548,"uid":null,"auid":4294967295,"ses":4294967295,"subj":"system_u:system_r:sshd_t:s0-s0:c0.c1023","op":"password","acct":"someuser","addr":"x.x.x.x","terminal":"ssh","res":"failed","type":1100,"startTime":1605775839850,"cmdLine":"sshd: someuser [priv]   ","processName":"sshd","executablePath":"/usr/sbin/sshd","ppid":1131,"hashes":{"sha256":"2c6bf828ee0b4e78c49a71affd3d33b7916700cf7a288cd1a55fc4e701e50d68"},"metadata":{"creationDate":1592052866191,"lastModifiedDate":1565314847000,"lastAccessDate":1605098588968,"size":852856,"permissions":"-rwxr-xr-x","uid":0,"gid":0,"uidName":"someuser","gidName":"someuser"},"euid":0,"egid":0,"uidName":null,"euidName":"someuser","egidName":"someuser","auidName":null,"domain":"someorganiztion.co","hostname":"jenkinsnode"}} | 1605775912448 |
 >| ab5a7594-5fde-4c5c-9ee6-e67291f0a40c | {"timestamp":"2020-11-19T09:47:15.802Z","destination_asset":"jenkinsnode.someorganiztion.co","source_asset_address":"x.x.x.x","destination_asset_address":"jenkinsnode.someorganiztion.co","destination_local_account":"someuser","logon_type":"NETWORK","result":"SUCCESS","new_authentication":"false","service":"/usr/sbin/sshd","source_json":{"audit_id":1003669,"pid":27013,"uid":null,"auid":4294967295,"ses":4294967295,"subj":"system_u:system_r:sshd_t:s0-s0:c0.c1023","op":"PAM:authentication","grantors":"pam_unix","acct":"someuser","hostname":"x.x.x.x","addr":"x.x.x.x","terminal":"ssh","res":"success","type":1100,"startTime":1605779227890,"cmdLine":"sshd: someuser@pts/1    ","processName":"sshd","executablePath":"/usr/sbin/sshd","ppid":1131,"hashes":{"sha256":"2c6bf828ee0b4e78c49a71affd3d33b7916700cf7a288cd1a55fc4e701e50d68"},"metadata":{"creationDate":1592052866191,"lastModifiedDate":1565314847000,"lastAccessDate":1605098588968,"size":852856,"permissions":"-rwxr-xr-x","uid":0,"gid":0,"uidName":"someuser","gidName":"someuser"},"euid":0,"egid":0,"uidName":null,"euidName":"someuser","egidName":"someuser","auidName":null,"domain":"someorganiztion.co"}} | 1605779255422 |
 >| ab5a7594-5fde-4c5c-9ee6-e67291f0a40c | {"timestamp":"2020-11-19T09:47:15.805Z","destination_asset":"jenkinsnode.someorganiztion.co","source_asset_address":"x.x.x.x","destination_asset_address":"jenkinsnode.someorganiztion.co","destination_local_account":"someuser","logon_type":"NETWORK","result":"SUCCESS","new_authentication":"false","service":"/usr/sbin/sshd","source_json":{"audit_id":1003673,"pid":27013,"uid":null,"auid":4294967295,"ses":4294967295,"subj":"system_u:system_r:sshd_t:s0-s0:c0.c1023","op":"success","acct":"someuser","addr":"x.x.x.x","terminal":"ssh","res":"success","type":1100,"startTime":1605779227890,"cmdLine":"sshd: someuser@pts/1    ","processName":"sshd","executablePath":"/usr/sbin/sshd","ppid":1131,"hashes":{"sha256":"2c6bf828ee0b4e78c49a71affd3d33b7916700cf7a288cd1a55fc4e701e50d68"},"metadata":{"creationDate":1592052866191,"lastModifiedDate":1565314847000,"lastAccessDate":1605098588968,"size":852856,"permissions":"-rwxr-xr-x","uid":0,"gid":0,"uidName":"someuser","gidName":"someuser"},"euid":0,"egid":0,"uidName":null,"euidName":"someuser","egidName":"someuser","auidName":null,"domain":"someorganiztion.co","hostname":"jenkinsnode"}} | 1605779255422 |
-

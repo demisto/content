@@ -1,0 +1,126 @@
+[
+    {
+        "groupPolicyId": "101",
+        "scheduling": {
+            "enabled": true,
+            "monday": {
+                "active": true,
+                "from": "9:00",
+                "to": "17:00"
+            },
+            "tuesday": {
+                "active": true,
+                "from": "9:00",
+                "to": "17:00"
+            },
+            "wednesday": {
+                "active": true,
+                "from": "9:00",
+                "to": "17:00"
+            },
+            "thursday": {
+                "active": true,
+                "from": "9:00",
+                "to": "17:00"
+            },
+            "friday": {
+                "active": true,
+                "from": "9:00",
+                "to": "17:00"
+            },
+            "saturday": {
+                "active": true,
+                "from": "9:00",
+                "to": "17:00"
+            },
+            "sunday": {
+                "active": true,
+                "from": "9:00",
+                "to": "17:00"
+            }
+        },
+        "bandwidth": {
+            "settings": "custom",
+            "bandwidthLimits": {
+                "limitUp": 1000000,
+                "limitDown": 1000000
+            }
+        },
+        "firewallAndTrafficShaping": {
+            "settings": "custom",
+            "trafficShapingRules": [
+                {
+                    "definitions": [
+                        {
+                            "type": "host",
+                            "value": "http://www.example.com"
+                        }
+                    ],
+                    "perClientBandwidthLimits": {
+                        "settings": "custom",
+                        "bandwidthLimits": {
+                            "limitUp": 1000000,
+                            "limitDown": 1000000
+                        }
+                    },
+                    "dscpTagValue": 0,
+                    "pcpTagValue": 0,
+                    "priority": "normal"
+                }
+            ],
+            "l3FirewallRules": [
+                {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": "443",
+                    "destCidr": "0.0.0.0/24"
+                }
+            ],
+            "l7FirewallRules": [
+                {
+                    "policy": "deny",
+                    "type": "host",
+                    "value": "http://www.example.com"
+                }
+            ]
+        },
+        "contentFiltering": {
+            "allowedUrlPatterns": {
+                "settings": "network default",
+                "patterns": []
+            },
+            "blockedUrlPatterns": {
+                "settings": "append",
+                "patterns": [
+                    "http://www.example.com",
+                    "http://www.example.com"
+                ]
+            },
+            "blockedUrlCategories": {
+                "settings": "override",
+                "categories": [
+                    "meraki:contentFiltering/category/1",
+                    "meraki:contentFiltering/category/7"
+                ]
+            }
+        },
+        "splashAuthSettings": "bypass",
+        "vlanTagging": {
+            "settings": "custom",
+            "vlanId": "1"
+        },
+        "bonjourForwarding": {
+            "settings": "custom",
+            "rules": [
+                {
+                    "description": "A simple bonjour rule",
+                    "vlanId": "1",
+                    "services": [
+                        "All Services"
+                    ]
+                }
+            ]
+        }
+    }
+]

@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 import pytest
 import requests
-from pytest import raises
 import demistomock as demisto
 from CommonServerPython import (
     DemistoException,
@@ -25,7 +24,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 @pytest.fixture
 def argtest():
     def _argtest(**_kwargs):
-        class TestArgs(object):
+        class TestArgs:
             def __call__(self, *args, **kwargs):
                 self.args = list(args)
                 self.kwargs = kwargs
@@ -57,7 +56,7 @@ def load_mock_response(file_name: str) -> dict:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f"test_data/{file_name}", mode="r", encoding="utf-8") as json_file:
+    with open(f"test_data/{file_name}", encoding="utf-8") as json_file:
         return json.loads(json_file.read())
 
 
@@ -1386,7 +1385,7 @@ def test_validate_item_fields() -> None:
     args = {"item_type": "certificateSigner", "certificate_signer": "xxx"}
     validate_item_fields(args)
     args = {"item_type": "certificateSigner", "path": "xxx"}
-    with raises(DemistoException):
+    with pytest.raises(DemistoException):
         validate_item_fields(args)
 
 
@@ -1771,7 +1770,7 @@ def test_whoami_failure(requests_mock):
 
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", status_code=401)
 
-    with raises(
+    with pytest.raises(
         DemistoException,
         match="An HTTP error occurred while validating the given tenant ID: ",
     ):
@@ -1809,7 +1808,7 @@ def test_whoami_exceptions(requests_mock, exception, error):
 
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", exc=exception)
 
-    with raises(DemistoException, match=error):
+    with pytest.raises(DemistoException, match=error):
         Client._whoami(bearer_token="dummy_token")
 
 
@@ -1904,7 +1903,7 @@ def test_get_tenant_base_url_exceptions(requests_mock, exception, error):
         f"{COMMON_BASE_URL}/partner/v1/tenants/dummy-tenant-id", exc=exception
     )
 
-    with raises(DemistoException, match=error):
+    with pytest.raises(DemistoException, match=error):
         Client._get_tenant_base_url(
             bearer_token="dummy-token",
             entity_id="dummy-entity-id",
@@ -1973,7 +1972,7 @@ def test_get_client_data_case2(requests_mock) -> None:
 
     error_msg = "Value provided in tenant ID field is not same as configured tenant whose credentials are entered."
 
-    with raises(DemistoException, match=error_msg):
+    with pytest.raises(DemistoException, match=error_msg):
         Client.get_client_data(
             tenant_id="dummy-tenant-id", bearer_token="dummy-bearer-token"
         )
@@ -2069,7 +2068,7 @@ def test_get_client_data_case4(requests_mock, creds_type) -> None:
         f"Value provided in tenant ID is not from managed tenants of "
         f"configured {creds_type} whose credentials are entered"
     )
-    with raises(DemistoException, match=error_msg):
+    with pytest.raises(DemistoException, match=error_msg):
         Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     cache = get_integration_context()
@@ -2112,7 +2111,7 @@ def test_get_client_data_case5(requests_mock, creds_type) -> None:
     error_msg = (
         f"Tenant ID field is mandatory to configure {creds_type} user's credential"
     )
-    with raises(DemistoException, match=error_msg):
+    with pytest.raises(DemistoException, match=error_msg):
         Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     cache = get_integration_context()
@@ -2398,7 +2397,7 @@ def test_insecure_connection(requests_mock):
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", exc=requests.exceptions.SSLError)
 
     # assert that a valid exception is raised with proper error message
-    with raises(DemistoException, match="SSL Certificate Verification Failed.*"):
+    with pytest.raises(DemistoException, match="SSL Certificate Verification Failed.*"):
         Client._whoami(bearer_token="dummy_token")
 
 
@@ -2417,7 +2416,7 @@ def test_proxy_error(requests_mock):
     )
 
     # assert that a valid exception is raised with proper error message
-    with raises(DemistoException, match="Proxy Error.*"):
+    with pytest.raises(DemistoException, match="Proxy Error.*"):
         Client._whoami(bearer_token="dummy_token")
 
 
@@ -2894,7 +2893,7 @@ def test_sophos_central_group_list_validate_page_size_min(page_size, page, reque
     from SophosCentral import sophos_central_group_list
     client = init_mock_client(requests_mock)
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         sophos_central_group_list(client, {
             "page_size": page_size,
             "page": page
@@ -3101,7 +3100,7 @@ def test_sophos_central_group_delete_exception(requests_mock) -> None:
     requests_mock.delete(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    with raises(DemistoException):
+    with pytest.raises(DemistoException):
         sophos_central_group_delete(client, {
             "groupId": "fake-id"
         })
@@ -3175,7 +3174,7 @@ def test_sophos_central_endpoint_policy_search_with_page_size_or_page_negative_v
 
     client = init_mock_client(requests_mock)
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         sophos_central_endpoint_policy_search_command(client, {
             "page_size": page_size,
             "page": page

@@ -1,9 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Main integration script."""
-import dateparser
-from typing import Dict, Tuple
 from CommonServerUserPython import *
+
+'''IMPORTS'''
+import dateparser
+
+'''GLOBAL VARS'''
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 COMMON_BASE_URL = "https://api.central.sophos.com"
@@ -169,7 +171,7 @@ class Client(BaseClient):
         set_integration_context(context)
 
     @staticmethod
-    def get_client_data(tenant_id: str, bearer_token: str) -> Tuple[dict, str]:
+    def get_client_data(tenant_id: str, bearer_token: str) -> tuple[dict, str]:
         """
         Validate the given tenant ID.
 
@@ -331,7 +333,7 @@ class Client(BaseClient):
             "hostname",
         )
 
-    def list_alert(self, limit: Optional[int]) -> Dict:
+    def list_alert(self, limit: Optional[int]) -> dict:
         """
         List all alerts connected to a tenant.
 
@@ -347,7 +349,7 @@ class Client(BaseClient):
             method="GET", url_suffix=url_suffix, headers=self.headers, params=params
         )
 
-    def get_alert(self, alert_id: str) -> Dict:
+    def get_alert(self, alert_id: str) -> dict:
         """
         Get a single alert based on ID.
 
@@ -367,7 +369,7 @@ class Client(BaseClient):
         alert_id: str,
         action: str,
         message: Optional[str],
-    ) -> Dict:
+    ) -> dict:
         """
         Take action against one alert.
 
@@ -398,7 +400,7 @@ class Client(BaseClient):
         severity: Optional[List[str]],
         ids: Optional[List[str]],
         limit: Optional[int],
-    ) -> Dict:
+    ) -> dict:
         """
         Search alerts based on parameters.
 
@@ -445,7 +447,9 @@ class Client(BaseClient):
         ids: Optional[List[str]],
         view: Optional[str],
         limit: Optional[int],
-    ) -> Dict:
+        ip_addresses: Optional[List[str]],
+        hostname_contains: Optional[str]
+    ) -> dict:
         """
         List all endpoints for a tenant.
 
@@ -459,6 +463,9 @@ class Client(BaseClient):
             ids (list(str)): List of IDs.
             view (str): Type of view to be returned in the response.
             limit (int): Max number of endpoints to return.
+            ip_addresses (list(str)): Find endpoints by IP addresses.
+            hostname_contains (str): Find endpoints where the hostname contains the given string.
+                Only the first 10 characters of the given string are matched.
 
         Returns:
             response (Response): API response from Sophos.
@@ -473,6 +480,8 @@ class Client(BaseClient):
             "ids": ids,
             "view": view,
             "pageSize": limit,
+            "ipAddresses": ip_addresses,
+            "hostnameContains": hostname_contains
         }
         params = remove_empty_elements(params)
         url_suffix = "endpoint/v1/endpoints"
@@ -480,7 +489,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, params=params, url_suffix=url_suffix
         )
 
-    def scan_endpoint(self, endpoint_id: str) -> Dict:
+    def scan_endpoint(self, endpoint_id: str) -> dict:
         """
         Initiate a scan on an endpoint.
 
@@ -495,7 +504,7 @@ class Client(BaseClient):
             method="POST", headers=self.headers, json_data={}, url_suffix=url_suffix
         )
 
-    def get_tamper(self, endpoint_id: str) -> Dict:
+    def get_tamper(self, endpoint_id: str) -> dict:
         """
         Get tamper protection of an endpoint.
 
@@ -510,7 +519,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, url_suffix=url_suffix
         )
 
-    def update_tamper(self, endpoint_id: str, enabled: bool) -> Dict:
+    def update_tamper(self, endpoint_id: str, enabled: bool) -> dict:
         """
         Get tamper protection of an endpoin.
 
@@ -534,7 +543,7 @@ class Client(BaseClient):
         self,
         page_size: Optional[int],
         page: Optional[int],
-    ) -> Dict:
+    ) -> dict:
         """
         List all allowed items for a tenant.
 
@@ -551,7 +560,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, params=params, url_suffix=url_suffix
         )
 
-    def get_allowed_item(self, allowed_item_id: str) -> Dict:
+    def get_allowed_item(self, allowed_item_id: str) -> dict:
         """
         Get a single allowed item.
 
@@ -575,7 +584,7 @@ class Client(BaseClient):
         path: Optional[str],
         sha256: Optional[str],
         origin_endpoint_id: Optional[str],
-    ) -> Dict:
+    ) -> dict:
         """
         Add a new allowed item.
 
@@ -611,7 +620,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def update_allowed_item(self, allowed_item_id: str, comment: str) -> Dict:
+    def update_allowed_item(self, allowed_item_id: str, comment: str) -> dict:
         """
         Update an existing allowed item.
 
@@ -631,7 +640,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def delete_allowed_item(self, allowed_item_id: str) -> Dict:
+    def delete_allowed_item(self, allowed_item_id: str) -> dict:
         """
         Delete an existing allowed item.
 
@@ -650,7 +659,7 @@ class Client(BaseClient):
         self,
         page_size: Optional[int],
         page: Optional[int],
-    ) -> Dict:
+    ) -> dict:
         """
         List all blocked items for a tenant.
 
@@ -667,7 +676,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, params=params, url_suffix=url_suffix
         )
 
-    def get_blocked_item(self, allowed_item_id: str) -> Dict:
+    def get_blocked_item(self, allowed_item_id: str) -> dict:
         """
         Get a single blocked item.
 
@@ -691,7 +700,7 @@ class Client(BaseClient):
         path: Optional[str],
         sha256: Optional[str],
         origin_endpoint_id: Optional[str],
-    ) -> Dict:
+    ) -> dict:
         """
         Add a new blocked item.
 
@@ -727,7 +736,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def delete_blocked_item(self, allowed_item_id: str) -> Dict:
+    def delete_blocked_item(self, allowed_item_id: str) -> dict:
         """
         Delete an existing blocked item.
 
@@ -747,7 +756,7 @@ class Client(BaseClient):
         exclusion_type: Optional[str],
         page_size: Optional[int],
         page: Optional[int],
-    ) -> Dict:
+    ) -> dict:
         """
         List all scan exclusions.
 
@@ -767,7 +776,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, params=params, url_suffix=url_suffix
         )
 
-    def get_scan_exclusion(self, exclusion_id: str) -> Dict:
+    def get_scan_exclusion(self, exclusion_id: str) -> dict:
         """
         Get a single scan exclusion.
 
@@ -788,7 +797,7 @@ class Client(BaseClient):
         scan_mode: Optional[str],
         exclusion_type: str,
         value: str,
-    ) -> Dict:
+    ) -> dict:
         """
         Add a new scan exclusion.
 
@@ -823,7 +832,7 @@ class Client(BaseClient):
         scan_mode: Optional[str],
         exclusion_id: str,
         value: Optional[str],
-    ) -> Dict:
+    ) -> dict:
         """
         Update an existing scan exclusion.
 
@@ -847,7 +856,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def delete_scan_exclusion(self, exclusion_id: str) -> Dict:
+    def delete_scan_exclusion(self, exclusion_id: str) -> dict:
         """
         Delete an existing scan exclusion.
 
@@ -868,7 +877,7 @@ class Client(BaseClient):
         page_size: Optional[int],
         page: Optional[int],
         modified: Optional[bool],
-    ) -> Dict:
+    ) -> dict:
         """
         List all exploit mitigations.
 
@@ -894,7 +903,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, params=params, url_suffix=url_suffix
         )
 
-    def get_exploit_mitigation(self, mitigation_id: str) -> Dict:
+    def get_exploit_mitigation(self, mitigation_id: str) -> dict:
         """
         Get a single exploit mitigation.
 
@@ -911,7 +920,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, url_suffix=url_suffix
         )
 
-    def add_exploit_mitigation(self, path: str) -> Dict:
+    def add_exploit_mitigation(self, path: str) -> dict:
         """
         Add a new exploit mitigation.
 
@@ -932,7 +941,7 @@ class Client(BaseClient):
 
     def update_exploit_mitigation(
         self, mitigation_id: str, path: Optional[str]
-    ) -> Dict:
+    ) -> dict:
         """
         Update an existing exploit mitigation.
 
@@ -954,7 +963,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def delete_exploit_mitigation(self, mitigation_id: str) -> Dict:
+    def delete_exploit_mitigation(self, mitigation_id: str) -> dict:
         """
         Update an existing exploit mitigation.
 
@@ -976,7 +985,7 @@ class Client(BaseClient):
         page_size: Optional[int],
         page: Optional[int],
         thumbprint_not_in: Optional[str],
-    ) -> Dict:
+    ) -> dict:
         """
         List all detected exploits.
 
@@ -998,7 +1007,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, params=params, url_suffix=url_suffix
         )
 
-    def get_detected_exploit(self, detected_exploit_id: str) -> Dict:
+    def get_detected_exploit(self, detected_exploit_id: str) -> dict:
         """
         Get a single detected exploit.
 
@@ -1016,7 +1025,7 @@ class Client(BaseClient):
             method="GET", headers=self.headers, url_suffix=url_suffix
         )
 
-    def isolate_endpoint(self, endpoint_id: List[str], comment: Optional[str]) -> Dict:
+    def isolate_endpoint(self, endpoint_id: List[str], comment: Optional[str]) -> dict:
         """
         Initiate isolation request on the given endpoint(s).
 
@@ -1037,7 +1046,7 @@ class Client(BaseClient):
 
     def deisolate_endpoint(
         self, endpoint_id: List[str], comment: Optional[str]
-    ) -> Dict:
+    ) -> dict:
         """
         Initiate de-isolation request on the given endpoint(s).
 
@@ -1059,7 +1068,7 @@ class Client(BaseClient):
     def get_endpoints_group(
         self,
         group_id: str
-    ) -> Dict:
+    ) -> dict:
         """
             Get endpoints in a group
 
@@ -1080,7 +1089,7 @@ class Client(BaseClient):
         self,
         group_id: str,
         ids: List[str]
-    ) -> Dict:
+    ) -> dict:
         """
             Add endpoints to the group.
 
@@ -1108,7 +1117,7 @@ class Client(BaseClient):
         self,
         group_id: str,
         ids: str
-    ) -> Dict:
+    ) -> dict:
         """
             Remove endpoints from endpoint group.
 
@@ -1139,7 +1148,7 @@ class Client(BaseClient):
         self,
         group_id: str,
         endpoint_id: str
-    ) -> Dict:
+    ) -> dict:
         """
             Remove endpoint from endpoint group.
 
@@ -1159,7 +1168,7 @@ class Client(BaseClient):
             url_suffix=url_suffix
         )
 
-    def get_endpoint_policies(self, policy_type: Optional[str], page_size: Optional[int], page: Optional[int]) -> Dict:
+    def get_endpoint_policies(self, policy_type: Optional[str], page_size: Optional[int], page: Optional[int]) -> dict:
         """
         Get all endpoint policy.
 
@@ -1179,7 +1188,7 @@ class Client(BaseClient):
             url_suffix=url_suffix
         )
 
-    def get_endpoint_policy(self, policy_id: str) -> Dict:
+    def get_endpoint_policy(self, policy_id: str) -> dict:
         """
         Get details of Policy by ID.
 
@@ -1195,7 +1204,7 @@ class Client(BaseClient):
             url_suffix=url_suffix
         )
 
-    def delete_endpoint_policy(self, policy_id: str) -> Dict:
+    def delete_endpoint_policy(self, policy_id: str) -> dict:
         """
         Delete an existing endpoint policy.
 
@@ -1210,7 +1219,7 @@ class Client(BaseClient):
             method="DELETE", headers=self.headers, url_suffix=url_suffix
         )
 
-    def clone_endpoint_policy(self, policy_id: str, name: Optional[str]) -> Dict:
+    def clone_endpoint_policy(self, policy_id: str, name: Optional[str]) -> dict:
         """
         Clone an existing endpoint policy.
 
@@ -1229,7 +1238,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def update_endpoint_policy(self, policy_id: str, priority: str) -> Dict:
+    def update_endpoint_policy(self, policy_id: str, priority: str) -> dict:
         """
         Update order priority an endpoint policy.
 
@@ -1258,7 +1267,7 @@ class Client(BaseClient):
         user_id: Optional[str],
         page: Optional[int],
         page_size: Optional[int]
-    ) -> Dict:
+    ) -> dict:
         """
         List all usergroups.
 
@@ -1297,7 +1306,7 @@ class Client(BaseClient):
             url_suffix="common/v1/directory/user-groups",
         )
 
-    def get_usergroup(self, group_id: str) -> Dict:
+    def get_usergroup(self, group_id: str) -> dict:
         """
         Get a single usergroup based on ID.
 
@@ -1313,7 +1322,7 @@ class Client(BaseClient):
             url_suffix=f"common/v1/directory/user-groups/{group_id}"
         )
 
-    def create_usergroup(self, group_name: str, description: Optional[str], user_ids: List[str]) -> Dict:
+    def create_usergroup(self, group_name: str, description: Optional[str], user_ids: List[str]) -> dict:
         """Create a usergroup
 
         Args:
@@ -1329,7 +1338,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def update_usergroup(self, group_id: str, group_name: str, description: Optional[str]) -> Dict:
+    def update_usergroup(self, group_id: str, group_name: str, description: Optional[str]) -> dict:
         """Update a specific usergroup based on ID.
 
         Args:
@@ -1345,7 +1354,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def delete_usergroup(self, group_id: str) -> Dict:
+    def delete_usergroup(self, group_id: str) -> dict:
         """Delete a usergroup with given ID.
 
         Args:
@@ -1365,7 +1374,7 @@ class Client(BaseClient):
             source_type: Optional[str],
             page: int,
             page_size: int
-    ) -> Dict:
+    ) -> dict:
         """
         Add multiple users to the specified group.
 
@@ -1397,7 +1406,7 @@ class Client(BaseClient):
 
     def add_users_to_usergroup(
             self, group_id: str, ids: List[str]
-    ) -> Dict:
+    ) -> dict:
         """
         Add multiple users to the specified group.
 
@@ -1416,7 +1425,7 @@ class Client(BaseClient):
 
     def delete_user_from_usergroup(
             self, group_id: str, user_id: str
-    ) -> Dict:
+    ) -> dict:
         """
         Delete a user from the specified group.
 
@@ -1440,7 +1449,7 @@ class Client(BaseClient):
         source_type: Optional[str],
         page_size: Optional[int],
         page: Optional[int]
-    ) -> Dict:
+    ) -> dict:
         """
         List all users.
 
@@ -1479,7 +1488,7 @@ class Client(BaseClient):
     def get_user(
         self,
         user_id: str
-    ) -> Dict:
+    ) -> dict:
         """
         Get a single user based on id.
 
@@ -1600,7 +1609,7 @@ class Client(BaseClient):
             url_suffix=url_suffix
         )
 
-    def get_endpoint_group(self, limit: Optional[int], page: Optional[int]) -> Dict:
+    def get_endpoint_group(self, limit: Optional[int], page: Optional[int]) -> dict:
         """
         List all endpoint group connected to a tenant
 
@@ -1619,7 +1628,7 @@ class Client(BaseClient):
         type: str,
         name: str,
         endpointIds: Optional[List[str]]
-    ) -> Dict:
+    ) -> dict:
         """
             List all endpoint group connected to a tenant.
 
@@ -1653,7 +1662,7 @@ class Client(BaseClient):
         groupId: str,
         name: Optional[str],
         description: Optional[str]
-    ) -> Dict:
+    ) -> dict:
         """
             List all endpoint group connected to a tenant.
 
@@ -1683,7 +1692,7 @@ class Client(BaseClient):
     def fetch_group(
         self,
         groupId: str
-    ) -> Dict:
+    ) -> dict:
         """
             List all endpoint group connected to a tenant.
 
@@ -1704,7 +1713,7 @@ class Client(BaseClient):
     def delete_group(
         self,
         groupId: str
-    ) -> Dict:
+    ) -> dict:
         """
             Delete endpoint group connected to a tenant.
 
@@ -1741,8 +1750,8 @@ def flip_chars(id_to_flip: str) -> str:
 
 
 def create_alert_output(
-    client: Client, item: Dict, table_headers: List[str]
-) -> Dict[str, Optional[Any]]:
+    client: Client, item: dict, table_headers: List[str]
+) -> dict[str, Optional[Any]]:
     """
     Create the complete output dictionary for an alert.
 
@@ -1779,7 +1788,7 @@ def create_alert_output(
 
 
 def sophos_central_alert_list_command(
-    client: Client, args: Dict[str, str]
+    client: Client, args: dict[str, str]
 ) -> CommandResults:
     """
     List all alerts.
@@ -1996,14 +2005,18 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
     results = client.list_endpoint(
         argToList(args.get("health_status")),
         argToList(args.get("endpoint_type")),
-        args.get("tamper_protection_enabled") == "true",
+        args.get("tamper_protection_enabled") == "true" if args.get("tamper_protection_enabled") else None,
         argToList(args.get("lockdown_status")),
         args.get("last_seen_before"),
         args.get("last_seen_after"),
         args.get("ids"),
         args.get("view"),
         min(int(args.get("limit", "")), 100),
+        argToList(args.get("ip_addresses")),
+        args.get("hostname_contains")
     )
+    full_match_ip = argToBoolean(args.get("full_match_ip", "false"))
+    full_match_hostname = argToBoolean(args.get("full_match_hostname", "false"))
     items = results.get("items")
     table_headers = [
         "id",
@@ -2019,6 +2032,24 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
     if items:
         for item in items:
             object_data = {field: item.get(field) for field in table_headers}
+            # The Sophos API does partial string matching, which can be unwanted for IP addresses.
+            if full_match_ip:
+                query_ips = argToList(args.get("ip_addresses"))
+                ips = []
+                if (data := object_data.get("ipv4Addresses", [])) is not None:
+                    ips.extend(data)
+                if (data := object_data.get("ipv6Addresses", [])) is not None:
+                    ips.extend(data)
+                matching_ips = [ip for ip in query_ips if ip in ips]
+                if not matching_ips:
+                    continue
+
+            # The Sophos API does partial string matching, which can be unwanted for hostnames.
+            if full_match_hostname and (
+                object_data.get("hostname") is None or object_data.get("hostname") != args.get("hostname_contains")
+            ):
+                continue
+
             assigned_products = item.get("assignedProducts")
             if assigned_products:
                 object_data["assignedProductCodes"] = [
@@ -2200,7 +2231,7 @@ def sophos_central_endpoint_tamper_update_command(
     )
 
 
-def create_item_output(item: Dict) -> Dict:
+def create_item_output(item: dict) -> dict:
     """
     Create the complete output dictionary for an allowed / blocked item.
 
@@ -2236,7 +2267,7 @@ def create_item_output(item: Dict) -> Dict:
     return item_data
 
 
-def validate_item_fields(args: Dict[str, str]):
+def validate_item_fields(args: dict[str, str]):
     """
     Validate parameters exist before they are sent to the API.
 
@@ -3058,7 +3089,7 @@ def sophos_central_exploit_mitigation_delete_command(
     )
 
 
-def create_detected_exploit_output(item: Dict) -> Dict:
+def create_detected_exploit_output(item: dict) -> dict:
     """
     Create the complete output dictionary for a detected exploit.
 
@@ -3236,12 +3267,12 @@ def sophos_central_deisolate_endpoint_command(
 
 def fetch_incidents(
     client: Client,
-    last_run: Dict[str, int],
+    last_run: dict[str, int],
     first_fetch_time: str,
     fetch_severity: Optional[List[str]],
     fetch_category: Optional[List[str]],
     max_fetch: Optional[int],
-) -> Tuple[Dict[str, int], List[dict]]:
+) -> tuple[dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
 
@@ -3256,12 +3287,15 @@ def fetch_incidents(
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
+    demisto.debug(f"Fetching incidents with last_run: {last_run}")
     last_fetch_timestamp = last_run.get("last_fetch", None)
 
     if last_fetch_timestamp:
+        demisto.debug(f"Last fetch time: {last_fetch_timestamp}")
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
         last_fetch = last_fetch_date
     else:
+        demisto.debug(f"First fetch time: {first_fetch_time}")
         first_fetch_time_date = dateparser.parse(first_fetch_time)
         assert first_fetch_time_date is not None, f'could not parse {first_fetch_time}'
         first_fetch_date = first_fetch_time_date.replace(tzinfo=None)
@@ -3299,10 +3333,12 @@ def fetch_incidents(
         }
         incidents.append(incident)
     if incidents:
+        demisto.debug(f"Found {len(incidents)} incidents.")
         last_incident_time = incidents[-1].get("occurred", "")
         next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
     next_run += timedelta(milliseconds=1)
     next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
+    demisto.debug(f"Next run: {next_run_timestamp}")
     return {"last_fetch": next_run_timestamp}, incidents
 
 
@@ -3332,11 +3368,10 @@ def sophos_central_group_list(
                 "page_size must be equal or less than 1000."
             )
 
-    if number_of_page is not None:
-        if number_of_page < 0:
-            raise ValueError(
-                "page must be a positive number."
-            )
+    if number_of_page is not None and number_of_page < 0:
+        raise ValueError(
+            "page must be a positive number."
+        )
 
     try:
         results = client.get_endpoint_group(page_size, number_of_page)
@@ -3547,8 +3582,8 @@ def sophos_central_group_delete(
 
 
 def create_policy_output(
-        item: Dict
-) -> Dict[str, Optional[Any]]:
+        item: dict
+) -> dict[str, Optional[Any]]:
     """
     Create the complete output dictionary for an endpoint policy.
 
@@ -3820,11 +3855,10 @@ def sophos_central_endpoint_policy_search_command(
                 "page_size must be equal or less than 200"
             )
 
-    if number_of_page is not None:
-        if number_of_page < 0:
-            raise ValueError(
-                "page must be a positive number"
-            )
+    if number_of_page is not None and number_of_page < 0:
+        raise ValueError(
+            "page must be a positive number"
+        )
 
     result = client.get_endpoint_policies(
         args.get("policy_type", ""),
@@ -4002,8 +4036,8 @@ def sophos_central_endpoint_policy_reorder_command(
 
 
 def create_usergroup_output(
-    item: Dict, table_headers: List[str]
-) -> Dict:
+    item: dict, table_headers: List[str]
+) -> dict:
     """
     Create the complete output dictionary for an usergroup.
 
@@ -4023,7 +4057,7 @@ def create_usergroup_output(
 
 
 def sophos_central_usergroups_get_command(
-    client: Client, args: Dict
+    client: Client, args: dict
 ) -> CommandResults:
     """
     Get a specific usergroups by ID.
@@ -4064,7 +4098,7 @@ def sophos_central_usergroups_get_command(
 
 
 def sophos_central_usergroups_create_command(
-    client: Client, args: Dict
+    client: Client, args: dict
 ) -> CommandResults:
     """
     Create a usergroup.
@@ -4097,7 +4131,7 @@ def sophos_central_usergroups_create_command(
 
 
 def sophos_central_usergroups_list_command(
-    client: Client, args: Dict
+    client: Client, args: dict
 ) -> CommandResults:
     """
     Returns a list of all user groups that match the search criteria (optional).
@@ -4178,7 +4212,7 @@ def sophos_central_usergroups_list_command(
 
 
 def sophos_central_usergroups_update_command(
-    client: Client, args: Dict
+    client: Client, args: dict
 ) -> CommandResults:
     """
     Update a usergroup.
@@ -4209,7 +4243,7 @@ def sophos_central_usergroups_update_command(
 
 
 def sophos_central_usergroups_delete_command(
-    client: Client, args: Dict
+    client: Client, args: dict
 ) -> CommandResults:
     """
     Delete a usergroup.
@@ -4640,7 +4674,7 @@ def test_module(client: Client) -> str:
 
 
 def retrieve_jwt_token(
-    client_id: str, client_secret: str, integration_context: Dict
+    client_id: str, client_secret: str, integration_context: dict
 ) -> str:
     """
     Get the JWT token from the integration context or create a new one.
@@ -4656,9 +4690,8 @@ def retrieve_jwt_token(
     bearer_token = integration_context.get("bearer_token", "")
     valid_until = integration_context.get("valid_until", "")
     time_now = int(time.time())
-    if bearer_token and valid_until:
-        if time_now < int(valid_until):
-            return bearer_token
+    if bearer_token and valid_until and time_now < int(valid_until):
+        return bearer_token
     bearer_token_dict = Client.get_jwt_token_from_api(client_id, client_secret)
     if bearer_token_dict:
         bearer_token = str(bearer_token_dict.get("access_token", ""))

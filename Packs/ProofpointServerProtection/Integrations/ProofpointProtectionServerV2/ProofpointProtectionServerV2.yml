@@ -347,9 +347,9 @@ script:
     description: Downloads a quarantine email message's raw data.
     name: proofpoint-pps-quarantine-message-download
   - arguments:
-    - description: Email address of the user
+    - description: Email address of the user.
       name: email
-    - description: UID of the user
+    - description: UID of the user.
       name: uid
     description: Gets the end user resource with the specified email address or UID.
     name: proofpoint-pps-get-user
@@ -383,16 +383,16 @@ script:
     - contextPath: Proofpoint.User.suborg
       description: Defines the sub-organization to which this user profile belongs.
     - contextPath: Proofpoint.User.type
-      description: 0=User 1=Mailing List
+      description: 0=User 1=Mailing List.
     - contextPath: Proofpoint.User.uid
       description: uid of the user.
   - arguments:
-    - description: Email address of the user
+    - description: Email address of the user.
       name: email
       required: true
-    - description: Request fields in JSON string format (e.g., firstname, lastname, addgroup)
+    - description: Request fields in JSON string format (e.g., firstname, lastname, addgroup).
       name: fields
-    - description: Attributes in JSON string format
+    - description: Attributes in JSON string format.
       name: attributes
     description: Creates a new end user resource with the specified email address.
     name: proofpoint-pps-create-user
@@ -426,17 +426,17 @@ script:
     - contextPath: Proofpoint.User.suborg
       description: Defines the sub-organization to which this user profile belongs.
     - contextPath: Proofpoint.User.type
-      description: 0=User 1=Mailing List
+      description: 0=User 1=Mailing List.
     - contextPath: Proofpoint.User.uid
       description: uid of the user.
   - arguments:
-    - description: Email address of the user
+    - description: Email address of the user.
       name: email
-    - description: UID of the user
+    - description: UID of the user.
       name: UID
-    - description: Request fields in JSON string format (e.g., firstname, lastname, addgroup)
+    - description: Request fields in JSON string format (e.g., firstname, lastname, addgroup).
       name: fields
-    - description: Attributes in JSON string format
+    - description: Attributes in JSON string format.
       name: attributes
     description: Modifies a user profile.
     name: proofpoint-pps-modify-user
@@ -470,17 +470,17 @@ script:
     - contextPath: Proofpoint.User.suborg
       description: Defines the sub-organization to which this user profile belongs.
     - contextPath: Proofpoint.User.type
-      description: 0=User 1=Mailing List
+      description: 0=User 1=Mailing List.
     - contextPath: Proofpoint.User.uid
       description: uid of the user.
   - arguments:
-    - description: Email address of the user
+    - description: Email address of the user.
       name: email
-    - description: UID of the user
+    - description: UID of the user.
       name: uid
     description: Delete a user profile.
     name: proofpoint-pps-delete-user
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

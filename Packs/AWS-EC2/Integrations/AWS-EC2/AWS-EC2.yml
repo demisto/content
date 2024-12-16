@@ -27,7 +27,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
-  required: false
+  required: true
 - display: Role Arn
   name: roleArn
   type: 0
@@ -91,6 +91,15 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
   required: false
 - display: AWS organization accounts
   name: accounts_to_access
@@ -4050,7 +4059,78 @@ script:
       type: string
     description: Gets the public IP addresses that have been discovered by IPAM.
     name: aws-ec2-get-ipam-discovered-public-addresses
-  dockerimage: demisto/boto3py3:1.0.0.84358
+  - arguments:
+    - description: The ID of the VPC in which the endpoint will be used.
+      name: vpcId
+      required: true
+    - description: The service name for the service that you want to create an endpoint.
+      name: serviceName
+      required: true
+    - description: The type of endpoint.
+      name: endpointType
+    - description: One or more subnet IDs in which to create the endpoint.
+      name: subnetIds
+      isArray: true
+    - description: One or more security group IDs to associate with the endpoint.
+      name: securityGroupIds
+      isArray: true
+    - description: Checks whether you have the required permissions for the action, without actually making the request.
+      name: dryRun
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: The type of endpoint.
+      name: vpcEndpointType
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - "Interface"
+      - "Gateway"
+      - "GatewayLoadBalancer"
+    - description: A policy document to attach to the endpoint. A JSON policy document that controls access to the service from the endpoint.
+      name: policyDocument
+    - description: One or more route table IDs.
+      name: routeTableIds
+      isArray: true
+    - description: Unique, case-sensitive identifier to ensure the idempotency of the request.
+      name: clientToken
+    - description: Indicates whether to associate a private hosted zone with the specified VPC.
+      name: private-dns-enabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: One or more tags to associate with the endpoint. Should be Json string of key-value tags.
+      name: tagSpecifications
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    outputs:
+    - contextPath: AWS.EC2.Vpcs.VpcEndpoint.VpcEndpointId
+      description: The ID of the endpoint.
+      type: String
+    - contextPath: AWS.EC2.Vpcs.VpcEndpoint.State
+      description: The state of the VPC endpoint.
+      type: String
+    - contextPath: AWS.EC2.Vpcs.VpcEndpoint.ServiceName
+      description: The service name of the VPC endpoint.
+      type: String
+    - contextPath: AWS.EC2.Vpcs.VpcEndpoint.VpcId
+      description: The ID of the VPC to which the endpoint is associated.
+      type: String
+    - contextPath: AWS.EC2.Vpcs.VpcEndpoint.EndpointType
+      description: The type of the VPC endpoint.
+      type: String
+    description: Creates a VPC endpoint.
+    name: aws-ec2-create-vpc-endpoint
+  dockerimage: demisto/boto3py3:1.0.0.115129
   runonce: false
   script: '-'
   subtype: python3

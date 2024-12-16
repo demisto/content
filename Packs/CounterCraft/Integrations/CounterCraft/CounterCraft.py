@@ -13,7 +13,6 @@ import binascii
 import uuid
 import urllib3
 
-from typing import Dict, List
 from hashlib import sha1
 
 # Disable insecure warnings

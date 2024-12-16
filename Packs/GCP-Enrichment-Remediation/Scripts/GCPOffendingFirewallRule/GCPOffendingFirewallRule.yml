@@ -1,0 +1,41 @@
+args:
+- description: The project to look up firewall rules in.  The project ID instead of the project number.  No need to supply `projects/` before the ID (i.e., use `project-name` instead of `projects/project-name` or `projects/111111111111`).
+  name: project_id
+  required: true
+- description: The url of the network objects to lookup firewall rules in.  This will be the url of the network and not just the name (i.e. https://www.googleapis.com/compute/v1/projects/<project_name>/global/networks/<network_name>).
+  name: network_url
+  required: true
+- description: Port to match traffic on for firewall rules.
+  name: port
+  required: true
+- description: Protocol to match traffic on for firewall rules.
+  name: protocol
+  required: true
+- description: Network tags on GCP VM instance to match rules based on target tag (optional).
+  isArray: true
+  name: network_tags
+comment: |-
+  Determine potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
+
+  Considerations:
+  - At this time this automation only find potential offending rules and not necessarily the rule that is matching traffic.
+commonfields:
+  id: GCPOffendingFirewallRule
+  version: -1
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: GCPOffendingFirewallRule
+outputs:
+- contextPath: GCPOffendingFirewallRule
+  description: One or more potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

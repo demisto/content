@@ -37,29 +37,29 @@ script:
     arguments:
     - name: ip
       required: true
-      description: Threat IP Address (e.g. 192.168.100.87)
+      description: Threat IP Address (e.g. 192.168.100.87).
     outputs:
     - contextPath: genians.tag.nodeId
-      description: nodeid of IP
+      description: nodeid of IP.
       type: string
     - contextPath: genians.tag.Name
-      description: Tag name
+      description: Tag name.
       type: string
     description: Assigns a tag to the Node specified.
   - name: genians-unassign-ip-tag
     arguments:
     - name: ip
       required: true
-      description: IP Address (e.g. 192.168.100.87)
+      description: IP Address (e.g. 192.168.100.87).
     outputs:
     - contextPath: genians.tag.nodeId
-      description: nodeid of IP
+      description: nodeid of IP.
       type: string
     - contextPath: genians.tag.Name
-      description: Tag name
+      description: Tag name.
       type: string
     description: Removes the tag(s) from the Node specified.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

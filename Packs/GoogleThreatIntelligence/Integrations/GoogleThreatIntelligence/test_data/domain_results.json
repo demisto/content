@@ -1,0 +1,92 @@
+{
+    "relationships": {
+        "siblings": {
+            "data": [{
+                "type": "domain",
+                "id": "test1.pw"
+            }, {
+                "type": "domain",
+                "id": "test2.pw"
+            }],
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/relationships/siblings?limit=20",
+                "related": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/siblings"
+            }
+        },
+        "subdomains": {
+            "data": [{
+                "type": "domain",
+                "id": "test3.pw"
+            }],
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/relationships/subdomains?limit=20",
+                "related": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/subdomains"
+            }
+        }
+    },
+    "attributes": {
+        "categories": {
+            "Comodo Valkyrie Verdict": "media sharing",
+            "Dr.Web": "known infection source",
+            "Forcepoint ThreatSeeker": "information technology",
+            "sophos": "malware callhome, command and control"
+        },
+        "creation_date": 1485015979,
+        "favicon": {
+            "dhash": "f4cca89496a0ccb2",
+            "raw_md5": "6eb4a43cb64c97f76562af703893c8fd"
+        },
+        "jarm": "29d21b20d29d29d21c41d21b21b41d494e0df9532e75299f15ba73156cee38",
+        "last_analysis_stats": {
+            "harmless": 83,
+            "malicious": 8,
+            "suspicious": 0,
+            "timeout": 0,
+            "undetected": 7
+        },
+        "last_dns_records": [{
+            "ttl": 3599,
+            "type": "A",
+            "value": ":ip:"
+        }],
+        "last_dns_records_date": 1612828461,
+        "last_modification_date": 1612828461,
+        "last_update_date": 1488837159,
+        "popularity_ranks": {},
+        "registrar": "Namecheap",
+        "reputation": 0,
+        "tags": [],
+        "total_votes": {
+            "harmless": 0,
+            "malicious": 0
+        },
+        "whois": "Domain Name: www.example.com\nRegistry Domain ID: D42904076-CNIC\nRegistrar WHOIS Server: whois.example.com\nUpdated Date: 2017-03-06T21:52:39.0Z\nCreation Date: 2017-01-21T16:26:19.0Z\nRegistry Expiry Date: 2018-01-21T23:59:59.0Z\nRegistrar: Namecheap\nRegistrar IANA ID: 1068\nDomain Status: serverHold https://icann.org/epp#serverHold\nDomain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited\nRegistry Registrant ID: C113380656-CNIC\nRegistrant Country: PA\nRegistrant Email: [REDACTED]@whoisguard.com\nRegistry Admin ID: C113380651-CNIC\nAdmin Organization: WhoisGuard, Inc.\nAdmin City: Panama\nAdmin State/Province: Panama\nAdmin Country: PA\nAdmin Email: [REDACTED]@example.com\nRegistry Tech ID: :tech-id:\nTech Organization: WhoisGuard, Inc.\nTech City: Panama\nTech State/Province: Panama\nTech Country: PA\nTech Email: [REDACTED]@whoisguard.com\nName Server: PDNS1.EXAMPLE.COM\nName Server: PDNS2.EXAMPLE.COM\nDNSSEC: unsigned\nRegistry Billing ID: C113380652-CNIC\nBilling Organization: WhoisGuard, Inc.\nBilling City: Panama\nBilling State/Province: Panama\nBilling Country: PA\nBilling Email: [REDACTED]@whoisguard.com\nRegistrar Abuse Contact Email: abuse@example.com\nRegistrar Abuse Contact Phone: +1.6613102107\nDomain name: :domain_id:\nRegistrar URL: http://www.example.com\nUpdated Date: 2017-01-21T16:26:23.00Z\nCreation Date: 2017-01-21T16:26:19.00Z\nRegistrar Registration Expiration Date: 2018-01-21T23:59:59.00Z\nRegistrar: NAMECHEAP INC\nDomain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited\nDomain Status: addPeriod https://icann.org/epp#addPeriod\nRegistry Registrant ID: :id:\nRegistry Admin ID: :id:\nRegistry Tech ID: :id:\nName Server: pdns1.EXAMPLE.COM\nName Server: pdns2.EXAMPLE.COM",
+        "gti_assessment": {
+            "threat_score": {
+                "value": 100
+            },
+            "severity": {
+                "value": "SEVERITY_HIGH"
+            },
+            "contributing_factors": {
+                "mandiant_association_report": true,
+                "mandiant_association_actor": true,
+                "gavs_detections": 3,
+                "normalised_categories": [
+                    "trojan"
+                ],
+                "mandiant_association_malware": true,
+                "mandiant_confidence_score": 100
+            },
+            "verdict": {
+                "value": "VERDICT_MALICIOUS"
+            },
+            "description": "This indicator is malicious (high severity) with high impact."
+        }
+    },
+    "id": "www.example.com",
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/domains/www.example.com"
+    },
+    "type": "domain"
+}

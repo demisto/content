@@ -59,9 +59,9 @@ script:
     - defaultValue: '20'
       description: 'Number of bonuses to retrieve (min: 1, max: 100) Default: 20.'
       name: limit
-    - description: 'The start time by which to filter returned bonuses. e.g., 2015-10-28T21:26:50Z.'
+    - description: The start time by which to filter returned bonuses. e.g., 2015-10-28T21:26:50Z.
       name: start-time
-    - description: 'The end time by which to filter returned bonuses, e.g., 2015-10-28T21:26:50Z.'
+    - description: The end time by which to filter returned bonuses, e.g., 2015-10-28T21:26:50Z.
       name: end-time
     - description: Email address of the bonus giver by which to filter results.
       name: giver-email
@@ -71,7 +71,7 @@ script:
       name: user-email
     - description: 'Filter to get a list of bonuses by a hashtag Example: %23teamwork'
       name: hashtag
-    - description: 'Whether to include child responses of the bonus.'
+    - description: Whether to include child responses of the bonus.
       name: include-children
     - description: Whether to show private bonuses. Requires Admin API key.
       name: show-private-bonuses
@@ -82,7 +82,7 @@ script:
       description: Bonus ID.
       type: String
     - contextPath: Bonusly.Bonus.created_at
-      description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
+      description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
       description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
@@ -196,7 +196,7 @@ script:
     - description: "The bonus message, e.g., \n+10 @george and @john for #execution with that customer #collaboration with the team, and #integrity on the known vulnerabilities to the application. \n\n+10 @francesco because he is fast and detailed\n"
       name: reason
       required: true
-    - description: 'The parent bonus ID with which to associate this bonus, e.g., 24abcdef1234567890abcdef.'
+    - description: The parent bonus ID with which to associate this bonus, e.g., 24abcdef1234567890abcdef.
       name: parent-bonus-id
     description: Creates a Bonusly bonus.
     name: bonusly-create-bonus
@@ -205,7 +205,7 @@ script:
       description: Bonus ID.
       type: String
     - contextPath: Bonusly.Bonus.created_at
-      description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
+      description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
       description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
@@ -313,7 +313,7 @@ script:
       description: Family bonus balance.
       type: Number
   - arguments:
-    - description: 'ID of the bonus to get information for.'
+    - description: ID of the bonus to get information for.
       name: id
       required: true
     description: Gets a bonus by bonus ID.
@@ -323,7 +323,7 @@ script:
       description: Bonus ID.
       type: String
     - contextPath: Bonusly.Bonus.created_at
-      description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
+      description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
       description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
@@ -444,7 +444,7 @@ script:
       description: Bonus ID.
       type: String
     - contextPath: Bonusly.Bonus.created_at
-      description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
+      description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
       description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
@@ -561,7 +561,7 @@ script:
     - contextPath: Bonusly.Bonus.message
       description: Message
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

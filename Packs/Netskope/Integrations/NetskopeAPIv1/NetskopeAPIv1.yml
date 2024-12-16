@@ -324,6 +324,9 @@ script:
     - description: The ID of the quarantined file.
       name: file_id
       required: true
+    - description: The file name of the quarantined file.
+      name: file_name
+      required: false
     description: Download a quarantined file.
     name: netskope-quarantined-file-get
     outputs:
@@ -491,7 +494,7 @@ script:
     - contextPath: Netskope.Host.agent_status
       description: The status of the agent on the device.
       type: String
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: "-"

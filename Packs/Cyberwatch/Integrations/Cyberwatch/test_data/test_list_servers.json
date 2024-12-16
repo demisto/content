@@ -1,0 +1,257 @@
+[
+    {
+      "id": 912,
+      "hostname": "ip-192-168-0-214",
+      "description": "Lorem ipsum dolor sit ame",
+      "last_communication": "2020-11-10T16:36:29.000+01:00",
+      "reboot_required": null,
+      "addresses": [],
+      "updates_count": 0,
+      "boot_at": null,
+      "category": "server",
+      "created_at": "2017-01-24T09:33:08.000+01:00",
+      "cve_announcements_count": 0,
+      "analyzed_at": "2020-11-10T16:36:29.000+01:00",
+      "prioritized_cve_announcements_count": 0,
+      "status": "server_vulnerable",
+      "os": {
+        "key": "ubuntu_1404_64",
+        "name": "Ubuntu 14.04 LTS",
+        "arch": "x86_64",
+        "eol": "2019-04-01",
+        "short_name": "Ubuntu 14.04",
+        "type": "Os::Ubuntu"
+      },
+      "environment": {
+        "id": 34,
+        "name": "High",
+        "confidentiality_requirement": "confidentiality_requirement_high",
+        "integrity_requirement": "integrity_requirement_high",
+        "availability_requirement": "availability_requirement_high",
+        "ceiling_cvss_v3": null
+      },
+      "groups": [
+        {
+          "id": 617,
+          "name": "ENV_PRODUCTION",
+          "description": null,
+          "color": "#12AFCB"
+        },
+        {
+          "id": 774,
+          "name": "Sentinelo",
+          "description": "",
+          "color": "#342e37"
+        },
+        {
+          "id": 775,
+          "name": "auditeur",
+          "description": null,
+          "color": "#9fd356"
+        },
+        {
+          "id": 807,
+          "name": "APP_Apache",
+          "description": null,
+          "color": "#12AFCB"
+        },
+        {
+          "id": 856,
+          "name": "LINUX ",
+          "description": "Machines Linux uniquement",
+          "color": "#ffd166"
+        }
+      ],
+      "compliance_repositories": []
+    },
+    {
+      "id": 1183,
+      "hostname": "EC2AMAZ-C9SIS5H",
+      "description": null,
+      "last_communication": "2019-01-19T08:28:13.000+01:00",
+      "reboot_required": false,
+      "addresses": [
+        "EC2AMAZ-C9SIS5H"
+      ],
+      "updates_count": 3,
+      "boot_at": null,
+      "category": "server",
+      "created_at": "2019-01-18T22:33:12.000+01:00",
+      "cve_announcements_count": 2858,
+      "analyzed_at": "2019-01-19T08:28:13.000+01:00",
+      "prioritized_cve_announcements_count": 110,
+      "status": "server_vulnerable",
+      "os": {
+        "key": "windows_2016",
+        "name": "Windows Server 2016",
+        "arch": "AMD64",
+        "eol": "2026-07-14",
+        "short_name": "Windows 2016",
+        "type": "Os::Windows"
+      },
+      "environment": {
+        "id": 32,
+        "name": "Low",
+        "confidentiality_requirement": "confidentiality_requirement_low",
+        "integrity_requirement": "integrity_requirement_low",
+        "availability_requirement": "availability_requirement_low",
+        "ceiling_cvss_v3": null
+      },
+      "groups": [
+        {
+          "id": 788,
+          "name": "Cloud",
+          "description": null,
+          "color": "#12AFCB"
+        },
+        {
+          "id": 793,
+          "name": "ZONE_EU_FR",
+          "description": null,
+          "color": "#12AFCB"
+        }
+      ],
+      "compliance_repositories": []
+    },
+    {
+      "id": 1186,
+      "hostname": "ip-192-168-0-56",
+      "description": null,
+      "last_communication": "2019-02-11T10:14:01.000+01:00",
+      "reboot_required": false,
+      "addresses": [
+        "ip-192-168-0-56"
+      ],
+      "updates_count": 225,
+      "boot_at": null,
+      "category": "server",
+      "created_at": "2019-01-18T22:41:44.000+01:00",
+      "cve_announcements_count": 1210,
+      "analyzed_at": "2019-01-18T22:41:46.000+01:00",
+      "prioritized_cve_announcements_count": 9,
+      "status": "server_vulnerable",
+      "os": {
+        "key": "ubuntu_1804_64",
+        "name": "Ubuntu 18.04 LTS",
+        "arch": "x86_64",
+        "eol": "2023-04-26",
+        "short_name": "Ubuntu 18.04",
+        "type": "Os::Ubuntu"
+      },
+      "environment": {
+        "id": 32,
+        "name": "Low",
+        "confidentiality_requirement": "confidentiality_requirement_low",
+        "integrity_requirement": "integrity_requirement_low",
+        "availability_requirement": "availability_requirement_low",
+        "ceiling_cvss_v3": null
+      },
+      "groups": [
+        {
+          "id": 788,
+          "name": "Cloud",
+          "description": null,
+          "color": "#12AFCB"
+        },
+        {
+          "id": 856,
+          "name": "LINUX ",
+          "description": "Machines Linux uniquement",
+          "color": "#ffd166"
+        }
+      ],
+      "compliance_repositories": []
+    },
+    {
+      "id": 1187,
+      "hostname": "ip-192-168-0-39",
+      "description": null,
+      "last_communication": "2019-02-11T10:15:01.000+01:00",
+      "reboot_required": true,
+      "addresses": [
+        "ip-192-168-0-39"
+      ],
+      "updates_count": 217,
+      "boot_at": null,
+      "category": "server",
+      "created_at": "2019-01-19T08:15:24.000+01:00",
+      "cve_announcements_count": 1167,
+      "analyzed_at": "2019-01-19T08:15:26.000+01:00",
+      "prioritized_cve_announcements_count": 9,
+      "status": "server_vulnerable",
+      "os": {
+        "key": "ubuntu_1804_64",
+        "name": "Ubuntu 18.04 LTS",
+        "arch": "x86_64",
+        "eol": "2023-04-26",
+        "short_name": "Ubuntu 18.04",
+        "type": "Os::Ubuntu"
+      },
+      "environment": {
+        "id": 32,
+        "name": "Low",
+        "confidentiality_requirement": "confidentiality_requirement_low",
+        "integrity_requirement": "integrity_requirement_low",
+        "availability_requirement": "availability_requirement_low",
+        "ceiling_cvss_v3": null
+      },
+      "groups": [
+        {
+          "id": 617,
+          "name": "ENV_PRODUCTION",
+          "description": null,
+          "color": "#12AFCB"
+        },
+        {
+          "id": 856,
+          "name": "LINUX ",
+          "description": "Machines Linux uniquement",
+          "color": "#ffd166"
+        }
+      ],
+      "compliance_repositories": []
+    },
+    {
+      "id": 1188,
+      "hostname": "MacBook-Pro.local",
+      "description": null,
+      "last_communication": "2019-05-16T16:29:20.000+02:00",
+      "reboot_required": false,
+      "addresses": [
+        "MacBook-Pro.local"
+      ],
+      "updates_count": 19,
+      "boot_at": null,
+      "category": "desktop",
+      "created_at": "2019-01-19T08:18:12.000+01:00",
+      "cve_announcements_count": 3966,
+      "analyzed_at": "2024-07-02T16:53:58.763+02:00",
+      "prioritized_cve_announcements_count": 86,
+      "status": "server_vulnerable",
+      "os": {
+        "key": "macosx",
+        "name": "Mac OS X",
+        "arch": null,
+        "eol": "2022-09-12",
+        "short_name": "macOS X",
+        "type": "Os::Macos"
+      },
+      "environment": {
+        "id": 32,
+        "name": "Low",
+        "confidentiality_requirement": "confidentiality_requirement_low",
+        "integrity_requirement": "integrity_requirement_low",
+        "availability_requirement": "availability_requirement_low",
+        "ceiling_cvss_v3": null
+      },
+      "groups": [
+        {
+          "id": 609,
+          "name": "Direction_Comm",
+          "description": null,
+          "color": "#12AFCB"
+        }
+      ],
+      "compliance_repositories": []
+    }
+  ]

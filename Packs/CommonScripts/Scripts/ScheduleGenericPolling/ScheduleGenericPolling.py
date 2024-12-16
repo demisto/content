@@ -8,6 +8,11 @@ import uuid
 MINIMUM_XSOAR_VERSION = '8.2.0'
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
+# Order is important! See is_command_sanitized implementation
+SANITIZED_ARG_NAMES = ['additionalPollingCommandArgValues', 'additionalPollingCommandArgNames', 'pollingCommandArgName',
+                       'pollingCommand',
+                       ]
+
 
 # Returns a comma-separated string representation of a list
 # Possible inputs: null, int, str, bytes, ["","",...], [int, int], 'a,b,...', '"a","b",...', '["","",...]'
@@ -51,10 +56,36 @@ def calculate_end_time(timeout):
 
 
 def is_value_sanitized(value):
-    arg_names = ['pollingCommand', 'pollingCommandArgName',
-                 'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
-                 ]
-    return all(current_arg_name not in value for current_arg_name in arg_names)
+    return all(current_arg_name not in value for current_arg_name in SANITIZED_ARG_NAMES)
+
+
+def is_command_sanitized(command):
+    malformed_args = []
+    command_lower = command.lower()
+    for current_sanitized_arg_name in SANITIZED_ARG_NAMES:
+        arg_name_lower = current_sanitized_arg_name.lower()
+        if command_lower.count(arg_name_lower) > 1:
+            malformed_args.append(current_sanitized_arg_name)
+        command_lower = command_lower.replace(arg_name_lower, '')
+    if malformed_args:
+        return False, f'The value of {", ".join(malformed_args)} is malformed.'
+    return True, None
+
+
+def get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag, args_names,
+                       args_values, extract_mode):
+
+    command_string = '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
+              pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
+              additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
+                                                               pollingCommandArgName, playbookId,
+                                                               dt.replace('"', r'\"'), interval, timeout, tag,
+                                                               args_names.replace('"', r'\"'),
+                                                               args_values.replace('"', r'\"'),)
+    if extract_mode:
+        command_string += f" auto-extract={extract_mode} extractMode={extract_mode}"
+
+    return command_string
 
 
 def main():  # pragma: no cover
@@ -68,16 +99,15 @@ def main():  # pragma: no cover
     pollingCommandArgName = args.get('pollingCommandArgName')
     tag = args.get('tag')
     playbookId = f' playbookId="{args.get("playbookId", "")}"'
+
     interval = int(args.get('interval'))
     timeout = int(args.get('timeout'))
-
-    args_names = args.get('additionalPollingCommandArgNames').strip() \
-        if args.get('additionalPollingCommandArgNames') else None
-    args_values = args.get('additionalPollingCommandArgValues').strip() \
-        if args.get('additionalPollingCommandArgValues') else None
-
+    extract_mode = args.get("extractMode")
     if interval <= 0 or timeout <= 0:
         return_error("Interval and timeout must be positive numbers")
+
+    args_names = (args.get('additionalPollingCommandArgNames', '') or '').strip()
+    args_values = (args.get('additionalPollingCommandArgValues', '') or '').strip()
 
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):
@@ -87,12 +117,13 @@ def main():  # pragma: no cover
         demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
                         "that all ids have finished running.")
 
-    command_string = '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
-                        pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
-                        additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
-                                                                         pollingCommandArgName, playbookId,
-                                                                         dt.replace('"', r'\"'), interval, timeout,
-                                                                         tag, args_names, args_values)
+    command_string = get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag,
+                                        args_names, args_values, extract_mode)
+
+    command_sanitized, message = is_command_sanitized(command_string)
+    if not command_sanitized:
+        return_error(message)
+
     schedule_command_args = {
         'command': command_string,
         'cron': f'*/{interval} * * * *',
@@ -104,8 +135,9 @@ def main():  # pragma: no cover
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
         schedule_command_args['command'] = command_string
         # Set the times to be the number of times the polling command should run (using the cron job functionally).
-        # Adding extra iteration to verify that the polling command will stop the schedule entry.
-        schedule_command_args['times'] = (timeout // interval) + 1
+        # Adding extra iterations to verify that the polling command will stop the schedule entry.
+        # See XSUP-36162 for the reason adding 2
+        schedule_command_args['times'] = (timeout // interval) + 2
         schedule_command_args['scheduledEntryGuid'] = entryGuid
 
     res = demisto.executeCommand("ScheduleCommand",

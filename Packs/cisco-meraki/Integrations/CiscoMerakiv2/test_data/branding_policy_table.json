@@ -1,0 +1,11 @@
+[
+    {
+        "Name": "My Branding Policy",
+        "Enabled": true,
+        "Admin Settings Applies To": "All admins of networks...",
+        "Admin Settings Values": [
+            "N_1234",
+            "L_5678"
+        ]
+    }
+]

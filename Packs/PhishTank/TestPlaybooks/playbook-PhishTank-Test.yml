@@ -50,6 +50,10 @@ tasks:
       - "2"
       - "3"
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "300"
       url:
         complex:
           root: ${badURL}

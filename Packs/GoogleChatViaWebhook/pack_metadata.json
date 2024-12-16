@@ -1,0 +1,23 @@
+{
+    "name": "Google Chat via Webhook",
+    "description": "Integration for sending notifications to a Google Chat Space via incoming webhook",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Rich Fontaine, Brandon Parmely",
+    "url": "",
+    "email": "",
+    "created": "2024-04-10T09:00:24Z",
+    "categories": [
+        "Messaging and Conferencing"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "edibleShell"
+    ]
+}

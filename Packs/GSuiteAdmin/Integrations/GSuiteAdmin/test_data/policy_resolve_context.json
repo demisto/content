@@ -1,0 +1,75 @@
+{
+    "entry_type": "1",
+    "ignore_auto_extract": "False",
+    "mark_as_note": "False",
+    "outputs": 
+    {
+        "GSuite.Policy(val.targetKey.targetResource && val.targetKey.targetResource == obj.targetKey.targetResource)": 
+        [
+            {
+                "targetKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k", 
+                    "additionalTargetKeys": 
+                    {
+                        "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"
+                    }
+                },
+                "value": 
+                {
+                    "policySchema": "chrome.users.apps.InstallType", 
+                    "value": 
+                    {
+                        "appInstallType": "BLOCKED"
+                    }
+                },
+                "sourceKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k"
+                },
+                "addedSourceKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k"
+                }
+            }
+        ],
+        "GSuite(true)": 
+        {
+            "PolicyNextToken": ""
+        }
+    },
+    "raw_response": 
+    {
+        "resolvedPolicies": 
+        [
+            {
+                "targetKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k", 
+                    "additionalTargetKeys": 
+                    {
+                        "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"
+                    }
+                }, 
+                "value": 
+                {
+                    "policySchema": "chrome.users.apps.InstallType", 
+                    "value": 
+                    {
+                        "appInstallType": "BLOCKED"
+                    }
+                }, 
+                "sourceKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k"
+                }, 
+                "addedSourceKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k"
+                }
+            }
+        ]
+    },
+    "readable_output": "### Resolved Policies\n|Target Resource|Additional Target Keys|Policy Schema|\n|---|---|---|\n| orgunits/03ph8a2z1kjba6k | app_id: chrome:jldhpllghnbhlbpcmnajkpdmadaolakh | chrome.users.apps.InstallType |\n",
+    "replace_existing": "False"
+}

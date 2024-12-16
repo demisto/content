@@ -12,27 +12,25 @@ Make sure you have the API key for CrowdStrike Falcon Sandbox v2.
 Each API key has an associated authorization level, which determines the available endpoints. By default, all free, non-vetted accounts can issue restricted keys. You can upgrade to full default keys, enabling file submissions and downloads.
 
 ### Get an API Key
+
 You must have an account with Hybrid-Analysis. If you do not have an account, you can [sign up here.](https://www.hybrid-analysis.com/signup)
 
 Obtain an API key by:
+
 1. In your [profile page](https://www.hybrid-analysis.com/my-account?tab=%23api-key-tab), from the top right menu navigate to the **API key** tab. 
 2. Click the **Create API key** button.
 
-## Configure CrowdStrike Falcon Sandbox v2 on Cortex XSOAR
+## Configure CrowdStrike Falcon Sandbox v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CrowdStrike Falcon Sandbox v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL| The Server URL of the CrowdStrike Falcon Sandbox instance. By default, `https://www.hybrid-analysis.com`| | True |
-    | API Key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL| The Server URL of the CrowdStrike Falcon Sandbox instance. By default, `https://www.hybrid-analysis.com`| | True |
+| API Key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Supported File Types:
 
@@ -61,10 +59,12 @@ Obtain an API key by:
 The maximum file upload size is 100 MB.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cs-falcon-sandbox-scan
+
 ***
 Gets summary information for a given MD5, SHA1, or SHA256 and all the reports generated for any environment ID.
 
@@ -72,6 +72,7 @@ Gets summary information for a given MD5, SHA1, or SHA256 and all the reports ge
 #### Base Command
 
 `cs-falcon-sandbox-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -132,8 +133,11 @@ Gets summary information for a given MD5, SHA1, or SHA256 and all the reports ge
 | DBotScore.Score | number | The actual score. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-scan file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51,9745bd652c50ac081e28981b96f41230c1ed2f84724c1e5b0f0d407a90aefe22```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -932,6 +936,7 @@ Gets summary information for a given MD5, SHA1, or SHA256 and all the reports ge
 #### Human Readable Output
 
 >### Scan Results:
+
 >|submit name|threat level|verdict|total network connections|total processes|environment description|interesting|environment id|url analysis|analysis start time|total signatures|type|type short|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| file | 0 | whitelisted | 0 | 0 | Static Analysis | false |  | false | 2020-09-15T16:47:06+00:00 | 0 | PDF document, version 1.3 | pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |
@@ -943,6 +948,7 @@ Gets summary information for a given MD5, SHA1, or SHA256 and all the reports ge
 
 
 ### cs-falcon-sandbox-get-environments
+
 ***
 Gets a list of all available environments.
 
@@ -950,6 +956,7 @@ Gets a list of all available environments.
 #### Base Command
 
 `cs-falcon-sandbox-get-environments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -969,8 +976,11 @@ Gets a list of all available environments.
 | CrowdStrike.Environment.groupicon | string | The environment icon. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-get-environments```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -1043,6 +1053,7 @@ Gets a list of all available environments.
 #### Human Readable Output
 
 >### Execution Environments:
+
 >|_ID|Description|Architecture|Total VMS|Busy VMS|Analysis mode|Group icon|
 >|---|---|---|---|---|---|---|
 >| 100 | Windows 7 32 bit | WINDOWS | 9223372036854775807 | 9223372036854775807 | KERNELMODE | windows |
@@ -1053,6 +1064,7 @@ Gets a list of all available environments.
 
 
 ### cs-falcon-sandbox-submit-sample
+
 ***
 Submits a file from the investigation to the analysis server.
 
@@ -1060,6 +1072,7 @@ Submits a file from the investigation to the analysis server.
 #### Base Command
 
 `cs-falcon-sandbox-submit-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1141,6 +1154,7 @@ Submits a file from the investigation to the analysis server.
 | DBotScore.Score | number | The actual score. | 
 
 ### cs-falcon-sandbox-search
+
 ***
 Searches the database using the Falcon Sandbox search syntax.
 
@@ -1148,6 +1162,7 @@ Searches the database using the Falcon Sandbox search syntax.
 #### Base Command
 
 `cs-falcon-sandbox-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1203,8 +1218,11 @@ Searches the database using the Falcon Sandbox search syntax.
 | CrowdStrike.Search.result.type_short | String | The short description of the file type. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-search filename=sample.pdf```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -1950,6 +1968,7 @@ Searches the database using the Falcon Sandbox search syntax.
 #### Human Readable Output
 
 >### Search Results:
+
 >|Submit Name|Verdict|Vx Family|Threat Score|Sha 256|Size|Environment Id|Type Short|Analysis Start Time|
 >|---|---|---|---|---|---|---|---|---|
 >| sample.pdf |  |  |  | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3028 | 300 | pdf | 2022-01-10T08:33:11+00:00 |
@@ -1961,6 +1980,7 @@ Searches the database using the Falcon Sandbox search syntax.
 
 
 ### cs-falcon-sandbox-result
+
 ***
 Retrieves result data on a file. Note: This command returns a file.
 
@@ -1968,6 +1988,7 @@ Retrieves result data on a file. Note: This command returns a file.
 #### Base Command
 
 `cs-falcon-sandbox-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2036,6 +2057,7 @@ Retrieves result data on a file. Note: This command returns a file.
 | InfoFile.Extension | string | The file extension. | 
 
 ### cs-falcon-sandbox-submit-url
+
 ***
 Submits a URL for analysis.
 
@@ -2043,6 +2065,7 @@ Submits a URL for analysis.
 #### Base Command
 
 `cs-falcon-sandbox-submit-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2125,8 +2148,11 @@ Submits a URL for analysis.
 | DBotScore.Score | number | The actual score. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-submit-url url=example.com environmentID=300```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -2491,12 +2517,14 @@ Submits a URL for analysis.
 #### Human Readable Output
 
 >### Scan Results:
+
 >|submit name|threat level|verdict|total network connections|total processes|environment description|interesting|url analysis|analysis start time|total signatures|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| http:<span>//</span>example.com/ | 1 | suspicious | 0 | 0 | Static Analysis | false | true | 2020-02-03T08:39:15+00:00 | 0 | 0b1d27c7ef8651eac6933608d4cb0a4b9fd74c45b883d5a4da1eeaa540f6cc5c |
 
 
 ### cs-falcon-sandbox-get-screenshots
+
 ***
 Retrieves screenshots from a report
 
@@ -2504,6 +2532,7 @@ Retrieves screenshots from a report
 #### Base Command
 
 `cs-falcon-sandbox-get-screenshots`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2525,8 +2554,11 @@ Retrieves screenshots from a report
 | InfoFile.Extension | string | The file extension. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-get-screenshots file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 environmentID=100```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": [
@@ -2603,6 +2635,7 @@ Retrieves screenshots from a report
 
 
 ### cs-falcon-sandbox-analysis-overview
+
 ***
 Gets the hash overview.
 
@@ -2610,6 +2643,7 @@ Gets the hash overview.
 #### Base Command
 
 `cs-falcon-sandbox-analysis-overview`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2653,8 +2687,11 @@ Gets the hash overview.
 | File.type | string | The file type. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-analysis-overview file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -2906,12 +2943,14 @@ Gets the hash overview.
 #### Human Readable Output
 
 >### Analysis Overview:
+
 >|Last File Name|Other File Name|Sha 256|Verdict|Url Analysis|Size|Type|Type Short|
 >|---|---|---|---|---|---|---|---|
 >| file | 5_Journals_3_Manuscripts_10_Version_1_Revision_0_CoverLetter.pdf,<br/>dyUQ2JAbImyU0WNH7TI1K3UYqUwDMsQBh1RwXWHG.pdf,<br/>k18zpzsrq3om4q1pu18mftdo2caaivqq.pdf,<br/>kuc86odvmimp0vd0tseubdekn9dg41jrff6lso01_parsed.eml,<br/>sample.pdf,<br/>samplePdf.pdf,<br/>test.pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | whitelisted | false | 3506 | PDF document, version 1.3 | pdf |
 
 
 ### cs-falcon-sandbox-analysis-overview-summary
+
 ***
 Returns the hash overview.
 
@@ -2919,6 +2958,7 @@ Returns the hash overview.
 #### Base Command
 
 `cs-falcon-sandbox-analysis-overview-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2938,8 +2978,11 @@ Returns the hash overview.
 | CrowdStrike.AnalysisOverviewSummary.multiscan_result | Number | The multi-scan result. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-analysis-overview-summary file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -2958,12 +3001,14 @@ Returns the hash overview.
 #### Human Readable Output
 
 >### Analysis Overview Summary:
+
 >|Analysis Start Time|Last Multi Scan|Multiscan Result|Sha256|Verdict|
 >|---|---|---|---|---|
 >| 2022-01-10T08:33:11+00:00 | 2022-02-07T12:52:10+00:00 | 0 | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | whitelisted |
 
 
 ### cs-falcon-sandbox-analysis-overview-refresh
+
 ***
 Refreshes the overview and downloads fresh data from external services.
 
@@ -2971,6 +3016,7 @@ Refreshes the overview and downloads fresh data from external services.
 #### Base Command
 
 `cs-falcon-sandbox-analysis-overview-refresh`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2981,13 +3027,17 @@ Refreshes the overview and downloads fresh data from external services.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cs-falcon-sandbox-analysis-overview-refresh file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51```
+
 #### Human Readable Output
 
 >The request to refresh the analysis overview was sent successfully.
 
 ### file
+
 ***
 Returns file information and reputation.
 
@@ -2995,6 +3045,7 @@ Returns file information and reputation.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3047,14 +3098,17 @@ Returns file information and reputation.
 | File.MalwareFamily | string | The file family classification. | 
 | File.Malicious.Vendor | string | The vendor that decided the file was malicious. | 
 | File.Malicious.Description | string | The reason the vendor decided the file was malicious. | 
-| DBotScore.Indicator | string | The tested indicator. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 
 #### Command example
+
 ```!file file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51```
+
 #### Context Example
+
 ```json
 {
     "CofenseIntelligence": {
@@ -3739,12 +3793,14 @@ Returns file information and reputation.
 #### Human Readable Output
 
 >### Scan Results:
+
 >|submit name|threat level|verdict|total network connections|total processes|environment description|interesting|environment id|url analysis|analysis start time|total signatures|type|type short|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51_1549672910345_sample.pdf | 0 | whitelisted | 0 | 1 | Windows 7 32 bit | false | 100 | false | 2019-02-09T01:41:57+00:00 | 9 | PDF document, version 1.3 | pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |
 
 
 ### cs-falcon-sandbox-sample-download
+
 ***
 Downloads the sample file.
 
@@ -3752,6 +3808,7 @@ Downloads the sample file.
 #### Base Command
 
 `cs-falcon-sandbox-sample-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3774,8 +3831,11 @@ Downloads the sample file.
 | File.Extension | String | The file extension. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-sample-download file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -3796,6 +3856,7 @@ Downloads the sample file.
 
 
 ### cs-falcon-sandbox-report-state
+
 ***
 Gets the report state for the given ID.
 
@@ -3803,6 +3864,7 @@ Gets the report state for the given ID.
 #### Base Command
 
 `cs-falcon-sandbox-report-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3822,8 +3884,11 @@ Gets the report state for the given ID.
 | CrowdStrike.State.error | String | The error description. | 
 
 #### Command example
+
 ```!cs-falcon-sandbox-report-state file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 environmentID=300```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -3841,6 +3906,7 @@ Gets the report state for the given ID.
 #### Human Readable Output
 
 >### State
+
 >|Error|Error Origin|Error Type|Related Reports|State|
 >|---|---|---|---|---|
 >| The requested environment ID "300" and file type "pdf" have no available execution environment | CLIENT | FILE_TYPE_BAD_ERROR |  | ERROR |

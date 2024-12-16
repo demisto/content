@@ -1,0 +1,37 @@
+commonfields:
+  id: SetIndicatorGridField
+  version: -1
+name: SetIndicatorGridField
+script: ''
+type: python
+tags: []
+comment: This script updates an indicator's grid field in Cortex XSOAR with provided row data. You can input the rows directly or extract them from the context.
+enabled: true
+args:
+- name: indicator
+  required: true
+  description: The value of the indicator to be updated.
+- name: grid_field
+  required: true
+  description: The name of the grid field you want to update.
+- name: headers
+  required: true
+  description: A comma-separated string listing the column headers for the grid.
+- name: input
+  required: true
+  description: Either a JSON or list of lists. This argument is mandatory.
+  isArray: true
+- name: keys_from_context
+  description: A comma-separated string listing the keys to extract values from the provided dictionaries in the input. The extracted values will be mapped to the headers in the order provided.
+- name: append
+  description: When set to True, appends the new content to the existing grid content instead of overwriting it.
+  defaultValue: 'False'
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

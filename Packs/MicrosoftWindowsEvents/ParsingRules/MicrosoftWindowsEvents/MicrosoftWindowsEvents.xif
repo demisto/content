@@ -1,4 +1,4 @@
 [INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_windows_raw", no_hit=drop]
 config case_sensitive=false 
-| filter to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND provider_name not in ("AD FS Auditing", "Microsoft-Antimalware-Scan-Interface","Microsoft-Windows-DNSServer", "Microsoft-Windows-DNS-Server-Service")
+| filter to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND provider_name not in ("Microsoft-Windows-Sysmon", "AD FS Auditing", "Microsoft-Antimalware-Scan-Interface","Microsoft-Windows-DNSServer", "Microsoft-Windows-DNS-Server-Service")
 | alter _time = time_created;

@@ -32,6 +32,7 @@ Phishing - Machine Learning Analysis
 | maxNumberOfURL | Maximum number of extracted URLs on which to run the model. |
 | forceModel | Whether to force the model to run if the URL belongs to the whitelist. If True, the model will run in every case. If False, the model will run only if the URL does not belong to the whitelist. |
 | resetModel | Whether to reset the model to the model existing in Docker. |
+| defaultRequestProtocol | The protocol to use when calling the URLs. This argument effects the calls sent by the model only and has no effect on the rasterize or whois commands. |
 | debug | Whether to enter debug mode. |
 | reliability | Reliability of the source providing the intelligence data. |
 
@@ -53,10 +54,18 @@ Phishing - Machine Learning Analysis
 
 ## Script Examples
 ### Example command
-```!DBotPredictURLPhishing urls=google.com```
+```!DBotPredictURLPhishing urls="http://google.com"```
 ### Context Example
 ```json
-{}
+{
+  "DBotPredictURLPhishing": [
+    {
+      "FinalVerdict": "Benign",
+      "TopMajesticDomain": "True",
+      "URL": "http://google.com"
+    }
+  ]
+}
 ```
 
 ### Human Readable Output

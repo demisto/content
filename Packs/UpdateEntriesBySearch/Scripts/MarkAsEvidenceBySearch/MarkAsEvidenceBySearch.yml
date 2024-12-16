@@ -80,17 +80,17 @@ args:
 - name: case_insensitive
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: true if the pattern is matched in case-insensitive, false otherwise
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: dry_run
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: true if it only search the entries and doesn't update, false otherwise
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: summary
   auto: PREDEFINED
   predefined:
@@ -101,7 +101,7 @@ args:
   defaultValue: basic
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

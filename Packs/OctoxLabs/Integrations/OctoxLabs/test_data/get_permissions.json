@@ -1,0 +1,11 @@
+{
+    "count": 1,
+    "results": [
+        {
+            "id": 1,
+            "name": "Can clear system logs",
+            "codename": "clear_system_log",
+            "app": "activities"
+        }
+    ]
+}

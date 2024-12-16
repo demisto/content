@@ -1,23 +1,23 @@
 args:
-- description: The input value
+- description: The input value.
   isArray: true
   name: value
   required: true
 - description: The relative path to the array from `value`.
   name: array_path
-- description: An array to merge from
+- description: An array to merge from.
   isArray: true
   name: merge_with
-- description: A comma separated list of pairs [key of merge_with]:[key of value.arrah_path]. e.g. ip:dst_ip, hostname:dst_host
+- description: A comma separated list of pairs [key of merge_with]:[key of value.arrah_path]. e.g. ip:dst_ip, hostname:dst_host.
   name: mapping
   required: true
-- description: The key to the value where each of the destination value is to be set
+- description: The key to the value where each of the destination value is to be set.
   name: out_key
-- description: The relative path to the destination array where the marged array is set
+- description: The relative path to the destination array where the marged array is set.
   name: out_path
 - auto: PREDEFINED
   defaultValue: "true"
-  description: true if it allows to simply append source entries which doesn't match, otherwise false
+  description: true if it allows to simply append source entries which doesn't match, otherwise false.
   name: appendable
   predefined:
   - "true"
@@ -55,4 +55,4 @@ tags:
 type: javascript
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- playbook-MergeDictArray_Test

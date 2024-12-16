@@ -1,29 +1,26 @@
 Cloud-based SaaS to detect risks found on social media and digital channels.
-This integration was integrated and tested with version 1.0 and 2.0 of ZeroFox
+This integration was integrated and tested with versions 1.0 and 2.0 of ZeroFox.
 
-## Configure ZeroFox on Cortex XSOAR
+## Configure ZeroFox in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ZeroFox.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL (e.g., <https://api.zerofox.com/>) | True |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Fetch Limit | True |
-    | Fetch incidents | False |
-    | Incident type | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| URL (e.g., https://api.zerofox.com/) | True |
+| Username | True |
+| Password | True |
+| Fetch only escalated alerts | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| Fetch Limit | True |
+| Fetch incidents | False |
+| Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### zerofox-get-alert
@@ -64,16 +61,16 @@ Fetches an alert by ID.
 | ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
 | ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
 | ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
-| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested", or "Whitelisted". |
-| ZeroFox.Alert.Timestamp | Date | The date-time string when an the alert was created, in ISO-8601 format. |
-| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule was deleted. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
 | ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
 | ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
 | ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
 | ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
 | ZeroFox.Alert.Network | String | The network on which an alert was created. |
 | ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
-| ZeroFox.Alert.Notes | String | Notes made on an alert by the user. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
 | ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
 | ZeroFox.Alert.Tags | String | A list of an alert's tags. |
 | ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
@@ -98,8 +95,38 @@ Assigns an alert to a user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZeroFox.Alert.ID | Number | The ID of an alert. |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
 | ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
+| ZeroFox.Alert.ID | Number | The ID of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-close-alert
 
@@ -120,8 +147,38 @@ Closes an alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
+| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
 | ZeroFox.Alert.ID | Number | The ID of an alert. |
-| ZeroFox.Alert.Status | String | The status of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-alert-request-takedown
 
@@ -142,8 +199,38 @@ Requests a takedown of a specified alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
+| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
 | ZeroFox.Alert.ID | Number | The ID of an alert. |
-| ZeroFox.Alert.Status | String | The status of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-modify-alert-tags
 
@@ -185,60 +272,7 @@ Adds tags to and or removes tags from a specified alert.
 | ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
 | ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
 | ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
-| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested", or "Whitelisted". |
-| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
-| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
-| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
-| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
-| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
-| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
-| ZeroFox.Alert.Network | String | The network on which an alert was created. |
-| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
-| ZeroFox.Alert.Notes | String | Notes made on an alert. |
-| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
-| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
-| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
-
-### zerofox-modify-alert-notes
-
-***
-Modify the notes from a specified alert.
-
-#### Base Command
-
-`zerofox-modify-alert-notes`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
-| notes | The modified notes to update in the alert. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ZeroFox.Alert.AlertType | String | The type of an alert. |
-| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
-| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
-| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
-| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
-| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
-| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
-| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
-| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
-| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
-| ZeroFox.Alert.ID | Number | The ID of an alert. |
-| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
-| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
-| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
-| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
-| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
-| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
-| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
-| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
-| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested", or "Whitelisted". |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
 | ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
 | ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
 | ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
@@ -379,8 +413,38 @@ Cancels a takedown of a specified alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
+| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
 | ZeroFox.Alert.ID | Number | The ID of an alert. |
-| ZeroFox.Alert.Status | String | The status of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-open-alert
 
@@ -401,8 +465,38 @@ Opens an alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
+| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
 | ZeroFox.Alert.ID | Number | The ID of an alert. |
-| ZeroFox.Alert.Status | String | The status of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-list-entities
 
@@ -434,14 +528,14 @@ Lists all entities associated with the company of the authorized user.
 | ZeroFox.Entity.Name | String | The name of the entity. |
 | ZeroFox.Entity.EmailAddress | String | The email address associated with the entity. |
 | ZeroFox.Entity.Organization | String | The organization associated with the entity. |
-| ZeroFox.Entity.Tags | String | A list of tags of the entity |
+| ZeroFox.Entity.Tags | String | A list of tags of the entity. |
 | ZeroFox.Entity.StrictNameMatching | Boolean | Indicates the type of string matching used for comparing entity names to impersonator names. |
 | ZeroFox.Entity.PolicyID | Number | The policy ID of the entity. |
 | ZeroFox.Entity.Profile | String | A link to a profile resource, if applicable. |
 | ZeroFox.Entity.EntityGroupID | Number | The ID of the entity group. |
 | ZeroFox.Entity.EntityGroupName | String | The name of the entity group. |
 | ZeroFox.Entity.TypeID | Number | The ID of the type of entity. |
-| ZeroFox.Entity.TypeName | String | The name of the type of entity |
+| ZeroFox.Entity.TypeName | String | The name of the type of entity. |
 
 ### zerofox-get-entity-types
 
@@ -459,7 +553,6 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-
 ### zerofox-get-policy-types
 
 ***
@@ -476,6 +569,58 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### zerofox-modify-alert-notes
+
+***
+Modify the notes of a specified alert.
+
+#### Base Command
+
+`zerofox-modify-alert-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required |
+| notes | The notes to add to an alert. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
+| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
+| ZeroFox.Alert.ID | Number | The ID of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
 ### zerofox-submit-threat
 
@@ -500,12 +645,85 @@ Submits potential threats into the ZF alert registry for disruption.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZeroFox.Alert.ID | Number | The ID of the alert created. |
+| ZeroFox.Alert.AlertType | String | The type of an alert. |
+| ZeroFox.Alert.OffendingContentURL | String | The URL to the site containing content that triggered an alert. |
+| ZeroFox.Alert.Assignee | String | The user to which an alert is assigned. |
+| ZeroFox.Alert.Entity.ID | Number | The ID of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Name | String | The name of the entity corresponding to the triggered alert. |
+| ZeroFox.Alert.Entity.Image | String | The URL to the profile image of the entity on which an alert was created. |
+| ZeroFox.Alert.EntityTerm.ID | Number | The ID of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Name | String | The name of the entity term corresponding to the triggered alert. |
+| ZeroFox.Alert.EntityTerm.Deleted | Boolean | Whether an entity term was deleted. |
+| ZeroFox.Alert.ContentCreatedAt | Date | The date-time string indicating when the alerted content was created, in ISO-8601 format. |
+| ZeroFox.Alert.ID | Number | The ID of an alert. |
+| ZeroFox.Alert.RiskRating | Number | The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info". |
+| ZeroFox.Alert.Perpetrator.Name | String | For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted. |
+| ZeroFox.Alert.Perpetrator.URL | String | The URL at which you can view the basic details of the perpetrator. |
+| ZeroFox.Alert.Perpetrator.Timestamp | Date | The timestamp of a post created by a perpetrator. |
+| ZeroFox.Alert.Perpetrator.Type | String | The type of perpetrator on which an alert was created. Can be an account, page, or post. |
+| ZeroFox.Alert.Perpetrator.ID | Number | The ZeroFox resource ID of the alert perpetrator. |
+| ZeroFox.Alert.Perpetrator.Network | String | The network containing the offending content. |
+| ZeroFox.Alert.RuleGroupID | Number | The ID of the rule group. |
+| ZeroFox.Alert.Status | String | The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted". |
+| ZeroFox.Alert.Timestamp | Date | The date-time string when an alert was created, in ISO-8601 format. |
+| ZeroFox.Alert.RuleName | String | The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.LastModified | Date | The date and time at which an alert was last modified. |
+| ZeroFox.Alert.DarkwebTerm | String | Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details. |
+| ZeroFox.Alert.Reviewed | Boolean | Whether an alert was reviewed. |
+| ZeroFox.Alert.Escalated | Boolean | Whether an alert was escalated. |
+| ZeroFox.Alert.Network | String | The network on which an alert was created. |
+| ZeroFox.Alert.ProtectedSocialObject | String | The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, \(account information or an incoming or outgoing content\), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null. |
+| ZeroFox.Alert.Notes | String | Notes made on an alert. |
+| ZeroFox.Alert.RuleID | Number | The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted. |
+| ZeroFox.Alert.Tags | String | A list of an alert's tags. |
+| ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
+
+### zerofox-send-alert-attachment
+
+***
+Sends an attachment to a specified alert.
+
+#### Base Command
+
+`zerofox-send-alert-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required |
+| attachment_type | The type of the attachment. Can be evidence "photo_id", "disruption_agreement", "trademark_information", "trademark"or "copyright". Possible values are: evidence, photo_id, disruption_agreement, trademark_information, trademark, copyright. | Required |
+| entry_id | The entry ID of the attachment. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+### zerofox-get-alert-attachments
+
+***
+Retrieves the attachments of a specified alert.
+
+#### Base Command
+
+`zerofox-get-alert-attachments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.AlertAttachments.ID | unknown | The ID of an alert. |
+| ZeroFox.AlertAttachments.Name | unknown | The name attachment of an alert. |
 
 ### zerofox-search-compromised-domain
 
 ***
-Looks for a given domain in Zerofox's CTI feeds
+Looks for a given domain in Zerofox's CTI feeds.
 
 #### Base Command
 
@@ -521,14 +739,14 @@ Looks for a given domain in Zerofox's CTI feeds
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZeroFox.CompromisedDomains.Domain | string | Domain in which the search domain was found |
-| ZeroFox.CompromisedDomains.LastModified | string | Last time that the threat was found |
-| ZeroFox.CompromisedDomains.IPs | string | Related domains to the threat separated by commas |
+| ZeroFox.CompromisedDomains.Domain | string | Domain in which the search domain was found. |
+| ZeroFox.CompromisedDomains.LastModified | string | Last time that the threat was found. |
+| ZeroFox.CompromisedDomains.IPs | string | Related domains to the threat separated by commas. |
 
 ### zerofox-search-compromised-email
 
 ***
-Looks for a given email in ZeroFox's CTI feeds
+Looks for a given email in ZeroFox's CTI feeds.
 
 #### Base Command
 
@@ -544,14 +762,14 @@ Looks for a given email in ZeroFox's CTI feeds
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZeroFox.CompromisedEmails.Domain | string | Domain in which the search domain was found |
-| ZeroFox.CompromisedEmails.Email | string | Email involved in the threat |
-| ZeroFox.CompromisedEmails.CreatedAt | string | Date in which the email was found related to a threat |
+| ZeroFox.CompromisedEmails.Domain | string | Domain in which the search domain was found. |
+| ZeroFox.CompromisedEmails.Email | string | Email involved in the threat. |
+| ZeroFox.CompromisedEmails.CreatedAt | string | Date in which the email was found related to a threat. |
 
 ### zerofox-search-malicious-ip
 
 ***
-Looks for malicious ips in ZeroFox's CTI feeds
+Looks for malicious ips in ZeroFox's CTI feeds.
 
 #### Base Command
 
@@ -567,14 +785,14 @@ Looks for malicious ips in ZeroFox's CTI feeds
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZeroFox.MaliciousIPs.Domain | string | Domain in which the search domain was found |
-| ZeroFox.MaliciousIPs.IPAddress | string | IP in which the search domain was found |
-| ZeroFox.MaliciousIPs.CreatedAt | string | Date in which the ip was found related to a threat |
+| ZeroFox.MaliciousIPs.Domain | string | Domain in which the search domain was found. |
+| ZeroFox.MaliciousIPs.IPAddress | string | IP in which the search domain was found. |
+| ZeroFox.MaliciousIPs.CreatedAt | string | Date in which the ip was found related to a threat. |
 
 ### zerofox-search-malicious-hash
 
 ***
-Looks for registered hashes in ZeroFox's CTI feeds
+Looks for registered hashes in ZeroFox's CTI feeds.
 
 #### Base Command
 
@@ -590,18 +808,18 @@ Looks for registered hashes in ZeroFox's CTI feeds
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZeroFox.MaliciousHashes.CreatedAt | string | Date in which the ip was found related to a threat |
-| ZeroFox.MaliciousHashes.Family | string | Family related threat |
-| ZeroFox.MaliciousHashes.MD5 | string | Hash in MD5 format |
-| ZeroFox.MaliciousHashes.SHA1 | string | Hash in SHA1 format |
-| ZeroFox.MaliciousHashes.SHA256 | string | Hash in SHA256 format |
-| ZeroFox.MaliciousHashes.SHA512 | string | Hash in SHA512 format |
-| ZeroFox.MaliciousHashes.FoundHash | string | Indicates in which hash format was found the search |
+| ZeroFox.MaliciousHashes.CreatedAt | string | Date in which the ip was found related to a threat. |
+| ZeroFox.MaliciousHashes.Family | string | Family related threat. |
+| ZeroFox.MaliciousHashes.MD5 | string | Hash in MD5 format. |
+| ZeroFox.MaliciousHashes.SHA1 | string | Hash in SHA1 format. |
+| ZeroFox.MaliciousHashes.SHA256 | string | Hash in SHA256 format. |
+| ZeroFox.MaliciousHashes.SHA512 | string | Hash in SHA512 format. |
+| ZeroFox.MaliciousHashes.FoundHash | string | Indicates in which hash format was found the search. |
 
 ### zerofox-search-exploits
 
 ***
-Looks for registered exploits in ZeroFox's CTI feeds
+Looks for registered exploits in ZeroFox's CTI feeds.
 
 #### Base Command
 
@@ -617,15 +835,46 @@ Looks for registered exploits in ZeroFox's CTI feeds
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZeroFox.Exploits.CreatedAt | string | Date in which the ip was found related to a threat |
-| ZeroFox.Exploits.CVECode | string | CVE Code to identify the exploit |
-| ZeroFox.Exploits.URLs | string | URLs associated to the threat separated by commas |
+| ZeroFox.Exploits.CreatedAt | string | Date in which the ip was found related to a threat. |
+| ZeroFox.Exploits.CVECode | string | CVE Code to identify the exploit. |
+| ZeroFox.Exploits.URLs | string | URLs associated to the threat separated by commas. |
+
+### zerofox-get-compromised-credentials
+
+***
+Gets compromised credentials data for a given ZeroFox alert and uploads it to the current investigation War Room.
+
+#### Base Command
+
+`zerofox-get-compromised-credentials`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
 
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and ZeroFox corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
-
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

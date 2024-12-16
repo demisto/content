@@ -1,0 +1,45 @@
+{
+    "id": "Jizo M - Incoming Mapper",
+    "name": "Jizo M - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": " Maps incoming Jizo alert fields",
+    "mapping": {
+        "Jizo Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Type": {
+                    "complex": null,
+                    "simple": "alert_type"
+                },
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Destination IP": {
+                    "complex": null,
+					"simple": "IP_destination"
+				},
+				"Source IP": {
+                    "complex": null,
+					"simple": "IP_source"
+				},
+                "Signature": {
+                    "complex": null,
+					"simple": "signature"
+				}
+            }
+        }
+    },
+    
+    "version": -1,
+    "fromVersion": "6.10.0"
+       
+}

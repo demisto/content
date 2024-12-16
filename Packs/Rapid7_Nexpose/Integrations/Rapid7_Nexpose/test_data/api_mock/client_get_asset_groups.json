@@ -1,0 +1,29 @@
+[
+    {
+        "assets": 0,
+        "id": 1,
+        "name": "Farrukh",
+        "riskScore": 0.0,
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "assets": 0,
+        "description": "This is a test group",
+        "id": 2,
+        "name": "Test-Group",
+        "riskScore": 0.0,
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    }
+]

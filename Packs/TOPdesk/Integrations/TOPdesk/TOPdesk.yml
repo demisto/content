@@ -25,6 +25,11 @@ configuration:
   name: first_fetch
   type: 0
   required: false
+- display: Default Incident Caller ID
+  name: defaultCallerId
+  type: 0
+  required: false
+  additionalinfo: Add the default caller ID which is set when creating new TOPdesk incidents without providing a caller.
 - additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
   display: The query to use when fetching incidents
   name: fetch_query
@@ -243,7 +248,7 @@ script:
     - description: A FIQL search expression to filter the result. (e.g., manager.name==Alice) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial.
       name: query
     - name: fields
-      description: Only include these specific fields in the response. (default = all)
+      description: Only include these specific fields in the response. (default = all).
       defaultValue: ''
       predefined:
       - ''
@@ -618,7 +623,7 @@ script:
     name: topdesk-operators-list
     outputs:
     - contextPath: TOPdesk.Operator.Id
-      description: Operator's ID
+      description: Operator's ID.
       type: String
     - contextPath: TOPdesk.Operator.PrincipalId
       description: Operator's principal ID.
@@ -1009,7 +1014,7 @@ script:
     - description: A FIQL search expression to filter the result. (e.g., address.country.name=NL) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial.
       name: query
     - name: fields
-      description: Only include these specific fields in the response. (default = id, name)
+      description: Only include these specific fields in the response. (default = id, name).
       defaultValue: ''
       predefined:
       - ''
@@ -1536,7 +1541,7 @@ script:
     - description: Retrieve only the incidents of the given entry type. Supported only with new FIQL type queries.
       name: entry_type
     - name: fields
-      description: Only include these specific fields in the response. (default = all)
+      description: Only include these specific fields in the response. (default = all).
       defaultValue: ''
       predefined:
       - ''
@@ -2128,7 +2133,7 @@ script:
   - arguments:
     - description: The caller ID for this incident. For an unregistered caller provide a name. For a list of registered persons or operator IDs run !topdesk-persons-list or !topdesk-operators-list.
       name: caller
-      required: true
+      required: false
     - auto: PREDEFINED
       description: Status of the incident. Can only be set by operators.
       name: status
@@ -2158,7 +2163,7 @@ script:
       name: external_number
     - description: Main incident ID or number, required for creating a partial incident. Can only be set by operators.
       name: main_incident
-    - description: Additional parameters to pass when creating an incident. (e.g., {"optionalFields1":{"text1":"test"}})
+    - description: Additional parameters to pass when creating an incident (e.g., {"optionalFields1":{"text1":"test"}}).
       name: additional_params
     description: Create an incident in TOPdesk.
     name: topdesk-incident-create
@@ -2781,7 +2786,7 @@ script:
       name: external_number
     - description: Main incident ID or number, required for creating a partial incident. Can only be set by operators.
       name: main_incident
-    - description: Additional parameters to pass when updating an incident. (e.g., {"optionalFields1":{"text1":"test"}})
+    - description: Additional parameters to pass when updating an incident (e.g., {"optionalFields1":{"text1":"test"}}).
       name: additional_params
     description: Update an incident in TOPdesk.
     name: topdesk-incident-update
@@ -3821,7 +3826,7 @@ script:
       description: TOPdesk incident's optional fields1 searchlist1 ID.
       type: String
     - contextPath: TOPdesk.Incident.OptionalFields1.Searchlist1.Name
-      description: TOPdesk incident's optional fields1 searchlist1 name
+      description: TOPdesk incident's optional fields1 searchlist1 name.
       type: String
     - contextPath: TOPdesk.Incident.OptionalFields1.Searchlist2.Id
       description: TOPdesk incident's optional fields1 searchlist2 ID.
@@ -5842,7 +5847,7 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: ''
   subtype: python3

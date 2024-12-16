@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, cast
 
 import dateparser
 import urllib3
@@ -22,7 +22,7 @@ API_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 class Client(BaseClient):
 
     def fetch_command_result(self, url_suffix, params, post_url):
-        incidents: List = list()
+        incidents: list = []
         try:
             if post_url is None:
                 method = 'GET'
@@ -52,7 +52,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> int | None:
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
@@ -66,7 +66,7 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
 
     if arg is None:
         if required is True:
@@ -81,7 +81,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
@@ -90,7 +90,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
 
 def fetch_record_command(client: Client, url_suffix, prefix, key, params, post_url=None):
-    incidents: List = list()
+    incidents: list = []
     r = client.fetch_command_result(url_suffix, params, post_url)
     incidents.extend(r)
     results = CommandResults(
@@ -111,9 +111,9 @@ def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url
     return_results(results)
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int],
+                    first_fetch_time: int | None
+                    ) -> tuple[dict[str, int], list[dict]]:
     last_fetch = last_run.get('last_fetch', None)
     case_status = 'OPEN'
     url_access_time = datetime.now().timestamp()
@@ -127,7 +127,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         last_fetch = int(last_fetch)
         startDate = (datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT))
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     page = 1
     isContinue = True
 
@@ -196,8 +196,19 @@ def main() -> None:
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module_command(client)
-            return_results(result)
+            try:
+                result = test_module_command(client)
+                return_results(result)
+            except Exception:
+                return_error('Gurucul services are currently not available. Please contact the administrator for further '
+                             'assistance.')
+
+        elif demisto.command() == 'gra-validate-api':
+            try:
+                result = client.validate_api_key()
+                return_results(result)
+            except Exception:
+                return_error('Error in service')
 
         elif demisto.command() == 'fetch-incidents':
 

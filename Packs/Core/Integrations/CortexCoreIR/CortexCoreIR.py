@@ -26,6 +26,9 @@ PREVALENCE_COMMANDS = {
     'core-get-cmd-analytics-prevalence': 'cmd',
 }
 
+TERMINATE_BUILD_NUM = '1398786'
+TERMINATE_SERVER_VERSION = '8.8.0'
+
 
 class Client(CoreClient):
 
@@ -51,7 +54,8 @@ class Client(CoreClient):
             "email": email,
         }
 
-        reply = demisto._apiCall(name="wfReportIncorrectVerdict",
+        reply = demisto._apiCall(method='POST',
+                                 name="wfReportIncorrectVerdict",
                                  params=None,
                                  data=json.dumps(request_data))
 
@@ -60,6 +64,15 @@ class Client(CoreClient):
     def get_prevalence(self, request_data: dict):
         reply = self._http_request(method='POST', json_data={'request_data': request_data}, headers=self._headers,
                                    url_suffix='/analytics_apis/')
+        return reply
+
+    def get_asset_details(self, asset_id):
+        reply = self._http_request(
+            method="POST",
+            json_data={"asset_id": asset_id},
+            headers=self._headers,
+            url_suffix="/unified-assets-inventory/get_asset/",
+        )
         return reply
 
 
@@ -138,6 +151,32 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
     )
 
 
+def get_asset_details_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves details of a specific asset by its ID and formats the response.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_id (str): The ID of the asset to retrieve.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    client._base_url = "/api/webapp/data-platform"
+    asset_id = args.get("asset_id")
+    response = client.get_asset_details(asset_id)
+    parsed = response.get("reply") if response else "An empty response was returned."
+    return CommandResults(
+        readable_output=tableToMarkdown("Asset Details", parsed, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
+        outputs=parsed,
+        raw_response=parsed,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -147,27 +186,30 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-    api_key = demisto.params().get('apikey')
-    api_key_id = demisto.params().get('apikey_id')
-    url = demisto.params().get('url')
+    headers = {}
     url_suffix = '/xsiam' if command in PREVALENCE_COMMANDS else "/public_api/v1"
+    if not FORWARD_USER_RUN_RBAC:
+        api_key = demisto.params().get('apikey')
+        api_key_id = demisto.params().get('apikey_id')
+        url = demisto.params().get('url')
 
-    if not api_key or not api_key_id or not url:
-        headers = {
-            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-            "Content-Type": "application/json"
-        }
-        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        if not api_key or not api_key_id or not url:
+            headers = {
+                "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
+                demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
+                "Content-Type": "application/json"
+            }
+            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
+            add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        else:
+            headers = {
+                "Content-Type": "application/json",
+                "x-xdr-auth-id": str(api_key_id),
+                "Authorization": api_key
+            }
+            add_sensitive_log_strs(api_key)
     else:
-        headers = {
-            "Content-Type": "application/json",
-            "x-xdr-auth-id": str(api_key_id),
-            "Authorization": api_key
-        }
-        add_sensitive_log_strs(api_key)
-
+        url = "/api/webapp/"
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
@@ -177,13 +219,12 @@ def main():  # pragma: no cover
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
-
     client = Client(
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
-        timeout=timeout
+        timeout=timeout,
     )
 
     try:
@@ -347,6 +388,10 @@ def main():  # pragma: no cover
         elif command == 'core-run-script':
             return_results(run_script_command(client, args))
 
+        elif command == 'core-script-run':
+            args = args | {'is_core': True}
+            return_results(script_run_polling_command(args, client))
+
         elif command == 'core-run-snippet-code-script':
             return_results(run_polling_command(client=client,
                                                args=args,
@@ -463,6 +508,49 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
+
+        elif command == 'core-terminate-process':
+            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
+                                         build_number=TERMINATE_BUILD_NUM):
+                raise DemistoException('This command is only available for XSIAM 2.4')
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-terminate-process",
+                                               command_function=terminate_process_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"
+                                                              ],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]))
+
+        elif command == 'core-terminate-causality':
+            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
+                                         build_number=TERMINATE_BUILD_NUM):
+                raise DemistoException("This command is only available for XSIAM 2.4")
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-terminate-causality",
+                                               command_function=terminate_causality_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]
+                                               ))
+
+        elif command == "core-get-asset-details":
+            return_results(get_asset_details_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

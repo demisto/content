@@ -1,0 +1,7 @@
+[
+    {"id":  "asset_id_one",
+    "name": "asset_name_one"
+    },
+    {"id": "asset_id_two",
+    "name":  "asset_name_two"}
+]

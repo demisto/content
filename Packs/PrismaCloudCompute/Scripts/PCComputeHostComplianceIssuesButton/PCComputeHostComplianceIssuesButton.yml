@@ -1,0 +1,45 @@
+commonfields:
+  id: PCComputeHostComplianceIssuesButton
+  version: -1
+name: PCComputeHostComplianceIssuesButton
+script: ''
+type: python
+tags: []
+comment: "This script runs the \"prisma-cloud-compute-hosts-scan-list\" command for a specific hostname and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called \"Detailed Compliance Issues\" showing the issues details.\nReturns the following fields for each compliance ID:\n- Compliance ID\n- Cause\n- Severity\n- Title\n- Description."
+enabled: true
+args:
+- name: hostname
+  required: true
+  description: The hostname to be enriched.
+- name: compliance_ids
+  description: A comma-separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
+outputs:
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.hostname
+  description: The hostname.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues
+  description: A list of the host's compliance issues.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Cause
+  description: Additional information regarding the root cause for the vulnerability.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.ComplianceID
+  description: ID of the violation.
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Severity
+  description: Textual representation of the vulnerability's severity.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Title
+  description: Compliance title.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Description
+  description: Compliance issue description.
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

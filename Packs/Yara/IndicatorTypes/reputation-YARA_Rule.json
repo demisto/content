@@ -1,0 +1,20 @@
+{
+    "id": "YARA Rule",
+    "version": -1,
+    "modified": "2024-03-18T16:16:12.833867437Z",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "YARA Rule",
+    "prevDetails": "YARA Rule",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "expiration": 0,
+    "contextPath": "YARA Rule(val.value \u0026\u0026 val.value === obj.value)",
+    "contextValue": "Rule",
+    "layout": "YARA Rule Layout",
+    "fromVersion": "6.10.0"
+}

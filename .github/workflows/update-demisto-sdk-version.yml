@@ -10,10 +10,11 @@ on:
         description: The SDK release version
         required: true
         type: string
-      release_changes:
-        description: The SDK release changes
-        required: true
-        type: string
+      is_draft:
+        description: Is draft pull request
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -33,12 +34,12 @@ jobs:
         token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
 
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: 'poetry'
-        
-    - name: Create brnach
+
+    - name: Create branch
       run: |
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
@@ -49,14 +50,21 @@ jobs:
       run: |
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
+        git add .
         source .venv/bin/activate
-        demisto-sdk pre-commit --no-validate --no-secrets --no-unit-test
+        demisto-sdk pre-commit --mode=ci
         git add .
 
     - name: Create pull request
       run: |
         git commit -m "poetry files" -a
         git push origin ${{ inputs.release_version }}
-        gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved"
+        if ${{ inputs.is_draft == true }}; then
+          echo "creating draft release pull request"
+          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "Initial body, will be replaced." --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
+        else
+          echo "creating release pull request"
+          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "Initial body, will be replaced." --reviewer ${{ inputs.reviewer }} -l "docs-approved"
+        fi
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}

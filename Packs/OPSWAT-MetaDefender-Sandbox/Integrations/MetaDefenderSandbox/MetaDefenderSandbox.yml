@@ -1,0 +1,282 @@
+commonfields:
+  id: MetaDefender Sandbox
+  version: -1
+name: MetaDefender Sandbox
+display: MetaDefender Sandbox
+category: Forensics & Malware Analysis
+description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction (previously known as OPSWAT Filescan Sandbox).
+configuration:
+- name: url
+  display: Server URL (e.g. https://www.filescan.io/api)
+  defaultvalue: https://www.filescan.io/api
+  required: true
+  type: 0
+- name: api_key
+  displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  required: true
+  hiddenusername: true
+  type: 9
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+script:
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.9.110419
+  runonce: false
+  commands:
+  - name: metadefender-sandbox-scan-url
+    description: Scan URL resource.
+    polling: true
+    arguments:
+    - name: flow_id
+      description: The flow ID what needs to poll.
+      deprecated: true
+    - name: url
+      description: The URL to submit.
+      required: true
+      default: true
+    - name: timeout
+      description: The timeout for the polling in seconds.
+      defaultValue: "600"
+    - name: hide_polling_output
+      description: Hide polling output.
+      deprecated: true
+    - name: description
+      description: Uploaded file/url description.
+    - name: tags
+      description: Tags array to propagate.
+    - name: password
+      description: Custom password, in case uploaded archive is protected.
+      secret: true
+    - name: is_private
+      description: If file should not be available for download by other users.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Submission.flow_id
+      description: The flow ID.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
+      description: The final verdict.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.allTags
+      description: All tags.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.overallState
+      description: Overall state of the scan.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
+      description: Name of the main scan task.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
+      description: Additional informations about the main scan task.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
+      description: ID of the main scan task.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
+      description: State of the main scan task.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
+      description: Resource reference of the main scan task.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
+      description: Counter.
+      type: Number
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
+      description: processTime.
+      type: Number
+    - contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
+      description: Status of scan subtasks.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
+      description: All signal groups.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.resources
+      description: Resources.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.file.name
+      description: The name of the file.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.file.hash
+      description: The SHA256 of the file.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.file.type
+      description: The type of the submission.
+      type: String
+
+  - name: metadefender-sandbox-scan-file
+    description: Scan file resource.
+    polling: true
+    arguments:
+    - name: flow_id
+      description: The flow ID what needs to poll.
+      deprecated: true
+    - name: entry_id
+      description: The War Room entry ID of the file to submit.
+      required: true
+    - name: timeout
+      description: The timeout for the polling in seconds.
+      defaultValue: "1200"
+    - name: hide_polling_output
+      description: Hide polling output.
+      deprecated: true
+    - name: description
+      description: Uploaded file/url description.
+    - name: tags
+      description: Tags array to propagate.
+    - name: password
+      description: Custom password, in case uploaded archive is protected.
+      secret: true
+    - name: is_private
+      description: If file should not be available for download by other users.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Submission.flow_id
+      description: The flow ID.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
+      description: The final verdict.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.allTags
+      description: All tags.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.overallState
+      description: Overall state of the scan.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
+      description: Name of the main scan task.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
+      description: Additional informations about the main scan task.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
+      description: ID of the main scan task.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
+      description: State of the main scan task.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
+      description: Resource reference of the main scan task.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
+      description: Counter.
+      type: Number
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
+      description: processTime.
+      type: Number
+    - contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
+      description: Status of scan subtasks.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
+      description: All signal groups.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.resources
+      description: Resources.
+      type: Unknown
+    - contextPath: MetaDefender.Sandbox.Analysis.file.name
+      description: The name of the file.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.file.hash
+      description: The SHA256 of the file.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.file.type
+      description: The type of the submission.
+      type: String
+
+  - name: metadefender-sandbox-search-query
+    description: Search for reports. Finds reports and uploaded files by various tokens.
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The query string.
+    - name: page
+      description: Page number, starting from 1.
+    - name: page_size
+      description: Page size. Can be 5, 10 or 20.
+      auto: PREDEFINED
+      predefined:
+      - '5'
+      - '10'
+      - '20'
+    - name: limit
+      description: Number of total results. Maximum 50 (if page and page_size was also provided, then it will be ignored).
+    outputs:
+    - contextPath: MetaDefender.Sandbox.Analysis.id
+      description: The analysis id.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.file.name
+      description: The file name.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.file.sha256
+      description: The file SHA256.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.verdict
+      description: The scan verdict.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.state
+      description: The scan state. Eg. success, failed.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.date
+      description: The scan date.
+      type: Date
+    - contextPath: MetaDefender.Sandbox.Analysis.file.mime_type
+      description: The file MimeType.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.file.short_type
+      description: The type of the submission.
+      type: String
+    - contextPath: MetaDefender.Sandbox.Analysis.tags
+      description: Tags.
+      type: Unknown
+fromversion: 6.0.0
+tests:
+- No tests

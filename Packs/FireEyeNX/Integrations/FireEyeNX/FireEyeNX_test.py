@@ -1,7 +1,6 @@
-from datetime import timezone
 from unittest import mock
 from unittest.mock import patch
-
+from datetime import UTC
 import pytest
 from requests.exceptions import (
     MissingSchema,
@@ -77,7 +76,7 @@ def mock_http_response(
     mock_resp.content = content
     if headers:
         mock_resp.headers = headers
-    mock_resp.ok = True if status < 400 else False
+    mock_resp.ok = status < 400
     # add json data if provided
     if json_data:
         mock_resp.json = mock.Mock(return_value=json_data)
@@ -417,9 +416,7 @@ def test_module_success_with_fetch_incident(
     from FireEyeNX import test_function
 
     mock_get_alert.return_value = []
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=UTC).timestamp(), 'alert_ids': ['1']}}
 
     mock_request.return_value = mock_http_response(
         status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
@@ -1127,18 +1124,18 @@ def test_fetch_incidents_for_alert_success(
     """
     When fetch_incidents() method called with fetch_type='Alerts' and pass all required arg it success.
     """
-    from FireEyeNX import fetch_incidents
+    from FireEyeNX import fetch_incidents, API_SUPPORT_DATE_FORMAT
 
     # Configure
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    start_time = datetime.strftime(datetime.now().replace(tzinfo=UTC), API_SUPPORT_DATE_FORMAT)
+    mock_last_run = {'alerts': {'start_time': start_time, 'alert_ids': ['1']}}
+
     dummy_first_fetch = 1
     mock_fetch_limit = 12
     mock_malware_type = 'malware-type'
     mock_api_token.return_value = API_TOKEN
 
-    with open('TestData/fetch_incidents_alert_response.json', 'r') as f:
+    with open('TestData/fetch_incidents_alert_response.json') as f:
         dummy_response = f.read()
 
     resp = Response()
@@ -1168,7 +1165,8 @@ def test_fetch_incidents_for_alert_success(
 
     # Assert
     assert len(incidents) == mock_fetch_limit
-    assert next_run.get('start_time') is not None
+    assert next_run.get('alerts').get('start_time') is not None
+    assert 8520 in next_run['alerts']['alert_ids']
 
 
 @patch('FireEyeNX.Client.http_request')
@@ -1223,14 +1221,12 @@ def test_fetch_incidents_for_event_success(
     from FireEyeNX import fetch_incidents
 
     # Configure
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=UTC).timestamp(), 'alert_ids': ['1']}}
     dummy_first_fetch = 1
     mock_fetch_limit = 1
     mock_api_token.return_value = API_TOKEN
 
-    with open('TestData/fetch_incidents_event_response.json', 'r') as f:
+    with open('TestData/fetch_incidents_event_response.json') as f:
         dummy_response = f.read()
 
     resp = Response()
@@ -1256,4 +1252,40 @@ def test_fetch_incidents_for_event_success(
 
     # Assert
     assert len(incidents) == mock_fetch_limit
-    assert next_run.get('start_time') is not None
+    assert next_run.get('alerts').get('start_time') is not None
+
+
+def test_update_start_time_within_last_forty_eight_hours():
+    """
+        Given:
+            - Given a start time equals to 24 hours ago.
+        When:
+            - Running date_to_timestamp function.
+        Then:
+            - Shouldn't update the start time (should return the same start time).
+    """
+
+    from FireEyeNX import update_start_time, DATE_FORMAT
+
+    current_time = datetime.utcnow()
+    start_time = date_to_timestamp(current_time - timedelta(hours=24), DATE_FORMAT) / 1000.0
+    result = update_start_time(start_time)
+    assert result == start_time
+
+
+def test_update_start_time_older_than_last_forty_eight_hours():
+    """
+        Given:
+            - Given a start time equals to 72 hours ago.
+        When:
+            - Running date_to_timestamp function.
+        Then:
+            - Should update the start time to be in the last 48 hours (should return the updated start time).
+    """
+    from FireEyeNX import update_start_time, DATE_FORMAT, FORTY_EIGHT_HOURS_IN_SECOND
+
+    current_time = datetime.utcnow()
+    old_start_time = date_to_timestamp(current_time - timedelta(hours=72), DATE_FORMAT) / 1000.0
+    result = update_start_time(old_start_time)
+    expected_start_time = date_to_timestamp(current_time, DATE_FORMAT) / 1000.0 - FORTY_EIGHT_HOURS_IN_SECOND
+    assert result == expected_start_time

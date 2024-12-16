@@ -129,6 +129,21 @@ EXTERNAL_SERVICE_RESPONSE = {
                     "Acme"
                 ],
                 "externally_inferred_vulnerability_score": 7.8,
+                "ipv6s": [
+                    "2600:1900:4000:9664:0:7::"
+                ],
+                "aws_cloud_tags": [
+                    "Name:AD Lab"
+                ],
+                "gcp_cloud_tags": [
+                    "Name:gcp Lab"
+                ],
+                "azure_cloud_tags": [
+                    "Name:azure Lab"
+                ],
+                "has_xdr_agent": "NO",
+                "has_bu_overrides": False,
+                "mac_address": ["00:11:22:33:44:55"],
                 "externally_inferred_cves": [
                     "CVE-2020-15778",
                     "CVE-2021-41617",

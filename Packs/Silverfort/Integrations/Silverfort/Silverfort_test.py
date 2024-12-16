@@ -1,6 +1,6 @@
 import pytest
-from Silverfort import get_user_entity_risk_command, get_resource_entity_risk_command, \
-    update_user_entity_risk_command, update_resource_entity_risk_command, get_jwt_token
+from Silverfort import get_user_entity_risk_command, get_resource_entity_risk_command, get_jwt_token, \
+    update_user_entity_risk_command, update_resource_entity_risk_command
 
 
 @pytest.fixture(autouse=True)

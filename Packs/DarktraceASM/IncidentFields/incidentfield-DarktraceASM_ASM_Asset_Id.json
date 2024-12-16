@@ -1,0 +1,31 @@
+{
+    "id": "incident_darktraceasmassetid",
+    "version": -1,
+    "modified": "2024-01-30T19:49:44.878013767Z",
+    "fromVersion": "6.6.0",
+    "name": "DarktraceASM Asset ID",
+    "ownerOnly": false,
+    "cliName": "darktraceasmassetid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Darktrace ASM Risk"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

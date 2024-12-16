@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Pipe List](./doc_files/Hurukai_-_Get_Pipe_List.png)
+![Hurukai - Get Pipe List](../doc_files/Hurukai_-_Get_Pipe_List.png)

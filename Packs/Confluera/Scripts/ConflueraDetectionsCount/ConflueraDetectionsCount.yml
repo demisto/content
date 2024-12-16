@@ -6,7 +6,7 @@ script: '-'
 type: python
 tags: []
 comment: |-
-  Logs detections count
+  Logs detections count.
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -15,7 +15,7 @@ dependson:
   - Confluera|||confluera-fetch-detections
   should:
   - Confluera|||confluera-fetch-detections
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

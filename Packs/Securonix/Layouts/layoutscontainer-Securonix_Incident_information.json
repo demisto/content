@@ -536,10 +536,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "securonixpolicytype",
+                                "height": 53,
+                                "id": "56459ea0-f251-11ee-861e-69e3a0f3f833",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "securonixviolationspotterquery",
                                 "height": 53,
                                 "id": "ab8fad70-ac29-11ed-99ec-9d05f5e7b4a2",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -549,7 +558,7 @@
                                 "fieldId": "securonixtenantid",
                                 "height": 53,
                                 "id": "49a06db0-90be-11ed-b33e-6f8b92988dc1",
-                                "index": 5,
+                                "index": 6,
                                 "listId": "caseinfoid-field-changed-caseinfoid-63341610-90bd-11ed-b33e-6f8b92988dc1",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -560,8 +569,17 @@
                                 "fieldId": "tenantname",
                                 "height": 53,
                                 "id": "4b22c7f0-90be-11ed-b33e-6f8b92988dc1",
-                                "index": 6,
+                                "index": 7,
                                 "listId": "caseinfoid-field-changed-caseinfoid-63341610-90bd-11ed-b33e-6f8b92988dc1",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "securonixpolicystages",
+                                "height": 22,
+                                "id": "dde23910-a636-11ef-8853-fdeeed272621",
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -750,6 +768,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_securonixpolicytype",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "incident_securonixreason",
                         "isVisible": true
                     },
@@ -899,6 +921,10 @@
                     },
                     {
                         "fieldId": "incident_securonixpolicies",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_securonixpolicytype",
                         "isVisible": true
                     },
                     {

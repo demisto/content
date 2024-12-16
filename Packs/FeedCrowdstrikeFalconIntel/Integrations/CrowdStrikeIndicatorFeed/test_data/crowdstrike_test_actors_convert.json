@@ -1,0 +1,54 @@
+{
+    "meta": {
+        "query_time": 1.5230555030000001,
+        "pagination": {
+            "offset": 0,
+            "limit": 1,
+            "total": 11
+        },
+        "powered_by": "msa-api",
+        "trace_id": "b18f911b-f0a0-471d-9a0e-2eab8f651591"
+    },
+    "resources": [
+        {
+            "id": "domain_abc",
+            "indicator": "abc",
+            "type": "domain",
+            "deleted": false,
+            "published_date": 1532708005,
+            "last_updated": 1612244501,
+            "reports": [
+                "CSA-123"
+            ],
+            "actors": [
+                "TESTTEST"
+            ],
+            "malware_families": [],
+            "kill_chains": [],
+            "ip_address_types": [],
+            "domain_types": [],
+            "malicious_confidence": "medium",
+            "_marker": "123",
+            "labels": [
+                {
+                    "name": "MaliciousConfidence/Medium",
+                    "created_on": 1532708005,
+                    "last_valid_on": 1612244501
+                },
+                {
+                    "name": "Actor/GOBLINPANDA",
+                    "created_on": 1532708004,
+                    "last_valid_on": 1588311187
+                }
+            ],
+            "relations": [],
+            "targets": [],
+            "threat_types": [
+                "Suspicious",
+                "Targeted"
+            ],
+            "vulnerabilities": []
+        }
+    ],
+    "errors": []
+}

@@ -1,0 +1,16 @@
+ {
+		"skip": 0,
+		"limit": 10,
+		"total": 1,
+		"resources": [
+			{
+				"app_metadata": {},
+				"created_at": "2016-12-05T15:13:49.543Z",
+				"name": "drivers",
+				"updated_at": "2016-12-05T15:13:49.543Z",
+				"user_metadata": {},
+				"client_metadata": {},
+                "users_count": 2
+			}
+		]
+ }

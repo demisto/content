@@ -1,0 +1,150 @@
+{
+    "defaultIncidentType": "Stellar Cyber Case",
+    "description": "Maps incoming Stellar Cyber Cases to Cortex XSOAR incidents",
+    "id": "Stellar Cyber - Incoming Mapper",
+    "mapping": {
+        "Stellar Cyber Case": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "name": {
+                    "simple": "name"
+                },
+                "Alert tags": {
+                    "complex": {
+                        "accessor": "tags",
+                        "filters": [],
+                        "root": "security_alerts.alert_metadata",
+                        "transformers": []
+                    }
+                },
+                "External Status": {
+                    "simple": "status"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "size"
+                },
+                "Related Alerts": {
+                    "complex": {
+                        "filters": [],
+                        "root": "security_alerts",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            },
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "displayname, description"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Stellar Cyber Case Alerts": {
+                    "complex": {
+                        "filters": [],
+                        "root": "security_alerts",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "External ID": {
+                    "simple": "_id"
+                },
+                "Stellar Cyber Case Score": {
+                    "simple": "incident_score"
+                },
+                "External Link": {
+                    "simple": "case_url"
+                },
+                "Stellar Cyber Tenant ID": {
+                    "simple": "cust_id"
+                },
+                "Tactic": {
+                    "complex": {
+                        "accessor": "xdr_tactic_name",
+                        "filters": [],
+                        "root": "security_alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Tactic ID": {
+                    "complex": {
+                        "accessor": "xdr_tactic_id",
+                        "filters": [],
+                        "root": "security_alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Technique": {
+                    "complex": {
+                        "accessor": "xdr_technique_name",
+                        "filters": [],
+                        "root": "security_alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Technique ID": {
+                    "complex": {
+                        "accessor": "xdr_technique_id",
+                        "filters": [],
+                        "root": "security_alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "details": {
+                    "simple": "summary"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Stellar Cyber - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.6.0"
+}

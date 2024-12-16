@@ -1,15 +1,15 @@
 args:
 - name: list1_name
   required: true
-  description: "First list name to compare."
+  description: First list name to compare.
 - name: list2_name
   required: true
-  description: "Second list name to compare."
+  description: Second list name to compare.
 commonfields:
   id: CompareList
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
-comment: "Compares two lists."
+dockerimage: demisto/python3:3.11.10.115186
+comment: Compares two lists.
 enabled: true
 name: CompareList
 runas: DBotWeakRole

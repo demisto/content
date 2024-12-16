@@ -515,3 +515,23 @@ def test_to_readable():
     assert 'asset' in readable_outputs[2]
     assert 'NetworkAccount' not in readable_outputs[3]
     assert 'asset' in readable_outputs[3]
+
+
+def test_tc_add_indicator_command_with_description(mocker):
+    """
+    Given:
+        - arguments fot the tc-add-indicator command
+    When:
+        - Adding an indicator
+    Then:
+        - The request contains the description attribute
+    """
+    import ThreatConnectV3
+    res = mocker.patch.object(Client, 'make_request', return_value={})
+    mocker.patch.object(ThreatConnectV3, 'create_context', return_value=([], []))
+    tc_add_indicator_command(client, {'tags': [], 'indicator': '1.1.1.1',
+                                      'indicatorType': 'Address',
+                                      'description': 'description'})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert {"type": "Description", "value": "description", "default": True} in call_args["attributes"]["data"]

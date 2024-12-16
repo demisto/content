@@ -1,0 +1,49 @@
+{
+    "outputs": {
+        "successful_update_just_name": {
+            "data": {
+                "id": 123,
+                "accountId": 1234567890,
+                "name": "updated_deployment_name",
+                "updatedAt": "2023-09-09T10:12:46.219Z",
+                "createdAt": "2023-09-09T10:12:46.219Z",
+                "description": "updated_deployment_description",
+                "deletedAt": null,
+                "nodes": [
+                    "0000000-0000-0000-0000-00000000, 1111111-1111-1111-1111-111111111"
+                ]
+            }
+        },
+        "successful_update_both_name_and_id": {
+            "data": {
+                "id": 123,
+                "accountId": 1234567890,
+                "name": "updated_deployment_name",
+                "updatedAt": "2023-09-09T10:12:46.219Z",
+                "createdAt": "2023-09-09T10:12:46.219Z",
+                "description": "updated_deployment_description",
+                "deletedAt": null,
+                "nodes": [
+                    "0000000-0000-0000-0000-00000000, 1111111-1111-1111-1111-111111111"
+                ]
+            }
+        },
+        "successful_update_just_ID": {
+            "data": {
+                "id": 123,
+                "accountId": 1234567890,
+                "name": "updated_deployment_name",
+                "updatedAt": "2023-09-09T10:12:46.219Z",
+                "createdAt": "2023-09-09T10:12:46.219Z",
+                "description": "updated_deployment_description",
+                "deletedAt": null,
+                "nodes": [
+                    "0000000-0000-0000-0000-00000000, 1111111-1111-1111-1111-111111111"
+                ]
+            }
+        },
+        "failed_update": {
+            "data": {}
+        }
+    }
+}

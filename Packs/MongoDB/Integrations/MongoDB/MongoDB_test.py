@@ -47,7 +47,7 @@ def test_convert_object_id_to_str(func_input, expected):
 
 def test_normalize_id():
     res = Client.normalize_id({'_id': ObjectId('5e4412f230c5b8f63a7356ba')})
-    assert '5e4412f230c5b8f63a7356ba' == res['_id']
+    assert res['_id'] == '5e4412f230c5b8f63a7356ba'
 
 
 class TestConvertStrToDatetime:
@@ -143,7 +143,7 @@ class TestDatetimeToStr:
             validate the value returned is 5
         """
         raw = Client.datetime_to_str({'time': 5})
-        assert 5 == raw['time']
+        assert raw['time'] == 5
 
     def test_datetime_to_str_list_no_datetime(self):
         """
@@ -171,7 +171,7 @@ class TestDatetimeToStr:
             validate the value returned is 'str'.
         """
         raw = Client.datetime_to_str('str')
-        assert 'str' == raw
+        assert raw == 'str'
 
 
 class MockedQuery:
@@ -253,7 +253,7 @@ def test_pipeline_query_command(mocker):
         pipeline="[{\"$match\": {\"title\": \"test_title\"}}]"
     )
 
-    expected_context = list()
+    expected_context = []
     for item in copy.deepcopy(raw_response):
         item.update({'collection': 'test_collection'})
         expected_context.append(item)

@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
+  display: Server URL (e.g., https://example.net)
   name: url
   required: true
   type: 0
@@ -27,20 +27,42 @@ name: Infoblox
 script:
   commands:
   - arguments:
-    - description: The IP address for which to retrieve information.
+    - description: The IP address for which to retrieve information, e.g., "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments.
       name: ip
-      required: true
-    description: Get IP info.
+      required: false
+    - name: network
+      description: The network that the IP belongs in FQDN/CIDR format, e.g., "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments.
+      required: false
+    - name: from_ip
+      description: The beginning of the IP range, e.g., "192.168.1.0". Must be used in conjunction with `to_ip`.
+      required: false
+    - name: to_ip
+      description: The end of the IP range, e.g., "192.168.1.254". Must be used in conjunction with `from_ip`.
+      required: false
+    - name: status
+      description: The status of the IP device. Used in conjunction with the `network` or `ip` argument.
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - UNUSED
+      - USED
+    - name: extended_attrs
+      description: Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue".
+      required: false
+    - name: max_results
+      description: The maximum results to return. Maximum is 1000.
+      defaultValue: '50'
+    description: Get IP information.
     name: infoblox-get-ip
     outputs:
     - contextPath: Infoblox.IP.ReferenceID
       description: Reference ID of the object.
-      type: number
+      type: string
     - contextPath: Infoblox.IP.MacAddress
       description: The Mac address of the IP.
       type: string
     - contextPath: Infoblox.IP.Network
-      description: The network that the IP belongs, in FQDN/CIDR format.
+      description: The network that the IP belongs (in FQDN/CIDR format).
       type: string
     - contextPath: Infoblox.IP.NetworkView
       description: The name of the network view.
@@ -50,31 +72,32 @@ script:
       type: string
     - contextPath: Infoblox.IP.IsConflict
       description: Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true).
-      type: string
-    - contextPath: Infoblox.IP. Objects
+      type: boolean
+    - contextPath: Infoblox.IP.Objects
       description: The objects associated with the IP address.
       type: string
     - contextPath: Infoblox.IP.Types
       description: The current status of the address.
       type: string
-    - contextPath: Infoblox.IP. Names
+    - contextPath: Infoblox.IP.Names
       description: The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname.
       type: string
-    - contextPath: Infoblox.IP. Extattrs
+    - contextPath: Infoblox.IP.Extattrs
       description: Extra attributes relevant for this object.
-      type: string
+      type: unknown
     - contextPath: Infoblox.IP.IpAddress
       description: The IP address.
       type: string
     - contextPath: Infoblox.IP.Usage
       description: Indicates whether the IP address is configured for DNS or DHCP.
-      type: string
+      type: unknown
   - arguments:
     - description: The IP address for which to search.
       name: ip
       required: true
-    - description: The maximum results to return.
+    - description: The maximum results to return. Maximum is 1000.
       name: max_results
+      defaultValue: '50'
     description: Searches IP related objects by a given IP.
     name: infoblox-search-related-objects-by-ip
     outputs:
@@ -91,7 +114,7 @@ script:
       name: next_page_id
     - description: The DNS view in which the records are located. For example 'External'. By default, the 'default' DNS view is searched.
       name: view
-    description: Lists all response policy rules that belong to the given response policy zone.
+    description: Lists all response policy rules that belong to the.g.,ven response policy zone.
     name: infoblox-list-response-policy-zone-rules
     outputs:
     - contextPath: Infoblox.ResponsePolicyZoneRulesList.Name
@@ -116,8 +139,9 @@ script:
       description: Retrieves the next page of the search. The last NextpageID corresponds to the last search performed.
       type: string
   - arguments:
-    - description: Maximum results to return. (default is 50).
+    - description: Maximum results to return. Maximum is 1000.
       name: max_results
+      defaultValue: 50
     description: List all response policy zones.
     name: infoblox-list-response-policy-zones
     outputs:
@@ -222,10 +246,10 @@ script:
     - description: The rule name in a FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to to.
       name: rp_zone
       required: true
-    - description: Adds a comment for this rule.
+    - description: CComment for this rule.
       name: comment
     - description: The substitute name to assign (substitute domain only).
       name: substitute_name
@@ -259,10 +283,10 @@ script:
     - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The IPv4 address of the substitute rule.
       name: ipv4addr
@@ -294,10 +318,10 @@ script:
     - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The IPv6 address of the substitute rule.
       name: ipv6addr
@@ -329,10 +353,10 @@ script:
     - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The mail exchanger name in FQDN format. This value can be in unicode format.
       name: mail_exchanger
@@ -365,13 +389,13 @@ script:
       description: The reference ID of the rule.
       type: string
   - arguments:
-    - description: The name for a record in FQDN forma.
+    - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The order parameter of the substitute rule of the NAPTR record. This parameter specifies the order in which the NAPTR rules are applied when multiple rules are present. Can be from 0 to 65535 (inclusive).
       name: order
@@ -407,19 +431,19 @@ script:
       description: The reference ID of the rule.
       type: string
   - arguments:
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The domain name of the RPZ substitute rule object of the PTR record in FQDN format.
       name: ptrdname
       required: true
-    - description: The name of the RPZ Substitute rule object of the PTR record in FQDN format.
+    - description: The name of the RPZ substitute rule object of the PTR record in FQDN format.
       name: name
-    - description: The IPv4 Address of the substitute rule.
+    - description: The IPv4 address of the substitute rule.
       name: ipv4addr
-    - description: The IPv6 Address of the substitute rule.
+    - description: The IPv6 address of the substitute rule.
       name: ipv6addr
     description: Creates a substitute rule of the PTR record.
     name: infoblox-create-ptr-substitute-record-rule
@@ -449,10 +473,10 @@ script:
     - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The port of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive).
       name: port
@@ -464,7 +488,7 @@ script:
       name: target
       required: true
     - description: The weight of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive).
-      name: weight
+      name: weight 
       required: true
     description: Creates a substitute rule of a SRV record.
     name: infoblox-create-srv-substitute-record-rule
@@ -494,10 +518,10 @@ script:
     - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: Text associated with the record. To enter leading, trailing, or embedded spaces in the text, add quotes around the text to preserve the spaces.
       name: text
@@ -530,10 +554,10 @@ script:
     - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The IPv4 Address of the substitute rule.
       name: ipv4addr
@@ -566,10 +590,10 @@ script:
     - description: The name for a record in FQDN format.
       name: name
       required: true
-    - description: The zone to assign the rule.
+    - description: The zone to assign the rule to.
       name: rp_zone
       required: true
-    - description: Add a comment for this rule.
+    - description: Comment for this rule.
       name: comment
     - description: The IPv6 Address of the substitute rule.
       name: ipv6addr
@@ -599,10 +623,10 @@ script:
       description: The reference ID of the rule.
       type: string
   - arguments:
-    - description: The ID of the rule reference (could be extracted by running the search rules command).
+    - description: The ID of the rule reference (can be extracted by running the search rules command).
       name: reference_id
       required: true
-    description: Disables a rule by its reference ID (reference ID could be extracted by running the searah rules command).
+    description: Disables a rule by its reference ID (reference ID can be extracted by running the search rules command).
     name: infoblox-enable-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
@@ -624,10 +648,10 @@ script:
       description: The view of the definition.
       type: string
   - arguments:
-    - description: The ID of the rule reference (reference ID could be extracted by running the 'infoblox-search-rule' command).
+    - description: The ID of the rule reference (reference ID can be extracted by running the 'infoblox-search-rule' command).
       name: reference_id
       required: true
-    description: Disable a rule by its reference ID (reference ID could be extracted by running the 'infoblox-search-rule' command).
+    description: Disable a rule by its reference ID (reference ID can be extracted by running the 'infoblox-search-rule' command).
     name: infoblox-disable-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
@@ -689,12 +713,78 @@ script:
     description: Deletes a rule.
     name: infoblox-delete-rpz-rule
   - arguments:
-    - description: The reference ID of the rule (could be extracted by running the search rules command).
+    - description: The reference ID of the rule (can be extracted by running the search rules command).
       name: reference_id
       required: true
     description: Deletes a given response policy zone.
     name: infoblox-delete-response-policy-zone
-  dockerimage: demisto/python3:3.10.13.84405
+  - name: infoblox-list-host-info
+    description: Get all host records.
+    arguments:
+    - name: host_name
+      description: The hostname to retrieve records for, e.g., example.com.
+      required: false
+    - name: extattrs
+      description: comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue".
+      required: false
+    - name: max_results
+      description: The maximum number of records to return. Default is 50, maximum is 1000.
+    - name: additional_return_fields
+      description: Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases.
+      required: false
+      defaultValue: extattrs
+    outputs:
+    - contextPath: Infoblox.Host.Reference
+      description: The host record reference ID.
+      type: String
+    - contextPath: Infoblox.Host.IPv4Address
+      description: The host first IPv4 address.
+      type: String
+    - contextPath: Infoblox.Host.ConfigureForDHCP
+      description: Whether the host is configured for DHCP.
+      type: Boolean
+    - contextPath: Infoblox.Host.Name
+      description: The host record name.
+      type: String
+    - contextPath: Infoblox.Host.ExtendedAttributes
+      description: The network extended attributes.
+      type: Unknown
+    - contextPath: Infoblox.Host.AdditionalFields
+      description: The additional fields for network.
+      type: Unknown
+  - name: infoblox-list-network-info
+    description: List network information.
+    arguments:
+    - name: pattern
+      description: Filter networks by pattern, e.g., '.0/24' for netmask, '192.168' for subnet.
+      required: false
+    - name: extattrs
+      description: Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue".
+      required: false
+    - name: max_results
+      description: The maximum number of records to return. Maximum is 1000.
+      defaultValue: 50
+    - name: additional_return_fields
+      description: Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases.
+      required: false
+      defaultValue: extattrs
+    outputs:
+    - contextPath: Infoblox.NetworkInfo.Reference
+      description: The network reference.
+      type: String
+    - contextPath: Infoblox.NetworkInfo.Name
+      description: The network name.
+      type: String
+    - contextPath: Infoblox.NetworkInfo.NetworkView
+      description: The network view name.
+      type: String
+    - contextPath: Infoblox.NetworkInfo.ExtendedAttributes
+      description: The network extended attributes.
+      type: Unknown
+    - contextPath: Infoblox.NetworkInfo.AdditionalFields
+      description: The additional fields for network.
+      type: Unknown
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3

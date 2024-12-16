@@ -7,9 +7,9 @@ args:
   - grayscale
   - sharpened
   - original
-- description: 'The desired width for resizing the image to. For example: image_resize_width=500'
+- description: 'The desired width for resizing the image to. For example: image_resize_width=500.'
   name: image_resize_width
-- description: 'The desired height for resizing the image to. For example: image_resize_height=1000'
+- description: 'The desired height for resizing the image to. For example: image_resize_height=1000.'
   name: image_resize_height
 - description: The entryID of the file to process.
   name: file_entry_id
@@ -31,7 +31,7 @@ script: '-'
 subtype: python3
 timeout: 480ns
 type: python
-dockerimage: demisto/processing-image-file:1.0.0.78798
+dockerimage: demisto/processing-image-file:1.0.0.115372
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0

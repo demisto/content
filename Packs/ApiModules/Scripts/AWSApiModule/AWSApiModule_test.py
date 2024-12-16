@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from AWSApiModule import *
 import pytest
 from pytest import raises
@@ -323,3 +325,127 @@ def test_aws_session(mocker, params, args, expected_assume_roles_args):
     aws_client.aws_session(service='ec2', **args)
 
     assert assume_client_mock.call_args_list[0].kwargs == expected_assume_roles_args
+
+
+@pytest.mark.parametrize('sts_regional_endpoint', ['legacy', 'regional', ''])
+def test_sts_regional_endpoint_param(mocker, sts_regional_endpoint):
+    """
+    Given
+        - Configuration param to set in the 'AWS_STS_REGIONAL_ENDPOINTS' variable.
+    When
+        - After creating the AWS client instance.
+    Then
+        - Verify the environment variable was sets correctly.
+    """
+    params = {
+        'aws_default_region': 'us-east-1',
+        'aws_role_arn': 'role_arn_param',
+        'aws_role_session_name': 'role_session_name_param',
+        'aws_access_key_id': 'test_access_key',
+        'aws_role_session_duration': None,
+        'aws_role_policy': None,
+        'aws_secret_access_key': 'test_secret_key',
+        'verify_certificate': False,
+        'timeout': 60,
+        'retries': 3
+    }
+
+    mocker.patch.object(demisto, 'params', return_value={'sts_regional_endpoint': sts_regional_endpoint})
+    os.environ['AWS_STS_REGIONAL_ENDPOINTS'] = ''
+    AWSClient(**params)
+    assert os.environ['AWS_STS_REGIONAL_ENDPOINTS'] == sts_regional_endpoint
+
+
+@pytest.mark.parametrize(
+    'params, region, expected_sts_endpoint_url', [
+        (
+            {
+                'aws_default_region': 'us-west-1',
+                'aws_role_arn': 'role_arn_param',
+                'aws_role_session_name': 'role_session_name_param',
+                'aws_access_key_id': 'test_access_key',
+                'aws_role_session_duration': None,
+                'sts_endpoint_url': None,
+                'aws_role_policy': None,
+                'aws_secret_access_key': 'test_secret_key',
+                'verify_certificate': False,
+                'timeout': 60,
+                'retries': 3
+            },
+            'us-east-1',
+            None
+        ),
+        (
+            {
+                'aws_default_region': 'us-gov-west-1',
+                'aws_role_arn': 'role_arn_param',
+                'aws_role_session_name': 'role_session_name_param',
+                'aws_access_key_id': 'test_access_key',
+                'aws_role_session_duration': None,
+                'sts_endpoint_url': None,
+                'aws_role_policy': None,
+                'aws_secret_access_key': 'test_secret_key',
+                'verify_certificate': False,
+                'timeout': 60,
+                'retries': 3
+            },
+            'us-gov-east-1',
+            'https://sts.us-gov-east-1.amazonaws.com'
+        ),
+        (
+            {
+                'aws_default_region': 'us-gov-east-1',
+                'aws_role_arn': 'role_arn_param',
+                'aws_role_session_name': 'role_session_name_param',
+                'aws_access_key_id': 'test_access_key',
+                'aws_role_session_duration': None,
+                'sts_endpoint_url': None,
+                'aws_role_policy': None,
+                'aws_secret_access_key': 'test_secret_key',
+                'verify_certificate': False,
+                'timeout': 60,
+                'retries': 3
+            },
+            'us-gov-east-1',
+            'https://sts.us-gov-east-1.amazonaws.com'
+        )
+    ]
+)
+def test_aws_session_sts_endpoint_url(mocker, params, region, expected_sts_endpoint_url):
+    """
+    Given
+    - A region parameter and its expected sts_endpoint_url.
+
+    When
+    - Calling the aws_session method with the specified region.
+
+    Then
+    - Verify that the sts_endpoint_url is set correctly based on the region.
+    """
+    sts_client_mock = MagicMock()
+    mocker.patch.object(
+        sts_client_mock,
+        'assume_role',
+        return_value={
+            'Credentials': {
+                'AccessKeyId': '1',
+                'SecretAccessKey': '2',
+                'SessionToken': '3'
+            }
+        }
+    )
+    boto3_client_mock = mocker.patch('AWSApiModule.boto3.client')
+    boto3_client_mock.side_effect = [MagicMock(), MagicMock()]
+    aws_client = AWSClient(**params)
+    aws_client.aws_session(service='ec2', region=region)
+    assert aws_client.sts_endpoint_url == expected_sts_endpoint_url
+    sts_call_args = boto3_client_mock.call_args_list[0]
+    assert sts_call_args[1] == {
+        'service_name': 'sts',
+        'region_name': region if region else params['aws_default_region'],
+        'aws_access_key_id': params['aws_access_key_id'],
+        'aws_secret_access_key': params['aws_secret_access_key'],
+        'verify': params['verify_certificate'],
+        'config': aws_client.config,
+        'endpoint_url': expected_sts_endpoint_url
+    }

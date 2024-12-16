@@ -1,0 +1,136 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Google Chronicle Backstory Streaming API
+  version: -1
+configuration:
+- displaypassword: User's Service Account JSON
+  name: credentials
+  hiddenusername: true
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: Select the region based on the location of the chronicle backstory instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
+  defaultvalue: General
+  display: Region
+  name: region
+  options:
+  - General
+  - Europe
+  - Asia
+  - Europe-west2
+  - Other
+  type: 15
+  section: Connect
+- additionalinfo: Specify the region based on the location of the chronicle backstory instance. Only applicable if the "Other" option is selected in the Region dropdown.
+  display: Other Region
+  hidden: false
+  name: other_region
+  required: false
+  type: 0
+  section: Connect
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- additionalinfo: |-
+    The date or relative timestamp from where to start fetching detections. Default will be the current time.
+
+    Note: The API is designed to retrieve data for the past 7 days only. Requests for data beyond that timeframe will result in errors.
+
+    Supported formats: N minutes, N hours, N days, N weeks, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
+
+    For example: 10 minutes, 5 hours, 6 days, 1 week, 2024-12-31, 01 Mar 2024, 01 Feb 2024 04:45:33, 2024-04-17T14:05:44Z
+  defaultvalue: now
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: 'true'
+  display: Long running instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+  required: false
+- additionalinfo: Select Chronicle Alert types to be considered for Fetch Incidents. Available options are Curated Rule Detection Alerts and Rule Detection Alerts (If not selected, fetches all detections).
+  display: Chronicle Alert Type
+  name: alert_type
+  options:
+  - Curated Rule Detection Alerts
+  - Rule Detection Alerts
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: Select the severity of detections to be considered for Fetch Incidents. Available options are 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, fetches all detections).
+  display: Severity of Detection
+  name: detection_severity
+  options:
+  - High
+  - Medium
+  - Low
+  - Informational
+  - Unspecified
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: Only detections with the given rule names will be allowed for ingestion.
+  display: Rule Names for Detection Ingestion
+  name: rule_names
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- display: If selected, detections with the above rule names will be denied for ingestion.
+  name: exclude_rule_names
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: Only the detections with the given rule IDs will be allowed for ingestion.
+  display: Rule IDs for Detection Ingestion
+  name: rule_ids
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- display: If selected, detections with above rule IDs will be denied for ingestion.
+  name: exclude_rule_ids
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Use the Google Chronicle Backstory Streaming API integration to ingest detections created by both user-created rules and Chronicle Rules as XSOAR incidents.
+display: Chronicle Streaming API
+name: Google Chronicle Backstory Streaming API
+script:
+  dockerimage: demisto/googleapi-python3:1.0.0.117483
+  longRunning: true
+  isFetchSamples: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+defaultmapperin: 'Chronicle-mapper'
+defaultclassifier: 'Chronicle'

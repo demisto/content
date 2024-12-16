@@ -1,0 +1,55 @@
+[
+    {
+        "number": 0,
+        "name": "My SSID",
+        "enabled": true,
+        "splashPage": "Click-through splash page",
+        "ssidAdminAccessible": false,
+        "localAuth": false,
+        "authMode": "8021x-radius",
+        "encryptionMode": "wpa",
+        "wpaEncryptionMode": "WPA2 only",
+        "radiusServers": [
+            {
+                "host": "0.0.0.0",
+                "port": 3000,
+                "openRoamingCertificateId": 2,
+                "caCertificate": ""
+            }
+        ],
+        "radiusAccountingServers": [
+            {
+                "host": "0.0.0.0",
+                "port": 3000,
+                "openRoamingCertificateId": 2,
+                "caCertificate": ""
+            }
+        ],
+        "radiusAccountingEnabled": false,
+        "radiusEnabled": true,
+        "radiusAttributeForGroupPolicies": "Filter-Id",
+        "radiusFailoverPolicy": "Deny access",
+        "radiusLoadBalancingPolicy": "Round robin",
+        "ipAssignmentMode": "NAT mode",
+        "adminSplashUrl": "http://www.example.com",
+        "splashTimeout": "30 minutes",
+        "walledGardenEnabled": true,
+        "walledGardenRanges": [
+            "example.com",
+            "0.0.0.0/32"
+        ],
+        "minBitrate": 11,
+        "bandSelection": "5 GHz band only",
+        "perClientBandwidthLimitUp": 0,
+        "perClientBandwidthLimitDown": 0,
+        "visible": true,
+        "availableOnAllAps": false,
+        "availabilityTags": [
+            "tag1",
+            "tag2"
+        ],
+        "perSsidBandwidthLimitUp": 0,
+        "perSsidBandwidthLimitDown": 0,
+        "mandatoryDhcpEnabled": false
+    }
+]

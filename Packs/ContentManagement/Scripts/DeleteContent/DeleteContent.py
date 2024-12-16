@@ -7,7 +7,7 @@ import requests
 import json
 
 SCRIPT_NAME = 'DeleteContent'
-CORE_PACKS_LIST_URL = "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_list.json"
+CORE_PACKS_LIST_URL = "https://raw.githubusercontent.com/demisto/content/master/Config/core_packs_list.json"
 INSTANCE_NAME = demisto.args().get('using')
 
 

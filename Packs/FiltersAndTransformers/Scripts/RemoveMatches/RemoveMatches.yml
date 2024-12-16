@@ -1,0 +1,48 @@
+args:
+- default: true
+  description: The value on which the transformer is applied.
+  isArray: true
+  name: value
+- auto: PREDEFINED
+  defaultValue: "Yes"
+  description: Whether to ignore the case of the item for which you are searching. Default is "Yes".
+  name: ignore_case
+  predefined:
+  - "yes"
+  - "no"
+- auto: PREDEFINED
+  defaultValue: "No"
+  description: Whether to match the exact item in the list, or look for any string that contains it. Default is "No".
+  name: match_exact
+  predefined:
+  - "yes"
+  - "no"
+- defaultValue: \n
+  description: A string used to delimit fields. For example, a new line "\n" should match the list separator configuration.
+  name: delimiter
+- description: A list of patterns to remove from the value. This can be a single string or a list of patterns, separated by the pattern defined in the delimiter argument. Unless match_exact is yes, regex pattern is supported.
+  required: true
+  name: filters
+comment: |-
+  Removes items from the given list of values if they match any of the patterns in the provided `filters`.
+  If the match_exact argument is 'yes', direct string compare is used, otherwise the comparison is done using regex.
+commonfields:
+  id: RemoveMatches
+  version: -1
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: RemoveMatches
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- entirelist
+- general
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

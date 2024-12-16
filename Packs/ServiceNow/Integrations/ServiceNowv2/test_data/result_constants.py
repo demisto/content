@@ -241,25 +241,21 @@ EXPECTED_UPLOAD_FILE = {
     }
 }
 EXPECTED_GET_TICKET_NOTES = {
-    'ServiceNow.Ticket(val.ID===obj.ID)': {
-        'ID': 'sys_id', 'Note': [
-            {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
-             'CreatedOn': '2020-04-07 07:32:12', 'CreatedBy': 'admin', 'Type': 'Work Note'},
-            {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
-             'CreatedOn': '2020-04-07 07:25:51', 'CreatedBy': 'admin', 'Type': 'Work Note'},
-            {'Value': 'Nice work!', 'CreatedOn': '2020-04-07 07:46:34', 'CreatedBy': 'admin', 'Type': 'Work Note'},
-            {'Value': 'Nice work!', 'CreatedOn': '2020-04-07 07:46:25', 'CreatedBy': 'admin', 'Type': 'Work Note'},
-            {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
-             'CreatedOn': '2020-04-07 07:26:01', 'CreatedBy': 'admin', 'Type': 'Work Note'}]
-    }
+    'ID': 'sys_id', 'Note': [
+        {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
+            'CreatedOn': '2020-04-07 07:32:12', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+        {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
+            'CreatedOn': '2020-04-07 07:25:51', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+        {'Value': 'Nice work!', 'CreatedOn': '2020-04-07 07:46:34', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+        {'Value': 'Nice work!', 'CreatedOn': '2020-04-07 07:46:25', 'CreatedBy': 'admin', 'Type': 'Work Note'},
+        {'Value': '[code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code]',
+            'CreatedOn': '2020-04-07 07:26:01', 'CreatedBy': 'admin', 'Type': 'Work Note'}]
 }
 EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE = {
-    'ServiceNow.Ticket(val.ID===obj.ID)': {
-        'ID': 'sys_id', 'Note': [
-            {'Value': 'Second comment\n\n Mirrored from Cortex XSOAR', 'CreatedOn': '2022-11-21 21:50:34',
-             'CreatedBy': 'System Administrator', 'Type': 'Comment'},
-            {'Value': 'First comment', 'CreatedOn': '2022-11-21 20:45:37', 'CreatedBy': 'Test User', 'Type': 'Comment'}]
-    }
+    'ID': 'sys_id', 'Note': [
+        {'Value': 'Second comment\n\n Mirrored from Cortex XSOAR', 'CreatedOn': '2022-11-21 21:50:34',
+            'CreatedBy': 'System Administrator', 'Type': 'Comment'},
+        {'Value': 'First comment', 'CreatedOn': '2022-11-21 20:45:37', 'CreatedBy': 'Test User', 'Type': 'Comment'}]
 }
 EXPECTED_GET_RECORD = {
     'ServiceNow.Record(val.ID===obj.ID)': {

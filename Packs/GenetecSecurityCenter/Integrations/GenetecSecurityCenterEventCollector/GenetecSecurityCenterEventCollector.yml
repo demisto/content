@@ -1,0 +1,70 @@
+category: Analytics & SIEM
+commonfields:
+  id: Genetec Security Center Event Collector
+  version: -1
+configuration:
+- display: Server URL (e.g., http://192.168.10.1:52311)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- name: credentials
+  display: Username
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo: Username and password.
+  displaypassword: Password
+  section: Connect
+- required: true
+  display: Application ID
+  name: app_id
+  type: 0
+  section: Connect
+- display: Maximum number of events per fetch
+  name: max_fetch
+  additionalinfo: Alerts and activity events.
+  type: 0
+  defaultvalue: 1000
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Genetec Security Center Audit Trail Event Collector.
+display: Genetec Security Center Event Collector
+name: Genetec Security Center Event Collector
+script:
+  commands:
+  - description: Manual execution of fetch-events. Use this for debugging purposes.
+    name: genetec-security-center-get-events
+    arguments:
+    - name: limit
+      description: The maximum amount of events to retrieve.
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    - name: start_time
+      description: The start time to fetch_from, should be in the format of YYYY-MM-DDTHH:MM:SS (e.g. 2024-02-21T23:00:00).
+    - name: end_time
+      description: The end time to fetch_from, should be in the format of YYYY-MM-DDTHH:MM:SS (e.g. 2024-02-21T23:00:00).
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/xml-feed:1.0.0.116765
+  isfetchevents: true
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

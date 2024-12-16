@@ -35,10 +35,10 @@ def test_get_account_ids(mocker):
         }
     ]
 
-    account_ids = get_account_ids('instance_name')
+    account_ids = get_account_ids('instance_name', 2)
 
     assert account_ids == (["1234", "5678"], "human_readable")
-    mock_execute_command.assert_called_with("aws-org-account-list", {'using': 'instance_name'})
+    mock_execute_command.assert_called_with("aws-org-account-list", {'limit': 2, 'using': 'instance_name'})
 
 
 def test_set_instance(mocker):
@@ -146,7 +146,17 @@ def test_update_ec2_instance(mocker):
     assert result == "Successfully updated ***AWS - EC2*** with accounts:"
 
 
-def test_errors(mocker):
+def test_remove_excluded_accounts():
+    from AwsEC2SyncAccounts import remove_excluded_accounts
+
+    accounts = ['1', '2', '3', '4', '5']
+
+    accounts = remove_excluded_accounts(accounts, '1,2,3')
+
+    assert set(accounts) == {'4', '5'}
+
+
+def test_errors():
     import AwsEC2SyncAccounts as sync
 
     with pytest.raises(DemistoException, match='Unexpected error while configuring AWS - EC2 instance with accounts'):
@@ -155,4 +165,4 @@ def test_errors(mocker):
 
     with pytest.raises(DemistoException, match="Unexpected output from 'aws-org-account-list':\nNone"):
         sync.demisto.executeCommand = lambda *_: {}['key']
-        sync.get_account_ids('')
+        sync.get_account_ids('', 0)

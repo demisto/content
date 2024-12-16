@@ -3,21 +3,30 @@ commonfields:
   version: -1
 category: IT Services
 sectionOrder:
-- Collect
 - Connect
 configuration:
 - display: Role Arn
   name: roleArn
-  required: true
+  required: false
   section: Connect
   type: 4
+  hidden: true
+- name: roleArnCredentials
+  required: false
+  type: 9
+  displaypassword: Role Arn
+  hiddenusername: true
 - display: Role Session Name
   name: roleSessionName
-  required: true
+  required: false
   section: Connect
   type: 0
+  additionalinfo: "A descriptive name for the assumed role session."
 - display: AWS Default Region
+  section: Connect
   name: defaultRegion
+  type: 15
+  required: true
   options:
   - us-east-1
   - us-east-2
@@ -37,26 +46,56 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
-  required: true
-  section: Collect
-  type: 15
 - display: Role Session Duration
-  section: Connect
   name: sessionDuration
   type: 0
+  section: Connect
   required: false
-- additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
-  defaultvalue: 60,10
-  display: Timeout
-  name: timeout
+- additionalinfo: "The Identity Store ID parameter is required for API requests. It can be provided as a parameter or as an argument. If the Identity Store ID was not specified - Test failure."
+  display: Identity Store ID
+  name: IdentityStoreId
   type: 0
   section: Connect
   required: false
-- additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
-  defaultvalue: "5"
-  display: Retries
-  name: retries
+- display: Access Key
+  name: access_key
+  required: false
+  section: Connect
+  type: 4
+  hidden: true
+- display: Secret Key
+  name: secret_key
+  required: false
+  section: Connect
+  type: 4
+  hidden: true
+- display: Access Key
+  name: credentials
+  required: false
+  section: Connect
+  type: 9
+  displaypassword: Secret Key
+- display: Timeout
+  name: timeout
+  required: false
+  section: Connect
   type: 0
+  additionalinfo: "The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used."
+  defaultvalue: 60,10
+- display: Retries
+  name: retries
+  required: false
+  section: Connect
+  type: 0
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  defaultvalue: 5
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
   section: Connect
   required: false
 - display: Trust any certificate (not secure)
@@ -66,24 +105,10 @@ configuration:
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
-  section: Connect
   type: 8
-- display: Identity Store ID
-  name: IdentityStoreId
-  required: true
-  section: Collect
-  type: 4
-- display: Secret Key
-  name: secret_key
-  required: true
-  section: Collect
-  type: 4
-- display: Access Key
-  name: access_key
-  required: true
-  section: Collect
-  type: 4
+  section: Connect
+  advanced: true
+  required: false
 description: Amazon Web Services IAM Identity Center.
 display: AWS - IAM Identity Center
 name: AWS - IAM Identity Center
@@ -95,73 +120,514 @@ script:
       required: true
     - description: The family name of the user to create.
       name: familyName
-    - description: The First name of the user to create.
+      required: true
+    - description: The first name of the user to create.
       name: givenName
       required: true
     - description: The email address of the user to create.
       name: userEmailAddress
-      required: true
+      required: false
     - description: The display name of the user to create.
       name: displayName
       required: true
+    - description: The profile URL of the user to create.
+      name: profileUrl
+      required: false
+    - description: Is this the primary email address for the associated resource?
+      name: userEmailAddressPrimary
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The type of the user to create.
+      name: userType
+      required: false
+    - description: The title of the user to create.
+      name: title
+      required: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
     description: Creates a new IAM Identity Center user for your AWS account.
     name: aws-iam-identitycenter-create-user
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Users.UserId
-      description: The date and time, when the user was created.
-      type: date
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
+      description: The user ID.
+      type: string
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
+      description: Identity Store ID.
+      type: string
   - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
     - description: The name of the user to get information about.
       name: userName
       required: true
-    description: Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
+    description: Retrieves information about the specified IAM user.
     name: aws-iam-identitycenter-get-user
     outputs:
-    - contextPath: AWS.IAM.IdentityCenter.Users.UserName
+    - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
       type: string
-    - contextPath: AWS.IAM.IdentityCenter.Users.UserId
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
       description: The stable and unique string identifying the user.
       type: string
-    - contextPath: AWS.IAM.IdentityCenter.Users.Email
-      description: The user email address.
-      type: string
-    - contextPath: AWS.IAM.IdentityCenter.Users.DisplayName
-      description: The user display name in AWS IAM IdentityCenter.
-  - arguments: []
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Issuer
+      description: The issuer for an external identifier.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Id
+      description: The identifier issued to this resource by an external identity provider.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.Formatted
+      description: Formatted version of the user's name for display.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.FamilyName
+      description: The family name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.GivenName
+      description: The given name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.MiddleName
+      description: The middle name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificPrefix
+      description: The honorific prefix of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificSuffix
+      description: The honorific suffix of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.DisplayName
+      description: The name of the user formatted for display when referenced.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.NickName
+      description: An alternate name for the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.ProfileUrl
+      description: URL associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Value
+      description: Email address associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Type
+      description: Type of email address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Primary
+      description: Indicates whether this is the primary email address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.StreetAddress
+      description: Street address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Locality
+      description: Address locality.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Region
+      description: Region of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.PostalCode
+      description: Postal code of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Country
+      description: Country of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Formatted
+      description: Formatted version of the address for display.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Type
+      description: Type of address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Primary
+      description: Indicates whether this is the primary address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Value
+      description: Phone number associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Type
+      description: Type of phone number.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Primary
+      description: Indicates whether this is the primary phone number.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.UserType
+      description: Type of user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Title
+      description: Title of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PreferredLanguage
+      description: Preferred language of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Locale
+      description: Geographical region or location of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Timezone
+      description: Time zone of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
+      description: Globally unique identifier for the identity store.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: Number of results to return. Maximum value is 50.
+      defaultValue: '50'
+      name: limit
+      required: false
+    - description: The pagination token.
+      name: nextToken
+      required: false
     description: Lists the IAM users, returns all users in the AWS account.
     name: aws-iam-identitycenter-list-users
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Users.UserName
+    - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.UserId
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
       description: The stable and unique string identifying the user.
       type: string
-  - arguments: []
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Issuer
+      description: The issuer for an external identifier.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Id
+      description: The identifier issued to this resource by an external identity provider.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.Formatted
+      description: Formatted version of the user's name for display.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.FamilyName
+      description: The family name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.GivenName
+      description: The given name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.MiddleName
+      description: The middle name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificPrefix
+      description: The honorific prefix of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificSuffix
+      description: The honorific suffix of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.DisplayName
+      description: The name of the user formatted for display when referenced.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.NickName
+      description: An alternate name for the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.ProfileUrl
+      description: URL associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Value
+      description: Email address associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Type
+      description: Type of email address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Primary
+      description: Indicates whether this is the primary email address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.StreetAddress
+      description: Street address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Locality
+      description: Address locality.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Region
+      description: Region of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.PostalCode
+      description: Postal code of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Country
+      description: Country of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Formatted
+      description: Formatted version of the address for display.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Type
+      description: Type of address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Primary
+      description: Indicates whether this is the primary address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Value
+      description: Phone number associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Type
+      description: Type of phone number.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Primary
+      description: Indicates whether this is the primary phone number.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.UserType
+      description: Type of user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Title
+      description: Title of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PreferredLanguage
+      description: Preferred language of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Locale
+      description: Geographical region or location of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Timezone
+      description: Time zone of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
+      description: Globally unique identifier for the identity store.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.UserNextToken
+      description: Pagination token.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: Number of results to return. Maximum value is 50.
+      defaultValue: '50'
+      name: limit
+      required: false
+    - description: The pagination token.
+      name: nextToken
+      required: false
     description: Lists all the IAM groups in the AWS account.
     name: aws-iam-identitycenter-list-groups
     outputs:
-    - contextPath: AWS.IAM.IdentityCenter.Groups.GroupName
-      description: The friendly name that identifies the group.
-      type: string
-    - contextPath: AWS.IAM.IdentityCenter.Groups.GroupId
-      description: The stable and unique string identifying the group.
-      type: string
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
+      description: The identifier for a group in the identity store.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.DisplayName
+      description: The display name value for the group.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Issuer
+      description: The issuer for an external identifier.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Id
+      description: The identifier issued to this resource by an external identity provider.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.Description
+      description: A description of the specified group.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.IdentityStoreId
+      description: The globally unique identifier for the identity store.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.GroupNextToken
+      description: The pagination token used for the ListUsers and ListGroups API operations.
+      type: String
   - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: Number of results to return. Maximum value is 50.
+      defaultValue: '50'
+      name: limit
+      required: false
+    - description: The pagination token.
+      name: nextToken
+      required: false
     - description: The name of the user to list groups for.
       name: userName
       required: true
-    description: Lists the IAM groups that the specified IAM user belongs to.
+    description: Lists the IAM Identity Center groups that the specified IAM user belongs to.
     name: aws-iam-identitycenter-list-groups-for-user
     outputs:
-    - contextPath: AWS.IAM.IdentityCenter.Users.GroupMemeberships.GroupName
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
+      description: User ID.
+      type: string
+    - contextPath: AWS.IAMIdentityCenter.User.GroupMemeberships.MembershipId
       description: The friendly name that identifies the group.
       type: string
-    - contextPath: AWS.IAM.IdentityCenter.Users.GroupMemeberships.GroupId
+    - contextPath: AWS.IAMIdentityCenter.User.GroupMemeberships.GroupId
       description: The stable and unique string identifying the group.
       type: string
   - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
     - description: The name of the user to add.
       name: userName
       required: true
@@ -171,40 +637,547 @@ script:
     description: Adds the specified user to the specified group.
     name: aws-iam-identitycenter-add-user-to-group
   - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
     - description: The name of the group to search.
-      name: groupName
+      name: displayName
       required: true
     description: Get AWS IAM Identity Center group Information.
     name: aws-iam-identitycenter-get-group
-  - arguments:
-    - description: Username that will be removed from all groups.
-      name: userName
-      required: true
-    description: This will remove the entered user from all groups/memberships.
-    name: aws-iam-identitycenter-remove-user-from-all-groups
-  - arguments:
-    - description: The email of the user to be removed.
-      name: emailAddress
     outputs:
-    - contextPath: AWS.IAM.IdentityCenter.Users.UserName
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
+      description: The identifier for a group in the identity store.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.DisplayName
+      description: The display name of the group.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Issuer
+      description: The issuer for an external identifier.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Id
+      description: The identifier issued to this resource by an external identity provider.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.Description
+      description: A description of the group.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.IdentityStoreId
+      description: The globally unique identifier for the identity store.
+      type: String
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The email of the user.
+      name: emailAddress
+      required: true
+    description: Retrieves information about the specified IAM user.
+    name: aws-iam-identitycenter-get-user-by-email
+    outputs:
+    - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
       type: string
-    - contextPath: AWS.IAM.IdentityCenter.Users.Email
-      description: The email address identifying the user.
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
+      description: The stable and unique string identifying the user.
       type: string
-    - contextPath: AWS.IAM.IdentityCenter.Users.UserId
-      description: The user ID of the queried user.
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Issuer
+      description: The issuer for an external identifier.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Id
+      description: The identifier issued to this resource by an external identity provider.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.Formatted
+      description: Formatted version of the user's name for display.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.FamilyName
+      description: The family name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.GivenName
+      description: The given name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.MiddleName
+      description: The middle name of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificPrefix
+      description: The honorific prefix of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificSuffix
+      description: The honorific suffix of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.DisplayName
+      description: The name of the user formatted for display when referenced.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.NickName
+      description: An alternate name for the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.ProfileUrl
+      description: URL associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Value
+      description: Email address associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Type
+      description: Type of email address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Primary
+      description: Indicates whether this is the primary email address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.StreetAddress
+      description: Street address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Locality
+      description: Address locality.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Region
+      description: Region of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.PostalCode
+      description: Postal code of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Country
+      description: Country of the address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Formatted
+      description: Formatted version of the address for display.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Type
+      description: Type of address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Primary
+      description: Indicates whether this is the primary address.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Value
+      description: Phone number associated with the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Type
+      description: Type of phone number.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Primary
+      description: Indicates whether this is the primary phone number.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.UserType
+      description: Type of user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Title
+      description: Title of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.PreferredLanguage
+      description: Preferred language of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Locale
+      description: Geographical region or location of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.Timezone
+      description: Time zone of the user.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
+      description: Globally unique identifier for the identity store.
+      type: String
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the user to remove.
+      name: userName
+      required: true
+    description: Removes the specified user from the AWS IAM Identity Center.
+    name: aws-iam-identitycenter-delete-user
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the group to create.
+      name: displayName
+      required: true
+    - description: The description of the group to create.
+      name: description
+      required: false
+    description: Creates a new IAM Identity Center group for your AWS account.
+    name: aws-iam-identitycenter-create-group
+    outputs:
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
+      description: The user ID.
       type: string
-    - contextPath: AWS.IAM.IdentityCenter.Users.DisplayName
-      description: The display name of the queried user.
+    - contextPath: AWS.IAMIdentityCenter.Group.IdentityStoreId
+      description: Identity store ID.
       type: string
-    description: This will get user information using email address.
-    name: aws-iam-identitycenter-get-user-by-email
-  dockerimage: demisto/boto3py3:1.0.0.76002
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the group to remove.
+      name: groupName
+      required: true
+    description: Removes the specified group from the IAM Identity Center.
+    name: aws-iam-identitycenter-delete-group
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the user to delete from all groups.
+      name: userName
+      required: false
+    - description: Comma-separated list of membership IDs to delete.
+      name: membershipId
+      required: false
+    description: Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
+    name: aws-iam-identitycenter-delete-group-membership
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: Number of results to return. Maximum value is 50.
+      defaultValue: '50'
+      name: limit
+      required: false
+    - description: The pagination token.
+      name: nextToken
+      required: false
+    - description: The name of the group to list the memberships.
+      name: groupName
+      required: true
+    description: Lists the memberships of the group.
+    name: aws-iam-identitycenter-list-memberships
+    outputs:
+    - contextPath: AWS.IAMIdentityCenter.GroupMemberships.IdentityStoreId
+      description: The globally unique identifier for the identity store.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupMemberships.MembershipId
+      description: The identifier for a GroupMembership object in an identity store.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
+      description: The identifier for a group in the identity store.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupMemberships.UserId
+      description: Identifier of resources that can be members.
+      type: String
+    - contextPath: AWS.IAMIdentityCenter.GroupMembershipNextToken
+      description: The pagination token.
+      type: String
+  - arguments:
+    - description: The username of the user to update.
+      name: userName
+      required: true
+    - description: The family name of the user to update.
+      name: familyName
+      required: false
+    - description: The first name of the user to update.
+      name: givenName
+      required: false
+    - description: Is this the primary email address for the associated resource.
+      name: userEmailAddressPrimary
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The email address of the user to update.
+      name: userEmailAddress
+      required: false
+    - description: The display name of the user to update.
+      name: displayName
+      required: false
+    - description: The profile URL of the user to update.
+      name: profileUrl
+      required: false
+    - description: The type of the user to update.
+      name: userType
+      required: false
+    - description: The title of the user to update.
+      name: title
+      required: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    description: Updates an IAM Identity Center user for your AWS account.
+    name: aws-iam-identitycenter-update-user
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: The Amazon Resource Name.
+      name: roleArn
+      required: false
+    - description: Role session duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role session name.
+      name: roleSessionName
+      required: false
+    - description: Identity store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the group to update.
+      name: displayName
+      required: true
+    - description: The description of the group to update.
+      name: description
+      required: true
+    description: Updates an IAM Identity Center group for your AWS account.
+    name: aws-iam-identitycenter-update-group
+  dockerimage: demisto/boto3py3:1.0.0.115129
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- AWS-IAMIdentityCenter-Test

@@ -1,0 +1,511 @@
+id: AWS-IAMIdentityCenter-Test
+version: -1
+name: AWS-IAMIdentityCenter-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e68d5257-dde6-4738-8461-926b3f675503
+    type: start
+    task:
+      id: e68d5257-dde6-4738-8461-926b3f675503
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a130e17b-50f6-4a05-80a2-5f7040656031
+    type: regular
+    task:
+      id: a130e17b-50f6-4a05-80a2-5f7040656031
+      version: -1
+      name: Create User
+      description: Creates a new IAM Identity Center user for your AWS account.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-create-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      displayName:
+        simple: test
+      familyName:
+        simple: testFam
+      givenName:
+        simple: test
+      userEmailAddress:
+        simple: test@example.com
+      userName:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6713ff9f-33f1-4bbe-8060-a12cfd156979
+    type: regular
+    task:
+      id: 6713ff9f-33f1-4bbe-8060-a12cfd156979
+      version: -1
+      name: Create Group
+      description: Creates a new IAM Identity Center group for your AWS account.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-create-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      description:
+        simple: new
+      displayName:
+        simple: GroupName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: caa168bc-b412-4d7f-8c21-a4fd44b0e58d
+    type: regular
+    task:
+      id: caa168bc-b412-4d7f-8c21-a4fd44b0e58d
+      version: -1
+      name: Get User
+      description: Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-get-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      userName:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 098dddb7-a148-46f6-8907-3cd2211e97d0
+    type: regular
+    task:
+      id: 098dddb7-a148-46f6-8907-3cd2211e97d0
+      version: -1
+      name: Add User To Group
+      description: Adds the specified user to the specified group.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-add-user-to-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "7"
+      - "8"
+    scriptarguments:
+      groupName:
+        simple: ${AWS.IAMIdentityCenter.Group.DisplayName}
+      userName:
+        simple: ${AWS.IAMIdentityCenter.User.UserName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8d4dca5f-6d8f-4b38-82d2-fc8e3db6e898
+    type: regular
+    task:
+      id: 8d4dca5f-6d8f-4b38-82d2-fc8e3db6e898
+      version: -1
+      name: Get Group
+      description: Get AWS IAM Identity Center group Information.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-get-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      displayName:
+        simple: GroupName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8f11f8eb-a3cd-406d-8a1b-d0e465dccff0
+    type: regular
+    task:
+      id: 8f11f8eb-a3cd-406d-8a1b-d0e465dccff0
+      version: -1
+      name: List Groups For User
+      description: Lists the IAM Identity Center groups that the specified IAM user belongs to.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-groups-for-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      userName:
+        simple: ${AWS.IAMIdentityCenter.User.UserName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a4790ee6-e42f-4034-88fb-4884ee424983
+    type: regular
+    task:
+      id: a4790ee6-e42f-4034-88fb-4884ee424983
+      version: -1
+      name: List Memberships
+      description: Lists the memberships of the group.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-memberships
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      groupName:
+        simple: ${AWS.IAMIdentityCenter.Group.DisplayName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1eb53488-dfe9-4f38-8377-e37265933b83
+    type: regular
+    task:
+      id: 1eb53488-dfe9-4f38-8377-e37265933b83
+      version: -1
+      name: Get User By Email
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-get-user-by-email
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      emailAddress:
+        simple: test@example.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d777736d-5e32-4882-8ed6-41375039c764
+    type: regular
+    task:
+      id: d777736d-5e32-4882-8ed6-41375039c764
+      version: -1
+      name: List Users
+      description: Lists the IAM users, returns all users in the AWS account.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-users
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4b35bd89-3e1c-489f-8a38-605442138b02
+    type: regular
+    task:
+      id: 4b35bd89-3e1c-489f-8a38-605442138b02
+      version: -1
+      name: List Groups
+      description: Lists all the IAM groups in the AWS account.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-list-groups
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4cef1817-d067-424b-852f-c8c6b4d92a37
+    type: regular
+    task:
+      id: 4cef1817-d067-424b-852f-c8c6b4d92a37
+      version: -1
+      name: Delete Group Membership
+      description: Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-delete-group-membership
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      userName:
+        simple: ${AWS.IAMIdentityCenter.User.UserName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d848ea88-8605-47f2-8081-a60447e0384c
+    type: regular
+    task:
+      id: d848ea88-8605-47f2-8081-a60447e0384c
+      version: -1
+      name: Delete Group
+      description: Removes the entered group.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-delete-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      groupName:
+        simple: ${AWS.IAMIdentityCenter.Group.DisplayName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 74865ca6-0986-41d5-8641-b44f9aec00ae
+    type: regular
+    task:
+      id: 74865ca6-0986-41d5-8641-b44f9aec00ae
+      version: -1
+      name: Delete user
+      description: Removes the entered user.
+      script: AWS - IAM Identity Center|||aws-iam-identitycenter-delete-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM Identity Center
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      userName:
+        simple: ${AWS.IAMIdentityCenter.User.UserName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1875,
+        "width": 810,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+description: If the creation of the user or group fails, please ensure to manually delete any existing users or groups that were not properly added.
+fromversion: 6.10.0

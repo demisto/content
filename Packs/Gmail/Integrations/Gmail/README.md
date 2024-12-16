@@ -20,15 +20,15 @@ You need to do the following in Google before configuring your integration insta
     2.  Click **CREATE**.
 4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.    
 
-    ![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
+    ![gmail_section1_step4](../../doc_files/gmail_section1_step4.png)
 5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
  
-    ![gmail_section1_step5](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step5.png)
+    ![gmail_section1_step5](../../doc_files/gmail_section1_step5.png)
 6.  In the **Grant this service account access to project** section,click **Continue**.
 7.  In the **Grant users access to this service account** section, click **DONE**.  
 8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
     
-    ![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
+    ![gmail_section1_step8](../../doc_files/gmail_section1_step8.png)   
 9. Click the **ADD KEY** dropdown, and select **Create new key**.
 10. Select Key type **JSON** and click **CREATE**.  
     This will generate a json **Private key** file that will be downloaded and saved locally.
@@ -61,7 +61,7 @@ To revoke or fetch a user role, you need an Immutable Google Apps ID.
 2. Navigate to **Security** -> **Authentication** -> **SSO with SAML applications**.
 3. Copy the **idpid** value from the **SSO URL**, this is the Immutable Google Apps ID.
 
-![gmail_section4_step3](https://raw.githubusercontent.com/demisto/content-docs/d8ca78236562702cd1347af133fbba09972a8160/docs/doc_imgs/integrations/gmail_section4_step3.png)
+![gmail_section4_step3](../../doc_files/gmail_section4_step3.png)
 
 ## Required Scopes
 
@@ -410,7 +410,6 @@ Retrieves a list of all Google roles for a specified user.
 ***
 Retrieves attachments from a sent Gmail message.
 
-
 #### Base Command
 
 `gmail-get-attachments`
@@ -419,12 +418,10 @@ Retrieves attachments from a sent Gmail message.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 
-
 #### Context Output
-
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -435,7 +432,8 @@ Retrieves attachments from a sent Gmail message.
 | File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
 | File.Size | Number | The size of the file in bytes. | 
 | File.SSDeep | String | The SSDeep hash of the file \(same as displayed in file entries\). | 
-
+| File.EntryID | String | The EntryID of the file. |
+| File.Extension | String | The file extension. For example: "xls". | 
 
 #### Command Example
 
@@ -447,7 +445,6 @@ Retrieves attachments from a sent Gmail message.
 ***
 Retrieves the Gmail message sent to a specified user.
 
-
 #### Base Command
 
 `gmail-get-mail`
@@ -457,9 +454,9 @@ Retrieves the Gmail message sent to a specified user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
-| include-attachments | Whether to include the attachment entries in the result or not. (Default: false). Possible values are: False, True. Default is False. | Optional |
+| include-attachments | Whether to include the attachment entries in the result or not. Possible values are: False, True. | Optional | 
 
 #### Context Output
 
@@ -471,8 +468,8 @@ Retrieves the Gmail message sent to a specified user.
 | Gmail.Labels | string | The labels of the specific email. | 
 | Gmail.To | String | The email address of the receiver. | 
 | Gmail.From | String | The email address of the sender. | 
-| Gmail.Cc | string | The additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
+| Gmail.Cc | string | Additional recipient email address \(CC\). | 
+| Gmail.Bcc | string | Additional recipient email address \(BCC\). | 
 | Gmail.Subject | string | The subject of the email. | 
 | Gmail.Body | string | The content of the email. | 
 | Gmail.Attachments.ID | String | The email attachment ID (as appear in gmail). | 
@@ -481,8 +478,8 @@ Retrieves the Gmail message sent to a specified user.
 | Gmail.Mailbox | string | The email mailbox. | 
 | Email.To | String | The recipient of the email. | 
 | Email.From | String | The sender of the email. | 
-| Email.CC | String | The additional recipient email address \(CC\). | 
-| Email.BCC | String | The additional recipient email address \(BCC\). | 
+| Email.CC | String | Additional recipient email address \(CC\). | 
+| Email.BCC | String | Additional recipient email address \(BCC\). | 
 | Email.Format | String | The format of the email. | 
 | Email.Body/HTML | String | The HTML version of the email. | 
 | Email.Body/Text | String | The plain-text version of the email. | 
@@ -498,6 +495,8 @@ Retrieves the Gmail message sent to a specified user.
 | File.Type | String | Relevant only when include-attachments is set to True. The file type, as determined by libmagic \(same as displayed in file entries\). | 
 | File.Size | Number | Relevant only when include-attachments is set to True. The size of the file in bytes. | 
 | File.SSDeep | String | Relevant only when include-attachments is set to True. The SSDeep hash of the file \(same as displayed in file entries\). | 
+| File.EntryID | string | The EntryID of the file. |
+| File.Extension | String | The file extension. For example: "xls". |
 
 #### Command Example
 
@@ -4753,6 +4752,7 @@ Sends mail using Gmail.
 | --- | --- | --- |
 | to | The email addresses of the receiver. | Required | 
 | from | The email address of the sender. | Optional | 
+| senderDisplayName | The sender Name that appears on the receiver side. | Optional |
 | body | The content (body) of the email to be sent in plain text. | Optional | 
 | subject | The subject for the email to be sent. | Required | 
 | attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 

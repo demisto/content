@@ -1,9 +1,9 @@
 import json
 import pytest
 from stix2 import TAXIICollectionSource, parse
-
+import demistomock as demisto  # noqa: F401
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
-    RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
+    RELATION, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
     CAMPAIGN, ATTACK_PATTERNS
 
@@ -118,9 +118,6 @@ def test_is_indicator_deprecated_or_revoked(indicator, expected_result):
     ('Intrusion Set', INTRUSION_SET.get('response'), INTRUSION_SET.get('map_result')),
     ('Malware', MALWARE.get('response'), MALWARE.get('map_result')),
     ('Tool', TOOL.get('response'), TOOL.get('map_result')),
-    ('STIX Tool', STIX_TOOL.get('response'), STIX_TOOL.get('map_result')),
-    ('STIX Malware', STIX_MALWARE.get('response'), STIX_MALWARE.get('map_result')),
-    ('STIX Attack Pattern', STIX_ATTACK_PATTERN.get('response'), STIX_ATTACK_PATTERN.get('map_result')),
     ('Campaign', CAMPAIGN.get('response'), CAMPAIGN.get('map_result')),
 ])
 def test_map_fields_by_type(indicator_type, indicator_json, expected_result):
@@ -272,16 +269,65 @@ def test_attack_pattern_reputation_command(mocker):
     assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'
 
 
+def test_attack_pattern_reputation_without_answer_command(mocker):
+    """
+    Given:
+        One attach pattern to retrive data on, that is not found in the collection
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Ensures the command_results is not empty and readable_output is as expected
+    """
+    from FeedMitreAttackv2 import attack_pattern_reputation_command
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_pattern': 'dummy attack pattern'}
+    command_results = attack_pattern_reputation_command('', args)
+
+    assert command_results
+    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: No Attack " \
+                                              "Patterns found for ['dummy attack pattern'] in the Enterprise collection."
+
+
+def test_get_mitre_value_from_id_without_answer_command(mocker):
+    """
+    Given:
+        One attach pattern to retrive data on, that is not found in the collection
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Ensures the command_results is not empty and readable_output is as expected
+    """
+    from FeedMitreAttackv2 import get_mitre_value_from_id
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_ids': ['dummy attack pattern id']}
+    command_results = get_mitre_value_from_id('', args)
+
+    assert command_results
+    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: " \
+                                              "No Attack Patterns found for ['dummy attack pattern id'] in the " \
+                                              "Enterprise collection."
+
+
 @pytest.mark.parametrize('description, expected_result', [
     ("Waterbear is modular malware attributed to BlackTech ...(Citation: Trend Micro Waterbear December 2019)",
      "Waterbear is modular malware attributed to BlackTech ..."),
     ("Adversaries may employ various means to detect and avoid debuggers.(Citation: ProcessHacker Github)\
-        (assuming a present debugger would “swallow” or handle the potential error).\
+(assuming a present debugger would “swallow” or handle the potential error).\
 (Citation: hasherezade debug)(Citation: AlKhaser Debug)(Citation: vxunderground debug)\
-            <code>OutputDebugStringW()</code>.(Citation: wardle evilquest partii)(Citation: Checkpoint Dridex Jan 2021)",
+<code>OutputDebugStringW()</code>.(Citation: wardle evilquest partii)(Citation: Checkpoint Dridex Jan 2021)",
      "Adversaries may employ various means to detect and avoid debuggers.\
-            (assuming a present debugger would “swallow” or handle the potential error).\
-                <code>OutputDebugStringW()</code>.")
+(assuming a present debugger would “swallow” or handle the potential error).\
+<code>OutputDebugStringW()</code>.")
 ])
 def test_remove_citations(description, expected_result):
     """
@@ -294,5 +340,30 @@ def test_remove_citations(description, expected_result):
     """
     from FeedMitreAttackv2 import remove_citations
     actual_result = remove_citations(description)
-    "Citation" not in actual_result
-    actual_result == expected_result
+    assert "Citation" not in actual_result
+    assert actual_result == expected_result
+
+
+def test_show_feeds_command(mocker):
+    """
+    Given:
+        A Client.
+    When:
+        Calling show_feeds_command method.
+    Then:
+        Validate the output extracted successfully.
+    """
+    from FeedMitreAttackv2 import show_feeds_command, Client
+    client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
+    default_id = NON_ENTERPRISE_COLLECTION_ID
+    nondefault_id = 2
+    client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
+    mocker.patch.object(demisto, 'results')
+    show_feeds_command(client)
+    assert demisto.results.call_count == 1
+    assert demisto.results.call_args[0][0] == {'Type': 1,
+                                               'Contents': [{'Name': 'default', 'ID': '101010101010101010101010101010101'},
+                                                            {'Name': 'not_default', 'ID': 2}],
+                                               'ContentsFormat': 'json',
+                                               'HumanReadable': '### MITRE ATT&CK Feeds:\n|Name|ID|\n|---|---|\n| default |\
+ 101010101010101010101010101010101 |\n| not_default | 2 |\n', 'ReadableContentsFormat': 'markdown'}

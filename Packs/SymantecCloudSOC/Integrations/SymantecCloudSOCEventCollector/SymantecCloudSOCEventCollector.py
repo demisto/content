@@ -220,7 +220,11 @@ def get_date_timestamp(str_date: str) -> datetime:
     Returns:
         - (datetime) A date.
     """
-    return datetime.strptime(str_date, DATE_FORMAT_SYMANTEC)
+    try:
+
+        return datetime.strptime(str_date, DATE_FORMAT_SYMANTEC)
+    except ValueError:
+        return datetime.strptime(str_date, DATE_FORMAT)
 
 
 def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,

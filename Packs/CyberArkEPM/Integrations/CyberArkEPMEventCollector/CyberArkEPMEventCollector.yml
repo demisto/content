@@ -1,0 +1,183 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: CyberArkEPMEventCollector
+  version: -1
+configuration:
+- additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon.'
+  display: SAML/EPM Logon URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Set name
+  additionalinfo: A comma-separated list of set names.
+  name: set_name
+  required: true
+  type: 0
+  section: Connect
+- additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
+  display: Application ID
+  name: application_id
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/api/v1/authn. See how to get the Authentication URL https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
+  advanced: true
+  display: Authentication URL
+  name: authentication_url
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
+  advanced: true
+  display: Application URL
+  name: application_url
+  required: false
+  type: 0
+  section: Connect
+- display: Trust any certificate (not secure)
+  advanced: true
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  advanced: true
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- defaultvalue: '5000'
+  display: Maximum number of events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 'false'
+  display: Enable admin audits events
+  name: enable_admin_audits
+  required: false
+  type: 8
+  section: Collect
+- display: Policy Audit Events
+  additionalinfo: A comma-separated list of policy audits event type to fetch
+  name: policy_audits_event_type
+  required: false
+  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
+  type: 16
+  options:
+  - AttackAttempt
+  - AttackBlock
+  - SuspiciousActivityAttempt
+  - SuspiciousActivityblock
+  - RestrictAccess
+  - DetectAccess
+  - Ransomware
+  - ElevationRequest
+  - Trust
+  - ManualRequest
+  - Installation
+  - Launch
+  - Block
+  - Access
+  - Skipped
+  section: Collect
+- display: Detailed Events
+  additionalinfo: A comma-separated list of detailed events event type to fetch
+  name: raw_events_event_type
+  required: false
+  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
+  type: 16
+  options:
+  - AttackAttempt
+  - AttackBlock
+  - SuspiciousActivityAttempt
+  - SuspiciousActivityblock
+  - RestrictAccess
+  - DetectAccess
+  - Ransomware
+  - ElevationRequest
+  - Trust
+  - ManualRequest
+  - Installation
+  - Launch
+  - Block
+  - Access
+  - Skipped
+  section: Collect
+description: CyberArk EPM Event Collector fetches events.
+display: CyberArk EPM Event Collector
+name: CyberArkEPMEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Date to return results from. (in ISO format '01-01-24T00:00:00.123Z').
+      name: from_date
+    description: Gets policy audits from Cyber Ark EPM.
+    execution: false
+    name: cyberarkepm-get-policy-audits
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Date to return results from. (in ISO format '01-01-24T00:00:00.123Z').
+      name: from_date
+    description: Gets admin audits from Cyber Ark EPM.
+    execution: false
+    name: cyberarkepm-get-admin-audits
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - defaultValue: '5'
+      description: Maximum number of results to return.
+      name: limit
+    - description: Date to return results from. (in ISO format '01-01-24T00:00:00.123Z').
+      name: from_date
+    description: Gets events from Cyber Ark EPM.
+    execution: false
+    name: cyberarkepm-get-events
+  dockerimage: demisto/btfl-soup:1.0.1.115405
+  isfetchevents: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.2.0
+tests:
+- No tests (auto formatted)

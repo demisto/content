@@ -312,7 +312,7 @@ def test_fetch_indicators_command(mocker):
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
-    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+    assert {'fields': {'recordedfutureevidencedetails': [], 'recordedfutureriskscore': None, 'tags': []},
             'rawJSON': {'Name': '192.168.0.1',
                         'a': '3',
                         'type': 'IP',
@@ -345,7 +345,7 @@ def test_fetch_indicators_risk_threshold_command(mocker):
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
-    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+    assert {'fields': {'recordedfutureevidencedetails': [], 'recordedfutureriskscore': '80', 'tags': []},
             'rawJSON': {'Criticality Label': 'Malicious',
                         'Name': '192.168.0.1',
                         'Risk': '80',
@@ -514,3 +514,18 @@ def test_duplicated_indicator_in_the_same_batch(mocker):
     indicators_occurrences = collections.Counter(indicators_values)
     assert indicators_occurrences.get('http://www.test.duckdns.org/') == 1
     assert indicators_occurrences.get('http://www.test.duckdns.ORG/') == 1
+
+
+def test_client_init_with_null_values():
+    """
+    Given:
+     - malicious_threshold, suspicious_threshold, and risk_score_threshold params all set to None
+
+    When:
+     - Initializing a client
+
+    Then:
+     - Verify that no errors were thrown (especially the part that check that malicious_threshold <= suspicious_threshold)
+    """
+    Client(indicator_type='ip', api_token='123', services=[
+        'fusion'], malicious_threshold=None, suspicious_threshold=None)

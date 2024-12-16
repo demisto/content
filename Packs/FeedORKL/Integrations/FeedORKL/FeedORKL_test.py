@@ -84,7 +84,7 @@ class TestTestModule(unittest.TestCase):
         result = module_of_testing(self.client)
 
         # Assert
-        self.assertEqual(result, 'ok')
+        assert result == 'ok'
 
     @patch.object(Client, 'fetch_indicators')
     def test_test_module_no_data(self, mock_fetch):
@@ -95,7 +95,7 @@ class TestTestModule(unittest.TestCase):
         result = module_of_testing(self.client)
 
         # Assert
-        self.assertTrue(result.startswith('Test Command Error:'))
+        assert result.startswith('Test Command Error:')
 
     @patch.object(Client, 'fetch_indicators')
     def test_test_module_exception(self, mock_fetch):

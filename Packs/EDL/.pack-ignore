@@ -9,3 +9,15 @@ ignore=RM106
 
 [file:playbook-PAN-OS_EDL_Service_Configuration.yml]
 ignore=PB116
+
+# GR103 is temporary, see CIAC-11705
+[file:Tag_massive_and_internal_IOCs_to_avoid_EDL_listing.yml]
+ignore=GR103
+[file:incidentfield-EDL_Indicator_Type.json]
+ignore=GR103
+[file:incidentfield-EDL_Indicators_List.json]
+ignore=GR103
+[file:incidentfield-EDL_Tag.json]
+ignore=GR103
+[file:incidentfield-EDL_Action.json]
+ignore=GR103

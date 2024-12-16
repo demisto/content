@@ -1,5 +1,5 @@
 import time
-import sys
+from unittest.mock import MagicMock
 
 import demistomock as demisto
 import requests_mock
@@ -154,61 +154,6 @@ def test_build_finished_job():
     assert build_finished_job('test', 'test') == {'JobID': 'test', 'SampleID': 'test', 'Status': 'Finished/NotExists'}
 
 
-def test_rate_limit(requests_mock):
-    requests_mock.get(
-        "https://cloud.vmray.com/rest/submission/123",
-        [
-            {
-                "status_code": 429,
-                "json": {
-                    "error_msg": "Request was throttled. Expected available in 2 seconds.",
-                    "result": "error"
-                },
-                "headers": {
-                    "Retry-After": "2"
-                }
-            },
-            {
-                "status_code": 200,
-                "json": {
-                    "foo": "bar"
-                }
-            }
-        ]
-    )
-
-    from VMRay import http_request
-    response = http_request("GET", "submission/123")
-
-    assert requests_mock.call_count == 2
-    assert response == {"foo": "bar"}
-
-
-def test_rate_limit_max_retries(requests_mock, mocker):
-    mocker.patch.object(sys, "exit", return_value=None)
-    requests_mock.get(
-        "https://cloud.vmray.com/rest/analysis/123",
-        [
-            {
-                "status_code": 429,
-                "json": {
-                    "error_msg": "Request was throttled. Expected available in 60 seconds.",
-                    "result": "error"
-                },
-                "headers": {
-                    "Retry-After": "60"
-                }
-            }
-        ]
-    )
-
-    from VMRay import http_request
-    response = http_request("GET", "analysis/123")
-
-    assert requests_mock.call_count == 11
-    assert response["error_msg"] == "Request was throttled. Expected available in 60 seconds."
-
-
 def test_billing_type(requests_mock):
     requests_mock.get(
         MOCK_URL + "rest/analysis/123",
@@ -269,3 +214,61 @@ def test_get_screenshots_command(requests_mock, mocker):
         file_type=EntryType.IMAGE,
     )
     return_results_mock.assert_called_once_with([file_result_return_value])
+
+
+@pytest.fixture
+def mock_http_request(mocker):
+    """Fixture to mock VMRay.generic_http_request with a specific response."""
+    is_json = MagicMock()
+    is_json.return_value = True
+    mocker.patch('VMRay.is_json', return_value=is_json)
+
+    def mock_request(method=None, url_suffix=None, params=None, files=None, get_raw=False, ignore_errors=False, status_code=200,
+                     response_data=None, text=None):
+        mock_response = MagicMock()
+        mock_response.status_code = status_code
+        if response_data:
+            mock_response.json.return_value = response_data
+        if text:
+            mock_response.text = text
+        mocker.patch('VMRay.generic_http_request', return_value=mock_response)
+        return mock_request
+
+    return mock_request
+
+
+def test_http_request_success_200(mock_http_request):
+    """
+     Given: A successfully http request.
+     When: Making a http request.
+     Then: Assert correct data is returned.
+    """
+    from VMRay import http_request
+
+    # Configure mock_http_request with desired status code and data
+    mock_http_request(status_code=200, response_data={"data": "success"})
+
+    # Call the function
+    response = http_request("GET", "/api/endpoint")
+
+    assert response == {"data": "success"}
+
+
+def test_http_request_rate_limit_exceeded(mocker, mock_http_request):
+    """
+     Given: A failing http request.
+     When: Making a http request.
+     Then: Assert correct error message is returned.
+    """
+    from VMRay import http_request
+
+    error_mock = mocker.patch('VMRay.return_error')
+
+    # Configure mock_http_request for rate limit exceeded (429)
+    mock_http_request(status_code=429, response_data={"message": "Rate limit exceeded"}, text="Rate limit exceeded")
+
+    # Call the function
+    http_request("GET", "/api/endpoint")
+
+    # Assert expected behavior in the error message
+    assert "Rate limit exceeded" in error_mock.call_args[0][0]

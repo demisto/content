@@ -1,0 +1,28 @@
+args:
+- description: This is the ASM Service ID.
+  name: service_id
+  required: true
+- description: This is the ASM attack surface rule ID.
+  name: attack_surface_rule_id
+  required: true
+- description: This is the ASM alert ID.
+  name: alert_internal_id
+  required: true
+comment: This script starts an RCS scan and sets the scan ID in context.
+commonfields:
+  id: 'RCSScan'
+  version: -1
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: RCSScan
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

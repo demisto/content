@@ -2,13 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-""" IMPORTS """
-from datetime import datetime
-import requests
-import base64
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # type: ignore
 
 """ GLOBALS """
 HEADERS = {
@@ -172,7 +165,7 @@ def login():
         return_error('Failed to login, check integration parameters.')
 
     try:
-        res_json = res.json()
+        res_json = parse_json_response(res)
         if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
             auth_token = res_json.get('log.loginResponse').get('log.return')
             if demisto.command() not in ['test-module', 'fetch-incidents']:
@@ -265,7 +258,7 @@ def get_query_viewer_results(query_viewer_id):
             return_error('Failed to get query viewer results.')
 
     return_object = None
-    res_json = res.json()
+    res_json = parse_json_response(res)
 
     if "qvs.getMatrixDataResponse" in res_json and "qvs.return" in res_json["qvs.getMatrixDataResponse"]:
         # ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
@@ -443,7 +436,7 @@ def get_case(resource_id, fetch_base_events=False):
         else:
             return_error(f'Failed to get case. StatusCode: {res.status_code}')
 
-    res_json = res.json()
+    res_json = parse_json_response(res)
     if 'cas.getResourceByIdResponse' in res_json and 'cas.return' in res_json.get('cas.getResourceByIdResponse'):
         case = res_json.get('cas.getResourceByIdResponse').get('cas.return')
 
@@ -500,7 +493,8 @@ def get_all_cases_command():
         demisto.debug(res.text)
         return_error(f'Failed to get case list. StatusCode: {res.status_code}')
 
-    contents = res.json().get('cas.findAllIdsResponse').get('cas.return')
+    res_json = parse_json_response(res)
+    contents = res_json.get('cas.findAllIdsResponse').get('cas.return')
     human_readable = tableToMarkdown(name='All cases', headers='caseID', t=contents, removeNull=True)
     outputs = {'ArcSightESM.AllCaseIDs': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -562,7 +556,7 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
             'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
                 event_ids, BASE_URL + query_path, res.status_code, res.text))
 
-    res_json = res.json()
+    res_json = parse_json_response(res)
     if res_json.get('sev.getSecurityEventsResponse') and res_json.get('sev.getSecurityEventsResponse').get(
             'sev.return'):
         events = res_json.get('sev.getSecurityEventsResponse').get('sev.return')
@@ -619,11 +613,10 @@ def update_case(case_id, stage, severity):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error('Failed to get security update case {}. \nPlease make sure user have edit permissions,'
-                     ' or case is unlocked. \nStatus Code: {}\nResponse Body: {}'.format(case_id, res.status_code,
-                                                                                         res.text))
+        return_error(f'Failed to get security update case {case_id}. \nPlease make sure user have edit permissions,'
+                     f' or case is unlocked. \nStatus Code: {res.status_code}\nResponse Body: {res.text}')
 
-    res_json = res.json()
+    res_json = parse_json_response(res)
     if 'cas.updateResponse' in res_json and 'cas.return' in res_json.get('cas.updateResponse'):
         return case
 
@@ -663,7 +656,7 @@ def get_case_event_ids_command():
         demisto.debug(res.text)
         return_error(f"Failed to get Event IDs with:\nStatus Code: {res.status_code}\nResponse: {res.text}")
 
-    res_json = res.json()
+    res_json = parse_json_response(res)
     if 'cas.getCaseEventIDsResponse' in res_json and 'cas.return' in res_json.get('cas.getCaseEventIDsResponse'):
         event_ids = res_json.get('cas.getCaseEventIDsResponse').get('cas.return')
         if not isinstance(event_ids, list):
@@ -738,7 +731,7 @@ def get_entries_command(use_rest, args):
             resource_id, res.status_code, body, res.text))
 
     if use_rest:
-        res_json = res.json()
+        res_json = parse_json_response(res)
         raw_entries = res_json.get('act.getEntriesResponse', {}).get('act.return', {})
     else:
         res_json = json.loads(xml2json((res.text).encode('utf-8')))
@@ -833,10 +826,8 @@ def entries_command(func):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to add entries. Please make sure to enter Active List resource ID"
-                     "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
-                                                                                                 res.status_code, body,
-                                                                                                 res.text))
+        return_error(f"Failed to {func}. Please make sure to enter Active List resource ID"
+                     f"\nResource ID: {resource_id}\nStatus Code: {res.status_code}\nRequest Body: {body}\nResponse: {res.text}")
 
     demisto.results("Success")
 
@@ -908,7 +899,7 @@ def get_all_query_viewers_command():
         demisto.debug(res.text)
         return_error(f"Failed to get query viewers:\nStatus Code: {res.status_code}\nResponse: {res.text}")
 
-    res_json = res.json()
+    res_json = parse_json_response(res)
     if 'qvs.findAllIdsResponse' in res_json and 'qvs.return' in res_json.get('qvs.findAllIdsResponse'):
         query_viewers = res_json.get('qvs.findAllIdsResponse').get('qvs.return')
 
@@ -919,6 +910,41 @@ def get_all_query_viewers_command():
 
     else:
         demisto.results('No Query Viewers were found')
+
+
+def parse_json_response(response: requests.Response):
+    """
+    Parse the response to JSON.
+    If the parsing fails due to an invalid escape sequence, the function will attempt to fix the response data.
+
+    Args:
+        response: The response to parse.
+
+    Raises:
+        JSONDecodeError: If the response data could not be parsed to JSON.
+    """
+    try:
+        return response.json()
+
+    except requests.exceptions.JSONDecodeError as e:
+        demisto.debug(f'Failed to parse response to JSON.\n'
+                      f'HTTP status code: {response.status_code}\n'
+                      f'Headers: {response.headers}\n'
+                      f'Response:\n{response.text}\n\n'
+                      'Attempting to fix invalid escape sequences and parse the response again.')
+
+        # Replace triple backslashes (where the last one doesn't escape anything) with two backslashes.
+        fixed_response_text = re.sub(r'(?<!\\)((\\\\)*)\\(?![\\"])', r'\1\\\\', response.text)
+
+        try:
+            fixed_response_json = json.loads(fixed_response_text)
+
+        except json.JSONDecodeError:
+            demisto.debug('Failed to parse modified response as JSON. Raising original exception.')
+            raise e  # Raise the original exception
+
+        demisto.debug('Response successfully parsed after fixing invalid escape sequences.')
+        return fixed_response_json
 
 
 AUTH_TOKEN: str

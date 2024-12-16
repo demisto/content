@@ -2,7 +2,7 @@
     "name": "XSOAR Content Update Notifications",
     "description": "This pack will check for any available content updates for existing packs and send an e-mail or Slack message to users to inform them of the updates.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.10",
     "author": "Adam Burt and XSOAR Labs",
     "url": "",
     "email": "",

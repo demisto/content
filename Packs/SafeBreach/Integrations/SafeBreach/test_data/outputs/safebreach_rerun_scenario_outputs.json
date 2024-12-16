@@ -1,0 +1,169 @@
+{
+  "outputs": {
+    "fail": {},
+    "success": {
+      "data": {
+        "name": "Dummy - Baseline",
+        "steps": [
+          {
+            "id": 199,
+            "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed",
+            "attacksFilter": {
+              "tags": {
+                "Security Controls": {
+                  "operator": "is",
+                  "values": [
+                    "Endpoint"
+                  ],
+                  "name": "security controls"
+                }
+              },
+              "playbook": {
+                "operator": "is",
+                "values": [],
+                "name": "playbook"
+              }
+            },
+            "attackerFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ]
+              }
+            },
+            "targetFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ]
+              }
+            },
+            "systemFilter": {
+              "bypassProxy": {
+                "operator": "is",
+                "values": [
+                  true
+                ],
+                "name": "bypassproxy"
+              },
+              "proxies": {
+                "operator": "is",
+                "values": [],
+                "name": "proxies"
+              }
+            },
+            "name": "Host actions",
+            "stepRunId": "1694765411978.152",
+            "planRunId": "1694765411978.151"
+          }
+        ],
+        "originalPlan": {
+          "name": "Dummy - Baseline",
+          "steps": [
+            {
+              "id": 199,
+              "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed",
+              "attacksFilter": {
+                "tags": {
+                  "Security Controls": {
+                    "operator": "is",
+                    "values": [
+                      "Endpoint"
+                    ],
+                    "name": "security controls"
+                  }
+                },
+                "playbook": {
+                  "operator": "is",
+                  "values": [
+                    1552,
+                    1558,
+                    3075,
+                    3199,
+                    6180,
+                    2337,
+                    4136,
+                    3680,
+                    2221,
+                    2264,
+                    5307,
+                    1465,
+                    6246,
+                    5388,
+                    2195,
+                    2196,
+                    2389,
+                    2353,
+                    795,
+                    2199,
+                    2243,
+                    2608
+                  ],
+                  "name": "playbook"
+                }
+              },
+              "attackerFilter": {
+                "simulators": {
+                  "operator": "is",
+                  "values": [
+                    "0000000-0000-0000-0000-00000000"
+                  ]
+                }
+              },
+              "targetFilter": {
+                "simulators": {
+                  "operator": "is",
+                  "values": [
+                    "0000000-0000-0000-0000-00000000"
+                  ]
+                }
+              },
+              "systemFilter": {
+                "bypassProxy": {
+                  "operator": "is",
+                  "values": [
+                    true
+                  ],
+                  "name": "bypassproxy"
+                },
+                "proxies": {
+                  "operator": "is",
+                  "values": [],
+                  "name": "proxies"
+                }
+              },
+              "name": "Host actions"
+            }
+          ]
+        },
+        "ranBy": 123456789000002,
+        "ranFrom": "UI",
+        "enableFeedbackLoop": true,
+        "planRunId": "1694765411978.151",
+        "priority": "low",
+        "retrySimulations": false,
+        "edges": [
+          {
+            "from": 0,
+            "to": 1
+          }
+        ],
+        "actions": [
+          {
+            "id": 1,
+            "type": "multiAttack",
+            "data": {
+              "id": 199
+            }
+          }
+        ],
+        "flowControl": {
+          "pointer": 0,
+          "conditionResults": {}
+        }
+      }
+    }
+  }
+}

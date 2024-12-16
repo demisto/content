@@ -1,0 +1,3 @@
+[file:playbook-CVE-2022-3786_&_CVE-2022-3602_-_OpenSSL_X.509_Buffer_Overflows.yml]
+ignore=GR107
+

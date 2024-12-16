@@ -54,7 +54,7 @@ def unicode_dict_reader(csv_data, **kwargs):
 
                 counter = 0
                 for val in value:
-                    col_name = 'NO_NAME_COLUMN_{}'.format(counter)
+                    col_name = f'NO_NAME_COLUMN_{counter}'
                     row_dict[col_name] = val
                     counter += 1
 
@@ -77,7 +77,7 @@ def unicode_dict_reader(csv_data, **kwargs):
         """
         first_row = arr[0]
         for counter in range(no_name_columns_counter):
-            first_row['NO_NAME_COLUMN_{}'.format(counter)] = ""
+            first_row[f'NO_NAME_COLUMN_{counter}'] = ""
 
     return arr
 
@@ -92,7 +92,7 @@ def get_entry_by_file_name(file_name):
 
         if file_name.lower() == fn.lower():
             return entry
-    raise ValueError('Was unable to find "{}" in the war room. Please ensure the file was uploaded.'.format(file_name))
+    raise ValueError(f'Was unable to find "{file_name}" in the war room. Please ensure the file was uploaded.')
 
 
 csv_entry = None
@@ -124,7 +124,7 @@ def main():
     parse_ip = int(d_args['ips']) if 'ips' in d_args else -1
     parse_domain = int(d_args['domains']) if 'domains' in d_args else -1
     parse_hash = int(d_args['hashes']) if 'hashes' in d_args else -1
-    parse_all = True if d_args['parseAll'] == 'yes' else False
+    parse_all = d_args['parseAll'] == 'yes'
 
     if parse_ip == -1 and parse_domain == -1 and parse_hash == -1 and not parse_all:
         return_error('Select a field to extract or set parseAll=yes to parse the whole CSV file')
@@ -142,7 +142,7 @@ def main():
 
     res = demisto.getFilePath(entry_id)
     if not res:
-        return_error("Entry {} not found".format(entry_id))
+        return_error(f"Entry {entry_id} not found")
 
     file_path = res['path']
     file_name = res['name']
@@ -186,7 +186,7 @@ def main():
         if sum(1 for line in open(file_path)) <= 1:  # checks if there are less than one line
             return_error('No data to parse. CSV file might be empty or one-lined. try the `ParseAll=yes` argument.')
 
-        with open(file_path, 'rU') as f:
+        with open(file_path) as f:
             has_header = csv.Sniffer().has_header(f.read(1024))
             f.seek(0)
             csv_data = csv.reader(f)

@@ -12,3 +12,7 @@ ignore=BA101
 
 [known_words]
 Adhoc
+
+# GR103 is temporary, see CIAC-11705
+[file:AnsibleTower-_Test_playbook.yml]
+ignore=GR103

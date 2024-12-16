@@ -44,7 +44,9 @@ args:
 - name: additionalPollingCommandArgValues
   description: Values of the additional arguments for the polling command (e.g. value1,value2,...).
   isArray: true
+- name: extractMode
+  description: Extraction mode for subsequent runs of the command.
 scripttarget: 0
 tests:
 - Generic Polling Test
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186

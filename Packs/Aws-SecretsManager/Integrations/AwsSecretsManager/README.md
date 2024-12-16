@@ -1,31 +1,31 @@
 AWS Secrets Manager helps you to securely encrypt, store, and retrieve credentials for your databases and other services.
 This integration was integrated and tested with version 1.0 of AwsSecretsManager
 
-## Configure Aws Secrets Manager on Cortex XSOAR
+## Configure Aws Secrets Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Aws Secrets Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | AWS Default Region |  | True |
-    | Role Arn |  | False |
-    | Role Session Name |  | False |
-    | Role Session Duration |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout separated from the read timeout with a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | Fetches credentials |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AWS Default Region |  | True |
+| Role Arn |  | False |
+| Role Session Name |  | False |
+| Role Session Duration |  | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout separated from the read timeout with a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| Fetches credentials |  | False |
+| AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Disable sensitive commands | Disables the following sensitive commands from running: aws-secrets-manager-secret–value-get. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aws-secrets-manager-secret-list
+
 ***
 Retrieve all secrets.
 
@@ -33,6 +33,7 @@ Retrieve all secrets.
 #### Base Command
 
 `aws-secrets-manager-secret-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,8 +76,11 @@ Retrieve all secrets.
 | AWS.SecretsManager.Secret.SecretList.SecretVersionsToStages.ac32e535-79e7-4188-a732-7f02dbe399f0 | String | The SecretVersionStage staging labels for the provided hash. | 
 
 #### Command example
+
 ```!aws-secrets-manager-secret-list```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -95,7 +99,7 @@ Retrieve all secrets.
                 },
                 "SecretList": [
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc",
                         "CreatedDate": "2022-09-04T09:10:12",
                         "LastAccessedDate": "2022-10-23T00:00:00",
                         "LastChangedDate": "2022-10-23T13:40:55",
@@ -108,7 +112,7 @@ Retrieve all secrets.
                         "Tags": []
                     },
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:gmail-oF08mg",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:gmail-oF08mg",
                         "CreatedDate": "2022-08-31T09:47:24",
                         "LastAccessedDate": "2022-10-23T00:00:00",
                         "LastChangedDate": "2022-08-31T09:47:24",
@@ -121,7 +125,7 @@ Retrieve all secrets.
                         "Tags": []
                     },
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:DB_credentials-3ic9K7",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:DB_credentials-3ic9K7",
                         "CreatedDate": "2022-08-31T09:45:33",
                         "LastAccessedDate": "2022-10-23T00:00:00",
                         "LastChangedDate": "2022-08-31T09:45:33",
@@ -134,7 +138,7 @@ Retrieve all secrets.
                         "Tags": []
                     },
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:test_for_moishy-fVYXb6",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_account",
                         "CreatedDate": "2022-08-21T13:54:05",
                         "Description": "new description",
                         "LastAccessedDate": "2022-10-23T00:00:00",
@@ -160,15 +164,17 @@ Retrieve all secrets.
 #### Human Readable Output
 
 >### AWS Secrets List
+
 >|ARN|Description|LastAccessedDate|Name|
 >|---|---|---|---|
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc |  | 2022-10-23T13:40:55 | fdff |
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:gmail-oF08mg |  | 2022-08-31T09:47:24 | gmail |
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:DB_credentials-3ic9K7 |  | 2022-08-31T09:45:33 | DB_credentials |
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:test_for_moishy-fVYXb6 | new description | 2022-09-08T07:14:13 | test_for_moishy |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc |  | 2022-10-23T13:40:55 | fdff |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:gmail-oF08mg |  | 2022-08-31T09:47:24 | gmail |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:DB_credentials-3ic9K7 |  | 2022-08-31T09:45:33 | DB_credentials |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_account | new description | 2022-09-08T07:14:13 | test_for_moishy |
 
 
 ### aws-secrets-manager-secret–value-get
+
 ***
 Retrieve a secret value by key.
 
@@ -176,6 +182,7 @@ Retrieve a secret value by key.
 #### Base Command
 
 `aws-secrets-manager-secret–value-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -207,15 +214,18 @@ Retrieve a secret value by key.
 | AWS.SecretsManager.Secret.SecretValue.ResponseMetadata.RetryAttempts | Number | The number of HTTP header response retry attempts. | 
 
 #### Command example
+
 ```!aws-secrets-manager-secret–value-get secret_id="fdff"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
         "SecretsManager": {
             "Secret": {
                 "SecretValue": {
-                    "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc",
+                    "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc",
                     "CreatedDate": "2022-09-04T09:10:13",
                     "Name": "fdff",
                     "ResponseMetadata": {
@@ -244,12 +254,14 @@ Retrieve a secret value by key.
 #### Human Readable Output
 
 >### AWS Get Secret
+
 >|ARN|CreatedDate|Name|SecretBinary|SecretString|
 >|---|---|---|---|---|
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc | 2022-09-04T09:10:13 | fdff |  | {"password":"cvcvcv","username":"cvcvcv"} |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc | 2022-09-04T09:10:13 | fdff |  | {"password":"cvcvcv","username":"cvcvcv"} |
 
 
 ### aws-secrets-manager-secret–delete
+
 ***
 Delete a specific secret.
 
@@ -257,6 +269,7 @@ Delete a specific secret.
 #### Base Command
 
 `aws-secrets-manager-secret–delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -272,13 +285,17 @@ Delete a specific secret.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-secrets-manager-secret–delete secret_id="fdff"```
+
 #### Human Readable Output
 
 >The Secret was Deleted
 
 ### aws-secrets-manager-secret–restore
+
 ***
 Restore a specific secret after deletion.
 
@@ -286,6 +303,7 @@ Restore a specific secret after deletion.
 #### Base Command
 
 `aws-secrets-manager-secret–restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -299,13 +317,17 @@ Restore a specific secret after deletion.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!aws-secrets-manager-secret–restore secret_id="fdff"```
+
 #### Human Readable Output
 
 >the secret was restored successfully
 
 ### aws-secrets-manager-secret–policy-get
+
 ***
 Get the Secret Manager policy for a specific secret.
 
@@ -313,6 +335,7 @@ Get the Secret Manager policy for a specific secret.
 #### Base Command
 
 `aws-secrets-manager-secret–policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -338,14 +361,17 @@ Get the Secret Manager policy for a specific secret.
 | AWS.SecretsManager.Policy.ResponseMetadata.RetryAttempts | Number | The number of HTTP header response retry attempts. | 
 
 #### Command example
+
 ```!aws-secrets-manager-secret–policy-get secret_id="fdff"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
         "SecretsManager": {
             "Policy": {
-                "ARN": "arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc",
+                "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc",
                 "Name": "fdff",
                 "ResponseMetadata": {
                     "HTTPHeaders": {
@@ -367,7 +393,7 @@ Get the Secret Manager policy for a specific secret.
 #### Human Readable Output
 
 >### AWS Secret Policy
+
 >|ARN|Name|Policy|
 >|---|---|---|
->| arn:aws:secretsmanager:eu-central-1:654338056632:secret:fdff-vnNyyc | fdff |  |
-
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc | fdff |  |

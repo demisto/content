@@ -9,7 +9,7 @@ function isIntegrationAvailable(brandName, allInstances) {
 
     return {
         'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
+        'ContentsFormat': formats['text'],
         'Contents': readableOutput,
         'HumanReadable': readableOutput,
         'EntryContext': {'brandInstances': brandInstances}

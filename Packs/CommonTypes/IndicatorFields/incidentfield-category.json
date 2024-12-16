@@ -18,11 +18,8 @@
     "breachScript": "",
     "editForm": true,
     "description": "",
-    "associatedToAll": false,
+    "associatedToAll": true,
     "associatedTypes": [
-        "URL",
-        "Domain",
-        "DomainGlob"
     ],
     "caseInsensitive": true,
     "columns": null,

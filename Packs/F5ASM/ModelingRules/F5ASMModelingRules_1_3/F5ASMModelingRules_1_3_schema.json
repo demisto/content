@@ -60,6 +60,30 @@
       "type": "string",
       "is_array": false
     },
+    "dvc": {
+      "type": "string",
+      "is_array": false
+    },
+    "act": {
+      "type": "string",
+      "is_array": false
+    },
+    "suid": {
+      "type": "string",
+      "is_array": false
+    },
+    "externalID": {
+      "type": "int",
+      "is_array": false
+    },
+    "cefseverity": {
+      "type": "int",
+      "is_array": false
+    },
+    "cs5": {
+      "type": "string",
+      "is_array": false
+    },        
     "request": {
       "type": "string",
       "is_array": false

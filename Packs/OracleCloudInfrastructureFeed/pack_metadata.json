@@ -2,13 +2,13 @@
     "name": "Oracle Cloud Infrastructure Feed",
     "description": "This feed provides information about public IP address ranges for services that are deployed in Oracle Cloud Infrastructure.\nSee additional information in this link:\nhttps://docs.oracle.com/en-us/iaas/Content/General/Concepts/addressranges.htm",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Rod Gonzalez",
     "url": "",
     "email": "",
     "created": "2023-06-22T18:59:06Z",
     "categories": [
-            "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],

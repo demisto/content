@@ -16,8 +16,8 @@ import copy
 urllib3.disable_warnings()
 
 ''' GLOBALS '''
-USERNAME = demisto.params().get('username')
-API_KEY = demisto.params().get('apikey')
+USERNAME = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('username')
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 RISK_THRESHOLD = arg_to_number(demisto.params().get('risk_threshold')) or 70
 YOUNG_DOMAIN_TIMEFRAME = arg_to_number(demisto.params().get('young_domain_timeframe')) or 7
 VERIFY_CERT = not demisto.params().get('insecure', False)
@@ -94,13 +94,16 @@ def http_request(method, params=None):
     Returns: request result
 
     """
+    proxy_url = PROXIES.get('https') if PROXIES.get('https') != '' else PROXIES.get('http')
+    if not (USERNAME and API_KEY):
+        raise DemistoException("The 'API Username' and 'API Key' parameters are required.")
     api = API(
         USERNAME,
         API_KEY,
         app_partner='cortex_xsoar',
         app_name='iris-plugin',
         app_version='2.0',
-        proxy_url=PROXIES,
+        proxy_url=proxy_url,
         verify_ssl=VERIFY_CERT,
         always_sign_api_key=True
     )
@@ -155,7 +158,7 @@ def prune_context_data(data_obj):
     items_to_prune = []
     if isinstance(data_obj, dict) and len(data_obj):
         for k, v in data_obj.items():
-            if isinstance(data_obj[k], dict) or isinstance(data_obj[k], list):
+            if isinstance(data_obj[k], dict | list):
                 prune_context_data(data_obj[k])
             if not isinstance(v, int) and not v:
                 items_to_prune.append(k)
@@ -287,8 +290,8 @@ def create_results(domain_result):
             'Postal': contact_data.get('postal'),
             'Org': contact_data.get('org')
         }
-    soa_email = [soa_email for soa_email in domain_result.get('soa_email')]
-    ssl_email = [ssl_email for ssl_email in domain_result.get('ssl_email')]
+    soa_email = list(domain_result.get('soa_email'))
+    ssl_email = list(domain_result.get('ssl_email'))
     email_domains = [email_domain.get('value') for email_domain in domain_result.get('email_domain')]
     additional_whois_emails = domain_result.get('additional_whois_email')
     domain_registrar = domain_result.get('registrar')
@@ -368,12 +371,12 @@ def create_results(domain_result):
     registrar = domain_result.get('registrar')
     registrant_country = domain_result.get('registrant_contact', {}).get('country', {}).get('value')
     admin_name = domain_result.get('admin_contact', {}).get('name', {}).get('value')
-    admin_email = [email for email in domain_result.get('admin_contact', {}).get('email', [])]
+    admin_email = list(domain_result.get('admin_contact', {}).get('email', []))
     admin_phone = domain_result.get('admin_contact', {}).get('phone', {}).get('value')
     admin_country = domain_result.get('admin_contact', {}).get('country', {}).get('value')
     threat_types = format_risk_grid(domain_result.get('domain_risk', {}))
     tech_name = domain_result.get('technical_contact', {}).get('name', {}).get('value')
-    tech_email = [email for email in domain_result.get('technical_contact', {}).get('email', [])]
+    tech_email = list(domain_result.get('technical_contact', {}).get('email', []))
     tech_org = domain_result.get('technical_contact', {}).get('org', {}).get('value')
     tech_country = domain_result.get('technical_contact', {}).get('country', {}).get('value')
     rank = [Common.Rank(source="DomainTools Popularity Rank", rank=popularity_rank if popularity_rank else 'None')]
@@ -1548,6 +1551,7 @@ def parsed_whois_command():
     results = CommandResults(
         indicator=domain_indicator,
         readable_output=human_readable,
+        raw_response=parsed,
         ignore_auto_extract=True
     )
 

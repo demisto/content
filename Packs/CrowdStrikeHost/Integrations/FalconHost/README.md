@@ -96,7 +96,7 @@
 <h5>Command Example</h5>
 <p><code>!cs-upload-ioc type=ipv4 value=8.8.8.8</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44453104-f119a280-a600-11e8-801c-5ed975c90dbf.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44453104-f119a280-a600-11e8-801c-5ed975c90dbf.png" alt="screen shot 2018-08-22 at 11 44 48"></a></p>
+<p><a href="../../doc_files/44453104-f119a280-a600-11e8-801c-5ed975c90dbf.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44453104-f119a280-a600-11e8-801c-5ed975c90dbf.png" alt="screen shot 2018-08-22 at 11 44 48"></a></p>
 <h3 id="h_595229102941535449358310">2. Get definitions of monitored indicators</h3>
 <hr>
 <p>Get the full definition of one or more indicators that you are watching</p>
@@ -130,7 +130,7 @@
 <h5>Command Example</h5>
 <p><code>!cs-get-ioc type=ipv4 value=8.8.8.8</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44453190-29b97c00-a601-11e8-8e98-53efd2012e86.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44453190-29b97c00-a601-11e8-8e98-53efd2012e86.png" alt="screen shot 2018-08-22 at 11 47 20"></a></p>
+<p><a href="../../doc_files/44453190-29b97c00-a601-11e8-8e98-53efd2012e86.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44453190-29b97c00-a601-11e8-8e98-53efd2012e86.png" alt="screen shot 2018-08-22 at 11 47 20"></a></p>
 <h3 id="h_6689032821831535449367661">3. Update indicators</h3>
 <hr>
 <p>Updates one or more of the uploaded indicators.</p>
@@ -189,7 +189,7 @@
 <h5>Command Example</h5>
 <p><code>!cs-update-ioc type=ipv4 value=8.8.8.8 policy=none</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44453869-cb8d9880-a602-11e8-9964-c12089b7a88e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44453869-cb8d9880-a602-11e8-9964-c12089b7a88e.png" alt="screen shot 2018-08-22 at 11 59 00" width="491"></a></p>
+<p><a href="../../doc_files/44453869-cb8d9880-a602-11e8-9964-c12089b7a88e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44453869-cb8d9880-a602-11e8-9964-c12089b7a88e.png" alt="screen shot 2018-08-22 at 11 59 00" width="491"></a></p>
 <h3 id="h_9452354952711535449374480">4. Delete an indicator</h3>
 <hr>
 <p>Deletes an indicator that you are monitoring.</p>
@@ -223,7 +223,7 @@
 <h5>Command Example</h5>
 <p><code>!cs-delete-ioc type=ipv4 value=8.8.8.8</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44453995-11e2f780-a603-11e8-80e7-b08848624a57.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44453995-11e2f780-a603-11e8-80e7-b08848624a57.png" alt="screen shot 2018-08-22 at 12 00 41" width="396"></a></p>
+<p><a href="../../doc_files/44453995-11e2f780-a603-11e8-80e7-b08848624a57.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44453995-11e2f780-a603-11e8-80e7-b08848624a57.png" alt="screen shot 2018-08-22 at 12 00 41" width="396"></a></p>
 <h3 id="h_2223791593581535449380302">5. Get a list of uploaded IOCs</h3>
 <hr>
 <p>Returns a list of your uploaded IOCs that match the search criteria.</p>
@@ -297,7 +297,7 @@
 <h5>Command Example</h5>
 <p><code>!cs-search-iocs types=domain<br>!cs-search-iocs types=ipv4</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44460535-21b80700-a616-11e8-887e-d2bf6a45c505.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44460535-21b80700-a616-11e8-887e-d2bf6a45c505.png" alt="screen shot 2018-08-22 at 14 17 18" width="751" height="621"></a></p>
+<p><a href="../../doc_files/44460535-21b80700-a616-11e8-887e-d2bf6a45c505.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44460535-21b80700-a616-11e8-887e-d2bf6a45c505.png" alt="screen shot 2018-08-22 at 14 17 18" width="751" height="621"></a></p>
 <h3 id="h_496752194441535449754930">6. Search for devices</h3>
 <hr>
 <p>Search for devices in your environment by platform, host name, IP, or various other parameters.</p>
@@ -355,7 +355,7 @@
 <h5>Command Example</h5>
 <p><code>!cs-device-search limit=2<br>!cs-device-search</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44460608-72c7fb00-a616-11e8-8aa5-58617013e9b5.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44460608-72c7fb00-a616-11e8-8aa5-58617013e9b5.png" alt="screen shot 2018-08-22 at 14 19 27"></a></p>
+<p><a href="../../doc_files/44460608-72c7fb00-a616-11e8-8aa5-58617013e9b5.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44460608-72c7fb00-a616-11e8-8aa5-58617013e9b5.png" alt="screen shot 2018-08-22 at 14 19 27"></a></p>
 <h3 id="h_387520955301535449766860">7. Get device details</h3>
 <hr>
 <p>Get details for one or more devices, according to device ID.</p>
@@ -439,9 +439,9 @@
 <h5>Command Example</h5>
 <p><code>!cs-device-details ids=1e371d976b4549186ed5f09e49e49c12<br>!cs-device-details ids=${FalconHostDevices}<code></code></code></p>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44460773-0f8a9880-a617-11e8-83e9-b94d145b6074.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44460773-0f8a9880-a617-11e8-83e9-b94d145b6074.png" alt="screen shot 2018-08-22 at 14 24 03"></a></p>
+<p><a href="../../doc_files/44460773-0f8a9880-a617-11e8-83e9-b94d145b6074.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44460773-0f8a9880-a617-11e8-83e9-b94d145b6074.png" alt="screen shot 2018-08-22 at 14 24 03"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/44460697-d0f4de00-a616-11e8-885f-17e15c238985.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/44460697-d0f4de00-a616-11e8-885f-17e15c238985.png" alt="screen shot 2018-08-22 at 14 22 11" width="750" height="343"></a></p>
+<p><a href="../../doc_files/44460697-d0f4de00-a616-11e8-885f-17e15c238985.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44460697-d0f4de00-a616-11e8-885f-17e15c238985.png" alt="screen shot 2018-08-22 at 14 22 11" width="750" height="343"></a></p>
 <h3 id="h_4217399986151535449774372">8. Get the number of devices an IOC ran on</h3>
 <hr>
 <p>Returns the number of devices on which an IOC ran, according to type and value of an IOC</p>
@@ -862,7 +862,7 @@
 <h5>Command Example</h5>
 <pre>!cs-detection-search query=".exe"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/46602938-54508d00-cafa-11e8-8f98-a8ecece76aff.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/46602938-54508d00-cafa-11e8-8f98-a8ecece76aff.png" alt="screen shot 2018-10-08 at 12 12 56" width="750" height="336"></a></p>
+<p><a href="../../doc_files/46602938-54508d00-cafa-11e8-8f98-a8ecece76aff.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46602938-54508d00-cafa-11e8-8f98-a8ecece76aff.png" alt="screen shot 2018-10-08 at 12 12 56" width="750" height="336"></a></p>
 <h3> </h3>
 <h3 id="h_2636367141621538978747829">14. Get detection details (Deprecated)</h3>
 <hr>
@@ -1079,4 +1079,4 @@
 <h5>Command Example</h5>
 <pre>!cs-detection-details detectionID=${CrowdStrikeHost.Detections.detectionID}</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/46602972-66323000-cafa-11e8-8d03-ca8b83d53e25.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/46602972-66323000-cafa-11e8-8d03-ca8b83d53e25.png" alt="screen shot 2018-10-08 at 12 13 14" width="749" height="156"></a></p>
+<p><a href="../../doc_files/46602972-66323000-cafa-11e8-8d03-ca8b83d53e25.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46602972-66323000-cafa-11e8-8d03-ca8b83d53e25.png" alt="screen shot 2018-10-08 at 12 13 14" width="749" height="156"></a></p>

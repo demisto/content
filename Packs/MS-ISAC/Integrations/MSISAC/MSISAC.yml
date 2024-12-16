@@ -125,7 +125,7 @@ script:
     - contextPath: MSISAC.Event.Stream.event_type
       description: The type of event submitted from MS-ISAC
   - arguments:
-    - defaultValue: "1"
+    - defaultValue: '1'
       description: The number of days worth of events to return. Must be one or greater
       name: days
       required: true
@@ -176,7 +176,7 @@ script:
     - contextPath: MSISAC.RetrievedEvents.severity
       description: The severity assigned to the MS-ISAC alert
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

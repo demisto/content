@@ -1,0 +1,83 @@
+args:
+- description: Type of resource to add to the table.
+  name: resourceType
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "Host"
+  - "Container"
+  - "Image"
+- description: The context path to the enriched compliance issues list.
+  name: contextPath
+  required: false
+  type: str
+- description: The grid ID to write the outputs to.
+  name: gridID
+  required: false
+  type: str
+comment: Iterate over EnrichedComplianceIssue information in the context data and add the important keys to a table under PrismaCloudCompute.ComplianceTable or a provided grid id.
+commonfields:
+  id: PrismaCloudComputeComplianceTable
+  version: -1
+name: PrismaCloudComputeComplianceTable
+outputs:
+- contextPath: PrismaCloudCompute.ComplianceTable.Host.Hostname
+  description: ID of the host.
+  type: String
+- contextPath: PrismaCloudCompute.ComplianceTable.Host.ComplianceIssues
+  description: Compliance issue records related to the host. Updated in every iteration.
+  type: Array
+- contextPath: PrismaCloudCompute.ComplianceTable.Host.ComplianceDistribution
+  description: Compliance distribution of the host.
+  type: Dictionary
+- contextPath: PrismaCloudCompute.ComplianceTable.Host.CloudMetadata
+  description: Cloud metadata of the host.
+  type: Dictionary
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.ContainerID
+  description: ID of the container.
+  type: String
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.ComplianceIssues
+  description: Compliance issue records related to the container. Updated in every iteration.
+  type: Array
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.ComplianceDistribution
+  description: Compliance distribution of the container.
+  type: Dictionary
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.Hostname
+  description: Hostname of the container.
+  type: String
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.ImageName
+  description: Image name of the container.
+  type: String
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.CloudMetadata
+  description: Cloud metadata of the container.
+  type: Dictionary
+- contextPath: PrismaCloudCompute.ComplianceTable.Image.ImageID
+  description: ID of the image.
+  type: String
+- contextPath: PrismaCloudCompute.ComplianceTable.Image.ComplianceIssues
+  description: Compliance issue records related to the image. Updated in every iteration.
+  type: Array
+- contextPath: PrismaCloudCompute.ComplianceTable.Image.ComplianceDistribution
+  description: Compliance distribution of the image.
+  type: Dictionary
+- contextPath: PrismaCloudCompute.ComplianceTable.Image.Hosts
+  description: Hosts of the image.
+  type: Array
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.ImageInstances
+  description: Instances of the image.
+  type: Array
+- contextPath: PrismaCloudCompute.ComplianceTable.Container.CloudMetadata
+  description: Cloud metadata of the image.
+  type: Dictionary
+script: '-'
+tags:
+- context
+- field-display
+- Prisma Cloud Compute
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/pandas:1.0.0.117209
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -5,9 +5,11 @@ IT service management. Cortex XSOAR interfaces with ServiceNow to help streamlin
 - Query ServiceNow data with the ServiceNow query syntax.
 - Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
-Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/sandiego-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html?cshalt=yes) page.
+Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/xanadu-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
 
-This integration was integrated and tested with the Orlando version of ServiceNow.
+This integration was integrated and tested with the Xanadu version of ServiceNow.
+
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Use cases
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
@@ -15,8 +17,8 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 3. Get, update, create, delete records from any ServiceNow table.
 
 ## Required Permissions
-To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
- These roles are required to make API calls.
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *snc_platform_rest_api_access* role.
+ This role is required to make API calls.
  Also add to your user account the specific tables that you want to have access to.
  However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
  
@@ -44,11 +46,11 @@ These scripts are wrapped around the incident table, so to wrap them around anot
       for example: “10=Design,11=Development,12=Testing”.
       Also, a matching user-defined list of customized incident close reasons must be configured as a "Server configuration" in Cortex XSOAR. (Meaning each Service Now custom state label will have a matching Cortex XSOAR custom close reason with the same name). ***Not following this format will result in a server error!***
       For more information about Customize Incident Close Reasons, see [this link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons).
-      ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-xsoar.png)
+      ![image](../../doc_files/closing-mirror-xsoar.png)
    6. To enable mirroring to close an incident in ServiceNow, under the **Mirrored ServiceNow Ticket closure method** dropdown, select the ticket closing method,
       or set the **Mirrored ServiceNow Ticket custom close state code** parameter, in order to override the default closure method with a custom state.
      
-        ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-snow.png)
+        ![image](../../doc_files/closing-mirror-snow.png)
 
 ## Instance Creation Flow
 This integration supports two types of authorization:
@@ -57,7 +59,7 @@ This integration supports two types of authorization:
 
 #### OAuth 2.0 Authorization
 To use OAuth 2.0 authorization follow the next steps:
-1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
+1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information). 
 2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `Username` and `Password` fields of the instance configuration.
 3. Select the `Use OAuth Login` checkbox and click the `Done` button.
 4. Run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only in the first time after configuring a new instance in the XSOAR platform.
@@ -66,10 +68,10 @@ To use OAuth 2.0 authorization follow the next steps:
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
 2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
-3. The grant type used to get an access token is `Client credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/tokyo-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information.
+3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
 
-### Using Multi Factor Authentication (MFA)
+### Using Multi-Factor Authentication (MFA)
 MFA can be used both when using basic authorization and when using OAuth 2.0 authorization, however we strongly recommend using OAuth 2.0 when using MFA.
 If MFA is enabled for your user, follow the next steps:
 1. Open the Google Authenticator application on your mobile device and make note of the number. The number refreshes every 30 seconds.
@@ -97,7 +99,7 @@ If MFA is enabled for your user, follow the next steps:
     | Get incident attachments |  | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
     | Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
-    | Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. | False |
+    | Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM. | False |
     | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
     | Work Note Entry Tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
     | File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
@@ -110,6 +112,7 @@ If MFA is enabled for your user, follow the next steps:
     | Mirrored XSOAR Ticket custom close resolution code | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
     | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
     | Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default one will be used instead. | False |
+    | Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incidents Fetch Interval |  | False |
@@ -179,7 +182,7 @@ When the trigger incident is ServiceNow, you use the **ServiceNow Classifier** a
 6. Under **Mapper (outgoing)**, for default mapping select ServiceNow - Outgoing Mapper. For
 custom mapping, follow the instructions in STEP 3 and then select the custom mapper name.
 
- ![image](https://raw.githubusercontent.com/demisto/content-docs/5781a9024dc9f7e6418c82d7b7318f07d49fc863/docs/doc_imgs/integrations/snowv2-configuration-settings.png)
+ ![image](../../doc_files/snowv2-configuration-settings.png)
 
 7. Enter the connection parameters.  
     - Confirm whether your organization uses basic authorization or OAuth authorization (most use basic) and enter the relevant authorization details.  
@@ -193,7 +196,7 @@ custom mapping, follow the instructions in STEP 3 and then select the custom map
 11. Enable the checkbox for **Use Display Value** if you want to fetch comments and work notes without using sys_journal_field table which required an elevated read only permission.
 12. If **Use Display Value** is enabled, **Instance Date Format** needs to be set to the date format that matches the date format used in ServiceNow by the user account used to configure the instance.
 
-![image](https://user-images.githubusercontent.com/74367144/212351268-12938ccc-87d6-4f36-9c9b-ef7fcd3135a0.png)
+![image](../../doc_files/212351268-12938ccc-87d6-4f36-9c9b-ef7fcd3135a0.png)
 
 13. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
 14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.  
@@ -201,7 +204,7 @@ These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR
 **Note:**  
 These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+![image](../../doc_files/mirror-tags.png)
 
 15. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
@@ -218,7 +221,7 @@ Any modifications require that the mappers be cloned before any changes can be a
 3. Under the **Incident Type** dropdown, select ServiceNow Create Ticket and Mirror.
 4. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
   
-     ![image](https://raw.githubusercontent.com/demisto/content-docs/ad6522b9c6822f5c4f9798c8aaa1a63c353ddbe3/docs/doc_imgs/snowv2-incoming-mapper.png) 
+     ![image](../../doc_files/snowv2-incoming-mapper.png) 
 
     - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the ticket. This should be the sys_id of the ServiceNow ticket. The value is mapped to incident.servicenowticketid.
     - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
@@ -246,7 +249,7 @@ match.
 6. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
 7. Save your changes.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
+![image](../../doc_files/outgoing-mapper.png)
 
 
 #### STEP 4 - Create an Incident in ServiceNow  
@@ -257,12 +260,12 @@ In the example below, we have written *A comment from Cortex XSOAR to ServiceNow
 1. Click Actions > Tags and add the comments tag.
 2. Add a file to the incident and mark it with the ForServiceNow tag.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)  
+![image](../../doc_files/mirror-files.png)  
 
 3. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.  
   You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
+![image](../../doc_files/ticket-example.png)
 
 
 ### Configure Incident Mirroring When the Trigger Incident is **Not** ServiceNow  
@@ -296,7 +299,7 @@ You can set up any source integration to create a ServiceNow ticket based on a f
 13. Enable the checkbox for **Use Display Value** if you want to fetch comments and work notes without using sys_journal_field table which required an elevated read only permission.
 14. If **Use Display Value** is enabled, **Instance Date Format** needs to be set to the date format that matches the date format used in ServiceNow by the user account used to configure the instance.
 
-![image](https://user-images.githubusercontent.com/74367144/212352242-329284d8-6936-4f6c-9a30-c741b7425ff8.png)
+![image](../../doc_files/212352242-329284d8-6936-4f6c-9a30-c741b7425ff8.png)
 
 15. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
 16. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.
@@ -304,7 +307,7 @@ These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR
 **Note:**  
 These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+![image](../../doc_files/mirror-tags.png)
 
 17. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
@@ -320,7 +323,7 @@ Any modifications require that the mappers be cloned before any changes can be a
 2. Under the **Incident Type** dropdown, select the relevant triggering incident type, for example Phishing.
 3. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
   
-     ![image](https://raw.githubusercontent.com/demisto/content-docs/ad6522b9c6822f5c4f9798c8aaa1a63c353ddbe3/docs/doc_imgs/snowv2-incoming-mapper.png) 
+     ![image](../../doc_files/snowv2-incoming-mapper.png) 
 
     - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the ticket. This should be the sys_id of the ServiceNow ticket. The value is mapped to incident.servicenowticketid.
     - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
@@ -348,7 +351,7 @@ match.
 5. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
 6. Save your changes.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
+![image](../../doc_files/outgoing-mapper.png)
 
 #### STEP 4 - Set up Your Source Integration  
 Set up your source integration so that after fetching a trigger incident a ServiceNow ticket is created and mirroring starts.  
@@ -359,11 +362,11 @@ Set up your source integration so that after fetching a trigger incident a Servi
 Example:
 The following shows the Create New Record playbook task, which creates a ServiceNow ticket.  
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/20d4fb13f3d1c822f3f3be479cc281c45dbc5667/docs/doc_imgs/integrations/snowv2-create-new-record.png)
+![image](../../doc_files/snowv2-create-new-record.png)
 
 The Create New Record task is followed by the Set Mirroring Fields task, which starts the mirroring capability.  
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/996d0dbad4430d325e030d7a75251d8d38ca7778/docs/doc_imgs/integrations/snowv2-set-mirroring-fields.png)
+![image](../../doc_files/snowv2-set-mirroring-fields.png)
 
 The new ServiceNow ticket will be ingested in Cortex XSOAR in approximately one minute.
 
@@ -372,12 +375,12 @@ In the example below, we have written *A comment from Cortex XSOAR to ServiceNow
 1. Click Actions > Tags and add the comments tag.
 2. Add a file to the incident and mark it with the ForServiceNow tag.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)  
+![image](../../doc_files/mirror-files.png)  
 
 3. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.  
   You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
+![image](../../doc_files/ticket-example.png)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -546,7 +549,7 @@ Creates new ServiceNow ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
@@ -621,7 +624,7 @@ Creates new ServiceNow ticket.
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 
 #### Context Output
@@ -774,7 +777,7 @@ Updates the specified ticket.
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 | clear_fields | A comma-separated list of fields to clear. | Optional | 
 
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 
@@ -1099,7 +1102,29 @@ Uploads a file to the specified ticket.
 
 #### Human Readable Output
 
+### servicenow-delete-file
 
+***
+Delete an attachment from a ticket.
+
+#### Base Command
+
+`servicenow-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_sys_id | Attachment File ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!servicenow-delete-file file_sys_id=1234```
+#### Human Readable Output
+
+>Attachment with Sys ID 1234 was successfully deleted.
 
 ### servicenow-get-record
 ***
@@ -1251,7 +1276,7 @@ Creates a new record in the specified ServiceNow table.
 | custom_fields | Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;... | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 
 #### Context Output
@@ -1310,7 +1335,7 @@ Updates a record in the specified ServiceNow table.
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 | clear_fields | A comma-separated list of fields to clear. | Optional | 
 
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 
@@ -1905,23 +1930,24 @@ Gets table names by a label to use in commands.
 
 
 ### servicenow-get-ticket-notes
-***
-Gets notes from the specified ServiceNow ticket. Can be used by providing "Read permissions" for the sys_journal_field table, or by setting use_display_value=true.
 
+***
+Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting Read permissions for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
 
 #### Base Command
 
 `servicenow-get-ticket-notes`
+
 #### Input
 
-| **Argument Name** | **Description**        | **Required** |
-|--------|--------| --- |
-| id  | Ticket System ID. | Required | 
-| limit  | Maximum number of ticket notes. Default is 10.     | Optional | 
-| offset | Offset of the ticket notes.    | Optional |
-| use_display_value | Whether to retrieve notes using display values from ServiceNow or by accessing the sys_journal_field table. Defaults to the value set in the Cortex XSOAR instance configuration. | Optional |
-| ticket_type   | The type of the ticket for which notes should be retrieved when using the `use_display_value` option. Defaults to the ticket type set in the Cortex XSOAR instance configuration. | Optional |
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Ticket System ID. | Required | 
+| limit | Maximum number of ticket notes. Default is 10. | Optional | 
+| offset | Offset of the ticket notes. Default is 0. | Optional | 
+| use_display_value | Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration. Possible values are: true, false. | Optional | 
+| ticket_type | The ticket type that notes should be retrieved for when using the `use_display_value` option. Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
+| add_as_entry | Whether to add ticket notes and work notes as notes in the War Room. Possible values are true, false. | Optional | 
 
 #### Context Output
 
@@ -2511,6 +2537,28 @@ Generic call to ServiceNow api
 
 >Request for GET method is successful
 
+### servicenow-get-ticket-attachments
+
+***
+Retrieve file attachments from tickets.
+
+#### Base Command
+
+`servicenow-get-ticket-attachments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sys_id | sys_id of the ticket containing the file. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Successfully retrieved attachments for ticket with sys id 111
 
 ### Troubleshooting  
 The following are tips for handling issues with mirroring incidents between ServiceNow and Cortex XSOAR.

@@ -214,7 +214,7 @@ script:
       predefined:
       - "true"
       - "false"
-    description: Creates VM snapshot
+    description: Creates VM snapshot.
     name: vmware-create-snapshot
     outputs: []
   - arguments:
@@ -471,14 +471,14 @@ script:
       description: Storage profile requirement for Virtual Machine's home directory.
     - auto: PREDEFINED
       name: priority
-      description: The task priorityץ
+      description: The task priorityץ.
       required: true
       predefined:
       - defaultPriority
       - highPriority
       - lowPriority
     - name: uuid
-      description: The UUID of the VM to relocate
+      description: The UUID of the VM to relocate.
       required: true
     outputs: []
   - name: vmware-delete-vm
@@ -526,7 +526,7 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:2.0.0.43555
+  dockerimage: demisto/vmware:2.0.0.117325
   script: ""
   subtype: python3
   type: python

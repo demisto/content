@@ -28,7 +28,7 @@ from TaegisXDRv2 import (
     test_module as connectivity_test,
 )
 
-from test_data.data import *
+from test_data.data import *  # nopycln: import
 
 
 ''' UTILITY FUNCTIONS '''

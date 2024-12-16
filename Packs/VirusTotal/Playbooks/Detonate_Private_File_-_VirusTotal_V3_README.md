@@ -2,7 +2,7 @@ Detonate a private file through VirusTotal Private Scanning service
 
 See files through the eyes of VirusTotal without uploading them to the main threat corpus, keeping them entirely private. Static, dynamic, network and similarity analysis included, as well as automated threat intel enrichment, but NOT multi-antivirus analysis.
 
-More information: https://support.virustotal.com/hc/en-us/articles/8516907790749-Private-Scanning
+More information: https://docs.virustotal.com/docs/private-scanning
 
 Get Private Scanning: https://www.virustotal.com/gui/contact-us
 

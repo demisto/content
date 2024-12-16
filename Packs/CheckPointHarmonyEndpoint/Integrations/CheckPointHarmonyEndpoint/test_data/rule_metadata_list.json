@@ -1,0 +1,64 @@
+[
+
+    {
+        "orientation": "DEVICE",
+        "id": "14",
+        "name": "New Rule 1",
+        "assignments": [
+            {
+                "id": "a1",
+                "name": "ChromeOsDesktops",
+                "type": "VIRTUAL_GROUP"
+            },
+            {
+                "id": "b2",
+                "name": "Entire Organization",
+                "type": "ORGANIZATION_ROOT"
+            },
+            {
+                "id": "c3",
+                "name": "Desktops",
+                "type": "VIRTUAL_GROUP"
+            }
+        ],
+        "comment": "",
+        "connectionState": "CONNECTED",
+        "family": "Threat Prevention",
+        "isDefaultRule": false,
+        "order": 0
+    },
+    {
+        "orientation": "DEVICE",
+        "id": "01",
+        "name": "Default settings for the entire organization",
+        "assignments": [
+            {
+                "id": "001",
+                "name": "Entire Organization",
+                "type": "ORGANIZATION_ROOT"
+            }
+        ],
+        "comment": "Default settings for the entire organization",
+        "connectionState": "CONNECTED",
+        "family": "Data Protection",
+        "isDefaultRule": true,
+        "order": 0
+    },
+    {
+        "orientation": "USER",
+        "id": "02",
+        "name": "Default settings for the entire organization",
+        "assignments": [
+            {
+                "id": "002",
+                "name": "Entire Organization",
+                "type": "ORGANIZATION_ROOT"
+            }
+        ],
+        "comment": "Default settings for the entire organization",
+        "connectionState": "CONNECTED",
+        "family": "OneCheck",
+        "isDefaultRule": true,
+        "order": 0
+    }
+]

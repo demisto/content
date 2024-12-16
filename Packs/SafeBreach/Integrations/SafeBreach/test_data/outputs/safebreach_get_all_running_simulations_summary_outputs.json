@@ -1,0 +1,133 @@
+{
+    "outputs": {
+        "success_with_data": {
+            "data": {
+                "RUNNING": {
+                    "0": {
+                        "planRunId": "1111111111111.1",
+                        "stepRunId": "1111111111111.1",
+                        "jobId": 51326,
+                        "taskId": 86437,
+                        "numOfTasks": 1,
+                        "packageId": 5,
+                        "metadata": {
+                            "moveId": 2243,
+                            "moveRevision": 28,
+                            "params": [
+                                {
+                                    "paramId": 1,
+                                    "valueId": 2
+                                },
+                                {
+                                    "paramId": 2,
+                                    "valueId": 1
+                                },
+                                {
+                                    "paramId": 4,
+                                    "valueId": 1
+                                },
+                                {
+                                    "paramId": 5,
+                                    "valueId": -1
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "nodeId": "0000000-0000-0000-0000-00000000",
+                                "nodeNameInMove": "gold"
+                            }
+                        ]
+                    }
+                },
+                "QUEUED": {
+                    "0": {
+                        "planRunId": "1111111111111.1",
+                        "stepRunId": "1111111111111.1",
+                        "jobId": 51327,
+                        "taskId": 86438,
+                        "numOfTasks": 1,
+                        "timeout": 300,
+                        "packageId": 5,
+                        "metadata": {
+                            "moveId": 2243,
+                            "moveRevision": 28,
+                            "params": [
+                                {
+                                    "paramId": 1,
+                                    "valueId": 3
+                                },
+                                {
+                                    "paramId": 2,
+                                    "valueId": 1
+                                },
+                                {
+                                    "paramId": 4,
+                                    "valueId": 1
+                                },
+                                {
+                                    "paramId": 5,
+                                    "valueId": -1
+                                }
+                            ],
+                            "filters": []
+                        },
+                        "actions": [
+                            {
+                                "nodeId": "0000000-0000-0000-0000-00000000",
+                                "nodeNameInMoveDescription": "gold"
+                            }
+                        ],
+                        "timestamp": "2023-09-13T12:43:33.272Z"
+                    },
+                    "1": {
+                        "planRunId": "1111111111111.1",
+                        "stepRunId": "1111111111111.1",
+                        "jobId": 51328,
+                        "taskId": 86439,
+                        "numOfTasks": 1,
+                        "timeout": 300,
+                        "packageId": 5,
+                        "metadata": {
+                            "moveId": 5307,
+                            "moveRevision": 15,
+                            "params": [
+                                {
+                                    "paramId": 1,
+                                    "valueId": 1
+                                },
+                                {
+                                    "paramId": 2,
+                                    "valueId": 6
+                                },
+                                {
+                                    "paramId": 3,
+                                    "valueId": 1
+                                },
+                                {
+                                    "paramId": 4,
+                                    "valueId": -1
+                                }
+                            ],
+                            "filters": []
+                        },
+                        "actions": [
+                            {
+                                "nodeId": "0000000-0000-0000-0000-00000000",
+                                "nodeNameInMoveDescription": "gold"
+                            }
+                        ],
+                        "timestamp": "2023-09-13T12:43:35.029Z"
+                    }
+                }
+            }
+        },
+        "success_without_data": {
+            "data": {
+                "RUNNING": {},
+                "QUEUED": {}
+            }
+        },
+        "fail": {}
+    }
+}

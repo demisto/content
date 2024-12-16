@@ -95,7 +95,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.IP.scan_date
-      description: 'Scan date format: ISO 8601'
+      description: 'Scan date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.IP.resource
       description: ' The scan target sent to CyberTotal.'
@@ -128,7 +128,7 @@ script:
       description: Message about this search.
       type: string
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -154,7 +154,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Return IP information and reputation
+    description: Return IP information and reputation.
   - name: file
     arguments:
     - name: file
@@ -167,7 +167,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.File.scan_date
-      description: 'Scan date format: ISO 8601'
+      description: 'Scan date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.File.resource
       description: The scan target sent to CyberTotal.
@@ -247,7 +247,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Return file's information and reputation
+    description: Return file's information and reputation.
   - name: domain
     arguments:
     - name: domain
@@ -260,7 +260,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.Domain.scan_date
-      description: 'Scan date format: ISO 8601'
+      description: 'Scan date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.Domain.resource
       description: The scan target sent to CyberTotal.
@@ -316,7 +316,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Return domain information and reputation
+    description: Return domain information and reputation.
   - name: url
     arguments:
     - name: url
@@ -329,7 +329,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.URL.scan_date
-      description: 'Scan date format: ISO 8601'
+      description: 'Scan date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.URL.resource
       description: The scan target sent to CyberTotal.
@@ -362,7 +362,7 @@ script:
       description: Message about this search.
       type: string
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: URL.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -388,7 +388,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Return domain information and reputation
+    description: Return domain information and reputation.
   - name: cybertotal-ip-whois
     arguments:
     - name: ip
@@ -398,7 +398,7 @@ script:
       isArray: true
     outputs:
     - contextPath: CyberTotal.WHOIS-IP.scan_date
-      description: 'Scan date format: ISO 8601'
+      description: 'Scan date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.task_id
       description: The unique id of each scan in CyberTotal.
@@ -413,141 +413,141 @@ script:
       description: The link of this whois report in CyberTotal.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.createdAt
-      description: 'Create date format: ISO 8601'
+      description: 'Create date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.updatedAt
-      description: 'Update date format: ISO 8601'
+      description: 'Update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.status
-      description: Status of this IP
+      description: Status of this IP.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.domain
-      description: Domain of this IP
+      description: Domain of this IP.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.domainMd5
       description: MD5 translation of CyberTotal.WHOIS-IP.domain
       type: string
     - contextPath: CyberTotal.WHOIS-IP.domainUnicode
-      description: Encode CyberTotal.WHOIS-IP.domain by using unicode
+      description: Encode CyberTotal.WHOIS-IP.domain by using unicode.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.nameservers
-      description: An array of all DNS nameservers
+      description: An array of all DNS nameservers.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrarName
-      description: The name of registrar
+      description: The name of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrarEmail
-      description: The email address of registrar
+      description: The email address of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrarPhone
-      description: The phone number of registrar
+      description: The phone number of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrarCreatedAt
-      description: 'Registrar create date format: ISO 8601'
+      description: 'Registrar create date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.registrarUpdatedAt
-      description: 'Registrar update date format: ISO 8601'
+      description: 'Registrar update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.registrarExpiresAt
-      description: 'Registrar expire date format: ISO 8601'
+      description: 'Registrar expire date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.auditCreatedAt
-      description: 'Registrar update date format: ISO 8601'
+      description: 'Registrar update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.auditUpdatedAt
-      description: 'Registrar expire date format: ISO 8601'
+      description: 'Registrar expire date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.registrant.name
-      description: The name of registrant
+      description: The name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrant.organization
-      description: The organization name of registrant
+      description: The organization name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrant.street
-      description: The street name of registrant
+      description: The street name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrant.city
-      description: The location city of registrant
+      description: The location city of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrant.state
-      description: The location state name of registrant
+      description: The location state name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrant.zip
-      description: The post zip code of registrant
+      description: The post zip code of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrant.country
-      description: The country of registrant
+      description: The country of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrant.address
-      description: The address of registrant
+      description: The address of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.name
-      description: The name of admin
+      description: The name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.organization
-      description: The organization name of admin
+      description: The organization name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.street
-      description: The street name of admin
+      description: The street name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.city
-      description: The location city of admin
+      description: The location city of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.state
-      description: The location state name of admin
+      description: The location state name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.zip
-      description: The post zip code of admin
+      description: The post zip code of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.country
-      description: The country of admin
+      description: The country of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.admin.address
-      description: The address of admin
+      description: The address of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.name
-      description: The name of technical
+      description: The name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.organization
-      description: The organization name of technical
+      description: The organization name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.street
-      description: The street name of technical
+      description: The street name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.city
-      description: The location city of technical
+      description: The location city of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.state
-      description: The location state name of technical
+      description: The location state name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.zip
-      description: The post zip code of technical
+      description: The post zip code of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.country
-      description: The country of technical
+      description: The country of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.technical.address
-      description: The address of technical
+      description: The address of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.contactEmails
-      description: An array of all contact email address
+      description: An array of all contact email address.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.contacts
-      description: An array of all contact details
+      description: An array of all contact details.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.contactNames
-      description: An array of all contact names
+      description: An array of all contact names.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.contactCountries
-      description: An array of all contact countries
+      description: An array of all contact countries.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.domainAvailable
-      description: If this domain is available
+      description: If this domain is available.
       type: boolean
     - contextPath: CyberTotal.WHOIS-IP.expired
-      description: If this IP is expired
+      description: If this IP is expired.
       type: boolean
-    description: Return ip whois information
+    description: Return ip whois information.
   - name: cybertotal-url-whois
     arguments:
     - name: url
@@ -557,7 +557,7 @@ script:
       isArray: true
     outputs:
     - contextPath: CyberTotal.WHOIS-URL.scan_date
-      description: 'Scan date format: ISO 8601'
+      description: 'Scan date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.task_id
       description: The unique id of each scan in CyberTotal.
@@ -572,141 +572,141 @@ script:
       description: The link of this whois report in CyberTotal.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.createdAt
-      description: 'Create date format: ISO 8601'
+      description: 'Create date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.updatedAt
-      description: 'Update date format: ISO 8601'
+      description: 'Update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.status
-      description: Status of this IP
+      description: Status of this IP.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.domain
-      description: Domain of this IP
+      description: Domain of this IP.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.domainMd5
       description: MD5 translation of CyberTotal.WHOIS-URL.domain
       type: string
     - contextPath: CyberTotal.WHOIS-URL.domainUnicode
-      description: Encode CyberTotal.WHOIS-URL.domain by using unicode
+      description: Encode CyberTotal.WHOIS-URL.domain by using unicode.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.nameservers
-      description: An array of all DNS nameservers
+      description: An array of all DNS nameservers.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrarName
-      description: The name of registrar
+      description: The name of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrarEmail
-      description: The email address of registrar
+      description: The email address of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrarPhone
-      description: The phone number of registrar
+      description: The phone number of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrarCreatedAt
-      description: 'Registrar create date format: ISO 8601'
+      description: 'Registrar create date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.registrarUpdatedAt
-      description: 'Registrar update date format: ISO 8601'
+      description: 'Registrar update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.registrarExpiresAt
-      description: 'Registrar expire date format: ISO 8601'
+      description: 'Registrar expire date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.auditCreatedAt
-      description: 'Registrar update date format: ISO 8601'
+      description: 'Registrar update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.auditUpdatedAt
-      description: 'Registrar expire date format: ISO 8601'
+      description: 'Registrar expire date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.registrant.name
-      description: The name of registrant
+      description: The name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrant.organization
-      description: The organization name of registrant
+      description: The organization name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrant.street
-      description: The street name of registrant
+      description: The street name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrant.city
-      description: The location city of registrant
+      description: The location city of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrant.state
-      description: The location state name of registrant
+      description: The location state name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrant.zip
-      description: The post zip code of registrant
+      description: The post zip code of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrant.country
-      description: The country of registrant
+      description: The country of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrant.address
-      description: The address of registrant
+      description: The address of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.name
-      description: The name of admin
+      description: The name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.organization
-      description: The organization name of admin
+      description: The organization name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.street
-      description: The street name of admin
+      description: The street name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.city
-      description: The location city of admin
+      description: The location city of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.state
-      description: The location state name of admin
+      description: The location state name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.zip
-      description: The post zip code of admin
+      description: The post zip code of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.country
-      description: The country of admin
+      description: The country of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.admin.address
-      description: The address of admin
+      description: The address of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.name
-      description: The name of technical
+      description: The name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.organization
-      description: The organization name of technical
+      description: The organization name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.street
-      description: The street name of technical
+      description: The street name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.city
-      description: The location city of technical
+      description: The location city of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.state
-      description: The location state name of technical
+      description: The location state name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.zip
-      description: The post zip code of technical
+      description: The post zip code of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.country
-      description: The country of technical
+      description: The country of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.technical.address
-      description: The address of technical
+      description: The address of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.contactEmails
-      description: An array of all contact email address
+      description: An array of all contact email address.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.contacts
-      description: An array of all contact details
+      description: An array of all contact details.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.contactNames
-      description: An array of all contact names
+      description: An array of all contact names.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.contactCountries
-      description: An array of all contact countries
+      description: An array of all contact countries.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.domainAvailable
-      description: If this domain is available
+      description: If this domain is available.
       type: boolean
     - contextPath: CyberTotal.WHOIS-URL.expired
-      description: If this URL is expired
+      description: If this URL is expired.
       type: boolean
-    description: Return url whois information
+    description: Return url whois information.
   - name: cybertotal-domain-whois
     arguments:
     - name: domain
@@ -716,7 +716,7 @@ script:
       isArray: true
     outputs:
     - contextPath: CyberTotal.WHOIS-Domain.scan_date
-      description: 'Scan date format: ISO 8601'
+      description: 'Scan date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.task_id
       description: The unique id of each scan in CyberTotal.
@@ -731,142 +731,142 @@ script:
       description: The link of this whois report in CyberTotal.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.createdAt
-      description: 'Create date format: ISO 8601'
+      description: 'Create date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.updatedAt
-      description: 'Update date format: ISO 8601'
+      description: 'Update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.status
-      description: Status of this Domain
+      description: Status of this Domain.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.domain
-      description: Top level Domain of this domain
+      description: Top level Domain of this domain.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.domainMd5
       description: MD5 translation of CyberTotal.WHOIS-Domain.domain
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.domainUnicode
-      description: Encode CyberTotal.WHOIS-Domain.domain by using unicode
+      description: Encode CyberTotal.WHOIS-Domain.domain by using unicode.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.nameservers
-      description: An array of all DNS nameservers
+      description: An array of all DNS nameservers.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrarName
-      description: The name of registrar
+      description: The name of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrarEmail
-      description: The email address of registrar
+      description: The email address of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrarPhone
-      description: The phone number of registrar
+      description: The phone number of registrar.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrarCreatedAt
-      description: 'Registrar create date format: ISO 8601'
+      description: 'Registrar create date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.registrarUpdatedAt
-      description: 'Registrar update date format: ISO 8601'
+      description: 'Registrar update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.registrarExpiresAt
-      description: 'Registrar expire date format: ISO 8601'
+      description: 'Registrar expire date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.auditCreatedAt
-      description: 'Registrar update date format: ISO 8601'
+      description: 'Registrar update date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.auditUpdatedAt
-      description: 'Registrar expire date format: ISO 8601'
+      description: 'Registrar expire date format: ISO 8601.'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.registrant.name
-      description: The name of registrant
+      description: The name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrant.organization
-      description: The organization name of registrant
+      description: The organization name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrant.street
-      description: The street name of registrant
+      description: The street name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrant.city
-      description: The location city of registrant
+      description: The location city of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrant.state
-      description: The location state name of registrant
+      description: The location state name of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrant.zip
-      description: The post zip code of registrant
+      description: The post zip code of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrant.country
-      description: The country of registrant
+      description: The country of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrant.address
-      description: The address of registrant
+      description: The address of registrant.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.name
-      description: The name of admin
+      description: The name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.organization
-      description: The organization name of admin
+      description: The organization name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.street
-      description: The street name of admin
+      description: The street name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.city
-      description: The location city of admin
+      description: The location city of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.state
-      description: The location state name of admin
+      description: The location state name of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.zip
-      description: The post zip code of admin
+      description: The post zip code of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.country
-      description: The country of admin
+      description: The country of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.admin.address
-      description: The address of admin
+      description: The address of admin.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.name
-      description: The name of technical
+      description: The name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.organization
-      description: The organization name of technical
+      description: The organization name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.street
-      description: The street name of technical
+      description: The street name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.city
-      description: The location city of technical
+      description: The location city of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.state
-      description: The location state name of technical
+      description: The location state name of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.zip
-      description: The post zip code of technical
+      description: The post zip code of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.country
-      description: The country of technical
+      description: The country of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.technical.address
-      description: The address of technical
+      description: The address of technical.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.contactEmails
-      description: An array of all contact email address
+      description: An array of all contact email address.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.contacts
-      description: An array of all contact details
+      description: An array of all contact details.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.contactNames
-      description: An array of all contact names
+      description: An array of all contact names.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.contactCountries
-      description: An array of all contact countries
+      description: An array of all contact countries.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.domainAvailable
-      description: If this domain is available
+      description: If this domain is available.
       type: boolean
     - contextPath: CyberTotal.WHOIS-Domain.expired
-      description: If this domain is expired
+      description: If this domain is expired.
       type: boolean
-    description: Return domain whois information
-  dockerimage: demisto/python3:3.10.12.63474
+    description: Return domain whois information.
+  dockerimage: demisto/python3:3.11.10.111526
   runonce: false
   subtype: python3
 fromversion: 5.0.0

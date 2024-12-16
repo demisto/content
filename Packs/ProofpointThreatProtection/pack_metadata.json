@@ -1,0 +1,26 @@
+{
+    "name": "Proofpoint Threat Protection",
+    "description": "Threat Protection APIs are REST APIs that allow our Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2024-04-01T15:13:32Z",
+    "categories": [
+        "Email"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "On Demand",
+        "PoD"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "randomizerxd"
+    ]
+}

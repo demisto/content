@@ -4,15 +4,12 @@
 import dateparser
 import secrets
 import jwt
-import urllib3
 from cryptography import exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from pydantic import Field, parse_obj_as
+from pydantic import ConfigDict, Field, parse_obj_as
 
 from SiemApiModule import *  # noqa: E402
-
-urllib3.disable_warnings()
 
 
 class Claims(BaseModel):
@@ -34,9 +31,7 @@ class BoxAppSettings(BaseModel):
     clientID: str
     clientSecret: str
     appAuth: AppAuth
-
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class BoxCredentials(BaseModel):
@@ -68,10 +63,8 @@ class BoxEventsParams(BaseModel):
     # validators
     _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
         get_box_events_timestamp_format
-    )
-
-    class Config:
-        validate_assignment = True
+    )  # type: ignore[type-var]
+    model_config = ConfigDict(validate_assignment=True)
 
 
 def not_gate(v):
@@ -94,7 +87,7 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
     verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
 
     # validators
-    _oppsite_verify = validator('verify', allow_reuse=True)(not_gate)
+    _oppsite_verify = validator('verify', allow_reuse=True)(not_gate)  # type: ignore[type-var]
 
 
 class BoxIntegrationOptions(IntegrationOptions):
@@ -131,7 +124,7 @@ class BoxEventsClient(IntegrationEventsClient):
             method=Method.POST,
             url=self.authorization_url,
             data=self._create_authorization_body(),
-            verify=self.request.verify,
+            verify=self.request.verify,  # type: ignore[arg-type]
         )
 
         response = self.call(request)
@@ -149,7 +142,7 @@ class BoxEventsClient(IntegrationEventsClient):
             self.box_credentials.boxAppSettings.appAuth
         )
         assertion = jwt.encode(
-            payload=claims.dict(),
+            payload=claims.model_dump(mode='json'),  # type: ignore[attr-defined]
             key=decrypted_private_key,
             algorithm='RS512',
             headers={
@@ -233,7 +226,7 @@ def main(command: str, demisto_params: dict):
                                  api_url=demisto_params.get('url', 'https://api.box.com'))
         get_events = BoxEventsGetter(client, options)
         if command == 'test-module':
-            get_events.client.request.params.limit = 1
+            get_events.client.options.limit = 1
             get_events.run()
             demisto.results('ok')
             return

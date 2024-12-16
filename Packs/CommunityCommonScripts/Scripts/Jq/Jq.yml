@@ -14,7 +14,7 @@ contentitemexportablefields:
     fromServerVersion: ''
 dependson:
   must: []
-dockerimage: demisto/jq:1.0.0.24037
+dockerimage: demisto/jq:1.0.0.113893
 enabled: true
 name: jq
 outputs:

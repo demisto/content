@@ -1,0 +1,74 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: SailPointIdentityNowEventCollector
+  version: -1
+configuration:
+- display: IdentityNow Server URL (e.g., https://{tenant}.api.identitynow.com)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
+  name: credentials
+  type: 9
+  required: true
+  displaypassword: Client Secret
+- defaultvalue: 50000
+  section: Collect
+  display: Max number of events per fetch
+  name: limit
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
+display: SailPoint IdentityNow Event Collector
+name: SailPointIdentityNowEventCollector
+supportlevelheader: xsoar
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    - description: Maximum number of results to return.
+      name: limit
+      required: false
+      defaultValue: 50
+    - description: An ID of the event to retrieve events from.
+      name: from_id
+      required: false
+    - default: false
+      description: Date from which to get events.
+      name: from_date
+    deprecated: false
+    description: Gets events from SailPoint IdentityNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding API request limitations.
+
+    name: identitynow-get-events
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

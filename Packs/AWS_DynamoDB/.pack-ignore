@@ -1,5 +1,5 @@
 [file:AWS_DynamoDB.yml]
-ignore=BA108,BA109,IN124
+ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM106

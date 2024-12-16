@@ -1,0 +1,42 @@
+{
+  "communicating_files": {
+    "meta": {
+      "cursor": "STIwCi4="
+    },
+    "data": [
+      {
+        "type": "file",
+        "id": "1471f53e5391f8a06171ffe21dec0d6d27b0201e28e66455030609b7a7ba955e"
+      },
+      {
+        "type": "file",
+        "id": "fedfc48d750b959d11004f56ba49815a011295824e02684aada549505378468a"
+      }
+    ],
+    "links": {
+      "self": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/communicating_files?limit=20",
+      "related": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/communicating_files",
+      "next": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/communicating_files?cursor=STIwCi4%3D&limit=20"
+    }
+  },
+  "referrer_files": {
+    "meta": {
+      "cursor": "STIwCi4="
+    },
+    "data": [
+      {
+        "type": "file",
+        "id": "5d4c6801a5d1c9e4d3f8317242723e17eefc7fbdfcf1b0a99fbc5b92b4b83631"
+      },
+      {
+        "type": "file",
+        "id": "e0d60d71b9ceaf6fb672cd78668e02eb5dcfd0c1d46137ed363f42f024ef6e83"
+      }
+    ],
+    "links": {
+      "self": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/referrer_files?limit=20",
+      "related": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/referrer_files",
+      "next": "https://www.virustotal.com/api/v3/ip_addresses/1.1.1.1/relationships/referrer_files?cursor=STIwCi4%3D&limit=20"
+    }
+  }
+}

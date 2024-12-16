@@ -49,6 +49,217 @@
                     "simple": "name"
                 }
             }
+        },
+        "Exabeam Notable User": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Account Member Of": {
+                    "simple": "highestRiskSession.accounts"
+                },
+                "Account Status": {
+                    "simple": "user.accessStatus"
+                },
+                "Country": {
+                    "simple": "user.info.country"
+                },
+                "Department": {
+                    "simple": "user.info.department"
+                },
+                "Email": {
+                    "simple": "user.info.email"
+                },
+                "Exabeam Average Risk Score": {
+                    "simple": "user.averageRiskScore"
+                },
+                "Exabeam Highest Session Login Host": {
+                    "simple": "highestRiskSession.loginHost"
+                },
+                "Exabeam Highest Session Number Of Reasons": {
+                    "simple": "highestRiskSession.numOfReasons"
+                },
+                "Exabeam Last Activity Time": {
+                    "simple": "user.lastActivityTime"
+                },
+                "Exabeam Last Activity Type": {
+                    "simple": "user.lastActivityType"
+                },
+                "Exabeam Past Scores": {
+                    "complex": {
+                        "accessor": "pastScores",
+                        "filters": [],
+                        "root": "user",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "highestRiskScore"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            }
+                        ]
+                    }
+                },
+                "Exabeam Session IDs": {
+                    "simple": "notableSessionIds"
+                },
+                "External End Time": {
+                    "simple": "highestRiskSession.endTime"
+                },
+                "External Start Time": {
+                    "simple": "highestRiskSession.startTime"
+                },
+                "First Name": {
+                    "simple": "user.info.fullName"
+                },
+                "First Seen": {
+                    "simple": "user.firstSeen"
+                },
+                "Full Name": {
+                    "simple": "user.info.fullName"
+                },
+                "Last Seen": {
+                    "simple": "user.lastSeen"
+                },
+                "Manager Name": {
+                    "complex": {
+                        "accessor": "manager",
+                        "filters": [],
+                        "root": "user.info",
+                        "transformers": []
+                    }
+                },
+                "Mobile Phone": {
+                    "simple": "user.info.phoneCell"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "highestRiskSession.numOfEvents"
+                },
+                "Number of Related Incidents": {
+                    "simple": "highestRiskSession.numOfSecurityEvents"
+                },
+                "Risk Score": {
+                    "simple": "user.riskScore"
+                },
+                "Tags": {
+                    "simple": "user.labels"
+                },
+                "Team name": {
+                    "simple": "user.info.division"
+                },
+                "Title": {
+                    "simple": "user.info.title"
+                },
+                "User Groups": {
+                    "simple": "user.info.group"
+                },
+                "Username": {
+                    "simple": "user.username"
+                },
+                "Work Phone": {
+                    "simple": "user.info.phoneOffice"
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "startTime",
+                        "filters": [],
+                        "root": "highestRiskSession",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "Vulnerability": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Full Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "userFullName",
+                        "transformers": []
+                    }
+                },
+                "Source Username": {
+                    "simple": "user.username"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "startTime",
+                        "filters": [],
+                        "root": "highestRiskSession",
+                        "transformers": []
+                    }
+                },
+                "owner": {
+                    "complex": {
+                        "accessor": "owner",
+                        "filters": [],
+                        "root": "baseFields",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "priority",
+                        "filters": [],
+                        "root": "baseFields",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Full Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "userFullName",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "startTime",
+                        "filters": [],
+                        "root": "highestRiskSession",
+                        "transformers": []
+                    }
+                },
+                "owner": {
+                    "complex": {
+                        "accessor": "owner",
+                        "filters": [],
+                        "root": "baseFields",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "priority",
+                        "filters": [],
+                        "root": "baseFields",
+                        "transformers": []
+                    }
+                }
+            }
         }
     },
     "name": "Exabeam mapping",

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Can break connectivity with the CyberArk service when using CyberArk AIM v2 integration."
+}

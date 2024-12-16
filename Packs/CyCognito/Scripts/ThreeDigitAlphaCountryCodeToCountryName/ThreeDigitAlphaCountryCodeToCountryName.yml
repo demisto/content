@@ -10,11 +10,11 @@ comment: Script for converting country names based on 3 letter Alpha codes.
 enabled: true
 args:
 - name: value
-  description: Three digit country code
+  description: Three digit country code.
   isArray: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/pycountry:1.0.0.36195
+dockerimage: demisto/pycountry:1.0.0.117224
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

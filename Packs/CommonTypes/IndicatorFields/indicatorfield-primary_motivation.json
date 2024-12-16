@@ -27,7 +27,8 @@
         "IP",
         "Domain",
         "URL",
-        "Intrusion Set"
+        "Intrusion Set",
+        "Threat Actor"
     ],
     "associatedToAll": false,
     "unmapped": false,

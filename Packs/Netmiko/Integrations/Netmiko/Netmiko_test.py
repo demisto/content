@@ -3,7 +3,7 @@ from Netmiko import cmds_command
 
 
 def get_test_data():
-    with open('test_data/test_data.json', 'r') as f:
+    with open('test_data/test_data.json') as f:
         return json.loads(f.read())
 
 

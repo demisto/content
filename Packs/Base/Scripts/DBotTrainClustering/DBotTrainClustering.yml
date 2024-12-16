@@ -7,8 +7,6 @@ args:
 - defaultValue: 1 month ago
   description: The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   name: fromDate
-  predefined:
-  - ''
 - description: The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   name: toDate
 - defaultValue: '3000'
@@ -59,8 +57,6 @@ args:
 - defaultValue: '24'
   description: Period of time (in hours) before retraining the model. Default is "24".
   name: modelExpiration
-  predefined:
-  - ''
 - auto: PREDEFINED
   defaultValue: 'True'
   description: Whether to hide the model in the ML page.
@@ -82,7 +78,14 @@ args:
   predefined:
   - char
   - word
-comment: Train clustering model on any incident type.
+outputs:
+- contextPath: DBotTrainClustering
+  description: The clustering data in JSON format.
+  type: String
+comment: |
+  This script helps organizes and groups incidents based on their similarities using clustering algorithms.
+  Clustering is a technique used to group data points (in this case, incidents) that are similar to each other into clusters.
+  Used to automatically categorize a large number of incidents into meaningful groups.
 commonfields:
   id: DBotTrainClustering
   version: -1
@@ -93,7 +96,7 @@ tags:
 - ml
 timeout: 3.6µs
 type: python
-dockerimage: demisto/mlclustering:1.0.0.23151
+dockerimage: demisto/mlclustering:1.0.0.105775
 tests:
-- No tests (auto formatted)
+- DBotTrainClustering-test
 fromversion: 6.2.0

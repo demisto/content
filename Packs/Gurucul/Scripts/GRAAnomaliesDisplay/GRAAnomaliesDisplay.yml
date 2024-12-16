@@ -6,12 +6,12 @@ script: '-'
 type: python
 tags:
 - dynamic-section
-comment: Retrieve anomalies for specified case id from GRA and update in XSOAR
+comment: Retrieve anomalies for specified case id from GRA and update in XSOAR.
 enabled: true
 scripttarget: 0
 subtype: python3
 timeout: 900ns
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

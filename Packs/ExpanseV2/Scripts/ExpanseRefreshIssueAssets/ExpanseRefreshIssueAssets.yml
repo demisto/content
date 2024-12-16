@@ -1,10 +1,11 @@
-comment: >
+comment: Deprecated. No available replacement. >
   Script to refresh tags and attribution reasons of assets inside Expanse Issue.
   The script should be used inside the Expanse Issue incident context.
+deprecated: true
 commonfields:
   id: ExpanseRefreshIssueAssets
   version: -1
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.13.87159
 enabled: true
 name: ExpanseRefreshIssueAssets
 runas: DBotWeakRole

@@ -443,6 +443,23 @@ script:
     - defaultValue: '50'
       description: The maximum number of items to return. Default is "50". Maximum is "100".
       name: limit
+    - name: ip_addresses
+      isArray: true
+      description: 'List of IP addresses to find endpoints for.'
+    - name: hostname_contains
+      description: Find endpoints where the hostname contains the given string. Only the first 10 characters of the given string are matched.
+    - auto: PREDEFINED
+      name: full_match_ip
+      description: 'Whether the IP addresses should match full or not (partial/default).'
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      name: full_match_hostname
+      description: 'Whether the hostname should match full or not (partial/default).'
+      predefined:
+      - 'true'
+      - 'false'
     description: List all endpoints for a tenant.
     name: sophos-central-endpoint-list
     outputs:
@@ -1408,7 +1425,7 @@ script:
       name: groupsIds
     - description: Search for items that match the given terms.
       name: search
-    - description: Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched:- name,description.
+    - description: 'Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched: name, description.'
       name: searchFields
     - description: List the items that match the given domain.
       name: domain
@@ -2398,7 +2415,7 @@ script:
     - contextPath: SophosCentral.DeletedUsers.deletedUserId
       description: Deleted User's Id.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

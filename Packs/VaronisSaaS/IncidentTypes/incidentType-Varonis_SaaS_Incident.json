@@ -18,5 +18,6 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
+    "closureScript": "varonis-alert-post-processing",
     "layout": "Varonis SaaS Incident"
 }

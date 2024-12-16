@@ -225,6 +225,59 @@ def test_list_resource_record_sets(mocker):
     assert tableToMarkdown('AWS Route53 Record Sets', data) == res.readable_output
 
 
+def test_list_resource_record_sets_no_ttl(mocker):
+    """
+    Given:
+    - A Hosted Zone.
+
+    When:
+    - Calling list_resource_record_sets method.
+    - api returns records without TTLs
+
+    Then:
+    - Ensure we get the list of record sets from the hosted zones.
+    - Ensure parsing is made properly
+    """
+    from CommonServerPython import tableToMarkdown
+
+    args = TEST_PARAMS
+    args.update({
+        'HostedZoneId': '__x__',
+        'startRecordName': 'aaa',
+        'startRecordType': 'CNAME',
+        'startRecordIdentifier': 'a',
+    })
+    response = {
+        'ResourceRecordSets': [
+            {
+                'Name': 'a.test-domain.com',
+                'Type': 'A',
+                'ResourceRecords':
+                    [
+                        {
+                            "Value": 'test-domain.com'
+                        }
+                    ],
+            }
+        ]
+    }
+    mocker.patch.object(AWSRoute53Client, "list_resource_record_sets", return_value=response)
+
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.list_resource_record_sets(args, session)
+    data = [
+        {
+            'Name': 'a.test-domain.com',
+            'Type': 'A',
+            'ResourceRecords': 'test-domain.com',
+        }
+    ]
+    assert tableToMarkdown('AWS Route53 Record Sets', data) == res.readable_output
+    assert res.outputs == [
+        {'Name': 'a.test-domain.com', 'Type': 'A', 'ResourceRecords': [{'Value': 'test-domain.com'}]}
+    ]
+
+
 def test_waiter_resource_record_sets_changed(mocker):
     """
     Given:
@@ -246,7 +299,7 @@ def test_waiter_resource_record_sets_changed(mocker):
 
     session = AWSRoute53Client()
     res = AWS_ROUTE53.waiter_resource_record_sets_changed(args, session)
-    assert "success" == res.readable_output
+    assert res.readable_output == "success"
 
 
 def test_test_dns_answer(mocker):

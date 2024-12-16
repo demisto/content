@@ -1,12 +1,15 @@
+from pytest_mock import MockerFixture
+from CommonServerPython import *
+
 import json
 import demistomock as demisto
 import pytest
 from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query, create_types_query, should_send_request, \
-    build_url_with_query_params, set_fields_query, get_updated_last_run
+    build_url_with_query_params, set_fields_query, get_updated_last_run, create_indicator_fields, get_indicator_value
 
 
 def load_json_file(path):
-    with open(path, 'r') as _json_file:
+    with open(path) as _json_file:
         return json.load(_json_file)
 
 
@@ -38,7 +41,8 @@ def test_create_or_query():
 
 @pytest.mark.parametrize("params, expected_result, endpoint",
                          [({'indicator_active': False, "indicator_type": ['All'],
-                           'createRelationships': False, "confidence": 0, "threat_assess_score": 0}, '', 'indicators'),
+                           'createRelationships': False, "confidence": 0, "threat_assess_score": 0},
+                           'typeName IN ("EmailAddress","File","Host","URL","ASN","CIDR","Hashtag","Mutex","Registry Key","User Agent","Address")', 'indicators'),  # noqa: E501
                           ({'indicator_active': True, "group_type": ['File'],
                            'createRelationships': False, "confidence": 0, "threat_assess_score": 0},
                            'typeName IN ("File")', 'groups'),
@@ -157,3 +161,81 @@ def test_get_updated_last_run(indicators, groups, previous_run, expected_result)
     output = get_updated_last_run(indicators, groups, previous_run)
 
     assert output == expected_result
+
+
+def test_create_indicator_fields_registry_key():
+    """
+    Given:
+        - lindicator from type Registry Key
+    When:
+        - running create_indicator_fields command
+    Then:
+        - validate the result contains the 'Key Value' key and the expected data
+    """
+    indicator = {'Key Name': 'key name',
+                 'Value Name': 'value name',
+                 'Key Type': 'key type',
+                 'dateAdded': 'firstseenbysource',
+                 'lastModified': 'updateddate',
+                 'threatAssessRating': 'verdict',
+                 'threatAssessConfidence': 'confidence',
+                 'description': 'description',
+                 'summary': 'name'}
+
+    result = create_indicator_fields(indicator, 'Registry Key')
+
+    assert 'Key Value' in result
+    assert 'name' in result.get('Key Value')[0]
+    assert result.get('Key Value')[0].get('name') == 'key name'
+
+
+def test_get_indicator_value_for_file():
+    """
+    Given:
+        An indicator dictionary with file hashes.
+    When:
+        The indicator type is 'File'.
+    Then:
+        It should return the sha256 hash if present, else sha1, else md5.
+    """
+    indicator = {
+        'sha256': 'sha256_hash',
+        'sha1': 'sha1_hash',
+        'md5': 'md5_hash'
+    }
+    indicator_type = FeedIndicatorType.File
+    indicator_value = get_indicator_value(indicator, indicator_type)
+    assert indicator_value == 'sha256_hash'
+
+    # Test when sha256 is not present
+    del indicator['sha256']
+    indicator_value = get_indicator_value(indicator, indicator_type)
+    assert indicator_value == 'sha1_hash'
+
+    # Test when sha256 and sha1 are not present
+    del indicator['sha1']
+    indicator_value = get_indicator_value(indicator, indicator_type)
+    assert indicator_value == 'md5_hash'
+
+
+def test_get_indicator_value_for_non_file(mocker: MockerFixture):
+    """
+    Given:
+        An indicator dictionary without file hashes.
+    When:
+        The indicator type is not 'File'.
+    Then:
+        It should return the summary if present, else name.
+    """
+    indicator = {
+        'summary': 'indicator_summary',
+        'name': 'indicator_name'
+    }
+    indicator_type = 'IP'
+    indicator_value = get_indicator_value(indicator, indicator_type)
+    assert indicator_value == 'indicator_summary'
+
+    # Test when summary is not present
+    mocker.patch.dict(indicator, {'summary': None})
+    indicator_value = get_indicator_value(indicator, indicator_type)
+    assert indicator_value == 'indicator_name'

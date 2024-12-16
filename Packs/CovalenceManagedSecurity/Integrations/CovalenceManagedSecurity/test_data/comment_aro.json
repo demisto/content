@@ -1,0 +1,41 @@
+{
+    "acknowledged": true,
+    "acknowledged_by": {
+        "ID": "string",
+        "avatar_file_url": "string",
+        "email": "user@example.com",
+        "first_name": "string",
+        "last_name": "string"
+    },
+    "acknowledged_time": "string",
+    "aro_id": "string",
+    "author": {
+        "ID": "string",
+        "avatar_file_url": "string",
+        "email": "user@example.com",
+        "first_name": "string",
+        "last_name": "string"
+    },
+    "author_organization": {
+        "ID": "string",
+        "email": "user@example.com",
+        "name": "string"
+    },
+    "author_organization_type": "Client",
+    "available_only_to_organization_id": "string",
+    "available_only_to_provider_id": "string",
+    "created_time": "string",
+    "id": "string",
+    "last_updated_time": "string",
+    "sensitive": true,
+    "source": "Portal",
+    "text": "string",
+    "type": "Comment",
+    "visible_to": [
+        {
+            "ID": "string",
+            "email": "user@example.com",
+            "name": "string"
+        }
+    ]
+}

@@ -53,6 +53,30 @@ def test_hash_contexts_in_return_results():
     assert entry_context == hashes
 
 
+UNESCAPE_CASES = [
+    (False, {'http://example.com/abc&#34;&#160;xmlns:xsi=&#34;http://example.com/abc&#34;&#160;',
+             'http://www.w3.org/1999/xhtml',
+             'http://example.com/abc&#160;http://example.com/abc/v1.2/1_2.xsd&#34;&gt;&#160;'}),
+    (True, {'http://www.w3.org/1999/xhtml', 'http://example.com/abc/v1.2/1_2.xsd', 'http://example.com/abc'})
+]
+
+
+@pytest.mark.parametrize('unescape_url, urls_set', UNESCAPE_CASES)
+def test_urls_are_unescaped(unescape_url, urls_set):
+    """
+    Given
+        - A pdf file that has xml content in it.
+        - Whether to unescape the html content or no.
+    When
+        - Trying extract the urls from an html with escaping characters.
+    Then
+        - The set of urls are extracted correctly, with respect to whether to unescape them or not.
+    """
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_html_content
+    urls, _ = get_urls_and_emails_from_pdf_html_content(f'{CWD}/xml_with_urls.pdf', CWD, unescape_url)
+    assert urls == urls_set
+
+
 def test_urls_are_found_correctly(mocker):
     """
     Given
@@ -504,3 +528,25 @@ def test_handle_error_read_only_failed(mocker):
             'The error is not due to a problem with write permissions to the file'
         )
     assert str(e.value) == 'The error is not due to a problem with write permissions to the file'
+
+
+def test_extract_urls_and_emails_from_annot_objects_with_binary_data(mocker):
+    """
+    Given:
+        A list of annotation objects where one object contains binary data.
+    When:
+        The extract_urls_and_emails_from_annot_objects function is called with these objects.
+    Then:
+        The function should correctly decode the binary data and extract the URL and email.
+    """
+    from ReadPDFFileV2 import extract_urls_and_emails_from_annot_objects
+    mock_annot_object = mocker.Mock()
+    mock_annot_object.get_object.return_value = mocker.Mock()
+
+    binary_data = b'https://example.com user@example.com'
+    mocker.patch('ReadPDFFileV2.extract_url_from_annot_object', return_value=binary_data)
+
+    urls, emails = extract_urls_and_emails_from_annot_objects([mock_annot_object])
+
+    assert urls == {'https://example.com'}
+    assert emails == {'user@example.com'}

@@ -891,10 +891,10 @@ tasks:
     continueonerrortype: ""
   "117":
     id: "117"
-    taskid: 02daa225-5853-458d-8c40-fb3e671a5568
+    taskid: e190537d-1b4b-4055-8eff-1f60d7651da1
     type: playbook
     task:
-      id: 02daa225-5853-458d-8c40-fb3e671a5568
+      id: e190537d-1b4b-4055-8eff-1f60d7651da1
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -940,6 +940,18 @@ tasks:
           accessor: username
           transformers:
           - operator: uniq
+      AutoBlockIndicators:
+        simple: "True"
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+          transformers:
+          - operator: uniq
+      HostContainment:
+        simple: "True"
+      UserVerification:
+        simple: "False"
     separatecontext: true
     loop:
       iscommand: false

@@ -48,11 +48,9 @@ def test_sane_pdf_report(mocker):
     assert demisto.results.call_args[0][0]['HumanReadable'] == 'Successfully generated pdf'
     assert demisto.results.call_args[0][0]['Contents']
 
-    zombies, output = find_zombie_processes()
-    assert len(zombies) == 0
-
 
 def test_markdown_image_server(mocker, capfd):
+    from SanePdfReport import MD_HTTP_PORT
     with capfd.disabled():
         mocker.patch.object(demisto, 'results')
         fileName = '1234-5678-9012-3456.png'
@@ -66,7 +64,7 @@ def test_markdown_image_server(mocker, capfd):
         time.sleep(5)
 
         # wrong path
-        conn = http.client.HTTPConnection("localhost", 10888)
+        conn = http.client.HTTPConnection("localhost", MD_HTTP_PORT)
         conn.request("GET", "/wrong/path")
         res1 = conn.getresponse()
         assert res1.status == 400

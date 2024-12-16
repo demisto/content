@@ -2,7 +2,7 @@ comment: Entry widget that returns the number of unused rules found by PAN-OS po
 commonfields:
   id: EntryWidgetUnusedRules
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: EntryWidgetUnusedRules
 runas: DBotWeakRole

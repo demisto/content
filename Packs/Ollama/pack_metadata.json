@@ -1,0 +1,23 @@
+{
+    "name": "Ollama",
+    "description": "Get up and running with large language models locally.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Ryan Fortress",
+    "url": "",
+    "email": "",
+    "created": "2024-05-06T18:31:05Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "rfortress-pan"
+    ]
+}

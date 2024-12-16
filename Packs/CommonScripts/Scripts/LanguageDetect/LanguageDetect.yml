@@ -13,14 +13,14 @@ args:
 - name: text
   required: true
   default: true
-  description: Text to analyse for language detection
+  description: Text to analyse for language detection.
 outputs:
 - contextPath: langDetect.lang
-  description: Language detection
+  description: Language detection.
 - contextPath: langDetect.probability
-  description: Probability of language detection
+  description: Probability of language detection.
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.49703
+dockerimage: demisto/py3-tools:1.0.0.114656
 fromversion: 5.0.0
 tests:
-  - LanguageDetect-Test
+- LanguageDetect-Test

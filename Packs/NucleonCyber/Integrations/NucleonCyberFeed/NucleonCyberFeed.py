@@ -75,7 +75,7 @@ class Client(BaseClient):
         return result
 
     def get_ips(self, params: Dict[str, Any], limit: int) -> List:
-        credentials: Dict = params.get('credentials', dict())
+        credentials: Dict = params.get('credentials', {})
         global_username = credentials.get('identifier')
         global_password = credentials.get('password')
         global_usrn = params.get('usrn')

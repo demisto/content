@@ -1,0 +1,19 @@
+{
+    "errors": [
+      {
+        "message": "Comment matching query does not exist.",
+        "locations": [
+          {
+            "line": 1,
+            "column": 24
+          }
+        ],
+        "path": [
+          "deleteComment"
+        ]
+      }
+    ],
+    "data": {
+      "deleteComment": null
+    }
+  }

@@ -1,9 +1,7 @@
 import json
-import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-from pydantic import parse_obj_as  # noqa: F401
 
 
 DEMISTO_PARAMS = {
@@ -19,7 +17,7 @@ EVENTS_URL = 'https://api.dropbox.com/2/team_log/get_events'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

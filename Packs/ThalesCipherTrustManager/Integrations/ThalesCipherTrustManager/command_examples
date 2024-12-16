@@ -1,0 +1,32 @@
+!ciphertrust-group-create name="example_group" description="this is an example group"
+!ciphertrust-group-update group_name="example_group" description="this is a modified description"
+!ciphertrust-group-list page=1 page_size=10
+!ciphertrust-users-list limit=10
+!ciphertrust-user-create username="example_user" password="Fake_password123!" allowed_auth_methods="password,user_certificate" allowed_client_types="none" certificate_subject_dn="OU=organization unit,O=organization,L=location,ST=state,C=country"
+!ciphertrust-user-update user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c" failed_logins_count=0 expires_at="never"
+!ciphertrust-user-password-change username="example_user" password="123ABC!123abc" new_password="new_123ABC!123abc"
+!ciphertrust-user-to-group-add group_name="example_group" user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c"
+!ciphertrust-user-to-group-remove group_name="example_group" user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c"
+!ciphertrust-user-delete user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c"
+!ciphertrust-group-delete group_name="example_group" force=true
+!ciphertrust-local-ca-create cn="test.com" name="example_local_ca" algorithm="RSA" name_fields_raw_json="[ {\"O\" : \"FakeCompany\", \"OU\": \"RnD\", \"C\": \"US\", \"ST\": \"CA\", \"L\": \"FakeCity\"}, {\"OU\": \"Fake Group Inc.\"}]" email="fakeemail@fakecompany.com,fakeemail1@fakecompany.com" ip="10.10.10.10,20.20.20.20" dns_names="*.fakecompany.com,*.fakecompany.net"
+!ciphertrust-local-ca-self-sign local_ca_id="example_local_ca" not_after="in three years" not_before="29.5.24"
+!ciphertrust-local-ca-update local_ca_id="example_local_ca" allow_client_authentication=true allow_user_authentication=true
+!ciphertrust-local-ca-list
+!ciphertrust-certificate-list ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd"
+!ciphertrust-certificate-revoke ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd" cert_id="0fb15f00-722c-412e-a1e8-6eb6130e87ba" reason="certificateHold"
+!ciphertrust-certificate-resume ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd" cert_id="0fb15f00-722c-412e-a1e8-6eb6130e87ba"
+!ciphertrust-local-certificate-delete ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd" local_ca_id="0fb15f00-722c-412e-a1e8-6eb6130e87ba"
+!ciphertrust-local-ca-delete local_ca_id="example_local_ca"
+!ciphertrust-external-ca-list
+!ciphertrust-external-ca-update external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774" allow_client_authentication=true allow_user_authentication=true
+!ciphertrust-external-ca-delete external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774"
+!ciphertrust-csr-generate cn="example_csr" private_key_file_password=123
+!ciphertrust-certificate-issue ca_id="ca_to_issue" csr_entry_id=715@9511b703-23e9-4b5b-82d1-70611060b629 purpose=server duration=365
+!ciphertrust-local-ca-install local_ca_id="local_ca_to_install" cert_entry_id=715@9511b703-23e9-4b5b-82d1-70611060b629  parent_id=59428dfa-cde9-4f68-907b-e7c0b61bfa4c
+!ciphertrust-external-ca-upload ca_entry_id=766@9511b703-23e9-4b5b-82d1-70611060b629 name="test_external_cert"
+
+
+
+
+

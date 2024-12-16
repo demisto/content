@@ -1,0 +1,71 @@
+{
+    "id": "Prisma Cloud Compute Compliance Use Case",
+    "version": -1,
+    "modified": "2022-04-10T11:55:54.250933+03:00",
+    "fromVersion": "6.9.0",
+    "name": "Prisma Cloud Compute Compliance Use Case",
+    "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment in the \"Cortex XSOAR Administrator Guide\" -> \"Set up Your Use Case with the Deployment Wizard\".",
+    "dependency_packs": [
+      {
+        "name": "Case Management",
+        "min_required": 1,
+        "packs": [
+          {
+            "name": "Jira",
+            "display_name": "Atlassian Jira v2"
+          },
+          {
+            "name": "ServiceNow",
+            "display_name": "ServiceNow v2"
+          }
+        ]
+      }
+    ],
+    "wizard": {
+      "fetching_integrations": [
+        {
+          "priority": 1,
+          "name": "PaloAltoNetworks_PrismaCloudCompute",
+          "action": {
+            "existing": "Update your current instance to work with the new Prisma Cloud Compute Compliance v2 incident type: \n1. Enable fetching. \n2. Set the 'Prisma Cloud Compute - Classifier'.\n3. Set the Incident type field to 'Prisma Cloud Compute Compliance v2' (the Prisma Cloud Compute classifier will keep on routing other incident types).\n4. Set the Mapper field to 'Palo Alto Networks Prisma Cloud Compute - Incoming Mapper'.",
+            "new": "Set up new 'Prisma Cloud Compute' instance to work with the Prisma Cloud Compute Compliance v2 incident type: \n1. Turn on fetching. \n2. Choose the 'Prisma Cloud Compute - Classifier .\n3. Set the Incident type field to 'Prisma Cloud Compute Compliance v2' (the Prisma Cloud Compute classifier will keep on routing other incident types).\n4. Set the Mapper field to 'Palo Alto Networks Prisma Cloud Compute - Incoming Mapper'."
+          },
+          "description": "Set up the 'Prisma Cloud Compute' integration to work with your Prisma Cloud Compute Compliance v2 use case.",
+          "incident_type": "Prisma Cloud Compute Compliance v2"
+        }
+      ],
+      "set_playbook": [
+        {
+          "name": "Prisma Cloud Compute - Compliance Alert v2"
+        }
+      ],
+      "supporting_integrations": [
+        {
+          "name": "ServiceNow v2",
+          "action": {
+            "existing": "Configure 'ServiceNow v2' to open a ticket for a true positive incident.",
+            "new": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
+          },
+          "description": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
+        },
+        {
+        "name": "jira-v2",
+        "action": {
+          "existing": "Configure 'jira-v2' to open a ticket for a true positive incident.",
+          "new": "Configure 'jira-v2' to open a ticket for a true positive incident."
+          },
+        "description": "Configure 'jira-v2' to open a ticket for a true positive incident."
+        }
+      ],
+      "next": [
+        {
+          "name": "Enable Your Use Case",
+          "action": {
+            "existing": "Enable the fetching integrations to start ingesting data and run the playbook.",
+            "new": "Enable the fetching integrations to start ingesting data and run the playbook."
+          }
+        }
+      ]
+    }
+  }
+  

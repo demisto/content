@@ -1,16 +1,15 @@
 id: RubrikPolaris-Test
 version: -1
 name: RubrikPolaris-Test
-description: This playbook uses RubrikPolaris integration and tests all commands of
-  the integration.
+description: This playbook uses RubrikPolaris integration and tests all commands of the integration.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fcf207bd-3497-4ecb-8cbe-0d044c85c24b
+    taskid: aa66e0dd-62cc-4fc8-862e-5f486834d296
     type: start
     task:
-      id: fcf207bd-3497-4ecb-8cbe-0d044c85c24b
+      id: aa66e0dd-62cc-4fc8-862e-5f486834d296
       version: -1
       name: ""
       iscommand: false
@@ -20,6 +19,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 15f81593-8d0b-4c29-82aa-faede50c5029
+    taskid: 0cfee14e-32c4-4b69-8b65-617369fd615f
     type: regular
     task:
-      id: 15f81593-8d0b-4c29-82aa-faede50c5029
+      id: 0cfee14e-32c4-4b69-8b65-617369fd615f
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -53,6 +53,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -69,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d732c457-87c8-478f-8c29-4a2fc0440652
+    taskid: 72af20a7-c354-429d-8d18-836c5fe584e3
     type: regular
     task:
-      id: d732c457-87c8-478f-8c29-4a2fc0440652
+      id: 72af20a7-c354-429d-8d18-836c5fe584e3
       version: -1
       name: rubrik-radar-analysis-status
       description: Check the Radar Event for updates.
@@ -97,6 +98,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -113,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 14e46324-8b78-4678-80b4-fb3dc8b4d177
+    taskid: aa5b7444-87dc-4248-85c2-a353d67dcb2c
     type: condition
     task:
-      id: 14e46324-8b78-4678-80b4-fb3dc8b4d177
+      id: aa5b7444-87dc-4248-85c2-a353d67dcb2c
       version: -1
       name: Verify Outputs
       type: condition
@@ -149,6 +151,7 @@ tasks:
             value:
               simple: Rubrik.Radar.ClusterId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -165,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 30fcb9fa-61ac-4329-87cf-f0bbaf724bf5
+    taskid: 493cd702-8341-4905-8cde-7fac094f185f
     type: regular
     task:
-      id: 30fcb9fa-61ac-4329-87cf-f0bbaf724bf5
+      id: 493cd702-8341-4905-8cde-7fac094f185f
       version: -1
       name: rubrik-sonar-sensitive-hits
       script: '|||rubrik-sonar-sensitive-hits'
@@ -179,6 +182,7 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -195,10 +199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f13f5378-58cc-4bda-834a-6f318f0acda1
+    taskid: 17257934-e46a-4a4d-8f27-b2c0418ea4e7
     type: regular
     task:
-      id: f13f5378-58cc-4bda-834a-6f318f0acda1
+      id: 17257934-e46a-4a4d-8f27-b2c0418ea4e7
       version: -1
       name: rubrik-cdm-cluster-location
       script: '|||rubrik-cdm-cluster-location'
@@ -214,6 +218,7 @@ tasks:
           root: RubrikPolaris.GPSCluster
           accessor: id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -230,10 +235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7dabe060-60cf-45d6-8f3a-b9000e6c233b
+    taskid: 439b46e8-726f-4688-87b6-e5c013289cf8
     type: condition
     task:
-      id: 7dabe060-60cf-45d6-8f3a-b9000e6c233b
+      id: 439b46e8-726f-4688-87b6-e5c013289cf8
       version: -1
       name: Verify Outputs
       type: condition
@@ -256,6 +261,7 @@ tasks:
             value:
               simple: Rubrik.CDM.ClusterId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -272,10 +278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 52c84ff5-0fda-4d37-8241-887ded52a8ae
+    taskid: 6462e23f-5638-4c9d-85ba-d3043e09b053
     type: regular
     task:
-      id: 52c84ff5-0fda-4d37-8241-887ded52a8ae
+      id: 6462e23f-5638-4c9d-85ba-d3043e09b053
       version: -1
       name: rubrik-cdm-cluster-connection-state
       script: '|||rubrik-cdm-cluster-connection-state'
@@ -291,6 +297,7 @@ tasks:
           root: RubrikPolaris.GPSCluster
           accessor: id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -307,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1435532a-cbc6-47db-8201-9f5ce4788c2d
+    taskid: bda15820-27c8-4920-8c9f-664deca7f74d
     type: condition
     task:
-      id: 1435532a-cbc6-47db-8201-9f5ce4788c2d
+      id: bda15820-27c8-4920-8c9f-664deca7f74d
       version: -1
       name: Verify Outputs
       type: condition
@@ -333,6 +340,7 @@ tasks:
             value:
               simple: Rubrik.CDM.ClusterId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -349,10 +357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: dfaf19e1-7f14-407d-8fa8-c8a89eaa7c52
+    taskid: 492f4f65-50a2-47d7-8477-5e99128a058c
     type: regular
     task:
-      id: dfaf19e1-7f14-407d-8fa8-c8a89eaa7c52
+      id: 492f4f65-50a2-47d7-8477-5e99128a058c
       version: -1
       name: rubrik-polaris-object-search
       script: '|||rubrik-polaris-object-search'
@@ -370,6 +378,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -386,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 64c36eb8-aef8-4a09-8cf0-9ae7f4bff2d8
+    taskid: f00acc12-4f55-44d1-8406-b906259d13df
     type: condition
     task:
-      id: 64c36eb8-aef8-4a09-8cf0-9ae7f4bff2d8
+      id: f00acc12-4f55-44d1-8406-b906259d13df
       version: -1
       name: Verify Outputs
       type: condition
@@ -417,6 +426,7 @@ tasks:
             value:
               simple: RubrikPolaris.GlobalSearchObject.objectType
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -433,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d2a98049-1e11-4054-8fd7-4b679b9b4d98
+    taskid: 1c0fbd30-19bc-4004-8ddc-6d8c95303228
     type: regular
     task:
-      id: d2a98049-1e11-4054-8fd7-4b679b9b4d98
+      id: 1c0fbd30-19bc-4004-8ddc-6d8c95303228
       version: -1
       name: rubrik-sonar-policies-list
       script: '|||rubrik-sonar-policies-list'
@@ -447,6 +457,7 @@ tasks:
       '#none#':
       - "13"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -463,10 +474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f8631660-47c6-48db-8feb-10cf3d773457
+    taskid: 1aed320c-ba1d-4dc0-8cb1-118421eb6c1f
     type: condition
     task:
-      id: f8631660-47c6-48db-8feb-10cf3d773457
+      id: 1aed320c-ba1d-4dc0-8cb1-118421eb6c1f
       version: -1
       name: Verify Outputs
       type: condition
@@ -504,6 +515,7 @@ tasks:
             value:
               simple: RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.status
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -520,10 +532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 77bc8731-50b0-407e-8436-ae0a75464660
+    taskid: 25d1c5a8-76cf-4d34-84b0-b2a14f752c3d
     type: regular
     task:
-      id: 77bc8731-50b0-407e-8436-ae0a75464660
+      id: 25d1c5a8-76cf-4d34-84b0-b2a14f752c3d
       version: -1
       name: rubrik-sonar-policy-analyzer-groups-list
       script: '|||rubrik-sonar-policy-analyzer-groups-list'
@@ -534,6 +546,7 @@ tasks:
       '#none#':
       - "15"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -550,10 +563,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f66e04a8-69a8-400e-8b3e-944b04ce5e58
+    taskid: ac867d86-9b4c-48a6-8126-9214b542e42c
     type: condition
     task:
-      id: f66e04a8-69a8-400e-8b3e-944b04ce5e58
+      id: ac867d86-9b4c-48a6-8126-9214b542e42c
       version: -1
       name: Verify Outputs
       type: condition
@@ -596,6 +609,7 @@ tasks:
             value:
               simple: RubrikPolaris.SonarAnalyzerGroup.analyzers.analyzerType
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -612,10 +626,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a30c277f-e16b-4f22-862e-2d0b2b24fb51
+    taskid: ccc77c74-c34e-4bba-866c-e6258ebee477
     type: regular
     task:
-      id: a30c277f-e16b-4f22-862e-2d0b2b24fb51
+      id: ccc77c74-c34e-4bba-866c-e6258ebee477
       version: -1
       name: rubrik-polaris-vm-object-metadata-get
       script: '|||rubrik-polaris-vm-object-metadata-get'
@@ -633,6 +647,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -649,10 +664,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 17db5403-5aef-4a6d-8ab7-3040d34762b3
+    taskid: dca3fba1-f479-41ce-85b6-30040c430015
     type: condition
     task:
-      id: 17db5403-5aef-4a6d-8ab7-3040d34762b3
+      id: dca3fba1-f479-41ce-85b6-30040c430015
       version: -1
       name: Verify Outputs
       type: condition
@@ -690,6 +705,7 @@ tasks:
             value:
               simple: RubrikPolaris.VSphereVm.metadata.cluster.name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -706,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 801c1174-ab5d-4cd5-8b07-d1e12b0c0438
+    taskid: d2fd552e-ea63-4199-837d-c935fc83715c
     type: regular
     task:
-      id: 801c1174-ab5d-4cd5-8b07-d1e12b0c0438
+      id: d2fd552e-ea63-4199-837d-c935fc83715c
       version: -1
       name: rubrik-polaris-vm-objects-list
       script: '|||rubrik-polaris-vm-objects-list'
@@ -725,6 +741,7 @@ tasks:
       sort_order:
         simple: ASC
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -741,10 +758,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 6c7b1f29-1eb9-4c5a-8e58-eb4f5a5e7904
+    taskid: a4951cc0-55eb-4789-8492-d9bbfa13bed3
     type: condition
     task:
-      id: 6c7b1f29-1eb9-4c5a-8e58-eb4f5a5e7904
+      id: a4951cc0-55eb-4789-8492-d9bbfa13bed3
       version: -1
       name: Verify Outputs
       type: condition
@@ -789,6 +806,7 @@ tasks:
             value:
               simple: RubrikPolaris.VSphereVm.cluster.status
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -805,10 +823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: dc365328-f1bc-4484-852c-03e8263dbe28
+    taskid: 1d06316b-50c4-4476-8fd4-fe9e1132dc2c
     type: regular
     task:
-      id: dc365328-f1bc-4484-852c-03e8263dbe28
+      id: 1d06316b-50c4-4476-8fd4-fe9e1132dc2c
       version: -1
       name: rubrik-sonar-ondemand-scan
       script: '|||rubrik-sonar-ondemand-scan'
@@ -832,8 +850,9 @@ tasks:
           transformers:
           - operator: FirstArrayElement
           - operator: Stringify
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -850,10 +869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: ed751e0f-4a37-4a64-82ba-73b704c62050
+    taskid: daacf920-d503-42da-8063-d350fbf3883a
     type: condition
     task:
-      id: ed751e0f-4a37-4a64-82ba-73b704c62050
+      id: daacf920-d503-42da-8063-d350fbf3883a
       version: -1
       name: Verify Outputs
       type: condition
@@ -873,6 +892,7 @@ tasks:
             value:
               simple: RubrikPolaris.SonarOndemandScan.crawlId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -889,10 +909,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 66f54ce6-2f52-42c5-8ba6-73e748c6bd5c
+    taskid: 381f3b49-3e69-4ba9-86a8-8a3aa98eaf77
     type: regular
     task:
-      id: 66f54ce6-2f52-42c5-8ba6-73e748c6bd5c
+      id: 381f3b49-3e69-4ba9-86a8-8a3aa98eaf77
       version: -1
       name: rubrik-sonar-ondemand-scan-status
       script: '|||rubrik-sonar-ondemand-scan-status'
@@ -908,6 +928,7 @@ tasks:
           root: RubrikPolaris.SonarOndemandScan
           accessor: crawlId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -924,10 +945,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 37b5e791-95c1-486a-8cd1-9505778955be
+    taskid: d1e1ebd7-28f8-449d-8bf9-fd92fd66bc8f
     type: condition
     task:
-      id: 37b5e791-95c1-486a-8cd1-9505778955be
+      id: d1e1ebd7-28f8-449d-8bf9-fd92fd66bc8f
       version: -1
       name: Verify Outputs
       type: condition
@@ -975,6 +996,7 @@ tasks:
             value:
               simple: RubrikPolaris.SonarOndemandScan.Status.cluster.name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -991,10 +1013,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4472ad6d-3f3c-49e8-89be-5baeff729734
+    taskid: 12ae081f-d88f-4ea8-8392-9aaae651ea59
     type: regular
     task:
-      id: 4472ad6d-3f3c-49e8-89be-5baeff729734
+      id: 12ae081f-d88f-4ea8-8392-9aaae651ea59
       version: -1
       name: rubrik-polaris-vm-object-snapshot-list
       script: '|||rubrik-polaris-vm-object-snapshot-list'
@@ -1032,8 +1054,9 @@ tasks:
         simple: 1 month ago
       timezone_offset:
         simple: "5.5"
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1050,10 +1073,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 3120455e-e8a6-4cac-8b63-c5bd81ff1b92
+    taskid: 6a62150f-125e-4168-8029-5659ae9115e5
     type: condition
     task:
-      id: 3120455e-e8a6-4cac-8b63-c5bd81ff1b92
+      id: 6a62150f-125e-4168-8029-5659ae9115e5
       version: -1
       name: Verify Outputs
       type: condition
@@ -1091,6 +1114,7 @@ tasks:
             value:
               simple: RubrikPolaris.VSphereVm.Snapshot.snapshotGroupByConnection.nodes.snapshotConnection.nodes.isUnindexable
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1107,10 +1131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 1e041362-c29a-4869-82ac-1d3cc7d014e2
+    taskid: ee2be787-4515-4ac3-83d3-20a0faf4de46
     type: regular
     task:
-      id: 1e041362-c29a-4869-82ac-1d3cc7d014e2
+      id: ee2be787-4515-4ac3-83d3-20a0faf4de46
       version: -1
       name: rubrik-sonar-ondemand-scan-result
       script: '|||rubrik-sonar-ondemand-scan-result'
@@ -1128,6 +1152,7 @@ tasks:
       file_type:
         simple: ANY
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1144,10 +1169,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: a8f881d3-f651-41d0-87dd-76ae7abb7e92
+    taskid: d39d5153-aefe-4ef1-8e97-a8b166d60cf8
     type: condition
     task:
-      id: a8f881d3-f651-41d0-87dd-76ae7abb7e92
+      id: d39d5153-aefe-4ef1-8e97-a8b166d60cf8
       version: -1
       name: Verify Outputs
       type: condition
@@ -1170,6 +1195,7 @@ tasks:
             value:
               simple: RubrikPolaris.SonarOndemandScan.Result.downloadLink
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1186,10 +1212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: df34d340-bdbc-4414-897f-1a41dd512521
+    taskid: 5541da26-b8ce-4f85-8fee-f467cbeec376
     type: regular
     task:
-      id: df34d340-bdbc-4414-897f-1a41dd512521
+      id: 5541da26-b8ce-4f85-8fee-f467cbeec376
       version: -1
       name: rubrik-radar-anomaly-csv-analysis
       script: '|||rubrik-radar-anomaly-csv-analysis'
@@ -1216,8 +1242,9 @@ tasks:
           accessor: id
           transformers:
           - operator: FirstArrayElement
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1234,10 +1261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 10c4a860-6004-40eb-8cb3-b60cebde2640
+    taskid: 86a21cfa-2bbf-4e7d-8b7c-47bc02294a1a
     type: condition
     task:
-      id: 10c4a860-6004-40eb-8cb3-b60cebde2640
+      id: 86a21cfa-2bbf-4e7d-8b7c-47bc02294a1a
       version: -1
       name: Verify Outputs
       type: condition
@@ -1270,6 +1297,7 @@ tasks:
             value:
               simple: RubrikPolaris.RadarAnomalyCSV.investigationCsvDownloadLink.downloadLink
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1286,10 +1314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 9fcd4604-dccb-4e4a-8bb0-bdf36c7322e0
+    taskid: 4a679000-94fb-4297-8ef7-e75489f02e78
     type: regular
     task:
-      id: 9fcd4604-dccb-4e4a-8bb0-bdf36c7322e0
+      id: 4a679000-94fb-4297-8ef7-e75489f02e78
       version: -1
       name: rubrik-sonar-csv-download
       script: '|||rubrik-sonar-csv-download'
@@ -1312,8 +1340,9 @@ tasks:
           accessor: id
           transformers:
           - operator: FirstArrayElement
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1330,10 +1359,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 570fcff5-1ab7-499c-8eb1-0a570f28e970
+    taskid: 3032e9d3-3d1c-4fdf-84d7-b88aedb94acf
     type: condition
     task:
-      id: 570fcff5-1ab7-499c-8eb1-0a570f28e970
+      id: 3032e9d3-3d1c-4fdf-84d7-b88aedb94acf
       version: -1
       name: Verify Outputs
       type: condition
@@ -1363,6 +1392,7 @@ tasks:
             value:
               simple: RubrikPolaris.SonarCSVDownload.downloadSnapshotResultsCsv.isSuccessful
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1379,10 +1409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 10db73f0-330a-4738-87d9-b074ae4381d4
+    taskid: 2957c6b4-8df7-4d5c-8ea7-40cd49ca76d3
     type: regular
     task:
-      id: 10db73f0-330a-4738-87d9-b074ae4381d4
+      id: 2957c6b4-8df7-4d5c-8ea7-40cd49ca76d3
       version: -1
       name: rubrik-gps-snapshot-files-list
       script: '|||rubrik-gps-snapshot-files-list'
@@ -1400,6 +1430,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1416,10 +1447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: be9c5cfd-bec3-4939-8c6b-689907c4f409
+    taskid: b0c8d55f-1901-4a60-8920-3bcb75b23a43
     type: condition
     task:
-      id: be9c5cfd-bec3-4939-8c6b-689907c4f409
+      id: b0c8d55f-1901-4a60-8920-3bcb75b23a43
       version: -1
       name: Verify Outputs
       type: condition
@@ -1462,6 +1493,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSSnapshotFile.node.lastModified
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1478,10 +1510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 15978f07-f068-4e69-85c9-7953e2b38594
+    taskid: b7f0d7c8-2ee6-458d-8831-35b2001f707f
     type: regular
     task:
-      id: 15978f07-f068-4e69-85c9-7953e2b38594
+      id: b7f0d7c8-2ee6-458d-8831-35b2001f707f
       version: -1
       name: rubrik-gps-vm-export
       script: '|||rubrik-gps-vm-export'
@@ -1553,8 +1585,9 @@ tasks:
           - operator: FirstArrayElement
       vm_name:
         simple: PAXSOAR-1.1.0-Test-Playbook-Export
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1571,10 +1604,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 76fc3e08-dcd5-4f72-835b-dd81e650124d
+    taskid: 932d6ff6-33cf-4433-8ee2-03d3cd1034c5
     type: regular
     task:
-      id: 76fc3e08-dcd5-4f72-835b-dd81e650124d
+      id: 932d6ff6-33cf-4433-8ee2-03d3cd1034c5
       version: -1
       name: rubrik-user-downloads-list
       script: '|||rubrik-user-downloads-list'
@@ -1585,6 +1618,7 @@ tasks:
       '#none#':
       - "37"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1601,10 +1635,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 7ddeac0b-8d3d-4822-8608-8a9914e656d0
+    taskid: f655d57d-8218-434a-8b2b-b4490132078b
     type: condition
     task:
-      id: 7ddeac0b-8d3d-4822-8608-8a9914e656d0
+      id: f655d57d-8218-434a-8b2b-b4490132078b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1637,6 +1671,7 @@ tasks:
             value:
               simple: RubrikPolaris.UserDownload.progress
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1653,10 +1688,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 55e80586-1e5e-4a3d-8270-3322a2b543d4
+    taskid: 145d6f63-a260-4360-83c4-eb92dc557660
     type: regular
     task:
-      id: 55e80586-1e5e-4a3d-8270-3322a2b543d4
+      id: 145d6f63-a260-4360-83c4-eb92dc557660
       version: -1
       name: rubrik-gps-sla-domain-list
       script: '|||rubrik-gps-sla-domain-list'
@@ -1674,6 +1709,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1690,10 +1726,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: cff4f0f4-a224-493c-8a1a-1ef3935e73c6
+    taskid: 668563b6-96d5-433a-805d-a457a66fefa7
     type: condition
     task:
-      id: cff4f0f4-a224-493c-8a1a-1ef3935e73c6
+      id: 668563b6-96d5-433a-805d-a457a66fefa7
       version: -1
       name: Verify Outputs
       type: condition
@@ -1721,6 +1757,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSSLADomain.protectedObjectCount
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1737,10 +1774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 2f221d78-3f37-4ee9-8d17-d7623460b97c
+    taskid: fe05a2a9-e6cb-4a65-8ee8-7c908ad5d48b
     type: regular
     task:
-      id: 2f221d78-3f37-4ee9-8d17-d7623460b97c
+      id: fe05a2a9-e6cb-4a65-8ee8-7c908ad5d48b
       version: -1
       name: rubrik-sonar-csv-result-download
       script: '|||rubrik-sonar-csv-result-download'
@@ -1758,6 +1795,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1774,10 +1812,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: e6f85ed8-6add-4866-8af9-78e532bee0e6
+    taskid: a348c579-5b17-4481-8dff-abebee4aa1af
     type: condition
     task:
-      id: e6f85ed8-6add-4866-8af9-78e532bee0e6
+      id: a348c579-5b17-4481-8dff-abebee4aa1af
       version: -1
       name: Verify Outputs
       type: condition
@@ -1800,6 +1838,7 @@ tasks:
             value:
               simple: RubrikPolaris.SonarCSVDownload.getDownloadUrl.url
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1816,10 +1855,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 22bcba7f-179a-4bf8-8c0a-840eccbd6f6b
+    taskid: 6d445e10-e8a1-4520-8d82-a8a14b816703
     type: regular
     task:
-      id: 22bcba7f-179a-4bf8-8c0a-840eccbd6f6b
+      id: 6d445e10-e8a1-4520-8d82-a8a14b816703
       version: -1
       name: rubrik-gps-vm-snapshot-create
       script: '|||rubrik-gps-vm-snapshot-create'
@@ -1836,8 +1875,9 @@ tasks:
           accessor: id
           transformers:
           - operator: FirstArrayElement
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1854,10 +1894,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 031e1ca6-6b39-4319-862a-cb4c29f95c16
+    taskid: 16a8dc4a-9fa8-4caf-818e-e0954e942b28
     type: condition
     task:
-      id: 031e1ca6-6b39-4319-862a-cb4c29f95c16
+      id: 16a8dc4a-9fa8-4caf-818e-e0954e942b28
       version: -1
       name: Verify Outputs
       type: condition
@@ -1880,6 +1920,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSOndemandSnapshot.status
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1896,10 +1937,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 18d9f73d-5631-498d-8604-88d7f211ee10
+    taskid: 49682c12-d5b3-426d-8298-c2e9ca0d2d0c
     type: regular
     task:
-      id: 18d9f73d-5631-498d-8604-88d7f211ee10
+      id: 49682c12-d5b3-426d-8298-c2e9ca0d2d0c
       version: -1
       name: rubrik-gps-snapshot-files-download
       script: '|||rubrik-gps-snapshot-files-download'
@@ -1918,8 +1959,9 @@ tasks:
         complex:
           root: RubrikPolaris.GPSSnapshotFile
           accessor: snapshotId
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1936,10 +1978,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: fe463632-ab3d-4f7b-8c47-30e99bef7d95
+    taskid: ea25935f-ca58-46bb-888e-76747007b35b
     type: condition
     task:
-      id: fe463632-ab3d-4f7b-8c47-30e99bef7d95
+      id: ea25935f-ca58-46bb-888e-76747007b35b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1972,6 +2014,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSSnapshotFileDownload.links.rel
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1988,10 +2031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: bbdc6fae-6f32-4acc-8d09-8b3412d03847
+    taskid: 3f69ff97-2f0e-435a-8d1c-27048144b12e
     type: regular
     task:
-      id: bbdc6fae-6f32-4acc-8d09-8b3412d03847
+      id: 3f69ff97-2f0e-435a-8d1c-27048144b12e
       version: -1
       name: rubrik-gps-vm-livemount
       script: '|||rubrik-gps-vm-livemount'
@@ -2042,8 +2085,9 @@ tasks:
           - operator: FirstArrayElement
       vm_name:
         simple: PAXSOAR-1.1.0-Test-Playbook-Live-Mount
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2060,10 +2104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 69767d35-d9f4-46f9-8e4c-c32be1308dba
+    taskid: 893aefd6-84b2-4986-87e1-f187dc4de0b8
     type: regular
     task:
-      id: 69767d35-d9f4-46f9-8e4c-c32be1308dba
+      id: 893aefd6-84b2-4986-87e1-f187dc4de0b8
       version: -1
       name: rubrik-gps-vm-host-list
       script: '|||rubrik-gps-vm-host-list'
@@ -2090,6 +2134,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2106,10 +2151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: c9e35fd2-4eb6-4b9b-8868-71f7c3314b5c
+    taskid: cada23ad-0250-4d27-8306-d8ceea20a90f
     type: condition
     task:
-      id: c9e35fd2-4eb6-4b9b-8868-71f7c3314b5c
+      id: cada23ad-0250-4d27-8306-d8ceea20a90f
       version: -1
       name: Verify Outputs
       type: condition
@@ -2149,6 +2194,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSVMHost.physicalPath.objectType
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2165,10 +2211,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 2c172ca8-b4a5-4098-8edd-98a9d0c7cd27
+    taskid: 6988fd9a-2de3-4c78-8cc8-c6b33f72e41f
     type: regular
     task:
-      id: 2c172ca8-b4a5-4098-8edd-98a9d0c7cd27
+      id: 6988fd9a-2de3-4c78-8cc8-c6b33f72e41f
       version: -1
       name: rubrik-gps-vm-datastore-list
       script: '|||rubrik-gps-vm-datastore-list'
@@ -2186,6 +2232,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2202,10 +2249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 075fde6a-6d12-48f0-82f9-8edef003c728
+    taskid: f3cd745e-1933-4941-879d-e259271490c6
     type: condition
     task:
-      id: 075fde6a-6d12-48f0-82f9-8edef003c728
+      id: f3cd745e-1933-4941-879d-e259271490c6
       version: -1
       name: Verify Outputs
       type: condition
@@ -2238,6 +2285,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSVMHost.Datastore.datastoreType
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2254,10 +2302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: aeb68834-1473-440e-8d5e-2c972d541706
+    taskid: 389d123a-16fa-4e88-884c-5ab6ea635969
     type: regular
     task:
-      id: aeb68834-1473-440e-8d5e-2c972d541706
+      id: 389d123a-16fa-4e88-884c-5ab6ea635969
       version: -1
       name: rubrik-event-list
       script: '|||rubrik-event-list'
@@ -2286,6 +2334,7 @@ tasks:
       limit:
         simple: "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2302,10 +2351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 8bd34398-b97c-452a-871d-bd67c8c811d8
+    taskid: f3ee43de-58c1-4ec4-8efb-b6604fe8f98b
     type: condition
     task:
-      id: 8bd34398-b97c-452a-871d-bd67c8c811d8
+      id: f3ee43de-58c1-4ec4-8efb-b6604fe8f98b
       version: -1
       name: Verify Outputs
       type: condition
@@ -2363,6 +2412,7 @@ tasks:
             value:
               simple: RubrikPolaris.Event.cluster.name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2379,10 +2429,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: ac2610ba-f9d5-41fa-8364-14a7ab3c5408
+    taskid: a85f63b3-6012-4362-86f1-91436db82ce6
     type: regular
     task:
-      id: ac2610ba-f9d5-41fa-8364-14a7ab3c5408
+      id: a85f63b3-6012-4362-86f1-91436db82ce6
       version: -1
       name: rubrik-polaris-object-list
       script: '|||rubrik-polaris-object-list'
@@ -2416,6 +2466,7 @@ tasks:
       type_filter:
         simple: VmwareVirtualMachine
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2432,10 +2483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 47a36dc8-36fb-46da-85ac-86bac1d78349
+    taskid: 0688dca3-5198-4d6d-89fd-724ab0b2c6d3
     type: condition
     task:
-      id: 47a36dc8-36fb-46da-85ac-86bac1d78349
+      id: 0688dca3-5198-4d6d-89fd-724ab0b2c6d3
       version: -1
       name: Verify Outputs
       type: condition
@@ -2478,6 +2529,7 @@ tasks:
             value:
               simple: RubrikPolaris.Object.objectType
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2494,10 +2546,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: c6bbdf1c-afc2-460d-80e4-5d33e5a7a1de
+    taskid: b12b65da-64a1-45cc-8875-5c64ab76deef
     type: regular
     task:
-      id: c6bbdf1c-afc2-460d-80e4-5d33e5a7a1de
+      id: b12b65da-64a1-45cc-8875-5c64ab76deef
       version: -1
       name: rubrik-polaris-object-snapshot-list
       script: '|||rubrik-polaris-object-snapshot-list'
@@ -2512,8 +2564,9 @@ tasks:
         complex:
           root: RubrikPolaris.Object
           accessor: id
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2530,10 +2583,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 5b166965-6cd3-45d2-870c-e91df128cecb
+    taskid: 2c0b6096-7556-444e-8ad9-473e775955fa
     type: condition
     task:
-      id: 5b166965-6cd3-45d2-870c-e91df128cecb
+      id: 2c0b6096-7556-444e-8ad9-473e775955fa
       version: -1
       name: Verify Outputs
       type: condition
@@ -2576,6 +2629,7 @@ tasks:
             value:
               simple: RubrikPolaris.Object.Snapshot.slaDomain.name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2592,10 +2646,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: aff71fe3-ecaf-4686-86ca-2f19b840a67f
+    taskid: 7b0eaaaa-0c90-4566-8e6f-0f6fdad41f4c
     type: regular
     task:
-      id: aff71fe3-ecaf-4686-86ca-2f19b840a67f
+      id: 7b0eaaaa-0c90-4566-8e6f-0f6fdad41f4c
       version: -1
       name: rubrik-radar-ioc-scan
       script: '|||rubrik-radar-ioc-scan'
@@ -2631,8 +2685,9 @@ tasks:
           - operator: FirstArrayElement
       scan_name:
         simple: PAXSOAR-1.1.0-Test-Playbook-Scan
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2649,10 +2704,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: c0898292-9799-488e-8522-e774bd97e786
+    taskid: 9737590b-8726-4a8f-827a-cb8536a8c257
     type: condition
     task:
-      id: c0898292-9799-488e-8522-e774bd97e786
+      id: 9737590b-8726-4a8f-827a-cb8536a8c257
       version: -1
       name: Verify Outputs
       type: condition
@@ -2677,6 +2732,7 @@ tasks:
             value:
               simple: RubrikPolaris.RadarIOCScan.status
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2693,10 +2749,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: a6ddfae2-1f2c-4bce-8468-af6c9f8797e3
+    taskid: f13ad7a3-fec5-4069-8483-44abaf6cbebe
     type: regular
     task:
-      id: a6ddfae2-1f2c-4bce-8468-af6c9f8797e3
+      id: f13ad7a3-fec5-4069-8483-44abaf6cbebe
       version: -1
       name: rubrik-radar-ioc-scan-results
       script: '|||rubrik-radar-ioc-scan-results'
@@ -2723,6 +2779,7 @@ tasks:
           root: RubrikPolaris.RadarIOCScan
           accessor: id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2739,10 +2796,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 4de8717a-2fa4-413e-8d9e-a419cc9919dd
+    taskid: 40263bb8-a250-4dee-8c8a-c864f9181e66
     type: condition
     task:
-      id: 4de8717a-2fa4-413e-8d9e-a419cc9919dd
+      id: 40263bb8-a250-4dee-8c8a-c864f9181e66
       version: -1
       name: Verify Outputs
       type: condition
@@ -2790,6 +2847,7 @@ tasks:
             value:
               simple: RubrikPolaris.RadarIOCScan.results.snapshotResults.snapshotId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2806,10 +2864,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 86ac0dfd-0650-40f7-8513-0e5a4974949e
+    taskid: 3c076f75-340e-4af6-83e6-1f0f63f2d3e7
     type: regular
     task:
-      id: 86ac0dfd-0650-40f7-8513-0e5a4974949e
+      id: 3c076f75-340e-4af6-83e6-1f0f63f2d3e7
       version: -1
       name: rubrik-gps-async-result
       script: '|||rubrik-gps-async-result'
@@ -2836,6 +2894,7 @@ tasks:
           root: RubrikPolaris.GPSOndemandSnapshot
           accessor: id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2852,10 +2911,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: fcbbacba-e647-4704-881b-ca6cb97ca4de
+    taskid: d8759d74-fd61-45c1-864e-a336e7ffa210
     type: condition
     task:
-      id: fcbbacba-e647-4704-881b-ca6cb97ca4de
+      id: d8759d74-fd61-45c1-864e-a336e7ffa210
       version: -1
       name: Verify Outputs
       type: condition
@@ -2893,6 +2952,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSAsyncResult.links.rel
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2909,10 +2969,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 2c4ee937-e75c-4f22-8306-09d87e126cca
+    taskid: 222b6232-9adc-456c-8aba-cd6d10702d03
     type: regular
     task:
-      id: 2c4ee937-e75c-4f22-8306-09d87e126cca
+      id: 222b6232-9adc-456c-8aba-cd6d10702d03
       version: -1
       name: rubrik-gps-cluster-list
       script: '|||rubrik-gps-cluster-list'
@@ -2923,6 +2983,7 @@ tasks:
       '#none#':
       - "65"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2939,10 +3000,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: c8e4b6af-e981-45fb-866a-4ac487f0cff4
+    taskid: 2582638e-7be3-4645-86fd-fd66a6bfa7f4
     type: condition
     task:
-      id: c8e4b6af-e981-45fb-866a-4ac487f0cff4
+      id: 2582638e-7be3-4645-86fd-fd66a6bfa7f4
       version: -1
       name: Verify Outputs
       type: condition
@@ -2983,6 +3044,7 @@ tasks:
             value:
               simple: RubrikPolaris.GPSCluster.version
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2999,10 +3061,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 0c9099ea-1854-458f-875e-ba7ac965578a
+    taskid: 16d08841-fd3f-4bdf-8668-6ee685bd6435
     type: regular
     task:
-      id: 0c9099ea-1854-458f-875e-ba7ac965578a
+      id: 16d08841-fd3f-4bdf-8668-6ee685bd6435
       version: -1
       name: rubrik-radar-ioc-scan-list
       script: '|||rubrik-radar-ioc-scan-list'
@@ -3020,6 +3082,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3036,10 +3099,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: d6657b17-7d3f-4a2a-87f6-a78b3267818b
+    taskid: b0892437-8653-4eba-8587-eb90222cc009
     type: condition
     task:
-      id: d6657b17-7d3f-4a2a-87f6-a78b3267818b
+      id: b0892437-8653-4eba-8587-eb90222cc009
       version: -1
       name: Verify Outputs
       type: condition
@@ -3072,6 +3135,7 @@ tasks:
             value:
               simple: RubrikPolaris.RadarIOCScan.snapshots.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3088,10 +3152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 2e883ff1-75cc-4eec-825b-4bc9c125dcd4
+    taskid: bdd7faf5-b330-44bb-81ad-414b74ecc10c
     type: regular
     task:
-      id: 2e883ff1-75cc-4eec-825b-4bc9c125dcd4
+      id: bdd7faf5-b330-44bb-81ad-414b74ecc10c
       version: -1
       name: rubrik-gps-vm-recover-files
       script: '|||rubrik-gps-vm-recover-files'
@@ -3100,7 +3164,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
+      - "71"
     scriptarguments:
       cluster_id:
         complex:
@@ -3118,8 +3182,9 @@ tasks:
           accessor: id
           transformers:
           - operator: FirstArrayElement
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3136,10 +3201,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 2262d74e-7ba3-4ae7-8c67-4fe38cfba843
+    taskid: 00025651-19c6-4cff-8f97-30ca98a117ad
     type: title
     task:
-      id: 2262d74e-7ba3-4ae7-8c67-4fe38cfba843
+      id: 00025651-19c6-4cff-8f97-30ca98a117ad
       version: -1
       name: Test Done
       type: title
@@ -3147,11 +3212,1071 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 11570
+          "y": 12930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 1cde144d-f018-4764-8121-74ccd33cb795
+    type: regular
+    task:
+      id: 1cde144d-f018-4764-8121-74ccd33cb795
+      version: -1
+      name: rubrik-sonar-user-access-list
+      description: Retrieve the user access information.
+      script: '|||rubrik-sonar-user-access-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 594639bb-e695-4e18-88ba-bbe7e1239e7f
+    type: condition
+    task:
+      id: 594639bb-e695-4e18-88ba-bbe7e1239e7f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.principalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.upn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.violatedHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.numDescendants
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.domainName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.startCursor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.endCursor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.hasNextPage
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.hasPreviousPage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 26147924-720d-443e-8a4c-a5f4b629830c
+    type: regular
+    task:
+      id: 26147924-720d-443e-8a4c-a5f4b629830c
+      version: -1
+      name: rubrik-sonar-file-context-list
+      description: Retrieve the user access information.
+      script: '|||rubrik-sonar-file-context-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      limit:
+        simple: "5"
+      object_id:
+        complex:
+          root: RubrikPolaris.SonarPolicy.objectStatuses
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.SonarPolicy.objectStatuses.latestSnapshotResult
+          accessor: snapshotFid
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: b86dc19c-c353-408f-8dcd-621af32ab8b9
+    type: condition
+    task:
+      id: b86dc19c-c353-408f-8dcd-621af32ab8b9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.nativePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.stdPath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.lastAccessTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.lastModifiedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.directory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantErrorFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantSkippedExtFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantSkippedSizeFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.violationsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.totalHitsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filesWithHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filesWithHits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filesWithHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessFilesWithHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessFilesWithHits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessFilesWithHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.staleFilesWithHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.staleFilesWithHits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.staleFilesWithHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.groupType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.analyzerType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.violationsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.totalHitsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.stalenessType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numActivities
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numActivitiesDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.FileContext.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.FileContext.endCursor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.FileContext.hasNextPage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: e129ed1b-4888-4613-86a8-053d84885831
+    type: regular
+    task:
+      id: e129ed1b-4888-4613-86a8-053d84885831
+      version: -1
+      name: rubrik-sonar-user-access-get
+      description: Retrieve the user access information based on the provided user ID.
+      script: '|||rubrik-sonar-user-access-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      user_id:
+        complex:
+          root: RubrikPolaris.UserAccess
+          accessor: principalId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 750921cb-a73f-44ad-8262-3d75494d6dd2
+    type: condition
+    task:
+      id: 750921cb-a73f-44ad-8262-3d75494d6dd2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.principalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.upn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskReasons.accessRiskReasons
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskReasons.insecureReasons
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskReasons.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.violatedHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.numDescendants
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.domainName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.directGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.directGroups.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.directGroups.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.__typename
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: b6aec8c5-5487-492c-83f9-30e832c0424d
+    type: regular
+    task:
+      id: b6aec8c5-5487-492c-83f9-30e832c0424d
+      version: -1
+      name: rubrik-radar-suspicious-file-list
+      description: Retrieve the suspicious list of files for a snapshot ID with detected file anomalies.
+      script: '|||rubrik-radar-suspicious-file-list'
+      type: regular
+      iscommand: true
+      brand: RubrikPolaris
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.SonarPolicy.objectStatuses.latestSnapshotResult
+          accessor: snapshotFid
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 54a5056c-9811-4444-8c6e-4d2fb1964ca0
+    type: condition
+    task:
+      id: 54a5056c-9811-4444-8c6e-4d2fb1964ca0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.snapshotFid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cluster.defaultAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cluster.systemStatusAffectedNodes.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cluster.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cluster.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cluster.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cluster.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.cdmId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.managedId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyProbability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.workloadId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.location
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.isAnomaly
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.objectType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.detectionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.snapshotDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.encryption
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalAffectedFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalRansomwareNotes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.lastModified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.fileSizeBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.lastModified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.fileSizeBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.anomalyInfo.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.SuspiciousFile.__typename
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12770
         }
       }
     note: false
@@ -3166,7 +4291,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11585,
+        "height": 12945,
         "width": 492.5,
         "x": 50,
         "y": 50

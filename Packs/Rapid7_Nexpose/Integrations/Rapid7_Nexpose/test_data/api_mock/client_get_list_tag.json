@@ -1,0 +1,47 @@
+{
+    "resources": [
+        {
+            "color": "default",
+            "created": "2024-05-06T13:32:58.454Z",
+            "id": 45,
+            "name": "test",
+            "searchCriteria": {
+                "match": "all",
+                "filters": [
+                    {
+                        "field": "risk-score",
+                        "operator": "in-range",
+                        "lower": "193.841",
+                        "upper": "187.841"
+                    }
+                ]
+            },
+            "source": "custom",
+            "type": "Owner"
+        },
+        {
+            "color": "default",
+            "created": "2024-05-06T13:43:52.874Z",
+            "id": 46,
+            "name": "new_test2",
+            "searchCriteria": {
+                "match": "any",
+                "filters": [
+                    {
+                        "field": "ip-address",
+                        "operator":"is",
+                        "value":"3.3.3.3"
+                    }
+                ]
+            },
+            "source": "custom",
+            "type": "Owner"
+        }
+    ],
+    "page": {
+        "number": 0,
+        "size": 2,
+        "totalResources": 8,
+        "totalPages": 4
+    }
+}

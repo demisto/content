@@ -19,10 +19,28 @@ configuration:
   required: true
   type: 9
   section: Connect
+- display: API Private Key Type
+  name: private_key_type
+  options:
+  - PKCS#1
+  - PKCS#8
+  type: 15
+  section: Connect
+  required: false
+  advanced: true
+  defaultvalue: PKCS#8
+  additionalinfo: The default value is PKCS#8. For more information about the difference between the 2 types follow the link https://stackoverflow.com/questions/48958304/pkcs1-and-pkcs8-format-for-rsa-private-key
 - display: Region
   name: region
   additionalinfo: Must be one the available regions for Oracle Cloud Infrastructure. For more information see the integration's description.
   required: true
+  type: 0
+  section: Connect
+- display: Compartment OCID
+  name: compartment_id
+  additionalinfo: The default value is the Tenancy OCID parameter. In case a Compartment ID is given, it will override the default value. To get the value see the link https://docs.oracle.com/en-us/iaas/Content/GSG/Tasks/contactingsupport_topic-Locating_Oracle_Cloud_Infrastructure_IDs.htm#Finding_the_OCID_of_a_Compartment
+  advanced: true
+  required: false
   type: 0
   section: Connect
 - display: First fetch time
@@ -61,7 +79,7 @@ script:
       required: true
     description: Manual command to fetch and display events.
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.85142
+  dockerimage: demisto/oci:1.0.0.117259
   isfetchevents: true
   script: '-'
   subtype: python3

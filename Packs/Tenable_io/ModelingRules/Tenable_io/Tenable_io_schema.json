@@ -1,0 +1,46 @@
+{
+    "tenable_io_raw": {
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "target": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "fields": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "tenable_io_vulnerabilities_raw": {
+        "asset": {
+            "type": "string",
+            "is_array": false
+        },
+        "plugin": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "output": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

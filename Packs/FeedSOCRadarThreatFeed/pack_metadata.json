@@ -2,17 +2,15 @@
     "name": "SOCRadar ThreatFeed",
     "description": "Obtain indicators provided by SOCRadar to gain knowledge about the malicious activities.",
     "support": "partner",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.12",
     "author": "SOCRadar Cyber Intelligence Inc.",
     "url": "www.socradar.io",
     "email": "xsoar@socradar.io",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-    ],
-    "useCases": [
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Threat Intelligence",
         "CTI",

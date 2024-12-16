@@ -2,7 +2,7 @@ id: Azure - Network Security Group Remediation
 version: -1
 name: Azure - Network Security Group Remediation
 description: |-
-  This playbook adds new Azure Network Security Groups (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allows traffic from private IP address and blocks the rest of the RDP traffic.
+  This playbook adds new Azure Network Security Groups (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.
 
   Conditions and limitations:
   - Limited to one resource group.
@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 41e5c47a-1936-48ad-8c02-a0f748035b66
+    taskid: 6ce17739-3f39-4681-8310-fd45ba54b9bb
     type: start
     task:
-      id: 41e5c47a-1936-48ad-8c02-a0f748035b66
+      id: 6ce17739-3f39-4681-8310-fd45ba54b9bb
       version: -1
       name: ""
       iscommand: false
@@ -30,8 +30,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": -710
+          "x": 510,
+          "y": -700
         }
       }
     note: false
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 81a05305-0f13-42cc-8c51-6d4c8915b7f1
+    taskid: 1adc8ea1-823e-440b-82da-b83a8d7451d2
     type: regular
     task:
-      id: 81a05305-0f13-42cc-8c51-6d4c8915b7f1
+      id: 1adc8ea1-823e-440b-82da-b83a8d7451d2
       version: -1
       name: Retrieve Rules from NSG Associated to Public IP
       description: List all rules of the specified security groups.
@@ -63,15 +63,32 @@ tasks:
       offset:
         simple: "1"
       security_group_name:
+        simple: ${inputs.AzureSecurityGroup}
+      resource_group_name:
         complex:
-          root: inputs.AzureSecurityGroup
+          root: inputs.ResourceGroup
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      subscription_id:
+        complex:
+          root: inputs.SubscriptionID
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 510,
-          "y": -350
+          "y": -380
         }
       }
     note: false
@@ -83,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 65f9da98-6c36-4c40-8786-d83d3770e4d6
+    taskid: 55bbd540-d880-4a5a-8a0a-4cb49be396ba
     type: condition
     task:
-      id: 65f9da98-6c36-4c40-8786-d83d3770e4d6
+      id: 55bbd540-d880-4a5a-8a0a-4cb49be396ba
       version: -1
       name: Is Azure Network Security Groups and Input Value Defined?
       description: Determines if the Azure Network Security Groups integration instance is configured and input values are defined to pull in data required for remediation.
@@ -95,7 +112,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "47"
       "yes":
       - "1"
     separatecontext: false
@@ -131,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": -560
+          "x": 510,
+          "y": -570
         }
       }
     note: false
@@ -144,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 013da57d-4a0e-45e2-8a82-52f3cd2b1cfd
+    taskid: 7482a072-0101-4618-83f9-1dd8189b715e
     type: title
     task:
-      id: 013da57d-4a0e-45e2-8a82-52f3cd2b1cfd
+      id: 7482a072-0101-4618-83f9-1dd8189b715e
       version: -1
       name: Done
       type: title
@@ -159,8 +176,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2160
+          "x": 710,
+          "y": 2410
         }
       }
     note: false
@@ -172,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f7419872-ff3c-4272-8a99-59bae56e6d33
+    taskid: 8b08e2be-7090-4530-8d81-840e906cbbff
     type: condition
     task:
-      id: f7419872-ff3c-4272-8a99-59bae56e6d33
+      id: 8b08e2be-7090-4530-8d81-840e906cbbff
       version: -1
       name: Does offending rule exist?
       description: Checks whether the last command returned rules or not.
@@ -184,7 +201,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "47"
       "yes":
       - "43"
     separatecontext: false
@@ -222,6 +239,14 @@ tasks:
                       value:
                         simple: inputs.RemotePort
                       iscontext: true
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: AzureNSG.Rule.destinationPortRange
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '*'
                 - - operator: isEqualString
                     left:
                       value:
@@ -231,6 +256,14 @@ tasks:
                       value:
                         simple: inputs.RemoteProtocol
                       iscontext: true
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: AzureNSG.Rule.protocol
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '*'
                 - - operator: isEqualString
                     left:
                       value:
@@ -247,6 +280,14 @@ tasks:
                     right:
                       value:
                         simple: Internet
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: AzureNSG.Rule.sourceAddressPrefix
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: 0.0.0.0/0
                 transformers:
                 - operator: getField
                   args:
@@ -261,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": -180
+          "y": -220
         }
       }
     note: false
@@ -273,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: a70caeee-0399-4821-8c66-263c8133173e
+    taskid: 84c801f2-2f65-4cac-851c-50e9feabd680
     type: title
     task:
-      id: a70caeee-0399-4821-8c66-263c8133173e
+      id: 84c801f2-2f65-4cac-851c-50e9feabd680
       version: -1
       name: Retrieve and Update Allow Rule
       type: title
@@ -292,7 +333,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": 790
+          "y": 890
         }
       }
     note: false
@@ -304,17 +345,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 110e9510-f313-4536-8113-59b63fad02fc
+    taskid: 7f84ef2a-e391-4f94-828f-3eff285e8fd3
     type: regular
     task:
-      id: 110e9510-f313-4536-8113-59b63fad02fc
+      id: 7f84ef2a-e391-4f94-828f-3eff285e8fd3
       version: -1
       name: Set variable for existing allow rule name
       description: Set a variable for the existing allow rule.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "32"
@@ -382,7 +423,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": 930
+          "y": 1030
         }
       }
     note: false
@@ -394,10 +435,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 353ca115-d23d-4e9c-893b-576dcf8e4a49
+    taskid: b5146806-4b94-4d33-8277-5ea7d3e51bdf
     type: regular
     task:
-      id: 353ca115-d23d-4e9c-893b-576dcf8e4a49
+      id: b5146806-4b94-4d33-8277-5ea7d3e51bdf
       version: -1
       name: Update existing remediation allow rule
       description: |-
@@ -417,6 +458,18 @@ tasks:
           root: existingAllowRule
           accessor: destinationAddressPrefix
           transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: existingAllowRule.destinationAddressPrefixes
+                iscontext: true
+              raw: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
           - operator: concat
             args:
               prefix: {}
@@ -437,13 +490,31 @@ tasks:
         complex:
           root: existingAllowRule
           accessor: name
+      resource_group_name:
+        complex:
+          root: inputs.ResourceGroup
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      subscription_id:
+        complex:
+          root: inputs.SubscriptionID
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": 1095
+          "y": 1195
         }
       }
     note: false
@@ -455,10 +526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: b9ec97db-eea7-4cd6-8f2c-e76ca04bfb9a
+    taskid: 6584ec00-606f-4979-88e1-ad8445501150
     type: condition
     task:
-      id: b9ec97db-eea7-4cd6-8f2c-e76ca04bfb9a
+      id: 6584ec00-606f-4979-88e1-ad8445501150
       version: -1
       name: Does remediation deny rule exist?
       description: Determines whether a remediation deny rule already exists or not.
@@ -471,7 +542,7 @@ tasks:
       Update:
       - "35"
       "yes":
-      - "5"
+      - "46"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -489,7 +560,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Allow
+                        simple: Deny
                 - - operator: containsGeneral
                     left:
                       value:
@@ -523,7 +594,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                 transformers:
                 - operator: getField
@@ -549,7 +629,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Allow
+                        simple: Deny
                 - - operator: containsGeneral
                     left:
                       value:
@@ -557,7 +637,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: remediation-allow-port
+                        simple: remediation-deny-port
                 - - operator: containsGeneral
                     left:
                       value:
@@ -583,7 +663,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: notContainsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
             iscontext: true
     continueonerrortype: ""
@@ -591,7 +680,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 1285
+          "y": 1365
         }
       }
     note: false
@@ -603,12 +692,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 27d21edd-8a53-4e3b-8b6f-39201e3f2c6c
+    taskid: a2f218f3-4fab-4c9b-8790-9f2e92756735
     type: title
     task:
-      id: 27d21edd-8a53-4e3b-8b6f-39201e3f2c6c
+      id: a2f218f3-4fab-4c9b-8790-9f2e92756735
       version: -1
-      name: Retrieve and Update Allow Rule
+      name: Retrieve and Update Deny Rule
       type: title
       iscommand: false
       brand: ""
@@ -622,7 +711,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 1545
+          "y": 1585
         }
       }
     note: false
@@ -634,17 +723,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: e930fede-842f-4d97-84d3-003360da4110
+    taskid: 21448315-bcc9-4e2c-865b-483a82cc882d
     type: regular
     task:
-      id: e930fede-842f-4d97-84d3-003360da4110
+      id: 21448315-bcc9-4e2c-865b-483a82cc882d
       version: -1
       name: Set variable for existing deny rule name
       description: Set a variable for the existing deny rule.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "37"
@@ -686,7 +775,8 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "3389"
+                  simple: inputs.RemotePort
+                iscontext: true
           - - operator: containsGeneral
               left:
                 value:
@@ -694,7 +784,8 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: TCP
+                  simple: inputs.RemoteProtocol
+                iscontext: true
           - - operator: notContainsGeneral
               left:
                 value:
@@ -710,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 1680
+          "y": 1720
         }
       }
     note: false
@@ -722,10 +813,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c70fae07-19b8-465e-85ab-6b394431c684
+    taskid: 1a7d4cac-6979-4cf3-8705-ec356925dda6
     type: regular
     task:
-      id: c70fae07-19b8-465e-85ab-6b394431c684
+      id: 1a7d4cac-6979-4cf3-8705-ec356925dda6
       version: -1
       name: Update existing remediation deny rule
       description: |-
@@ -738,13 +829,25 @@ tasks:
       brand: Azure Network Security Groups
     nexttasks:
       '#none#':
-      - "5"
+      - "46"
     scriptarguments:
       destination:
         complex:
           root: existingDenyRule
           accessor: destinationAddressPrefix
           transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: existingAllowRule.destinationAddressPrefixes
+                iscontext: true
+              raw: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
           - operator: concat
             args:
               prefix: {}
@@ -765,13 +868,31 @@ tasks:
         complex:
           root: existingDenyRule
           accessor: name
+      resource_group_name:
+        complex:
+          root: inputs.ResourceGroup
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      subscription_id:
+        complex:
+          root: inputs.SubscriptionID
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 510,
-          "y": 1860
+          "y": 1880
         }
       }
     note: false
@@ -783,10 +904,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: da28b150-a5ff-467f-8811-3432937ce7e6
+    taskid: e982f863-79e1-4b9e-8916-38eafb22159e
     type: condition
     task:
-      id: da28b150-a5ff-467f-8811-3432937ce7e6
+      id: e982f863-79e1-4b9e-8916-38eafb22159e
       version: -1
       name: Does remediation allow rule exist?
       description: Determines whether a remediation allow rule already exists or not.
@@ -851,7 +972,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                 transformers:
                 - operator: getField
@@ -911,7 +1041,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: notContainsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
             iscontext: true
     continueonerrortype: ""
@@ -919,7 +1058,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 570
+          "y": 720
         }
       }
     note: false
@@ -931,10 +1070,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 0f591347-c5b5-4de5-886e-03a4a6ab7e74
+    taskid: 62d2b0b1-5d6c-4218-86c9-2b8babd7b23d
     type: title
     task:
-      id: 0f591347-c5b5-4de5-886e-03a4a6ab7e74
+      id: 62d2b0b1-5d6c-4218-86c9-2b8babd7b23d
       version: -1
       name: Create Allow Rule
       type: title
@@ -949,8 +1088,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 790
+          "x": 780,
+          "y": 890
         }
       }
     note: false
@@ -962,17 +1101,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: e65e18a5-0588-4b65-8aa1-753a80b94e7f
+    taskid: 9bb91f4f-7790-482c-8671-d9e0b22bdf49
     type: regular
     task:
-      id: e65e18a5-0588-4b65-8aa1-753a80b94e7f
+      id: 9bb91f4f-7790-482c-8671-d9e0b22bdf49
       version: -1
       name: Create list of priorities of all returned Azure rules
       description: Creates a list of priorities from the list of rules found.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "41"
@@ -1002,7 +1141,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 240
+          "y": 400
         }
       }
     note: false
@@ -1014,17 +1153,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 89d3847a-96c0-40f7-8207-2d8d2c899684
+    taskid: fa68287b-bca8-4561-8034-1383ce60869a
     type: regular
     task:
-      id: 89d3847a-96c0-40f7-8207-2d8d2c899684
+      id: fa68287b-bca8-4561-8034-1383ce60869a
       version: -1
       name: Retrieve available priorities
       description: This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number available priorities to return available priorities from the provided list.
-      scriptName: AzureFindAvailableNSGPriorities
       type: regular
       iscommand: false
       brand: ""
+      script: AzureFindAvailableNSGPriorities
     nexttasks:
       '#none#':
       - "38"
@@ -1041,7 +1180,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 410
+          "y": 560
         }
       }
     note: false
@@ -1053,10 +1192,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: ee2869a7-705a-43fd-8ffd-19acc22a891e
+    taskid: f871b58d-6155-4b03-880a-1889551b6b00
     type: regular
     task:
-      id: ee2869a7-705a-43fd-8ffd-19acc22a891e
+      id: f871b58d-6155-4b03-880a-1889551b6b00
       version: -1
       name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
       description: |-
@@ -1117,14 +1256,32 @@ tasks:
                   simple: ${inputs.RemoteProtocol}
                 iscontext: true
       source:
-        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+        simple: ${inputs.RemediationAllowRanges}
+      resource_group_name:
+        complex:
+          root: inputs.ResourceGroup
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      subscription_id:
+        complex:
+          root: inputs.SubscriptionID
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 930
+          "x": 780,
+          "y": 1020
         }
       }
     note: false
@@ -1136,20 +1293,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 4a606d7d-785f-41c5-8674-3c81a435a398
+    taskid: c98dc204-241c-4c23-8de5-f9e778ac7395
     type: regular
     task:
-      id: 4a606d7d-785f-41c5-8674-3c81a435a398
+      id: c98dc204-241c-4c23-8de5-f9e778ac7395
       version: -1
       name: Set variable for offending rule priority
       description: Sets variable for the offending rule priority in the list of rules returned.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
-      - "40"
+      - "48"
     scriptarguments:
       key:
         simple: azureOffendingRulePriority
@@ -1174,6 +1331,14 @@ tasks:
                 value:
                   simple: inputs.RemotePort
                 iscontext: true
+            - left:
+                iscontext: true
+                value:
+                  simple: AzureNSG.Rule.destinationPortRange
+              operator: isEqualString
+              right:
+                value:
+                  simple: '*'
           - - operator: isEqualString
               left:
                 value:
@@ -1183,6 +1348,14 @@ tasks:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
+            - left:
+                iscontext: true
+                value:
+                  simple: AzureNSG.Rule.protocol
+              operator: isEqualString
+              right:
+                value:
+                  simple: '*'
           - - operator: isEqualString
               left:
                 value:
@@ -1191,6 +1364,22 @@ tasks:
               right:
                 value:
                   simple: '*'
+            - left:
+                iscontext: true
+                value:
+                  simple: AzureNSG.Rule.sourceAddressPrefix
+              operator: isEqualString
+              right:
+                value:
+                  simple: Internet
+            - left:
+                iscontext: true
+                value:
+                  simple: AzureNSG.Rule.sourceAddressPrefix
+              operator: isEqualString
+              right:
+                value:
+                  simple: 0.0.0.0/0
           - - operator: isEqualString
               left:
                 value:
@@ -1211,7 +1400,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 70
+          "y": -40
         }
       }
     note: false
@@ -1223,10 +1412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 3fa069d5-be06-4a84-8d9b-5dbba1fdb415
+    taskid: 76be7dd2-448b-47b5-8ad1-8e5197e74bc8
     type: regular
     task:
-      id: 3fa069d5-be06-4a84-8d9b-5dbba1fdb415
+      id: 76be7dd2-448b-47b5-8ad1-8e5197e74bc8
       version: -1
       name: Add block rule for port ${inputs.RemotePort}
       description: |-
@@ -1239,7 +1428,7 @@ tasks:
       brand: Azure Network Security Groups
     nexttasks:
       '#none#':
-      - "5"
+      - "46"
     scriptarguments:
       action:
         simple: Deny
@@ -1288,13 +1477,31 @@ tasks:
         simple: Internet
       source_ports:
         simple: '*'
+      resource_group_name:
+        complex:
+          root: inputs.ResourceGroup
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      subscription_id:
+        complex:
+          root: inputs.SubscriptionID
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue: {}
+            operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 960,
-          "y": 1680
+          "y": 1720
         }
       }
     note: false
@@ -1306,10 +1513,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: f5735595-a251-455e-8388-c6e2b4c60398
+    taskid: f9dd66ef-8a63-4f79-855a-c33bf6f69ebc
     type: title
     task:
-      id: f5735595-a251-455e-8388-c6e2b4c60398
+      id: f9dd66ef-8a63-4f79-855a-c33bf6f69ebc
       version: -1
       name: Create Deny Rule
       type: title
@@ -1325,7 +1532,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 1545
+          "y": 1585
         }
       }
     note: false
@@ -1335,23 +1542,181 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "46":
+    continueonerrortype: ""
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: cfbd8031-0897-427a-8801-aa8784d41da1
+      iscommand: false
+      name: Set remediatedFlag to true
+      script: Set
+      type: regular
+      version: -1
+    taskid: cfbd8031-0897-427a-8801-aa8784d41da1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2230
+        }
+      }
+  "47":
+    continueonerrortype: ""
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: cfcf7d60-5bea-4f24-8b19-3a8b5f7f926e
+      iscommand: false
+      name: Set remediatedFlag to false
+      script: Set
+      type: regular
+      version: -1
+    taskid: cfcf7d60-5bea-4f24-8b19-3a8b5f7f926e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 2240
+        }
+      }
+  "48":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${azureOffendingRulePriority}
+          operator: isEqualString
+          right:
+            value:
+              simple: "100"
+      label: "yes"
+    continueonerrortype: ""
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the the offending rule's priority is 100 (highest).
+      id: a398e163-bf7b-4353-8492-43da8d89fca2
+      iscommand: false
+      name: Is offending rule priority 100?
+      type: condition
+      version: -1
+    taskid: a398e163-bf7b-4353-8492-43da8d89fca2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 150
+        }
+      }
+  "49":
+    continueonerrortype: ""
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "47"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedReason
+      value:
+        simple: Offending rule priority of 100
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 11568067-90be-45c1-81a7-f22d1e6cd356
+      iscommand: false
+      name: Set remediatedReason
+      script: Set
+      type: regular
+      version: -1
+    taskid: 11568067-90be-45c1-81a7-f22d1e6cd356
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 400
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
-      "22_43_yes": 0.67,
-      "22_5_#default#": 0.16,
+      "22_43_yes": 0.63,
+      "22_47_#default#": 0.34,
       "34_35_Update": 0.65,
-      "34_5_yes": 0.35,
       "38_39_#default#": 0.58,
-      "4_1_yes": 0.61,
-      "4_5_#default#": 0.1
+      "4_1_yes": 0.46,
+      "4_47_#default#": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 2935,
-        "width": 1350,
-        "x": -10,
-        "y": -710
+        "height": 3175,
+        "width": 1540,
+        "x": 210,
+        "y": -700
       }
     }
   }
@@ -1376,7 +1741,54 @@ inputs:
   required: true
   description: The remote port that is publicly exposed.
   playbookInputQuery:
-outputs: []
+- description: The Azure subscription ID (optional).
+  key: SubscriptionID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The Azure resource group (optional).
+  key: ResourceGroup
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Azure Network Security Groups integration instance to use if you have multiple instances configured (optional).
+  key: InstanceName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the vnet and bastion hosts) but other networks can be added as needed.
+  key: RemediationAllowRanges
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+outputs:
+- contextPath: remediatedFlag
+  description: Output key to determine if remediation was successfully done.
+  type: boolean
+- contextPath: remediatedReason
+  description: Reason remediation was done or not done.
+  type: string
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - AzureSecurityGroup
+  - AzureVMPrivateIP
+  - RemoteProtocol
+  - RemotePort
+  - SubscriptionID
+  - ResourceGroup
+  - InstanceName
+  - RemediationAllowRanges
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - remediatedFlag
+  - remediatedReason
+contentitemexportablefields:
+  contentitemfields: {}

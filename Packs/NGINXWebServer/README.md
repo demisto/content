@@ -14,8 +14,9 @@ access_log syslog:server=<syslog server hostname/IP>:<port>,facility=local7,tag=
 ```
 4. In order for the config changes to take effect you need to restart the nginx service.
 
-Note: In order to parse the timestamp correctly, make sure that the timestamp is set to UTC time zone.
-The supported time formats are: 
+**Pay Attention**: 
+For timestamp ingestion, the default time zone for error logs is set to UTC (+0000), you can change the time zone according to your preference.
+The supported timestamp formats from syslog messages: 
 - dd/MMM/yyyy:hh:mm:ss [+|-]nnnn (18/Jul/2021:10:00:00 +0000)
 - yyyy/MM/dd hh:mm:ss (2020/01/19 10:00:00)
 

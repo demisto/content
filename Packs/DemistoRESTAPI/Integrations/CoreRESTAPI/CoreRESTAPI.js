@@ -32,6 +32,9 @@ getTenantAccountName = function () {
             account_name = 'acc_' + tenant_name
         }
     }
+    else{
+        logDebug('getTenantAccountName: The server url ' + server_url + ' does not contain the expected tenant prefix acc_');
+    }
     return account_name
 }
 
@@ -103,18 +106,26 @@ sendMultipart = function (uri, entryID, body) {
     else if (params.auth_method == 'Advanced') {
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
-    var res = httpMultipart(
-        requestUrl,
-        entryID,
-        {
-            Headers: headers,
-        },
-        body,
-        params.insecure,
-        params.proxy,
-        undefined,
-        'file'
-    );
+
+    var res;
+    var tries = 0;
+    do {
+        res = httpMultipart(
+            requestUrl,
+            entryID,
+            {
+                Headers: headers,
+            },
+            body,
+            params.insecure,
+            params.proxy,
+            undefined,
+            'file'
+        );
+        tries++;
+    } while (tries < 3 && res.Status.startsWith('timeout'));
+    logDebug("Ran httpMultipart() " + tries + " time(s)")
+
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
         throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
@@ -309,8 +320,11 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
-
-        return 'The following packs installed successfully: ' + installed_packs.join(", ")
+        if (installed_packs.length === 0) {
+            return 'No pack has been installed, please check that the pack name and version are correct.'
+        } else {
+            return 'The following packs installed successfully: ' + installed_packs.join(", ")
+        }
     }
 };
 
@@ -320,26 +334,14 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 /**
  * deletes an entry  by entryID by the key_to_delete
 Arguments:
-    @param {String} file_content -- content of the file to upload
-    @param {String} file_name  -- name of the file in the dest incident
-    @param {String} key_to_delete  -- the name of the key to delete
     @param {String} incident_id  -- the incident id
+    @param {String} entry_id  -- the entry ID of the file
 Returns:
     CommandResults
 """
  */
-var uploadFile= function(incident_id, file_content, file_name) {
-    var body = {
-        file: 
-        {
-            value: [file_content],
-            options: {
-                filename: [file_name],
-                contentType: 'multipart/form-data'
-            }
-        },
-    };
-    var res = httpMultipart(`/entry/upload/${incident_id}`,file_content ,body);
+var uploadFile= function(incident_id, entry_id) {
+    var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id);
     if (isError(res[0])) {
         throw res[0].Contents;
     }
@@ -350,7 +352,7 @@ var uploadFile= function(incident_id, file_content, file_name) {
 /**
  * deletes a file  by entryID
 Arguments:
-    @param {String} delete_artifact  -- in order to delete the artifact 
+    @param {String} delete_artifact  -- in order to delete the artifact
     @param {String} entry_id  -- entry ID of the file
 Returns:
     CommandResults
@@ -360,7 +362,7 @@ var deleteFileRequest = function (entry_id, delete_artifact = true) {
     const body_content = JSON.stringify({
         id: entry_id,
         deleteArtifact: delete_artifact});
-    
+
     return sendRequest( 'POST', '/entry/delete/v2', body_content);
 };
 
@@ -388,7 +390,7 @@ var deleteAttachmentRequest=function(incident_id, attachment_path, field_name = 
             path: attachment_path
           }
         ]
-      });    
+      });
     try{
         return sendRequest('POST', `/incident/remove/${incident_id}`, body);
     }
@@ -408,7 +410,7 @@ Returns:
     CommandResults -- Readable output
 Note:
     You can give either the entryID or file_name.
-""" 
+"""
  */
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
     incident_id = (typeof incident_id === 'undefined')? investigation.id: incident_id;
@@ -420,8 +422,8 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     }
     var fileId = '';
     if ((!entryID)) {
-        response = uploadFile(incident_id, file_content, file_name);
         fileId = saveFile(file_content);
+        response = uploadFile(incident_id, fileId);
     } else {
         if (file_name === undefined) {
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
@@ -456,7 +458,7 @@ Arguments:
 Returns:
     Message that the file was deleted successfully + entry_id
 """
- */ 
+ */
 // getting the context data
 var fileDeleteCommand = function(EntryID) {
     files =  invContext['File'];
@@ -466,14 +468,14 @@ var fileDeleteCommand = function(EntryID) {
     files = (invContext['File'] instanceof Array)? invContext['File']:[invContext['File']];
     if (files[0]=='undefined'){
         throw new Error(`Files not found.`);
-        
+
     }
     var not_found = true
     for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
         if (files[i]['EntryID'] == EntryID) {
-            not_found= false 
+            not_found= false
         }
-        
+
       }
     if(not_found){
         throw new Error(`File already deleted or not found.`);
@@ -496,14 +498,14 @@ var fileDeleteCommand = function(EntryID) {
 function coreApiFileCheckCommand(EntryID) {
     files =  invContext['File']instanceof Array? invContext['File']:[invContext['File']];
     var file_found = false;
-    var human_readable = `File ${EntryID} isn't exists`;
+    var human_readable = `File ${EntryID} does not exist`;
     if (typeof files['0'] !== 'undefined') {
         for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
             if (files[i]['EntryID'] == EntryID) {
                 file_found= true ;
                 human_readable = `File ${EntryID} exists`;
             }
-          }    
+          }
     }
     return {
         Type: entryTypes.note,
@@ -511,7 +513,7 @@ function coreApiFileCheckCommand(EntryID) {
         HumanReadable: human_readable,
         EntryContext: {[`IsFileExists(val.${EntryID}==${EntryID})`]:{[EntryID]:file_found}}
     };
-        
+
 
 };
 
@@ -525,7 +527,7 @@ function coreApiFileCheckCommand(EntryID) {
         Show a message that the file was deleted successfully
 */
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
-    incident_id = (typeof incident_id == 'undefined')? investigation.id: incident_id;    
+    incident_id = (typeof incident_id == 'undefined')? investigation.id: incident_id;
     deleteAttachmentRequest(incident_id, attachment_path, field_name);
     return `Attachment ${attachment_path} deleted `;
 };

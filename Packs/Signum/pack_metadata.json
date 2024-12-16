@@ -1,0 +1,23 @@
+{
+    "name": "Signum",
+    "description": "To list all the users in a domain on Signum",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "davistonehub",
+    "url": "",
+    "email": "",
+    "created": "2024-08-02T19:19:32Z",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "davistonehub"
+    ]
+}

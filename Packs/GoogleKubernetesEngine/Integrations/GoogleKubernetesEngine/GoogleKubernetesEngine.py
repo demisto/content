@@ -7,9 +7,8 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 from collections.abc import Callable
 # 3-rd party packages
-from google.cloud.container_v1 import ClusterManagerClient
+from google.cloud.container_v1 import ClusterManagerClient, ClusterUpdate, AddonsConfig, ListClustersResponse, Cluster
 from google.protobuf.json_format import MessageToDict
-from google.protobuf.message import Message
 from google.oauth2 import service_account
 # Local packages
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -182,7 +181,7 @@ def parse_cluster_table(entry: dict) -> dict:
 
 
 def parse_node_pool(node_pool: dict) -> dict:
-    """ Build entry contect entry for a node pools entry.
+    """ Build entry context entry for a node pools entry.
 
     Args:
         node_pool: Node pool raw response from google API.
@@ -302,10 +301,10 @@ def gcloud_clusters_list_command(client: ClusterManagerClient, project: str, zon
         dict: Cluster raw response.
     """
     # Query and gPRC unpack
-    raw_response_msg: Message = client.list_clusters(project_id=project,
-                                                     zone=zone,
-                                                     timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_msg: ListClustersResponse = client.list_clusters(project_id=project,
+                                                                  zone=zone,
+                                                                  timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
 
     # Entry context
     clusters_ec: list[dict] = [parse_cluster(cluster) for cluster in raw_response_dict.get('clusters', [])]
@@ -336,7 +335,7 @@ def gcloud_clusters_describe_command(client: ClusterManagerClient, project: str 
         dict: Cluster raw response.
     """
     # Query and gPRC unpack
-    raw_response_msg: Message = client.get_cluster(cluster_id=cluster,
+    raw_response_msg: Cluster = client.get_cluster(cluster_id=cluster,
                                                    project_id=project,
                                                    zone=zone,
                                                    timeout=API_TIMEOUT)
@@ -374,7 +373,7 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
     update = {
         "username": "admin" if basic_auth == "enable" else ""
     }
-    raw_response_msg: Message = client.set_master_auth(
+    raw_response_msg = client.set_master_auth(
         request={
             'action': 'SET_USERNAME',
             'project_id': project,
@@ -384,7 +383,7 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
         },
         timeout=API_TIMEOUT,
     )
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -420,7 +419,7 @@ def gcloud_clusters_set_addons_command(client: ClusterManagerClient, project: st
         dict: Operation raw response.
     """
     # Perform cluster update
-    update = {}
+    update: AddonsConfig = {}  # type: ignore[assignment]
     if http_load_balancing:
         update['http_load_balancing'] = {
             "disabled": http_load_balancing != 'enable'
@@ -433,12 +432,12 @@ def gcloud_clusters_set_addons_command(client: ClusterManagerClient, project: st
         update['network_policy_config'] = {
             "disabled": network_policy != 'enable'
         }
-    raw_response_msg: Message = client.set_addons_config(project_id=project,
-                                                         zone=zone,
-                                                         cluster_id=cluster,
-                                                         addons_config=update,
-                                                         timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_msg = client.set_addons_config(project_id=project,
+                                                zone=zone,
+                                                cluster_id=cluster,
+                                                addons_config=update,
+                                                timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -470,11 +469,11 @@ def gcloud_clusters_set_legacy_auth_command(client: ClusterManagerClient, projec
         dict: Operation raw response.
     """
     # Perform cluster update
-    raw_response_msg: Message = client.set_legacy_abac(project_id=project,
-                                                       zone=zone,
-                                                       cluster_id=cluster,
-                                                       enabled=(enable == 'true'),
-                                                       timeout=API_TIMEOUT)
+    raw_response_msg = client.set_legacy_abac(project_id=project,
+                                              zone=zone,
+                                              cluster_id=cluster,
+                                              enabled=(enable == 'true'),
+                                              timeout=API_TIMEOUT)
     raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
@@ -502,7 +501,7 @@ def gcloud_clusters_set_master_authorized_network_command(client: ClusterManager
         zone: Project query zone, e.g. "europe-west2-a".
         cluster: Cluster ID, e.g. "dmst-gcloud-cluster-1".
         enable: "true" or "false"
-        cidrs: Comma seprated list of CIDRs 192.160.0.0/24,10.0.0.0/24,
+        cidrs: Comma separated list of CIDRs 192.160.0.0/24,10.0.0.0/24,
 
     Returns:
         str: Human readable.
@@ -517,12 +516,12 @@ def gcloud_clusters_set_master_authorized_network_command(client: ClusterManager
         }
     }
 
-    raw_response_msg: Message = client.update_cluster(project_id=project,
-                                                      zone=zone,
-                                                      cluster_id=cluster,
-                                                      update=update,
-                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_msg = client.update_cluster(project_id=project,
+                                             zone=zone,
+                                             cluster_id=cluster,
+                                             update=update,  # type: ignore[arg-type]
+                                             timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -558,11 +557,11 @@ def gcloud_clusters_set_k8s_stackdriver_command(client: ClusterManagerClient, pr
     """
     # Perform cluster update
     update = "monitoring.googleapis.com/kubernetes" if enable == 'true' else ''
-    raw_response_msg: Message = client.set_monitoring_service(project_id=project,
-                                                              zone=zone,
-                                                              cluster_id=cluster,
-                                                              monitoring_service=update,
-                                                              timeout=API_TIMEOUT)
+    raw_response_msg = client.set_monitoring_service(project_id=project,
+                                                     zone=zone,
+                                                     cluster_id=cluster,
+                                                     monitoring_service=update,
+                                                     timeout=API_TIMEOUT)
 
     raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
@@ -596,17 +595,17 @@ def gcloud_clusters_set_binary_auth(client: ClusterManagerClient, project: str, 
         dict: Operation raw response.
     """
     # Perform cluster update
-    update = {
+    update: ClusterUpdate = {
         'desired_binary_authorization': {
             'enabled': enable == 'enable',
         }
-    }
-    raw_response_msg: Message = client.update_cluster(project_id=project,
-                                                      zone=zone,
-                                                      cluster_id=cluster,
-                                                      update=update,
-                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    }  # type: ignore[assignment]
+    raw_response_msg = client.update_cluster(project_id=project,
+                                             zone=zone,
+                                             cluster_id=cluster,
+                                             update=update,
+                                             timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -638,18 +637,18 @@ def gcloud_clusters_set_intra_node_visibility(client: ClusterManagerClient, proj
         dict: Operation raw response.
     """
     # Perform cluster update
-    update = {
+    update: ClusterUpdate = {
         'desired_intra_node_visibility_config': {
             'enabled': enable == 'enable',
         }
-    }
+    }  # type: ignore[assignment]
 
-    raw_response_msg: Message = client.update_cluster(project_id=project,
-                                                      zone=zone,
-                                                      cluster_id=cluster,
-                                                      update=update,
-                                                      timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_msg = client.update_cluster(project_id=project,
+                                             zone=zone,
+                                             cluster_id=cluster,
+                                             update=update,
+                                             timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
     entry_context = {
@@ -680,11 +679,11 @@ def gcloud_node_pool_list_command(client: ClusterManagerClient, project: str, zo
         dict: Cluster raw response.
     """
     # Query and gPRC unpack
-    raw_response_msg: Message = client.list_node_pools(project_id=project,
-                                                       zone=zone,
-                                                       cluster_id=cluster,
-                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_msg = client.list_node_pools(project_id=project,
+                                              zone=zone,
+                                              cluster_id=cluster,
+                                              timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     node_pools_ec: list[dict] = [parse_node_pool(node_pool) for node_pool in raw_response_dict.get('nodePools', [])]
     entry_context = {
@@ -715,11 +714,11 @@ def gcloud_node_pool_describe_command(client: ClusterManagerClient, project: str
         dict: Cluster raw response.
     """
     # Query and gPRC unpack
-    raw_response_msg: Message = client.get_node_pool(project_id=project,
-                                                     zone=zone,
-                                                     cluster_id=cluster,
-                                                     node_pool_id=node_pool,
-                                                     timeout=API_TIMEOUT)
+    raw_response_msg = client.get_node_pool(project_id=project,
+                                            zone=zone,
+                                            cluster_id=cluster,
+                                            node_pool_id=node_pool,
+                                            timeout=API_TIMEOUT)
     raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     node_pools_ec: dict = parse_node_pool(raw_response_dict)
@@ -737,7 +736,7 @@ def gcloud_node_pool_describe_command(client: ClusterManagerClient, project: str
 def gcloud_set_node_pool_management(client: ClusterManagerClient, project: str, zone: str, cluster: str,
                                     node_pool: str, auto_repair: str | None = None,
                                     auto_upgrade: str | None = None) -> COMMAND_OUTPUT:
-    """ Disbale or Enable node-pool functionallity:
+    """ Disable or Enable node-pool functionallity:
             1. auto-repair.
             2. auto-upgrade.
         https://cloud.google.com/sdk/gcloud/reference/container/node-pools/update
@@ -763,7 +762,7 @@ def gcloud_set_node_pool_management(client: ClusterManagerClient, project: str, 
     if auto_upgrade:
         update['auto_upgrade'] = auto_upgrade == 'enable'
 
-    raw_response_msg: Message = client.set_node_pool_management(
+    raw_response_msg = client.set_node_pool_management(
         request={
             'project_id': project,
             'zone': zone,
@@ -802,10 +801,10 @@ def gcloud_operations_list_command(client: ClusterManagerClient, project: str, z
     """
     # Query operation status
 
-    raw_response_msg: Message = client.list_operations(project_id=project,
-                                                       zone=zone,
-                                                       timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_msg = client.list_operations(project_id=project,
+                                              zone=zone,
+                                              timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     operations: list[dict] = [parse_operation(operation) for operation in raw_response_dict.get('operations', [])]
     entry_context = {
@@ -836,11 +835,11 @@ def gcloud_operations_describe_command(client: ClusterManagerClient, project: st
         dict: Operation raw response.
     """
     # Query operation status
-    raw_response_msg: Message = client.get_operation(project_id=project,
-                                                     zone=zone,
-                                                     operation_id=operation,
-                                                     timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
+    raw_response_msg = client.get_operation(project_id=project,
+                                            zone=zone,
+                                            operation_id=operation,
+                                            timeout=API_TIMEOUT)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     operations: dict = parse_operation(raw_response_dict)
     entry_context = {

@@ -34,7 +34,7 @@ def test_azure_storage_queue_list_queues_command(requests_mock):
      - Ensure a sample value from the API matches what is generated in the context.
     """
     from AzureStorageQueue import Client, list_queues_command
-    url = f'{BASE_URL}/{SAS_TOKEN}&comp=list&maxresults=50'
+    url = f'{BASE_URL}/?{SAS_TOKEN}&comp=list&maxresults=50'
 
     mock_response = load_xml_mock_response('queues.xml')
     requests_mock.get(url, text=mock_response)
@@ -65,7 +65,7 @@ def test_azure_storage_queue_create_queue_command(requests_mock):
     """
     from AzureStorageQueue import Client, create_queue_command
     queue_name = "test-queue"
-    url = f'{BASE_URL}/{queue_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}/{queue_name}?{SAS_TOKEN}'
 
     requests_mock.put(url, text='', status_code=201)
 
@@ -97,7 +97,7 @@ def test_azure_storage_queue_delete_queue_command(requests_mock):
     """
     from AzureStorageQueue import Client, delete_queue_command
     queue_name = "test-queue"
-    url = f'{BASE_URL}/{queue_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}/{queue_name}?{SAS_TOKEN}'
 
     requests_mock.delete(url, text='')
 
@@ -125,7 +125,7 @@ def test_azure_storage_queue_create_message_command(requests_mock):
     """
     from AzureStorageQueue import Client, create_message_command
     queue_name = "test-queue"
-    url = f'{BASE_URL}/{queue_name}/messages{SAS_TOKEN}'
+    url = f'{BASE_URL}/{queue_name}/messages?{SAS_TOKEN}'
 
     mock_response = load_xml_mock_response('create_message.xml')
     requests_mock.post(url, text=mock_response)
@@ -157,7 +157,7 @@ def test_azure_storage_queue_get_messages_command(requests_mock):
     """
     from AzureStorageQueue import Client, get_messages_command
     queue_name = "test-queue"
-    url = f'{BASE_URL}/{queue_name}/messages{SAS_TOKEN}&numofmessages=1'
+    url = f'{BASE_URL}/{queue_name}/messages?{SAS_TOKEN}&numofmessages=1'
 
     mock_response = load_xml_mock_response('get_message.xml')
     requests_mock.get(url, text=mock_response)
@@ -190,7 +190,7 @@ def test_azure_storage_queue_peek_messages_command(requests_mock):
     """
     from AzureStorageQueue import Client, peek_messages_command
     queue_name = "test-queue"
-    url = f'{BASE_URL}/{queue_name}/messages{SAS_TOKEN}&numofmessages=1&peekonly=true'
+    url = f'{BASE_URL}/{queue_name}/messages?{SAS_TOKEN}&numofmessages=1&peekonly=true'
 
     mock_response = load_xml_mock_response('peek_message.xml')
     requests_mock.get(url, text=mock_response)
@@ -223,7 +223,7 @@ def test_azure_storage_queue_dequeue_messages_command(requests_mock):
     """
     from AzureStorageQueue import Client, dequeue_message_command
     queue_name = "test-queue"
-    get_url = f'{BASE_URL}/{queue_name}/messages{SAS_TOKEN}&numofmessages=1&visibilitytimeout=30'
+    get_url = f'{BASE_URL}/{queue_name}/messages?{SAS_TOKEN}&numofmessages=1&visibilitytimeout=30'
 
     mock_response = load_xml_mock_response('get_message.xml')
     requests_mock.get(get_url, text=mock_response)
@@ -231,7 +231,7 @@ def test_azure_storage_queue_dequeue_messages_command(requests_mock):
     message_id = '1111111111111'
     pop_receipt = 'AgAAAAMAAAAAAAAAsIN/0VWX1wE='
 
-    delete_url = f'{BASE_URL}/{queue_name}/messages/{message_id}{SAS_TOKEN}&popreceipt={pop_receipt}'
+    delete_url = f'{BASE_URL}/{queue_name}/messages/{message_id}?{SAS_TOKEN}&popreceipt={pop_receipt}'
     requests_mock.delete(delete_url, text='')
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
@@ -262,7 +262,7 @@ def test_azure_storage_queue_update_messages_command(requests_mock):
     pop_receipt = 'AgAAAAMAAAAAAAAAsIN/0VWX1wE='
     visibility_time_out = '30'
 
-    url = f'{BASE_URL}/{queue_name}/messages/{message_id}{SAS_TOKEN}' \
+    url = f'{BASE_URL}/{queue_name}/messages/{message_id}?{SAS_TOKEN}' \
           f'&popreceipt={pop_receipt}&visibilitytimeout={visibility_time_out}'
 
     requests_mock.put(url, text='')
@@ -298,7 +298,7 @@ def test_azure_storage_queue_delete_messages_command(requests_mock):
     message_id = '1111111111111'
     pop_receipt = 'AgAAAAMAAAAAAAAAsIN/0VWX1wE='
 
-    delete_url = f'{BASE_URL}/{queue_name}/messages/{message_id}{SAS_TOKEN}&popreceipt={pop_receipt}'
+    delete_url = f'{BASE_URL}/{queue_name}/messages/{message_id}?{SAS_TOKEN}&popreceipt={pop_receipt}'
     requests_mock.delete(delete_url, text='')
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
@@ -327,7 +327,7 @@ def test_azure_storage_queue_clear_queue_command(requests_mock):
     from AzureStorageQueue import Client, clear_messages_command
     queue_name = "test-queue"
 
-    url = f'/{queue_name}/messages{SAS_TOKEN}'
+    url = f'/{queue_name}/messages?{SAS_TOKEN}'
     requests_mock.delete(url, text='')
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,

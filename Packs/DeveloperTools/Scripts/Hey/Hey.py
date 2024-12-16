@@ -2,13 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
 import subprocess
-from typing import Tuple
-
-import urllib3
-
-
-# disable insecure warnings
-urllib3.disable_warnings()
 
 # ---------- CONSTANTS ---------- #
 
@@ -28,7 +21,7 @@ def try_re(pattern: str, string: str, i: int = 0) -> Optional[Any]:
 
 
 def name_value_arg_to_dict(arg: Optional[str]):
-    parsed_input: Dict[str, str] = {}
+    parsed_input: dict[str, str] = {}
     if arg:
         args = argToList(arg)
         for item in args:
@@ -64,19 +57,23 @@ def construct_hey_query(url: str,
         d=body,
         x=proxy
     )
-    hey_query = "hey "
+
+    query_args = ["hey"]
+
     if disable_compression == 'true':
-        hey_query += '--disable-compression '
+        query_args.append('--disable-compression')
     if enable_http2 == 'true':
-        hey_query += ' -h2 '
+        query_args.append('-h2')
     if disable_redirects == 'true':
-        hey_query += ' -disable-redirects '
+        query_args.append('-disable-redirects')
     if headers:
         for header_key, header_val in name_value_arg_to_dict(headers).items():
-            hey_query += f' -H {header_key}:{header_val} '
-    hey_query += " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
-    hey_query = hey_query.replace("  ", " ")  # remove double spaces
-    return hey_map, hey_query
+            query_args.extend(('-H', f'{header_key}:{header_val}'))
+    for k, v in hey_map.items():
+        query_args.extend([f"-{k}", v])
+    query_args.append(url)
+
+    return hey_map, query_args
 
 
 # ---------- CLASSES ---------- #
@@ -99,7 +96,7 @@ class HeyPerformanceResult:
         self._result = result or ''
         self._ext_outputs = name_value_arg_to_dict(results_map)
 
-    def _get_summary(self, result: List[str]) -> Tuple[dict, int]:
+    def _get_summary(self, result: List[str]) -> tuple[dict, int]:
         """Returns summary dictionary and index after the summary"""
         summary = {}
         i = 0
@@ -183,7 +180,7 @@ def run_hey_test(url: str,
                                              proxy,
                                              enable_http2,
                                              disable_redirects)
-    result = subprocess.check_output(hey_query.split(), stderr=subprocess.STDOUT, text=True)
+    result = subprocess.check_output(hey_query, stderr=subprocess.STDOUT, text=True)
     return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 
 

@@ -1,21 +1,20 @@
 from CommonServerPython import *
 
 
-def send_action_and_update_incident(farm: str, customer: str, entity: str, action: str):
+def send_action_and_update_incident(entity: str, action: str, incident: str):
     result = demisto.executeCommand(
         "checkpointhec-send-action",
         {
-            'farm': farm,
-            'customer': customer,
             'entity': entity,
             'action': action,
+            'using': incident
         }
     )
     demisto.executeCommand(
         "setIncident",
         {
             'customFields': json.dumps({
-                'checkpointhectask': result[0]['Contents']['task']
+                'checkpointhecemailtask': result[0]['Contents']['task']
             })
         }
     )
@@ -24,12 +23,11 @@ def send_action_and_update_incident(farm: str, customer: str, entity: str, actio
 
 def main():  # pragma: no cover
     try:
+        incident = demisto.incident()['sourceInstance']
         args = demisto.args()
-        farm = args.get('farm')
-        customer = args.get('customer')
         entity = args.get('entity')
         action = args.get('action')
-        return_results(send_action_and_update_incident(farm, customer, entity, action))
+        return_results(send_action_and_update_incident(entity, action, incident))
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')

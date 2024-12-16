@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# noqa: F401
-# noqa: F401
-# type: ignore
 
 TIME_FIELD = "created"
 MAX_CANDIDATES_IN_LIST = 1000
@@ -11,8 +8,7 @@ MAX_CANDIDATES_IN_LIST = 1000
 def get_incidents_by_case(case_id, incident_id):
 
     # find incidents that are not closed and do not have the same incident id.
-    query = 'cyrencaseid="%s" and -cyrenincidentid="%s"'\
-            % (case_id, incident_id)
+    query = f'cyrencaseid="{case_id}" and -cyrenincidentid="{incident_id}"'
 
     get_incidents_argument =\
         {'query': query,
@@ -41,7 +37,7 @@ def incident_to_record(incident, time_field):
             return date_time_str
 
     time = parse_time(incident[time_field])
-    return {'id': "[%s](#/Details/%s)" % (incident['id'], incident['id']),
+    return {'id': "[{}](#/Details/{})".format(incident['id'], incident['id']),
             'raw_id': incident['id'],
             'cyren_incident_id': incident['CustomFields']['cyrenincidentid'],
             'name': incident['name'],
@@ -87,18 +83,11 @@ def main():
 
         if len(similar_incidents or []) > 0:
             similar_incidents_rows =\
-                list(
-                    map(
-                        lambda x: incident_to_record(x, TIME_FIELD),
-                        similar_incidents
-                    )
-                )
+                [incident_to_record(x, TIME_FIELD) for x in similar_incidents]
             similar_incidents_rows =\
-                list(
-                    sorted(
-                        similar_incidents_rows,
-                        key=lambda x: (x['time'], x['id'])
-                    )
+                sorted(
+                    similar_incidents_rows,
+                    key=lambda x: (x['time'], x['id'])
                 )
 
             similar_incident_csv = ""

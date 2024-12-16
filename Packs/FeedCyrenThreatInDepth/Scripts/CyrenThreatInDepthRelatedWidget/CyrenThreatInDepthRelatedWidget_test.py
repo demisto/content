@@ -24,6 +24,7 @@ def executeCommand(result=NORMAL, error=False):
             if error:
                 return ERROR
             return result
+        return None
 
     return inner
 
@@ -37,10 +38,10 @@ def test_cyren_feed_relationship_normal(mocker):
     from CyrenThreatInDepthRelatedWidget import cyren_feed_relationship
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand())
-    args = dict(indicator=dict(some="value"))
+    args = {"indicator": {"some": "value"}}
     result = cyren_feed_relationship(args)
 
-    demisto.executeCommand.assert_any_call("CyrenThreatInDepthRenderRelated", dict(indicator="{\"some\": \"value\"}"))
+    demisto.executeCommand.assert_any_call("CyrenThreatInDepthRenderRelated", {"indicator": "{\"some\": \"value\"}"})
     assert result.readable_output == "tha output!"
 
 
@@ -54,7 +55,7 @@ def test_cyren_feed_relationship_no_indicator(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand())
     with pytest.raises(ValueError):
-        cyren_feed_relationship(dict())
+        cyren_feed_relationship({})
 
 
 def test_cyren_feed_relationship_error_response(mocker):
@@ -66,7 +67,7 @@ def test_cyren_feed_relationship_error_response(mocker):
     from CyrenThreatInDepthRelatedWidget import cyren_feed_relationship
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(error=True))
-    args = dict(indicator=dict(some="value"))
+    args = {"indicator": {"some": "value"}}
 
     with pytest.raises(ValueError):
         cyren_feed_relationship(args)

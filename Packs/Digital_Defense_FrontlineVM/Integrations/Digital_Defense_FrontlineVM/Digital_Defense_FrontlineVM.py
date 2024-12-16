@@ -9,7 +9,7 @@ import socket
 import struct
 import urllib3
 from datetime import datetime, timedelta, timezone
-from typing import List, Dict, Any
+from typing import Any
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -66,7 +66,6 @@ SCAN_HEADERS = ['ID', 'Name', 'IP', 'Policy']
 
 class EndOfTime(Exception):
     ''' Raised when functions timeout '''
-    pass
 
 
 def function_timeout(signum, frame):
@@ -225,7 +224,7 @@ def fetch_incidents():
     try:
         new_start_time = datetime.utcnow()    # may be used to update new start_time if no incidents found.
         new_start_time_str = new_start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        incidents: List[Dict[str, Any]] = []
+        incidents: list[dict[str, Any]] = []
         last_run = demisto.getLastRun()
 
         # Check if last_run exists and has a start_time to continue:
@@ -705,10 +704,7 @@ def scan_policy_exists(policy_selected):
         resp = requests.get(policy_url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
         resp.raise_for_status()
         data = json.loads(resp.text)
-        for policy in data:
-            if policy_selected == policy.get('name', ""):
-                return True
-        return False
+        return any(policy_selected == policy.get('name', '') for policy in data)
     except Exception as err:
         return_error("Error: FrontlineVM scan_policy_exists failed " + str(err))
 
@@ -788,7 +784,7 @@ def test_module():
 
 def main():
     ''' Integration main method '''
-    LOG('command is %s' % (demisto.command(), ))
+    LOG(f'command is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             test_module()

@@ -9,21 +9,34 @@ from SiemApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 VENDOR = 'github'
 PRODUCT = 'github-audit'
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def get_github_timestamp_format(value):
-    """Converting int(epoch), str(3 days) or datetime to github's api time"""
-    timestamp: Optional[datetime] = None
+    """Converts int(epoch), str(3 days), or datetime to GitHub's API time format.
+
+    Args:
+        value (Any): The value to convert to GitHub's API time format.
+
+    Returns:
+        str: The value in GitHub's API time format.
+
+    Raises:
+        TypeError: If the input value is not a valid time.
+    """
     if isinstance(value, int):
-        value = str(value)
+        value = datetime.utcfromtimestamp(value / 1000)
+    elif isinstance(value, str):
+        value = dateparser.parse(value)
     if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)
-    if timestamp is None:
         raise TypeError(f'after is not a valid time {value}')
-    timestamp_epoch = timestamp.timestamp() * 1000
-    str_bytes = f'{timestamp_epoch}|'.encode('ascii')
-    base64_bytes = base64.b64encode(str_bytes)
-    return base64_bytes.decode('ascii')
+
+    return f'created:>{value.strftime(DATETIME_FORMAT)}'
+
+
+def prepare_demisto_params(params: dict):
+    params['phrase'] = params.get('after')
+    del params['after']
 
 
 class GithubParams(BaseModel):
@@ -32,28 +45,28 @@ class GithubParams(BaseModel):
     """
     include: str
     order: str = 'asc'
-    after: str
+    phrase: str
     per_page: int = 100  # Maximum is 100
-    _normalize_after = validator('after', pre=True, allow_reuse=True)(
+    _normalize_after = validator('phrase', pre=True, allow_reuse=True)(  # type: ignore[type-var]
         get_github_timestamp_format
     )
 
 
 class GithubEventsRequestConfig(IntegrationHTTPRequest):
     url: AnyUrl
-    method = Method.GET
+    method: Method = Method.GET
     params: GithubParams  # type: ignore
 
 
 class GithubClient(IntegrationEventsClient):
     def set_request_filter(self, after: str):
         if self.request.params:
-            self.request.params.after = get_github_timestamp_format(after)  # type: ignore
+            self.request.params.phrase = get_github_timestamp_format(after)  # type: ignore
 
 
 class GithubGetEvents(IntegrationGetEvents):
 
-    def _iter_events(self) -> Generator:
+    def _iter_events(self) -> Generator | list:  # type: ignore[return]
         """
         Function that responsible for the iteration over the events returned from github api
         """
@@ -68,7 +81,6 @@ class GithubGetEvents(IntegrationGetEvents):
             self.client.set_request_filter(last['@timestamp'])
             events = self.client.call(self.client.request).json()
             try:
-                events.pop(0)
                 assert events
             except (IndexError, AssertionError):
                 LOG('empty list, breaking')
@@ -82,16 +94,18 @@ class GithubGetEvents(IntegrationGetEvents):
         if not events:
             return demisto.getLastRun()
         last_timestamp = events[-1]['@timestamp']
-        last_time = last_timestamp / 1000
-        next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
-            seconds=1
-        )
-        return {'after': next_fetch_time.isoformat()}
+        return {'after': last_timestamp}
 
 
-def main():
+def main():  # pragma: no cover
+    # Once the parameter "after" is hidden, the previous value of the parameter is saved, not the new default value which
+    # is 1 minute. For example if the previous value of "after" (First fetch time interval) was "3 days", after the parameter
+    # "after" is hidden it will remain "3 days" and each time Reset the "last run" timestamp is used, it will use "3 days"
+    # instead of "1 minute".
+    demisto.params()['after'] = '1 minute'
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    demisto.debug(f'{demisto_params.get("after")=}')
 
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
@@ -99,6 +113,8 @@ def main():
                'Accept': 'application/vnd.github.v3+json'}
 
     demisto_params['headers'] = headers
+
+    prepare_demisto_params(demisto_params)
     demisto_params['params'] = GithubParams(**demisto_params)
 
     request = GithubEventsRequestConfig(**demisto_params)
@@ -115,6 +131,7 @@ def main():
             return_results('ok')
         elif command in ('github-get-events', 'fetch-events'):
             events = get_events.run()
+            demisto.debug(f'{len(events)=}')
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

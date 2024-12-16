@@ -18,6 +18,7 @@ splunk
 splunkpy
 hec
 splunk-search
+drilldown
 
 [file:classifier-SplunkPy.json]
 ignore=BA101
@@ -28,3 +29,6 @@ ignore=BA124
 [file:SplunkShowAsset.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Notable_-_ID.json]
+ignore=GR103

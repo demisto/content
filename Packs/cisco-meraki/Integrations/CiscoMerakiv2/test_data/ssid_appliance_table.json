@@ -1,0 +1,9 @@
+[
+    {
+        "Number": 1,
+        "Name": "My SSID",
+        "Default VLAN ID": 1,
+        "SSID Enabled": true,
+        "Visible": true
+    }
+]

@@ -595,6 +595,76 @@ def test_tags_file_report_response(mocker, response, expected_output):
     assert command_results[0].indicator.tags == expected_output
 
 
+@pytest.mark.parametrize('response, expected_output', [
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', 1),
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>grayware</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', 2),
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>yes</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', 3)
+])
+def test_score_file_report_response(mocker, response, expected_output):
+    """
+    Given:
+     - hash of a file with malware field which is set to no
+     - hash of a file with malware field which is set to grayware
+     - hash of a file with malware field which is set to yes
+
+    When:
+     - Running report command.
+
+    Then:
+    Check that the dbot_score assigned is correct.
+    """
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'x-envoy-upstream-service-time': '258'
+    }
+    get_sample_response._content = response
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    mocker.patch.object(demisto, "args",
+                        return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                                      'format': 'xml'})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
+    command_results, status = wildfire_get_report_command(
+        {'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+         'format': 'xml'})
+    assert command_results[0].indicator.dbot_score.score == expected_output
+
+
 def test_wildfire_get_pending_file_report(mocker):
     """
     Given:

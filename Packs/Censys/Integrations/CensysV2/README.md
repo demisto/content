@@ -4,22 +4,24 @@ This integration was integrated and tested with version 2.0 of Censys.
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#additional-considerations-for-this-version).
 
-## Configure Censys v2 on Cortex XSOAR
+## Configure Censys v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Censys v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | App ID | True |
-    | Secret | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| App ID | True |
+| Secret | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Labels premium feature available | False |
+| IP and Domain Malicious labels | False |
+| IP and Domain Suspicious labels | False |
+| Malicious labels threshold | False |
+| Suspicious labels threshold | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cen-view
 ***
@@ -106,9 +108,9 @@ Returns detailed information for an IP address or SHA256 within the specified in
 | Censys.View.parsed.tbs_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate. | 
 | Censys.View.parsed.tbs_noct_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate with any CT extensions omitted. | 
 | Censys.View.parsed.validation_level | String | How the certificate is validated - Domain validated \(DV\), Organization Validated \(OV\), Extended Validation \(EV\), or unknown. | 
-| Censys.View.parsed.validity.end | Date | Timestamp of when the certificate expires. Timezone is UTC. | 
+| Censys.View.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. | 
 | Censys.View.parsed.validity.length | Number | The length of time, in seconds, that the certificate is valid. | 
-| Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Timezone is UTC. | 
+| Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Time zone is UTC. | 
 | Censys.View.parsed.version | Number | The x.509 certificate version number. | 
 | Censys.View.precert | Boolean | Whether the certificate is pre-cert. | 
 | Censys.View.raw | String | The raw certificate. | 
@@ -445,7 +447,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
 #### Human Readable Output
 
 >### Information for IP 8.8.8.8
->|ASN|Bgp Prefix|Last Updated|Name|Service|
+>|ASN|Routing|Last Updated|Network|Protocols|
 >|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 2022-08-30T06:39:12.356Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'},<br/>{'Port': 853, 'Service Name': 'UNKNOWN'} |
 
@@ -494,8 +496,8 @@ Returns previews of hosts matching a specified search query, or a list of certif
 | Censys.Search.parsed.issuer.organization | Unknown | The organization name. | 
 | Censys.Search.parsed.names | Unknown | Common names for the entity. | 
 | Censys.Search.parsed.subject_dn | String | Distinguished name of the entity that the certificate belongs to. | 
-| Censys.Search.parsed.validity.end | Date | Timestamp of when the certificate expires. Timezone is UTC. | 
-| Censys.Search.parsed.validity.start | Date | Timestamp of when the certificate is first valid. Timezone is UTC. | 
+| Censys.Search.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. | 
+| Censys.Search.parsed.validity.start | Date | Timestamp of when the certificate is first valid. Time zone is UTC. | 
 | Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. | 
 
 
@@ -533,7 +535,7 @@ Returns previews of hosts matching a specified search query, or a list of certif
 #### Human Readable Output
 
 >### Search results for query "parsed.issuer.common_name: "Let's Encrypt""
->|Issuer|Issuer dn|Names|SHA256|Subject dn|Validity|
+>|Issuer|Issuer DN|Names|SHA256|Subject DN|Validity|
 >|---|---|---|---|---|---|
 >| organization: Let's Encrypt | C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3 | *.45g4rg43g4fr3434g.gb.net,<br/>45g4rg43g4fr3434g.gb.net | f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec | CN=45g4rg43g4fr3434g.gb.net | start: 2020-10-12T14:46:11Z<br/>end: 2021-01-10T14:46:11Z |
 
@@ -541,3 +543,341 @@ Returns previews of hosts matching a specified search query, or a list of certif
 ## Additional Considerations for this Version
 * This version supports API v2 from Censys. 
 * Breaking backward compatibility: The Censys v2 integration does not support *websites* searches.
+
+
+### ip
+
+***
+Runs reputation on IPs.
+
+#### Base Command
+
+`ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address or a list of IP addresses to assess reputation. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.IP.services.port | Number   | The port number associated with the service running on the IP. |
+| Censys.IP.services.transport_protocol | String | The transport protocol used by the service running on the IP. |
+| Censys.IP.services.extended_service_name | String   | The extended name of the service running on the IP. |
+| Censys.IP.services.service_name | String | The name of the service running on the IP. |
+| Censys.IP.services.certificate | String   | The SSL/TLS certificate associated with the service running on the IP. |
+| Censys.IP.labels | String | Labels associated with the IP address (with premium access only). |
+| Censys.IP.dns.reverse_dns.names | String | Reverse DNS names associated with the IP address. |
+| Censys.IP.autonomous_system.country_code | String | The country code of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.description | String | Description of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.name | String | Name of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.bgp_prefix | String | BGP prefix of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.asn | Number | Autonomous System Number (ASN) of the autonomous system associated with the IP address. |
+| Censys.IP.ip | String | The IP address. |
+| Censys.IP.location.country | String | Country name of the location associated with the IP address. |
+| Censys.IP.location.timezone | String | Time zone of the location associated with the IP address. |
+| Censys.IP.location.province | String | Province name of the location associated with the IP address. |
+| Censys.IP.location.coordinates.latitude | Number | Latitude coordinate of the location associated with the IP address. |
+| Censys.IP.location.coordinates.longitude | Number | Longitude coordinate of the location associated with the IP address. |
+| Censys.IP.location.continent | String | Continent name of the location associated with the IP address. |
+| Censys.IP.location.postal_code | String | Postal code of the location associated with the IP address. |
+| Censys.IP.location.city | String | City name of the location associated with the IP address. |
+| Censys.IP.location.country_code | String   | Country code of the location associated with the IP address. |
+| Censys.IP.last_updated_at | Date | The date and time when the information about the IP address was last updated. |
+| IP.Address | unknown | The IP address. | 
+| IP.ASN | unknown | The IP ASN. | 
+| IP.Geo.Country | unknown | The IP country. | 
+| IP.Geo.Location | unknown | The IP location. | 
+| IP.UpdatedDate | unknown | The IP last update | 
+| IP.Port | unknown | The IP port | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+
+#### Command example
+
+```!ip ip=8.8.8.8,8.8.4.4```
+
+#### Context Example
+
+```json
+{
+    "services": [
+        {
+            "port": 53,
+            "transport_protocol": "UDP",
+            "extended_service_name": "DNS",
+            "service_name": "DNS"
+        },
+        {
+            "certificate": "5a7763efee07b08b18a4af2796bfaac46641a2f15c98e88c3d79fa9a06adfc87",
+            "extended_service_name": "HTTPS",
+            "port": 443,
+            "transport_protocol": "TCP",
+            "service_name": "HTTP"
+        },
+        {
+            "service_name": "UNKNOWN",
+            "transport_protocol": "QUIC",
+            "extended_service_name": "UNKNOWN",
+            "port": 443
+        },
+        {
+            "transport_protocol": "TCP",
+            "service_name": "UNKNOWN",
+            "port": 853,
+            "certificate": "5a7763efee07b08b18a4af2796bfaac46641a2f15c98e88c3d79fa9a06adfc87",
+            "extended_service_name": "UNKNOWN"
+        }
+    ],
+    "labels": ["database","email","file-sharing","iot","login-page"],
+    "dns": {
+        "reverse_dns": {
+            "names": [
+                "dns.google"
+            ]
+        }
+    },
+    "autonomous_system": {
+        "country_code": "US",
+        "description": "GOOGLE",
+        "name": "GOOGLE",
+        "bgp_prefix": "8.8.8.0/24",
+        "asn": 15169
+    },
+    "ip": "8.8.8.8",
+    "location": {
+        "country": "United States",
+        "timezone": "America/Los_Angeles",
+        "province": "California",
+        "coordinates": {
+            "latitude": 37.4056,
+            "longitude": -122.0775
+        },
+        "continent": "North America",
+        "postal_code": "94043",
+        "city": "Mountain View",
+        "country_code": "US"
+    },
+    "last_updated_at": "2024-04-07T02:16:23.015Z"
+}
+```
+
+#### Human Readable Output
+
+>### censys results for IP: 8.8.8.8
+>| **Asn** | **Geo Country** | **Geo Latitude** | **Geo Longitude** | **Ip** | **Port** | **Reputation** | **Updated** |
+>| --- | --- | --- | --- | --- | --- | --- |  --- |
+>| 15169 | United States | 37.4056 | -122.0775 | 8.8.8.8 | 53, 443, 443, 853 | 0 | 2024-04-14T08:03:28.159Z |
+
+
+### domain
+
+***
+Return all related IPs as relationships.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain to check. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.Domain.location.postal_code | String | The postal code of the location associated with the domain. |
+| Censys.Domain.location.province | String | The province name of the location associated with the domain. |
+| Censys.Domain.location.country_code | String | The country code of the location associated with the domain. |
+| Censys.Domain.location.timezone | String | The time zone of the location associated with the domain. |
+| Censys.Domain.location.country | String | The country name of the location associated with the domain. |
+| Censys.Domain.location.coordinates.longitude | Number | The longitude coordinate of the location associated with the domain. |
+| Censys.Domain.location.coordinates.latitude | Number | The latitude coordinate of the location associated with the domain. |
+| Censys.Domain.location.continent | String | The continent name of the location associated with the domain. |
+| Censys.Domain.location.city | String | The city name of the location associated with the domain. |
+| Censys.Domain.autonomous_system.country_code | String | The country code of the autonomous system associated with the domain. |
+| Censys.Domain.autonomous_system.asn | Number | The Autonomous System Number (ASN) associated with the domain. |
+| Censys.Domain.autonomous_system.name | String | The name of the autonomous system associated with the domain. |
+| Censys.Domain.autonomous_system.bgp_prefix | String | The BGP prefix of the autonomous system associated with the domain. |
+| Censys.Domain.autonomous_system.description | String | The description of the autonomous system associated with the domain. |
+| Censys.Domain.services.transport_protocol | String | The transport protocol used by the service associated with the domain. |
+| Censys.Domain.services.extended_service_name | String | The extended name of the service associated with the domain. |
+| Censys.Domain.services.port | Number | The port number associated with the service associated with the domain. |
+| Censys.Domain.services.service_name | String | The name of the service associated with the domain. |
+| Censys.Domain.services.certificate | String | The SSL/TLS certificate associated with the service associated with the domain. |
+| Censys.Domain.last_updated_at | Date | The date and time when the information about the domain was last updated. |
+| Censys.Domain.ip | String | The IP address associated with the domain. |
+| Censys.Domain.dns.reverse_dns.names | String | The reverse DNS names associated with the domain. |
+| Domain.Name | string. | The domain. | 
+| Domain.Relationships.EntityA | string. | The domain name. | 
+| Domain.Relationships.EntityAType | string. | The entity type. | 
+| Domain.Relationships.EntityB | string. | The entity B. | 
+| Domain.Relationships.EntityBType | string. | The entity B type. | 
+| Domain.Relationships.Relationship | string. | The relationship type. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type.| 
+| DBotScore.Score | unknown | The actual score. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+
+#### Command example
+
+```!domain domain=amazon.com,facebook.com```
+
+#### Context Example
+
+```json
+{
+    "code": 200,
+    "status": "OK",
+    "result": {
+      "query": "dns.names=amazon.com",
+      "total": 3,
+      "duration": 239,
+      "hits": [
+        {
+          "location": {
+            "province": "Virginia",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "timezone": "America/New_York",
+            "country_code": "US",
+            "continent": "North America",
+            "postal_code": "20147",
+            "city": "Ashburn"
+          },
+          "autonomous_system": {
+            "description": "AMAZON-02",
+            "bgp_prefix": "1.1.1.1",
+            "name": "AMAZON-02",
+            "country_code": "US",
+            "asn": 16509
+          },
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "transport_protocol": "TCP",
+              "certificate": "XXXXXXX",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "ip": "1.1.1.1."
+        },
+        {
+          "ip": "1.1.1.1",
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "port": 443,
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "certificate": "XXXXXXX"
+            }
+          ],
+          "dns": {
+            "reverse_dns": {
+              "names": [
+                "s3-console-us-standard.console.aws.amazon.com"
+              ]
+            }
+          },
+          "location": {
+            "province": "Virginia",
+            "postal_code": "20147",
+            "country": "United States",
+            "timezone": "America/New_York",
+            "continent": "North America",
+            "city": "Ashburn",
+            "country_code": "US",
+            "coordinates": {
+              "latitude": 39.04372,
+              "longitude": -77.48749
+            }
+          },
+          "autonomous_system": {
+            "country_code": "US",
+            "bgp_prefix": "1.1.1.1",
+            "asn": 16509,
+            "description": "AMAZON-02",
+            "name": "AMAZON-02"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.171Z"
+        },
+        {
+          "location": {
+            "postal_code": "20147",
+            "province": "Virginia",
+            "country_code": "US",
+            "timezone": "America/New_York",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "continent": "North America",
+            "city": "Ashburn"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "autonomous_system": {
+            "country_code": "US",
+            "asn": 16509,
+            "name": "AMAZON-02",
+            "bgp_prefix": "1.1.1.1",
+            "description": "AMAZON-02"
+          },
+          "services": [
+            {
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTP",
+              "port": 80,
+              "service_name": "HTTP"
+            },
+            {
+              "extended_service_name": "HTTPS",
+              "transport_protocol": "TCP",
+              "certificate": "XXXXXX",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "ip": "1.1.1.1"
+        }
+      ],
+      "links": {
+        "next": "",
+        "prev": ""
+      }
+    }
+}
+```
+
+#### Human Readable Output
+
+| **Domain** |
+| --- |
+| amazon.com |

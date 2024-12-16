@@ -3,19 +3,121 @@ commonfields:
   id: CensysV2
   version: -1
 configuration:
-- display: App ID
-  displaypassword: Secret
-  name: credentials
+- display: Server URL
+  name: server_url
   required: true
+  type: 0
+  defaultvalue: https://search.censys.io
+  section: Connect
+- display: App ID
+  name: credentials
   type: 9
+  required: true
+  displaypassword: Secret
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+- display: Determine IP score by labels (for paid subscribers)
+  name: premium_access
+  type: 8
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: |-
+    Censys API provides reputation data exclusively to paid subscribers. 
+    When set to True, the integration will use labels to determine the IP score. 
+- display: IP Malicious labels
+  name: malicious_labels
+  type: 16
+  required: false
+  options:
+  - database
+  - email
+  - file-sharing
+  - iot
+  - login-page
+  - network-administration
+  - network.device
+  - network.device.firewall
+  - network.device.soho
+  - network.device.vpn
+  - network.device.web-ui
+  - onion-enabled
+  - out-of-band-management
+  - remote-access
+  - scada
+  - voip
+  - web.control-panel.hosting
+  additionalinfo: |-
+    Used only when `Determine IP score by labels` is set. 
+    Labels to classify IP as Malicious. 
+    Input can be an array or comma-separated values.
+  section: Collect
+  advanced: true
+- display: IP Suspicious labels
+  name: suspicious_labels
+  type: 16
+  required: false
+  options:
+  - database
+  - email
+  - file-sharing
+  - iot
+  - login-page
+  - network-administration
+  - network.device
+  - network.device.firewall
+  - network.device.soho
+  - network.device.vpn
+  - network.device.web-ui
+  - onion-enabled
+  - out-of-band-management
+  - remote-access
+  - scada
+  - voip
+  - web.control-panel.hosting
+  additionalinfo: |-
+    Used when `Determine IP score by labels` is set.
+    Labels to classify IP as Suspicious.
+    Input can be an array or comma-separated values.
+  section: Collect
+  advanced: true
+- display: Malicious labels threshold
+  name: malicious_labels_threshold
+  type: 0
+  required: false
+  additionalinfo: Determines the minimum number of labels returned that are classified as malicious for IP.
+  section: Collect
+  advanced: true
+- display: Suspicious labels threshold
+  name: suspicious_labels_threshold
+  type: 0
+  required: false
+  additionalinfo: Determines the minimum number of labels returned that are classified as suspicious for IP.
+  section: Collect
+  advanced: true
+- display: Source Reliability
+  name: integration_reliability
+  defaultvalue: C - Fairly reliable
+  type: 15
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+  section: Connect
 description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
 display: Censys v2
 name: CensysV2
@@ -231,13 +333,13 @@ script:
       description: How the certificate is validated - Domain validated (DV), Organization Validated (OV), Extended Validation (EV), or unknown.
       type: String
     - contextPath: Censys.View.parsed.validity.end
-      description: Timestamp of when the certificate expires. Timezone is UTC.
+      description: Timestamp of when the certificate expires. Time zone is UTC.
       type: Date
     - contextPath: Censys.View.parsed.validity.length
       description: The length of time, in seconds, that the certificate is valid.
       type: Number
     - contextPath: Censys.View.parsed.validity.start
-      description: Timestamp of when certificate is first valid. Timezone is UTC.
+      description: Timestamp of when certificate is first valid. Time zone is UTC.
       type: Date
     - contextPath: Censys.View.parsed.version
       description: The x.509 certificate version number.
@@ -373,15 +475,220 @@ script:
       description: Distinguished name of the entity that the certificate belongs to.
       type: String
     - contextPath: Censys.Search.parsed.validity.end
-      description: Timestamp of when the certificate expires. Timezone is UTC.
+      description: Timestamp of when the certificate expires. Time zone is UTC.
       type: Date
     - contextPath: Censys.Search.parsed.validity.start
-      description: Timestamp of when the certificate is first valid. Timezone is UTC.
+      description: Timestamp of when the certificate is first valid. Time zone is UTC.
       type: Date
     - contextPath: Censys.Search.parsed.issuer_dn
       description: Distinguished name of the entity that has signed and issued the certificate.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  - name: ip
+    arguments:
+    - name: ip
+      description: IP address to check.
+      required: true
+      isArray: true
+      type: textArea
+      default: true
+    description: Runs reputation on IPs.
+    outputs:
+    - contextPath: Censys.IP.services.port
+      description: The port number associated with the service running on the IP.
+      type: Number
+    - contextPath: Censys.IP.services.transport_protocol
+      description: The transport protocol used by the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.services.extended_service_name
+      description: The extended name of the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.services.service_name
+      description: The name of the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.services.certificate
+      description: The SSL/TLS certificate associated with the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.labels
+      description: Labels associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.dns.reverse_dns.names
+      description: Reverse DNS names associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.country_code
+      description: The country code of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.description
+      description: Description of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.name
+      description: Name of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.bgp_prefix
+      description: BGP prefix of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.asn
+      description: Autonomous System Number (ASN) of the autonomous system associated with the IP address.
+      type: Number
+    - contextPath: Censys.IP.ip
+      description: The IP address.
+      type: String
+    - contextPath: Censys.IP.location.country
+      description: Country name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.timezone
+      description: Time zone of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.province
+      description: Province name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.coordinates.latitude
+      description: Latitude coordinate of the location associated with the IP address.
+      type: Number
+    - contextPath: Censys.IP.location.coordinates.longitude
+      description: Longitude coordinate of the location associated with the IP address.
+      type: Number
+    - contextPath: Censys.IP.location.continent
+      description: Continent name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.postal_code
+      description: Postal code of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.city
+      description: City name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.country_code
+      description: Country code of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.last_updated_at
+      description: The date and time when the information about the IP address was last updated.
+      type: Date
+    - contextPath: IP.Address
+      description: The IP address.
+    - contextPath: IP.ASN
+      description: The IP ASN.
+    - contextPath: IP.Geo.Country
+      description: The IP country.
+    - contextPath: IP.Geo.Location
+      description: The IP location.
+    - contextPath: IP.UpdatedDate
+      description: The IP last update.
+    - contextPath: IP.Port
+      description: The IP port.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+  - name: domain
+    arguments:
+    - name: domain
+      description: A comma-separated list of domains to check.
+      required: true
+      isArray: true
+      default: true
+      type: textArea
+    description: Return all related IPs as relationships.
+    outputs:
+    - contextPath: Censys.Domain.location.postal_code
+      description: The postal code of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.province
+      description: The province name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.country_code
+      description: The country code of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.timezone
+      description: The time zone of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.country
+      description: The country name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.coordinates.longitude
+      description: The longitude coordinate of the location associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.location.coordinates.latitude
+      description: The latitude coordinate of the location associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.location.continent
+      description: The continent name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.city
+      description: The city name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.autonomous_system.country_code
+      description: The country code of the autonomous system associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.autonomous_system.asn
+      description: The Autonomous System Number (ASN) associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.autonomous_system.name
+      description: The name of the autonomous system associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.autonomous_system.bgp_prefix
+      description: The BGP prefix of the autonomous system associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.autonomous_system.description
+      description: The description of the autonomous system associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.services.transport_protocol
+      description: The transport protocol used by the service associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.services.extended_service_name
+      description: The extended name of the service associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.services.port
+      description: The port number associated with the service associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.services.service_name
+      description: The name of the service associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.services.certificate
+      description: The SSL/TLS certificate associated with the service associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.last_updated_at
+      description: The date and time when the information about the domain was last updated.
+      type: Date
+    - contextPath: Censys.Domain.ip
+      description: The IP address associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.dns.reverse_dns.names
+      description: The reverse DNS names associated with the domain.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain.
+      type: string.
+    - contextPath: Domain.Relationships.EntityA
+      description: The domain name.
+      type: string.
+    - contextPath: Domain.Relationships.EntityAType
+      description: The entity type.
+      type: string.
+    - contextPath: Domain.Relationships.EntityB
+      description: The entity B.
+      type: string.
+    - contextPath: Domain.Relationships.EntityBType
+      description: The entity B type.
+      type: string.
+    - contextPath: Domain.Relationships.Relationship
+      description: The relationship type.
+      type: string.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

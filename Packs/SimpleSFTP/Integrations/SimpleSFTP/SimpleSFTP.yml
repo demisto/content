@@ -20,7 +20,7 @@ configuration:
   required: true
 - display: Port
   name: port
-  defaultvalue: "22"
+  defaultvalue: '22'
   type: 0
   additionalinfo: Defaults to 22
   required: false
@@ -42,10 +42,10 @@ script:
     - name: return_file
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
-      defaultValue: "False"
+      defaultValue: 'False'
     description: Copies contents of file specified from the sftp server and prints it to the war room
   - name: sftp-upload-file
     arguments:
@@ -56,7 +56,7 @@ script:
       name: file_entry_id
       required: true
     description: Upload a file to a path on the SFTP Server
-  dockerimage: demisto/netmiko:1.0.0.62777
+  dockerimage: demisto/netmiko:1.0.0.114712
   subtype: python3
 fromversion: 6.2.0
 tests:

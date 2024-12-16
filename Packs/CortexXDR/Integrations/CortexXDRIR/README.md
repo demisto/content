@@ -1,5 +1,5 @@
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
+This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR.
 
 ## Configure Palo Alto Networks Cortex XDR - Investigation and Response on Cortex XSOAR
 
@@ -8,27 +8,33 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | - | --- | --- |
+    | --- | --- | --- |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
-    | Incident Mirroring Direction |  | False |
-    | Server URL (copy URL from XDR - click ? to see more info.) |  | True |
+    | Server URL (copy URL from XDR) |  | True |
     | API Key ID |  | False |
     | API Key |  | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
+    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
+    | Incident Mirroring Direction |  | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored Cortex XDR Incident | When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. If not selected, but "Close all related alerts in XDR" is selected, the incident will automatically be closed in Cortex XDR. | False |
+    | XDR mirroring delay in minutes | In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents. | False |
+    | Custom close-reason mapping for mirrored **XSOAR -> XDR** incidents. | Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated close-reason mapping (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False |
+    | Custom lose-reason mapping for mirrored **XDR -> XSOAR** incidents. | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False |
     | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
     | Only fetch starred incidents |  | False |
-    | Starred incidents fetch window | Starred fetch window timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
+    | Starred incidents fetch window | Starred fetch window timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Prevent Only Mode | Whether the XDR tenant Mode is prevent only | False |
+    | Prevent Only Mode | Whether the Cortex XDR tenant mode is prevent only. | False |
     | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
-    | Incidents Fetch Interval |  | False |
+    | Minimize Incident Information | Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information. | False |
+    | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Configuration
 
@@ -43,14 +49,18 @@ You need to collect several pieces of information in order to configure the inte
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
 
-*Note*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
+*Note 1*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
 The highest privileged builtin role is the Instance Admin. 
-For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.  
+For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.
+
+*Note 2*: In case of missing updates in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the delay period. However, be aware that this may result in increased latency when updating incidents.
 
 #### URL
 
 1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API key** page > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
+
+#### XDR & XSOAR
 
 ## Playbooks
 
@@ -58,25 +68,34 @@ For builtin role with less permission but maximum command running abilities, use
 
 #### Cortex XDR Incident Handling
 
-The playbook syncs and updates new XDR alerts that construct the incident.
+The playbook syncs and updates new Cortex XDR alerts that construct the incident.
 It enriches indicators using Threat Intelligence integrations and Palo Alto Networks
 AutoFocus. The incident's severity is then updated based on the indicators reputation
 and an analyst is assigned for manual investigation. If chosen, automated remediation
 with Palo Alto Networks FireWall is initiated. After a manual review by the
-SOC analyst, the XDR incident is closed automatically.
+SOC analyst, the Cortex XDR incident is closed automatically.
 
+To utilize this playbook for handling Cortex XDR incidents, the classifier that should be selected is `Cortex XDR - Classifier`.
+The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
+
+#### Cortex XDR Lite - Incident Handling
+
+This playbook is a lite default playbook to handle Cortex XDR incidents, and it doesn't require additional integrations to run. The playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident. First, the playbook performs enrichment on the incident’s indicators. Then, the playbook performs investigation and analysis on the command line and searches for related Cortex XDR alerts by Mitre tactics to identify malicious activity performed on the endpoint and by the user. Based on the enrichment and the investigation results, the playbooks sets the verdict of the incident. If malicious indicators are found, the playbook takes action to block these indicators and isolate the affected endpoint to prevent further damage or the spread of threats. If the verdict is not determined, it lets the analyst decide whether to continue to the remediation stage or close the investigation as benign. As part of this playbook, you'll receive a comprehensive layout that presents incident details, analysis, investigation findings, and the final verdict. Additionally, the layout offers convenient remediation buttons for quicker manual actions.
+
+To utilize this playbook for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
+The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
 
 ## Use Cases
 
 ---
 
-- Fetch incidents from XDR
-- Enrich incident with alerts and incident from XDR
-- Update incident in XDR
+- Fetch incidents from Cortex XDR
+- Enrich incident with alerts and incident from Cortex XDR
+- Update incident in Cortex XDR
 - Search for endpoints
 - Isolate/unisolate endpoints
-- Insert parsed alerts into XDR
-- Insert CEF alerts into XDR
+- Insert parsed alerts into Cortex XDR
+- Insert CEF alerts into Cortex XDR
 - Query for agent audit reports
 - Query for audit management logs
 - Create distribution
@@ -128,35 +147,60 @@ To setup the mirroring follow these instructions:
 4. Under **Mapper (incoming)**, select `XDR - Incoming Mapper`.
 5. Under **Mapper (outgoing)**, select `Cortex XDR - Outgoing Mapper`.
 6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+   - Incoming - Any changes in Cortex XDR incidents will be reflected in Cortex XSOAR incidents.
+   - Outgoing - Any changes in Cortex XSOAR incidents will be reflected in Cortex XDR incidents.
+   - Both - Changes in Cortex XSOAR and Cortex XDR incidents will be reflected in both directions.
+   - None - Choose this to turn off incident mirroring.
+   
+7. Optional: Provide a custom close-reason mapping for mirrored XDR <-> XSOAR incidents. Please use only possible close-reasons to map: 
+    
+    | Possible Closure Reasons for Cortex XSOAR Incident |                      
+    |----------------------------------------------------|
+    | Resolved                                           |
+    | False Positive                                     |
+    | Duplicate                                          |
+    | Security Testing                                   |
+    | Other                                              |
 
-- Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
-- Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
-- Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
-- None - Choose this to turn off incident mirroring.
+    |Possible Closure Reasons for Cortex Cortex XDR Incident|
+    |-----------------------------------|
+    | True Positive                     |
+    | False Positive                    |
+    | Duplicate Incident                |
+    | Security Testing                  |
+    | Known Issue                       |
+    | Other                             |
+    | Auto                              |
+    
+    Failing to use only available values will result in using default mapping of closure reasons within the mirroring process.
+    
+  **Close-reason default mapping XSOAR -> XDR**: _Other=Other, Duplicate=Duplicate Incident, False Positive=False Positive, Resolved=True Positive_
 
-7. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
+  **Close-reason default mapping XDR -> XSOAR**: _Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto=Resolved_
 
-- Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
+8. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both Cortex XDR and Cortex XSOAR.
 
-8. Newly fetched incidents will be mirrored in the chosen direction.
+   - Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
 
-- Note: This will not effect existing incidents.
+9. Newly fetched incidents will be mirrored in the chosen direction.
+
+   - Note: This will not effect existing incidents.
 
 ### XDR Mirroring Notes, limitations and Troubleshooting
 
 - While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
-  If we have an incident with two fields (A and B) in XDR and XSOAR while *Incoming And Outgoing* mirroring is selected: 
-  - I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
+  If we have an incident with two fields (A and B) in Cortex XDR and Cortex XSOAR while *Incoming And Outgoing* mirroring is selected: 
+  - I can mirror field A from Cortex XDR to Cortex XSOAR and field B from Cortex XSOAR to Cortex XDR.
   - I cannot mirror changes from field A in both directions.
 
-  Initially all fields are mirrored in from XDR to XSOAR. Once they are changed in XSOAR, they can only be mirrored out.
+  Initially all fields are mirrored in from Cortex XDR to Cortex XSOAR. Once they are changed in Cortex XSOAR, they can only be mirrored out.
 - **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
   (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
 
 - When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
   - The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
      different playbook that does not use `XDRSyncScript`.
-  - The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
+  - The Cortex XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
   - Mirroring impacts only incidents that were fetched after the mirroring was enabled for this instance. If incidents were fetched with the incorrect mapper, changing the mapper will not affect them. This can be resolved by resetting the last fetch run and re-fetching the incidents. New incidents will be created and the old ones will no longer be relevant.
 
 - The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
@@ -192,22 +236,22 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
-| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| incident_id_list | An array or CSV string of incident IDs. | Optional | 
-| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
-| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false. | Optional | 
-| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                            | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| lte_creation_time | A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                  | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                          | Optional | 
+| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.                                                                                                      | Optional | 
+| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.                                                                                                      | Optional | 
+| incident_id_list | An array or CSV string of incident IDs.                                                                                                                                                                                    | Optional | 
+| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.                                                                                   | Optional | 
+| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.                                                                                  | Optional | 
+| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                    | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                          | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                             | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                            | Optional | 
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto, resolved_auto_resolve. | Optional | 
+| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false.                                                                                                                          | Optional | 
+| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days.                                                                                                              | Optional | 
 
 
 #### Context Output
@@ -275,13 +319,13 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
             "description": "'test 1' generated by Virus Total - Firewall", 
             "severity": "medium", 
             "modification_time": 1579237974014, 
-            "assigned_user_pretty_name": "woo@demisto.com", 
+            "assigned_user_pretty_name": "woo@test.com", 
             "notes": null, 
             "creation_time": 1576100096594, 
             "alert_count": 1, 
             "med_severity_alert_count": 0, 
             "detection_time": null, 
-            "assigned_user_mail": "woo@demisto.com", 
+            "assigned_user_mail": "woo@test.com", 
             "resolve_comment": null, 
             "status": "new", 
             "user_count": 1, 
@@ -322,11 +366,11 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 >### Incidents
 
->|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
->| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
->| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
+>|alert_count| assigned_user_mail | assigned_user_pretty_name |creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
+>|---|--------------------|---------------------------|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 5 |                    |                           | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
+>| 1 | woo@test.com       | woo@test.com              | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
+>| 2 |                    |                           | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
 
 
 ### xdr-get-incident-extra-data
@@ -510,7 +554,7 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 | incident_id | XDR incident ID. You can get the incident ID from the output of the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command. | Required | 
 | manual_severity | Severity to assign to the incident (LOW, MEDIUM, or HIGH). Possible values are: HIGH, MEDIUM, LOW. | Optional | 
 | assigned_user_mail | Email address of the user to assign to the incident. | Optional | 
-| assigned_user_pretty_name | Full name of the user assigned to the incident. | Optional | 
+| assigned_user_pretty_name | Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument. | Optional | 
 | status | Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. Possible values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. | Optional | 
 | resolve_comment | Comment explaining why the incident was resolved. This should be set when the incident is resolved. | Optional | 
 | unassign_user | If true, will remove all assigned users from the incident. Possible values are: true. | Optional | 
@@ -704,6 +748,8 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
 | username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional | 
+| all_results | Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments. Possible values are: false, true. Default is false. | Optional | 
+| use_hr_timestamps | Whether to return timestamp values in human-readable format as opposed to Unix epoch timestamp format. Possible values are: false, true. Default is false. | Optional | 
 
 
 #### Context Output
@@ -1977,7 +2023,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptResult.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
-| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Name of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_status | String | Endpoint status. | 
 | PaloAltoNetworksXDR.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
@@ -2043,11 +2089,13 @@ Initiates a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
-| commands | A comma-separated list of shell commands to execute. | Required | 
+| commands | A comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&&`, `;` separators for controlling the flow of multiple commands). | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
 | action_id | For polling use. | Optional | 
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional |
+| command_type | Type of shell command. Possible values: "powershell", "null". | Optional |
 
 
 #### Context Output
@@ -2238,6 +2286,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | A comma-separated list of alert IDs. | Required | 
+| events_from_decider_format | Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False. | Optional |
 
 
 #### Context Output
@@ -2408,8 +2457,8 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_order | The order in which we sort the results. Possible values are: DESC, ASC. | Optional | 
 | offset | The first page from which we bring the alerts. Default is 0. | Optional | 
 | limit | The last page from which we bring the alerts. Default is 50. | Optional | 
-| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
-| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
+| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
+| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
 | starred | Whether the alert is starred or not. Possible values are: true, false. | Optional | 
 | mitre_technique_id_and_name | The MITRE attack technique. | Optional | 
 
@@ -3182,10 +3231,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
-| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>.             | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 10. | Optional | 
 
 #### Context Output
 
@@ -3240,10 +3289,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_id | The name of the host. | Optional | 
-| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| host_id | The host name of a specific host.                                                                                                                         | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 10. | Optional | 
 
 #### Context Output
 
@@ -3471,7 +3520,7 @@ There is no context output for this command.
 
 >Role was removed successfully for 1 user.
 
-## xdr-script-run
+### xdr-script-run
 
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
@@ -3624,7 +3673,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | List of endpoint IDs. Supports comma separated list. | Optional | 
+| endpoint_ids | List of endpoint IDs. Supports comma-separated list. | Optional | 
 | tag | Tag to add. | Optional | 
 
 
@@ -3801,3 +3850,32 @@ There is no context output for this command.
 
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
+
+### xdr-update-alert
+
+***
+Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
+
+#### Base Command
+
+`xdr-update-alert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | Comma-separated list of alert IDs. | Required | 
+| severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
+| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_auto_resolve, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
+| comment | Comment to append to updated alerts. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!xdr-update-alert alert_ids=35326 severity=low```
+
+#### Human Readable Output
+
+>Alerts with IDs 35326 have been updated successfully.
+

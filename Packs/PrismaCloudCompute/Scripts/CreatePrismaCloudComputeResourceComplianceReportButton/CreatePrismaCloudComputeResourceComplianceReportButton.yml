@@ -1,0 +1,58 @@
+commonfields:
+  id: CreatePrismaCloudComputeResourceComplianceReportButton
+  version: -1
+name: CreatePrismaCloudComputeResourceComplianceReportButton
+script: ''
+type: python
+tags: []
+comment: Generate a compliance report for Prisma Cloud resources - host, container or image.
+enabled: true
+args:
+- name: table
+  required: true
+  description: The table of data.
+  isArray: true
+- name: title
+  required: true
+  description: The title of the report.
+- name: to
+  required: true
+  description: The to email address.
+- name: headers
+  description: The headers for the HTML table.
+- name: resource_type
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - container
+  - image
+  - host
+  description: The resource type.
+  type: unknown
+- name: output_type
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - html
+  - xlsx
+  description: Whether to send the compliance issues as an html table or attached in xlsx file.
+- name: desired_severities
+  auto: PREDEFINED
+  predefined:
+  - critical
+  - high
+  - medium
+  - low
+  description: 'A comma-separated list of severities which will be included in the compliance report. If no value is provided, all of the severities will be included. Example: "Critical, High"."'
+  isArray: true
+- name: desired_resources
+  description: A comma-separated list of resources. In case the report should contain results only for specific resources, whether it's a host, container ID or an image ID, provide the resources here.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

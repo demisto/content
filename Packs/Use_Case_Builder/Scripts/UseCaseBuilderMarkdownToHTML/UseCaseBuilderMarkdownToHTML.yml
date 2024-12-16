@@ -3,24 +3,24 @@ args:
   name: text
   required: true
 - auto: PREDEFINED
-  defaultValue: "True"
+  defaultValue: 'True'
   description: If True - The markdown text will be converted to HTML without a Full HTML structure.
   name: convertOnlyMarkdown
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
 - auto: PREDEFINED
-  defaultValue: "False"
+  defaultValue: 'False'
   description: If True - The resulted HTML will be nicely formatted as a Unicode string, with a separate line for each tag and each string.
   name: prettifyHTML
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
 comment: Converts Markdown to HTML.
 commonfields:
   id: UseCaseBuilderMarkdownToHTML
   version: -1
-dockerimage: demisto/bs4-py3:1.0.0.63660
+dockerimage: demisto/bs4-py3:1.0.0.117152
 enabled: true
 name: UseCaseBuilderMarkdownToHTML
 outputs:

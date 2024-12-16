@@ -1,0 +1,40 @@
+{
+    "description": "Classifies Gem Alerts.",
+    "feed": false,
+    "id": "Gem Classifier",
+    "keyTypeMap": {
+        "app.gem.security": "Gem Alert"
+    },
+    "name": "Gem Classifier",
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "link",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "isContext": false,
+                            "value": {
+                                "simple": "8"
+                            }
+                        },
+                        "to": {
+                            "isContext": false,
+                            "value": {
+                                "simple": "24"
+                            }
+                        }
+                    },
+                    "operator": "substring"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "propagationLabels": [
+        "all"
+    ],
+    "fromVersion": "6.12.0"
+}

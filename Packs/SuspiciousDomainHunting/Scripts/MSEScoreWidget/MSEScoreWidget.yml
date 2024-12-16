@@ -1,0 +1,19 @@
+commonfields:
+  id: MSEScoreWidget
+  version: -1
+name: MSEScoreWidget
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: This dynamic automation parses the MSE results and presents it in the layout in color according to its score.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -2,15 +2,14 @@
     "name": "NucleonCyber",
     "description": "NucleonCyber indicator data feed ",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.6",
     "author": "NucleonCyber",
     "url": "",
     "email": "support@nucleon.sh",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [],

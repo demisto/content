@@ -1,0 +1,26 @@
+[
+    {
+        "sha": "463cedd3734f00fe9c43d49f6b5e5b22ce8ce931",
+        "filename": "space_invaders-main/aaa.json",
+        "status": "added",
+        "additions": 36,
+        "deletions": 0,
+        "changes": 36,
+        "blob_url": "https://github.com/aaron1535/space_invaders/blob/9a611449423b9992c126c20e47c5de4f58fc1c0e/space_invaders-main%2Faaa.json",
+        "raw_url": "https://github.com/aaron1535/space_invaders/raw/9a611449423b9992c126c20e47c5de4f58fc1c0e/space_invaders-main%2Faaa.json",
+        "contents_url": "https://api.github.com/repos/aaron1535/space_invaders/contents/space_invaders-main%2Faaa.json?ref=9a611449423b9992c126c20e47c5de4f58fc1c0e",
+        "patch": "@@ -0,0 +1,36 @@\\n+[\\n+  {\\n+ "    
+    },
+    {
+        "sha": "8b82a649186b55f8e905b7850f5dbd5b6f67f2e0",
+        "filename": "space_invaders-main/iocs-test.txt",
+        "status": "added",
+        "additions": 32,
+        "deletions": 0,
+        "changes": 32,
+        "blob_url": "https://github.com/aaron1535/space_invaders/blob/9a611449423b9992c126c20e47c5de4f58fc1c0e/space_invaders-main%2Fiocs-test.txt",
+        "raw_url": "https://github.com/aaron1535/space_invaders/raw/9a611449423b9992c126c20e47c5de4f58fc1c0e/space_invaders-main%2Fiocs-test.txt",
+        "contents_url": "https://api.github.com/repos/aaron1535/space_invaders/contents/space_invaders-main%2Fiocs-test.txt?ref=9a611449423b9992c126c20e47c5de4f58fc1c0e",
+        "patch": "@@ -0,0 +1,32 @@\\n+2023-02-08 (WEDNESDAY) - COBALT STRIKE FROM ICEDID (BOKBOT) INFECTION\\n+\\n+REFERENCE:\\n+\\n+- https://twitter.com/Unit42_Intel/status/1623707361184477185\\n+\\n+NOTES:\\n+\\n+- IcedID infection generated using a OneNote file reported earlier today by @k3dg3 at:\\n+  -- https://twitter.com/k3dg3/status/1623333951069646857\\n+\\n+ICEDID TRAFFIC:\\n+\\n+- 80.66.88[.]143 port 80 - ehonlionetodo[.]com - GET /\\n+- 94.232.46[.]221 port 443 - noosaerty[.]com - HTTPS traffic\\n+- 37.252.6[.]77 port 443 - palasedelareforma[.]com - HTTPS traffic\\n+\\n+COBALT STRIKE TRAFFIC:\\n+\\n+- 167.172.154[.]189 port 80 - 167.172.154[.]189 - GET /36.ps1\\n+- 167.172.154[.]189 port 80 - 167.172.154[.]189 - GET /b360802.dll\\n+- 79.132.128[.]191 port 443 - thefirstupd[.]com - HTTPS traffic\\n+\\n+COBALT STRIKE STAGER:\\n+\\n+- SHA256 hash: 9e68ac920bae102ccf1829ae8b8c212cc3046dd82114966c74e740df68b76fcd\\n+- File size: 754,688 bytes\\n+- File location: hxxp://167.172.154[.]189/b360802.dll\\n+- File location: C:\\\\Windows\\\\tasks\\\\si.dll\\n+- File description: 64-bit DLL stager for Cobalt Strike\\n+- Run method: rundll32.exe [filename],ApendMenu \\n+- Sample: https://bazaar.abuse.ch/sample/9e68ac920bae102ccf1829ae8b8c212cc3046dd82114966c74e740df68b76fcd/"
+    }
+]

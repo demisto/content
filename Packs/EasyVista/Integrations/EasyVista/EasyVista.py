@@ -38,7 +38,7 @@ def http_request(method, url_suffix):
         if res.status_code != 200:
             raise Exception(f'Your request failed with the following error: {str(res.content)}{str(res.status_code)}')
     except Exception as e:
-        demisto.debug(e)
+        demisto.debug(f'{e}')
         raise
     return res.json()
 
@@ -134,5 +134,5 @@ try:
         search_command()
 
 except Exception as e:
-    demisto.debug(e)
+    demisto.debug(f'{e}')
     raise e

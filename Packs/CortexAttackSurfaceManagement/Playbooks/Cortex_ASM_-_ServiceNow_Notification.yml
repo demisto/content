@@ -1,17 +1,15 @@
 id: Cortex ASM - ServiceNow Notification
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex ASM - ServiceNow Notification
 description: This playbook is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+    taskid: b2dad0cb-d59b-4656-8b00-45e7bf43e237
     type: start
     task:
-      id: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+      id: b2dad0cb-d59b-4656-8b00-45e7bf43e237
       version: -1
       name: ""
       iscommand: false
@@ -19,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -38,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e28fdfca-d524-4853-8dc3-285981f0050f
+    taskid: 0dfcbaac-1689-4433-82a2-361344c6503f
     type: title
     task:
-      id: e28fdfca-d524-4853-8dc3-285981f0050f
+      id: 0dfcbaac-1689-4433-82a2-361344c6503f
       version: -1
       name: Complete
       type: title
@@ -54,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 580
+          "y": 800
         }
       }
     note: false
@@ -66,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2d40f244-f863-4313-8ba2-c526f39d0fa1
+    taskid: dd4851db-4755-4535-8057-c794b7836d2a
     type: regular
     task:
-      id: 2d40f244-f863-4313-8ba2-c526f39d0fa1
+      id: dd4851db-4755-4535-8057-c794b7836d2a
       version: -1
       name: Create ServiceNow alert
       description: Creates new ServiceNow ticket.
@@ -87,7 +85,9 @@ tasks:
           transformers:
           - operator: concat
             args:
-              prefix: {}
+              prefix:
+                value:
+                  simple: ${predescription}
               suffix:
                 value:
                   simple: inputs.RemediationGuidance
@@ -99,6 +99,29 @@ tasks:
               toReplace:
                 value:
                   simple: <br>
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '["'
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"]'
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: '","'
+            operator: replace
       extend-context:
         simple: 'ServiceNowDomain=.={"url": val.result.sys_domain.link.split(''api/now'')[0]}'
       short_description:
@@ -115,13 +138,17 @@ tasks:
       ticket_type:
         complex:
           root: inputs.NotificationTicketType
+      contact_type:
+        simple: ASM
+      correlation_id:
+        simple: ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 210
+          "y": 430
         }
       }
     note: false
@@ -133,19 +160,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 75531f68-ebd5-4f9d-855f-d739e502ef20
+    taskid: 89c90893-467e-4394-8e3e-46c4e5afc691
     type: regular
     task:
-      id: 75531f68-ebd5-4f9d-855f-d739e502ef20
+      id: 89c90893-467e-4394-8e3e-46c4e5afc691
       version: -1
       name: Set notification grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "5"
@@ -170,7 +197,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: alert.do?sysparm_query=number=
+                  simple: nav_to.do?uri=incident.do?sysparm_query=number=
           - operator: concat
             args:
               prefix: {}
@@ -188,7 +215,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 400
+          "y": 620
         }
       }
     note: false
@@ -198,12 +225,71 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: predescription
+      stringify:
+        simple: "true"
+      value:
+        simple: |+
+          Source: ASM
+
+          Alert ID: ${alert.id}
+
+          Cloud: ${alert.asmprovider}
+
+          Severity: ${alert.severity}
+
+          IP address: ${alert.remoteip}
+
+          Hostname: ${alert.hostname}
+
+          Tags: ${alert.tags}
+
+          Attack surface rule: ${alert.asmattacksurfaceruleid.[0]}
+
+          Excluded: ${alert.excluded}
+
+          External ID: ${alert.external_id}
+
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 80795fa8-8410-446c-8ce9-0ebe1d09a0b7
+      iscommand: false
+      name: Set predescription field
+      script: Set
+      type: regular
+      version: -1
+    taskid: 80795fa8-8410-446c-8ce9-0ebe1d09a0b7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 595,
+        "height": 815,
         "width": 380,
         "x": 450,
         "y": 50
@@ -220,6 +306,7 @@ inputs:
   value: {}
   required: true
   description: The ticket type used by ticketing systems. The default is "incident" because ticketing systems such as ServiceNow and Cherwell use it as default.
+  playbookInputQuery:
 - key: RemediationGuidance
   value: {}
   required: true
@@ -229,3 +316,14 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - OwnerNotificationBody
+  - NotificationTicketType
+  - RemediationGuidance
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []

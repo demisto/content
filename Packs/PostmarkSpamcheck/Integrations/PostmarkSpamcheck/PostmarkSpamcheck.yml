@@ -6,7 +6,7 @@ display: Postmark Spamcheck
 category: Messaging and Conferencing
 description: Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter tool SpamAssassin.
 configuration:
-- display: 'URL'
+- display: URL
   name: base_url
   defaultvalue: https://spamcheck.postmarkapp.com
   type: 0
@@ -14,13 +14,13 @@ configuration:
   additionalinfo: Postmark Spamcheck API URL
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
-  additionalinfo: When ‘trust any certificate’ is selected, the integration ignores TLS/SSL certificate validation errors. Used to test connection issues or connect to a server without a valid certificate.
+  additionalinfo: "When 'trust any certificate' is selected, the integration ignores TLS/SSL certificate validation errors. Used to test connection issues or connect to a server without a valid certificate."
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   additionalinfo: Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.
   required: false
@@ -36,8 +36,8 @@ script:
     - name: short
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: Only return spam score
     outputs:
     - contextPath: Postmark.Spamcheck.score
@@ -49,7 +49,7 @@ script:
     - contextPath: Postmark.Spamcheck.report
       description: Detailed SpamAssassin report
     description: Check the spamscore of your email message
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   subtype: python3
 fromversion: 6.0.0
 tests:

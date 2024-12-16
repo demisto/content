@@ -1,48 +1,203 @@
 category: Messaging and Conferencing
+name: OpenAi ChatGPT v3
+display: OpenAI GPT
+description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
 commonfields:
   id: OpenAi ChatGPT v3
   version: -1
+
 configuration:
-- defaultvalue: https://api.openai.com/
-  display: 'Server URL: (e.g. https://api.openai.com/)'
+- display: Server URL
   name: url
   required: true
+  defaultvalue: https://api.openai.com/
   section: Connect
   type: 0
-- display: ""
-  displaypassword: 'API Key'
-  hiddenusername: true
+
+- displaypassword: API Key
   name: apikey
+  type: 9
   required: true
   section: Connect
-  type: 9
+  hiddenusername: true
+
+- display: Model
+  additionalinfo: The model that will process the inputs and generate the completion.
+  name: model-select
+  type: 15
+  required: false
+  section: Connect
+  defaultvalue: gpt-3.5-turbo
+  options:
+  - gpt-3.5-turbo
+  - gpt-3.5-turbo-0125
+  - gpt-3.5-turbo-1106
+  - gpt-3.5-turbo-16k
+  - gpt-4-turbo
+  - gpt-4-turbo-preview
+  - gpt-4-0125-preview
+  - gpt-4-1106-preview
+  - gpt-4-vision-preview
+  - gpt-4-1106-vision-preview
+  - gpt-4
+  - gpt-4-0613
+  - gpt-4-32k
+  - gpt-4-32k-0613
+
+- display: Model (Optional - overrides selected choice)
+  additionalinfo: The model that will process the inputs and generate the completion.
+  name: model-freetext
+  type: 0
+  required: false
+  section: Connect
+
+- display: Max tokens
+  name: max_tokens
+  additionalinfo: The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption).
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+
+- display: Temperature
+  name: temperature
+  additionalinfo: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+
+- display: Top P
+  name: top_p
+  additionalinfo: "Enables nucleus sampling where only the top 'p' percent (0 to 1) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both."
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-description: |-
-  This integration provides access to the OpenAI ChatGPT API, which generates human-like responses to text prompts.
 
-  OpenAI ChatGPT is a revolutionary conversational AI system that is designed to interact with humans just like real people, this cutting-edge system is capable of understanding human language, responding to complex queries, and even mimicking human personality traits. Using advanced natural language processing techniques, OpenAI ChatGPT can simulate human conversation to an unprecedented degree of accuracy and effectiveness, making it an ideal tool for a wide range of applications, including customer service, virtual assistance, and more.
-display: OpenAi ChatGPT v3
-name: OpenAi ChatGPT v3
 script:
   commands:
-  - arguments:
-    - description: Add your question or text
-      name: prompt
+  - name: gpt-send-message
+    description: Send a plain message to the selected GPT model and receive the generated response.
+    arguments:
+    - name: message
       required: true
-    description: Send Text Message as a prompt to ChatGPT
-    name: chatgpt-send-prompt
-  dockerimage: demisto/python3:3.10.12.63474
+      description: The message that the GPT model will respond to.
+
+    - name: reset_conversation_history
+      required: false
+      description: Whether to keep previously sent messages in a conversation context or start a new conversation.
+      predefined:
+      - "yes"
+      - "no"
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+
+    - name: top_p
+      required: false
+      description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
+
+  - name: gpt-check-email-header
+    description: Checking email header for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+    arguments:
+    - name: entry_id
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
+
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on.
+      required: false
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model. 
+      type: Dictionary
+
+  - name: gpt-check-email-body
+    description: Check email body for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+    arguments:
+    - name: entry_id
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
+
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on.
+      required: false
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
+
+  - name: gpt-create-soc-email-template
+    description: Create an email template out of the conversation context to be sent from the SOC.
+    arguments:
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on.
+      required: false
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
   runonce: false
   script: ''
-  subtype: python3
   type: python
+  subtype: python3
+  dockerimage: demisto/parse-emails:1.0.0.117740
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,25 @@
+{
+    "accountId": "123456:cd68d496-c059-4e88-9e29-12ef5c911bcf",
+    "accountType": "atlassian",
+    "active": true,
+    "applicationRoles": {
+        "items": [],
+        "size": 2
+    },
+    "avatarUrls": {
+        "16x16": "https://secure.gravatar.com/avatar/image.png",
+        "24x24": "https://secure.gravatar.com/avatar/image.png",
+        "32x32": "https://secure.gravatar.com/avatar/image.png",
+        "48x48": "https://secure.gravatar.com/avatar/image.png"
+    },
+    "displayName": "Example User",
+    "emailAddress": "user@example.com",
+    "expand": "groups,applicationRoles",
+    "groups": {
+        "items": [],
+        "size": 5
+    },
+    "locale": "en_US",
+    "self": "https://api.atlassian.com/ex/jira/2bbc6974-df19-4608-a10c-cc3bc207239d/rest/api/3/user?accountId=123456:cd68d496-c059-4e88-9e29-12ef5c911bcf",
+    "timeZone": "America/Detroit"
+}

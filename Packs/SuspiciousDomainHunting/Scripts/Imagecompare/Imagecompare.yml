@@ -1,0 +1,24 @@
+commonfields:
+  id: imagecompare
+  version: -1
+name: imagecompare
+comment: "Compares two images and returns a similarity score."
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: org_image
+  description: 'Provide the Entry ID.'
+- name: sec_image
+  description: Provide the Entry ID.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/processing-image-file:1.0.0.115372
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/processing-image-file:1.0.0.89250
+fromversion: 6.10.0

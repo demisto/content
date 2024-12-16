@@ -1,0 +1,10 @@
+{
+    "name": "modified_test_group_name",
+    "created_at": "2024-05-27T15:32:49.601093Z",
+    "updated_at": "2024-05-27T15:33:02.680911Z",
+    "description": "modified description",
+    "user_metadata" : {},
+    "app_metadata" : {},
+    "client_metadata" : {},
+    "users_count": 1
+}

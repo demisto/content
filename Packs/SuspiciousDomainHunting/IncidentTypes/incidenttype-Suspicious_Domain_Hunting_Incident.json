@@ -1,0 +1,42 @@
+{
+    "id": "Suspicious Domain Hunting Incident",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Suspicious Domain Hunting Incident",
+    "color": "#F8E7A5",
+    "playbookId": "Suspicious Domain Hunting Incident Handling",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 2,
+    "onChangeRepAlg": 0,
+    "layout": "Suspicious Domain Hunting Incident",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "certstreamfingerprint": {
+                "extractAsIsIndicatorTypeId": "136fd66a-e220-4241-8c3a-78a1e6a25add",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "name": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            }
+        }
+    },
+    "fromVersion": "6.10.0",
+    "version": -1
+}

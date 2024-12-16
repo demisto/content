@@ -15,7 +15,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -35,7 +35,7 @@ def test_azure_storage_create_table_command(requests_mock):
     from AzureStorageTable import Client, create_table_command
 
     mock_response = json.loads(load_mock_response('create_table.json'))
-    url = f'{BASE_URL}Tables{SAS_TOKEN}'
+    url = f'{BASE_URL}Tables?{SAS_TOKEN}'
     table_name = 'test'
 
     requests_mock.post(url, json=mock_response)
@@ -70,7 +70,7 @@ def test_azure_storage_delete_table_command(requests_mock):
     from AzureStorageTable import Client, delete_table_command
 
     table_name = 'test'
-    url = f'{BASE_URL}Tables(\'{table_name}\'){SAS_TOKEN}'
+    url = f'{BASE_URL}Tables(\'{table_name}\')?{SAS_TOKEN}'
 
     requests_mock.delete(url, text='')
 
@@ -100,7 +100,7 @@ def test_azure_storage_query_tables_command(requests_mock):
     from AzureStorageTable import Client, query_tables_command
 
     mock_response = json.loads(load_mock_response('query_table.json'))
-    url = f'{BASE_URL}Tables{SAS_TOKEN}&$top=50'
+    url = f'{BASE_URL}Tables?{SAS_TOKEN}&$top=50'
 
     requests_mock.get(url, json=mock_response)
 
@@ -132,7 +132,7 @@ def test_azure_storage_insert_entity_command(requests_mock):
 
     mock_response = json.loads(load_mock_response('insert_entity.json'))
     table_name = 'test'
-    url = f'{BASE_URL}{table_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}{table_name}?{SAS_TOKEN}'
 
     requests_mock.post(url, json=mock_response)
 
@@ -170,7 +170,7 @@ def test_azure_storage_update_entity_command(requests_mock):
     table_name = 'test'
     partition_key = 'xsoar-partition'
     row_key = 'xsoar-row'
-    url = f'{BASE_URL}{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\'){SAS_TOKEN}'
+    url = f'{BASE_URL}{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\')?{SAS_TOKEN}'
 
     requests_mock.register_uri('MERGE', url, text='')
 
@@ -203,7 +203,7 @@ def test_azure_storage_replace_entity_command(requests_mock):
     table_name = 'test'
     partition_key = 'xsoar-partition'
     row_key = 'xsoar-row'
-    url = f'{BASE_URL}{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\'){SAS_TOKEN}'
+    url = f'{BASE_URL}{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\')?{SAS_TOKEN}'
 
     requests_mock.put(url, text='')
 
@@ -236,7 +236,7 @@ def test_azure_storage_query_entity_command(requests_mock):
 
     mock_response = json.loads(load_mock_response('query_entity.json'))
     table_name = 'test'
-    url = f'{BASE_URL}{table_name}(){SAS_TOKEN}&$top=1'
+    url = f'{BASE_URL}{table_name}()?{SAS_TOKEN}&$top=1'
 
     requests_mock.get(url, json=mock_response)
 
@@ -272,7 +272,7 @@ def test_azure_storage_delete_entity_command(requests_mock):
     table_name = 'test'
     partition_key = 'xsoar-partition'
     row_key = 'xsoar-row'
-    url = f'{BASE_URL}{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\'){SAS_TOKEN}'
+    url = f'{BASE_URL}{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\')?{SAS_TOKEN}'
 
     requests_mock.delete(url, text='')
 

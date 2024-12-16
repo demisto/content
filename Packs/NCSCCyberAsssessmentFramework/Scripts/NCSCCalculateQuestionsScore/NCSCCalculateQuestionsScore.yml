@@ -8,7 +8,7 @@ args:
 commonfields:
   id: NCSCCalculateQuestionsScore
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: NCSCCalculateQuestionsScore
 outputs:
@@ -32,4 +32,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-comment: 'This script calculates the score based on the question and answer responses.'
+comment: This script calculates the score based on the question and answer responses.

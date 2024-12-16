@@ -278,19 +278,12 @@ function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
         for(var i=0; i<headers.length; i++){
             newHeaders.push(headerTransform(headers[i]));
         }
-        if (newHeaders.length > 1) {
-            mdResults += newHeaders.join('|') + '\n';
-        } else {
-            mdResults += newHeaders[0] + '|' + '\n';
-        }
+        mdResults += '| ' + newHeaders.join(' | ') + ' |' + '\n';
         var sep = [];
         headers.forEach(function(h){
             sep.push('---');
         });
-        if (sep.length === 1) {
-            sep[0] = sep[0]+'|';
-        }
-        mdResults += sep.join('|') + '\n';
+        mdResults += '| ' + sep.join(' | ') + ' |' + '\n';
         t.forEach(function(entry){
             var vals = [];
             if(typeof(entry) !== 'object' && !(entry instanceof Array)){
@@ -305,10 +298,8 @@ function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
                     vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter), true, true) || ' ');
                 }
             });
-            if (vals.length === 1) {
-                vals[0] = vals[0]+'|';
-            }
-            mdResults += vals.join(' | ') + '\n';
+
+            mdResults += '| ' + vals.join(' | ') + ' |' + '\n';
         });
     } else{
         mdResults += 'No data returned\n';

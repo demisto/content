@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1b434045-2df3-4f80-8b9f-157dca93b8cf
+    taskid: 2156b8d3-82ba-4c2e-835e-766238e62366
     type: start
     task:
-      id: 1b434045-2df3-4f80-8b9f-157dca93b8cf
+      id: 2156b8d3-82ba-4c2e-835e-766238e62366
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 20f8a1c6-e3d8-44ec-81b7-1edbd55f9afe
+    taskid: df39c0da-9a4a-46dd-86c4-86cdaf6d66ba
     type: regular
     task:
-      id: 20f8a1c6-e3d8-44ec-81b7-1edbd55f9afe
+      id: df39c0da-9a4a-46dd-86c4-86cdaf6d66ba
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: e05746d3-898e-419a-8f1e-5e7be71f6bdd
+    taskid: fe913f29-c515-4092-8c4b-cb7c06a5b5f4
     type: title
     task:
-      id: e05746d3-898e-419a-8f1e-5e7be71f6bdd
+      id: fe913f29-c515-4092-8c4b-cb7c06a5b5f4
       version: -1
       name: IPv6
       type: title
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: d52862ae-52e1-4df5-8f5d-8d862b07c1be
+    taskid: 059ed22d-567e-4cb0-8b40-f0f2b595aadd
     type: regular
     task:
-      id: d52862ae-52e1-4df5-8f5d-8d862b07c1be
+      id: 059ed22d-567e-4cb0-8b40-f0f2b595aadd
       version: -1
       name: Print valid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -146,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 49575ef2-c65e-49b8-8e47-a19e729b8c59
+    taskid: fe235c83-0846-4744-8cf0-1a18f4ed3cc7
     type: regular
     task:
-      id: 49575ef2-c65e-49b8-8e47-a19e729b8c59
+      id: fe235c83-0846-4744-8cf0-1a18f4ed3cc7
       version: -1
       name: Set invalid IPv6s
       description: Sets a value into the context with the given context key
@@ -164,7 +164,7 @@ tasks:
       key:
         simple: invalid_ipv6s
       value:
-        simple: '"2001:db8:::1","fe80::123::5678","2001::db8::1","::fffff:192.0.2.1","2001:db8:::1%eth0","fe80::1%eth0%vlan0"'
+        simple: '"2001:db8:::1","fe80::123::5678","2001::db8::1","::fffff:192.0.2.1","2001:db8:::1%eth0","fe80::1%eth0%vlan0","Event::Endpoint::Denc::Encrypt"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -183,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 1eb6d5b6-14b7-4593-87fe-f29d597448aa
+    taskid: a34570bc-879a-454c-8f46-1e8099825eab
     type: regular
     task:
-      id: 1eb6d5b6-14b7-4593-87fe-f29d597448aa
+      id: a34570bc-879a-454c-8f46-1e8099825eab
       version: -1
       name: Print invalid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -203,6 +203,7 @@ tasks:
       - "95"
       - "96"
       - "97"
+      - "98"
     scriptarguments:
       value:
         simple: ${invalid_ipv6s}
@@ -225,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 2640d463-ee23-4878-8118-73e423df644c
+    taskid: 06ac2615-9f2a-4f1a-8959-4a91ac3b6290
     type: condition
     task:
-      id: 2640d463-ee23-4878-8118-73e423df644c
+      id: 06ac2615-9f2a-4f1a-8959-4a91ac3b6290
       version: -1
       name: 2001:db8:::1 - Double colons in the middle
       type: condition
@@ -266,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 3e66fd61-0094-4b4f-8943-a6a94a2524e1
+    taskid: 24631531-2e39-476f-8ba3-99ad7a897d46
     type: regular
     task:
-      id: 3e66fd61-0094-4b4f-8943-a6a94a2524e1
+      id: 24631531-2e39-476f-8ba3-99ad7a897d46
       version: -1
       name: Set valid IPv6s
       description: Sets a value into the context with the given context key
@@ -284,7 +285,7 @@ tasks:
       key:
         simple: valid_ipv6s
       value:
-        simple: '"fe80::1","::1","2001:0db8:0000:0000:0000:0000:0000:0001","2001:db8:1:0:0:0:0:1","::ffff:192.0.2.1","fe80::7:8%eth0","ff02::1:ff00:1","ff02:1::ff00:1","ff02:1:ff00::1"'
+        simple: '"fe80::1","::1","2001:0db8:0000:0000:0000:0000:0000:0001","2001:db8:1:0:0:0:0:1","::ffff:192.0.2.1","ff02::1:ff00:1","ff02:1::ff00:1","ff02:1:ff00::1","fe80::7:8%eth0"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -303,10 +304,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: cdd1e174-e0e3-4b6d-856e-fdb35a79d9e5
+    taskid: 82471283-39e7-4911-8e5b-f6b07e36a3fa
     type: regular
     task:
-      id: cdd1e174-e0e3-4b6d-856e-fdb35a79d9e5
+      id: 82471283-39e7-4911-8e5b-f6b07e36a3fa
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -335,10 +336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: e0243c9f-cecc-43b2-8185-3340cd216916
+    taskid: 0cf20ef1-5c52-4078-86fa-98e38f16df8b
     type: condition
     task:
-      id: e0243c9f-cecc-43b2-8185-3340cd216916
+      id: 0cf20ef1-5c52-4078-86fa-98e38f16df8b
       version: -1
       name: fe80::123::5678 - Multiple consecutive colons
       type: condition
@@ -376,10 +377,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 27750af8-3990-42e0-8239-4045b1e09c2b
+    taskid: 42efe980-0d4d-422e-8bb4-46c0082183e7
     type: condition
     task:
-      id: 27750af8-3990-42e0-8239-4045b1e09c2b
+      id: 42efe980-0d4d-422e-8bb4-46c0082183e7
       version: -1
       name: Collapsed address - ff02::1:ff00:1
       type: condition
@@ -417,10 +418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 27e609d6-d063-486e-8e98-309cd09059e8
+    taskid: 70325c9b-121a-45e1-8334-e7044946f672
     type: condition
     task:
-      id: 27e609d6-d063-486e-8e98-309cd09059e8
+      id: 70325c9b-121a-45e1-8334-e7044946f672
       version: -1
       name: local IPv6 with zone identifier - fe80::7:8%eth0
       type: condition
@@ -458,10 +459,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: a757a4ae-747f-45c4-8ca4-b270efccf8a5
+    taskid: 7943746b-af8d-4123-8ab9-90dfcf759036
     type: condition
     task:
-      id: a757a4ae-747f-45c4-8ca4-b270efccf8a5
+      id: 7943746b-af8d-4123-8ab9-90dfcf759036
       version: -1
       name: IPv4-compatible IPv6 address - ::ffff:192.0.2.1
       type: condition
@@ -499,10 +500,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: ee664d04-7d2d-4bf9-8353-64dae4dfc546
+    taskid: 7e7f9ae4-d8a8-4657-88c9-a3ec82ac4ef4
     type: condition
     task:
-      id: ee664d04-7d2d-4bf9-8353-64dae4dfc546
+      id: 7e7f9ae4-d8a8-4657-88c9-a3ec82ac4ef4
       version: -1
       name: Local Address - fe80::1
       type: condition
@@ -540,10 +541,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: a2218277-526e-479f-8d5d-03cc26f0d5d8
+    taskid: bcadde02-28cd-4a28-8715-4d7ed08cc32c
     type: condition
     task:
-      id: a2218277-526e-479f-8d5d-03cc26f0d5d8
+      id: bcadde02-28cd-4a28-8715-4d7ed08cc32c
       version: -1
       name: Collapsed zeros - 2001:db8:1:0:0:0:0:1
       type: condition
@@ -581,10 +582,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 8f8fb385-6766-4113-8d85-1316d760bb07
+    taskid: a317ea7b-7123-47cd-849c-4832157392b2
     type: condition
     task:
-      id: 8f8fb385-6766-4113-8d85-1316d760bb07
+      id: a317ea7b-7123-47cd-849c-4832157392b2
       version: -1
       name: Leading zeros - 2001:0db8:0000:0000:0000:0000:0000:0001
       type: condition
@@ -622,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 75aae3f7-5224-4ea2-8226-16a3d6511b60
+    taskid: 1be167b6-ab37-423b-8905-26dfdc7d5f62
     type: condition
     task:
-      id: 75aae3f7-5224-4ea2-8226-16a3d6511b60
+      id: 1be167b6-ab37-423b-8905-26dfdc7d5f62
       version: -1
       name: Loopback - ::1
       type: condition
@@ -663,10 +664,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: d6d9ce83-d0a7-4dff-8a1b-3ae028232253
+    taskid: d5b94802-7b18-424c-8b92-1fefe85b2112
     type: condition
     task:
-      id: d6d9ce83-d0a7-4dff-8a1b-3ae028232253
+      id: d5b94802-7b18-424c-8b92-1fefe85b2112
       version: -1
       name: Collapsed address mid - ff02:1::ff00:1
       type: condition
@@ -704,10 +705,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 2db343e3-4a96-41e2-8501-826d5996ac36
+    taskid: a8f026df-0874-4fec-8410-ef1edae1dc50
     type: condition
     task:
-      id: 2db343e3-4a96-41e2-8501-826d5996ac36
+      id: a8f026df-0874-4fec-8410-ef1edae1dc50
       version: -1
       name: Collapsed address mid - ff02:1:ff00::1
       type: condition
@@ -745,10 +746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 4ccb6e56-a3d3-4573-8058-cda5d34a6f1b
+    taskid: 67fa7fdc-1648-410a-8b49-61b8cfc78597
     type: condition
     task:
-      id: 4ccb6e56-a3d3-4573-8058-cda5d34a6f1b
+      id: 67fa7fdc-1648-410a-8b49-61b8cfc78597
       version: -1
       name: 2001::db8::1 - Double colons not at the start or end
       type: condition
@@ -786,10 +787,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: 9395253d-35a2-4c28-86f5-4dc8885e1b62
+    taskid: 05e30fc9-c3cd-4e75-8e9f-1b83f3ce214d
     type: condition
     task:
-      id: 9395253d-35a2-4c28-86f5-4dc8885e1b62
+      id: 05e30fc9-c3cd-4e75-8e9f-1b83f3ce214d
       version: -1
       name: ::fffff:192.0.2.1 - Too many hexadecimal digits in one group
       type: condition
@@ -827,10 +828,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: 9a79bb83-5353-4c1a-85a1-cdc49bc94aee
+    taskid: a6c27f45-947b-4a56-8ce9-b46b5dcc24a4
     type: condition
     task:
-      id: 9a79bb83-5353-4c1a-85a1-cdc49bc94aee
+      id: a6c27f45-947b-4a56-8ce9-b46b5dcc24a4
       version: -1
       name: 2001:db8:::1%eth0 - Double colons with zone identifier
       type: condition
@@ -868,10 +869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: 7c000ee0-fb0b-4728-8dba-4ed982597055
+    taskid: 45fc9842-24f6-47e8-8f9a-e6b5ebda5b0e
     type: condition
     task:
-      id: 7c000ee0-fb0b-4728-8dba-4ed982597055
+      id: 45fc9842-24f6-47e8-8f9a-e6b5ebda5b0e
       version: -1
       name: fe80::1%eth0%vlan0 - Multiple zone identifiers
       type: condition
@@ -909,10 +910,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: 8b3df2c7-76d8-4af7-8117-a28e17ad8515
+    taskid: 7f26cb6f-4bd8-4ee1-8f25-62b2ab3a07ff
     type: condition
     task:
-      id: 8b3df2c7-76d8-4af7-8117-a28e17ad8515
+      id: 7f26cb6f-4bd8-4ee1-8f25-62b2ab3a07ff
       version: -1
       name: 00:1A:2B:3C:4D:5E - MAC Address
       type: condition
@@ -948,13 +949,54 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: f7c5985a-764f-4052-8879-9be0e62e5430
+    type: condition
+    task:
+      id: f7c5985a-764f-4052-8879-9be0e62e5430
+      version: -1
+      name: Event::Endpoint::Denc::Encrypt - Event
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: c::E
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3510,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1610,
-        "width": 3820,
+        "width": 3840,
         "x": 50,
         "y": 50
       }

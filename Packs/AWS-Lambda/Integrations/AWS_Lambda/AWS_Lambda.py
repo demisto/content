@@ -94,7 +94,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug('could not parse field: %s' % (f,))
+            demisto.debug(f'could not parse field: {f}')
             continue
 
         tags.append({
@@ -129,6 +129,62 @@ def create_entry(title: str, data: dict, ec: dict):
         'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
         'EntryContext': ec
     }
+
+
+def read_zip_to_bytes(filename):
+    """
+  Reads the entire zip file into a bytes object in chunks.
+
+  Args:
+      filename: Path to the zip file.
+
+  Returns:
+      A bytes object containing the complete zip file content.
+  """
+    with open(filename, "rb") as zip_file:
+        data = b''
+        for chunk in iter(lambda: zip_file.read(1024), b''):
+            data += chunk
+    return data
+
+
+def prepare_create_function_kwargs(args: dict[str, str]):
+    """
+    Prepare arguments to be sent to the API
+    """
+    create_function_api_keys = ['FunctionName', 'Runtime', 'Role', 'Handler', 'Description', 'PackageType']
+    kwargs = {}
+
+    if code_path := args.get('code'):
+        file_path = demisto.getFilePath(code_path).get('path')
+        method_code = read_zip_to_bytes(file_path)
+        kwargs.update({'Code': {'ZipFile': method_code}})
+    elif s3_bucket := args.get('S3-bucket'):
+        kwargs.update({'Code': {'S3Bucket': s3_bucket}})
+    else:
+        raise DemistoException('code or S3-bucket must be provided.')
+
+    kwargs['TracingConfig'] = {'Mode': args.get('tracingConfig') or "Active"}
+    kwargs['MemorySize'] = arg_to_number(args.get('memorySize')) or 128  # type: ignore
+    kwargs['Timeout'] = arg_to_number(args.get('functionTimeout')) or 3  # type: ignore
+
+    for key in create_function_api_keys:
+        arg_name = key[0].lower() + key[1:]
+        if arg_name in args:
+            kwargs.update({key: args.get(arg_name)})  # type: ignore
+
+    if publish := args.get('publish'):
+        kwargs['Publish'] = argToBoolean(publish)
+    if env := args.get('environment'):
+        kwargs['Environment'] = {'Variables': {json.loads(env)}}
+    if tags := args.get('tags'):
+        kwargs['Tags'] = argToBoolean(tags)
+    if layers := args.get('layers'):
+        kwargs['Layers'] = argToList(layers)
+    if vpc := args.get('vpcConfig'):
+        kwargs['VpcConfig'] = json.loads(vpc)
+
+    return kwargs
 
 
 """MAIN FUNCTIONS"""
@@ -206,7 +262,7 @@ def list_aliases(args, aws_client):
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as e:
-        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        return_error(f'Could not decode/encode the raw response - {e}')
     ec = {'AWS.Lambda.Aliases(val.AliasArn === obj.AliasArn)': raw}
     human_readable = tableToMarkdown('AWS Lambda Aliases', data)
     return_outputs(human_readable, ec)
@@ -233,6 +289,7 @@ def invoke(args, aws_client):
     data = ({
         'FunctionName': args.get('functionName'),
         'Region': obj['_user_provided_options']['region_name'],
+        'RequestPayload': args.get('payload'),
     })
     if 'LogResult' in response:
         data.update({'LogResult': base64.b64decode(response['LogResult']).decode("utf-8")})  # type:ignore
@@ -243,9 +300,13 @@ def invoke(args, aws_client):
     if 'FunctionError' in response:
         data.update({'FunctionError': response['FunctionError']})
 
-    ec = {'AWS.Lambda.InvokedFunctions(val.FunctionName === obj.FunctionName)': data}
     human_readable = tableToMarkdown('AWS Lambda Invoked Functions', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs=data,
+        readable_output=human_readable,
+        outputs_prefix="AWS.Lambda.InvokedFunctions",
+        outputs_key_field=["FunctionName", "RequestPayload"]
+    )
 
 
 def remove_permission(args, aws_client):
@@ -286,7 +347,7 @@ def get_account_settings(args, aws_client):
     try:
         raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
     except ValueError as e:
-        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        return_error(f'Could not decode/encode the raw response - {e}')
     if raw:
         raw.update({'Region': obj['_user_provided_options']['region_name']})
 
@@ -518,6 +579,155 @@ def delete_function_command(args: dict[str, str], aws_client) -> CommandResults:
     )
 
 
+def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Creates a Lambda function from AWS.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the creation operation.
+    """
+    output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description', 'Timeout',
+                      'MemorySize', 'Version', 'PackageType', 'LastModified', 'VpcConfig', ]
+
+    kwargs = prepare_create_function_kwargs(args)
+
+    res = aws_client.create_function(**kwargs)
+    outputs = {key: res.get(key) for key in output_headers}
+
+    readable_outputs = outputs.copy()
+    vpc_config = readable_outputs.pop('VpcConfig')
+    readable_outputs.update({"SubnetIds": vpc_config.get('SubnetIds'),
+                             "SecurityGroupIds": vpc_config.get('SecurityGroupIds'),
+                             "VpcId": vpc_config.get('VpcId'),
+                             "Ipv6AllowedForDualStack": vpc_config.get('Ipv6AllowedForDualStack')})
+
+    readable_output = tableToMarkdown(name='Create Function',
+                                      t=readable_outputs,
+                                      headerTransform=pascalToSpace)
+
+    return CommandResults(
+        outputs=outputs,
+        raw_response=res,
+        outputs_prefix='AWS.Lambda.Functions',
+        outputs_key_field='FunctionArn',
+        readable_output=readable_output
+    )
+
+
+def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Creates an Lambda layer from a ZIP archive.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
+    """
+    output_headers = ['LayerVersionArn', 'LayerArn', 'Description', 'CreatedDate', 'Version',
+                      'CompatibleRuntimes', 'CompatibleArchitectures']
+
+    content = {}
+    s3_bucket = args.get('s3-bucket')
+    s3_key = args.get('s3-key')
+    s3_object_version = args.get('s3-object-version')
+
+    if zip_file := args.get('zip-file'):
+        file_path = demisto.getFilePath(zip_file).get('path')
+        content["ZipFile"] = read_zip_to_bytes(file_path)
+    elif s3_bucket and s3_key and s3_object_version:
+        content['S3Bucket'] = s3_bucket
+        content['S3Key'] = s3_key
+        content['S3ObjectVersion'] = s3_object_version
+    else:
+        raise DemistoException("Either zip-file or a combination of s3-bucket, s3-key and s3-object-version must be provided.")
+
+    kwargs = {
+        'LayerName': args.get('layer-name'),
+        'Description': args.get('description', ""),
+        'Content': content,
+        'CompatibleRuntimes': argToList(args.get('compatible-runtimes')),
+        'CompatibleArchitectures': argToList(args.get('compatible-architectures'))
+    }
+
+    res = aws_client.publish_layer_version(**kwargs)
+    readable_output = tableToMarkdown(name='Publish Layer Version', t=res, headers=output_headers, headerTransform=pascalToSpace)
+    outputs = {key: res.get(key) for key in output_headers}
+
+    return CommandResults(
+        outputs=remove_empty_elements(outputs),
+        raw_response=res,
+        outputs_prefix='AWS.Lambda.Layers',
+        outputs_key_field='LayerVersionArn',
+        readable_output=readable_output
+    )
+
+
+def delete_layer_version_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Deletes a version of a Lambda layer.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
+    """
+    layer_name = args.get('layer-name')
+    version_number = arg_to_number(args.get('version-number'))
+    kwargs = {'LayerName': layer_name,
+              'VersionNumber': version_number}
+
+    aws_client.delete_layer_version(**kwargs)  # raises on error
+
+    return CommandResults(
+        readable_output=f"Deleted version number {version_number} of {layer_name} Successfully"
+    )
+
+
+def list_layer_version_command(args, aws_client):
+    """
+    Lists the version of an Lambda layer.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the list operation.
+    """
+
+    kwargs = {
+        'LayerName': args.get('layer-name'),
+        'CompatibleRuntime': args.get('compatible-runtime'),
+        'Marker': args.get('token'),
+        'MaxItems': arg_to_number(args.get('limit')),
+        'CompatibleArchitecture': args.get('compatible-architecture')
+    }
+
+    res = aws_client.list_layer_versions(**remove_empty_elements(kwargs))
+    outputs = {
+        'AWS.Lambda.Layers(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)':
+            res.get('LayerVersions'),
+        'AWS.Lambda(true)': {'LayerVersionsNextToken': res.get("NextMarker")}
+    }
+
+    readable_output = tableToMarkdown(name='Layer Version List', t=res.get('LayerVersions'), headerTransform=pascalToSpace)
+
+    return CommandResults(
+        outputs=remove_empty_elements(outputs),
+        raw_response=res,
+        readable_output=readable_output
+    )
+
+
 """TEST FUNCTION"""
 
 
@@ -561,7 +771,7 @@ def main():
             case 'aws-lambda-list-aliases':
                 list_aliases(args, aws_client)
             case 'aws-lambda-invoke':
-                invoke(args, aws_client)
+                return_results(invoke(args, aws_client))
             case 'aws-lambda-remove-permission':
                 remove_permission(args, aws_client)
             case 'aws-lambda-get-account-settings':
@@ -578,6 +788,14 @@ def main():
                 return_results(delete_function_url_config_command(args, aws_client))
             case 'aws-lambda-delete-function':
                 return_results(delete_function_command(args, aws_client))
+            case 'aws-lambda-create-function':
+                return_results(create_function_command(args, aws_client))
+            case 'aws-lambda-publish-layer-version':
+                return_results(publish_layer_version_command(args, aws_client))
+            case 'aws-lambda-delete-layer-version':
+                return_results(delete_layer_version_command(args, aws_client))
+            case 'aws-lambda-list-layer-version':
+                return_results(list_layer_version_command(args, aws_client))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 

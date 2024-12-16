@@ -118,7 +118,7 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -151,7 +151,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 3
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -176,7 +176,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 10
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
@@ -201,7 +201,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 12
+                        "y": 14
                     },
                     {
                         "columns": [
@@ -267,7 +267,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 14
+                        "y": 16
                     },
                     {
                         "columns": [
@@ -320,7 +320,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -345,7 +345,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
@@ -430,7 +430,61 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-b2f782f0-eb15-11ee-9523-d3c564a4bc8a",
+                        "items": [
+                            {
+                                "args": {
+                                    "alert_internal_id": {
+                                        "simple": "${alert.id}"
+                                    },
+                                    "attack_surface_rule_id": {
+                                        "simple": "${alert.asmattacksurfaceruleid}"
+                                    },
+                                    "service_id": {
+                                        "simple": "${alert.asmserviceid}"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "c7508e90-eb15-11ee-9523-d3c564a4bc8a",
+                                "index": 0,
+                                "name": "RCS Scan Start",
+                                "scriptId": "RCSScan",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "scan_id": {
+                                        "simple": "${RCSScanId}"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 26,
+                                "id": "f527de70-eb17-11ee-9523-d3c564a4bc8a",
+                                "index": 1,
+                                "name": "RCS Scan Status",
+                                "scriptId": "Cortex Attack Surface Management|||asm-get-remediation-confirmation-scan-status",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "RCS Scan",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -444,6 +498,12 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
@@ -453,6 +513,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": "A layout used for ASM alerts in XSIAM.",
-    "marketplaces": ["marketplacev2"]
+    "description": "A layout used for ASM alerts in XSIAM."
 }

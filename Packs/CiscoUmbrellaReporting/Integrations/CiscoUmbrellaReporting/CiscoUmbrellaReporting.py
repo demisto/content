@@ -1,7 +1,6 @@
 import demistomock as demisto
 
 from CommonServerPython import *
-from typing import Dict, List, Optional
 from datetime import datetime
 import requests
 import urllib3
@@ -21,6 +20,7 @@ IP_PARAM = 'ip'
 DOMAIN_PARAM = 'domains'
 URL_PARAM = 'urls'
 SHA256_PARAM = 'sha256'
+CATEGORIES_PARAM = 'categories'
 INTRUSION_ACTION = 'intrusion_action'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater than zero.'
@@ -31,16 +31,16 @@ INVALID_CREDENTIALS_ERROR_MSG = 'Authorization Error: The provided credentials f
 
 ACTIVITY_TRAFFIC_TYPE_DICT = {
     "dns": ["traffic_type", "limit", "from", "to", "offset", "domains", "ip", "verdict",
-            "threats", "threat_types", "identity_types", "page", "page_size"],
+            "threats", "threat_types", "identity_types", "page", "page_size", "categories"],
     "proxy": ["traffic_type", "limit", "from", "to", "offset", "domains",
               "ip", "verdict", "threats", "threat_types", "urls", "ports",
-              "identity_types", "file_name", "amp_disposition", "page", "page_size"],
+              "identity_types", "file_name", "amp_disposition", "page", "page_size", "categories"],
     "firewall": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "verdict",
                  "page", "page_size"],
     "intrusion": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports",
                   "signatures", "intrusion_action", "page", "page_size"],
     "ip": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "identity_types",
-           "verdict", "page", "page_size"],
+           "verdict", "page", "page_size", "categories"],
     "amp": ["traffic_type", "limit", "from", "to", "offset", "amp_disposition", "sha256",
             "page", "page_size"]
 }
@@ -48,13 +48,13 @@ ACTIVITY_TRAFFIC_TYPE_DICT = {
 SUMMARY_TYPE_DICT = {
     "all": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
             "identity_types", "verdict", "file_name", "threats",
-            "threat_types", "amp_disposition", "page", "page_size", "ports"],
+            "threat_types", "amp_disposition", "page", "page_size", "ports", "categories"],
     "category": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
                  "identity_types", "verdict", "file_name", "threats",
-                 "threat_types", "amp_disposition", "page", "page_size"],
+                 "threat_types", "amp_disposition", "page", "page_size", "categories"],
     "destination": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
                     "identity_types", "verdict", "file_name", "threats",
-                    "threat_types", "amp_disposition", "page", "page_size"],
+                    "threat_types", "amp_disposition", "page", "page_size", "categories"],
     "intrusion_rule": ["summary_type", "limit", "from", "to", "offset", "signatures", "ip",
                        "identity_types", "intrusion_action", "ports", "page",
                        "page_size"]
@@ -101,7 +101,7 @@ class Client(BaseClient):
         )
         return token_response.get('access_token')
 
-    def query_cisco_umbrella_api(self, end_point: str, params: dict) -> Dict:
+    def query_cisco_umbrella_api(self, end_point: str, params: dict) -> dict:
         """
         Call Cisco Umbrella Reporting API
 
@@ -127,7 +127,7 @@ class Client(BaseClient):
         Returns:
             Return the raw api response from Cisco Umbrella Reporting API.
         """
-        result: Dict = {}
+        result: dict = {}
         url_path = urljoin(self._base_url, f'/reports/v2/{end_point}')
         access_token = self.get_access_token()
         response = self._http_request(
@@ -212,14 +212,12 @@ def check_valid_indicator_value(indicator_type: str,
                 raise ValueError(
                     f'URL {url} is invalid')
 
-    elif indicator_type == IP_PARAM:
-        if not is_ip_valid(indicator_value, accept_v6_ips=True):
-            raise ValueError(f'IP "{indicator_value}" is invalid')
+    elif indicator_type == IP_PARAM and not is_ip_valid(indicator_value, accept_v6_ips=True):
+        raise ValueError(f'IP "{indicator_value}" is invalid')
 
-    if indicator_type == SHA256_PARAM:
-        if not re.match(sha256Regex, indicator_value):
-            raise ValueError(
-                f'SHA256 value {indicator_value} is invalid')
+    if indicator_type == SHA256_PARAM and not re.match(sha256Regex, indicator_value):
+        raise ValueError(
+            f'SHA256 value {indicator_value} is invalid')
 
     if indicator_type == INTRUSION_ACTION:
         intrusion_list = argToList(indicator_value)
@@ -228,11 +226,18 @@ def check_valid_indicator_value(indicator_type: str,
                 raise ValueError("Invalid input Error: supported values for "
                                  "intrusion_action are: 'would_block', 'blocked' and 'detected'.")
 
+    if indicator_type == CATEGORIES_PARAM:
+        categories = argToList(indicator_value)
+        for category in categories:
+            if not category.isdigit():
+                raise ValueError(
+                    f'Invalid input Error: Categories argument is not a valid list of integers: {indicator_value}')
+
     return True
 
 
-def get_command_title_string(sub_context: str, page: Optional[int],
-                             page_size: Optional[int]) -> str:
+def get_command_title_string(sub_context: str, page: int | None,
+                             page_size: int | None) -> str:
     """
     Define command title
     Args:
@@ -249,7 +254,7 @@ def get_command_title_string(sub_context: str, page: Optional[int],
     return f"{sub_context} List"
 
 
-def destination_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def destination_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -277,7 +282,7 @@ def destination_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def categories_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def categories_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -302,7 +307,7 @@ def categories_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def summary_lookup_to_markdown(summary: Dict, title: str) -> str:
+def summary_lookup_to_markdown(summary: dict, title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -337,7 +342,7 @@ def summary_lookup_to_markdown(summary: Dict, title: str) -> str:
     return markdown
 
 
-def summary_category_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def summary_category_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -375,7 +380,7 @@ def summary_category_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def summary_rule_lookup_to_markdown(results: List[Dict], title: str):
+def summary_rule_lookup_to_markdown(results: list[dict], title: str):
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -400,7 +405,7 @@ def summary_rule_lookup_to_markdown(results: List[Dict], title: str):
     return markdown
 
 
-def summary_destination_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def summary_destination_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -436,7 +441,7 @@ def summary_destination_lookup_to_markdown(results: List[Dict], title: str) -> s
     return markdown
 
 
-def identities_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def identities_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -458,7 +463,7 @@ def identities_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def file_type_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def file_type_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -491,7 +496,7 @@ def file_type_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def event_types_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def event_types_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -514,7 +519,7 @@ def event_types_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def threat_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def threat_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -538,7 +543,7 @@ def threat_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def activity_build_data(activity: Dict) -> dict:
+def activity_build_data(activity: dict) -> dict:
     """
     Build activity data
     Args:
@@ -575,7 +580,7 @@ def activity_build_data(activity: Dict) -> dict:
     return activity_data
 
 
-def activity_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def activity_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -612,7 +617,7 @@ def activity_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def activity_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def activity_dns_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -647,7 +652,7 @@ def activity_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def activity_proxy_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def activity_proxy_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -680,7 +685,7 @@ def activity_proxy_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def activity_firewall_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def activity_firewall_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -717,7 +722,7 @@ def activity_firewall_lookup_to_markdown(results: List[Dict], title: str) -> str
     return markdown
 
 
-def activity_intrusion_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def activity_intrusion_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -752,7 +757,7 @@ def activity_intrusion_lookup_to_markdown(results: List[Dict], title: str) -> st
     return markdown
 
 
-def activity_ip_lookup_to_markdown(results: List[Dict], title: str) -> \
+def activity_ip_lookup_to_markdown(results: list[dict], title: str) -> \
         str:
     """
     Parsing the Cisco Umbrella Reporting data
@@ -783,7 +788,7 @@ def activity_ip_lookup_to_markdown(results: List[Dict], title: str) -> \
     return markdown
 
 
-def activity_amp_lookup_to_markdown(results: List[Dict], title: str) -> str:
+def activity_amp_lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -813,7 +818,7 @@ def activity_amp_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def pagination(page: Optional[int], page_size: Optional[int]):
+def pagination(page: int | None, page_size: int | None):
     """
     Define pagination.
     Args:
@@ -841,7 +846,7 @@ def pagination(page: Optional[int], page_size: Optional[int]):
     return limit, offset
 
 
-def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args: Dict) -> Dict:
+def create_cisco_umbrella_args(limit: int | None, offset: int | None, args: dict) -> dict:
     """
     This function creates a dictionary of the arguments sent to the Cisco Umbrella API based on the demisto.args().
     Args:
@@ -851,7 +856,7 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
     Returns:
         Return arguments dict.
     """
-    cisco_umbrella_args: Dict = {}
+    cisco_umbrella_args: dict = {}
 
     if sha256 := args.get('sha256'):
         check_valid_indicator_value('sha256', sha256)
@@ -863,6 +868,8 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
         check_valid_indicator_value('urls', urls)
     if intrusion_action := args.get('intrusion_action'):
         check_valid_indicator_value('intrusion_action', intrusion_action)
+    if categories := args.get('categories'):
+        check_valid_indicator_value('categories', categories)
 
     max_limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE), arg_name='limit')
 
@@ -883,6 +890,7 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
     cisco_umbrella_args['threats'] = args.get('threats')
     cisco_umbrella_args['signatures'] = args.get('signatures')
     cisco_umbrella_args['sha256'] = sha256
+    cisco_umbrella_args['categories'] = argToList(categories)
 
     return cisco_umbrella_args
 
@@ -900,7 +908,7 @@ def test_module(client: Client) -> str:
     Returns:
         Connection ok
     """
-    params: Dict = {
+    params: dict = {
         'limit': 1,
         'from': '-1days',
         'to': 'now',
@@ -911,7 +919,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_destinations_list_command(client: Client, args: Dict[str, Any]):
+def get_destinations_list_command(client: Client, args: dict[str, Any]):
     """
     get_destinations_list_command: List of destinations ordered by the number of requests made in descending order.
     Args:
@@ -943,7 +951,7 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_categories_list_command(client: Client, args: Dict[str, Any]):
+def get_categories_list_command(client: Client, args: dict[str, Any]):
     """
     get_categories_list_command: List of categories ordered by the number of
         requests made matching the categories in descending order.
@@ -979,7 +987,7 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_identities_list_command(client: Client, args: Dict[str, Any]):
+def get_identities_list_command(client: Client, args: dict[str, Any]):
     """
     get_identities_list_command: List of identities ordered by the number of requests they made in descending order.
     Args:
@@ -1011,7 +1019,7 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_file_list_command(client: Client, args: Dict[str, Any]):
+def get_file_list_command(client: Client, args: dict[str, Any]):
     """
     get_file_list_command: List of files within a timeframe. Only returns proxy data.
     Args:
@@ -1042,7 +1050,7 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_threat_list_command(client: Client, args: Dict[str, Any]):
+def get_threat_list_command(client: Client, args: dict[str, Any]):
     """
     get_threat_list_command: List of threats within a timeframe. Returns both DNS and Proxy data.
     Args:
@@ -1074,7 +1082,7 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_event_types_list_command(client: Client, args: Dict[str, Any]):
+def get_event_types_list_command(client: Client, args: dict[str, Any]):
     """
     get_event_types_list_command: List of event types ordered by the number
      of requests made for each type of event in descending order.
@@ -1106,7 +1114,7 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_activity_list_command(client: Client, args: Dict[str, Any]):
+def get_activity_list_command(client: Client, args: dict[str, Any]):
     """
     get_activity_list_command: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe.
     Args:
@@ -1137,7 +1145,7 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
+def get_activity_by_traffic_type_command(client: Client, args: dict[str, Any]):
     """
     get_activity_by_traffic_type_command: List all entries within a timeframe
      based on the activity type selected. Valid activity types are dns,
@@ -1198,7 +1206,7 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_summary_list_command(client: Client, args: Dict[str, Any]):
+def get_summary_list_command(client: Client, args: dict[str, Any]):
     """
     get_summary_list_command: Get the summary.
     Args:

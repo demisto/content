@@ -1,8 +1,5 @@
 Full documentation for this integration is available at our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-sentinel).
 
-
-## Authorize Cortex XSOAR for Azure Sentinel
-
 #### Self-Deployed Authentication
 Follow these steps for a self-deployed configuration:
 

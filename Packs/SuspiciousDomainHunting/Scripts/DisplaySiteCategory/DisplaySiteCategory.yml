@@ -1,0 +1,20 @@
+commonfields:
+  id: displaySiteCategory
+  version: -1
+name: displaySiteCategory
+comment: "This dynamic automation retrieves the category of a website and displays it in the layout."
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/python3:3.10.13.78960
+fromversion: 6.10.0
