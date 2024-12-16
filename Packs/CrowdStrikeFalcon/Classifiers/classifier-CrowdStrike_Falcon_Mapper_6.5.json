@@ -568,7 +568,7 @@
                 "CrowdStrike Falcon Platform Name": {
                     "simple": "device.platform_name"
                 },
-                "Product Type Description": {
+                "CrowdStrike Falcon Product Type Description": {
                     "simple": "device.product_type_desc"
                 },
                 "Cloud Service": {
