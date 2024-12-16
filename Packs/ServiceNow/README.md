@@ -25,12 +25,12 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 
 ### Configure ServiceNow Event Collector on XSIAM Tenant
 
-- Go to Settings -> Configurations -> Automation & Feed Integrations
-- Search for ServiceNow Event Collector
-- Click on `Add instance`
-- Insert ServiceNow URL
-- Insert your credentials (user name and password)
-- Scroll down to `Collect` section
+1. Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+2. Search for ServiceNow Event Collector
+3. Click **Add instance**.
+4. Insert the ServiceNow URL.
+5. Insert your credentials (user name and password).
+6. Scroll down to the *Collect* section.
 7. Mark **Fetch Events** and select the desire event types to fetch (Audit and Syslog Transactions).
 
 
