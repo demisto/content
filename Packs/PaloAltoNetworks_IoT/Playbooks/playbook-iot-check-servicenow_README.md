@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Palo_Alto_Neworks_IoT_Security_ServiceNow_Check](../doc_files/playbook-iot-check-servicenow.png)
+![Palo_Alto_Neworks_IoT_Security_ServiceNow_Check](../doc_files/iot-check-servicenow.png)

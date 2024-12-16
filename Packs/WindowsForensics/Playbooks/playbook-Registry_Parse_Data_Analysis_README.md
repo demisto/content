@@ -33,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Registry Data Analysis](../doc_files/playbook-Registry_Parse_Data_Analysis.png)
+![Registry Data Analysis](../doc_files/Registry_Parse_Data_Analysis.png)

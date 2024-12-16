@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PrismaCloudRemediation_AWSSecurityGroupsAllowInternetTrafficToTCPPort](../doc_files/playbook-PrismaCloudRemediation_-_AWSSecurityGroupsTrafficToTCPPort.png)
+![PrismaCloudRemediation_AWSSecurityGroupsAllowInternetTrafficToTCPPort](../doc_files/PrismaCloudRemediation_-_AWSSecurityGroupsTrafficToTCPPort.png)

@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![lost_stolen_device](../doc_files/playbook-lost_stolen_device.png)
+![lost_stolen_device](../doc_files/lost_stolen_device.png)

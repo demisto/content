@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Tanium Demo Playbook](../doc_files/playbook-Tanium_Demo.png)
+![Tanium Demo Playbook](../doc_files/Tanium_Demo.png)

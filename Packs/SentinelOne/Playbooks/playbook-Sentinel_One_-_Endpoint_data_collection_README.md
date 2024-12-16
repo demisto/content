@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 There are no outputs for this playbook.
 ## Playbook Image
 ---
-![Sentinel_One_Endpoint_data_collection](../doc_files/playbook-Sentinel_One_-_Endpoint_data_collection.png)
+![Sentinel_One_Endpoint_data_collection](../doc_files/Sentinel_One_-_Endpoint_data_collection.png)

@@ -99,4 +99,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_File_McAfee_ATD](../doc_files/playbook-Detonate_File_-_McAfee_ATD.png)
+![Detonate_File_McAfee_ATD](../doc_files/Detonate_File_-_McAfee_ATD.png)

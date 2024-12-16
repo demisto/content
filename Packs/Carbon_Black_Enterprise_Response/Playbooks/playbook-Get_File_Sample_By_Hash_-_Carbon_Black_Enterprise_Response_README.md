@@ -31,4 +31,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get_File_Sample_By_Hash_Carbon_Black_Enterprise_Response](../doc_files/playbook-Get_File_Sample_By_Hash_-_Carbon_Black_Enterprise_Response.png)
+![Get_File_Sample_By_Hash_Carbon_Black_Enterprise_Response](../doc_files/Get_File_Sample_By_Hash_-_Carbon_Black_Enterprise_Response.png)

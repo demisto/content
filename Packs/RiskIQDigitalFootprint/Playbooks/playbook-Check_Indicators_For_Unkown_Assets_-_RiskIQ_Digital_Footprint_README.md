@@ -37,4 +37,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Check Indicators For Unknown Assets - RiskIQ Digital Footprint](../doc_files/playbook-Check_Indicators_For_Unkown_Assets_-_RiskIQ_Digital_Footprint.png)
+![Check Indicators For Unknown Assets - RiskIQ Digital Footprint](../doc_files/Check_Indicators_For_Unkown_Assets_-_RiskIQ_Digital_Footprint.png)

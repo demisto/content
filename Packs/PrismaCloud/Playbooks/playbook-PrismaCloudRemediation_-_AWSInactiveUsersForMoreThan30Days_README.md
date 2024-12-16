@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PrismaCloudRemediation_AWSInactiveUsersForMoreThan30Days](../doc_files/playbook-PrismaCloudRemediation_-_AWSInactiveUsersForMoreThan30Days.png) 
+![PrismaCloudRemediation_AWSInactiveUsersForMoreThan30Days](../doc_files/PrismaCloudRemediation_-_AWSInactiveUsersForMoreThan30Days.png) 
