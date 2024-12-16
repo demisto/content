@@ -1171,9 +1171,11 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
                 incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
             # Update last run and add incident if the incident is newer than last fetch
-            if creation_time := incident_data.get('creation_time', 0) > last_fetch:
+            creation_time = incident_data.get('creation_time', 0)
+            demisto.debug(f'creation time for {incident_id=} {creation_time=}')
+            if creation_time > last_fetch:
                 next_dedup_incidents = [incident_id]
-                demisto.debug(f'updating last_fetch, {creation_time=} {incident_id=}')
+                demisto.debug(f'updating last_fetch,  {incident_id=}')
                 last_fetch = incident_data['creation_time']
             elif incident_data.get('creation_time') == last_fetch:
                 next_dedup_incidents.append(incident_id)
