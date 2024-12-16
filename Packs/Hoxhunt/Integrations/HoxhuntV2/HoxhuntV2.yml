@@ -24,7 +24,6 @@ configuration:
   defaultvalue: Incoming And Outgoing
   type: 15
   required: false
-  section: Collect
   additionalinfo: "Choose the direction to mirror the incident: Incoming (from Hoxhunt to Cortex XSOAR), Outgoing (from Cortex XSOAR to Hoxhunt), or Incoming and Outgoing (from/to Cortex XSOAR and Hoxhunt)."
   options:
   - None
