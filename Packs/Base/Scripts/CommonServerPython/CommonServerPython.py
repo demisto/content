@@ -12462,11 +12462,11 @@ def content_profiler(func):
             timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
             timeout_seconds = timeout_nanoseconds / 1e9
             event_set = signal_event.wait(timeout_seconds - 5)
-            if not event_set:
-                raise DemistoException("The profiled function '{}' failed due to a timeout.".format(func.__name__))
             profiler.disable()
             dump_result()
             demisto.debug("Profiler finished.")
+            if not event_set:
+                return_error("The profiled function '{}' failed due to a timeout.".format(func.__name__))
 
         def function_runner(func, profiler, signal_event,
                             results, *args, **kwargs):
