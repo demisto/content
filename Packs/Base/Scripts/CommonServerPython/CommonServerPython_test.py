@@ -9996,22 +9996,52 @@ def test_get_engine_base_url(mocker):
     assert res == '11.111.111.33:443'
 
 
-def test_find_and_remove_sensitive_text__found(mocker):
+@pytest.mark.parametrize('input_text, pattern, expected_output, call_count', [
+    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', r'(token:\s*)(\S+)', '1234', 1, id='Match token value'),
+    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', r'(invalid_grant: java.security.SignatureException: Invalid signature for token: 1234)', 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', 1, id='Match entire string')
+])
+def test_find_and_remove_sensitive_text__found_onc(input_text, pattern, expected_output, call_count, mocker):
     """
     Given:
     - Input text that includes sensitive information.
 
     When:
-    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information (the word following "token:").
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for sensitive information.
 
     Then:
     - Verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
     """
     input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
     mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
-    find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
+    find_and_remove_sensitive_text(input_text, pattern)
 
-    mock_remove_from_logs.assert_called_once_with('1234')
+    assert mock_remove_from_logs.call_count == call_count
+    assert mock_remove_from_logs.call_args[0][0] == expected_output
+
+
+@pytest.mark.parametrize('pattern, expected_output, call_count', [
+    pytest.param(r'(1234)', ['1234'], 1, id='Match specific number'),
+    pytest.param(r'n', ['n', 'n', 'n', 'n', 'n', 'n', 'n'], 7, id='Match character n'),
+    pytest.param(r'(?i)\binvalid\b', ['invalid', 'Invalid'], 2, id='Match word invalid case insensitive')
+])
+def test_find_and_remove_sensitive_text__found_multiple(pattern, expected_output, call_count, mocker):
+    """
+    Given:
+    - Input text that includes sensitive information.
+
+    When:
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information.
+
+    Then:
+        verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
+        verify that the function is called the correct number of times.
+    """
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
+    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+    find_and_remove_sensitive_text(input_text, pattern)
+    assert mock_remove_from_logs.call_count == call_count
+    for x in range(call_count):
+        assert mock_remove_from_logs.call_args_list[x][0][0] == expected_output[x]
 
 
 def test_find_and_remove_sensitive_text__not_found(mocker):
