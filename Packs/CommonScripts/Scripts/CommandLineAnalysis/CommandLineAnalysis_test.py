@@ -1,18 +1,9 @@
 import pytest
 from CommandLineAnalysis import (
     analyze_command_line,
-    check_amsi,
-    check_credential_dumping,
-    check_data_exfiltration,
-    check_lateral_movement,
     check_malicious_commands,
-    check_powershell_suspicious_patterns,
-    check_reconnaissance_temp,
-    check_suspicious_content,
-    check_windows_temp_paths,
     clean_non_base64_chars,
     decode_base64,
-    identify_and_decode_base64,
     is_base64,
 )
 

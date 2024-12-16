@@ -5,6 +5,7 @@ import re
 import ipaddress
 import json
 
+
 def is_base64(s):
     """
     Validates if the provided string is a Base64-encoded string.
@@ -18,8 +19,9 @@ def is_base64(s):
             s += b'=' * (4 - padding)  # Add missing padding
         base64.b64decode(s, validate=True)  # Use strict validation
         return True
-    except Exception as e:
+    except Exception:
         return False
+
 
 def clean_non_base64_chars(encoded_str):
     """
@@ -40,6 +42,7 @@ def remove_null_bytes(decoded_str):
     Removes null bytes from the decoded string.
     """
     return decoded_str.replace("\x00", "")
+
 
 def decode_base64(encoded_str, max_recursions=5):
     """
@@ -104,6 +107,7 @@ def reverse_command(command_line):
         return command_line[::-1], True
     return command_line, False
 
+
 def check_malicious_commands(command_line):
     patterns = [
         r'\bmimikatz\b',
@@ -153,12 +157,12 @@ def check_malicious_commands(command_line):
         r'\bInvoke\-KickoffAtomicRunner\b'
     ]
 
-
     matches = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
+
 
 def check_reconnaissance_temp(command_line):
     patterns = [
@@ -192,6 +196,7 @@ def check_reconnaissance_temp(command_line):
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
+
 
 def check_windows_temp_paths(command_line):
     """
@@ -252,6 +257,7 @@ def check_suspicious_content(command_line):
 
     return matches
 
+
 def check_amsi(command_line):
     patterns = [
         r'\bSystem\.Management\.Automation\.AmsiUtils\b',
@@ -266,6 +272,7 @@ def check_amsi(command_line):
 
     return matches
 
+
 def check_mixed_case_powershell(command_line):
     mixed_case_powershell_regex = re.compile(
         r'\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b'
@@ -277,7 +284,6 @@ def check_mixed_case_powershell(command_line):
         match.group() for match in mixed_case_powershell_regex.finditer(command_line)
         if match.group() not in exclusions
     ]
-
 
 
 def check_powershell_suspicious_patterns(command_line):
@@ -317,6 +323,7 @@ def check_powershell_suspicious_patterns(command_line):
 
     return matches
 
+
 def check_credential_dumping(command_line):
     """
     Detects credential dumping techniques.
@@ -345,12 +352,12 @@ def check_credential_dumping(command_line):
         r'\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*'
     ]
 
-
     matches = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
     return matches
+
 
 def check_lateral_movement(command_line):
     """
@@ -383,6 +390,7 @@ def check_lateral_movement(command_line):
 
     return matches
 
+
 def check_data_exfiltration(command_line):
     """
     Detects potential data exfiltration techniques from a given command line.
@@ -406,6 +414,7 @@ def check_data_exfiltration(command_line):
 
     return matches
 
+
 def check_custom_patterns(command_line, custom_patterns=None):
 
     matches = []
@@ -414,18 +423,20 @@ def check_custom_patterns(command_line, custom_patterns=None):
 
     return matches
 
+
 def is_reserved_ip(ip_str):
     try:
         ip_obj = ipaddress.ip_address(ip_str)
         return (
-            ip_obj.is_private or
-            ip_obj.is_loopback or
-            ip_obj.is_reserved or
-            ip_obj.is_multicast or
-            ip_obj.is_link_local
+            ip_obj.is_private
+            or ip_obj.is_loopback
+            or ip_obj.is_reserved
+            or ip_obj.is_multicast
+            or ip_obj.is_link_local
         )
     except ValueError:
         return False
+
 
 def extract_indicators(command_line):
     try:
@@ -444,7 +455,7 @@ def extract_indicators(command_line):
                 return [ip for ip in contents["IP"] if not is_reserved_ip(ip)]
             elif isinstance(contents, dict) and "IP" not in contents:
                 for key in contents:
-                    return [value for value in contents[key]]
+                    return list(contents[key])
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
     return []
@@ -619,7 +630,6 @@ def analyze_command_line(command_line, custom_patterns=None):
     results.update(score_details)
 
     return results
-
 
 
 def main():
