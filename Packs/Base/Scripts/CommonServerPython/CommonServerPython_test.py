@@ -10018,7 +10018,7 @@ def test_find_and_remove_sensitive_text__not_found(mocker):
     """
     Given:
     - Input text that does not contain any sensitive information (e.g., no word following "token:").
-    
+
     When:
     - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information (the word following "token:").
 
@@ -10026,7 +10026,7 @@ def test_find_and_remove_sensitive_text__not_found(mocker):
     - Ensure that the function does not remove anything from the logs.
     """
 
-    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for sectert: 1234'
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for text: 1234'
     mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
     find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
 
