@@ -1,8 +1,8 @@
 commonfields:
-  id: Redmine
+  id: Redmine-new
   version: -1
-name: Redmine
-display: Redmine
+name: Redmine-new
+display: Redmine-new
 category: Utilities
 description: 'A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities. '
 configuration:
@@ -24,6 +24,12 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+- section: Collect
+  display: Project Id
+  name: project_id
+  additionalinfo: This project ID will be overridden by command project ID if one is provided within a command.
+  type: 0
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
