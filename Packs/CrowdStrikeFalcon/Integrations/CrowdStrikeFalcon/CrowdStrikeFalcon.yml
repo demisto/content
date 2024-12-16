@@ -114,6 +114,12 @@ configuration:
   section: Collect
   required: false
   advanced: true
+- display: OFP Detection fetch query
+  name: ofp_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8

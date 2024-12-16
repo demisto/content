@@ -1,4 +1,3 @@
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
@@ -16,6 +15,7 @@ from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 # Disable insecure warnings
 import urllib3
+
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
@@ -27,7 +27,8 @@ IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
-OFP_DETECTION = "OFP Detection"
+OFP_DETECTION_TYPE = "OFP Detection"
+OFP_DETECTION = "OFP detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
@@ -298,7 +299,6 @@ HOST_STATUS_DICT = {
     'unknown': 'Unknown'
 }
 
-
 QUARANTINE_FILES_OUTPUT_HEADERS = ['id', 'aid', 'cid', 'sha256', 'paths', 'state', 'detect_ids', 'alert_ids', 'hostname',
                                    'username', 'date_updated', 'date_created', 'extracted',
                                    'release_path_for_removable_media', 'primary_module', 'is_on_removable_disk',
@@ -313,7 +313,6 @@ CPU_UTILITY_INT_TO_STR_KEY_MAP = {
 }
 CPU_UTILITY_STR_TO_INT_KEY_MAP = {
     value: key for key, value in CPU_UTILITY_INT_TO_STR_KEY_MAP.items()}
-
 
 SCHEDULE_INTERVAL_STR_TO_INT = {
     'never': 0,
@@ -336,7 +335,6 @@ class IncidentType(Enum):
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -637,7 +635,7 @@ def modify_detection_summaries_outputs(detection: dict):
         "filepath"
     ]
 
-   # rename before adding to a nested dict
+    # rename before adding to a nested dict
     parent_details = detection.get("parent_details", {})
     parent_keys = ["sha256", "cmdline", "md5", "process_graph_id"]
     for key in parent_keys:
@@ -871,18 +869,18 @@ def handle_response_errors(raw_res: dict, err_msg: str | None = None):
 
 
 def create_json_iocs_list(
-        ioc_type: str,
-        iocs_value: list[str],
-        action: str,
-        platforms: list[str],
-        severity: str | None = None,
-        source: str | None = None,
-        description: str | None = None,
-        expiration: str | None = None,
-        applied_globally: bool | None = None,
-        host_groups: list[str] | None = None,
-        tags: list[str] | None = None,
-        file_name: str | None = None,
+    ioc_type: str,
+    iocs_value: list[str],
+    action: str,
+    platforms: list[str],
+    severity: str | None = None,
+    source: str | None = None,
+    description: str | None = None,
+    expiration: str | None = None,
+    applied_globally: bool | None = None,
+    host_groups: list[str] | None = None,
+    tags: list[str] | None = None,
+    file_name: str | None = None,
 ) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
@@ -1707,6 +1705,7 @@ def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
     Returns:
         dict: The response from the API (a combination of all paginated data).
     """
+
     def generate_paginated_request(_offset: int, _limit: int) -> dict:
         result: dict = {
             'method': 'GET',
@@ -1864,14 +1863,14 @@ def delete_ioc(ioc_type, value):
 
 
 def search_custom_iocs(
-        types: list | str | None = None,
-        values: list | str | None = None,
-        sources: list | str | None = None,
-        expiration: str | None = None,
-        limit: str = '50',
-        sort: str | None = None,
-        offset: str | None = None,
-        after: str | None = None,
+    types: list | str | None = None,
+    values: list | str | None = None,
+    sources: list | str | None = None,
+    expiration: str | None = None,
+    limit: str = '50',
+    sort: str | None = None,
+    offset: str | None = None,
+    after: str | None = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1913,14 +1912,14 @@ def get_custom_ioc(ioc_id: str) -> dict:
 
 
 def update_custom_ioc(
-        ioc_id: str,
-        action: str | None = None,
-        platforms: str | None = None,
-        severity: str | None = None,
-        source: str | None = None,
-        description: str | None = None,
-        expiration: str | None = None,
-        file_name: str | None = None,
+    ioc_id: str,
+    action: str | None = None,
+    platforms: str | None = None,
+    severity: str | None = None,
+    source: str | None = None,
+    description: str | None = None,
+    expiration: str | None = None,
+    file_name: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -2939,6 +2938,7 @@ def fetch_incidents():
     ioa_incidents: list[dict[str, Any]] = []
     mobile_detections: list[dict[str, Any]] = []
     on_demand_detections: list[dict[str, Any]] = []
+    ofp_detections: list[dict[str, Any]] = []
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
@@ -2951,6 +2951,7 @@ def fetch_incidents():
     ioa_last_run: dict = {} if len(last_run) < 5 else last_run[4]
     current_fetch_info_mobile_detections: dict = {} if len(last_run) < 6 else last_run[5]
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
+    current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
     look_back = int(params.get('look_back') or 1)
@@ -3177,9 +3178,26 @@ def fetch_incidents():
             detection_name_prefix=ON_DEMAND_SCANS_DETECTION_TYPE,
             start_time_key='created_timestamp')
 
+    if OFP_DETECTION_TYPE in fetch_incidents_or_detections:
+        if LEGACY_VERSION:
+            raise DemistoException(f'{OFP_DETECTION_TYPE} is not supported in legacy version.')
+        demisto.debug(f'Fetching {OFP_DETECTION_TYPE} incidents')
+        demisto.debug(f'ofp_detection_last_run= {current_fetch_ofp_detection}')
+
+        ofp_detections, current_fetch_ofp_detection = fetch_detections_by_product_type(
+            current_fetch_ofp_detection,
+            look_back=look_back,
+            fetch_query=params.get('ofp_detection_fetch_query', ''),
+            detections_type=OFP_DETECTION,
+            product_type='ofp',
+            detection_name_prefix=OFP_DETECTION_TYPE,
+            start_time_key='created_timestamp')
+
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
-                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections])
-    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections
+                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections,
+                        current_fetch_ofp_detection])
+    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections\
+        + ofp_detections
 
 
 def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
@@ -3791,14 +3809,14 @@ def delete_ioc_command(ioc_type, value):
 
 
 def search_custom_iocs_command(
-        types: list | str | None = None,
-        values: list | str | None = None,
-        sources: list | str | None = None,
-        expiration: str | None = None,
-        limit: str = '50',
-        sort: str | None = None,
-        offset: str | None = None,
-        next_page_token: str | None = None,
+    types: list | str | None = None,
+    values: list | str | None = None,
+    sources: list | str | None = None,
+    expiration: str | None = None,
+    limit: str = '50',
+    sort: str | None = None,
+    offset: str | None = None,
+    next_page_token: str | None = None,
 ) -> list[dict]:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -3845,9 +3863,9 @@ def search_custom_iocs_command(
 
 
 def get_custom_ioc_command(
-        ioc_type: str | None = None,
-        value: str | None = None,
-        ioc_id: str | None = None,
+    ioc_type: str | None = None,
+    value: str | None = None,
+    ioc_id: str | None = None,
 ) -> dict:
     """
     :param ioc_type: IOC type
@@ -3873,18 +3891,18 @@ def get_custom_ioc_command(
 
 
 def upload_custom_ioc_command(
-        ioc_type: str,
-        value: str,
-        action: str,
-        platforms: str,
-        severity: str | None = None,
-        source: str | None = None,
-        description: str | None = None,
-        expiration: str | None = None,
-        applied_globally: bool | None = None,
-        host_groups: list[str] | None = None,
-        tags: list[str] | None = None,
-        file_name: str | None = None,
+    ioc_type: str,
+    value: str,
+    action: str,
+    platforms: str,
+    severity: str | None = None,
+    source: str | None = None,
+    description: str | None = None,
+    expiration: str | None = None,
+    applied_globally: bool | None = None,
+    host_groups: list[str] | None = None,
+    tags: list[str] | None = None,
+    file_name: str | None = None,
 ) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
@@ -3927,14 +3945,14 @@ def upload_custom_ioc_command(
 
 
 def update_custom_ioc_command(
-        ioc_id: str,
-        action: str | None = None,
-        platforms: str | None = None,
-        severity: str | None = None,
-        source: str | None = None,
-        description: str | None = None,
-        expiration: str | None = None,
-        file_name: str | None = None,
+    ioc_id: str,
+    action: str | None = None,
+    platforms: str | None = None,
+    severity: str | None = None,
+    source: str | None = None,
+    description: str | None = None,
+    expiration: str | None = None,
+    file_name: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -5230,7 +5248,7 @@ def delete_host_groups_command(host_group_ids: list[str]) -> CommandResults:
 
 
 def upload_batch_custom_ioc_command(
-        multiple_indicators_json: str | None = None, timeout: str = '180',
+    multiple_indicators_json: str | None = None, timeout: str = '180',
 ) -> list[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
@@ -6088,7 +6106,6 @@ def build_cs_falcon_filter(custom_filter: str | None = None, **filter_args) -> s
 
 
 def ODS_query_scans_request(**query_params) -> dict:
-
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
     url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
@@ -6096,13 +6113,11 @@ def ODS_query_scans_request(**query_params) -> dict:
 
 
 def ODS_get_scans_by_id_request(ids: list[str]) -> dict:
-
     url_params = '&'.join(f'ids={query_id}' for query_id in ids)
     return http_request('GET', f'/ods/entities/scans/v1?{url_params}')
 
 
 def map_scan_resource_to_UI(resource: dict) -> dict:
-
     output = {
         'ID': resource.get('id'),
         'Status': resource.get('status'),
@@ -6121,7 +6136,6 @@ def map_scan_resource_to_UI(resource: dict) -> dict:
 
 
 def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
-
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Scans',
         [map_scan_resource_to_UI(resource) for resource in resources],
@@ -6133,7 +6147,6 @@ def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
 
 
 def get_ODS_scan_ids(args: dict) -> list[str] | None:
-
     demisto.debug('Fetching IDs from query api')
 
     query_filter = build_cs_falcon_filter(
@@ -6217,7 +6230,6 @@ def map_scheduled_scan_resource_to_UI(resource: dict) -> dict:
 
 
 def ODS_get_scheduled_scan_resources_to_human_readable(resources: list[dict]) -> str:
-
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Scheduled Scans',
         [map_scheduled_scan_resource_to_UI(resource) for resource in resources],
@@ -6229,7 +6241,6 @@ def ODS_get_scheduled_scan_resources_to_human_readable(resources: list[dict]) ->
 
 
 def get_ODS_scheduled_scan_ids(args: dict) -> list[str] | None:
-
     demisto.debug('Fetching IDs from query api')
 
     query_filter = build_cs_falcon_filter(**{
@@ -6281,13 +6292,11 @@ def ODS_query_scan_hosts_request(**query_params) -> dict:
 
 
 def ODS_get_scan_hosts_by_id_request(ids: list[str]) -> dict:
-
     url_params = '&'.join(f'ids={query_id}' for query_id in ids)
     return http_request('GET', f'/ods/entities/scan-hosts/v1?{url_params}')
 
 
 def get_ODS_scan_host_ids(args: dict) -> list[str]:
-
     query_filter = build_cs_falcon_filter(
         custom_filter=args.get('filter'),
         host_id=args.get('host_ids'),
@@ -6320,7 +6329,6 @@ def map_scan_host_resource_to_UI(resource: dict) -> dict:
 
 
 def ODS_get_scan_hosts_resources_to_human_readable(resources: list[dict]) -> str:
-
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Scan Hosts',
         [map_scan_host_resource_to_UI(resource) for resource in resources],
@@ -6333,7 +6341,6 @@ def ODS_get_scan_hosts_resources_to_human_readable(resources: list[dict]) -> str
 
 
 def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
-
     ids = get_ODS_scan_host_ids(args)
 
     if not ids:
@@ -6362,7 +6369,6 @@ def ODS_query_malicious_files_request(**query_params) -> dict:
 
 
 def ODS_get_malicious_files_by_id_request(ids: list[str]) -> dict:
-
     url_params = '&'.join(f'ids={query_id}' for query_id in ids)
     return http_request('GET', f'/ods/entities/malicious-files/v1?{url_params}')
 
@@ -6380,7 +6386,6 @@ def map_malicious_file_resource_to_UI(resource: dict) -> dict:
 
 
 def ODS_get_malicious_files_resources_to_human_readable(resources: list[dict]) -> str:
-
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Malicious Files',
         [map_malicious_file_resource_to_UI(resource) for resource in resources],
@@ -6391,7 +6396,6 @@ def ODS_get_malicious_files_resources_to_human_readable(resources: list[dict]) -
 
 
 def get_ODS_malicious_files_ids(args: dict) -> list[str] | None:
-
     demisto.debug('Fetching IDs from query api')
 
     query_filter = build_cs_falcon_filter(
@@ -6435,7 +6439,6 @@ def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
 
 
 def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
-
     result = {
         'host_groups': argToList(args.get('host_groups')),
         'file_paths': argToList(args.get('file_paths')),
@@ -6471,11 +6474,10 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
 def ODS_create_scan_request(args: dict, is_scheduled: bool) -> dict:
     body = make_create_scan_request_body(args, is_scheduled)
     remove_nulls_from_dictionary(body)
-    return http_request('POST', f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
+    return http_request('POST', f'/ods/entities/{"scheduled-" * is_scheduled}scans/v1', json=body)
 
 
 def ODS_verify_create_scan_command(args: dict) -> None:
-
     if not (args.get('hosts') or args.get('host_groups')):
         raise DemistoException('MUST set either hosts OR host_groups.')
 
@@ -6484,7 +6486,6 @@ def ODS_verify_create_scan_command(args: dict) -> None:
 
 
 def ods_create_scan(args: dict, is_scheduled: bool) -> dict:
-
     ODS_verify_create_scan_command(args)
 
     response = ODS_create_scan_request(args, is_scheduled)
@@ -6497,7 +6498,6 @@ def ods_create_scan(args: dict, is_scheduled: bool) -> dict:
 
 
 def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
-
     resource = ods_create_scan(args, is_scheduled=False)
     scan_id = resource.get('id')
 
@@ -6512,7 +6512,6 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
 
 
 def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
-
     resource = ods_create_scan(args, is_scheduled=True)
 
     human_readable = f'Successfully created scheduled scan with ID: {resource.get("id")}'
@@ -6536,7 +6535,6 @@ def ODS_delete_scheduled_scans_request(ids: list[str], scan_filter: str | None =
 
 
 def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
-
     ids, scan_filter = argToList(args.get('ids')), args.get('filter')
     response = ODS_delete_scheduled_scans_request(ids, scan_filter)
 
