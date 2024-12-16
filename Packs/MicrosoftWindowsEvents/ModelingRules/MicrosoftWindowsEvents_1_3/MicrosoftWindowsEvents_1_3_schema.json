@@ -16,7 +16,19 @@
       "type": "string",
       "is_array": false
     },
+    "Ipv6Address": {
+      "type": "string",
+      "is_array": false
+    },
+    "TicketEncryptionType": {
+      "type": "string",
+      "is_array": false
+    },
     "host_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "Failure_Reason": {
       "type": "string",
       "is_array": false
     },
