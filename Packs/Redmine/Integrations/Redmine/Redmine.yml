@@ -104,7 +104,7 @@ script:
     outputs:
     - contextPath: Redmine.Issue.id
       description: The ID of the new issue.
-    - contextPath: Redmine.Issue.priority.aa
+    - contextPath: Redmine.Issue.priority.id
       description: The ID of the priority of the issue.
     - contextPath: Redmine.Issue.tracker.id
       description: The ID of the tracker of the issue.
