@@ -13,7 +13,7 @@
 		"ioa_events": "CrowdStrike Falcon IOA Event",
         "MOBILE detection": "CrowdStrike Falcon Mobile Detection",
         "On-Demand Scans detection": "CrowdStrike Falcon On-Demand Scans Detection",
-        "Falcon OFP detection": "CrowdStrike Falcon OFP detection"
+        "Falcon OFP detection": "CrowdStrike Falcon OFP Detection"
 	},
 	"transformer": {
 		"complex": null,

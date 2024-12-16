@@ -5,7 +5,7 @@
         "Carbon Black EDR",
         "Symantec DLP Endpoint Incident",
         "CrowdStrike Falcon On-Demand Scans Detection",
-        "CrowdStrike Falcon OFP detection"
+        "CrowdStrike Falcon OFP Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,

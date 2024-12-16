@@ -496,13 +496,13 @@
                 }
             }
         },
-        "CrowdStrike Falcon OFP detection": {
+        "CrowdStrike Falcon OFP Detection": {
             "dontMapEventToLabels": false,
             "internalMapping": {
 				"Agent ID": {
 					"simple": "agent_id"
 				},
-                "Alleged file type": {
+                "CrowdStrike Falcon Alleged File Type": {
                     "simple": "alleged_filetype"
                 },
                 "CMD line": {
