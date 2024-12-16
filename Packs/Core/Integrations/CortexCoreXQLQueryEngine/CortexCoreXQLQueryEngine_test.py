@@ -763,6 +763,7 @@ def test_start_xql_query_polling_command_http_request_failure(mocker):
     query = 'MOCK_QUERY'
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='FAILURE')
     command_results = start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
+    assert command_results.scheduled_command
     assert 'The maximum allowed number of parallel running queries has been reached.' in command_results.readable_output
 
 
