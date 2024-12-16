@@ -395,7 +395,8 @@ def get_domain_by_domain_name(octox: OctoxLabs, args: dict[str, Any]) -> Command
                 "id",
                 "domain",
                 "tenant_name",
-                "tenant" "is_primary",
+                "tenant",
+                "is_primary",
             ],
         ),
     )
