@@ -51,7 +51,6 @@ NAME = "name"
 PATH = "path"
 IF_MATCH = "if_match"
 INV_RESULT = "inv_result"
-INV_STATUS = "inv_status"
 FALSE = "false"
 TRUE = "true"
 POLL = "poll"
@@ -2431,7 +2430,6 @@ def update_status(
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
     inv_res = args.get(INV_RESULT, EMPTY_STRING)
-    # inv_sts = args.get(INV_STATUS, EMPTY_STRING)    # Deprecated
     message: dict[str, Any] = {}
     # Assign enum status
     sts = AlertStatus[status.upper()]
@@ -2442,7 +2440,6 @@ def update_status(
         status=sts,
         etag=if_match,
         inv_result=inv_result,
-        # inv_status=inv_status,  # DEPRECATED
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
