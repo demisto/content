@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -760
+          "y": -1040
         }
       }
     note: false
@@ -89,7 +89,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -425
+          "y": -705
         }
       }
     note: false
@@ -195,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": 250
+          "y": -30
         }
       }
     note: false
@@ -268,7 +268,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -290
+          "y": -570
         }
       }
     note: false
@@ -298,7 +298,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 610
+          "y": 330
         }
       }
     note: false
@@ -707,7 +707,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 425
+          "y": 145
         }
       }
     note: false
@@ -748,7 +748,7 @@ tasks:
       {
         "position": {
           "x": 1720,
-          "y": 560
+          "y": 280
         }
       }
     note: false
@@ -838,7 +838,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 890
+          "y": 660
         }
       }
     note: false
@@ -1023,7 +1023,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 730
+          "y": 480
         }
       }
     note: false
@@ -1048,7 +1048,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "102"
+      - "108"
     scriptarguments:
       affectedhosts:
         complex:
@@ -1069,8 +1069,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 1060
+          "x": 930,
+          "y": 890
         }
       }
     note: false
@@ -1112,7 +1112,7 @@ tasks:
       {
         "position": {
           "x": 1810,
-          "y": -610
+          "y": -890
         }
       }
     note: false
@@ -1173,7 +1173,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -610
+          "y": -890
         }
       }
     note: false
@@ -1234,7 +1234,7 @@ tasks:
       {
         "position": {
           "x": 1010,
-          "y": -610
+          "y": -890
         }
       }
     note: false
@@ -1271,7 +1271,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -80
+          "y": -360
         }
       }
     note: false
@@ -1316,7 +1316,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": 90
+          "y": -190
         }
       }
     note: false
@@ -1592,7 +1592,52 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 560
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 820dcf43-d785-4585-88ec-ac2c12d4ad8c
+    type: condition
+    task:
+      id: 820dcf43-d785-4585-88ec-ac2c12d4ad8c
+      version: -1
+      name: Should open another incident to track findings?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "102"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.CreateNewIncidnetForIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1050
         }
       }
     note: false
@@ -1603,6 +1648,24 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
+  {
+    "linkLabelsPosition": {
+      "105_17_#default#": 0.81,
+      "61_62_#default#": 0.52,
+      "76_78_Manual Remediation  ": 0.51,
+      "77_78_#error#": 0.49,
+      "91_49_True Positive": 0.46,
+      "91_92_False Positive": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4275,
+        "width": 1840,
+        "x": 350,
+        "y": -1040
+      }
+    }
+  }
   {
     "linkLabelsPosition": {
       "105_17_#default#": 0.81,
