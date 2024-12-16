@@ -2642,7 +2642,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "DemistoUploadFileV2 Test",
+            "playbookID": "UploadFile Test",
             "integrations": "Core REST API"
         },
         {
@@ -5711,6 +5711,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA_dictionary_commands_tpb",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "CiscoSMA",
             "playbookID": "CiscoSMA",
             "fromversion": "6.2.0"
@@ -6061,7 +6066,9 @@
         "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
         "Generic Webhook - Test": "CIAC-11234",
         "Netskope_V2_Test": "No instance - developed by Qmasters",
-        "IAMInitOktaUser - Test": "CIAC-12093"
+        "IAMInitOktaUser - Test": "CIAC-12093",
+        "TAXII2 Server Performance Test": "CIAC-9768",
+        "BoxV2_TestPlaybook": "CRTX-145174"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",

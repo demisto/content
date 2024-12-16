@@ -671,13 +671,8 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
             tab.Page.navigate(url=path)
 
         demisto.debug(f'Waiting for tab_ready_event on {tab.id=}')
-        success_flag = tab_ready_event.wait(navigation_timeout)
+        tab_ready_event.wait(navigation_timeout)
         demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
-
-        if not success_flag:
-            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
-            demisto.error(message)
-            return_error(message)
 
         if wait_time > 0:
             demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
@@ -996,15 +991,21 @@ def rasterize_email_command():  # pragma: no cover
 
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
-    with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
-        f.write(f'<html style="background:white";>{html_body}</html>')
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', encoding='utf-8-sig') as tf:
+            demisto.debug(f'rasterize-email, {html_body=}')
+            tf.write(f'<html style="background:white";>{html_body}</html>')
+            tf.flush()
+            path = f'file://{os.path.realpath(tf.name)}'
+            demisto.debug(f'rasterize-email, rasterizing {path=}')
+            rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+                                                 offline_mode=offline, navigation_timeout=navigation_timeout,
+                                                 full_screen=full_screen)
 
-    path = f'file://{os.path.realpath(f.name)}'
-
-    rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                                         offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
-
-    res = fileResult(filename=file_name, data=rasterize_output[0][0])
+            res = fileResult(filename=file_name, data=rasterize_output[0][0])
+    except Exception as err:
+        demisto.error(str(err))
+        return_error(f'Failed to rasterize email: {err}')
 
     if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
         res['Type'] = entryTypes['image']
@@ -1121,6 +1122,8 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg('url')
+    # Do not remove this line, as rasterize does not support array in `url`.
+    urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())

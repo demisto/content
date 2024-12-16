@@ -4,20 +4,16 @@ This integration was integrated and tested with RFC3164 and RFC5424 formats of S
 - **Important**: Supported log formats: RFC3164, RFC5424, RFC6587 (with RFC3164 or RFC5424)
 - **Important**: Do not use an engine group for this integration. It can cause the integration to run on a different engine, and the Syslog server may send logs to an IP for which Syslog is not configured.
 - The integration **does not support** encrypted private keys.
-## Configure Syslog v2 on Cortex XSOAR
+## Configure Syslog v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Syslog v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Port mapping | The listening port to receive Syslog message on (`<port> or <host port>:<docker port>`). Port 6514 is the default when using TLS. | True |
-    | Certificate | Required for TLS | False |
-    | Private Key | Required for TLS | False |
-    | Message Regex Filter For Incidents Creation | Creates an incident in Cortex XSOAR for every received log message that matches this regex. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Port mapping | The listening port to receive Syslog message on (`<port> or <host port>:<docker port>`). Port 6514 is the default when using TLS. | True |
+| Certificate | Required for TLS | False |
+| Private Key | Required for TLS | False |
+| Message Regex Filter For Incidents Creation | Creates an incident in Cortex XSOAR for every received log message that matches this regex. | False |
 
-4. Click **Test** to validate the connection.
 
 ## Troubleshooting
 To receive incidents, the Syslog engine listens on a configured port that needs to be available for external in-coming traffic. There may be cases that docker is configured not to expose the port for external in-comming traffic. In this case, you can use host networking and not the docker based networking. Enable host networking usage by adding the following server configuration (Settings > About > Troubleshooting > Add Server Configuration):
