@@ -18,7 +18,7 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import (replace_sensitive_text, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+from CommonServerPython import (find_and_remove_sensitive_text, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
                                 flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
                                 remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
                                 get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
@@ -9996,26 +9996,38 @@ def test_get_engine_base_url(mocker):
     assert res == '11.111.111.33:443'
 
 
-@pytest.mark.parametrize("input_text, expected_output", [
-    # Test case 1: Token is present in the text
-    ('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234',
-     'invalid_grant: java.security.SignatureException: Invalid signature for token: MASKED'),
-
-    # Test case 2: Token is not present in the text
-    ('invalid_grant: java.security.SignatureException: No token present',
-     'invalid_grant: java.security.SignatureException: No token present'),
-])
-def test_replace_sensitive_text(input_text, expected_output, mocker):
+def test_find_and_remove_sensitive_text__found(mocker):
     """
-        Given:
-        - Input text containing sensitive information.
+    Given:
+    - Input text that includes sensitive information.
 
-        When:
-        - Calling replace_sensitive_text() method with a regex pattern to find the sensitive information and a mask to replace it.
+    When:
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to identify the sensitive information.
 
-        Then:
-        - Ensure the sensitive information is replaced with the mask if it exists.
+    Then:
+    - Verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
     """
-    mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
+    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+    find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
 
-    assert replace_sensitive_text(input_text, r'(token:\s*)(\S+)', "MASKED") == expected_output
+    mock_remove_from_logs.assert_called_once_with('1234')
+
+
+def test_find_and_remove_sensitive_text__not_found(mocker):
+    """
+    Given:
+    - Input text that does not include any sensitive information (no match for the regex pattern).
+
+    When:
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for sensitive information.
+
+    Then:
+    - Ensure that the function does not remove anything from the logs.
+    """
+
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
+    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+    find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
+
+    assert mock_remove_from_logs.caall_count == 0

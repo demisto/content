@@ -12514,32 +12514,27 @@ def content_profiler(func):
     return profiler_wrapper
 
 
-def replace_sensitive_text(text, pattern, mask=MASK):
+def find_and_remove_sensitive_text(text, pattern):
     """
-    Replaces sensitive information in the given text with a mask, adds the sensitive information to the list of strings
-    that should not appear in any logs, and returns the new string.
+    Finds sensitive information in a string and removes it from the logs.
 
     :param text: The input text containing the sensitive information.
     :type text: str
     :param pattern: The regex pattern to match the sensitive information.
     :type pattern: str
-    :param mask: The text to replace the sensitive information with. Defaults to '<XX_REPLACED>'.
-    :type mask: str
 
-    :return: The new string with the sensitive information replaced by the mask.
-    :rtype: str
+    :return: None
     """
     sensitive_pattern = re.compile(pattern)
     match = sensitive_pattern.search(text)
 
     if not match:
-        return text
+        return
 
-    original_sensitive_info = match.group(2)
-    add_sensitive_log_strs(original_sensitive_info)
+    sensitive_text = match.group(2)
+    add_sensitive_log_strs(sensitive_text)
 
-    # Replace only the sensitive part, keeping all the rest
-    return sensitive_pattern.sub(r'\g<1>{}'.format(mask), text)
+    return
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
