@@ -385,7 +385,7 @@ class Client(CoreClient):
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[],
                                           gte_creation_time_milliseconds=0, statuses=[],
                                           starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100, offset=0):
+                                          page_number=0, limit=100):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -394,8 +394,7 @@ class Client(CoreClient):
         """
         global ALERTS_LIMIT_PER_INCIDENTS
         request_data = {
-            'search_from': offset,
-            'search_to': offset + limit,
+            'search_to': limit,
             'sort': {
                 'field': 'creation_time',
                 'keyword': 'asc',
@@ -1099,7 +1098,6 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     last_fetch = last_run.get('time')
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
 
-    offset = int(last_run.get('offset', 0))
 
     demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
@@ -1123,11 +1121,12 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             gte_creation_time_milliseconds=last_fetch,
             statuses=statuses, limit=max_fetch, starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
-            exclude_artifacts=exclude_artifacts, offset=offset,
+            exclude_artifacts=exclude_artifacts,
         )
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
+    next_dedup_incidents = dedup_incidents = last_run.get('dedup_incidents')
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
@@ -1136,6 +1135,9 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
+            if incident_id in dedup_incidents:
+                demisto.debug(f'fetched {incident_id=} last run, skipping')
+                continue
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
@@ -1158,13 +1160,13 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
                 incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
             # Update last run and add incident if the incident is newer than last fetch
-            if incident_data.get('creation_time', 0) > last_fetch:
-                demisto.debug(f'updating last_fetch, setting offset = 1; {incident_id=}')
+            if creation_time := incident_data.get('creation_time', 0) > last_fetch:
+                next_dedup_incidents = [incident_id]
+                demisto.debug(f'updating last_fetch, {creation_time=} {incident_id=}')
                 last_fetch = incident_data['creation_time']
-                offset = 1
             elif incident_data.get('creation_time') == last_fetch:
-                demisto.debug(f'updating offset += 1; {incident_id=}')
-                offset += 1
+                next_dedup_incidents.append(incident_id)
+                demisto.debug(f'got incident at same time for dedup, {incident_id=}')
             else:
                 demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
 
@@ -1181,7 +1183,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     next_run = {
         'incidents_from_previous_run': non_created_incidents,
         'time': last_fetch,
-        'offset': str(offset),
+        'dedup_incidents': dedup_incidents
     }
 
     if non_created_incidents:
