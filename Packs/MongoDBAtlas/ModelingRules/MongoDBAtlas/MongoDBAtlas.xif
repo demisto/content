@@ -3,7 +3,6 @@ filter source_log_type = "alerts"
 | alter
 	xdm.event.type = source_log_type,
 	xdm.alert.description = acknowledgementComment,
-	xdm.source.user.username = acknowledgingUsername,
 	xdm.alert.original_alert_id = coalesce(alertConfigId, id),
 	xdm.event.original_event_type = eventTypeName,
 	xdm.source.user.groups = arraycreate(groupId),
@@ -12,8 +11,7 @@ filter source_log_type = "alerts"
 filter source_log_type = "events"
 | alter
 	get_linkToDetails = arraycreate(linkToDetails),
-	get_links_href = arraydistinct(arraymap(links -> [], "@element" -> href)),
-	get_username = arraystring(arraycreate(acknowledgingUsername, username), "|")
+	get_links_href = arraydistinct(arraymap(links -> [], "@element" -> href))
 | alter
 	check_remoteAddress_ipv4 = if(remoteAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remoteAddress),
 	check_remoteAddress_ipv6 = if(remoteAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", remoteAddress),
@@ -24,7 +22,7 @@ filter source_log_type = "events"
 	xdm.event.original_event_type = eventTypeName,
 	xdm.source.user.groups = arraycreate(groupId),
 	xdm.observer.unique_identifier = if(check_links ~= "^\s*\|\s*$", null, check_links ~= "^\|", ltrim(check_links, "|"), check_links ~= "\|$", rtrim(check_links, "|"), check_links),
-	xdm.source.user.username = if(get_username ~= "^\s*\|\s*$", null, get_username ~= "^\|", ltrim(get_username, "|"), get_username ~= "\|$", rtrim(get_username, "|"), get_username),
+	xdm.source.user.username = username,
 	xdm.auth.privilege_level = if(to_boolean(isGlobalAdmin) = true, XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
 	xdm.source.ipv4 = check_remoteAddress_ipv4,
 	xdm.source.ipv6 = check_remoteAddress_ipv6,
