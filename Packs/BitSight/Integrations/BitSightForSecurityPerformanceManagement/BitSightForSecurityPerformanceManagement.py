@@ -68,7 +68,9 @@ RISK_VECTOR_MAPPING = {
     'dmarc': 'dmarc'
 
 }
-
+PACK_VERSION = get_pack_version(pack_name='Bitsight') or '1.1.22'
+CALLING_PLATFORM_VERSION = 'XSOAR'
+CONNECTOR_NAME_VERSION = f'Bitsight - {PACK_VERSION}'
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -525,7 +527,11 @@ def main():
         verify=verify_certificate,
         proxy=proxy,
         ok_codes=[200],
-        auth=requests.auth.HTTPBasicAuth(api_key, '')
+        auth=requests.auth.HTTPBasicAuth(api_key, ''),
+        headers={
+            "X-BITSIGHT-CALLING-PLATFORM_VERSION": CALLING_PLATFORM_VERSION,
+            "X-BITSIGHT-CONNECTOR-NAME-VERSION": CONNECTOR_NAME_VERSION,
+        },
     )
 
     try:

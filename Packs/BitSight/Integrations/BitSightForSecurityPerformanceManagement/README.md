@@ -543,6 +543,9 @@ Bitsight command to get company findings.
 | BitSight.Page.previous | String | The URL to navigate to the previous page of results. | 
 | BitSight.Page.count | Number | The number of findings. | 
 
+#### Command example
+```!bitsight-company-findings-get guid=00000000-0000-0000-0000-000000000001 first_seen=2021-01-01 last_seen=2022-03-01 limit=2```
+
 ### bitsight-companies-guid-get
 ***
 Bitsight command to get list of companies and GUID.
@@ -653,45 +656,3 @@ There are no input arguments for this command.
 >|---|---|---|---|
 >| Saperix, Inc. | Saperix | 00000000-0000-0000-0000-000000000001 | 640 |
 >| Saperix Corporate | Saperix Corporate | 00000000-0000-0000-0000-000000000002 | 730 |
-### bitsight-companies-guid-get
-
-***
-Bitsight command to get list of companies and GUID.
-
-#### Base Command
-
-`bitsight-companies-guid-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| BitSight.Company.name | String | Name of this company. | 
-| BitSight.Company.shortname | String | The abbreviated name of this company. | 
-| BitSight.Company.guid | String | The unique identifier of this company. | 
-| BitSight.Company.customId | String | The customizable ID assigned to this company. | 
-| BitSight.Company.networkSizeV4 | Number | The number of IPv4 addresses attributed to this company. | 
-| BitSight.Company.rating | Number | The most recent security rating of this company. | 
-| BitSight.Company.ratingDate | Date | The date when the rating report for this company was generated. | 
-| BitSight.Company.dateAdded | Date | The date when this company was added to your portfolio. | 
-| BitSight.Company.industry | String | The industry of this company. | 
-| BitSight.Company.industrySlug | String | The slug name of this company's industry. | 
-| BitSight.Company.subIndustry | String | The sub-industry of this company. | 
-| BitSight.Company.subIndustrySlug | String | The slug name of this company's sub-industry. | 
-| BitSight.Company.type | String | The rating type. | 
-| BitSight.Company.logo | String | The URL in the Bitsight platform to this company's logo image. | 
-| BitSight.Company.sparkline | String | The URL in the Bitsight platform to this company's historical ratings trend line. | 
-| BitSight.Company.externalId | Number | The external ID assigned to this company. | 
-| BitSight.Company.subscriptionType | String | The subscription type used to monitor this company. | 
-| BitSight.Company.subscriptionTypeKey | String | The slug name of the subscription type used to monitor this company. | 
-| BitSight.Company.primaryDomain | String | The primary domain of this company. | 
-| BitSight.Company.securityGrade | String | For internal Bitsight use. | 
-| BitSight.Company.gradeDate | Date | For internal Bitsight use. | 
-| BitSight.Company.displayURL | String | The URL in the Bitsight platform to this company's overview page. | 
-| BitSight.Company.href | String | The URL in the Bitsight platform to this company's page. | 
-| BitSight.MyCompany.guid | String | The unique identifier of my company. | 
