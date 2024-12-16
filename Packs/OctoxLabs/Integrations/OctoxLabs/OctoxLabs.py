@@ -4,7 +4,8 @@ from CommonServerUserPython import *  # noqa
 from octoxlabs import OctoxLabs
 
 import urllib3
-from typing import Any, Dict, List, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 # from Packs.Base.Scripts.CommonServerPython.CommonServerPython import CommandResults
 
@@ -16,14 +17,14 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 """ HELPER FUNCTIONS """
 
 
-def convert_to_json(obj: object, keys: List[str]) -> Dict[str, Any]:
+def convert_to_json(obj: object, keys: list[str]) -> dict[str, Any]:
     return {k: getattr(obj, k, None) for k in keys}
 
 
 def run_command(
-    octox: OctoxLabs, command_name: str, args: Dict[str, Any]
+    octox: OctoxLabs, command_name: str, args: dict[str, Any]
 ) -> CommandResults:
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         "test-module": test_module,
         "octoxlabs-get-adapters": get_adapters,
         "octoxlabs-get-connections": get_connections,
@@ -51,11 +52,11 @@ def run_command(
         "octoxlabs-get-groups": get_groups,
         "octoxlabs-get-permissions": get_permissions,
         "octoxlabs-search-scroll-devices": search_scroll_devices,
-        "octoxlabs-search-scroll-users-inventory": search_scroll_users,
+        "octoxlabs-search-scroll-users": search_scroll_users,
         "octoxlabs-search-scroll-applications": search_scroll_applications,
         "octoxlabs-search-scroll-avm": search_scroll_avm,
     }
-    command_function: Optional[Callable] = commands.get(command_name, None)
+    command_function: Callable | None = commands.get(command_name, None)
     if command_function:
         return command_function(octox=octox, args=args)
     raise Exception("No command.")
@@ -108,7 +109,7 @@ def get_adapters(octox: OctoxLabs, *_, **__) -> CommandResults:
     )
 
 
-def get_connections(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_connections(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     page = args.get("page", 1)
     count, connections = octox.get_connections(page=page)
 
@@ -135,7 +136,7 @@ def get_connections(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_discoveries(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_discoveries(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     page = args.get("page", 1)
     count, discoveries = octox.get_discoveries(page=page)
 
@@ -172,7 +173,7 @@ def get_last_discovery(octox: OctoxLabs, *_, **__) -> CommandResults:
     )
 
 
-def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def search_devices(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     fields = args.get("fields", None)
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
@@ -194,14 +195,14 @@ def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_device(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_device(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     device = octox.get_device_detail(
         hostname=args.get("hostname"), discovery_id=args.get("discovery_id", None)
     )
     return CommandResults(outputs_prefix="OctoxLabs.Device", outputs=device)
 
 
-def get_queries(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_queries(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, queries = octox.get_queries(
         page=args.get("page", 1),
         search=args.get("search", ""),
@@ -234,7 +235,7 @@ def get_queries(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_query_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_query_by_id(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     query = octox.get_query_by_id(query_id=args.get("query_id"))
     return CommandResults(
         outputs_prefix="OctoxLabs.Query",
@@ -256,7 +257,7 @@ def get_query_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_query_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_query_by_name(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     query = octox.get_query_by_name(query_name=args.get("query_name"))
     return CommandResults(
         outputs_prefix="OctoxLabs.Query",
@@ -278,7 +279,7 @@ def get_query_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_companies(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_companies(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, companies = octox.get_companies(
         page=args.get("page", 1),
         search=args.get("search", ""),
@@ -305,7 +306,7 @@ def get_companies(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_company_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_company_by_id(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     company = octox.get_company_by_id(company_id=args.get("company_id"))
 
     return CommandResults(
@@ -322,7 +323,7 @@ def get_company_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_company_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_company_by_name(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     company = octox.get_company_by_name(company_name=args.get("company_name"))
 
     return CommandResults(
@@ -339,7 +340,7 @@ def get_company_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def get_domains(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_domains(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, domains = octox.get_domains(
         page=args.get("page", 1),
         search=args.get("search", ""),
@@ -366,7 +367,7 @@ def get_domains(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_domain_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_domain_by_id(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     domain = octox.get_domain_by_id(domain_id=args.get("domain_id"))
 
     return CommandResults(
@@ -383,7 +384,7 @@ def get_domain_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_domain_by_domain_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_domain_by_domain_name(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     domain = octox.get_domains_by_domain_name(domain_name=args.get("domain_name"))
 
     return CommandResults(
@@ -400,7 +401,7 @@ def get_domain_by_domain_name(octox: OctoxLabs, args: Dict[str, Any]) -> Command
     )
 
 
-def get_users(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_users(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, users = octox.get_users(
         page=args.get("page", 1),
         search=args.get("search", ""),
@@ -432,7 +433,7 @@ def get_users(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_user_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_user_by_id(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     user = octox.get_user_by_id(user_id=args.get("user_id"))
     return CommandResults(
         outputs_prefix="OctoxLabs.User",
@@ -453,7 +454,7 @@ def get_user_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_user_by_username(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_user_by_username(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     user = octox.get_user_by_username(username=args.get("username"))
     return CommandResults(
         outputs_prefix="OctoxLabs.User",
@@ -474,7 +475,7 @@ def get_user_by_username(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def get_groups(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_groups(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, groups = octox.get_groups(
         page=args.get("page", 1),
         search=args.get("search", ""),
@@ -496,7 +497,7 @@ def get_groups(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_permissions(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_permissions(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, permissions = octox.get_permissions(
         page=args.get("page", 1),
         search=args.get("search", ""),
@@ -518,7 +519,7 @@ def get_permissions(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def search_users_inventory(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def search_users_inventory(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     fields = args.get("fields", None)
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
@@ -540,7 +541,7 @@ def search_users_inventory(octox: OctoxLabs, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def search_applications(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def search_applications(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     fields = args.get("fields", None)
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
@@ -562,7 +563,7 @@ def search_applications(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def search_avm(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def search_avm(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, avm = octox.search_avm(
         query=args.get("query", ""),
         page=args.get("page", 1),
@@ -579,14 +580,14 @@ def search_avm(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_user_inventory_detail(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_user_inventory_detail(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     user = octox.get_user_inventory_detail(
         username=args.get("username"), discovery_id=args.get("discovery_id", None)
     )
     return CommandResults(outputs_prefix="OctoxLabs.UserInv", outputs=user)
 
 
-def get_application_detail(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def get_application_detail(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     application = octox.get_application_detail(
         application_id=args.get("application_id"),
         discovery_id=args.get("discovery_id", None),
@@ -594,7 +595,7 @@ def get_application_detail(octox: OctoxLabs, args: Dict[str, Any]) -> CommandRes
     return CommandResults(outputs_prefix="OctoxLabs.Application", outputs=application)
 
 
-def search_scroll_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def search_scroll_devices(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     fields = args.get("fields", None)
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
@@ -617,7 +618,7 @@ def search_scroll_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def search_scroll_users(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def search_scroll_users(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     fields = args.get("fields", None)
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
@@ -640,7 +641,7 @@ def search_scroll_users(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def search_scroll_applications(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+def search_scroll_applications(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     fields = args.get("fields", None)
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
@@ -662,7 +663,8 @@ def search_scroll_applications(octox: OctoxLabs, args: Dict[str, Any]) -> Comman
         },
     )
 
-def search_scroll_avm(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+
+def search_scroll_avm(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
     count, scroll_id, avm = octox.search_scroll_avm(
         query=args.get("query", ""),
         scroll_id=args.get("scroll_id", None),
@@ -678,6 +680,7 @@ def search_scroll_avm(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
             "results": avm,
         },
     )
+
 
 """ MAIN FUNCTION """
 

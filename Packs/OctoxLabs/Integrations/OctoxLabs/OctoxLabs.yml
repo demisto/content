@@ -595,7 +595,7 @@ script:
     - contextPath: OctoxLabs.Permissions.results.app
       description: 'Permission app.'
       type: String
-  - name: octoxlabs-search-user-inventory
+  - name: octoxlabs-search-users-inventory
     description: 'Search in your User Inventory.'
     arguments:
       - default:
@@ -606,10 +606,10 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page.'
+        description: 'Page. (Default: 1)'
         name: page
       - default:
-        description: 'Size.'
+        description: 'Size. (Default: 50)'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -619,7 +619,7 @@ script:
         description: 'Total users count.'
         type: Number
       - contextPath: OctoxLabs.UserInventory.results
-        description: 'List<Dict> User information.'
+        description: 'List User information.'
         type: Unknown
   - name: octoxlabs-search-applications
     description: 'Search in your Applications'
@@ -632,10 +632,10 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page.'
+        description: 'Page. (Default: 1)'
         name: page
       - default:
-        description: 'Size.'
+        description: 'Size. (Default: 50)'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -645,7 +645,7 @@ script:
         description: 'Total applications count.'
         type: Number
       - contextPath: OctoxLabs.Applications.results
-        description: 'List<Dict> Application information.'
+        description: 'List Application information.'
         type: Unknown
   - name: octoxlabs-search-avm
     description: 'Search in your AVM'
@@ -658,10 +658,10 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page.'
+        description: 'Page. (Default: 1)'
         name: page
       - default:
-        description: 'Size.'
+        description: 'Size. (Default: 50)'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -671,7 +671,7 @@ script:
         description: 'Total vulnerabilities count.'
         type: Number
       - contextPath: OctoxLabs.AVM.results
-        description: 'List<Dict> Vulnerability information.'
+        description: 'List Vulnerability information.'
         type: Unknown
   - name: octoxlabs-get-user-inventory-detail
     description: 'Fetch your user.'
@@ -708,10 +708,7 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page.'
-        name: page
-      - default:
-        description: 'Size.'
+        description: 'Size. (Default: 50)'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -727,7 +724,7 @@ script:
         description: 'Specific Scroll Id'
         type: String
       - contextPath: OctoxLabs.ScrolledDevices.results
-        description: 'List<Dict> Device information.'
+        description: 'List Device information.'
         type: Unknown
   - name: octoxlabs-search-scroll-users
     description: 'Search in your users.'
@@ -740,10 +737,7 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page.'
-        name: page
-      - default:
-        description: 'Size.'
+        description: 'Size. (Default: 50)'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -759,7 +753,7 @@ script:
         description: 'Specific Scroll Id'
         type: String
       - contextPath: OctoxLabs.ScrolledUsers.results
-        description: 'List<Dict> Users information.'
+        description: 'List Users information.'
         type: Unknown
   - name: octoxlabs-search-scroll-applications
     description: 'Search in your applications.'
@@ -772,10 +766,7 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page.'
-        name: page
-      - default:
-        description: 'Size.'
+        description: 'Size. (Default: 50)'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -791,7 +782,7 @@ script:
         description: 'Specific Scroll Id'
         type: String
       - contextPath: OctoxLabs.ScrolledApplications.results
-        description: 'List<Dict> Application information.'
+        description: 'List Application information.'
         type: Unknown
   - name: octoxlabs-search-scroll-avm
     description: 'Search in your AVM.'
@@ -799,9 +790,6 @@ script:
       - default:
         description: 'Query.'
         name: query
-      - default:
-        description: 'Page.'
-        name: page
       - default:
         description: 'Size.'
         name: size
@@ -819,7 +807,7 @@ script:
         description: 'Specific Scroll Id'
         type: String
       - contextPath: OctoxLabs.ScrolledAVM.results
-        description: 'List<Dict> Vulnerability information.'
+        description: 'List Vulnerability information.'
         type: Unknown
   runonce: false
   script: '-'
