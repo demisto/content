@@ -532,9 +532,13 @@ def handle_little_fetch_metadata(client: GwClient, fetch_type: str, query: dict)
     
     return gw_metadata
 
-def index_alerts_incidents(to_index: list, incidents: list) -> list:
+def index_alerts_incidents(to_index: list, incidents: list, params: dict) -> list:
+
+    webui_link = "https://" + str(params['ip']) + "/ui/alerts?drawer=alert&drawer_uuid="
 
     for i in range(0, len(to_index)):
+
+        webui_link += str(to_index[i]['_source']['event']['id'])
 
         incident = {'name': "Gatewatcher Alert: " + to_index[i]['_source']['event']['module'],
                     'occurred': str(to_index[i]['_source']['@timestamp']),
@@ -544,8 +548,12 @@ def index_alerts_incidents(to_index: list, incidents: list) -> list:
                     'rawJSON': json.dumps(to_index[i]['_source']),
                     'type': "Gatewatcher Incident",
                     'CustomFields': {
-                                    'GatewatcherRawEvent': json.dumps(to_index[i]['_source'])}
+                                    'GatewatcherRawEvent': json.dumps(to_index[i]['_source']),
+                                    'GatewatcherGCenterWebUI': webui_link
+                                    }
                     }
+
+        webui_link = webui_link.rstrip(str(to_index[i]['_source']['event']['id']))
 
         # XSOAR Severity
         if 'severity' in to_index[i]['_source']['event'].keys():
@@ -647,7 +655,7 @@ def fetch_selected_engines(client: GwClient, engine_selection: list, params: dic
     if max_fetch > 10000:
 
         gw_alerts = handle_big_fetch_selected_engines(client=client, query=query, engine_selection=engine_selection, max_fetch=max_fetch, fetch_type=fetch_type)
-        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents)
+        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
         gw_metadata = handle_big_fetch_metadata(client=client, query=query, max_fetch=max_fetch, fetch_type=fetch_type)
@@ -658,7 +666,7 @@ def fetch_selected_engines(client: GwClient, engine_selection: list, params: dic
     else:
 
         gw_alerts = handle_little_fetch_alerts(client=client, query=query, engine_selection=engine_selection, fetch_type=fetch_type)
-        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents)
+        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
         gw_metadata = handle_little_fetch_metadata(client=client, query=query, fetch_type=fetch_type)
@@ -674,7 +682,7 @@ def fetch_empty_selected_engines(client: GwClient, max_fetch: int, fetch_type: s
     if max_fetch > 10000:
 
         gw_alerts = handle_big_fetch_empty_selected_engines(client=client, query=query, max_fetch=max_fetch, fetch_type=fetch_type)
-        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents)
+        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
         gw_metadata = handle_big_fetch_metadata(client=client, query=query, max_fetch=max_fetch, fetch_type=fetch_type)
@@ -685,7 +693,7 @@ def fetch_empty_selected_engines(client: GwClient, max_fetch: int, fetch_type: s
     else:
 
         gw_alerts = handle_little_fetch_empty_selected_engines(client=client, query=query, fetch_type=fetch_type)
-        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents)
+        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
         gw_metadata = handle_little_fetch_metadata(client=client, query=query, fetch_type=fetch_type)
