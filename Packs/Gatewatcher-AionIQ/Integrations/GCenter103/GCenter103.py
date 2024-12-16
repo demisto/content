@@ -542,7 +542,9 @@ def index_alerts_incidents(to_index: list, incidents: list) -> list:
                     'labels': [{"value": str(to_index[i]['_source']['source']['ip']), "type": "IP"},
                                {"value": str(to_index[i]['_source']['destination']['ip']), "type": "IP"}],
                     'rawJSON': json.dumps(to_index[i]['_source']),
-                    'type': "Gatewatcher Incident"
+                    'type': "Gatewatcher Incident",
+                    'CustomFields': {
+                                    'GatewatcherRawEvent': json.dumps(to_index[i]['_source'])}
                     }
 
         # XSOAR Severity
