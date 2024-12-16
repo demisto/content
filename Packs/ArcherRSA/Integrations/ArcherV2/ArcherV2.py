@@ -254,9 +254,7 @@ def construct_generic_filter_condition(
 
     ET.SubElement(root, 'Operator').text = operator
     ET.SubElement(root, 'Field', attrib={'name': field_name}).text = field_id
-
-    value_element = ET.SubElement(root, 'Value')
-    value_element.text = search_value
+    ET.SubElement(root, 'Value').text = search_value
 
     for tag_name, tag_text in (sub_elements_tags_values or {}).items():
         ET.SubElement(root, tag_name).text = tag_text
