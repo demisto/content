@@ -10,7 +10,7 @@ You can also provide comments or attachments in Cortex XSOAR which will appear i
 - View, create, update, and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
 
-As part of this pack, you will also get 2 out-of-the-box layouts so that you can visualize ServiceNow ticket information in Cortex XSOAR.
+As part of this pack, you will also get two out-of-the-box layouts so that you can visualize ServiceNow ticket information in Cortex XSOAR.
 
 
 The Create ServiceNow Ticket playbook provides an example for how to use the Mirror ServiceNow Ticket playbook to mirror data and ServiceNow Ticket State Polling sub-playbook to track when the ticket closes.
