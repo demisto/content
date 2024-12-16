@@ -1098,6 +1098,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     last_fetch = last_run.get('time')
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
 
+    next_dedup_incidents = dedup_incidents = last_run.get('dedup_incidents') or []
 
     demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
@@ -1119,14 +1120,27 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         demisto.debug('Fetching incidents')
         raw_incidents = client.get_multiple_incidents_extra_data(
             gte_creation_time_milliseconds=last_fetch,
-            statuses=statuses, limit=max_fetch, starred=starred,
+            statuses=statuses, limit=max_fetch + len(dedup_incidents), starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
             exclude_artifacts=exclude_artifacts,
         )
+    deduped_incidents = []
+    for raw_incident in raw_incidents:
+        incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
+        incident_id = incident_data.get('incident_id')
+        if incident_id in next_dedup_incidents:
+            demisto.debug(f'removing {incident_id=} was already brought')
+        else:
+            deduped_incidents.append(raw_incident)
+
+    if len_events:= len(deduped_incidents) > max_fetch:
+        demisto.debug(f'len(deduped_incidents)={len_events}')
+        deduped_incidents = deduped_incidents[:max_fetch]
+
+    raw_incidents = deduped_incidents
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
-    next_dedup_incidents = dedup_incidents = last_run.get('dedup_incidents')
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
@@ -1135,9 +1149,6 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
-            if incident_id in dedup_incidents:
-                demisto.debug(f'fetched {incident_id=} last run, skipping')
-                continue
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
