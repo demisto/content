@@ -2,9 +2,9 @@ import json
 import os
 from unittest.mock import patch
 
+import freezegun
 import pytest
 from CommonServerPython import *
-from freezegun import freeze_time
 from NetskopeAPIv2 import Client
 
 SERVER_URL = "https://test_url.com/"
@@ -490,11 +490,11 @@ def test_get_updated_url_list():
                 "insertion_start_time": None,
                 "insertion_end_time": None,
             },
-            (1673042400, 1605698400, None, None),
+            (1673049600, 1690891200, None, None),
         ),
     ],
 )
-@freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
+@freezegun.freeze_time(datetime(2023, 8, 1, 12))
 def test_convert_time_args_to_num(args, expected_output):
     """
     Scenario: Test the convert_time_args_to_num function.
@@ -529,7 +529,7 @@ def test_convert_number_to_str_date():
     from NetskopeAPIv2 import convert_number_to_str_date
 
     date_number = 1677756000
-    expected_output = "02-03-2023 13:20"
+    expected_output = "02-03-2023 11:20"
 
     assert convert_number_to_str_date(date_number) == expected_output
 
@@ -582,7 +582,7 @@ def test_fetch_incidents(client, requests_mock):
             "name":
             "application-event ID: c4a0ad0684b73c3746e205a0",
             "occurred":
-            "2023-07-05T20:14:00Z",
+            "2023-07-05T17:14:00Z",
             'incident_type':
             'application-event',
             'mirror_direction':
@@ -601,7 +601,7 @@ def test_fetch_incidents(client, requests_mock):
             "name":
             "page-event ID: c4a0ad0684b73c3746e205a0",
             "occurred":
-            "2023-07-05T20:14:00Z",
+            "2023-07-05T17:14:00Z",
             'incident_type':
             'page-event',
             'mirror_direction':
@@ -620,7 +620,7 @@ def test_fetch_incidents(client, requests_mock):
             "name":
             "dlp_incident ID: 01",
             "occurred":
-            "2024-03-20T12:01:00Z",
+            "2024-03-20T10:01:00Z",
             'incident_type':
             'dlp_incident',
             'mirror_direction':
@@ -639,7 +639,7 @@ def test_fetch_incidents(client, requests_mock):
             "name":
             "alert ID: 7a30814339c73cf437653b22",
             "occurred":
-            "2023-07-05T20:14:00Z",
+            "2023-07-05T17:14:00Z",
             'incident_type':
             'alert',
             'mirror_direction':
