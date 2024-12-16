@@ -24,10 +24,5 @@ ignore=BA124
 ignore=BA124
 
 [file:Shift_handover.yml]
-ignore=GR107,RM116
+ignore=GR107
 
-[file:Set_up_a_Shift_handover_meeting.yml]
-ignore=RM116
-
-[file:Assign_Active_Incidents_to_Next_Shift_V2.yml]
-ignore=RM116
