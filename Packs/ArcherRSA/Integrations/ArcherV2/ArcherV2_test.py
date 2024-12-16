@@ -581,12 +581,13 @@ class TestArcherV2:
         assert records[0]['record']['Device Name'] == 'DEVICE NAME'
 
     @pytest.mark.parametrize(
-        'field_name,field_to_search_by_id,expected_condition',
+        'field_name, field_to_search_by_id, expected_condition',
         [
             pytest.param(
+                # Inputs ↓
                 'id_field_name',
                 '',
-                # Expected
+                # Expected ↓
                 '<TextFilterCondition>'
                 '<Operator>Contains</Operator>'
                 '<Field name="id_field_name">field_id</Field>'
@@ -595,9 +596,10 @@ class TestArcherV2:
                 id='Generic text filter',
             ),
             pytest.param(
+                # Inputs ↓
                 'id_field_name',
                 'id_field_name',
-                # Expected
+                # Expected ↓
                 '<ContentFilterCondition>'
                 '<Level>5678</Level>'
                 '<Operator>Equals</Operator>'
@@ -1143,23 +1145,26 @@ class TestArcherV2:
         'xml_document, blacklisted_tags, expected_is_valid',
         [
             pytest.param(
+                # Inputs ↓
                 '<DisplayField name="First Published">7194</DisplayField>',
                 [],
-                # Expected
+                # Expected ↓
                 True,
                 id='Valid',
             ),
             pytest.param(
+                # Inputs ↓
                 '<ShowStatSummaries>false</ShowSummaries>',
                 [],
-                # Expected
+                # Expected ↓
                 False,
                 id='Mismatched tags',
             ),
             pytest.param(
+                # Inputs ↓
                 '<ModuleCriteria><Module name="appname">5</Module></ModuleCriteria>',
                 ['ModuleCriteria'],
-                # Expected
+                # Expected ↓
                 False,
                 id='Blacklisted tag',
             ),
@@ -1181,12 +1186,13 @@ class TestArcherV2:
         'condition_type, operator, field_name, field_id, search_value, expected_xml_condition',
         [
             pytest.param(
+                # Inputs ↓
                 FilterConditionTypes.date,
                 'GreaterThan',
                 'Last Updated',
                 '1234',
                 '2024-12-11T11:11:24.433385Z',
-                # Expected
+                # Expected ↓
                 '<DateComparisonFilterCondition>'
                 '<Operator>GreaterThan</Operator>'
                 '<Field name="Last Updated">1234</Field>'
@@ -1195,12 +1201,13 @@ class TestArcherV2:
                 id='Date greater than condition',
             ),
             pytest.param(
+                # Inputs ↓
                 FilterConditionTypes.text,
                 'Contains',
                 'Incident Priority',
                 '456',
                 'High',
-                # Expected
+                # Expected ↓
                 '<TextFilterCondition>'
                 '<Operator>Contains</Operator>'
                 '<Field name="Incident Priority">456</Field>'
@@ -1239,27 +1246,9 @@ class TestArcherV2:
     @pytest.mark.parametrize(
         'logical_operator, conditions_count, expected_operator_logic',
         [
-            pytest.param(
-                'or',
-                3,
-                # Expected
-                '<OperatorLogic>1 OR 2 OR 3</OperatorLogic>',
-                id='OR with 3 conditions',
-            ),
-            pytest.param(
-                'AND',
-                4,
-                # Expected
-                '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>',
-                id='AND with 4 conditions',
-            ),
-            pytest.param(
-                'XOR',
-                1,
-                # Expected
-                '',
-                id='XOR with 1 condition',
-            ),
+            pytest.param('or', 3, '<OperatorLogic>1 OR 2 OR 3</OperatorLogic>', id='OR with 3 conditions'),
+            pytest.param('AND', 4, '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>', id='AND with 4 conditions'),
+            pytest.param('XOR', 1, '', id='XOR with 1 condition'),
         ]
     )
     def test_construct_operator_logic(self, logical_operator: str, conditions_count: int, expected_operator_logic: str):
