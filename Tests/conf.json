@@ -6052,7 +6052,6 @@
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
         "VMWare Test": "CIAC-10276",
-        "AWS - EC2 Test Playbook": "CIAC-10426",
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
         "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant",
