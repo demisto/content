@@ -3,3 +3,6 @@ RFC
 TLS
 Syslog
 BrokerVM
+
+[file:README.md]
+ignore=RM106

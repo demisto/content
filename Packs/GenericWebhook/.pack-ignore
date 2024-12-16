@@ -4,3 +4,6 @@ ignore=BA124
 [known_words]
 Webhook
 rawJSON
+
+[file:README.md]
+ignore=RM106
