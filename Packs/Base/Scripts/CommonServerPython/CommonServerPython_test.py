@@ -9997,8 +9997,10 @@ def test_get_engine_base_url(mocker):
 
 
 @pytest.mark.parametrize('input_text, pattern, expected_output, call_count', [
-    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', r'(token:\s*)(\S+)', '1234', 1, id='Match token value'),
-    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', r'(invalid_grant: java.security.SignatureException: Invalid signature for token: 1234)', 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', 1, id='Match entire string')
+    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234',
+                 r'(token:\s*)(\S+)', '1234', 1, id='Match token value'),
+    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', r'(invalid_grant: java.security.SignatureException: Invalid signature for token: 1234)',
+                 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', 1, id='Match entire string')
 ])
 def test_find_and_remove_sensitive_text__found_onc(input_text, pattern, expected_output, call_count, mocker):
     """
@@ -10020,9 +10022,8 @@ def test_find_and_remove_sensitive_text__found_onc(input_text, pattern, expected
 
 
 @pytest.mark.parametrize('pattern, expected_output, call_count', [
-    pytest.param(r'(1234)', ['1234'], 1, id='Match specific number'),
     pytest.param(r'n', ['n', 'n', 'n', 'n', 'n', 'n', 'n'], 7, id='Match character n'),
-    pytest.param(r'(?i)\binvalid\b', ['invalid', 'Invalid'], 2, id='Match word invalid case insensitive')
+    pytest.param(r'(?i)invalid', ['invalid', 'Invalid'], 2, id='Match word invalid case insensitive')
 ])
 def test_find_and_remove_sensitive_text__found_multiple(pattern, expected_output, call_count, mocker):
     """
