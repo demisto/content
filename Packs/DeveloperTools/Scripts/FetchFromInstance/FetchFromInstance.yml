@@ -34,4 +34,4 @@ scripttarget: 0
 runonce: false
 tests:
 - No test - cannot create a dummy integration inorder to test that
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
