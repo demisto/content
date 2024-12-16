@@ -1606,31 +1606,31 @@ script:
     name: xdr-file-quarantine
     polling: true
     outputs:
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
   - deprecated: true
@@ -1681,31 +1681,31 @@ script:
     name: xdr-file-restore
     polling: true
     outputs:
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
   - arguments:
@@ -1788,31 +1788,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
       description: Was the scan aborted?
       type: Boolean
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
     polling: true
@@ -2185,31 +2185,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.status
       description: The action status. Added only when the operation is unsuccessful.
       type: string
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
     polling: true
@@ -2477,31 +2477,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
     polling: true
@@ -2700,31 +2700,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
   - arguments:
@@ -2781,31 +2781,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
   - arguments:
@@ -2864,31 +2864,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
   - arguments:
@@ -2947,31 +2947,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
   - arguments:
