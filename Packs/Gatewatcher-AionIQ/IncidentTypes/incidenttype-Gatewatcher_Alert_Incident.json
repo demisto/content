@@ -1,10 +1,10 @@
 {
-    "id": "Gatewatcher Incident",
+    "id": "Gatewatcher Alert Incident",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Gatewatcher Incident",
-    "prevName": "Gatewatcher Incident",
+    "name": "Gatewatcher Alert Incident",
+    "prevName": "Gatewatcher Alert Incident",
     "color": "#ff1435",
     "hours": 0,
     "days": 0,
@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "Gatewatcher Incident Layout",
+    "layout": "Gatewatcher Alert Incident Layout",
     "detached": false,
     "extractSettings": {
         "mode": "All",
