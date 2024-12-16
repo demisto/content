@@ -21,15 +21,15 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
-| Server URL | In Cortex XDR, navigate to Settings > Configurations > API Keys and click Copy API URL| True |  
-| API Key ID | In Cortex XDR platform, go to Settings > Configurations > API Keys and copy the Key ID from the ID column | True |  
+| Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL| True |  
+| API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column | True |  
 | API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key | True | 
 | Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators | False |
 | Overriding severity value | When the **override severity** parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the original severity level of the indicator will be used | True | 
 | Tags | Supports CSV values | False|
 | Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR | True |
-| Trust any certificate (not secure) | | False |
-| Use system proxy settings | Enabled only when an engine is selected | False |  
+| Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified | False |
+| Use system proxy settings | Use system proxy settings is enabled only when an Engine is selected | False |  
 | Indicator Reputation | Indicator Reputation | False |  
 | Source Reliability | Source Reliability | True |  
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |

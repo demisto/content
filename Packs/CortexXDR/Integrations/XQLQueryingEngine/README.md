@@ -1,23 +1,31 @@
-Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
-This integration was integrated and tested with version 3.0 of Cortex XDR - XQL Query Engine
+## Overview
 
-In order to access all of the datasets, make sure your api token role is set to at least 'investigator'. Investigation query view will provide you access to all of the datasets except endpoints and host_inventory.
-For additional information see [Predefined User Roles for Cortex XDR](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Predefined-User-Roles)
+---
+The **Cortex XDR - XQL Query Engine** integration enables you to execute XQL queries on your data sources within Cortex XSOAR, facilitating advanced threat hunting and data analysis.
+
+### Key Features:
+
+- Execute XQL Queries: Run complex queries across your data to identify threats and anomalies.
+- Data Retrieval: Access and analyze data from various sources integrated with Cortex XDR.
+- Automation Support: Incorporate XQL queries into playbooks for automated threat detection and response.
 
 ## Configure Cortex XDR - XQL Query Engine in Cortex
 
+---
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| API Key ID | False |
-| API Key | False |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL | True |
+| API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column | False |
+| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key| False |
+| Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified | False |
+| Use system proxy settings | Use system proxy settings is enabled only when an Engine is selected | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### xdr-xql-generic-query
 ***
 Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
@@ -937,3 +945,9 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Actor Causality Id|Actor Process Image Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Dns Query Name|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-07-31T01:47:07.000Z | PANW |  |  | ISRAEL | LOCAL_IP | REMOTE_IP | 80 |  |  |  |  | x.exe |  |  |  |  Windows Publisher | X Corporation | WIN10X64 |  | IP |  |  | 2021-07-31T01:48:03.000Z |
+
+## Troubleshooting
+
+- **Datasets Access**: Ensure your API token role is set to at least 'investigator' to access all datasets.​
+- **Query Errors**: Review XQL syntax and dataset availability.
+- **Rate limit Errors**: Rate limit errors may occur when multiple queries are run on the same database simultaneously. Please review whether this level of multitasking is necessary or if it can be optimized.

@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex XDR - IR
+  id: Cortex XDR - IR for golden standard
   version: -1
 configuration:
 - display: Incidents Fetch Interval
@@ -115,7 +115,7 @@ configuration:
   section: Connect
   required: false
   hidden: true
-- additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
+- additionalinfo: The timeout of the HTTP request sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
@@ -150,12 +150,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  additionalinfo: When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
   required: false
+  additionalinfo: Use system proxy settings is enabled only when an Engine is selected
 - additionalinfo: Whether the Cortex XDR tenant is prevented only.
   display: Prevent Only Mode
   name: prevent_only
@@ -209,8 +211,8 @@ configuration:
   additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
   advanced: true
 description: The integration enables direct execution of Cortex XDR actions within Cortex XSOAR.
-display: Palo Alto Networks Cortex XDR - Investigation and Response - Tal
-name: Cortex XDR - IR
+display: Cortex XDR - IR for golden standard
+name: Cortex XDR - IR for golden standard
 script:
   commands:
   - arguments:
