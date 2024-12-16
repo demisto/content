@@ -2,6 +2,7 @@ from CommonServerPython import *
 import urllib3
 import time
 from typing import Any
+from http import HTTPStatus
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -117,29 +118,36 @@ def test_module(client: Client, export_profiles: list[str]) -> str:
         client (Client): Digital Guardian client to use.
         export_profiles (list): List of export profile names.
     Returns:
-        str: 'ok' connection to the service is successful.
+        str: 'ok' if connection to the service is successful, an error message otherwise.
     Raises:
-        DemistoException | HTTPError: If request failed.
+        DemistoException | Exception: If request failed.
     """
     invalid_export_profiles = set()
 
     for export_profile in export_profiles:
         try:
+            # Client._http_request raises DemistoException if non-okay response
             client.export_events(export_profile)
 
-        except Exception as e:
-            if 'Forbidden' in str(e):
-                raise DemistoException('Authorization Error: Make sure client credentials are correctly set') from e
+        except DemistoException as e:
+            error_status_code = (
+                e.exception.response.status_code
+                if isinstance(e.exception, requests.exceptions.HTTPError)
+                else None
+            )
 
-            if 'Unable to find export_profile' in str(e):
+            if error_status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
+                return 'Authorization Error: Make sure client credentials are correctly set'
+
+            if error_status_code == HTTPStatus.NOT_FOUND:
                 invalid_export_profiles.add(export_profile)
 
             else:
-                # Some other unknown error
+                # Some other exception type or HTTP error status code
                 raise
 
     if invalid_export_profiles:
-        raise DemistoException(f'Invalid export profiles: {", ".join(invalid_export_profiles)}')
+        return f'Invalid export profiles: {", ".join(invalid_export_profiles)}'
 
     return 'ok'
 
@@ -153,7 +161,7 @@ def fetch_events(client: Client, export_profile: str, limit: int | None = None) 
     Returns:
         tuple[list[dict], dict]: Events and last run dictionary.
     """
-    demisto.debug('Fetching events')
+    demisto.debug(f'Fetching events for profile: {export_profile}')
     raw_response = client.export_events(export_profile)
 
     demisto.info(f"Got {raw_response['total_hits']} raw events")
