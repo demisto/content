@@ -1,0 +1,28 @@
+commonfields:
+  id: 036596b7-9cd3-4ad3-864d-9c797d5fb1d3
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 958aac7a-666b-4065-82a5-3cebc2c67363
+    packName: cs command and scripting
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+dockerimage: demisto/python3:3.12.7.117934
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: cspresentparentprocess
+pswd: ''
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
