@@ -6,6 +6,12 @@ commonfields:
   id: Cortex XDR - IR
   version: -1
 configuration:
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  defaultvalue: '1'
 - display: Fetch incidents
   name: isFetch
   defaultvalue: 'true'
