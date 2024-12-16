@@ -43,18 +43,18 @@ configuration:
   name: longRunning
   section: Collect
   type: 8
+- display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: Required when choosing an external engine. You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - defaultvalue: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
   section: Collect
   additionalinfo: You most enable or run mirror-investigation.
-- display: Listen Port
-  name: longRunningPort
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Use system proxy settings
   name: proxy
   type: 8
