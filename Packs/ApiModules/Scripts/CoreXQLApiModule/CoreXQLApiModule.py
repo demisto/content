@@ -120,7 +120,7 @@ class CoreClient(BaseClient):
             res = self._http_request(method='POST', url_suffix='/xql/start_xql_query', json_data=data)
             execution_id = res.get('reply', "")
             return execution_id
-        except:
+        except Exception:
             return "FAILURE"
 
     def get_xql_query_results(self, data: dict) -> dict:
