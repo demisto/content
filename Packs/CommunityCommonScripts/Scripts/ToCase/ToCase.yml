@@ -1,0 +1,29 @@
+args:
+- defaultValue: capital
+  description: Default is 'capital. Can also be 'title' or 'swap'.
+  name: case
+  required: true
+- default: true
+  name: value
+commonfields:
+  id: toCase
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.7.117934
+enabled: true
+engineinfo: {}
+name: toCase
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- string
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
