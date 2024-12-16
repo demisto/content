@@ -120,8 +120,10 @@ class CoreClient(BaseClient):
             res = self._http_request(method='POST', url_suffix='/xql/start_xql_query', json_data=data)
             execution_id = res.get('reply', "")
             return execution_id
-        except Exception:
-            return "FAILURE"
+        except Exception as e:
+            if 'reached max allowed amount of parallel running queries' in str(e).lower():
+                return "FAILURE"
+            raise e
 
     def get_xql_query_results(self, data: dict) -> dict:
         res = self._http_request(method='POST', url_suffix='/xql/get_query_results', json_data=data)
