@@ -144,11 +144,8 @@ def main():
     """
     params = demisto.params()
     base_url = params.get('url')
-    insecure = False
+    insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
-
-    base_url = 'https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-health-agent-install#outbound-connectivity-to-the-azure-service-endpoints'
 
     command = demisto.command()
     demisto.info(f'Command being called in {INTEGRATION_NAME} is {command}')
