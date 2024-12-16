@@ -517,7 +517,7 @@
                 "External Confidence": {
                     "simple": "confidence"
                 },
-                "Crawled timestamp": {
+                "CrowdStrike Falcon Crawled Timestamp": {
                     "simple": "crawled_timestamp"
                 },
                 "Description": {
