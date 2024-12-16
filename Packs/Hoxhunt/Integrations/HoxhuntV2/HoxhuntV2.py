@@ -448,6 +448,7 @@ HoxNonReturningCommandType = Callable[[Client, dict, dict], None]
 
 ''' FNS '''
 
+
 def camel_to_title(text: str) -> str:
     result = []
     for i, char in enumerate(text):

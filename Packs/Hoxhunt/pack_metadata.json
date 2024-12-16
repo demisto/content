@@ -58,5 +58,8 @@
         "CoreAlertFields",
         "rasterize",
         "FiltersAndTransformers"
+    ],
+    "itemPrefix": [
+        "Hox"
     ]
 }
