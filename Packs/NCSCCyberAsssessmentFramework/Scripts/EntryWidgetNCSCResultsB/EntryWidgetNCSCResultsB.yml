@@ -1,7 +1,7 @@
 commonfields:
   id: EntryWidgetNCSCResultsB
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.7.117934
 enabled: true
 name: EntryWidgetNCSCResultsB
 runas: DBotWeakRole
