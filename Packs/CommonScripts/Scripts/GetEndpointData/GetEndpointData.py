@@ -399,7 +399,7 @@ def run_list_args_commands(
         endpoints_not_found_list (List[Dict[str, Any]]): A list to store the endpoints that were not found.
         verbose (bool): A flag indicating whether to print verbose output.
     Returns:
-        tuple[CommandResults, List[Command], List[Command]]:
+        tuple[list[dict], list[dict], list[CommandResults]]:
         The endpoints that were successfully found, list of endpoints that were not found, and a list of command results.
     """
     multiple_endpoint_outputs = []
