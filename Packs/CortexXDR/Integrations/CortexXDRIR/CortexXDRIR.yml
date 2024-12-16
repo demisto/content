@@ -56,7 +56,7 @@ configuration:
   name: mirror_direction
   required: false
   type: 15
-  section: Collect
+  section: Mirroring
   defaultvalue: None
   options:
   - None
