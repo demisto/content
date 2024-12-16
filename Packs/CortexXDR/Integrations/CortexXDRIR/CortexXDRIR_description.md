@@ -23,3 +23,4 @@ Securely store the API Key, as it will not be displayed again.
 1. In the Cortex XDR platform, go to **Settings**> **Configurations** > **API Keys**.
 2. Click the **Copy API URL** button in the top-right corner.
 
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir)
