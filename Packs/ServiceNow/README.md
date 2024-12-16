@@ -13,7 +13,7 @@ You can also provide comments or attachments in Cortex XSOAR which will appear i
 As part of this pack, you will also get two out-of-the-box layouts so that you can visualize ServiceNow ticket information in Cortex XSOAR.
 
 
-The Create ServiceNow Ticket playbook provides an example for how to use the Mirror ServiceNow Ticket playbook to mirror data and ServiceNow Ticket State Polling sub-playbook to track when the ticket closes.
+The Create ServiceNow Ticket playbook provides an example for how to use the Mirror ServiceNow Ticket playbook to mirror data and the ServiceNow Ticket State Polling sub-playbook to track when the ticket closes.
 
 <~XSIAM>
 
