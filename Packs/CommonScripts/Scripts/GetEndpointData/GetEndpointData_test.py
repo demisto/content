@@ -15,6 +15,7 @@ def setup_module_manager():
     command = Command(brand="BrandA", name="TestCommand", output_keys=[], args_mapping={}, output_mapping={})
     return module_manager, command, modules, brands_to_run
 
+
 class TestModuleManager:
 
     def test_is_brand_in_brands_to_run(self, setup_module_manager):
@@ -45,12 +46,14 @@ class TestModuleManager:
         command.brand = "BrandD"
         assert module_manager.is_brand_available(command) is False
 
+
 @pytest.fixture
 def setup(mocker):
     module_manager = mocker.Mock(spec=ModuleManager)
     command_runner = EndpointCommandRunner(module_manager=module_manager)
     command = Command(brand="TestBrand", name="test-command", output_keys=[], args_mapping={}, output_mapping={})
     return command_runner, module_manager, command
+
 
 class TestEndpointCommandRunner:
     def test_is_command_runnable(self, setup):
@@ -96,21 +99,22 @@ class TestEndpointCommandRunner:
         mock_demisto_execute_command.assert_called_once_with("test-command", {"arg1": "value1"})
 
     def test_get_command_results(self, mocker, setup):
-        command_runner, _,command = setup
+        command_runner, _, command = setup
         command_results = [
             {"EntryContext": {"key": "value"}, "HumanReadable": "Readable output", "Type": EntryType.NOTE},
             {"EntryContext": {}, "HumanReadable": "Another output", "Type": EntryType.NOTE},
-            {"EntryContext": {}, "Contents": "Error output", "Type": EntryType.ERROR }  # An entry with error
+            {"EntryContext": {}, "Contents": "Error output", "Type": EntryType.ERROR}  # An entry with error
         ]
         expected_context_outputs = [{"key": "value"}, {}]
         expected_human_readable = f"#### Result for !{command.name} \nReadable output\nAnother output"
         expected_error_outputs = [CommandResults(
-                    readable_output=f"#### Error for !{command.name} \nError output",
-                    entry_type=EntryType.ERROR,
-                    mark_as_note=True,
-                )]
+            readable_output=f"#### Error for !{command.name} \nError output",
+            entry_type=EntryType.ERROR,
+            mark_as_note=True,
+        )]
 
-        context_outputs, human_readable_command_results, error_outputs = command_runner.get_command_results("test-command", command_results, {})
+        context_outputs, human_readable_command_results, error_outputs = command_runner.get_command_results(
+            "test-command", command_results, {})
         human_readable = human_readable_command_results[0].readable_output
         assert context_outputs == expected_context_outputs
         assert human_readable == expected_human_readable
@@ -152,10 +156,12 @@ class TestEndpointCommandRunner:
         mock_run_execute_command.assert_called()
         mock_get_commands_outputs.assert_called()
 
+
 @pytest.fixture
 def setup_command_runner(mocker):
     command_runner = mocker.Mock(spec=EndpointCommandRunner)
     return command_runner
+
 
 def test_run_single_args_commands(mocker, setup_command_runner):
     command_runner = setup_command_runner
@@ -212,6 +218,7 @@ def test_run_single_args_commands(mocker, setup_command_runner):
 
     # Verify merge_endpoint_outputs calls
     assert mock_merge_endpoint_outputs.call_count == 2
+
 
 def test_run_list_args_commands(mocker, setup_command_runner):
     command_runner = setup_command_runner
@@ -271,6 +278,7 @@ def test_run_list_args_commands(mocker, setup_command_runner):
     # Verify merge_endpoint_outputs was called correctly
     mock_merge_endpoint_outputs.assert_called_once_with([{"result": "data1"}])
 
+
 def test_create_endpoint(mocker, setup_command_runner):
     # Example data
     command_output = {
@@ -296,6 +304,7 @@ def test_create_endpoint(mocker, setup_command_runner):
 
     # Test empty command_output
     assert create_endpoint({}, output_mapping, source) == {}
+
 
 def test_prepare_args():
 
@@ -347,6 +356,7 @@ def test_prepare_args():
     # Assertions
     assert result == expected
 
+
 def test_prepare_human_readable():
     # Example data
     command_name = "example-command"
@@ -385,6 +395,7 @@ def test_prepare_human_readable():
 
     # Assertions
     assert result is None
+
 
 def test_get_output_key(mocker):
 
@@ -479,11 +490,6 @@ def test_merge_with_hostname_conflict(setup_endpoints, mocker):
 
 def test_merge_with_key_conflict(setup_endpoints, mocker):
     endpoints = setup_endpoints[:3]
-    expected_result = {
-        'Hostname': [{'Value': 'host1'}, {'Value': 'host1'}],
-        'Port': [{'Value': 9090},{'Value': 8080}],
-        'Protocol': {'Value': 'http'}
-    }
     mock_error = mocker.patch.object(demisto, 'error')
     result = merge_endpoints(endpoints)
     mock_error.assert_called_once_with(
@@ -496,6 +502,7 @@ def test_merge_empty_endpoints():
     endpoints = []
     result = merge_endpoints(endpoints)
     assert result == {}  # Merging empty list results in an empty dictionary
+
 
 def test_get_raw_endpoints(mocker):
 
@@ -558,6 +565,7 @@ def test_get_raw_endpoints(mocker):
     result = get_raw_endpoints(['Endpoint', 'Device'], raw_context)
     assert result == expected_output, f"Expected {expected_output}, got {result}"
 
+
 def test_create_endpoints(mocker):
     raw_endpoints = [
         {"key1": "value1", "key2": "value2"},
@@ -572,14 +580,15 @@ def test_create_endpoints(mocker):
         {'key1_from_callable': {'Value': 'value3'}, 'key2_from_callable': {'Value': 'value4'}},
     ]
 
-    result = create_endpoints(raw_endpoints, output_mapping,'brand')
+    result = create_endpoints(raw_endpoints, output_mapping, 'brand')
     assert result == [
         {'KEY_1': {'Value': 'value1'}, 'KEY_2': {'Value': 'value2'}},
         {'KEY_1': {'Value': 'value3'}, 'KEY_2': {'Value': 'value4'}},
     ]
 
-    output_mapping = lambda x : {'key1': 'key1_from_callable', 'key2': 'key2_from_callable'}
-    create_endpoints(raw_endpoints, output_mapping,'brand')
+    def output_mapping(x):
+        return {"key1": "key1_from_callable", "key2": "key2_from_callable"}
+    create_endpoints(raw_endpoints, output_mapping, 'brand')
     mock_create_endopint.assert_has_calls([
         mocker.call(
             raw_endpoints[0],
@@ -604,7 +613,7 @@ def test_create_endpoints(mocker):
     ])
 
     raw_endpoints = []
-    result = create_endpoints(raw_endpoints, output_mapping,'brand')
+    result = create_endpoints(raw_endpoints, output_mapping, 'brand')
     assert result == []
 
 
@@ -641,4 +650,3 @@ def test_merge_endpoint_logic(mocker):
     # Verify `merge_endpoints` was called with the right arguments
     mock_merge_endpoints.assert_any_call([{'a': 1}, {'c': 3}, {'e': 5}])
     mock_merge_endpoints.assert_any_call([{'b': 2}, {'d': 4}, {}])
-

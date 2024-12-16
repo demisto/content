@@ -140,7 +140,8 @@ class EndpointCommandRunner:
         """
         Checks if the given command is runnable.
         This function performs the following checks:
-        1. Checks if the integration required for the command is installed and active using the module_manager.is_brand_available() method.
+        1. Checks if the integration required for the command is installed and active using the
+            module_manager.is_brand_available() method.
         2. Checks if the command has argument mapping and if the provided arguments match the command's expected arguments.
 
         Args:
@@ -177,7 +178,7 @@ class EndpointCommandRunner:
         return to_list(demisto.executeCommand(command.name, args))
 
     @staticmethod
-    def get_command_results(command: str, results: list[dict[str, Any]], args: dict[str, Any]) -> tuple[list,list, list]:
+    def get_command_results(command: str, results: list[dict[str, Any]], args: dict[str, Any]) -> tuple[list, list, list]:
         """
         Processes the results of a previously executed command and extracts relevant outputs.
 
@@ -228,7 +229,8 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
 
     Returns:
         tuple[EndpointCommandRunner, list[Command], list[Command]]:
-        The initialized EndpointCommandRunner instance, the list of single-argument commands, and the list of multi-argument commands.
+        The initialized EndpointCommandRunner instance, the list of single-argument commands, and the list of
+        multi-argument commands.
     """
     command_runner = EndpointCommandRunner(module_manager=module_manager)
 
@@ -329,7 +331,8 @@ def run_single_args_commands(
         endpoints_not_found_list
 ):
     """
-    Runs the single-argument commands and returns the command results, human-readable outputs, and a list of endpoints that were not found.
+    Runs the single-argument commands and returns the command results, human-readable outputs, and a list of endpoints
+    that were not found.
     Args:
         zipped_args (Iterable[Tuple[Any, Any, Any]]): A list of tuples containing agent ID, agent IP, and agent hostname.
         single_args_commands (List[Command]): A list of single-argument commands to run.
@@ -387,7 +390,8 @@ def run_list_args_commands(
         verbose
 ):
     """
-    Runs the list-argument commands and returns the command results, human-readable outputs, and a list of endpoints that were not found.
+    Runs the list-argument commands and returns the command results, human-readable outputs, and a list of
+    endpoints that were not found.
     Args:
         list_args_commands (List[Command]): A list of list-argument commands to run.
         command_runner (EndpointCommandRunner): The EndpointCommandRunner instance to use for running the commands.
@@ -508,7 +512,7 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
 
 def prepare_human_readable(
     command_name: str, args: dict[str, Any], human_readable: str, is_error: bool = False
-) -> CommandResults:
+) -> CommandResults | None:
     """
     Prepares human-readable output for a command execution.
 
@@ -522,7 +526,7 @@ def prepare_human_readable(
         is_error (bool, optional): Flag indicating if the result is an error. Defaults to False.
 
     Returns:
-        list[CommandResults]: A list containing a CommandResults object with the formatted output.
+        CommandResults: A list containing a CommandResults object with the formatted output.
     """
     result = None
     if human_readable:
@@ -747,8 +751,8 @@ def merge_endpoint_outputs(endpoint_outputs: list[list[dict[str, Any]]]) -> list
     """
     Merges a list of lists of endpoint dictionaries into a single list of merged endpoint dictionaries.
     Args:
-        endpoint_outputs (list[list[dict[str, Any]]]): A list of lists of endpoint dictionaries, where each inner list represents the
-                                                      endpoint data from a different source.
+        endpoint_outputs (list[list[dict[str, Any]]]): A list of lists of endpoint dictionaries, where each inner list
+        represents the endpoint data from a different source.
 
     Returns:
         list[dict[str, Any]]: A list of merged endpoint dictionaries.
@@ -762,6 +766,7 @@ def merge_endpoint_outputs(endpoint_outputs: list[list[dict[str, Any]]]) -> list
             merged_endpoints.append(merged_endpoint)
 
     return merged_endpoints
+
 
 def extra_hop_mapping(outputs: dict[str, Any]) -> dict[str, str]:
     output_mapping = {
@@ -791,6 +796,8 @@ def cylance_filtering(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> 
 
 
 """ MAIN FUNCTION """
+
+
 def main():
     try:
         args = demisto.args()
