@@ -589,19 +589,19 @@
                 "File Path": {
                     "simple": "filepath"
                 },
-                "Macros CMD line": {
+                "CrowdStrike Falcon Macros CMD line": {
                     "simple": "macros.cmdline"
                 },
-                "Macros Display Name": {
+                "CrowdStrike Falcon Macros Display Name": {
                     "simple": "macros.display_name"
                 },
-                "Macros IOC description": {
+                "CrowdStrike Falcon Macros IOC Description": {
                     "simple": "macros.ioc_description"
                 },
-                "Macros  IOC source": {
+                "CrowdStrike Falcon Macros IOC Source": {
                     "simple": "macros.ioc_source"
                 },
-                "Macros IOC type": {
+                "CrowdStrike Falcon Macros IOC Type": {
                     "simple": "macros.ioc_type"
                 },
                 "File MD5": {
