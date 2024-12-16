@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Set up a Shift handover meeting](../doc_files/Set_up_a_Shift_handover_meeting.png)
+![Set up a Shift handover meeting](../doc_files/set_up_a_shift_handover_meeting.png)

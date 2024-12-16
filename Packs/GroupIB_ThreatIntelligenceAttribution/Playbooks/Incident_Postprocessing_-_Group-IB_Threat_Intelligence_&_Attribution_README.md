@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Incident Postprocessing - Group-IB Threat Intelligence](../doc_files/Incident_Postprocessing_-_Group-IB_Threat_Intelligence_&_Attribution.png)
+![Incident Postprocessing - Group-IB Threat Intelligence](../doc_files/Incident_Postprocessing_-_Group-IB_Threat_Intelligence_and_Attribution.png)

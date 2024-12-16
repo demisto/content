@@ -56,4 +56,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_URL_Cuckoo](../doc_files/playbook-Detonate_URL_-_Cuckoo.png)
+![Detonate_URL_Cuckoo](../doc_files/Detonate_URL_-_Cuckoo.png)

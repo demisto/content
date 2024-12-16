@@ -68,4 +68,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_File_Cuckoo](../doc_files/playbook-Detonate_File_-_Cuckoo.png)
+![Detonate_File_Cuckoo](../doc_files/Detonate_File_-_Cuckoo.png)

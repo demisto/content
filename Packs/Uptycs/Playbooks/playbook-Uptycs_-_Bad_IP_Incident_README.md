@@ -48,4 +48,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Uptycs_Bad_IP_Incident](../doc_files/playbook-Uptycs_-_Bad_IP_Incident.png)
+![Uptycs_Bad_IP_Incident](../doc_files/Uptycs_-_Bad_IP_Incident.png)
