@@ -1,5 +1,13 @@
 {
     "msft_azure_raw": {
+        "activitystatusvalue":{
+            "type": "string",
+            "is_array": false
+        },
+        "caller": {
+            "type": "string",
+            "is_array": false
+        },
         "callerIpAddress": {
             "type": "string",
             "is_array": false
@@ -8,11 +16,27 @@
             "type": "string",
             "is_array": false
         },
+        "CategoryValue": {
+            "type": "string",
+            "is_array": false
+        },
         "correlationId": {
             "type": "string",
             "is_array": false
         },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
         "durationMs": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventDataId": {
+            "type": "string",
+            "is_array": false
+        },
+        "HTTPRequest": {
             "type": "string",
             "is_array": false
         },
@@ -21,6 +45,10 @@
             "is_array": false
         },
         "Level": {
+            "type": "string",
+            "is_array": false
+        },
+        "level": {
             "type": "string",
             "is_array": false
         },
@@ -40,6 +68,10 @@
             "type": "string",
             "is_array": false
         },
+        "resourceprovidervalue": {
+            "type": "string",
+            "is_array": false
+        },
         "resultDescription": {
             "type": "string",
             "is_array": false
@@ -49,6 +81,10 @@
             "is_array": false
         },
         "resultType": {
+            "type": "string",
+            "is_array": false
+        },
+        "SubscriptionId": {
             "type": "string",
             "is_array": false
         },
