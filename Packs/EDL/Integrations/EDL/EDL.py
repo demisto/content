@@ -1361,7 +1361,7 @@ def test_module(_: dict, params: dict):
         2. Valid cache_refresh_rate
     """
     if not params.get('longRunningPort'):
-        params['longRunningPort'] = '8888'
+        params['longRunningPort'] = '1111'
     get_params_port(params)
     on_demand = params.get('on_demand', None)
     if not on_demand:
