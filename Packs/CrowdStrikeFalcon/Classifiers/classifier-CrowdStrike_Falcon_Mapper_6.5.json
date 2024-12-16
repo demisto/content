@@ -625,7 +625,7 @@
                 "Parent Process SHA256": {
                     "simple": "parent_details.sha256"
                 },
-                "Parent Process ID": {
+                "Parent Process IDs": {
                     "simple": "parent_process_id"
                 },
                 "CrowdStrike Falcon Pattern ID":{
