@@ -12,7 +12,6 @@ from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory, TemporaryFile
 from typing import Any, Dict, List, Optional, Tuple
-import logging
 
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType

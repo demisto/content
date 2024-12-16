@@ -2620,6 +2620,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     if client.use_display_value and client.display_date_format:
         timezone_offset = get_timezone_offset(ticket, client.display_date_format)
         ticket = format_incidents_response_with_display_values(ticket)[0]
+    else:
+        timezone_offset = None
+        demisto.debug(f"not ({client.use_display_value=} and {client.display_date_format=}) setting {timezone_offset=}")
 
     ticket_last_update = arg_to_timestamp(
         arg=ticket.get('sys_updated_on'),
