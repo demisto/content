@@ -12518,7 +12518,7 @@ def find_and_remove_sensitive_text(text, pattern):
     """
     Finds all appearances of sensitive information in a string using regex and adds the sensitive
     information to the list of strings that should not appear in any logs.
-    
+
     :param text: The input text containing the sensitive information.
     :type text: str
     :param pattern: The regex pattern to match the sensitive information.
@@ -12538,7 +12538,6 @@ def find_and_remove_sensitive_text(text, pattern):
             sensitive_text = match
         add_sensitive_log_strs(sensitive_text)
     return
-
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
