@@ -2185,31 +2185,31 @@ script:
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.status
       description: The action status. Added only when the operation is unsuccessful.
       type: string
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.bucket
       description: The bucket that the error happened in.
       type: String
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_name
       description: The name of the file that caused the error.
       type: String
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_path
       description: The path of the file that caused the error.
       type: String
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_size
       description: The size of the file that caused the error.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.missing_files
       description: The missing files that caused the error.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorData
       description: The error reason data.
       type: String
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminated_by
       description: The instance ID which terminated the action and caused the error.
       type: String
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorDescription
       description: The error reason description.
       type: String
-    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
     polling: true
