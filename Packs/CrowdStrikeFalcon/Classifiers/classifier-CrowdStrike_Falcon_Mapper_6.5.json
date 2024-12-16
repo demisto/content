@@ -538,7 +538,7 @@
                 "Agent Version": {
                     "simple": "device.agent_version"
                 },
-                "Bios Manufacturer": {
+                "CrowdStrike Falcon Bios Manufacturer": {
                     "simple": "device.bios_manufacturer"
                 },
                 "Bios Version": {
