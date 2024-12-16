@@ -541,7 +541,7 @@
                 "CrowdStrike Falcon Bios Manufacturer": {
                     "simple": "device.bios_manufacturer"
                 },
-                "Bios Version": {
+                "CrowdStrike Falcon Bios Version": {
                     "simple": "device.bios_version"
                 },
                 "Device Id": {
