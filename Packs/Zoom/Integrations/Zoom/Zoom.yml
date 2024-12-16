@@ -41,7 +41,7 @@ configuration:
   additionalinfo: Token to verify the messages from Zoom.
 - display: Long running instance
   name: longRunning
-  section: Collect
+  section: Connect
   type: 8
 - display: Listen Port
   name: longRunningPort
