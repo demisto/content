@@ -148,7 +148,7 @@ def test_module(params: dict):
     Assigns a temporary port for longRunningPort and returns 'ok'.
     """
     if not params.get('longRunningPort'):
-        params['longRunningPort'] = '8888'
+        params['longRunningPort'] = '1111'
     return_results('ok')
 
 
