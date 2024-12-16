@@ -36,7 +36,7 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 
 ### For more information on ServiceNow platform
 
-[Visit ServiceNow website](https://www.servicenow.com/docs/)
-[Visit ServiceNow Transaction documentations](https://www.servicenow.com/docs/bundle/utah-platform-security/page/administer/time/reference/r_TransactionLogs.html)
+- [Visit ServiceNow website](https://www.servicenow.com/docs/)
+- [Visit ServiceNow Transaction documentations](https://www.servicenow.com/docs/bundle/utah-platform-security/page/administer/time/reference/r_TransactionLogs.html)
 
 </~XSIAM>
