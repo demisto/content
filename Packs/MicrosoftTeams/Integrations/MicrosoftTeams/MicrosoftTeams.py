@@ -3036,7 +3036,7 @@ def main():   # pragma: no cover
     ''' EXECUTION '''
     command: str = demisto.command()
 
-    if command != 'test-module': # skipping test-module since it doesn't have integration context 
+    if command != 'test-module':  # skipping test-module since it doesn't have integration context
         auth_type_switch_handling()  # handles auth type switch cases
 
     try:
