@@ -19,7 +19,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         event_data_param1 = event_data -> param1,
         event_data_param2 = event_data -> param2,
         event_name = arrayindex(regextract(message, "([^\.]+)\."), 0),
-        //TicketEncryptionType = to_string(event_data -> TicketEncryptionType),
+        TicketEncryptionType = to_string(event_data -> TicketEncryptionType),
         IpPort = event_data -> IpPort,
         IpAddress = event_data -> IpAddress,
         Ipv6Address = arrayindex(regextract(message, "Source\s+Network\s+Address:\s+((?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}|(?:[a-fA-F0-9]{1,4}:){1,7}:|:(?::[a-fA-F0-9]{1,4}){1,7}|::)\s?"), 0),
