@@ -9,8 +9,7 @@ args:
   name: agent_hostname
   isArray: true
 - description: |-
-    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
+    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'SailPointIdentityNow, Active Directory Query v2, PingOne'
   name: brands
   auto: PREDEFINED
   predefined:
@@ -22,7 +21,7 @@ args:
   - 'CrowdstrikeFalcon'
   - 'Cortex XDR - IR'
   - 'Cortex Core - IR'
-- description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+- description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
   name: verbose
   auto: PREDEFINED
   predefined:
