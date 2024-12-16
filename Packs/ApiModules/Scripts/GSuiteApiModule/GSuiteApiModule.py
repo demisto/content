@@ -138,9 +138,9 @@ class GSuiteClient:
         except exceptions.RefreshError as error:
             if error.args:
                 # masking the token present in the error message
-                error_msg =error.args[0]
+                error_msg = error.args[0]
                 find_and_remove_sensitive_text(text=error_msg,
-                                       pattern=r'(token:\s*)(\S+)')
+                                               pattern=r'(token:\s*)(\S+)')
                 raise DemistoException(COMMON_MESSAGES['REFRESH_ERROR'].format(error_msg))
             raise DemistoException(error)
         except TimeoutError as error:

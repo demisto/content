@@ -10002,7 +10002,7 @@ def test_find_and_remove_sensitive_text__found(mocker):
     - Input text that includes sensitive information.
 
     When:
-    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to identify the sensitive information.
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information (the word following "token:").
 
     Then:
     - Verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
@@ -10017,17 +10017,17 @@ def test_find_and_remove_sensitive_text__found(mocker):
 def test_find_and_remove_sensitive_text__not_found(mocker):
     """
     Given:
-    - Input text that does not include any sensitive information (no match for the regex pattern).
-
+    - Input text that does not contain any sensitive information (e.g., no word following "token:").
+    
     When:
-    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for sensitive information.
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information (the word following "token:").
 
     Then:
     - Ensure that the function does not remove anything from the logs.
     """
 
-    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for sectert: 1234'
     mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
     find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
 
-    assert mock_remove_from_logs.caall_count == 0
+    mock_remove_from_logs.assert_not_called()
