@@ -46,11 +46,10 @@ configuration:
   advanced: true
   required: false
   defaultvalue: Low
-- display: Types of Notifications to Send.
+- display: Types of Notifications to Send. (deprecated)
   name: permitted_notifications
   type: 16
   section: Collect
-  deprecated: true
   hidden: true
   required: false
   options:
