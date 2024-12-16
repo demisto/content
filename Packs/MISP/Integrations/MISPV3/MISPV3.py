@@ -21,6 +21,7 @@ class TempFile:
             temp_file.write(data)
 
     def __del__(self):
+        import os
         os.remove(self.path)
 
 

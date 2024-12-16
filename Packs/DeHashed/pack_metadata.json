@@ -2,7 +2,7 @@
     "name": "DeHashed",
     "description": "This integration allows you to check if your personal information such as your email, username, or password is being compromised.",
     "support": "xsoar",
-    "currentVersion": "1.1.25",
+    "currentVersion": "1.1.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

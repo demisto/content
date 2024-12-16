@@ -12,23 +12,19 @@ The user should be assigned to a role with the relevant devices in scope, and th
 
     <img height="350" width="700" src="./../../doc_imgs/role.png" />
 
-## Configure Kaspersky Security Center on Cortex XSOAR
+## Configure Kaspersky Security Center in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Kaspersky Security Center.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., https://kaspersky.domain.com:13299) | True |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., https://kaspersky.domain.com:13299) | True |
+| Username | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ksc-hosts-list
 ***

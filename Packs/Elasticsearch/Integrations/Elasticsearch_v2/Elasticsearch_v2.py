@@ -684,8 +684,9 @@ def results_to_incidents_timestamp(response, last_fetch):
                         'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                         'rawJSON': json.dumps(hit),
                         'occurred': hit_date.isoformat() + 'Z',
-                        'dbotMirrorId': hit.get('_id')
                     }
+                    if hit.get('_id'):
+                        inc['dbotMirrorId'] = hit.get('_id')
 
                     if MAP_LABELS:
                         inc['labels'] = incident_label_maker(hit.get('_source'))
@@ -733,8 +734,9 @@ def results_to_incidents_datetime(response, last_fetch):
                         # and sometimes as YYYY-MM-DDThh:mm:ss
                         # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
                         'occurred': format_to_iso(hit_date.isoformat()),
-                        'dbotMirrorId': hit.get('_id')
                     }
+                    if hit.get('_id'):
+                        inc['dbotMirrorId'] = hit.get('_id')
 
                     if MAP_LABELS:
                         inc['labels'] = incident_label_maker(hit.get('_source'))
