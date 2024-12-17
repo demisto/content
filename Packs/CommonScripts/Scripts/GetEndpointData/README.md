@@ -15,11 +15,11 @@ This script gathers endpoint data from multiple integrations and returns an Endp
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| agent_id | List of agent IDs of the agent to retrieve. |
-| agent_ip | List of agent IPs of the agent to retrieve. |
-| agent_hostname | List of agent hostnames of the agent to retrieve. |
-| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne". |
-| verbose | Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result. |
+| agent_id | List of agent IDs of the endpoint to retrieve. |
+| agent_ip | List of agent IPs of the endpoint to retrieve. |
+| agent_hostname | List of agent hostnames of the endpoint to retrieve. |
+| brands | Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'SailPointIdentityNow, Active Directory Query v2, PingOne'. |
+| verbose | Set to true to display human-readable output for each step of the command. Set to false \(default\) to only display the final result. |
 
 ## Outputs
 
