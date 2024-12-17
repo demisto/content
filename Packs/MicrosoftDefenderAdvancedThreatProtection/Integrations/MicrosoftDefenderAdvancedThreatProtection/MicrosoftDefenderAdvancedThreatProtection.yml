@@ -1181,7 +1181,7 @@ script:
     - description: Flag for the rate limit retry.
       name: ran_once_flag
       deprecated: true
-    description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve userAccount information as part of the alert details.    
+    description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.    
     name: microsoft-atp-get-alert-related-user (Deprecated)
     deprecated: true
     outputs:
@@ -1331,7 +1331,7 @@ script:
     - description: Flag for the rate limit retry.
       name: ran_once_flag
       deprecated: true
-    description: Deprecated. Alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve DomainName as part of the alert details.
+    description: Deprecated. Alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
     name: microsoft-atp-get-alert-related-domains (Deprecated)
     deprecated: true
     outputs:
