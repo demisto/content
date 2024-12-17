@@ -492,6 +492,7 @@ Bitsight command to get company findings.
 | limit | Set the maximum number of results to be retrieved. The maximum value is 1000.<br/><br/>Note: If a negative value is provided then the default value of 100 will be used. Default is 100. | Optional | 
 | offset | Set the starting point of the results to be returned. A 0 (zero) value starts the results from the first record in the result set. Default is 0. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -539,6 +540,129 @@ Bitsight command to get company findings.
 
 #### Command example
 ```!bitsight-company-findings-get guid=00000000-0000-0000-0000-000000000001 first_seen=2021-01-01 last_seen=2022-03-01 limit=2```
+#### Context Example
+```json
+{
+    "BitSight": {
+        "Company": {
+            "CompanyFinding": [
+                {
+                    "affectsRating": false,
+                    "assets": [
+                        {
+                            "asset": "X.X.X.1",
+                            "category": "low",
+                            "importance": 0,
+                            "isIp": true
+                        }
+                    ],
+                    "attributedCompanies": [
+                        {
+                            "guid": "00000000-0000-0000-0000-000000000001",
+                            "name": "Saperix, Inc."
+                        }
+                    ],
+                    "details": {
+                        "checkPass": "",
+                        "country": "United States",
+                        "destPort": 22,
+                        "diligenceAnnotations": {
+                            "cPE": [
+                                "a:openbsd:openssh:8.0"
+                            ],
+                            "close-seen": "2022-03-11 16:22:22",
+                            "message": "Detected service: SSH {{(OpenSSH_8.0)}}",
+                            "product": "OpenSSH",
+                            "transport": "tcp",
+                            "version": "8.0"
+                        },
+                        "geoIpLocation": "US",
+                        "grade": "GOOD",
+                        "remediations": [
+                            {
+                                "helpText": "This port was observed running SSH, which is used for sending and receiving secure communication.",
+                                "message": "Detected service: SSH (OpenSSH_8.0)",
+                                "remediationTip": ""
+                            }
+                        ],
+                        "rollupEndDate": "2022-01-28",
+                        "rollupStartDate": "2022-01-28",
+                        "searchableDetails": "Detected service: SSH {{(OpenSSH_8.0)}},tcp,OpenSSH"
+                    },
+                    "evidenceKey": "X.X.X.1:22",
+                    "firstSeen": "2022-01-28",
+                    "lastSeen": "2022-01-28",
+                    "riskCategory": "Diligence",
+                    "riskVector": "open_ports",
+                    "riskVectorLabel": "Open Ports",
+                    "rolledupObservationId": "11A3==",
+                    "severity": 1,
+                    "severityCategory": "minor",
+                    "temporaryId": "A9yq"
+                },
+                {
+                    "affectsRating": true,
+                    "assetOverrides": [
+                        {
+                            "asset": "X.X.X.2",
+                            "importance": "high",
+                            "overrideImportance": "high"
+                        }
+                    ],
+                    "assets": [
+                        {
+                            "asset": "X.X.X.2",
+                            "category": "critical",
+                            "importance": 0.49,
+                            "isIp": true
+                        }
+                    ],
+                    "attributedCompanies": [
+                        {
+                            "guid": "00000000-0000-0000-0000-000000000002",
+                            "name": "Saperix Lab"
+                        },
+                        {
+                            "guid": "00000000-0000-0000-0000-000000000001",
+                            "name": "Saperix, Inc."
+                        }
+                    ],
+                    "details": {
+                        "checkPass": "",
+                        "country": "United States",
+                        "destPort": 143,
+                        "geoIpLocation": "US",
+                        "grade": "GOOD",
+                        "observedIps": [
+                            "X.X.X.2:143"
+                        ],
+                        "rollupEndDate": "2022-03-01",
+                        "rollupStartDate": "2021-01-04"
+                    },
+                    "evidenceKey": "X.X.X.2:143",
+                    "firstSeen": "2021-01-04",
+                    "lastSeen": "2022-03-01",
+                    "remainingDecay": 32,
+                    "riskCategory": "Diligence",
+                    "riskVector": "ssl_configurations",
+                    "riskVectorLabel": "SSL Configurations",
+                    "rolledupObservationId": "10A==",
+                    "severity": 1,
+                    "severityCategory": "minor",
+                    "temporaryId": "A9yq"
+                }
+            ],
+            "guid": "00000000-0000-0000-0000-000000000001"
+        },
+        "Page": {
+            "count": 2441,
+            "name": "bitsight-company-findings-get",
+            "next": "https://api.bitsighttech.com/v1/companies/00000000-0000-0000-0000-000000000001/findings?expand=attributed_companies&first_seen_gte=2021-01-01&last_seen_lte=2022-03-01&limit=2&offset=2&unsampled=true",
+            "previous": null
+        }
+    }
+}
+```
 
 ### bitsight-companies-guid-get
 ***
