@@ -1,7 +1,7 @@
 Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents.
 This integration was integrated and tested with version August 2024 of Hoxhunt.
 
-## Configure Hoxhunt v2 in Cortex
+## Configure Hoxhunt in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
