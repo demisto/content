@@ -501,3 +501,4 @@ fromversion: 5.5.0
 tests:
 - No tests
 defaultmapperin: Microsoft 365 Defender - Incoming Mapper
+defaultmapperout: Microsoft 365 Defender - Outgoing Mapper

@@ -1,10 +1,10 @@
 {
-    "id": "incident_microsoft365comments",
+    "id": "incident_microsoft365defendercomments",
     "version": -1,
     "modified": "2024-11-17T10:07:57.222360651Z",
-    "name": "Microsoft 365 Comments",
+    "name": "Microsoft 365 Defender Comments",
     "ownerOnly": false,
-    "cliName": "microsoft365comments",
+    "cliName": "microsoft365defendercomments",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -23,7 +23,7 @@
     ],
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "columns": [
         {

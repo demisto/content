@@ -1,5 +1,4 @@
 {
-	"cacheVersn": 0,
 	"close": {
 		"sections": [
 			{
@@ -110,10 +109,7 @@
 	},
 	"definitionId": "",
 	"description": "Microsoft 365 layout page",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -1988,18 +1984,9 @@
 			}
 		]
 	},
-	"fromServerVersion": "0.0.0",
 	"group": "incident",
-	"id": "1e0d84c7-7452-4944-8a22-59fd24e6e504",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "4.5.35",
-	"locked": false,
-	"mobile": null,
+	"id": "Microsoft 365 Defender - Layout",
 	"name": "Microsoft 365 Defender - Layout",
-	"packID": "",
-	"packName": "Microsoft 365 Defender",
-	"propagationLabels": [],
 	"quickView": {
 		"sections": [
 			{
@@ -3124,8 +3111,9 @@
 			}
 		]
 	},
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "99.99.99",
-	"version": -1
+    "fromVersion": "6.0.0",
+	"version": -1,
+    "marketplaces": ["xsoar"]
+
 }

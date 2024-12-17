@@ -1,5 +1,5 @@
 args:
-- description: count the categories of alerts in given incident
+- description: count the categories of alerts in given incident.
   name: value
 comment: count the categories of alerts in given incident
 commonfields:

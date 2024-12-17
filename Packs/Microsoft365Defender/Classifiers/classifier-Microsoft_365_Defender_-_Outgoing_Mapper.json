@@ -1,19 +1,9 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "6.10.0",
 	"id": "Microsoft 365 Defender - Outgoing Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "4.5.35",
-	"keyTypeMap": null,
-	"locked": false,
-	"logicalVersion": 0,
 	"mapping": {
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": true,
@@ -65,7 +55,7 @@
 				"comments": {
 					"complex": {
 						"filters": [],
-						"root": "microsoft365comments",
+						"root": "microsoft365defendercomments",
 						"transformers": []
 					}
 				},
@@ -124,17 +114,7 @@
 		}
 	},
 	"name": "Microsoft 365 Defender - Outgoing Mapper",
-	"nameRaw": "Microsoft 365 Defender - Outgoing Mapper",
-	"packID": "",
-	"packName": "Microsoft 365 Defender",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "Microsoft 365 Defender - Outgoing Mapper",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+    "fromVersion": "6.0.0"
 }
