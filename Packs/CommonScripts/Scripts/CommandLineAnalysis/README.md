@@ -22,8 +22,8 @@ The scoring mechanism provides a comprehensive risk assessment, considering both
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| command_line | The command line to be analyzed. |
-| custom_patterns | Custom patterns to use in the analysis. |
+| command_line | The command line input to analyze. |
+| custom_patterns | A list of custom regex patterns to search for within the command line. Each pattern should be a valid regular expression string. |
 
 ## Outputs
 

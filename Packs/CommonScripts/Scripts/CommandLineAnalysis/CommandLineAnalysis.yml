@@ -10,9 +10,9 @@ enabled: true
 args:
 - name: command_line
   required: true
-  description: The command line to be analyzed.
+  description: The command line input to analyze.
 - name: custom_patterns
-  description:  Custom patterns to use in the analysis.
+  description:  A list of custom regex patterns to search for within the command line. Each pattern should be a valid regular expression string.
 outputs:
 - contextPath: CommandLineAnalysis.original_command
   description: The original command line string analyzed for potential risks.
