@@ -3106,8 +3106,8 @@
         },
         {
             "integrations": "AWS - EC2",
-            "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
+            "instance_names": "aws_alloacte_host",
             "fromversion": "5.0.0",
             "memory_threshold": 90,
             "timeout": 700,
