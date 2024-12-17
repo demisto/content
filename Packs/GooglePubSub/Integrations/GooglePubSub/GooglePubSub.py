@@ -1324,9 +1324,8 @@ def fetch_incidents(
     )
 
     # Pull unique messages if available
-    msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(
-        client, sub_name, last_run_fetched_ids, last_run_time, retry_times=1
-    )
+    msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(client, sub_name, last_run_fetched_ids,
+                                                                             last_run_time, False, retry_times=1)
 
     # Handle fetch results
     return handle_fetch_results(
@@ -1371,15 +1370,14 @@ def setup_subscription_last_run(
     return last_run_fetched_ids, last_run_time
 
 
-def try_pull_unique_messages(
-    client, sub_name, previous_msg_ids, last_run_time, retry_times=0
-):
+def try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, ack_incidents, retry_times=0):
     """
     Tries to pull unique messages for the subscription
     :param client: PubSub client
     :param sub_name: Subscription name
     :param previous_msg_ids: Previous message ids set
     :param last_run_time: previous run time
+    :param ack_incidents: should ack incidents
     :param retry_times: How many times to retry pulling
     :return:
         1. Unique list of messages
@@ -1406,11 +1404,9 @@ def try_pull_unique_messages(
                 demisto.debug(
                     f"GCP_PUBSUB_MSG Duplicates with max_publish_time: {max_publish_time}"
                 )
-                return try_pull_unique_messages(
-                    client, sub_name, previous_msg_ids, retry_times - 1
-                )
-            # clean non-unique ids from raw_msgs
-            else:
+                return try_pull_unique_messages(client, sub_name, previous_msg_ids, retry_times - 1, ack_incidents)
+            # clean non-unique ids from raw_msgs (in case non-ack)
+            elif not ack_incidents:
                 filtered_raw_msgs = filter_non_unique_messages(
                     raw_msgs, previous_msg_ids, last_run_time
                 )
