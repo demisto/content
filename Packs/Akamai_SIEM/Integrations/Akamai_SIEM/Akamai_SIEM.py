@@ -11,9 +11,10 @@ from collections.abc import Iterator, Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
-import hashlib
 # Local imports
 from CommonServerUserPython import *
+import concurrent.futures
+
 
 """GLOBALS/PARAMS
 
@@ -35,7 +36,12 @@ INTEGRATION_CONTEXT_NAME = 'Akamai'
 
 VENDOR = "Akamai"
 PRODUCT = "WAF"
-FETCH_EVENTS_PAGE_SIZE = 50000
+FETCH_EVENTS_MAX_PAGE_SIZE = 20000  # Allowed events limit per request.
+TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a safe zone delta.
+EXECUTION_START_TIME = datetime.now()
+ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
+MAX_ALLOWED_FETCH_LIMIT = 80000
+SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -103,16 +109,26 @@ class Client(BaseClient):
             'limit': limit
         }
         if offset:
+            demisto.info(f"received {offset=} will run an offset based request.")
             params["offset"] = offset
         else:
-            params["from"] = int(from_epoch)
+            from_param = int(from_epoch)
+            params["from"] = from_param
+            demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
         raw_response: str = self._http_request(
             method='GET',
             url_suffix=f'/{config_ids}',
             params=params,
             resp_type='text',
         )
-        events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
+        demisto.info("Finished executing request to Akamai, processing")
+        events: list[dict] = []
+        for event in raw_response.split('\n'):
+            try:
+                events.append(json.loads(event))
+            except Exception as e:
+                if event:  # The last element might be an empty dict.
+                    demisto.error(f"Could not decode the {event=}, reason: {e}")
         offset = events.pop().get("offset")
         return events, offset
 
@@ -384,22 +400,43 @@ def reset_offset_command(client: Client):  # pragma: no cover
     return 'Offset was reset successfully.', {}, {}
 
 
-def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_previous_run: set[str]) -> tuple[List[dict],
-                                                                                                             set[str]]:
-    """Implement the dedup logic and mapping between the hashes and the related events.
+def is_last_request_smaller_than_page_size(num_events_from_previous_request: int, page_size: int) -> bool:
+    """Checks wether the number of events from the last API call was lower by a certain delta than the request page size.
 
     Args:
-        hashed_events_mapping (dict[str, dict]): A mapping between the event's httpMessage hash and the event itself.
-        hashed_events_from_previous_run (set[str]): The set of httpMessage hashes from previous run.
+        num_events_from_previous_request (int): The length of the list of events from previous response
+        page_size (int): the request limit for the last request.
 
     Returns:
-        tuple[List[dict], set[str]]: The list of deduped event and the set of hashes from the current run to save to context.
+        bool: True if the number of events from last API call was lower by a certain delta for the requested page size.
+              Otherwise, return False
     """
-    hashed_events_from_current_run = set(hashed_events_mapping.keys())
-    filtered_hashed_events = hashed_events_from_current_run - hashed_events_from_previous_run
-    deduped_events: List[dict] = [event for hashed_event,
-                                  event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
-    return deduped_events, hashed_events_from_current_run
+    demisto.info(f"Checking whether execution should break with {num_events_from_previous_request=} and {page_size=}")
+    return num_events_from_previous_request < page_size * ALLOWED_PAGE_SIZE_DELTA_RATIO
+
+
+def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_took: float) -> tuple[bool, float]:
+    """
+    Checking whether there's enough time for another fetch request to the Akamai API before docker timeout.
+    The function calculates the time of the first request (including the send_events_to_xsiam_part).
+    And checks wether the remaining running time (plus a little delta) is less or equal the expected running time.
+    The remaining running time is docker timeout limit in seconds - the run time so far (now time - docker execution start time).
+
+    Args:
+        min_allowed_delta (int): The minimum allowed delta that should remain before going on another fetch interval.
+        max_time_took (float): The worst case execution (the first execution) to compare the rest of the executions to.
+    Returns:
+        bool: Return True if there's not enough time. Otherwise, return False.
+    """
+    timeout_time_nano_seconds = demisto.callingContext.get('context', {}).get('TimeoutDuration')
+    demisto.info(f"Got {timeout_time_nano_seconds} non seconds for the execution.")
+    timeout_time_seconds = timeout_time_nano_seconds / 1_000_000_000
+    now = datetime.now()
+    time_since_interval_beginning = (now - EXECUTION_START_TIME).total_seconds()
+    if not max_time_took:
+        max_time_took = time_since_interval_beginning
+    demisto.info(f"Checking if execution should break with {time_since_interval_beginning=}, {max_time_took=}.")
+    return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
 
 
 @logger
@@ -410,6 +447,7 @@ def fetch_events_command(
     config_ids: str,
     ctx: dict,
     page_size: int,
+    should_skip_decode_events: bool
 ) -> Iterator[Any]:
     """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
 
@@ -420,45 +458,79 @@ def fetch_events_command(
         config_ids: security configuration ids to fetch, e.g. `51000;56080`
         ctx: The integration context
         page_size: The number of events to limit for every request.
+        should_skip_decode_events: Wether to skip events decoding or not.
 
     Yields:
-        (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
+        (list[dict], str, int, set[str], bool): events, new offset, total number of events fetched,
+        event hashes from current fetch, and whether to set nexttrigger=0 for next execution.
     """
     total_events_count = 0
-    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
-    hashed_events_from_previous_run = ctx.get("hashed_events_from_previous_run", set())
-    while total_events_count < int(fetch_limit):
+    from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", fetch_time), date_format='%s')
+    auto_trigger_next_run = False
+    worst_case_time: float = 0
+    execution_counter = 0
+    while total_events_count < fetch_limit:
+        if execution_counter > 0:
+            demisto.info(f"The execution number is {execution_counter}, checking for breaking conditions.")
+            if is_last_request_smaller_than_page_size(len(events), page_size):  # type: ignore[has-type]  # pylint: disable=E0601
+                demisto.info("last request wasn't big enough, breaking.")
+                break
+            should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(TIME_TO_RUN_BUFFER, worst_case_time)
+            if should_break:
+                demisto.info("Not enough time for another execution, breaking and triggering next run.")
+                auto_trigger_next_run = True
+                break
+        if (remaining_events_to_fetch := fetch_limit - total_events_count) < page_size:
+            demisto.info(f"{remaining_events_to_fetch=} < {page_size=}, lowering page_size to {remaining_events_to_fetch}.")
+            page_size = remaining_events_to_fetch
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
-        events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+        try:
+            events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+        except DemistoException as e:
+            demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
+            if "Requested Range Not Satisfiable" in str(e):
+                err_msg = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
+                    "This occurred due to offset pointing to events older than 12 hours.\n" \
+                    "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
+                    "If you wish to fetch more up to date events, " \
+                    "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
+                    'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
+                    f'original error: [{e}]'
+                set_integration_context({"from_time": "11 hours"})
+                raise DemistoException(err_msg)
+            else:
+                raise DemistoException(e)
+
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
-        hashed_events_mapping = {}
-        for event in events:
-            try:
+        demisto.info(f"got {len(events)} events, moving to processing events data.")
+        if should_skip_decode_events:
+            for event in events:
                 event["_time"] = event["httpMessage"]["start"]
-                if "attackData" in event:
-                    for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
-                                            'ruleActions', 'ruleVersions']:
-                        event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
-                                                                                                              ""))
-                if "httpMessage" in event:
-                    hashed_events_mapping[(hashlib.sha256(json.dumps(event['httpMessage'],
-                                                                     sort_keys=True).encode('utf-8'))).hexdigest()] = event
-                    event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
-                    event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
-            except Exception as e:
-                config_id = event.get('attackData', {}).get('configId', "")
-                policy_id = event.get('attackData', {}).get('policyId', "")
-                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        demisto.info("Preparing to deduplicate events, currently got {len(events)} events.")
-        deduped_events, hashed_events_from_current_run = dedup_events(hashed_events_mapping, hashed_events_from_previous_run)
-        total_events_count += len(deduped_events)
-        demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
-        hashed_events_from_previous_run = hashed_events_from_current_run
-        yield deduped_events, offset, total_events_count, hashed_events_from_previous_run
-    yield [], offset, total_events_count, hashed_events_from_previous_run
+        else:
+            for event in events:
+                try:
+                    event["_time"] = event["httpMessage"]["start"]
+                    if "attackData" in event:
+                        for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
+                                                'ruleActions', 'ruleVersions']:
+                            event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
+                                                                                                                  ""))
+                    if "httpMessage" in event:
+                        event['httpMessage']['requestHeaders'] = decode_url(
+                            event.get('httpMessage', {}).get('requestHeaders', ""))
+                        event['httpMessage']['responseHeaders'] = decode_url(
+                            event.get('httpMessage', {}).get('responseHeaders', ""))
+                except Exception as e:
+                    config_id = event.get('attackData', {}).get('configId', "")
+                    policy_id = event.get('attackData', {}).get('policyId', "")
+                    demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
+            total_events_count += len(events)
+            execution_counter += 1
+        yield events, offset, total_events_count, auto_trigger_next_run
+    yield [], offset, total_events_count, auto_trigger_next_run
 
 
 def decode_url(headers: str) -> dict:
@@ -516,24 +588,45 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            page_size = int(params.get("page_size", FETCH_EVENTS_PAGE_SIZE))
+            page_size = int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE))
             limit = int(params.get("fetchLimit", 300000))
-            for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
+            if limit > MAX_ALLOWED_FETCH_LIMIT:
+                demisto.info(f"Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, setting limit to {MAX_ALLOWED_FETCH_LIMIT}.")
+                limit = MAX_ALLOWED_FETCH_LIMIT
+            if limit < page_size:
+                demisto.info(f"Got {limit=} lower than {page_size=}, lowering page_size to {limit}.")
+                page_size = limit
+            should_skip_decode_events = params.get("should_skip_decode_events", False)
+            for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
+            fetch_events_command(
                 client,
                 "5 minutes",
                 fetch_limit=limit,
                 config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
-                page_size=page_size
-            ):
+                page_size=page_size,
+                should_skip_decode_events=should_skip_decode_events
+            )):
                 if events:
-                    demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
-                    send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                set_integration_context({"offset": offset, "hashed_events_from_previous_run": hashed_events_from_previous_run})
+                    demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
+                                 f"latest event time is: {events[-1]['_time']}")
+                    futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
+                                                   chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
+                                                   multiple_threads=True)
+                    demisto.info("Finished executing send_events_to_xsiam, waiting for futures to end.")
+                    data_size = 0
+                    for future in concurrent.futures.as_completed(futures):
+                        data_size += future.result()
+                    demisto.info(f"Done sending {data_size} events to xsiam."
+                                 f"sent {total_events_count} events to xsiam in total during this interval.")
+                set_integration_context({"offset": offset})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
-            if total_events_count >= limit:
+            if auto_trigger_next_run or total_events_count >= limit:
+                demisto.info(f"got {auto_trigger_next_run=} or at least {limit} events this interval - setting nextTrigger=0.")
                 next_run["nextTrigger"] = "0"
+            else:
+                demisto.info(f"Got less than {limit} events this interval - will not trigger next run automatically.")
             demisto.setLastRun(next_run)
 
         else:
