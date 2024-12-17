@@ -57,11 +57,11 @@ Follow these steps for a self-deployed configuration:
 2. Search for Microsoft 365 Defender.
 3. Click **Add instance** to create and configure a new integration instance.
 4. To ensure that mirroring works:
-   1. Select the **Incident Mirroring Direction**. Choose the direction to mirror the incident: Incoming (from Microsoft 365 Defender to Cortex XSOAR), Outgoing (from Cortex XSOAR to Microsoft 365 Defender), or Incoming And Outgoing (from/to Cortex XSOAR and Microsoft 365 Defender).
+   1. Select  **Incident Mirroring Direction**. Choose the direction to mirror the incident: Incoming (from Microsoft 365 Defender to Cortex XSOAR), Outgoing (from Cortex XSOAR to Microsoft 365 Defender), or Incoming And Outgoing (from/to Cortex XSOAR and Microsoft 365 Defender).
    2. Select the **Fetches incidents** radio button.
-   3. Under **Incident type**, select Microsoft 365 Defender Incident. 
-   4. Under **Mapper (incoming)**, select Microsoft 365 Defender - Incoming Mapper.
-   5. Under **Mapper (outgoing)**, select Microsoft 365 Defender - Outgoing Mapper.
+   3. Under **Incident type**, select **Microsoft 365 Defender Incident**. 
+   4. Under **Mapper (incoming)**, select **Microsoft 365 Defender - Incoming Mapper**.
+   5. Under **Mapper (outgoing)**, select **Microsoft 365 Defender - Outgoing Mapper**.
    6. To enable mirroring to close a ticket in Cortex XSOAR, check the **Close Mirrored Cortex XSOAR Incidents** checkbox.
    7. To enable mirroring to close an incident in Microsoft 365 Defender, check the **Close Mirrored Microsoft 365 Defender Incidents** checkbox.
 
@@ -75,7 +75,7 @@ Follow these steps for a self-deployed configuration:
 | Tenant ID (for Client Credentials mode) |  | False |
 | Client Secret (for Client Credentials mode) |  | False |
 | Client Secret |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
 | Private Key |  | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
@@ -94,7 +94,7 @@ Follow these steps for a self-deployed configuration:
 | Incidents Fetch Interval |  | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Microsoft 365 Defender to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to  Microsoft 365 Defender\), or Incoming and Outgoing \(from/to Cortex XSOAR and  Microsoft 365 Defender\). | False |
 | Close Mirrored Cortex XSOAR Incidents | Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR. | False |
-| Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender. | False |
+| Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender. | False |
 | Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender. | False |
 | Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
 
