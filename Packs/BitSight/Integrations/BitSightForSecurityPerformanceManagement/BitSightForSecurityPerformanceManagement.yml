@@ -59,7 +59,7 @@ configuration:
   type: 16
   required: false
 - additionalinfo: This parameter supports comma separated list of values. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values.
-  display: Risk Vector ('All' has been selected by default)
+  display: Risk Vector
   name: risk_vector
   options:
   - Web Application Headers
