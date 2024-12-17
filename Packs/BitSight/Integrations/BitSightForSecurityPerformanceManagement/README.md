@@ -664,6 +664,16 @@ Bitsight command to get company findings.
 }
 ```
 
+#### Human Readable Output
+
+>### Company findings:
+>Total Findings: 2441
+>|Evidence Key|Risk Vector Label|First Seen|Last Seen|ID|Risk Category|Severity|Asset Category|Finding Grade|
+>|---|---|---|---|---|---|---|---|---|
+>| X.X.X.1:22 | Open Ports | 2022-01-28 | 2022-01-28 | A9Jq | Diligence | minor | X.X.X.1: Low | Good |
+>| X.X.X.2:143 | SSL Configurations | 2021-01-04 | 2022-03-01 | A9yq | Diligence | minor | X.X.X.2: Critical | Good |
+
+
 ### bitsight-companies-guid-get
 ***
 Bitsight command to get list of companies and GUID.
