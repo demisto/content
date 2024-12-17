@@ -600,6 +600,9 @@ def main() -> None:
     proxy = params.get('proxy', False)
     app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
+    endpoint_type = params.get('endpoint_type')
+
+    base_url = microsoft_defender_get_base_url(base_url, endpoint_type)
 
     tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)

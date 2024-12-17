@@ -174,8 +174,6 @@ MICROSOFT_365_DEFENDER_API_ENDPOINTS = {
 }
 
 
-
-
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
@@ -666,6 +664,15 @@ def get_azure_cloud(params, integration_name):
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
+
+def microsoft_defender_get_base_url(endpoint_type, base_url):
+    if endpoint_type == 'Custom':
+        if not base_url:
+            raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+        url = base_url
+    else:
+        url = MICROSOFT_365_DEFENDER_API_ENDPOINTS[MICROSOFT_365_DEFENDER_TYPE.get(endpoint_type)]
+    return url
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
