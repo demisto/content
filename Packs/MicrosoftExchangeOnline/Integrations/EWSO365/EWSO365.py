@@ -1453,32 +1453,6 @@ def mark_item_as_read(
     return readable_output, output, marked_items
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
-    """
-    Extract all data-url content from within the html and return as separate attachments.
-    Due to security implications, we support only images here
-    We might not have Beautiful Soup so just do regex search
-    """
-    attachments = []
-    clean_body = ''
-    last_index = 0
-    for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
-        name = f'image{i}'
-        cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
-        attachment = {
-            'data': b64_decode(m.group(3)),
-            'name': name
-        }
-        attachment['cid'] = cid
-        attachments.append(attachment)
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
-        last_index = m.end() - 1
-
-    clean_body += html_body[last_index:]
-    return clean_body, attachments
-
-
 def collect_manual_attachments(manualAttachObj):  # pragma: no cover
     """Collect all manual attachments' data
 
