@@ -1,8 +1,8 @@
 commonfields:
-  id: Core REST API
+  id: Core REST API_dev
   version: -1
-name: Core REST API
-display: Core REST API
+name: Core REST API_dev
+display: Core REST API_dev
 category: Utilities
 description: Use Core REST APIs.
 configuration:

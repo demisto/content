@@ -859,18 +859,20 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
     last_thread_processed = 0
 
     # Iterate through each entry with the selected number.  The last one contains the ID to reply to.
+    demisto.debug(f"{incident_email_threads=}, {email_selected_thread=}")
     for idx, thread_entry in enumerate(incident_email_threads):
-        if str(thread_entry['EmailCommsThreadNumber']) == str(email_selected_thread):
+
+        if str(incident_email_threads['EmailCommsThreadNumber']) == str(email_selected_thread):
             thread_found = True
 
-            if thread_entry['MessageDirection'] == 'inbound':
-                reply_to_message_id = thread_entry['MessageID']
-                outbound_only = False
-            reply_code = thread_entry['EmailCommsThreadId']
-            reply_subject = thread_entry['EmailSubject']
-            email_to = thread_entry['EmailTo']
-            email_from = thread_entry['EmailFrom']
-            email_received = thread_entry['EmailReceived']
+
+            reply_to_message_id = incident_email_threads['MessageID']
+            outbound_only = False
+            reply_code = incident_email_threads['EmailCommsThreadId']
+            reply_subject = incident_email_threads['EmailSubject']
+            email_to = incident_email_threads['EmailTo']
+            email_from = incident_email_threads['EmailFrom']
+            email_received = incident_email_threads['EmailReceived']
 
             # Create recipient list based on all 'EmailTo' and 'EmailFrom' values
             if email_to and email_to not in reply_recipients:
@@ -893,16 +895,16 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
                     reply_mailbox += f", {email_received}"
 
             # Create list of CC addresses based on others CC'd on this thread
-            if thread_entry['EmailCC']:
-                for cc_address in thread_entry['EmailCC'].split(","):
+            if incident_email_threads['EmailCC']:
+                for cc_address in incident_email_threads['EmailCC'].split(","):
                     if cc_address not in thread_cc and len(thread_cc) == 0:
                         thread_cc = cc_address
                     elif cc_address not in thread_cc:
                         thread_cc += f',{cc_address}'
 
             # Create list of BCC addresses based on others BCC'd on this thread
-            if thread_entry['EmailBCC']:
-                for bcc_address in thread_entry['EmailBCC'].split(","):
+            if incident_email_threads['EmailBCC']:
+                for bcc_address in incident_email_threads['EmailBCC'].split(","):
                     if bcc_address not in thread_bcc and len(thread_bcc) == 0:
                         thread_bcc = bcc_address
                     elif bcc_address not in thread_bcc:
@@ -949,93 +951,93 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
 
         first_contact_resent = False
 
-        if isinstance(incident_email_threads, dict):
-            """
-            A 'dict' input means only one email message exists in the context.  This also means
-            this was an 'outbound' message, as it is not possible for an an initial incoming message
-            to be stored as a thread without an existing incident to link to.
-            """
-            result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id,
-                                          new_email_attachments, files, new_email_body, body_type, add_cc, add_bcc, service_mail,
-                                          mail_sender_instance, new_attachment_names, subject_include_incident_id)
+        # if isinstance(incident_email_threads, dict):
+        #     """
+        #     A 'dict' input means only one email message exists in the context.  This also means
+        #     this was an 'outbound' message, as it is not possible for an an initial incoming message
+        #     to be stored as a thread without an existing incident to link to.
+        #     """
+        #     result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id,
+        #                                   new_email_attachments, files, new_email_body, body_type, add_cc, add_bcc, service_mail,
+        #                                   mail_sender_instance, new_attachment_names, subject_include_incident_id)
 
-            # Clear fields for re-use
-            reset_fields()
+        #     # Clear fields for re-use
+        #     reset_fields()
 
-            return_results(result)
+        #     return_results(result)
 
-            first_contact_resent = True
+        #     first_contact_resent = True
 
-        elif isinstance(incident_email_threads, list):
-            # Process existing thread entries in this email chain to gather re-usable data for new message
-            thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients, \
-                reply_mailbox, thread_cc, thread_bcc, \
-                last_thread_processed = collect_thread_details(incident_email_threads, email_selected_thread)
+        # elif isinstance(incident_email_threads, list):
+        #     # Process existing thread entries in this email chain to gather re-usable data for new message
+        thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients, \
+            reply_mailbox, thread_cc, thread_bcc, \
+            last_thread_processed = collect_thread_details(incident_email_threads, email_selected_thread)
 
-            if thread_found is False:
-                # Return an error if the selected thread number is not found
-                return_error(f'The selected Thread Number to respond to ({email_selected_thread}) '
-                             f'does not exist.  Please choose a valid Thread Number and re-try.')
+        #     if thread_found is False:
+        #         # Return an error if the selected thread number is not found
+        #         return_error(f'The selected Thread Number to respond to ({email_selected_thread}) '
+        #                      f'does not exist.  Please choose a valid Thread Number and re-try.')
 
-            if outbound_only is True:
-                # If this thread does not contain any inbound messages, then this is an update to the original
-                # first-contact message and must be sent as a new email message.
-                result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
-                                              incident_id, new_email_attachments, files, new_email_body, body_type, add_cc,
-                                              add_bcc, service_mail, mail_sender_instance, new_attachment_names,
-                                              subject_include_incident_id)
+        #     if outbound_only is True:
+        #         # If this thread does not contain any inbound messages, then this is an update to the original
+        #         # first-contact message and must be sent as a new email message.
+        #         result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
+        #                                       incident_id, new_email_attachments, files, new_email_body, body_type, add_cc,
+        #                                       add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+        #                                       subject_include_incident_id)
 
-                # Clear fields for re-use
-                reset_fields()
+        #         # Clear fields for re-use
+        #         reset_fields()
 
-                return_results(result)
+        #         return_results(result)
 
-                first_contact_resent = True
+        #         first_contact_resent = True
 
-        if first_contact_resent is False:
-            # Strip service mail address(es) from reply recipients list
-            final_reply_recipients = get_email_recipients(reply_recipients, service_mail, service_mail, reply_mailbox)
+        # if first_contact_resent is False:
+        # Strip service mail address(es) from reply recipients list
+        final_reply_recipients = get_email_recipients(reply_recipients, service_mail, service_mail, reply_mailbox)
 
-            # Verify a message ID to reply to was identified
-            if not reply_to_message_id:
-                return_error('Unable to identify an email message ID to reply to - reply not sent!')
+        # Verify a message ID to reply to was identified
+        if not reply_to_message_id:
+            return_error('Unable to identify an email message ID to reply to - reply not sent!')
 
-            # Combine CC and BCC addresses already on the thread with new ones set in fields
-            final_email_cc = get_email_cc(thread_cc, add_cc)
-            final_email_bcc = get_email_cc(thread_bcc, add_bcc)
+        # Combine CC and BCC addresses already on the thread with new ones set in fields
+        final_email_cc = get_email_cc(thread_cc, add_cc)
+        final_email_bcc = get_email_cc(thread_bcc, add_bcc)
 
-            # Get a list of entry ID's for attachments that were fetched as files
-            entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
+        # Get a list of entry ID's for attachments that were fetched as files
+        entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
-            # Format any markdown in the email body as HTML
-            context_html_body, reply_html_body = format_body(new_email_body)
+        # Format any markdown in the email body as HTML
+        context_html_body, reply_html_body = format_body(new_email_body)
 
-            # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
-            reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
+        # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
+        reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
 
-            # Send the email reply
-            result = validate_email_sent(incident_id, reply_subject, subject_include_incident_id,
-                                         final_reply_recipients, new_email_body, body_type, service_mail, final_email_cc,
-                                         final_email_bcc, reply_html_body, entry_id_list, reply_to_message_id,
-                                         reply_code, mail_sender_instance)
-            return_results(result)
+        # Send the email reply
+        result = validate_email_sent(incident_id, reply_subject, subject_include_incident_id,
+                                        final_reply_recipients, new_email_body, body_type, service_mail, final_email_cc,
+                                        final_email_bcc, reply_html_body, entry_id_list, reply_to_message_id,
+                                        reply_code, mail_sender_instance)
+        return_results(result)
 
-            if subject_include_incident_id and f'[{incident_id}]' not in reply_subject:
-                reply_subject = f'[{incident_id}] ${reply_subject}'
+        if subject_include_incident_id and f'[{incident_id}]' not in reply_subject:
+            reply_subject = f'[{incident_id}] ${reply_subject}'
 
-            if f'<{reply_code}' not in reply_subject:
-                subject_with_id = f"<{reply_code}> {reply_subject}"
-            else:
-                subject_with_id = reply_subject
+        if f'<{reply_code}' not in reply_subject:
+            subject_with_id = f"<{reply_code}> {reply_subject}"
+        else:
+            subject_with_id = reply_subject
 
-            # Store message details in context entry
-            context_html_body = append_email_signature(context_html_body)
-            create_thread_context(reply_code, final_email_cc, final_email_bcc, new_email_body, service_mail,
-                                  context_html_body, '', '', service_mail, subject_with_id, final_reply_recipients,
-                                  incident_id, new_attachment_names)
+        # Store message details in context entry
+        context_html_body = append_email_signature(context_html_body)
+        create_thread_context(reply_code, final_email_cc, final_email_bcc, new_email_body, service_mail,
+                                context_html_body, '', '', service_mail, subject_with_id, final_reply_recipients,
+                                incident_id, new_attachment_names)
 
-            # Clear fields for re-use
-            reset_fields()
+        # Clear fields for re-use
+        reset_fields()
 
     except Exception as error:
         return_error(f"Failed to send email via new_thread = 'false' branch. Reason: {error}")
@@ -1108,3 +1110,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
+
