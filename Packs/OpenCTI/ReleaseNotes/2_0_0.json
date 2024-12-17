@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>Deprecate all `indicator` commands.</li><li>The old `indicator` commands now are `observable` commands</li></ul>Make sure to check and update any Playbooks/Scripts that use the above context paths."
+}
