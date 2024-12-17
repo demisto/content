@@ -1,12 +1,12 @@
-Microsoft Defender XDR is a unified pre- and post-breach enterprise defense suite that natively coordinates detection,
+Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection,
 prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated
 protection against sophisticated attacks.
 
 ## Authentication Using the Device Code Flow
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
-to link Microsoft Defender XDR with Cortex XSOAR.
+to link Microsoft 365 Defender with Cortex XSOAR.
 
-To connect to the Microsoft Defender XDR:
+To connect to the Microsoft 365 Defender:
 1. Fill in the required parameters.
 2. Run the ***!microsoft-365-defender-auth-start*** command. 
 3. Follow the instructions that appear.
@@ -45,12 +45,19 @@ Follow these steps for a self-deployed configuration:
  * AdvancedHunting.Read.All - Application
  * Incident.ReadWrite.All - Application
 
-## Configure Microsoft Defender XDR on Cortex XSOAR
+## Configure Microsoft 365 Defender on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Defender XDR.
+2. Search for Microsoft 365 Defender.
 3. Click **Add instance** to create and configure a new integration instance.
-
+4. To ensure that mirroring works:
+   1. Select the **Incident Mirroring Direction**. Choose the direction to mirror the incident: Incoming (from Microsoft 365 Defender to Cortex XSOAR), Outgoing (from Cortex XSOAR to Microsoft 365 Defender), or Incoming And Outgoing (from/to Cortex XSOAR and Microsoft 365 Defender).
+   2. Select the **Fetches incidents** radio button.
+   3. Under **Incident type**, select Microsoft 365 Defender Incident. 
+   4. Under **Mapper (incoming)**, select Microsoft 365 Defender - Incoming Mapper.
+   5. Under **Mapper (outgoing)**, select Microsoft 365 Defender - Outgoing Mapper.
+   6. To enable mirroring to close a ticket in Cortex XSOAR, check the **Close Mirrored Cortex XSOAR Incidents** checkbox.
+   7. To enable mirroring to close an incident in Microsoft 365 Defender, check the **Close Mirrored Microsoft 365 Defender Incidents** checkbox.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -85,8 +92,78 @@ Follow these steps for a self-deployed configuration:
 | Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender. | False |
 | Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
 
+5. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
-4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
+## Configure Incident Mirroring
+**This feature is compliant with XSOAR version 6.0 and above.**  
+When mirroring incidents, you can make changes in Microsoft 365 Defender that will be reflected in Cortex XSOAR, or vice versa. 
+
+The following instructions include steps for configuring the integration and incoming and outgoing mappers. However, they do not cover every option available in the integration nor classification and mapping features. 
+For information about classification and mapping see [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).  
+
+**Note:**  
+- For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in Microsoft 365 Defender, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
+- The mirroring settings apply only for incidents that are fetched after applying the settings. 
+- To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. If you detach the out of the box mapper and make changes to it, the pack does not automatically get updates.
+
+#### STEP 1 - Configure the Microsoft 365 Defender Integration Instance for Mirroring.
+1. Navigate to **Integrations** and search for ** Microsoft 365 Defender**.
+2. Click **Add instance**.
+3. Select **Fetches incidents**.
+4. Select the **Incident Mirroring Direction**:  
+   - **Incoming** - Mirrors changes on the Microsoft 365 Defender incident in to the Cortex XSOAR incident.
+   - **Outgoing** - Mirrors changes on the Cortex XSOAR incident to the Microsoft 365 Defender incident.
+   - **Incoming And Outgoing** - Mirrors changes both in and out on both incidents.
+5. Under **Incident type**, select Microsoft 365 Defender Incident. 
+6. Under **Mapper (incoming)**, for default mapping select Microsoft 365 Defender - Incoming Mapper. For custom mapping, follow the instructions in STEP 2 and then select the custom mapper name.
+7. Under **Mapper (outgoing)**, for default mapping select Microsoft 365 Defender - Outgoing Mapper. For custom mapping, follow the instructions in STEP 3 and then select the custom mapper name.
+8. Enter the relevant **Comment Entry Tag To Microsoft 365 Defender** and **Comment Entry Tag From Microsoft 365 Defender** values.  
+These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room. 
+**Note:**  
+These tags work only for mirroring comments from Cortex XSOAR to Microsoft 365 Defender.
+9. To enable mirroring when closing an incident in Cortex XSOAR and Microsoft 365 Defender, select the **Close Mirrored Cortex XSOAR Incidents** and **Close Mirrored Microsoft 365 Defender Incidents** checkboxes respectively.
+10. Click **Save & Exit**.
+
+#### STEP 2 (Optional) Configure the Incoming Mapper by Incident Type
+**Note:**
+Any modifications require that the mappers be cloned before any changes can be applied.
+
+1. Navigate to **Classification and Mapping** and for **Incidents** search for the **Microsoft 365 Defender - Incoming Mapper**.
+2. Select it and click **Duplicate**.
+3. Under the **Incident Type** dropdown, select Microsoft 365 Defender Incident.
+4. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
+    - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the incident. This should be the incidentId of the Microsoft 365 Defender Incident.
+    - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
+    - **dbotMirrorInstance** - determines the Microsoft 365 Defender instance with which to mirror. This should match the instance configuration.
+    - **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
+    - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Microsoft 365 Defender. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
+
+
+#### STEP 3 - Modify the Outgoing Mapper  
+**Note:**  
+Any modifications require that the mappers be cloned before any changes can be applied.
+1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **Microsoft 365 Defender - Outgoing Mapper.**
+2. Select it and click **Duplicate**.  
+  The left side of the screen shows the Microsoft 365 Defender fields to which to map and the right side of the
+screen shows the Cortex XSOAR fields by which you are mapping.
+3. Under the **Incident Type** dropdown, select the relevant incident type (for example **Microsoft 365 Defender Incident**).
+4. Under **Schema Type**, select **incident**. The Schema Type represents the Microsoft 365 Defender entity that
+you are mapping to.
+5. On the right side of the screen, under **Incident**, select the incident based on which you want to
+match.
+6. Change the mapping according to your needs, including any fields you want mapped outward to Microsoft 365 Defender.
+7. Save your changes.
+
+#### STEP 4 - Create an Incident in Microsoft 365 Defender  
+For purposes of this use case, it can be a simple incident. The new incident will be ingested in Cortex XSOAR in approximately one minute.
+
+#### STEP 5 - Add a Comment from Cortex XSOAR to Microsoft 365 Defender
+In the example below, we have written *A comment from Cortex XSOAR to Microsoft 365 Defender*.
+1. Create an entry in the incidents' war room.
+2. Click Actions > Tags and add the Comment Entry Tag To Microsoft 365 Defender tag.
+3. Navigate back to the incident in Microsoft 365 Defender and within approximately one minute, the changes will be reflected there, too. The note is mirrored out as a comment in Microsoft 365 Defender.  
+  You can make additional changes like closing the incident or changing the assignee and those will be reflected in both systems.
+
 
 ## Commands
 
@@ -182,7 +259,7 @@ There is no context output for this command.
 
 ### microsoft-365-defender-auth-test
 ***
-Tests the connectivity to the Microsoft Defender XDR.
+Tests the connectivity to the Microsoft 365 Defender.
 
 
 #### Base Command
@@ -353,7 +430,7 @@ Update the incident with the given ID.
 
 ### microsoft-365-defender-advanced-hunting
 ***
-Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Defender XDR.
+Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender.
 Details on how to write queries you can find [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide).
 
 #### Base Command

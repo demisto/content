@@ -176,6 +176,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   type: 15
+  section: Collect
   hidden:
   - marketplacev2
   required: false
