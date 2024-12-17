@@ -7,6 +7,6 @@
 - Click on 'Save changes'
 - An API key will be generated, you can copy it for further usage in Cortex XSOAR
 
-# Event severity
+## Event severity
 
 - The following XSOAR severity levels are supported: Unknown, Informational, Low, Medium, Critical

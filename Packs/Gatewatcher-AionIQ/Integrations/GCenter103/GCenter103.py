@@ -295,18 +295,15 @@ def test_module(client: GwClient) -> str:  # noqa: E501
         return "Authentication error, please check ip/user/password/token: [ERROR]"
 
 
-def convertEventSeverity(gwSev: int) -> int:
+def convert_event_severity(gw_sev: int) -> int | float:
 
-    if gwSev == 0:
-        return 0.5
-    if gwSev == 1:
-        return 4
-    if gwSev == 2:
-        return 2
-    if gwSev == 3:
-        return 1
-
-    return 0
+    severity_map = {
+            0: 0.5,
+            1: 4,
+            2: 2,
+            3: 1
+    }
+    return severity_map.get(gw_sev, 0)
 
 def return_empty_incidents():
 
@@ -387,7 +384,7 @@ def handle_big_fetch_selected_engines(client: GwClient, query: dict, engine_sele
     gw_alerts = []
     search_after_id_a = -1
 
-    if fetch_type == "Alerts" or fetch_type == "Both":
+    if fetch_type in ("Alerts", "Both"):
 
         query['size'] = 10000
         query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[0])
@@ -437,7 +434,7 @@ def handle_big_fetch_empty_selected_engines(client: GwClient, query: dict, max_f
     search_after_id_a = -1
     gw_alerts = []
     
-    if fetch_type == "Alerts" or fetch_type == "Both":
+    if fetch_type in ("Alerts", "Both"):
 
         res_a = query_es_alerts(client=client,query=query)
         gw_alerts = res_a
@@ -469,7 +466,7 @@ def handle_big_fetch_metadata(client: GwClient, query: dict, max_fetch: int, fet
     search_after_id_m = -1
     gw_metadata = []
 
-    if fetch_type == "Metadata" or fetch_type == "Both":
+    if fetch_type in ("Metadata", "Both"):
 
         res_m = query_es_metadata(client=client,query=query)
         gw_metadata = res_m
@@ -496,7 +493,7 @@ def handle_little_fetch_alerts(client: GwClient, fetch_type: str, engine_selecti
 
     gw_alerts = []
    
-    if fetch_type == "Alerts" or fetch_type == "Both":
+    if fetch_type in ("Alerts", "Both"):
 
         query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[0])
         res_a = query_es_alerts(client=client,query=query)
@@ -514,7 +511,7 @@ def handle_little_fetch_empty_selected_engines(client: GwClient, fetch_type: str
 
     gw_alerts = []
 
-    if fetch_type == "Alerts" or fetch_type == "Both":
+    if fetch_type in ("Alerts", "Both"):
 
         res_a = query_es_alerts(client=client,query=query)
         gw_alerts = res_a
@@ -525,7 +522,7 @@ def handle_little_fetch_metadata(client: GwClient, fetch_type: str, query: dict)
 
     gw_metadata = []
 
-    if fetch_type == "Metadata" or fetch_type == "Both":
+    if fetch_type in ("Metadata", "Both"):
 
         res_m = query_es_metadata(client=client,query=query)
         gw_metadata = res_m
@@ -557,10 +554,10 @@ def index_alerts_incidents(to_index: list, incidents: list, params: dict) -> lis
 
         # XSOAR Severity
         if 'severity' in to_index[i]['_source']['event'].keys():
-            incident['severity'] = convertEventSeverity(to_index[i]['_source']['event']['severity'])
+            incident['severity'] = convert_event_severity(to_index[i]['_source']['event']['severity'])
 
         else:
-            incident['severity'] = convertEventSeverity(-1)
+            incident['severity'] = convert_event_severity(-1)
 
         # Sigflow alert signature
         if 'sigflow' in to_index[i]['_source'].keys():
@@ -591,10 +588,10 @@ def index_metadata_incidents(to_index: list, incidents: list) -> list:
 
         # XSOAR Severity
         if 'severity' in to_index[i]['_source']['event'].keys():
-            incident['severity'] = convertEventSeverity(to_index[i]['_source']['event']['severity'])
+            incident['severity'] = convert_event_severity(to_index[i]['_source']['event']['severity'])
 
         else:
-            incident['severity'] = convertEventSeverity(-1)
+            incident['severity'] = convert_event_severity(-1)
 
         incidents.append(incident)
 
@@ -602,48 +599,54 @@ def index_metadata_incidents(to_index: list, incidents: list) -> list:
 
 def query_selected_engines_builder(max_fetch: int, engine_selection: list, from_to: list) -> dict:
     
-    query = {'size': max_fetch,
-             'query': {
-               'bool': {
-                  'must': [
-                  {
-                    'match': {
-                      'event.module': str(engine_selection[0])
+    query = {
+        "size": max_fetch,
+        "query": {
+            "bool": {
+                "must": [
+                {
+                    "match": {
+                        "event.module": str(engine_selection[0])
                     }
-                  },
-                  {
-                    'range': {
-                      '@timestamp': {
-                        'gte': str(from_to[0]),
-                        'lte': str(from_to[1])
-                      }
+                },
+                {
+                    "range": {
+                        "@timestamp": {
+                            "gt": str(from_to[0]),
+                            "lt": str(from_to[1])
+                        }
                     }
-                  }
-                 ]
-               }
-             },
-             'sort': [
-             {"@timestamp": "asc"}
-             ]
-           }
+                }
+                ]
+            }
+        },
+        "sort": [
+        {
+            "@timestamp": "asc"
+        }
+        ]
+    }
 
     return query
 
 def query_empty_selected_engines_builder(from_to: list, max_fetch: int) -> dict:
 
-    query = {'size': max_fetch,
-             'query': {
-               'range': {
-                 '@timestamp': {
-                   'gt': str(from_to[0]),
-                   'lt': str(from_to[1])
-                 }
-               }
-             },
-             'sort': [
-               {"@timestamp": "asc"}
-             ]
+    query = {
+        "size": max_fetch,
+        "query": {
+            "range": {
+                "@timestamp": {
+                    "gt": str(from_to[0]),
+                    "lt": str(from_to[1])
+                }
             }
+        },
+        "sort": [
+        {
+            "@timestamp": "asc"
+        }
+        ]
+    }
 
     return query
 

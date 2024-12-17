@@ -92,3 +92,4 @@ script:
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
 fromversion: 6.5.0
+defaultclassifier: Gatewatcher Incidents Classifier
