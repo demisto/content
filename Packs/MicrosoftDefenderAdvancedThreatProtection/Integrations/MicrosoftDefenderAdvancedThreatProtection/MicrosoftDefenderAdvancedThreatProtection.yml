@@ -767,7 +767,6 @@ script:
       deprecated: true
     description: Deprecated. Use the 'msg-search-alerts' command in the 'Microsoft Graph Security' integration instead.
     name: microsoft-atp-list-alerts (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.
@@ -863,6 +862,7 @@ script:
       description: The device RBAC group name.
       type: String
     polling: true
+    deprecated: true
   - arguments:
     - description: Alert ID to update.
       name: alert_id
@@ -906,9 +906,8 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
-    description: Deprecated. Use the 'msg-update-alert' command in the 'Microsoft Graph Security' integration instead.
+    description: 'Deprecated. Use the ''msg-update-alert'' command in the ''Microsoft Graph Security'' integration instead.'
     name: microsoft-atp-update-alert (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.
@@ -986,6 +985,7 @@ script:
       description: The alert comment created time date.
       type: Date
     polling: true
+    deprecated: true
   - arguments:
     - description: The query to run. Must be passed if query_batch argument is not provided.
       name: query
@@ -1019,14 +1019,14 @@ script:
       name: query_batch
     - description: If stated along with query, the response will be be saved in context under the Result.name path.
       name: name
-    description: Deprecated. Use the 'msg-advanced-hunting' command in the 'Microsoft Graph Security' integration instead.
+    description: "Deprecated. Use the ''msg-advanced-hunting'' command in the ''Microsoft Graph Security'' integration instead."
     name: microsoft-atp-advanced-hunting (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Hunt.Result
       description: The query results.
       type: String
     polling: true
+    deprecated: true
   - arguments:
     - description: ID of the machine on which the event was identified.
       name: machine_id
@@ -1096,7 +1096,6 @@ script:
       name: ran_once_flag
     description: Deprecated. No available replacement.
     name: microsoft-atp-create-alert (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.
@@ -1174,6 +1173,7 @@ script:
       description: The alert comment created time date.
       type: Date
     polling: true
+    deprecated: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1181,9 +1181,8 @@ script:
     - description: Flag for the rate limit retry.
       name: ran_once_flag
       deprecated: true
-    description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.    
+    description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.
     name: microsoft-atp-get-alert-related-user (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.AlertUser.User.ID
       description: The user ID.
@@ -1225,6 +1224,7 @@ script:
       description: The alert ID.
       type: String
     polling: true
+    deprecated: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1240,7 +1240,6 @@ script:
       name: ran_once_flag
     description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `fileDetails` as part of the alert details.
     name: microsoft-atp-get-alert-related-files (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.AlertFile.Files.FilePublisher
       description: The file's publisher.
@@ -1294,6 +1293,7 @@ script:
       description: The MD5 hash of the file.
       type: String
     polling: true
+    deprecated: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1309,7 +1309,6 @@ script:
       name: ran_once_flag
     description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details.
     name: microsoft-atp-get-alert-related-ips (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.AlertIP.IPs.IpAddress
       description: The address of the IP.
@@ -1318,6 +1317,7 @@ script:
       description: The alert ID.
       type: String
     polling: true
+    deprecated: true
   - arguments:
     - description: ID of the alert.
       name: id
@@ -1331,9 +1331,9 @@ script:
     - description: Flag for the rate limit retry.
       name: ran_once_flag
       deprecated: true
-    description: Deprecated. Alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
+    description: |-
+      Deprecated. Alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
     name: microsoft-atp-get-alert-related-domains (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.AlertDomain.Domains.Domain
       description: The domain address.
@@ -1342,6 +1342,7 @@ script:
       description: The alert ID.
       type: Unknown
     polling: true
+    deprecated: true
   - arguments:
     - description: ID of the action.
       name: id
@@ -1764,7 +1765,6 @@ script:
       name: ran_once_flag
     description: Deprecated. No available replacement.
     name: microsoft-atp-get-domain-alerts (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.DomainAlert.Domain
       description: The domain address.
@@ -1845,6 +1845,7 @@ script:
       description: The alert comment created time date.
       type: Date
     polling: true
+    deprecated: true
   - arguments:
     - description: The domain address.
       name: domain
@@ -1984,7 +1985,6 @@ script:
       name: ran_once_flag
     description: Deprecated. No available replacement.
     name: microsoft-atp-get-file-alerts (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.FileAlert.Sha1
       description: The file SHA1 hash.
@@ -2065,6 +2065,7 @@ script:
       description: The alert comment created time date.
       type: Date
     polling: true
+    deprecated: true
   - arguments:
     - description: The IP address.
       name: ip
@@ -2098,7 +2099,6 @@ script:
       name: ran_once_flag
     description: Deprecated. No available replacement.
     name: microsoft-atp-get-ip-alerts (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.IPAlert.IPAddress
       description: The IP address.
@@ -2179,6 +2179,7 @@ script:
       description: The alert comment created time date.
       type: Date
     polling: true
+    deprecated: true
   - arguments:
     - description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
@@ -2190,7 +2191,6 @@ script:
       name: ran_once_flag
     description: Deprecated. No available replacement.
     name: microsoft-atp-get-user-alerts (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.UserAlert.Username
       description: The username.
@@ -2271,6 +2271,7 @@ script:
       description: The alert comment created time date.
       type: Date
     polling: true
+    deprecated: true
   - arguments:
     - description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
@@ -4577,8 +4578,7 @@ script:
       type: Boolean
     polling: true
   - name: microsoft-atp-get-alert-by-id (Deprecated)
-    description: Deprecated. Use 'msg-get-alert-details' in the 'Microsoft Graph Security' integration instead.
-    deprecated: true
+    description: 'Deprecated. Use ''msg-get-alert-details'' in the ''Microsoft Graph Security'' integration instead.'
     arguments:
     - name: alert_ids
       description: A comma-separated list of alert IDs.
@@ -4682,6 +4682,7 @@ script:
       description: The device RBAC group name.
       type: String
     polling: true
+    deprecated: true
   - name: microsoft-atp-live-response-get-file
     description: 'Collects a file from a device. Note: Backslashes in the path must be escaped.'
     arguments:
@@ -5538,7 +5539,6 @@ script:
       deprecated: true
     description: Deprecated. No available replacement.
     name: microsoft-atp-get-machine-alerts (Deprecated)
-    deprecated: true
     outputs:
     - contextPath: MicrosoftATP.MachineAlerts.ID
       description: The alert ID.
@@ -5571,6 +5571,7 @@ script:
       description: The alerts machine ID.
       type: String
     polling: true
+    deprecated: true
   - arguments:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
