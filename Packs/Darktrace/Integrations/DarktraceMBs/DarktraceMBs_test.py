@@ -307,6 +307,7 @@ def test_post_comment_to_model_breach(requests_mock):
     assert integration_response.outputs_prefix == 'Darktrace.ModelBreach'
     assert integration_response.outputs_key_field == 'pbid'
 
+
 def test_acknowledge_model_breach_UV(requests_mock):
     """Tests darktrace-acknowledge-model-breach command function.
 
@@ -338,3 +339,26 @@ def test_acknowledge_model_breach_UV(requests_mock):
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.ModelBreach'
     assert integration_response.outputs_key_field == 'pbid'
+    
+def test_test_module(requests_mock):
+    """
+    Tests the test module function
+    """
+    from DarktraceMBs import Client, test_module
+
+    # GIVEN an integration is configured and you would like to test the configuration
+    mock_api_response = util_load_json('test_data/fetch_breach.json')
+    requests_mock.post('https://mock.darktrace.com/modelbreaches?minscore=0.0&starttime=1598932817000', json=mock_api_response)
+
+    client = Client(
+        base_url='https://mock.darktrace.com',
+        verify=False,
+        auth=('examplepub', 'examplepri')
+    )
+
+    integration_response = test_module(client)
+    expected_response = "ok"
+
+    # THEN if there is no error, test_module should return 'ok'
+    assert len(integration_response) == 2
+    assert isinstance(expected_response, str)
