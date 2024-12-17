@@ -746,7 +746,6 @@ def test_start_xql_query_polling_command(mocker):
     assert get_integration_context() == context
 
 
-
 def test_start_xql_query_polling_command_http_request_failure(mocker):
     """
     Given:
