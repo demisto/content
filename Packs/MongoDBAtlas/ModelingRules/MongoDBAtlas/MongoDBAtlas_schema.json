@@ -1,129 +1,136 @@
-
 {
-    "servicenow_servicenow_raw": {
-      "documentkey": {
+    "mongodb_atlas_raw": {
+      "source_log_type": {
         "type": "string",
         "is_array": false
       },
-      "fieldname": {
+      "acknowledgementComment": {
+        "type": "string",  
+        "is_array": false
+      },
+      "acknowledgingUsername": {
         "type": "string",
         "is_array": false
       },
-      "oldvalue": {
+      "alertConfigId": {
         "type": "string",
         "is_array": false
       },
-      "newvalue": {
+      "eventTypeName": {
         "type": "string",
         "is_array": false
       },
-      "reason": {
+      "groupId": {
         "type": "string",
         "is_array": false
       },
-      "sys_id": {
+      "id": {
         "type": "string",
         "is_array": false
       },
-      "tablename": {
+      "links": {
         "type": "string",
         "is_array": false
       },
-      "user": {
+      "status": {
         "type": "string",
         "is_array": false
       },
-        "source_log_type": {
+      "_ENTRY_STATUS": {
         "type": "string",
         "is_array": false
       },
-        "type": {
+      "apiKeyId": {
         "type": "string",
         "is_array": false
       },
-        "total_wait_time": {
+      "isGlobalAdmin": {
         "type": "string",
         "is_array": false
       },
-        "transaction_processing_time": {
+      "publicKey": {
         "type": "string",
         "is_array": false
       },
-        "interaction_id": {
+      "remoteAddress": {
         "type": "string",
         "is_array": false
       },
-        "transaction_number": {
+      "targetPublicKey": {
         "type": "string",
         "is_array": false
       },
-        "output_length": {
+      "userId": {
         "type": "string",
         "is_array": false
       },
-        "db_category": {
+      "username": {
         "type": "string",
         "is_array": false
       },
-        "additional_info": {
+      "targetUsername": {
         "type": "string",
         "is_array": false
       },
-        "additional_debug_info": {
+      "alertId": {
         "type": "string",
         "is_array": false
       },
-        "remote_ip": {
+      "collection": {
         "type": "string",
         "is_array": false
       },
-        "sys_created_by": {
+      "database": {
         "type": "string",
         "is_array": false
       },
-        "system_id": {
+      "opType": {
         "type": "string",
         "is_array": false
       },
-        "user_agent": {
+      "hostname": {
         "type": "string",
         "is_array": false
       },
-        "url": {
+      "port": {
         "type": "string",
         "is_array": false
       },
-        "session": {
+      "replicaSetName": {
         "type": "string",
         "is_array": false
       },
-        "protocol": {
+      "userAlias": {
         "type": "string",
         "is_array": false
       },
-        "gzip": {
+      "clusterName": {
         "type": "string",
         "is_array": false
       },
-        "origin_scope": {
+      "whitelistEntry": {
         "type": "string",
         "is_array": false
       },
-        "db_pool": {
+      "applicationId": {
         "type": "string",
         "is_array": false
       },
-        "sql_time": {
+      "applicationName": {
         "type": "string",
         "is_array": false
       },
-        "table": {
+      "linkToDetails": {
         "type": "string",
         "is_array": false
       },
-        "app_scope": {
+      "diffs": {
         "type": "string",
         "is_array": false
-      }
+      },
+      "dbUserUsername": {
+        "type": "string",
+        "is_array": false
+      }                            
     }
-  }
+}
