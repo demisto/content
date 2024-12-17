@@ -1,0 +1,50 @@
+category: Email
+commonfields:
+  id: RetarusSecureEmailGateway
+  version: -1
+configuration:
+- defaultvalue: https://events.retarus.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: Token ID
+  additionalinfo: The Token ID to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch events
+  name: is_fetch
+  type: 8
+  required: false
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]' #TODO
+display: RetarusSecureEmailGateway
+name: RetarusSecureEmailGateway
+script:
+  commands:
+  - arguments:
+    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: Retarus-seg-get-events
+      required: true
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted) #TODO
