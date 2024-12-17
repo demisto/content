@@ -1,0 +1,75 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: BloodHoundEnterprise
+  version: -1
+configuration:
+- display: Server URL (e.g., https://example.bloodhoundenterprise.io)
+  additionalinfo: The hostname of the server from which to fetch events. With the "https://" part.
+  name: server_url
+  required: true
+  type: 0
+  section: Connect
+- display: API Token ID
+  additionalinfo: The password for the client application. This is used to authenticate the client with the BloodHound Enterprise server.
+  displaypassword: API Token Key
+  name: client
+  required: true
+  type: 9
+  section: Connect
+- defaultvalue: 5000
+  section: Collect
+  advanced: true
+  display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: Use this integration to fetch audit logs from BloodHound Enterprise as events in Cortex XSIAM.
+display: BloodHoundEnterprise
+name: BloodHoundEnterprise
+script:
+  commands:
+  - arguments:
+    - description: The start date from which to filter events (e.g., 2024-07-10T08:08:46.76).
+      name: start_date
+      required: false
+    - description: The end date from which to filter events (e.g., 2024-07-11T08:09:47.08).
+      name: end_date
+      required: false
+    - description: Set this argument to True in order to create events, otherwise the command will only display them.  
+      name: should_push_events  
+      predefined:  
+      - 'true'  
+      - 'false'  
+      required: false  
+      auto: PREDEFINED  
+    - description: The number of events to return. Default is 10.
+      name: limit
+      required: false
+    description: Gets events from BloodHound Enterprise.
+    name: bloodhound-get-events
+  dockerimage: demisto/python3:3.11.10.116949
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

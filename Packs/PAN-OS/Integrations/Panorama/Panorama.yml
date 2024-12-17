@@ -9726,7 +9726,83 @@ script:
     - contextPath: Panorama.Spyware.Exception.packet-capture
       description: The exception packet capture.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.108041
+  - name: pan-os-get-master-key-details
+    description: Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
+    outputs:
+    - contextPath: Panorama.MasterKey.auto-renew-mkey
+      type: String
+      description: Whether the master key will be automatically renewed on expiry.
+    - contextPath: Panorama.MasterKey.expire-at
+      type: String
+      description: The date and time when the key is set to expire.
+    - contextPath: Panorama.MasterKey.hours-to-expiry
+      type: String
+      description: The number of hours remaining before the key expires.
+    - contextPath: Panorama.MasterKey.hours-to-reminder
+      type: String
+      description: The number of hours remaining before being notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.minutes-to-expiry
+      type: String
+      description: The number of minutes remaining before the key expires.
+    - contextPath: Panorama.MasterKey.minutes-to-reminder
+      type: String
+      description: The number of minutes remaining before being notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.on-hsm
+      type: String
+      description: Whether the master key is encrypted using a key stored on a Hardware Security Module (HSM).
+    - contextPath: Panorama.MasterKey.remind-at
+      type: String
+      description: The date and time when to be notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.seconds-to-expiry
+      type: String
+      description: The number of seconds remaining before the key expires.
+    - contextPath: Panorama.MasterKey.seconds-to-reminder
+      type: String
+      description: The number of seconds remaining before being notified that the key is set to expire.
+  - name: pan-os-create-master-key
+    description: 'Create a default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.'
+    execution: true  # This command is harmful
+    arguments:
+    - description: The encryption master key. Must be exactly 16 characters.
+      name: master_key
+      type: String
+      required: true
+      isArray: false
+    - description: The lifetime of the key in hours.
+      name: lifetime_in_hours
+      type: Number
+      required: true
+      isArray: false
+    - description: The time to be notified of the key's expiration in hours.
+      name: reminder_in_hours
+      type: Number
+      required: true
+      isArray: false
+  - name: pan-os-update-master-key
+    description: 'Update the default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.'
+    execution: true  # This command is harmful
+    arguments:
+    - description: The new encryption master key. Must be exactly 16 characters.
+      name: new_master_key
+      type: String
+      required: true
+      isArray: false
+    - description: The current encryption master key.
+      name: current_master_key
+      type: String
+      required: true
+      isArray: false
+    - description: The lifetime of the new key in hours.
+      name: lifetime_in_hours
+      type: Number
+      required: true
+      isArray: false
+    - description: The time to be notified of new the new key's expiration in hours.
+      name: reminder_in_hours
+      type: Number
+      required: true
+      isArray: false
+  dockerimage: demisto/pan-os-python:1.0.0.117206
   isfetch: true
   runonce: false
   script: ''
