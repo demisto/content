@@ -91,9 +91,9 @@ def test_third_fetch_incidents(mocker):
 
 test_get_machine_by_ip_data = [
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
-     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]),  # expected two machines
+     '8.8.8.8', '2024-05-19T01:00:05Z', {"value": [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]}),  # expected two machines
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
-     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}])  # expected only 1 machine
+     '8.8.8.8', '2024-05-19T01:00:05Z', {"value": [{'a': 'b'}]})  # expected only 1 machine
 ]
 
 
