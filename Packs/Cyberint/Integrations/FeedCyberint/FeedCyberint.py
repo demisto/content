@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_INTERVAL = 240
-PAGE_SIZE = 50000
+PAGE_SIZE = 20000
 EXECUTION_TIMEOUT_SECONDS = 1200  # 20 minutes
 MAX_LIMIT_SIZE = 500000
 
@@ -253,6 +253,7 @@ def get_indicators_command(
     Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
+        client: Cyberint API Client.
         args: Command arguments.
 
     Returns:

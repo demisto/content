@@ -4,8 +4,9 @@
 import copy
 import json
 from contextlib import closing
-from collections.abc import Iterable
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+import dateparser
 from CommonServerPython import *
 from requests import Response
 
@@ -66,22 +67,23 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
+
     @logger
     def list_alerts(
         self,
-        page: str | None,
-        page_size: int | None,
-        created_date_from: str | None,
-        created_date_to: str | None,
-        modification_date_from: str | None,
-        modification_date_to: str | None,
-        update_date_from: str | None,
-        update_date_to: str | None,
-        environments: list[str] | None,
-        statuses: list[str] | None,
-        severities: list[str] | None,
-        types: list[str] | None,
-    ) -> dict:
+        page: Optional[str],
+        page_size: Optional[int],
+        created_date_from: Optional[str],
+        created_date_to: Optional[str],
+        modification_date_from: Optional[str],
+        modification_date_to: Optional[str],
+        update_date_from: Optional[str],
+        update_date_to: Optional[str],
+        environments: Optional[List[str]],
+        statuses: Optional[List[str]],
+        severities: Optional[List[str]],
+        types: Optional[List[str]],
+    ) -> Dict:
         """
         Retrieve a list of alerts according to parameters.
 
@@ -122,11 +124,11 @@ class Client(BaseClient):
 
     def update_alerts(
         self,
-        alerts: list[str],
-        status: str | None,
-        closure_reason: str | None = None,
-        closure_reason_description: str | None = None,
-    ) -> dict:
+        alerts: List[str],
+        status: Optional[str],
+        closure_reason: Optional[str] = None,
+        closure_reason_description: Optional[str] = None,
+    ) -> Dict:
         """
         Update the status of one or more alerts
 
@@ -190,7 +192,7 @@ class Client(BaseClient):
     def get_alert(
         self,
         alert_ref_id: str,
-    ) -> dict:
+    ) -> Dict:
         """
         Retrieve attachment by alert reference ID and attachment ID.
 
@@ -244,7 +246,7 @@ def test_module(client: Client):
         raise DemistoException(error_message)
 
 
-def verify_input_date_format(date: str | None) -> str | None:
+def verify_input_date_format(date: Optional[str]) -> Optional[str]:
     """
     Make sure a date entered by the user is in the correct string format (with a Z at the end).
 
@@ -259,9 +261,8 @@ def verify_input_date_format(date: str | None) -> str | None:
     return date
 
 
-def set_date_pair(
-    start_date_arg: str | None, end_date_arg: str | None, date_range_arg: str | None
-) -> tuple[str | None, str | None]:
+def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str], date_range_arg: Optional[str]
+) -> Tuple[Optional[str], Optional[str]]:
     """
     Calculate the date range to send to the API based on the arguments from the user.
 
@@ -287,9 +288,8 @@ def set_date_pair(
     return start_date_arg, end_date_arg
 
 
-def extract_data_from_csv_stream(
-    client: Client, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n"
-) -> list[dict]:
+def extract_data_from_csv_stream(client: Client, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n"
+) -> List[dict]:
     """
     Call the attachment download API and parse required fields.
 
@@ -447,9 +447,8 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
     )
 
 
-def cyberint_alerts_get_attachment_command(
-    client: Client, alert_ref_id: str, attachment_id: str, attachment_name: str
-) -> dict:
+def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str, attachment_id: str, attachment_name: str
+) -> Dict:
     """
     Retrieve attachment by alert reference ID and attachment internal ID.
     Attachments includes: CSV files , Screenshots, and alert attachments files.
@@ -470,7 +469,7 @@ def cyberint_alerts_get_attachment_command(
     return fileResult(filename=attachment_name, data=raw_response.content)
 
 
-def cyberint_alerts_get_analysis_report_command(client: Client, alert_ref_id: str, report_name: str) -> dict:
+def cyberint_alerts_get_analysis_report_command(client: Client, alert_ref_id: str, report_name: str) -> Dict:
     """
     Retrieve expert analysis report by alert reference ID and report name.
 
@@ -524,7 +523,7 @@ def create_fetch_incident_attachment(raw_response: Response, attachment_file_nam
     return {"path": file_result["FileID"], "name": attachment_name, "showMediaFile": True}
 
 
-def get_alert_attachments(client: Client, attachment_list: list, attachment_type: str, alert_id: str) -> list:
+def get_alert_attachments(client: Client, attachment_list: List, attachment_type: str, alert_id: str) -> List:
     """
     Retrieve all alert attachments files - Attachments, CSV, Screenshot, and Analysis report.
     For each attachment, we save and return the relevant fields in order to represent the attachment in the layout.
@@ -570,7 +569,7 @@ def convert_date_time_args(date_time: str) -> str:
     return ""
 
 
-def get_modified_remote_data(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
     Queries for incidents that were modified since the last update.
 
@@ -620,7 +619,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     Returns:
     GetMappingFieldsResponse: Dictionary with keys as field names.
     """
-    demisto.debug("Get Cyberint mapping fields")
+    demisto.debug("******** Get Cyberint mapping fields")
     mapping_response = GetMappingFieldsResponse()
 
     incident_type_scheme = SchemeTypeMapping(type_name="Cyberint Incident")
@@ -632,9 +631,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system(
-    client: Client,
-    args: dict[str, Any],
+def update_remote_system(client: Client, args: Dict[str, Any],
 ) -> str:
     """
     This command pushes local changes to the remote system.
@@ -667,8 +664,8 @@ def update_remote_system(
             updated_arguments = {}
             if updated_status := update_args.get("status"):
                 closure_reason = update_args.get("closure_reason", "other")
-                closure_reason_description = update_args.get(
-                    "closure_reason_description", "user wasn't specified closure reason when closed alert")
+                closure_reason_description = (
+                    update_args.get("closure_reason_description", "user wasn't specified closure reason when closed alert"))
                 if updated_status != "closed":
                     updated_arguments["status"] = updated_status
                 else:
@@ -677,7 +674,7 @@ def update_remote_system(
                     updated_arguments["closure_reason_description"] = closure_reason_description
             else:
                 cyberint_response = client.get_alert(alert_ref_id=incident_id)
-                cyberint_alert: dict[str, Any] = cyberint_response["alert"]
+                cyberint_alert: Dict[str, Any] = cyberint_response["alert"]
                 cyberint_status = cyberint_alert.get("status")
                 updated_arguments["status"] = cyberint_status
 
@@ -700,8 +697,8 @@ def update_remote_system(
 
 def get_remote_data_command(
     client: Client,
-    args: dict[str, Any],
-    params: dict[str, Any],
+    args: Dict[str, Any],
+    params: Dict[str, Any],
 ) -> GetRemoteDataResponse:
     """
     Gets new information about the incidents in the remote system
@@ -720,12 +717,11 @@ def get_remote_data_command(
     response = client.get_alert(alert_ref_id=incident_id)
     if not isinstance(response, dict):
         response = json.loads(response)
-
-    mirrored_ticket: dict[str, Any] = response["alert"]
+    mirrored_ticket: Dict[str, Any] = response["alert"]
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("update_date")))
 
-    mirrored_ticket["cyberintstatus"] = MIRRORING_FIELDS_MAPPER.get(mirrored_ticket["status"])
-    mirrored_ticket["cyberintclosurereason"] = mirrored_ticket["closure_reason"]
+    mirrored_ticket["cyberintstatus"] =  MIRRORING_FIELDS_MAPPER.get(mirrored_ticket["status"])
+    mirrored_ticket["cyberintclosurereason"] = mirrored_ticket.get("closure_reason")
     mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket.get("closure_reason_description")
 
     demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")
@@ -747,7 +743,7 @@ def get_remote_data_command(
     return GetRemoteDataResponse(mirrored_ticket, entries)
 
 
-def date_to_epoch_for_fetch(date: datetime | None) -> int:
+def date_to_epoch_for_fetch(date: Optional[datetime]) -> int:
     """
     Converts datetime object to date in epoch timestamp (in seconds),
     for fetch command.
@@ -763,17 +759,17 @@ def date_to_epoch_for_fetch(date: datetime | None) -> int:
 
 def fetch_incidents(
     client: Client,
-    last_run: dict[str, int],
+    last_run: Dict[str, int],
     first_fetch_time: str,
-    fetch_severity: list[str] | None,
-    fetch_status: list[str] | None,
-    fetch_type: list[str] | None,
-    fetch_environment: list[str] | None,
-    max_fetch: int | None,
+    fetch_severity: Optional[List[str]],
+    fetch_status: Optional[List[str]],
+    fetch_type: Optional[List[str]],
+    fetch_environment: Optional[List[str]],
+    max_fetch: Optional[int],
     duplicate_alert: bool,
-    mirror_direction: str | None,
+    mirror_direction: Optional[str],
     close_alert: bool,
-) -> tuple[dict[str, int], list[dict]]:
+) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
