@@ -130,7 +130,6 @@ class EndpointCommandRunner:
             return readable_errors, []
 
         endpoints = entry_context_to_endpoints(command, entry_context)
-        demisto.debug(f'run_command::{endpoints=}')
         if command.post_processing:
             endpoints = command.post_processing(endpoints, endpoint_args)
 
@@ -477,7 +476,6 @@ def create_endpoint(
     Returns:
         dict[str, Any]: A structured endpoint dictionary with values and their sources.
     """
-    demisto.debug(f'creating endpoint with {command_output=}, {output_mapping=}, {source=}')
 
     if not command_output:
         return {}
@@ -488,7 +486,6 @@ def create_endpoint(
         endpoint_key = mapped_key if (mapped_key := output_mapping.get(key)) else key
         endpoint[endpoint_key] = {'Value': value, 'Source': source}
 
-    demisto.debug(f'created {endpoint=}')
     return endpoint
 
 
@@ -700,7 +697,6 @@ def get_raw_endpoints(output_keys: list[str], raw_context: list[dict[str, Any]])
     raw_endpoints = []
 
     for context in raw_context:
-        demisto.debug(f'Processing context: {context}')
         # Convert each key's data to a list using to_list
         lists_of_objects = [to_list(get_outputs(key, context)) for key in output_keys]
 
@@ -742,7 +738,6 @@ def entry_context_to_endpoints(command: Command, entry_context: list) -> list[di
     Returns:
         list[dict[str, Any]]: A list of endpoint dictionaries generated from the entry context.
     """
-    demisto.debug('Starting entry_context_to_endpoints')
     raw_endpoints = get_raw_endpoints(command.output_keys, entry_context)
     endpoints = create_endpoints(raw_endpoints, command.output_mapping, command.brand)
     demisto.debug(f'Returning {len(endpoints)} endpoints')
