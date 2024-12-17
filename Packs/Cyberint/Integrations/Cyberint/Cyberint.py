@@ -2,12 +2,9 @@
 """ IMPORTS """
 
 import copy
-import json
 from contextlib import closing
-from typing import Any
 from collections.abc import Iterable
 
-import dateparser
 from CommonServerPython import *
 from requests import Response
 
@@ -243,7 +240,7 @@ def test_module(client: Client):
             )
         else:
             error_message = str(exception)
-        raise DemistoException(error_message)
+        return error_message
 
 
 def verify_input_date_format(date: str | None) -> str | None:
@@ -717,7 +714,16 @@ def get_remote_data_command(
     response = client.get_alert(alert_ref_id=incident_id)
     if not isinstance(response, dict):
         response = json.loads(response)
-    mirrored_ticket: dict[str, Any] = response["alert"]
+
+    if response is None:
+        demisto.error("Invalid response from Cyberint")
+        return GetRemoteDataResponse({}, [])
+
+    mirrored_ticket: dict[str, Any] = response.get("alert", {})
+
+    if mirrored_ticket is None or not mirrored_ticket:
+        return GetRemoteDataResponse({}, [])
+
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("update_date")))
 
     mirrored_ticket["cyberintstatus"] = MIRRORING_FIELDS_MAPPER.get(mirrored_ticket["status"])
@@ -754,6 +760,8 @@ def date_to_epoch_for_fetch(date: datetime | None) -> int:
     Returns:
         int: date in epoch timestamp.
     """
+    if date is None:
+        return int(datetime.now().timestamp())
     return date_to_timestamp(date) // 1000
 
 

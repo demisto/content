@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from CommonServerPython import EntryType, DemistoException
+from CommonServerPython import EntryType, DemistoException, GetRemoteDataResponse
 from Cyberint import cyberint_alerts_status_update, test_module, get_alert_attachments, create_fetch_incident_attachment, \
     convert_date_time_args, get_mapping_fields_command, date_to_epoch_for_fetch
 
@@ -381,9 +381,7 @@ def test_test_module_invalid_token(requests_mock, client):
     error_response = {"error": "Invalid token or token expired"}
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=401, json=error_response)
 
-    with pytest.raises(DemistoException,
-                       match="Error verifying access token and / or URL, make sure the configuration parameters are correct."):
-        test_module(client)
+    assert test_module(client) == 'Error verifying access token and / or URL, make sure the configuration parameters are correct.'
 
 
 def test_test_module_error(requests_mock, client):
@@ -397,11 +395,10 @@ def test_test_module_error(requests_mock, client):
      - A DemistoException is raised with an appropriate error message.
     """
 
-    error_response = {"error": "Unexpected error"}
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=503, json=error_response)
+    error_response = {"error": "Not found"}
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=404, json=error_response)
 
-    with pytest.raises(DemistoException, match="Unexpected error"):
-        test_module(client)
+    assert test_module(client) == 'Error in API call [404] - None\n{"error": "Not found"}'
 
 
 def test_get_alert_attachments_with_analysis_report(requests_mock, client):
@@ -493,7 +490,7 @@ def test_get_attachment_name(client):
     assert get_attachment_name("") == "xsoar_untitled_attachment"
 
 
-def test_get_remote_data_command_with_closed_incident(requests_mock, client):
+def test_get_remote_data_command_with_open_incident(requests_mock, client):
 
     from Cyberint import get_remote_data_command
 
@@ -504,14 +501,86 @@ def test_get_remote_data_command_with_closed_incident(requests_mock, client):
         "last_update": "2024-06-10T12:00:00Z"
     }
     params = {
-        "close_incident": True
+        "close_incident": False
     }
-    mock_response = load_mock_response("alert.json")
+    mock_response = load_mock_response("alert_open.json")
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
     response = get_remote_data_command(client, args, params)
 
     assert response is not None
+
+
+def test_get_remote_data_command_with_closed_incident(requests_mock, client):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 124,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 124,
+        "last_update": "2024-06-10T12:00:00Z"
+    }
+    params = {
+        "close_incident": True
+    }
+    mock_response = load_mock_response("alert_closed.json")
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
+
+    response = get_remote_data_command(client, args, params)
+
+    assert response is not None
+
+
+def test_get_remote_data_command_with_missing_update_date(requests_mock, client):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 125,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 125,
+        "last_update": "2024-06-10T12:00:00Z"
+
+    }
+    params = {"close_incident": True}
+
+    mock_response = {
+        "alert": {
+            "id": "125",
+            "status": "closed",
+            "closure_reason": "Resolved",
+            "closure_reason_description": "Issue mitigated"
+        }
+    }
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
+
+    response = get_remote_data_command(client, args, params)
+
+    assert isinstance(response, GetRemoteDataResponse)
+    assert response.mirrored_object["cyberintstatus"] is None
+    assert response.entries[0]["Contents"]["dbotIncidentClose"] is True
+
+
+def test_get_remote_data_command_invalid_response(requests_mock, client):
+
+    from Cyberint import get_remote_data_command
+
+    args = {
+        "id": 126,
+        "lastUpdate": "2024-06-10T12:00:00Z",
+        "remote_incident_id": 126,
+        "last_update": "2024-06-10T12:00:00Z"
+    }
+    params = {"close_incident": True}
+
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", text='{"invalid": "response"}')
+
+    response = get_remote_data_command(client, args, params)
+
+    assert isinstance(response, GetRemoteDataResponse)
+    assert response.mirrored_object == {}
+    assert len(response.entries) == 0
 
 
 def test_convert_date_time_args():
