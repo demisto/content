@@ -1,5 +1,4 @@
 {
-	"brands": null,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "Classifies Microsoft 365 Defender's events",
@@ -282,9 +281,6 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-                "dbotMirrorName": {
-                    "simple": "mirror_name"
-                },
                  "dbotMirrorTags": {
                     "simple": "mirror_tags"
                 },
