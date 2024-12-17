@@ -3,10 +3,12 @@ prevention, investigation, and response across endpoints, identities, email, and
 protection against sophisticated attacks.
 
 ## Authentication Using the Device Code Flow
+
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Microsoft 365 Defender with Cortex XSOAR.
 
 To connect to the Microsoft 365 Defender:
+
 1. Fill in the required parameters.
 2. Run the ***!microsoft-365-defender-auth-start*** command. 
 3. Follow the instructions that appear.
@@ -15,6 +17,7 @@ To connect to the Microsoft 365 Defender:
 At the end of the process you'll see a message that you've logged in successfully.
 
 *Note: In case of a password change, the `microsoft-365-defender-auth-reset` command should be executed followed by the authentication process described above.*
+
 ### Cortex XSOAR App
 
 In order to use the Cortex XSOAR application, use the default application ID.
@@ -25,11 +28,13 @@ In order to use the Cortex XSOAR application, use the default application ID.
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
 #### Required Permissions
+
 The required API permissions are for the ***Microsoft Threat Protection*** app.
- * offline_access - Delegate
- * AdvancedHunting.Read - Delegated
- * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
- * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+
+* offline_access - Delegate
+* AdvancedHunting.Read - Delegated
+* Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+* AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
 ### Self-Deployed Application - Client Credentials Flow
 
@@ -42,8 +47,9 @@ Follow these steps for a self-deployed configuration:
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 
 #### Required Permissions
- * AdvancedHunting.Read.All - Application
- * Incident.ReadWrite.All - Application
+
+* AdvancedHunting.Read.All - Application
+* Incident.ReadWrite.All - Application
 
 ## Configure Microsoft 365 Defender on Cortex XSOAR
 
@@ -93,15 +99,18 @@ Follow these steps for a self-deployed configuration:
 | Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
 
 5. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
+
 ## Incident Mirroring
+
 ### Mirroring In (Microsoft 365 Defender → XSOAR)
+
 When incidents are mirrored into XSOAR from Microsoft 365 Defender:
 
 1. **Comments** mirrored from Microsoft 365 Defender will be added to the incident as entries in XSOAR and tagged with the **Comment Entry Tag From Microsoft 365 Defender**.  
-   - By default, the tag is set to: `CommentFromMicrosoft365Defender`.  
+   * By default, the tag is set to: `CommentFromMicrosoft365Defender`.  
 
 2. If an incident is closed in Microsoft 365 Defender (`status` = **Resolved**) and Close Mirrored Cortex XSOAR Incidents is enabled:  
-   - The **"classification"** field in Microsoft 365 Defender will be mapped to the **Close Reason** field in XSOAR.  
+   * The **"classification"** field in Microsoft 365 Defender will be mapped to the **Close Reason** field in XSOAR.  
 
 
 ### Mirroring Out (XSOAR → Microsoft 365 Defender)
@@ -110,17 +119,17 @@ When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
 
 1. **Supported Fields**:  
    The following fields are mirrored:  
-   - **Microsoft 365 Defender Status**  
-   - **Assigned User**  
-   - **Microsoft 365 Defender Classification**  
-   - **Microsoft 365 Defender Tags**  
+   * **Microsoft 365 Defender Status**  
+   * **Assigned User**  
+   * **Microsoft 365 Defender Classification**  
+   * **Microsoft 365 Defender Tags**  
 
 2. **Comments**:  
-   - XSOAR entries with the **Comment Entry Tag To Microsoft 365 Defender** tag are mirrored as comments in Microsoft 365 Defender.  
-   - **Note**: Comments cannot be edited or deleted in Microsoft 365 Defender, as this functionality is not supported.
+   * XSOAR entries with the **Comment Entry Tag To Microsoft 365 Defender** tag are mirrored as comments in Microsoft 365 Defender.  
+   * **Note**: Comments cannot be edited or deleted in Microsoft 365 Defender, as this functionality is not supported.
 
 3. If an incident is closed in XSOAR and Close Mirrored Microsoft 365 Defender Incidents is enabled:  
-   - The **Close Reason** field is mirrored to the `status` and `classification` fields in Microsoft 365 Defender.  
+   * The **Close Reason** field is mirrored to the `status` and `classification` fields in Microsoft 365 Defender.  
 
 
 ### Closing Logic
@@ -130,18 +139,18 @@ When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
 When an incident is resolved in Microsoft 365 Defender:
 
 1. If the `status` = **Resolved**:  
-   - The **"classification"** field will be mapped to the **Close Reason** field in XSOAR using the **Close Reason Mapping Table**.  
-   - The **"classification"** and  **"determination"** fields will be mirrored into the **Microsoft 365 Defender Classification** field in XSOAR.
+   * The **"classification"** field will be mapped to the **Close Reason** field in XSOAR using the **Close Reason Mapping Table**.  
+   * The **"classification"** and  **"determination"** fields will be mirrored into the **Microsoft 365 Defender Classification** field in XSOAR.
 
 **Example**:  
-- An incident closed in Microsoft 365 Defender with:  
-   - `status` = **Resolved**
-   - `Classification` = **True Positive**  
-   - `Determination` = **Phishing**  
+* An incident closed in Microsoft 365 Defender with:  
+  * `status` = **Resolved**
+  * `Classification` = **True Positive**  
+  * `Determination` = **Phishing**  
 
   Results in XSOAR:  
-   - `Close Reason` = **Resolved**  
-   - `Microsoft 365 Defender Classification` = **True Positive - Phishing**
+  * `Close Reason` = **Resolved**  
+  * `Microsoft 365 Defender Classification` = **True Positive - Phishing**
 
 **Close Reason Mapping Table (Incoming)**:
 
@@ -165,13 +174,13 @@ When closing incidents from XSOAR to Microsoft 365 Defender, the following logic
 
 3. **Close Reason: False Positive**  
    If the **Close Reason** in XSOAR is **FalsePositive**, but the `classification` field does not already equal `FalsePositive`, the following updates occur:  
-   - **classification** → `FalsePositive`  
-   - **determination** → `Other`  
+   * **classification** → `FalsePositive`  
+   * **determination** → `Other`  
 
 3. **Close Reason: Other or Duplicate**  
    If the **Close Reason** in XSOAR is either **Other** or **Duplicate**, the following updates occur:  
-   - **classification** → `Unknown`  
-   - **determination** → `NotAvailable`  
+   * **classification** → `Unknown`  
+   * **determination** → `NotAvailable`  
 
 
 **Close Reason Mapping Table (Outgoing)**:
@@ -189,13 +198,14 @@ When closing incidents from XSOAR to Microsoft 365 Defender, the following logic
 
 1. **Configuration Requirements for Closing Incidents**:  
    To close incidents in both directions, ensure the following settings in XSOAR:  
-   - **Close Mirrored XSOAR Incident** checkbox = **True**  
-   - **Close Mirrored Microsoft 365 Defender Incident** checkbox = **True**  
+   * **Close Mirrored XSOAR Incident** checkbox = **True**  
+   * **Close Mirrored Microsoft 365 Defender Incident** checkbox = **True**  
 
    If these checkboxes are **False**, only the `Microsoft 365 Defender Status` and `Microsoft 365 Defender Classification` fields will be updated, and incidents will not be closed.
 
 
 ### Configure Incident Mirroring
+
 **This feature is compliant with XSOAR version 6.0 and above.**  
 When mirroring incidents, you can make changes in Microsoft 365 Defender that will be reflected in Cortex XSOAR, or vice versa. 
 Mirroring out of the box includes the following fields:
@@ -204,18 +214,19 @@ The following instructions include steps for configuring the integration and inc
 For information about classification and mapping see [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).  
 
 **Note:**  
-- For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in Microsoft 365 Defender, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
-- The mirroring settings apply only for incidents that are fetched after applying the settings. 
-- To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. If you detach the out of the box mapper and make changes to it, the pack does not automatically get updates.
+* For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in Microsoft 365 Defender, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
+* The mirroring settings apply only for incidents that are fetched after applying the settings. 
+* To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. If you detach the out of the box mapper and make changes to it, the pack does not automatically get updates.
 
 #### STEP 1 - Configure the Microsoft 365 Defender Integration Instance for Mirroring.
+
 1. Navigate to **Integrations** and search for ** Microsoft 365 Defender**.
 2. Click **Add instance**.
 3. Select **Fetches incidents**.
 4. Select the **Incident Mirroring Direction**:  
-   - **Incoming** - Mirrors changes on the Microsoft 365 Defender incident in to the Cortex XSOAR incident.
-   - **Outgoing** - Mirrors changes on the Cortex XSOAR incident to the Microsoft 365 Defender incident.
-   - **Incoming And Outgoing** - Mirrors changes both in and out on both incidents.
+   * **Incoming** - Mirrors changes on the Microsoft 365 Defender incident in to the Cortex XSOAR incident.
+   * **Outgoing** - Mirrors changes on the Cortex XSOAR incident to the Microsoft 365 Defender incident.
+   * **Incoming And Outgoing** - Mirrors changes both in and out on both incidents.
 5. Under **Incident type**, select Microsoft 365 Defender Incident. 
 6. Under **Mapper (incoming)**, for default mapping select Microsoft 365 Defender - Incoming Mapper. For custom mapping, follow the instructions in STEP 2 and then select the custom mapper name.
 7. Under **Mapper (outgoing)**, for default mapping select Microsoft 365 Defender - Outgoing Mapper. For custom mapping, follow the instructions in STEP 3 and then select the custom mapper name.
@@ -227,6 +238,7 @@ These tags work only for mirroring comments from Cortex XSOAR to Microsoft 365 D
 10. Click **Save & Exit**.
 
 #### STEP 2 (Optional) Configure the Incoming Mapper by Incident Type
+
 **Note:**
 Any modifications require that the mappers be cloned before any changes can be applied.
 
@@ -234,16 +246,18 @@ Any modifications require that the mappers be cloned before any changes can be a
 2. Select it and click **Duplicate**.
 3. Under the **Incident Type** dropdown, select Microsoft 365 Defender Incident.
 4. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
-    - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the incident. This should be the incidentId of the Microsoft 365 Defender Incident.
-    - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
-    - **dbotMirrorInstance** - determines the Microsoft 365 Defender instance with which to mirror. This should match the instance configuration.
-    - **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
-    - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Microsoft 365 Defender. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
+    * **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the incident. This should be the incidentId of the Microsoft 365 Defender Incident.
+    * **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
+    * **dbotMirrorInstance** - determines the Microsoft 365 Defender instance with which to mirror. This should match the instance configuration.
+    * **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
+    * **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Microsoft 365 Defender. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
 
 
 #### STEP 3 - Modify the Outgoing Mapper  
+
 **Note:**  
 Any modifications require that the mappers be cloned before any changes can be applied.
+
 1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **Microsoft 365 Defender - Outgoing Mapper.**
 2. Select it and click **Duplicate**.  
   The left side of the screen shows the Microsoft 365 Defender fields to which to map and the right side of the
@@ -257,10 +271,13 @@ match.
 7. Save your changes.
 
 #### STEP 4 - Create an Incident in Microsoft 365 Defender  
+
 For purposes of this use case, it can be a simple incident. The new incident will be ingested in Cortex XSOAR in approximately one minute.
 
 #### STEP 5 - Add a Comment from Cortex XSOAR to Microsoft 365 Defender
+
 In the example below, we have written *A comment from Cortex XSOAR to Microsoft 365 Defender*.
+
 1. Create an entry in the incidents' war room.
 2. Click Actions > Tags and add the Comment Entry Tag To Microsoft 365 Defender tag.
 3. Navigate back to the incident in Microsoft 365 Defender and within approximately one minute, the changes will be reflected there, too. The note is mirrored out as a comment in Microsoft 365 Defender.  
@@ -298,6 +315,7 @@ There is no context output for this command.
 
 
 >###Authorization instructions
+>
 >1. To sign in, use a web browser to open the page {URL}
 >and enter the code {code} to authenticate.
 >2. Run the !microsoft-365-defender-auth-complete command in the War Room.
@@ -331,6 +349,7 @@ There is no context output for this command.
 
 
 ### microsoft-365-defender-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -360,6 +379,7 @@ There is no context output for this command.
 
 
 ### microsoft-365-defender-auth-test
+
 ***
 Tests the connectivity to the Microsoft 365 Defender.
 
@@ -367,6 +387,7 @@ Tests the connectivity to the Microsoft 365 Defender.
 #### Base Command
 
 `microsoft-365-defender-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -376,9 +397,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-365-defender-auth-test```
 
 #### Human Readable Output
+
 >✅ Success!
 
 
@@ -400,7 +423,7 @@ Get the most recent incidents.
 | limit | Number of incidents in the list. Maximum is 100. Default is 100. | Optional | 
 | offset | Number of entries to skip. | Optional | 
 | timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
-| odata | Filter incidents using odata query: https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-list-incidents?view=o365-worldwide. Example: `{"$filter":"lastUpdateTime gt 2022-08-29T06:00:00.29Z"}`. | Optional | 
+| odata | Filter incidents using odata query: <https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-list-incidents?view=o365-worldwide>. Example: `{"$filter":"lastUpdateTime gt 2022-08-29T06:00:00.29Z"}`. | Optional | 
 
 #### Context Output
 
@@ -421,10 +444,13 @@ Get the most recent incidents.
 | Microsoft365Defender.Incident.comments | unknown | List of comments created by secops when managing the incident, for example additional information about the classification selection. | 
 
 #### Command Example
+
 ```!ms-365-defender-incidents-list status=Active limit=10 assigned_to=user```
 
 #### Human Readable Output
+
 >### Incidents:
+
 >|Incident name|Tags|Severity|Incident ID|Categories|Impacted entities|Active alerts|Service sources|Detection sources|First activity|Last activity|Status|Assigned to|Classification|Device groups|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Automated investigation started manually on one endpoint | tag1, tag2 | Informational | 263 | SuspiciousActivity | user | 5 / 12 | MicrosoftDefenderForEndpoint | AutomatedInvestigation | 2021-03-22T12:34:31.8123759Z | 2021-03-22T12:59:07.526847Z | Active | email| Unknown | computer |
@@ -433,6 +459,7 @@ Get the most recent incidents.
 
 
 ### microsoft-365-defender-incident-get
+
 ***
 Get incident with the given ID.
 
@@ -440,6 +467,7 @@ Get incident with the given ID.
 #### Base Command
 
 `microsoft-365-defender-incident-get`
+
 #### Input
 
 ### microsoft-365-defender-incident-get
@@ -520,10 +548,13 @@ Update the incident with the given ID.
 
 
 #### Command Example
+
 ```!microsoft-365-defender-incident-update id=264 tags=test5```
 
 #### Human Readable Output
+
 >### Updated incident No. 263:
+
 >|Incident name|Tags|Severity|Incident ID|Categories|Impacted entities|Active alerts|Service sources|Detection sources|First activity|Last activity|Status|Assigned to|Classification|Device groups|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Automated investigation started manually on one endpoint | test5 | Informational | 263 | SuspiciousActivity |  | 10 / 12 | MicrosoftDefenderForEndpoint | AutomatedInvestigation | 2021-03-22T12:34:31.8123759Z | 2021-03-22T12:59:07.526847Z | Active | User | Unknown | computer |
@@ -531,6 +562,7 @@ Update the incident with the given ID.
 
 
 ### microsoft-365-defender-advanced-hunting
+
 ***
 Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender.
 Details on how to write queries you can find [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide).
@@ -538,6 +570,7 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 #### Base Command
 
 `microsoft-365-defender-advanced-hunting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -556,13 +589,17 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 
 
 #### Command Example
+
 ```!microsoft-365-defender-advanced-hunting query=AlertInfo```
 
 #### Human Readable Output
+
 >###  Result of query: AlertInfo:
+
 >|Timestamp|AlertId|Title|Category|Severity|ServiceSource|DetectionSource|AttackTechniques|
 >|---|---|---|---|---|---|---|---|
 >| 2021-04-25T10:11:00Z | alertId | eDiscovery search started or exported | InitialAccess | Medium | Microsoft Defender for Office 365 | Microsoft Defender for Office 365 |  |
+
 ### update-remote-system
 
 ***
@@ -580,6 +617,7 @@ Updates the remote incident with local incident changes. This method is only use
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -599,6 +637,7 @@ Get remote data from a remote incident. This method does not update the current 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
 
 ***
@@ -616,6 +655,7 @@ Returns the list of fields to map in outgoing mirroring. This command is only us
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***

@@ -315,34 +315,34 @@ script:
       description: The specification for the incident.
       name: classification
       predefined:
-        - Unknown
-        - FalsePositive
-        - TruePositive
-        - InformationalExpectedActivity
-    - auto: PREDEFINED
-      description: 'Determination of the incident. Must be used with the classification field. Possible values depend on the classification field: TruePositive - MultiStagedAttack, MaliciousUserActivity, Malware, Phishing, CompromisedAccount, UnwantedSoftware, Other (default), InformationalExpectedActivity- SecurityTesting, LineOfBusinessApplication, ConfirmedActivity, Other (default), FalsePositive - Clean, NoEnoughDataToValidate, Other (default), Unknown - NotAvailable.'
+      - Unknown
+      - FalsePositive
+      - TruePositive
+      - InformationalExpectedActivity
+    - description: 'Determination of the incident. Must be used with the classification field. Possible values depend on the classification field: TruePositive - MultiStagedAttack, MaliciousUserActivity, Malware, Phishing, CompromisedAccount, UnwantedSoftware, Other (default), InformationalExpectedActivity- SecurityTesting, LineOfBusinessApplication, ConfirmedActivity, Other (default), FalsePositive - Clean, NoEnoughDataToValidate, Other (default), Unknown - NotAvailable.'
       name: determination
+      auto: PREDEFINED
       predefined:
-        - NotAvailable
-        - Malware
-        - SecurityTesting
-        - UnwantedSoftware
-        - MultiStagedAttack
-        - MaliciousUserActivity
-        - CompromisedAccount
-        - Phishing
-        - LineOfBusinessApplication
-        - ConfirmedActivity
-        - NotMalicious
-        - Other
+      - NotAvailable
+      - Malware
+      - SecurityTesting
+      - UnwantedSoftware
+      - MultiStagedAttack
+      - MaliciousUserActivity
+      - CompromisedAccount
+      - Phishing
+      - LineOfBusinessApplication
+      - ConfirmedActivity
+      - NotMalicious
+      - Other
     - description: Comment to be added to the incident.
       name: comment
     - description: 'A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3.'
-      name: tags
       isArray: true
-    - description: 'The time limit in seconds for the http request to run.'
+      name: tags
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
       name: timeout
-      defaultValue: '30'
     description: Update the incident with the given ID.
     name: microsoft-365-defender-incident-update
     outputs:
