@@ -75,7 +75,7 @@ call o365_common_fields
 	xdm.alert.severity = Severity,
 	xdm.alert.name = investigationname,
 	xdm.source.application.name = SourceApp,
-	xdm.email.subject = coalesce(itemname, subject),
+	xdm.email.subject = if(Subject != null, Subject, ItemName != null and RecordType in (43, 71, 72, 73, 75)), // For MIP events, fallback to ItemName (see https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#mip-label-schema)
 	xdm.target.user.identifier = targetyammeruserid,
 	xdm.alert.original_threat_name = replex(ThreatsAndDetectionTech, "[\"\[\]]", ""),
 	xdm.target.url = url, 
