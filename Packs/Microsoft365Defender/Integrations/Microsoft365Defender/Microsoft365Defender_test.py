@@ -9,13 +9,14 @@ you are implementing with your integration
 """
 
 import json
+from unittest.mock import patch
 
 import pytest
 
 import demistomock as demisto
-from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids
-
-from unittest.mock import patch
+from CommonServerPython import EntryType
+from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
+    get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries
 
 MOCK_MAX_ENTRIES = 2
 
@@ -211,7 +212,7 @@ class MockMicrosoft365DefenderClient(Client):
 
 # Test case
 @patch("Microsoft365Defender.MAX_ENTRIES", MOCK_MAX_ENTRIES)
-def test_fetch_modified_incident_ids_with_mocked_max_entries(mocker):
+def test_fetch_modified_incident_ids(mocker):
     mock_responses = [util_load_json("./test_data/incidents_list_response.json"),
                       util_load_json("./test_data/incidents_empty_list_response.json")]
     for mock_response in mock_responses:
@@ -221,4 +222,90 @@ def test_fetch_modified_incident_ids_with_mocked_max_entries(mocker):
         assert result == expected_incidents
 
 
+def test_get_modified_remote_data_command(mocker):
+    import Microsoft365Defender
+    mock_args = {"lastUpdate": "2023-01-01T12:00:00Z"}
+    mocker.patch.object(Microsoft365Defender, 'fetch_modified_incident_ids', return_value=["123", "456"])
+    response = get_modified_remote_data_command(mock_client(mocker), mock_args)
+    assert response.modified_incident_ids == ["123", "456"]
 
+
+def test_get_modified_remote_data_command_invalid_last_update(mocker):
+    import Microsoft365Defender
+    mock_args = {"lastUpdate": "invalid_date_string"}
+    mocker.patch.object(Microsoft365Defender, 'fetch_modified_incident_ids', return_value=[])
+
+    with pytest.raises(AssertionError, match="could not parse invalid_date_string"):
+        get_modified_remote_data_command(mock_client(mocker), mock_args)
+
+
+@pytest.fixture
+def resolved_incidents():
+    """Fixture for resolved incidents."""
+    return [
+        {'incidentId': '1234', 'status': 'Resolved', 'classification': 'TruePositive'},
+        {'incidentId': '5678', 'status': 'Resolved', 'classification': 'Unknown'},
+        {'incidentId': '9012', 'status': 'Resolved', 'classification': 'FalsePositive'},
+        {'incidentId': '3456', 'status': 'Resolved', 'classification': 'InformationalExpectedActivity'}
+    ]
+
+
+@pytest.fixture
+def unresolved_incidents():
+    """Fixture for unresolved incidents."""
+    return [
+        {'incidentId': '1234', 'status': 'Active'},
+        {'incidentId': '5678', 'status': 'InProgress'}
+    ]
+
+
+def test_get_modified_incidents_close_entries(mocker, resolved_incidents):
+    """
+    Test when close_incident is True and incidents are Resolved.
+    """
+    result = get_modified_incidents_close_or_repopen_entries(resolved_incidents, close_incident=True)
+
+    assert len(result) == 4
+    assert result[0]['Type'] == EntryType.NOTE
+    assert result[0]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'Resolved',
+    }
+    assert result[1]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'Other',
+    }
+    assert result[2]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'False Positive',
+    }
+    assert result[3]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'Resolved',
+    }
+
+
+def test_get_modified_incidents_reopen_entries(mocker, unresolved_incidents):
+    """
+    Test when close_incident is True and incidents are not Resolved.
+    """
+    result = get_modified_incidents_close_or_repopen_entries(unresolved_incidents, close_incident=True)
+    assert len(result) == 2
+    assert result[0] == {'dbotIncidentReopen': True}
+    assert result[1] == {'dbotIncidentReopen': True}
+
+
+def test_get_modified_incidents_close_incident_false(mocker, resolved_incidents):
+    """
+    Test when close_incident is False.
+    """
+    result = get_modified_incidents_close_or_repopen_entries(resolved_incidents, close_incident=False)
+    assert result == []
+
+
+def test_get_modified_incidents_empty_list(mocker):
+    """
+    Test when modified_incidents is an empty list.
+    """
+    result = get_modified_incidents_close_or_repopen_entries([], close_incident=True)
+    assert result == []

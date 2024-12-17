@@ -747,7 +747,7 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
         List[dict]: The entries for closing or reopening incidents.
     """
     demisto.debug("Microsoft Defender 365 - Starting get_modified_incidents_close_or_repopen_entries")
-    entries_content = []
+    entries = []
     if close_incident:
         for incident in modified_incidents:
             if incident.get('status') == 'Resolved':
@@ -773,8 +773,8 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
                 entry = {
                     'dbotIncidentReopen': True
                 }
-            entries_content.append(entry)
-    return entries_content
+            entries.append(entry)
+    return entries
 
 
 def get_modified_remote_data_command(client: Client, args: dict) -> GetModifiedRemoteDataResponse:
