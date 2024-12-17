@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "All 'User' related fields have been replaced by 'Identity' related fields \\(eg. xdm.source.user.username -> xdm.identity.user, xdm.source.user.user_type -> xdm.identity.type\\). A full list of the 'Identity' fields can be found in X"
+}
