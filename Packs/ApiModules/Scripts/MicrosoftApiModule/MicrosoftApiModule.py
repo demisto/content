@@ -145,6 +145,37 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     'gcc-high': 'https://login.microsoftonline.us',
 }
 
+MICROSOFT_365_DEFENDER_TYPE = {
+    "Worldwide": "com",
+    "US Geo Proximity": "geo-us",
+    "EU Geo Proximity": "geo-eu",
+    "UK Geo Proximity": "geo-uk",
+    "AU Geo Proximity": "geo-au",
+    "SWA Geo Proximity": "geo-swa",
+    "INA Geo Proximity": "geo-ina",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+    "DoD": "dod",
+}
+
+# https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-list
+# https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
+MICROSOFT_365_DEFENDER_API_ENDPOINTS = {
+    "com": "https://api.security.microsoft.com",
+    "geo-us": "https://us.api.security.microsoft.com",
+    "geo-eu": "https://eu.api.security.microsoft.com",
+    "geo-uk": "ttps://uk.api.security.microsoft.com",
+    "geo-au": "https://au.api.security.microsoft.com",
+    "geo-swa": "https://swa.api.security.microsoft.com",
+    "geo-ina": "https://ina.api.security.microsoft.com",
+    "gcc": "https://api-gcc.security.microsoft.us",
+    "gcc-high": "https://api-gov.security.microsoft.us",
+    "dod": "https://api-gov.security.microsoft.us",
+}
+
+
+
+
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
