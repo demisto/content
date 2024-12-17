@@ -190,7 +190,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: Outgoing Mirroring - when selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender.
+- additionalinfo: Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender.
   defaultvalue: 'false'
   display: Close Mirrored Microsoft 365 Defender Incidents
   name: close_out
