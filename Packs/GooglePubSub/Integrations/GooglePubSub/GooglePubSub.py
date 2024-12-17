@@ -1325,7 +1325,7 @@ def fetch_incidents(
 
     # Pull unique messages if available
     msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(client, sub_name, last_run_fetched_ids,
-                                                                             last_run_time, False, retry_times=1)
+                                                                             last_run_time, ack_incidents, retry_times=1)
 
     # Handle fetch results
     return handle_fetch_results(
