@@ -188,7 +188,7 @@ class FireEyeClient(BaseClient):
         return self.http_request(method='GET', url_suffix='emailmgmt/quarantine', params=params, resp_type='json')
 
     @logger
-    def release_quarantined_emails_request(self, queue_ids: list, sensor_name: str):
+    def release_quarantined_emails_request(self, queue_ids: list, sensor_name: str = ''):
         return self.http_request(method='POST',
                                  url_suffix='emailmgmt/quarantine/release',
                                  params={'sensorName': sensor_name},
