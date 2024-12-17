@@ -25,6 +25,8 @@ class AlertStatus(Enum):
 
 
 def check_if_found_incident(res: List):
+    demisto.debug(f"res returned from command is: {res}")
+    demisto.debug("checking if we recieved incidents.")
     if res and isinstance(res, list) and isinstance(res[0].get('Contents'), dict):
         if 'data' not in res[0]['Contents']:
             raise DemistoException(res[0].get('Contents'))
@@ -36,6 +38,7 @@ def check_if_found_incident(res: List):
 
 
 def is_valid_args(args: Dict):
+    demisto.debug(f"checking if args are valid.")
     array_args: List[str] = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'owner', 'type', 'query']
     error_msg: List[str] = []
     for _key, value in args.items():
@@ -57,6 +60,7 @@ def is_valid_args(args: Dict):
     if len(error_msg) != 0:
         raise DemistoException('\n'.join(error_msg))
 
+    demisto.debug(f"they are valid.")
     return True
 
 
@@ -135,12 +139,13 @@ def transform_to_alert_data(incidents: List):
 
 
 def search_incidents(args: Dict):  # pragma: no cover
+    demisto.debug(f"in search_incidents")
     hr_prefix = ''
     is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     platform = get_demisto_version().get('platform', 'xsoar')
     if not is_valid_args(args):
         return None
-
+    demisto.debug("continuing cuz it's valid")
     if fromdate := arg_to_datetime(args.get('fromdate', '30 days ago' if is_summarized_version else None)):
         from_date = fromdate.isoformat()
         args['fromdate'] = from_date
@@ -173,7 +178,7 @@ def search_incidents(args: Dict):  # pragma: no cover
     # handle list of ids
     if args.get('id'):
         args['id'] = ','.join(argToList(args.get('id'), transform=str))
-
+    demisto.debug(f"getIncidents will be executed.")
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
     if not incident_found:

@@ -82,10 +82,10 @@ comment: |-
   For more information, see the section about permissions here:
   https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
-  id: SearchIncidentsV2
+  id: SearchIncidentsV2_test
   version: -1
 enabled: true
-name: SearchIncidentsV2
+name: SearchIncidentsV2_test
 outputs:
 - contextPath: foundIncidents.id
   description: A list of incident IDs returned from the query.
