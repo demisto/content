@@ -1,5 +1,5 @@
 NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
-This integration was integrated and tested with version xx of NetQuestOMX.
+This integration was integrated and tested with version 3.7.5a of NetQuestOMX.
 
 ## Configure NetQuestOMX in Cortex
 
