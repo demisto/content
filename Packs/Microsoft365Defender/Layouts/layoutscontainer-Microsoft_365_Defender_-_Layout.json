@@ -62,42 +62,6 @@
 			},
 			{
 				"description": "",
-				"filters": [
-					[
-						{
-							"left": {
-								"isContext": true,
-								"value": {
-									"simple": "closeReason"
-								}
-							},
-							"operator": "isEqualString",
-							"right": {
-								"isContext": false,
-								"value": {
-									"simple": "False Positive"
-								}
-							},
-							"type": "singleSelect"
-						},
-						{
-							"left": {
-								"isContext": true,
-								"value": {
-									"simple": "closeReason"
-								}
-							},
-							"operator": "isEqualString",
-							"right": {
-								"isContext": false,
-								"value": {
-									"simple": "Resolved"
-								}
-							},
-							"type": "singleSelect"
-						}
-					]
-				],
 				"isVisible": true,
 				"name": "Custom Fields",
 				"query": null,
