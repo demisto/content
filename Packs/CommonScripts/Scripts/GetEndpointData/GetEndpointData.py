@@ -116,7 +116,7 @@ class EndpointCommandRunner:
                 - A list of dictionaries, where each dictionary represents an endpoint and contains the raw output.
         """
         args = prepare_args(command, endpoint_args)
-        demisto.debug(f'run_command::args={args}')
+        demisto.debug(f'run command {command.name} with args={args}')
 
         if not self.is_command_runnable(command, args):
             return [], []
@@ -224,6 +224,8 @@ def to_list(var):
 def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandRunner, list[Command], list[Command]]:
     """
     Initializes the EndpointCommandRunner and the lists of single-argument and multi-argument commands.
+    single-argument commands are commands that accept only single values as arguments.
+    multi-argument commands are commands that accept comma-seperated lists of values as arguments.
     Args:
         module_manager (ModuleManager): The ModuleManager instance used to check the availability of integrations.
 
