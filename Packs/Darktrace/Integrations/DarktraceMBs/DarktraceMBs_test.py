@@ -339,7 +339,8 @@ def test_acknowledge_model_breach_UV(requests_mock):
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.ModelBreach'
     assert integration_response.outputs_key_field == 'pbid'
-    
+
+
 def test_test_module(requests_mock):
     """
     Tests the test module function
@@ -348,17 +349,46 @@ def test_test_module(requests_mock):
 
     # GIVEN an integration is configured and you would like to test the configuration
     mock_api_response = util_load_json('test_data/fetch_breach.json')
-    requests_mock.post('https://mock.darktrace.com/modelbreaches?minscore=0.0&starttime=1598932817000', json=mock_api_response)
+    requests_mock.get(
+        'https://mock.darktrace.com/modelbreaches?minscore=0&starttime=1598932817000&minimal=false&deviceattop=true',
+        json=mock_api_response)
 
     client = Client(
-        base_url='https://mock.darktrace.com',
+        base_url='https://mock.darktrace.com/',
         verify=False,
         auth=('examplepub', 'examplepri')
     )
 
-    integration_response = test_module(client, 1598932817000)
+    first_fetch_time = 1598932817000
+
+    integration_response = test_module(client, first_fetch_time)
     expected_response = "ok"
 
     # THEN if there is no error, test_module should return 'ok'
     assert len(integration_response) == 2
     assert isinstance(expected_response, str)
+
+
+def test_helper_stringify_data():
+    """
+    Tests the stringify_data helper function.
+    """
+    from DarktraceMBs import stringify_data
+
+    # GIVEN you have a params data structure in dictionary format and would like to test the stringify_data helper function
+    data_1 = {"first": 1}
+    data_2 = {"first": 1, "second": 2}
+    data_3 = {}
+    data_4 = {"test_1": "string_1", "test_2": 2}
+
+    # WHEN calling the helper function
+    integration_response_1 = stringify_data(data_1)
+    integration_response_2 = stringify_data(data_2)
+    integration_response_3 = stringify_data(data_3)
+    integration_response_4 = stringify_data(data_4)
+
+    # THEN the following outputs are expected
+    assert integration_response_1 == "first=1"
+    assert integration_response_2 == "first=1&second=2"
+    assert integration_response_3 == ""
+    assert integration_response_4 == "test_1=string_1&test_2=2"
