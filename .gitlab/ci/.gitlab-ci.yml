@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "ciac-11651/use_sdk_pylint_update"
+  CURRENT_BRANCH_NAME: packwise
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "ciac-11651/use_sdk_pylint_update"
+    ref: packwise
     project: "${CI_PROJECT_NAMESPACE}/infra"
