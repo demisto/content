@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory, TemporaryFile
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 import logging
 
 import git
@@ -58,8 +58,8 @@ def get_extracted_code_filepath(extractor: YmlSplitter) -> str:
 
 
 def content_item_to_package_format(
-        self, content_item_dir: str, del_unified: bool = True, source_mapping: dict | None = None,  # noqa: F841
-        code_fp_to_row_offset: dict = {}
+        self, content_item_dir: str, del_unified: bool = True, source_mapping: Optional[Dict] = None,  # noqa: F841
+        code_fp_to_row_offset: Dict = {}
 ) -> None:
     child_files = get_child_files(content_item_dir)
     for child_file in child_files:
@@ -83,7 +83,7 @@ def content_item_to_package_format(
                 os.remove(content_item_file_path)
 
 
-def convert_contribution_to_pack(contrib_converter: ContributionConverter) -> dict:
+def convert_contribution_to_pack(contrib_converter: ContributionConverter) -> Dict:
     """Create or updates a pack in the content repo from the contents of a contribution zipfile
 
     Args:
@@ -107,7 +107,7 @@ def convert_contribution_to_pack(contrib_converter: ContributionConverter) -> di
     for unpacked_contribution_dir in unpacked_contribution_dirs:
         contrib_converter.convert_contribution_dir_to_pack_contents(unpacked_contribution_dir)
     # extract to package format
-    code_fp_to_row_offset: dict[str, int] = {}
+    code_fp_to_row_offset: Dict[str, int] = {}
     for pack_subdir in get_child_directories(contrib_converter.pack_dir_path):
         basename = os.path.basename(pack_subdir)
         if basename in {SCRIPTS_DIR, INTEGRATIONS_DIR}:
@@ -121,13 +121,14 @@ def convert_contribution_to_pack(contrib_converter: ContributionConverter) -> di
 
 def get_pack_name(zip_fp: str) -> str:
     """returns the pack name from the zipped contribution file's metadata.json file"""
-    with zipfile.ZipFile(zip_fp) as zipped_contrib, zipped_contrib.open('metadata.json') as metadata_file:
-        metadata = json.loads(metadata_file.read())
+    with zipfile.ZipFile(zip_fp) as zipped_contrib:
+        with zipped_contrib.open('metadata.json') as metadata_file:
+            metadata = json.loads(metadata_file.read())
     return metadata.get('name', 'ServerSidePackValidationDefaultName')
 
 
 def adjust_linter_row_and_col(
-        error_output: dict, code_fp_to_row_offset: dict | None = None,
+        error_output: Dict, code_fp_to_row_offset: Optional[Dict] = None,
         row_offset: int = 2, row_start: int = 1, col_offset: int = 1, col_start: int = 0
 ) -> None:
     """Update the linter errors row and column numbering
@@ -162,7 +163,7 @@ def adjust_linter_row_and_col(
                         offset_for_file = code_fp_to_row_offset.get(filepath)
                         if isinstance(offset_for_file, int):
                             offset = offset_for_file
-                original_vector_value: Any | None = error_output.get(vector)
+                original_vector_value: Optional[Any] = error_output.get(vector)
                 if original_vector_value:
                     error_output[vector] = str(max(int(original_vector_value) - offset, start))
     except ValueError as e:
@@ -200,7 +201,7 @@ def run_lint(file_path: str, json_output_file: str) -> None:
     )
 
 
-def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> tuple[str, dict]:
+def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> Tuple[str, Dict]:
     # write zip file data to file system
     zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
     with open(zip_path, 'wb') as fp:
@@ -214,7 +215,7 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
     return contrib_converter.pack_dir_path, code_fp_to_row_offset
 
 
-def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_directory: str) -> tuple[str, dict]:
+def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_directory: str) -> Tuple[str, Dict]:
     content = Content(tmp_directory)
     pack_name = 'TmpPack'
     pack_dir = content.path / 'Packs' / pack_name
@@ -252,50 +253,51 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     return extractor.get_output_path(), code_fp_to_row_offset
 
 
-def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
+def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
 
-    with redirect_stderr(output_capture), TemporaryFile(mode='w+') as tmp:
-        logging_setup(
-            console_log_threshold=logging.INFO,
-            file_log_threshold=logging.DEBUG,
-            log_file_path=tmp.name,
-            skip_log_file_creation=True
-        )
-
-        if filename.endswith('.zip'):
-            path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
-                filename, data, tmp_directory
+    with redirect_stderr(output_capture):
+        with TemporaryFile(mode='w+') as tmp:
+            logging_setup(
+                console_log_threshold=logging.INFO,
+                file_log_threshold=logging.DEBUG,
+                log_file_path=tmp.name,
+                skip_log_file_creation=True
             )
-        else:
-            path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
-                filename, data, tmp_directory
-            )
-        run_validate(path_to_validate, json_output_path)
-        run_lint(path_to_validate, lint_output_path)
 
-        demisto.debug("log capture:" + tmp.read())
+            if filename.endswith('.zip'):
+                path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
+                    filename, data, tmp_directory
+                )
+            else:
+                path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
+                    filename, data, tmp_directory
+                )
+            run_validate(path_to_validate, json_output_path)
+            run_lint(path_to_validate, lint_output_path)
 
-        all_outputs = []
-        with open(json_output_path) as json_outputs:
-            outputs_as_json = json.load(json_outputs)
-            if outputs_as_json:
-                if type(outputs_as_json) == list:
-                    all_outputs.extend(outputs_as_json)
-                else:
-                    all_outputs.append(outputs_as_json)
+            demisto.debug("log capture:" + tmp.read())
 
-        with open(lint_output_path) as json_outputs:
-            outputs_as_json = json.load(json_outputs)
-            if outputs_as_json:
-                if type(outputs_as_json) == list:
-                    for validation in outputs_as_json:
-                        adjust_linter_row_and_col(validation, code_fp_to_row_offset)
-                    all_outputs.extend(outputs_as_json)
-                else:
-                    all_outputs.append(outputs_as_json)
+            all_outputs = []
+            with open(json_output_path, 'r') as json_outputs:
+                outputs_as_json = json.load(json_outputs)
+                if outputs_as_json:
+                    if type(outputs_as_json) == list:
+                        all_outputs.extend(outputs_as_json)
+                    else:
+                        all_outputs.append(outputs_as_json)
+
+            with open(lint_output_path, 'r') as json_outputs:
+                outputs_as_json = json.load(json_outputs)
+                if outputs_as_json:
+                    if type(outputs_as_json) == list:
+                        for validation in outputs_as_json:
+                            adjust_linter_row_and_col(validation, code_fp_to_row_offset)
+                        all_outputs.extend(outputs_as_json)
+                    else:
+                        all_outputs.append(outputs_as_json)
     return all_outputs
 
 
@@ -385,9 +387,9 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
 
 
 def get_file_name_and_contents(
-        filename: str | None = None,
-        data: str | None = None,
-        entry_id: str | None = None,
+        filename: Optional[str] = None,
+        data: Optional[str] = None,
+        entry_id: Optional[str] = None,
 ):
     if filename and data:
         return filename, b64decode(data)
@@ -397,7 +399,6 @@ def get_file_name_and_contents(
         with open(file_object['path'], 'rb') as f:
             file_contents = f.read()
         return file_object['name'], file_contents
-    return None
 
 
 def main():
