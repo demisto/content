@@ -954,14 +954,14 @@ def handle_incident_close_out_or_reactivation(delta: dict, incident_status: Inci
             demisto.debug("Microsoft Defender 365 - Updating incident status to Active")
 
 
-def mirror_out_entries(client: Client, entries: list[Dict], comment_tag: str, remote_incident_id: str):
+def mirror_out_entries(client: Client, entries: list[Dict], comment_tag: str, remote_incident_id: int):
     """
     Mirror out the entries to Microsoft 365 Defender.
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         entries (list[Dict]): The entries added to the incident.
         comment_tag (str): The comment tag to identify the entries that should be mirrored out as comments.
-        remote_incident_id (str): The remote incident ID.
+        remote_incident_id (int): The remote incident ID.
 
 
     """
