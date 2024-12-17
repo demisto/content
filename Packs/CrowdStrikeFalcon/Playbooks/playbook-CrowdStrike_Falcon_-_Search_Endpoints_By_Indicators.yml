@@ -1,16 +1,8 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: 6.5.0
-    itemVersion: ""
-    packID: 958aac7a-666b-4065-82a5-3cebc2c67363
-    packName: cs command and scripting
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
-dirtyInputs: true
-id: cdddd0da-6ac6-441d-85a6-4a95e5798268
+id: CrowdStrike Falcon - Search Endpoints By Indicators
 inputSections:
 - description: Generic group for inputs
   inputs:
@@ -25,38 +17,38 @@ inputSections:
 inputs:
 - description: The SHA256 file hash to search for.
   key: FileSha256
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The ID of the host that originated the detection.
   key: HostId
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The SHA1 file hash to search for.
   key: SHA1
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The MD5 file hash to search for.
   key: MD5
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The IPV4 indicator to search for.
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: 8.8.8.8
 - description: The Domain Indicator to search for.
   key: Domain
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The IPv6 Indicator to search for.
   key: IPV6
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: CrowdStrike Falcon - Search Endpoints By Indicators
@@ -97,7 +89,6 @@ outputs:
   description: The endpoint isolation status.
 - contextPath: CrowdStrike.DeviceID
   description: Device IDs an indicator ran on.
-sourceplaybookid: CrowdStrike Falcon - Search Endpoints By Hash
 starttaskid: "0"
 tasks:
   "0":
@@ -119,6 +110,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: fdebf4c2-18fa-45ad-8931-a1df035a26d8
     timertriggers: []
     type: start
@@ -226,6 +218,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 0204bfc2-fc2d-483c-869b-8f85d0580b31
     timertriggers: []
     type: title
@@ -389,8 +382,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if the integration brand is available. Otherwise
-        returns 'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       id: 13169d17-92b3-4cbf-8930-86e9b5d6f265
       iscommand: false
       name: Is CrowdStrike Falcon enabled?
@@ -427,6 +419,7 @@ tasks:
       name: Domain
       type: title
       version: -1
+      description: ''
     taskid: 7a763ee5-b65c-46c3-85e9-41611d8d19c8
     timertriggers: []
     type: title
@@ -457,6 +450,7 @@ tasks:
       name: IPv6
       type: title
       version: -1
+      description: ''
     taskid: 241f5911-0490-410b-82df-e4b1e4ccaab5
     timertriggers: []
     type: title
@@ -487,6 +481,7 @@ tasks:
       name: IP
       type: title
       version: -1
+      description: ''
     taskid: 1bac08d1-e57a-4fa9-84ed-d50fc504eed4
     timertriggers: []
     type: title
@@ -941,9 +936,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "If the hash was found on additional hosts the playbook will enrich
-        the endpoint details.\nIn case we provided a host ID and there is no additional
-        endpoints that were found, the playbook will stop and finish without the enrichment. "
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided a host ID and there is no additional endpoints that were found, the playbook will stop and finish without the enrichment. "
       id: d61e2bb3-62ba-4eaa-850f-e4c4e0ab3342
       iscommand: false
       name: Should enrich the returned results?
@@ -988,10 +981,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "This playbook is part of the 'Malware Investigation And Response'
-        pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-        \nThis playbook searches across the organization for other endpoints associated
-        with a specific SHA256/MD5/SHA1 hash."
+      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. \nThis playbook searches across the organization for other endpoints associated with a specific SHA256/MD5/SHA1 hash."
       id: e58490bd-bf66-4153-8181-ba7267d07c25
       iscommand: false
       name: CrowdStrike Falcon - Search Endpoints By Hash
@@ -1028,6 +1018,7 @@ tasks:
       name: File Hashes
       type: title
       version: -1
+      description: ''
     taskid: 5b3d3782-289a-4741-8414-0d6519a1bdde
     timertriggers: []
     type: title
@@ -1065,3 +1056,7 @@ view: |-
       }
     }
   }
+tests:
+- Test - CrowdStrike Falcon
+fromversion: 6.10.0
+description: This playbooks searches for different indicators (IP,IPV6,File hashes,Domain) in the crowdstrike falcon console. The output will be all the endpoins found associated with provided indicators. Provided agent id as an input will be excluded from the returned list.

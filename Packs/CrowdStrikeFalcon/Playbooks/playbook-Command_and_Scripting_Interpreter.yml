@@ -1,41 +1,9 @@
 id: T1059 - Command and Scripting Interpreter
-version: 121
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Core - Investigation and Response
-    itemVersion: 3.0.94
-    fromServerVersion: 6.6.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: T1059 - Command and Scripting Interpreter
-description: "This playbook handles command and scripting interpreter alerts based
-  on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters
-  to execute commands, scripts, or binaries.\nMost systems come with some kind of
-  built-in command line interface and scripting capabilities. For example, macOS and
-  Linux distributions include some form of Unix Shell while Windows installations
-  include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn
-  attacker can abuse these technologies in various ways as a means of executing arbitrary
-  commands. Commands and scripts can be embedded in initial access payloads delivered
-  to victims as lure documents or as secondary payloads downloaded from an existing
-  C2. An attacker may also execute commands through interactive terminals/shells,
-  as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue
-  to the nature of this technique and the usage of built-in command line interfaces,
-  the first step of the playbook is to analyze the command line. \nThe command line
-  analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches
-  indicators from the command line\n- Checks specific arguments for malicious usage
-  \n\n**Investigative Actions:**\nThe playbook checks for additional activity using
-  the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response
-  Actions**\n\nAfter analyzing the data, the playbook's first response action is to
-  contain the threat based on the initial data provided within the alert. In this
-  phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen
-  the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation
-  Plan' playbook. It then continues with the next stage, which includes, containment
-  and eradication.\n\nThis phase executes the following containment actions:\n\n*
-  Automatically isolates the endpoint\n\nIt then continues with the following eradication
-  actions:\n\n* process termination"
+description: "This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. \nThe command line analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response Actions**\n\nAfter analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.\n\nThis phase executes the following containment actions:\n\n* Automatically isolates the endpoint\n\nIt then continues with the following eradication actions:\n\n* process termination."
 starttaskid: "0"
 tasks:
   "0":
@@ -48,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "96"
@@ -80,6 +49,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "61"
@@ -145,6 +115,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -216,6 +187,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "80"
@@ -289,6 +261,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -547,14 +520,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: The Terminate Process task failed, would you like to isolate the endpoint?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -615,8 +588,7 @@ tasks:
       id: 9793d56b-9b39-491c-8c84-0281dd229584
       version: -1
       name: Crowdstrike Falcon - Isolate Endpoint
-      description: This playbook will auto isolate endpoints by the device ID that
-        was provided in the playbook.
+      description: This playbook will auto isolate endpoints by the device ID that was provided in the playbook.
       playbookName: Crowdstrike Falcon - Isolate Endpoint
       type: playbook
       iscommand: false
@@ -698,6 +670,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "107"
@@ -725,15 +698,7 @@ tasks:
       id: 95015e7c-df77-4ea0-8491-73275c39e803
       version: -1
       name: No suspicious artifacts were found - How would you like to proceed?
-      description: "Dear Analyst, \n\nWe've performed several operations and found
-        no suspicious activity. \n\nThe Process Chain we've received is:\n${CrowdStrike.Detection.grandparentprocess=val.filename
-        +' --> ' }${CrowdStrike.Detection.parentprocess=val.filename +' --> ' } \n${incident.filenames.[0]}\n\n\n**Please
-        Choose how would you should this incident be classified:**\n#### Option 1:
-        True Positive   \n-> This action will go ahead and try to terminate the process
-        in case it is still running, If not, you will be promoted with an additional
-        manual task to choose from  if you want to isolate the machine or kill the
-        parent process in the alert\n\n--- \n\n\n#### Option 2: False Positive  \n->
-        The incident will be closed and classified as False Positive\n\n"
+      description: "Dear Analyst, \n\nWe've performed several operations and found no suspicious activity. \n\nThe Process Chain we've received is:\n${CrowdStrike.Detection.grandparentprocess=val.filename +' --> ' }${CrowdStrike.Detection.parentprocess=val.filename +' --> ' } \n${incident.filenames.[0]}\n\n\n**Please Choose how would you should this incident be classified:**\n#### Option 1: True Positive   \n-> This action will go ahead and try to terminate the process in case it is still running, If not, you will be promoted with an additional manual task to choose from  if you want to isolate the machine or kill the parent process in the alert\n\n--- \n\n\n#### Option 2: False Positive  \n-> The incident will be closed and classified as False Positive\n\n"
       type: condition
       iscommand: false
       brand: ""
@@ -755,14 +720,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: How would you like to proceed?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -787,6 +752,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "82"
@@ -860,6 +826,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "93"
@@ -1252,8 +1219,7 @@ tasks:
       id: de0ed1c3-2220-410b-8677-4eeae424d06d
       version: -1
       name: CommandLine Analysis
-      description: This script analyses a command line and provide a score based on
-        the matched profiles.
+      description: This script analyses a command line and provide a score based on the matched profiles.
       scriptName: CommandLineAnalysis
       type: regular
       iscommand: false
@@ -1344,15 +1310,9 @@ tasks:
       - "106"
     scriptarguments:
       description:
-        simple: "We've identified the following hostnames being associated with malicious
-          indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of
-          malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease
-          check the investigation id: ${incident.id}"
+        simple: "We've identified the following hostnames being associated with malicious indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease check the investigation id: ${incident.id}"
       details:
-        simple: "We've identified the following hostnames being associated with malicious
-          indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of
-          malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease
-          check the investigation id: ${incident.id}"
+        simple: "We've identified the following hostnames being associated with malicious indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease check the investigation id: ${incident.id}"
       name:
         simple: Malicious Indicators were found on the following hosts
       type:
@@ -1716,13 +1676,13 @@ inputs:
       - operator: uniq
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CreateNewIncidnetForIndicators
   value:
     simple: "True"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - CommandLines
@@ -1734,4 +1694,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
