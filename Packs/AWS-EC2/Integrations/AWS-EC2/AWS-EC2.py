@@ -11,7 +11,7 @@ PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
 IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
-
+# just to trig build
 """HELPER FUNCTIONS"""
 
 
