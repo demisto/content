@@ -160,14 +160,21 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
+        # Using the same dates so that we do not fetch any data for testing,
+        # but still get the response as 200
+        # TODO: convert both the dates to current timestamps
+        query_params = {
+            'created_before': '2024-01-05T13:45:30',
+            'created_after': '2024-01-05T13:45:30'
+        }
+
+        # Call the client's `get_alerts` method to test the connection
+        results = client.get_alerts(params=query_params)
+        message: str = 'ok'
+
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
