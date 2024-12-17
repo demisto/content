@@ -1173,6 +1173,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             # Update last run and add incident if the incident is newer than last fetch
             creation_time = incident_data.get('creation_time', 0)
             demisto.debug(f'creation time for {incident_id=} {creation_time=}')
+            demisto.debug(f'{creation_time=} {last_fetch=} lookhere')
             if creation_time > last_fetch:
                 next_dedup_incidents = [incident_id]
                 demisto.debug(f'updating last_fetch,  {incident_id=}')
@@ -1196,7 +1197,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     next_run = {
         'incidents_from_previous_run': non_created_incidents,
         'time': last_fetch,
-        'dedup_incidents': dedup_incidents
+        'dedup_incidents': next_dedup_incidents
     }
 
     if non_created_incidents:
