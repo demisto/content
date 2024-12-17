@@ -157,7 +157,7 @@ def check_malicious_commands(command_line):
         r'\bInvoke\-KickoffAtomicRunner\b'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -191,7 +191,7 @@ def check_reconnaissance_temp(command_line):
         r'\breg\s+query\b'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -217,7 +217,7 @@ def check_windows_temp_paths(command_line):
         r'\\Windows\\Temp\b'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -251,7 +251,7 @@ def check_suspicious_content(command_line):
         r'\bcertutil.*\-encodehex\b',
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
@@ -266,7 +266,7 @@ def check_amsi(command_line):
         r'\bAmsiScanBuffer\(\)\b'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -317,7 +317,7 @@ def check_powershell_suspicious_patterns(command_line):
         r'for\s+%?\w+%?\s+in\s*\([^)]{50,}\)'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -352,7 +352,7 @@ def check_credential_dumping(command_line):
         r'\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
@@ -384,7 +384,7 @@ def check_lateral_movement(command_line):
         r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -408,7 +408,7 @@ def check_data_exfiltration(command_line):
         r'\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b'
     ]
 
-    matches = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -417,7 +417,7 @@ def check_data_exfiltration(command_line):
 
 def check_custom_patterns(command_line, custom_patterns=None):
 
-    matches = []
+    matches: List[Any] = []
     for pattern in custom_patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -482,7 +482,7 @@ def calculate_score(results):
     }
 
     # Initialize findings and scores for original and decoded
-    findings = {"original": [], "decoded": []}
+    findings: dict[str, list[Any]] = {"original": [], "decoded": []}
     scores = {"original": 0, "decoded": 0}
 
     # Define risk groups and bonus scores
