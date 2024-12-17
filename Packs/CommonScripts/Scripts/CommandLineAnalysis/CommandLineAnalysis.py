@@ -203,7 +203,6 @@ def check_windows_temp_paths(command_line):
     Identifies all occurrences of temporary paths in the given command line.
     """
     patterns = [
-        r'\bC:\\Windows\\Temp\b',
         r'\bC:\\Temp\b',
         r'\bC:\\Windows\\System32\\Temp\b',
         r'\b%TEMP%\b',
@@ -249,6 +248,7 @@ def check_suspicious_content(command_line):
         r'\bnetsh\s+firewall\s+set\b',
         r'\s*\<NUL\b',
         r'\bcertutil.*\-encodehex\b',
+        r'wevtutil\s+cl\b'
     ]
 
     matches: List[Any] = []
@@ -445,7 +445,6 @@ def extract_indicators(command_line: str) -> List[str]:
     extracted_indicators: List[str] = []
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
-        print(indicators)  # Debug output
 
         if indicators and isinstance(indicators, list):
             contents = indicators[0].get('Contents', {})
@@ -462,12 +461,15 @@ def extract_indicators(command_line: str) -> List[str]:
                 for key, values in contents.items():
                     if isinstance(values, list):
                         for value in values:
+                            if value == "::":
+                                continue
                             if key == "IP" and is_reserved_ip(value):
                                 continue  # Skip reserved IPs
                             extracted_indicators.append(value)
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
     return extracted_indicators
+
 def calculate_score(results):
     # Define weights for base scoring
     weights = {
