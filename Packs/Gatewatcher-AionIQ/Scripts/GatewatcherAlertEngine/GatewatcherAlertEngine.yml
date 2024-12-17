@@ -1,7 +1,6 @@
 commonfields:
-  id: a87f285f-80f2-43fa-827a-22194d379b51
-  version: 14
-vcShouldKeepItemLegacyProdMachine: false
+  id: GatewatcherAlertEngine
+  version: -1
 name: GatewatcherAlertEngine
 script: |-
   from typing import Dict, Any
@@ -177,9 +176,10 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
