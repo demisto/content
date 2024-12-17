@@ -31,7 +31,7 @@ The required API permissions are for the ***Microsoft Threat Protection*** app.
  * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
  * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
-## Self-Deployed Application - Client Credentials Flow
+### Self-Deployed Application - Client Credentials Flow
 
 Follow these steps for a self-deployed configuration:
 
@@ -93,10 +93,112 @@ Follow these steps for a self-deployed configuration:
 | Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
 
 5. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
+## Incident Mirroring
+### Mirroring In (Microsoft 365 Defender → XSOAR)
+When incidents are mirrored into XSOAR from Microsoft 365 Defender:
 
-## Configure Incident Mirroring
+1. **Comments** mirrored from Microsoft 365 Defender will be added to the incident as entries in XSOAR and tagged with the **Comment Entry Tag From Microsoft 365 Defender**.  
+   - By default, the tag is set to: `CommentFromMicrosoft365Defender`.  
+
+2. If an incident is closed in Microsoft 365 Defender (`status` = **Resolved**) and Close Mirrored Cortex XSOAR Incidents is enabled:  
+   - The **"classification"** field in Microsoft 365 Defender will be mapped to the **Close Reason** field in XSOAR.  
+
+
+### Mirroring Out (XSOAR → Microsoft 365 Defender)
+
+When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
+
+1. **Supported Fields**:  
+   The following fields are mirrored:  
+   - **Microsoft 365 Defender Status**  
+   - **Assigned User**  
+   - **Microsoft 365 Defender Classification**  
+   - **Microsoft 365 Defender Tags**  
+
+2. **Comments**:  
+   - XSOAR entries with the **Comment Entry Tag To Microsoft 365 Defender** tag are mirrored as comments in Microsoft 365 Defender.  
+   - **Note**: Comments cannot be edited or deleted in Microsoft 365 Defender, as this functionality is not supported.
+
+3. If an incident is closed in XSOAR and Close Mirrored Microsoft 365 Defender Incidents is enabled:  
+   - The **Close Reason** field is mirrored to the `status` and `classification` fields in Microsoft 365 Defender.  
+
+
+### Closing Logic
+
+#### Incoming Closing Logic (Microsoft 365 Defender → XSOAR)
+
+When an incident is resolved in Microsoft 365 Defender:
+
+1. If the `status` = **Resolved**:  
+   - The **"classification"** field will be mapped to the **Close Reason** field in XSOAR using the **Close Reason Mapping Table**.  
+   - The **"classification"** and  **"determination"** fields will be mirrored into the **Microsoft 365 Defender Classification** field in XSOAR.
+
+**Example**:  
+- An incident closed in Microsoft 365 Defender with:  
+   - `status` = **Resolved**
+   - `Classification` = **True Positive**  
+   - `Determination` = **Phishing**  
+
+  Results in XSOAR:  
+   - `Close Reason` = **Resolved**  
+   - `Microsoft 365 Defender Classification` = **True Positive - Phishing**
+
+**Close Reason Mapping Table (Incoming)**:
+
+| Classification in Microsoft 365 Defender | Close Reason in XSOAR      |
+|-----------------------------------------|----------------------------|
+| Not set                                 | Other                      |
+| True Positive                           | Resolved                   |
+| False Positive                          | False Positive             |
+| Informational / Expected Activity       | Resolved                   |
+
+
+#### Outgoing Closing Logic (XSOAR → Microsoft 365 Defender)
+
+When closing incidents from XSOAR to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** and **Microsoft 365 Defender Classification** fields:
+
+1. **General Status Update**:  
+   When an incident is marked as closed in XSOAR, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
+
+2. **Close Reason: Resolved**  
+  If the **Close Reason** in XSOAR is **Resolved**, the **Microsoft 365 Defender Classification** field is mirrored to classification and determination fields **as-is** into Microsoft 365 Defender without any changes.  
+
+3. **Close Reason: False Positive**  
+   If the **Close Reason** in XSOAR is **FalsePositive**, but the `classification` field does not already equal `FalsePositive`, the following updates occur:  
+   - **classification** → `FalsePositive`  
+   - **determination** → `Other`  
+
+3. **Close Reason: Other or Duplicate**  
+   If the **Close Reason** in XSOAR is either **Other** or **Duplicate**, the following updates occur:  
+   - **classification** → `Unknown`  
+   - **determination** → `NotAvailable`  
+
+
+**Close Reason Mapping Table (Outgoing)**:
+
+| Close Reason in XSOAR | Classification in Microsoft 365 Defender | Determination in Microsoft 365 Defender | Status in Defender |
+|-----------------------|------------------------------------------|-----------------------------------------|--------------------|
+| Resolved              | Mirrored as-is                           | Mirrored as-is                          | Resolved           |
+| FalsePositive         | FalsePositive                            | Mirrored as-is \ Other                  | Resolved           |
+| Other                 | Unknown                                  | NotAvailable                            | Resolved           |
+| Duplicate             | Unknown                                  | NotAvailable                            | Resolved           |
+
+
+
+#### Notes
+
+1. **Configuration Requirements for Closing Incidents**:  
+   To close incidents in both directions, ensure the following settings in XSOAR:  
+   - **Close Mirrored XSOAR Incident** checkbox = **True**  
+   - **Close Mirrored Microsoft 365 Defender Incident** checkbox = **True**  
+
+   If these checkboxes are **False**, only the `Microsoft 365 Defender Status` and `Microsoft 365 Defender Classification` fields will be updated, and incidents will not be closed.
+
+
+### Configure Incident Mirroring
 **This feature is compliant with XSOAR version 6.0 and above.**  
 When mirroring incidents, you can make changes in Microsoft 365 Defender that will be reflected in Cortex XSOAR, or vice versa. 
+Mirroring out of the box includes the following fields:
 
 The following instructions include steps for configuring the integration and incoming and outgoing mappers. However, they do not cover every option available in the integration nor classification and mapping features. 
 For information about classification and mapping see [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).  
