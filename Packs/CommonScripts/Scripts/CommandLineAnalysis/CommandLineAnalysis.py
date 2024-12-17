@@ -4,26 +4,27 @@ import base64
 import re
 import ipaddress
 import json
+from typing import List, Any, Optional, Tuple, Union
 
 
-def is_base64(s):
+def is_base64(possible_base64: Union[str, bytes]) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
     """
     try:
-        if isinstance(s, str):
-            s = s.encode('ascii')
+        if isinstance(possible_base64, str):
+            possible_base64 = possible_base64.encode('ascii')
         # Validate Base64
-        padding = len(s) % 4
+        padding = len(possible_base64) % 4
         if padding:
-            s += b'=' * (4 - padding)  # Add missing padding
-        base64.b64decode(s, validate=True)  # Use strict validation
+            possible_base64 += b'=' * (4 - padding)  # Add missing padding
+        base64.b64decode(possible_base64, validate=True)  # Use strict validation
         return True
     except Exception:
         return False
 
 
-def clean_non_base64_chars(encoded_str):
+def clean_non_base64_chars(encoded_str: str) -> str:
     """
     Cleans and ensures the Base64 string contains only valid Base64 characters.
     Adds proper padding if necessary.
@@ -37,14 +38,14 @@ def clean_non_base64_chars(encoded_str):
     return cleaned_str
 
 
-def remove_null_bytes(decoded_str):
+def remove_null_bytes(decoded_str: str) -> str:
     """
     Removes null bytes from the decoded string.
     """
     return decoded_str.replace("\x00", "")
 
 
-def decode_base64(encoded_str, max_recursions=5):
+def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[Optional[str], bool]:
     """
     Decodes a Base64-encoded string recursively up to a defined limit.
     """
@@ -61,11 +62,11 @@ def decode_base64(encoded_str, max_recursions=5):
             recursion_depth += 1
         return encoded_str, recursion_depth > 1  # Return decoded string and if double encoding was detected
     except Exception as e:
-        print(f"Error decoding base64: {e}")
+        demisto.debug(f"Error decoding base64: {e}")
         return None, False
 
 
-def identify_and_decode_base64(command_line):
+def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
     """
     Identifies and decodes all Base64 occurrences in a command line,
     returning the original command line, the fully decoded content, and a flag for double encoding.
@@ -76,7 +77,7 @@ def identify_and_decode_base64(command_line):
     )
 
     matches = base64_pattern.findall(command_line)
-    fully_decoded_content = []  # Collect decoded Base64 strings
+    fully_decoded_content: List[str] = []  # Collect decoded Base64 strings
     double_encoded_detected = False
 
     for match in matches:
@@ -99,7 +100,7 @@ def identify_and_decode_base64(command_line):
     return decoded_command_line, double_encoded_detected
 
 
-def reverse_command(command_line):
+def reverse_command(command_line: str) -> Tuple[str, bool]:
     """
     Detects if the command line contains a reversed PowerShell string and reverses it.
     """
@@ -108,7 +109,7 @@ def reverse_command(command_line):
     return command_line, False
 
 
-def check_malicious_commands(command_line):
+def check_malicious_commands(command_line: str) -> List[str]:
     patterns = [
         r'\bmimikatz\b',
         r'\bLaZagne\.exe\b',
@@ -157,14 +158,14 @@ def check_malicious_commands(command_line):
         r'\bInvoke\-KickoffAtomicRunner\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_reconnaissance_temp(command_line):
+def check_reconnaissance_temp(command_line: str) -> List[str]:
     patterns = [
         r'\bipconfig\b',
         r'\bnetstat\b',
@@ -191,14 +192,14 @@ def check_reconnaissance_temp(command_line):
         r'\breg\s+query\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_windows_temp_paths(command_line):
+def check_windows_temp_paths(command_line: str) -> List[str]:
     """
     Identifies all occurrences of temporary paths in the given command line.
     """
@@ -216,14 +217,14 @@ def check_windows_temp_paths(command_line):
         r'\\Windows\\Temp\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_suspicious_content(command_line):
+def check_suspicious_content(command_line: str) -> List[str]:
     patterns = [
         r'\-w\s+hidden\b',
         r'\-WindowStyle\s+Hidden\b',
@@ -251,14 +252,14 @@ def check_suspicious_content(command_line):
         r'wevtutil\s+cl\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_amsi(command_line):
+def check_amsi(command_line: str) -> List[str]:
     patterns = [
         r'\bSystem\.Management\.Automation\.AmsiUtils\b',
         r'\bamsiInitFailed\b',
@@ -266,14 +267,14 @@ def check_amsi(command_line):
         r'\bAmsiScanBuffer\(\)\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_mixed_case_powershell(command_line):
+def check_mixed_case_powershell(command_line: str) -> List[str]:
     mixed_case_powershell_regex = re.compile(
         r'\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b'
     )
@@ -286,7 +287,7 @@ def check_mixed_case_powershell(command_line):
     ]
 
 
-def check_powershell_suspicious_patterns(command_line):
+def check_powershell_suspicious_patterns(command_line: str) -> List[str]:
     """
     Detects potential obfuscation, backdoor mechanisms and Command-and-Control (C2) communication
     implemented using PowerShell.
@@ -317,14 +318,14 @@ def check_powershell_suspicious_patterns(command_line):
         r'powershell.*?\b(iex.*?2>&1)\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_credential_dumping(command_line):
+def check_credential_dumping(command_line: str) -> List[str]:
     """
     Detects credential dumping techniques.
     """
@@ -352,14 +353,14 @@ def check_credential_dumping(command_line):
         r'\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_lateral_movement(command_line):
+def check_lateral_movement(command_line: str) -> List[str]:
     """
     Detects potential lateral movement techniques from a given command line.
     """
@@ -384,14 +385,14 @@ def check_lateral_movement(command_line):
         r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
     return matches
 
 
-def check_data_exfiltration(command_line):
+def check_data_exfiltration(command_line: str) -> List[str]:
     """
     Detects potential data exfiltration techniques from a given command line.
     """
@@ -408,7 +409,7 @@ def check_data_exfiltration(command_line):
         r'\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b'
     ]
 
-    matches: List[Any] = []
+	matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -416,7 +417,6 @@ def check_data_exfiltration(command_line):
 
 
 def check_custom_patterns(command_line: str, custom_patterns: Optional[List[str]] = None) -> List[str]:
-
     matches: List[str] = []
     if custom_patterns:
         # Ensure custom_patterns is a list
@@ -427,7 +427,7 @@ def check_custom_patterns(command_line: str, custom_patterns: Optional[List[str]
     return matches
 
 
-def is_reserved_ip(ip_str):
+def is_reserved_ip(ip_str: str) -> bool:
     try:
         ip_obj = ipaddress.ip_address(ip_str)
         return (
@@ -470,9 +470,10 @@ def extract_indicators(command_line: str) -> List[str]:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
     return extracted_indicators
 
-def calculate_score(results):
+
+def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     # Define weights for base scoring
-    weights = {
+    weights: Dict[str, int] = {
         "mixed_case_powershell": 25,
         "reversed_command": 25,
         "powershell_suspicious_patterns": 25,
@@ -491,8 +492,8 @@ def calculate_score(results):
     }
 
     # Initialize findings and scores for original and decoded
-    findings: dict[str, list[Any]] = {"original": [], "decoded": []}
-    scores = {"original": 0, "decoded": 0}
+    findings: Dict[str, List[Any]] = {"original": [], "decoded": []}
+    scores: Dict[str, int] = {"original": 0, "decoded": 0}
 
     # Define risk groups and bonus scores
     high_risk_keys = {
@@ -507,7 +508,7 @@ def calculate_score(results):
         "suspicious_parameters", "windows_temp_path", "reconnaissance", "base64_encoding",
     }
 
-    risk_bonuses = {
+    risk_bonuses: Dict[str, int] = {
         "high": 30,
         "medium": 20,
         "low": 10,
@@ -517,10 +518,10 @@ def calculate_score(results):
     theoretical_max = 120
 
     # Helper function to calculate score and detect combinations
-    def process_context(context_name, context_results):
+    def process_context(context_name: str, context_results: Dict[str, Any]) -> Tuple[int, List[str]]:
         context_score = 0
-        context_findings = []
-        context_keys_detected = set()
+        context_findings: List[str] = []
+        context_keys_detected: Set[str] = set()
 
         # Calculate base score for each key (count each category once)
         for key, value in context_results.items():
