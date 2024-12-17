@@ -14,11 +14,17 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
     try:
         if isinstance(possible_base64, str):
             possible_base64 = possible_base64.encode('ascii')
-        # Validate Base64
-        padding = len(possible_base64) % 4
-        if padding:
-            possible_base64 += b'=' * (4 - padding)  # Add missing padding
-        base64.b64decode(possible_base64, validate=True)  # Use strict validation
+
+        # Check for valid Base64 characters
+        if not re.fullmatch(b'[A-Za-z0-9+/]*={0,2}', possible_base64):
+            return False
+
+        # Validate padding
+        if len(possible_base64) % 4 != 0:
+            return False
+
+        # Attempt decoding
+        base64.b64decode(possible_base64, validate=True)
         return True
     except Exception:
         return False
@@ -26,11 +32,12 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
 
 def clean_non_base64_chars(encoded_str: str) -> str:
     """
-    Cleans and ensures the Base64 string contains only valid Base64 characters.
+    Cleans and ensures the Base64 string contains only valid Base64 characters (+, /, =, alphanumeric).
     Adds proper padding if necessary.
     """
-    # Remove unwanted characters
-    cleaned_str = re.sub(r'[^A-Za-z0-9=]', '', encoded_str)
+    # Allow only valid Base64 characters: A-Z, a-z, 0-9, +, /, and =
+    cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', encoded_str)
+
     # Fix padding (Base64 strings should be a multiple of 4 in length)
     padding = len(cleaned_str) % 4
     if padding:
