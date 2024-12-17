@@ -51,24 +51,40 @@ Follow these steps for a self-deployed configuration:
 2. Search for Microsoft Defender XDR.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Application ID or Client ID | The API key to use to connect. | False |
-    | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
-    | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-    | Token or Tenant ID (for Client Credentials mode) |  | False |
-    | Password |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
-    | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
+| ID or Client ID |  | False |
+| Token or Tenant ID |  | False |
+| Application ID | The API key to use to connect. | False |
+| Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
+| Tenant ID (for Client Credentials mode) |  | False |
+| Client Secret (for Client Credentials mode) |  | False |
+| Client Secret |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
+| Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Application ID (Deprecated) |  | False |
+| Tenant ID (for Client Credentials mode) (Deprecated) |  | False |
+| Client Secret (for Client Credentials mode) (Deprecated) |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Microsoft 365 Defender to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to  Microsoft 365 Defender\), or Incoming and Outgoing \(from/to Cortex XSOAR and  Microsoft 365 Defender\). | False |
+| Close Mirrored Cortex XSOAR Incidents | Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the XSOAR incident is mirrored in Microsoft 365 Defender. | False |
+| Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender. | False |
+| Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
+
 
 4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
@@ -188,13 +204,14 @@ There is no context output for this command.
 
 
 ### microsoft-365-defender-incidents-list
+
 ***
 Get the most recent incidents.
-
 
 #### Base Command
 
 `microsoft-365-defender-incidents-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -204,7 +221,7 @@ Get the most recent incidents.
 | limit | Number of incidents in the list. Maximum is 100. Default is 100. | Optional | 
 | offset | Number of entries to skip. | Optional | 
 | timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
-
+| odata | Filter incidents using odata query: https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-list-incidents?view=o365-worldwide. Example: `{"$filter":"lastUpdateTime gt 2022-08-29T06:00:00.29Z"}`. | Optional | 
 
 #### Context Output
 
@@ -221,7 +238,8 @@ Get the most recent incidents.
 | Microsoft365Defender.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
 | Microsoft365Defender.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
 | Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents. | 
-
+| Microsoft365Defender.Incident.tags | unknown | List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic. | 
+| Microsoft365Defender.Incident.comments | unknown | List of comments created by secops when managing the incident, for example additional information about the classification selection. | 
 
 #### Command Example
 ```!ms-365-defender-incidents-list status=Active limit=10 assigned_to=user```
@@ -245,50 +263,62 @@ Get incident with the given ID.
 `microsoft-365-defender-incident-get`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Incident's ID. | Required | 
-| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
+### microsoft-365-defender-incident-get
 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Microsoft365Defender.Incident.incidentId | Number | Incident's ID. | 
-| Microsoft365Defender.Incident.redirectIncidentId | Unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
-| Microsoft365Defender.Incident.incidentName | String | The name of the incident. | 
-| Microsoft365Defender.Incident.createdTime | Date | The date and time \(in UTC\) the incident was created. | 
-| Microsoft365Defender.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the incident was last updated. | 
-| Microsoft365Defender.Incident.assignedTo | String | Owner of the incident. | 
-| Microsoft365Defender.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
-| Microsoft365Defender.Incident.determination | String | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
-| Microsoft365Defender.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
-| Microsoft365Defender.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
-| Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents. | 
-
-
-
-### microsoft-365-defender-incident-update
 ***
-Update the incident with the given ID.
-
+Gets the incident with the given ID.
 
 #### Base Command
 
-`microsoft-365-defender-incident-update`
+`microsoft-365-defender-incident-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
-| assigned_to | Owner of the incident. | Optional | 
 | id | Incident's ID. | Required | 
-| classification | The specification for the incident. Possible values are: Unknown, FalsePositive, TruePositive. | Optional | 
-| determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other. | Optional | 
-| tags | A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3. | Optional | 
 | timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Microsoft365Defender.Incident.incidentId | number | Incident's ID. | 
+| Microsoft365Defender.Incident.redirectIncidentId | unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
+| Microsoft365Defender.Incident.incidentName | string | The name of the incident. | 
+| Microsoft365Defender.Incident.createdTime | date | The date and time \(in UTC\) the incident was created. | 
+| Microsoft365Defender.Incident.tags | unknown | List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic. | 
+| Microsoft365Defender.Incident.lastUpdateTime | date | The date and time \(in UTC\) the incident was last updated. | 
+| Microsoft365Defender.Incident.assignedTo | string | Owner of the incident. | 
+| Microsoft365Defender.Incident.classification | string | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
+| Microsoft365Defender.Incident.determination | string | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
+| Microsoft365Defender.Incident.severity | string | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
+| Microsoft365Defender.Incident.status | string | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
+| Microsoft365Defender.Incident.alerts | unknown | List of alerts relevant for the incidents. | 
+| Microsoft365Defender.Incident.tags | unknown | List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic. | 
+| Microsoft365Defender.Incident.comments | unknown | List of comments created by secops when managing the incident, for example additional information about the classification selection. | 
+
+### microsoft-365-defender-incident-update
+
+***
+Update the incident with the given ID.
+
+#### Base Command
+
+`microsoft-365-defender-incident-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: Active, Resolved, Redirected, InProgress. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| id | Incident's ID. | Required | 
+| classification | The specification for the incident. Possible values are: Unknown, FalsePositive, TruePositive, InformationalExpectedActivity. | Optional | 
+| determination | Determination of the incident. Must be used with the classification field. Possible values depend on the classification field: TruePositive - MultiStagedAttack, MaliciousUserActivity, Malware, Phishing, CompromisedAccount, UnwantedSoftware, Other (default), InformationalExpectedActivity- SecurityTesting, LineOfBusinessApplication, ConfirmedActivity, Other (default), FalsePositive - Clean, NoEnoughDataToValidate, Other (default), Unknown - NotAvailable. Possible values are: NotAvailable, Malware, SecurityTesting, UnwantedSoftware, MultiStagedAttack, MaliciousUserActivity, CompromisedAccount, Phishing, LineOfBusinessApplication, ConfirmedActivity, NotMalicious, Other. | Optional | 
+| comment | Comment to be added to the incident. | Optional | 
+| tags | A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
 
 #### Context Output
 
@@ -305,6 +335,9 @@ Update the incident with the given ID.
 | Microsoft365Defender.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
 | Microsoft365Defender.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
 | Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents. | 
+| Microsoft365Defender.Incident.tags | unknown | List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic. | 
+| Microsoft365Defender.Incident.comments | unknown | List of comments created by secops when managing the incident, for example additional information about the classification selection. | 
+
 
 
 #### Command Example
@@ -351,3 +384,74 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 >|Timestamp|AlertId|Title|Category|Severity|ServiceSource|DetectionSource|AttackTechniques|
 >|---|---|---|---|---|---|---|---|
 >| 2021-04-25T10:11:00Z | alertId | eDiscovery search started or exported | InitialAccess | Medium | Microsoft Defender for Office 365 | Microsoft Defender for Office 365 |  |
+### update-remote-system
+
+***
+Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+
+#### Base Command
+
+`update-remote-system`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### get-remote-data
+
+***
+Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+
+#### Base Command
+
+`get-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote incident ID. | Required | 
+| lastUpdate | The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### get-mapping-fields
+
+***
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### get-modified-remote-data
+
+***
+Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | Date string representing the local time. The incident is only returned if it was modified after the last update time. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
