@@ -1,0 +1,1 @@
+1password-get-events event_type="Item usage actions" limit=10 should_push_events=false
