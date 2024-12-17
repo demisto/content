@@ -331,6 +331,7 @@ class IncidentType(Enum):
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
     ON_DEMAND = 'ods'
+    OFP = 'ofp'
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
@@ -2463,10 +2464,11 @@ def get_remote_data_command(args: dict[str, Any]):
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_idp_or_mobile_detection_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)  # sets in place
-        elif incident_type == IncidentType.ON_DEMAND:
+        elif incident_type in {IncidentType.ON_DEMAND, IncidentType.OFP}:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
-                demisto.debug(f'Update on-demand detection {remote_incident_id} with fields: {updated_object}')
+                mapping = {IncidentType.ON_DEMAND: "on-demand", IncidentType.OFP: "OFP"}
+                demisto.debug(f'Update {mapping[incident_type]} detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)
 
         else:
@@ -2497,6 +2499,8 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION
     if IncidentType.ON_DEMAND.value in remote_incident_id:
         return IncidentType.ON_DEMAND
+    if IncidentType.OFP.value in remote_incident_id:
+        return IncidentType.OFP
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
@@ -2725,7 +2729,10 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ods'"
-
+        ).get('resources', [])
+    if OFP_DETECTION_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ofp'"
         ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
@@ -2759,7 +2766,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
-            elif incident_type in (IncidentType.LEGACY_ENDPOINT_DETECTION, IncidentType.ON_DEMAND):
+            elif incident_type in (IncidentType.LEGACY_ENDPOINT_DETECTION, IncidentType.ON_DEMAND, IncidentType.OFP):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
