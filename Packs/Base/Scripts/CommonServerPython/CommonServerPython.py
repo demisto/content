@@ -46,7 +46,8 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)  # 4 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
+# So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -54,6 +55,7 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
+NUM_OF_WORKERS = 20
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -233,6 +235,7 @@ PROFILING_DUMP_ROWS_LIMIT = 20
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
+    import concurrent.futures
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
@@ -11985,7 +11988,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False):
+                         add_proxy_to_request=False, multiple_threads=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12019,10 +12022,16 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type add_proxy_to_request :``bool``
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
-    :return: None
-    :rtype: ``None``
+    :type multiple_threads: ``bool``
+    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None``
     """
-    send_data_to_xsiam(
+    return send_data_to_xsiam(
         events,
         vendor,
         product,
@@ -12033,6 +12042,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
+        multiple_threads=multiple_threads
     )
 
 
@@ -12145,7 +12155,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12189,8 +12199,15 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type items_count: ``str``
     :param items_count: the asset snapshot items count.
 
-    :return: None
-    :rtype: ``None``
+    :type multiple_threads: ``bool``
+    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+    Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
+
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None```
     """
     data_size = 0
     params = demisto.params()
@@ -12281,17 +12298,38 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
-    for data_chunk in data_chunks:
-        data_size += len(data_chunk)
+
+    def send_events(data_chunk):
+        chunk_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        return chunk_size
 
-    if should_update_health_module:
-        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    if multiple_threads:
+        demisto.info("Sending events to xsiam with multiple threads.")
+        all_chunks = [chunk for chunk in data_chunks]
+        demisto.info("Finished appending all data_chunks to a list.")
+        support_multithreading()
+        futures = []
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+        for chunk in all_chunks:
+            future = executor.submit(send_events, chunk)
+            futures.append(future)
+
+        demisto.info('Finished submiting {} Futures.'.format(len(futures)))
+        return futures
+    else:
+        demisto.info("Sending events to xsiam with a single thread.")
+        for chunk in data_chunks:
+            data_size += send_events(chunk)
+
+        if should_update_health_module:
+            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    return
 
 
 def comma_separated_mapping_to_dict(raw_text):
