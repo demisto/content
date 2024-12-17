@@ -57,7 +57,7 @@ Follow these steps for a self-deployed configuration:
 2. Search for Microsoft 365 Defender.
 3. Click **Add instance** to create and configure a new integration instance.
 4. To ensure that mirroring works:
-   1. Select the **Incident Mirroring Direction**. Choose the direction to mirror the incident: Incoming (from Microsoft 365 Defender to Cortex XSOAR), Outgoing (from Cortex XSOAR to Microsoft 365 Defender), or Incoming And Outgoing (from/to Cortex XSOAR and Microsoft 365 Defender).
+   1. Select  **Incident Mirroring Direction**. Choose the direction to mirror the incident: Incoming (from Microsoft 365 Defender to Cortex XSOAR), Outgoing (from Cortex XSOAR to Microsoft 365 Defender), or Incoming And Outgoing (from/to Cortex XSOAR and Microsoft 365 Defender).
    2. Select the **Fetches incidents** radio button.
    3. Under **Incident type**, select Microsoft 365 Defender Incident. 
    4. Under **Mapper (incoming)**, select Microsoft 365 Defender - Incoming Mapper.
