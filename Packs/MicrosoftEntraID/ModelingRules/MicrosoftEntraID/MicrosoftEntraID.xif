@@ -176,7 +176,9 @@ filter category in("Administrative", "Policy", "Alert") and (CategoryValue = nul
 | call msft_azure_entra_id_map_common_fields
 | alter
         xdm.target.cloud.project_hierarchy = if(arraystring(split(properties -> hierarchy, "/"), "") != "", split(properties -> hierarchy, "/"), arraystring(arraycreate(properties -> tenantId, properties -> subscriptionId), "") != "", arraycreate(properties -> tenantId, properties -> subscriptionId), null),
-        xdm.network.rule = if(category = "Policy", to_string (properties -> policies), null);
+        xdm.network.rule = if(category = "Policy", to_string (properties -> policies), null),
+        xdm.alert.severity = if(to_string(SEVERITY) != "" and to_string(SEVERITY) != null, to_string(SEVERITY), null),
+        xdm.alert.name = if(ALERT_NAME != "" and ALERT_NAME != null, ALERT_NAME, ruleName != "" and ruleName != null, ruleName, null);
 
 // XDM Mappings for Azure Activity Logs follows the Log Analytics AzureActivity table schema
 filter CategoryValue in("Administrative", "Policy", "Alert") and (category = null or category = "")

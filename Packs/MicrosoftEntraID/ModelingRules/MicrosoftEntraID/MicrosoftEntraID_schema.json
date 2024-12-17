@@ -4,6 +4,10 @@
             "type": "string",
             "is_array": false
         },
+        "ALERT_NAME": {
+            "type": "string",
+            "is_array": false
+        },
         "caller": {
             "type": "string",
             "is_array": false
@@ -81,6 +85,14 @@
             "is_array": false
         },
         "resultType": {
+            "type": "string",
+            "is_array": false
+        },
+        "ruleName": {
+            "type": "string",
+            "is_array": false
+        },
+        "SEVERITY": {
             "type": "string",
             "is_array": false
         },
