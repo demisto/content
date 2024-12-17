@@ -906,7 +906,7 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
-    description: 'Deprecated. Use the ''msg-update-alert'' command in the ''Microsoft Graph Security'' integration instead.'
+    description: "Deprecated. Use the 'msg-update-alert' command in the 'Microsoft Graph Security' integration instead."
     name: microsoft-atp-update-alert (Deprecated)
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
@@ -1019,7 +1019,7 @@ script:
       name: query_batch
     - description: If stated along with query, the response will be be saved in context under the Result.name path.
       name: name
-    description: "Deprecated. Use the ''msg-advanced-hunting'' command in the ''Microsoft Graph Security'' integration instead."
+    description: "Deprecated. Use the 'msg-advanced-hunting' command in the 'Microsoft Graph Security' integration instead."
     name: microsoft-atp-advanced-hunting (Deprecated)
     outputs:
     - contextPath: MicrosoftATP.Hunt.Result
@@ -4578,7 +4578,7 @@ script:
       type: Boolean
     polling: true
   - name: microsoft-atp-get-alert-by-id (Deprecated)
-    description: 'Deprecated. Use ''msg-get-alert-details'' in the ''Microsoft Graph Security'' integration instead.'
+    description: "Deprecated. Use 'msg-get-alert-details' in the 'Microsoft Graph Security' integration instead."
     arguments:
     - name: alert_ids
       description: A comma-separated list of alert IDs.
