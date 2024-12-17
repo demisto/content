@@ -165,3 +165,5 @@ type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.7.117934
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
