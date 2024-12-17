@@ -356,7 +356,7 @@ def test_test_module(requests_mock):
         auth=('examplepub', 'examplepri')
     )
 
-    integration_response = test_module(client)
+    integration_response = test_module(client, 1598932817000)
     expected_response = "ok"
 
     # THEN if there is no error, test_module should return 'ok'
