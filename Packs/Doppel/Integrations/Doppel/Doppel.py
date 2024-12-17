@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
+import datetime
 """Doppel for Cortex XSOAR (aka Demisto)
 
 This integration contains features to mirror the alerts from Doppel to create incidents in XSOAR
@@ -95,7 +96,7 @@ class Client(BaseClient):
         )
         return response_content
     
-    def get_alerts(self, params: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def get_alerts(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Fetches multiple alerts based on query parameters.
 
@@ -255,16 +256,6 @@ def get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not results:
         raise ValueError("No alerts were found with the given parameters.")
 
-    # Prepare the readable JSON response
-    readable_output = json.dumps(results, indent=4)
-
-    return CommandResults(
-        outputs_prefix="Doppel.GetAlerts",
-        outputs_key_field="id",
-        outputs=results,
-        readable_output=readable_output
-    )
-
 def create_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity = args.get('entity')
     if not entity:
@@ -291,6 +282,69 @@ def create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_key_field='id',
         outputs=result,
     )
+
+
+def fetch_incidents_command(client: Client) -> None:
+    """
+    Fetch incidents from Doppel alerts, map fields to custom XSOAR fields, and create incidents.
+    This function fetches alerts directly from Doppel using the `get_alerts_command` and creates incidents in XSOAR.
+    """
+    demisto.debug("Fetching alerts from Doppel.")
+    # Fetch the last run (time of the last fetch)
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get("last_fetch", None)
+    # If no last run is found, set first_run (default to 24 hours ago)
+    
+    last_fetch_str: str = None
+    if last_fetch:
+        last_fetch_datetime: datetime.datetime = datetime.datetime.fromtimestamp(int(last_fetch))
+        last_fetch_str = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+        demisto.debug(f"Last run found: {last_fetch_str}")        
+    else:
+        first_run = datetime.datetime.now() - datetime.timedelta(days=1)
+        last_fetch_str = first_run.strftime("%Y-%m-%dT%H:%M:%S")
+        demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch}")
+        
+    # Set the query parameters
+    query_params = {
+        'created_after': last_fetch_str,  # Fetch alerts after the last_fetch
+        'page': 0,
+    }
+    
+    #TODO: Implement the pagination for fetching all the alerts within the time range
+    # Fetch alerts
+    get_alerts_response = client.get_alerts(params=query_params)
+    alerts = get_alerts_response.get('alerts', None)
+    if not alerts:
+        demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
+        return
+    incidents = []
+    new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
+    for alert in alerts:
+        # Building the incident structure
+        incident = {
+            "name": "Doppel Incident",
+            "type": "Doppel_Incident_Test",
+            "occurred": alert.get("created_at"),
+            "dbotMirrorId": str(alert.get("id")),
+            "rawJSON": json.dumps(alert),
+        }
+        
+        # TODO: Save the actual epoch for last fetch
+        new_last_fetch = None#int(datetime.datetime.strptime(alert.get("created_at"), "%Y-%m-%dT%H:%M:%S").timestamp()) * 1000
+        incidents.append(incident)
+    # Update last run with the new_last_fetch value
+    demisto.setLastRun({"last_fetch": new_last_fetch})
+    demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
+    # Create incidents in XSOAR
+    if incidents:
+        try:
+            demisto.incidents(incidents)
+            demisto.info(f"Successfully created {len(incidents)} incidents in XSOAR.")
+        except Exception as e:
+            raise ValueError(f"Incident creation failed due to: {str(e)}")
+    else:
+        demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
 
 ''' MAIN FUNCTION '''
@@ -328,6 +382,8 @@ def main() -> None:
             return_results(create_alert_command(client, demisto.args()))
         elif current_command == 'create-abuse-alert':
             return_results(create_abuse_alert_command(client, demisto.args()))
+        elif current_command == 'fetch-incidents':
+            return_results(fetch_incidents_command(client))
 
     # Log exceptions and return errors
     except Exception as e:
