@@ -75,7 +75,7 @@ Follow these steps for a self-deployed configuration:
 | Tenant ID (for Client Credentials mode) |  | False |
 | Client Secret (for Client Credentials mode) |  | False |
 | Client Secret |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
 | Private Key |  | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
