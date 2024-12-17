@@ -158,7 +158,7 @@ def check_malicious_commands(command_line: str) -> List[str]:
         r'\bInvoke\-KickoffAtomicRunner\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -192,7 +192,7 @@ def check_reconnaissance_temp(command_line: str) -> List[str]:
         r'\breg\s+query\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -217,7 +217,7 @@ def check_windows_temp_paths(command_line: str) -> List[str]:
         r'\\Windows\\Temp\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -252,7 +252,7 @@ def check_suspicious_content(command_line: str) -> List[str]:
         r'wevtutil\s+cl\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
@@ -267,7 +267,7 @@ def check_amsi(command_line: str) -> List[str]:
         r'\bAmsiScanBuffer\(\)\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -318,7 +318,7 @@ def check_powershell_suspicious_patterns(command_line: str) -> List[str]:
         r'powershell.*?\b(iex.*?2>&1)\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -353,7 +353,7 @@ def check_credential_dumping(command_line: str) -> List[str]:
         r'\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
@@ -385,7 +385,7 @@ def check_lateral_movement(command_line: str) -> List[str]:
         r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
@@ -409,7 +409,7 @@ def check_data_exfiltration(command_line: str) -> List[str]:
         r'\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b'
     ]
 
-	matches: List[Any] = []
+    matches: List[Any] = []
     for pattern in patterns:
         matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
 
