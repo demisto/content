@@ -441,9 +441,12 @@ def is_reserved_ip(ip_str):
         return False
 
 
-def extract_indicators(command_line):
+def extract_indicators(command_line: str) -> List[str]:
+    extracted_indicators: List[str] = []
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
+        print(indicators)  # Debug output
+
         if indicators and isinstance(indicators, list):
             contents = indicators[0].get('Contents', {})
 
@@ -454,16 +457,17 @@ def extract_indicators(command_line):
                 except json.JSONDecodeError:
                     return []
 
-            if isinstance(contents, dict) and "IP" in contents:
-                return [ip for ip in contents["IP"] if not is_reserved_ip(ip)]
-            elif isinstance(contents, dict) and "IP" not in contents:
-                for key in contents:
-                    return list(contents[key])
+            # Process all keys in the contents dictionary
+            if isinstance(contents, dict):
+                for key, values in contents.items():
+                    if isinstance(values, list):
+                        for value in values:
+                            if key == "IP" and is_reserved_ip(value):
+                                continue  # Skip reserved IPs
+                            extracted_indicators.append(value)
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
-    return []
-
-
+    return extracted_indicators
 def calculate_score(results):
     # Define weights for base scoring
     weights = {
