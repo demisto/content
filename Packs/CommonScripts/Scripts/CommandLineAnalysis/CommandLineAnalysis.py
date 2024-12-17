@@ -292,9 +292,8 @@ def check_powershell_suspicious_patterns(command_line):
     implemented using PowerShell.
     """
     patterns = [
-        r'\bNew\-Object\s+Net\.Sockets\.TcpClient\b',
-        r'\bNew\-Object\s+Net\.Sockets\.UdpClient\b',
-        r'\bSystem\.Net\.Sockets\.TcpListener\b',
+        r'\bNew\-Object\s+Net\.Sockets\.(?:TcpClient|UdpClient)\b',
+        r'\bSystem\.Net\.Sockets\.Tcp(?:Client|Listener)\b',
         r'\.Connect\(',
         r'\.AcceptTcpClient\(',
         r'\.Receive\(',
@@ -314,7 +313,8 @@ def check_powershell_suspicious_patterns(command_line):
         r'(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)',
         r'if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?',
         r'(\[char\[[^\]]+\]\]){3,}',
-        r'for\s+%?\w+%?\s+in\s*\([^)]{50,}\)'
+        r'for\s+%?\w+%?\s+in\s*\([^)]{50,}\)',
+        r'powershell.*?\b(iex.*?2>&1)\b'
     ]
 
     matches: List[Any] = []
@@ -415,12 +415,15 @@ def check_data_exfiltration(command_line):
     return matches
 
 
-def check_custom_patterns(command_line, custom_patterns=None):
+def check_custom_patterns(command_line: str, custom_patterns: Optional[List[str]] = None) -> List[str]:
 
-    matches: List[Any] = []
-    for pattern in custom_patterns:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
+    matches: List[str] = []
+    if custom_patterns:
+        # Ensure custom_patterns is a list
+        if isinstance(custom_patterns, str):
+            custom_patterns = [custom_patterns]  # Convert single string to a list
+        for pattern in custom_patterns:
+            matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
     return matches
 
 
