@@ -888,7 +888,7 @@ def test_module(params: dict) -> str:
     Integration test module.
     """
     if not params.get('longRunningPort'):
-        params['longRunningPort'] = '8888'
+        params['longRunningPort'] = '1111'
     run_long_running(params, is_test=True)
     return 'ok'
 

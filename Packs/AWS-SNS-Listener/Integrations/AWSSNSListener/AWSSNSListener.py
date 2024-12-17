@@ -282,7 +282,7 @@ def test_module():  # pragma: no cover
     Assigns a temporary port for longRunningPort and returns 'ok'.
     """
     if not PARAMS.get('longRunningPort'):
-        PARAMS['longRunningPort'] = '8888'
+        PARAMS['longRunningPort'] = '1111'
     return 'ok'
 
 

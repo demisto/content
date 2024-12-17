@@ -702,7 +702,7 @@ def get_port(params: dict = demisto.params()) -> int:
     Gets port from the integration parameters.
     """
     if not params.get('longRunningPort'):
-        params['longRunningPort'] = '8888'
+        params['longRunningPort'] = '1111'
     try:
         port = int(params.get('longRunningPort', ''))
     except ValueError as e:
