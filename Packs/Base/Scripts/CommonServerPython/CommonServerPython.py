@@ -1421,9 +1421,26 @@ def b64_decode(b64_str):
     :return: decoded binary
     :rtype: bytes
     """
-    b64 = b64_str.encode('ascii')
-    b64 += b'=' * (-len(b64) % 4)  # add padding
-    return binascii.a2b_base64(b64)
+    try:
+        # Convert the base64 string to bytes
+        b64 = b64_str.encode('ascii')
+
+        # Add padding to ensure the length is a multiple of 4
+        b64 += b'=' * (-len(b64) % 4)
+
+        # Decode the base64 string into binary data
+        decoded_data = binascii.a2b_base64(b64)
+        return decoded_data
+
+    except (binascii.Error, UnicodeEncodeError) as e:
+        # Catch errors related to invalid base64 encoding or string encoding issues
+        demisto.debug(f"Error decoding base64 string: {e}")
+        return None
+    except Exception as e:
+        # Catch any other unexpected exceptions
+        demisto.debug(f"An unexpected error occurred: {e}")
+        return None
+
 
 
 def encode_string_results(text):
