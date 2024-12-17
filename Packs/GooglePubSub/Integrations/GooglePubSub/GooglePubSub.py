@@ -1430,6 +1430,9 @@ def is_unique_msg(msg, previous_msg_ids, previous_run_time):
     if message_dict:
         msg_id = message_dict.get("messageId")
         msg_pub_time = message_dict.get("publishTime", "")
+        unique_msg = msg_id not in previous_msg_ids and msg_pub_time > previous_run_time
+        if not unique_msg:
+            demisto.debug(f"Dropping {msg_id=}. {msg_pub_time=}")
         return msg_id not in previous_msg_ids and msg_pub_time > previous_run_time
     return False
 
@@ -1485,6 +1488,7 @@ def handle_fetch_results(
             incidents.append(incident)
         # ACK messages if relevant
         if ack_incidents:
+            demisto.debug(f"ACK: {acknowledges}")
             client.ack_messages(sub_name, acknowledges)
         # Recreate last run to return with new values
         last_run = {
