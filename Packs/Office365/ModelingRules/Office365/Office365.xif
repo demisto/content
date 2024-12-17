@@ -23,9 +23,9 @@ call o365_common_fields
 	src_ip = coalesce(userip, senderip, ClientIP),
 	filename_name = if(filename ~= "\.", filename, null),
 	filename_extension = if(filename ~= "\.", arraystring(regextract(filename, "^\S+\.(\S+)"), ""), null),
-	members_upn = arraystring(arraymap(members -> [], "@element" -> UPN), "|"),
-	members_displayname = arraystring(arraymap(members -> [], "@element" -> DisplayName), "|"),
-	members_role = arraystring(arraymap(members -> [], "@element" -> Role), "|"),
+	members_upn = arraystring(arraymap(Members -> [], "@element" -> UPN), ","),
+	members_displayname = arraystring(arraymap(Members -> [], "@element" -> DisplayName), "|"),
+	members_role = arraystring(arraymap(Members -> [], "@element" -> Role), "|"),
 	sourceworkload_name = if(sourceworkload = 0, "SharePoint Online", sourceworkload = 1, "	OneDrive for Business", sourceworkload = 2, "Microsoft Teams"),
 	Scope_name = if(Scope = 0, "Online", Scope = 1, "Onprem"),
 	check_objectid_filepath = if(arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), "") ~= "\.", arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), ""))
@@ -49,7 +49,7 @@ call o365_common_fields
 	xdm.email.sender = p2sender,
 	xdm.email.recipients = if(arraystring(arraycreate(targetuserid), ", ") != "", arraycreate(targetuserid),  arraystring(arraycreate(ReleaseTo), ", ") != "", arraycreate(ReleaseTo), arraymap(recipients -> [], trim("@element", "\""))),
 	xdm.source.user.username = coalesce(username, members_displayname),
-	xdm.source.user.upn = coalesce(members_upn, actoruserid, UserId),
+	xdm.source.user.upn = coalesce(UserId, ActorUserId),
 	xdm.source.user.user_type = if(user_type_string ~= "0|1|2|3", XDM_CONST.USER_TYPE_REGULAR, user_type_string ~= "4|5|6|7|8", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
 	xdm.source.user.identity_type = if(user_type_string ~= "0|1|2|3", XDM_CONST.IDENTITY_TYPE_USER, user_type_string ~= "4|5|6|7|8", XDM_CONST.IDENTITY_TYPE_MACHINE),
 	xdm.auth.privilege_level = if(userrole = "owner", XDM_CONST.PRIVILEGE_LEVEL_USER, userrole = "admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, members_role = "2", XDM_CONST.PRIVILEGE_LEVEL_GUEST, members_role = "1", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, members_role = "0", XDM_CONST.PRIVILEGE_LEVEL_USER, user_type_string ~= "0|1", XDM_CONST.PRIVILEGE_LEVEL_USER, user_type_string ~= "2|3", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, user_type_string ~= "4|5|6|7|8", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM),
@@ -81,7 +81,8 @@ call o365_common_fields
 	xdm.target.url = url, 
 	xdm.network.http.url = coalesce(eventdeeplink, deeplinkurl),
 	xdm.source.process.name = if(Application ~= "\.[Ee][Xx][Ee]", Application),
-	xdm.observer.type = coalesce(sourceworkload_name, Source, Workload);
+	xdm.observer.type = coalesce(sourceworkload_name, Source, Workload),
+	xdm.target.user.upn = members_upn;
 
 
 
@@ -117,7 +118,7 @@ call o365_common_fields
 	xdm.source.user.identity_type = if(user_logon_type ~= "3|4", XDM_CONST.IDENTITY_TYPE_MACHINE, user_logon_type ~= "0|1|2|5|6", XDM_CONST.IDENTITY_TYPE_USER, user_type_string ~= "0|1|2|3", XDM_CONST.IDENTITY_TYPE_USER, user_type_string ~= "4|5|6|7|8", XDM_CONST.IDENTITY_TYPE_MACHINE),
 	xdm.auth.privilege_level = if(user_logon_type ~= "3|4", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, user_logon_type ~= "1|6", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, user_logon_type ~= "0|2|5", XDM_CONST.PRIVILEGE_LEVEL_USER, user_type_string ~= "0|1", XDM_CONST.PRIVILEGE_LEVEL_USER, user_type_string ~= "2|3", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, user_type_string ~= "4|5|6|7|8", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM),
 	xdm.event.outcome = if(ResultStatus = "Succeeded", XDM_CONST.OUTCOME_SUCCESS, ResultStatus = "PartiallySucceeded", XDM_CONST.OUTCOME_PARTIAL, ResultStatus = "Failed", XDM_CONST.OUTCOME_FAILED, ResultStatus ~= "[Tt]rue", XDM_CONST.OUTCOME_SUCCESS, ResultStatus ~= "[Ff]alse", XDM_CONST.OUTCOME_FAILED),
-	xdm.source.user.upn = coalesce(MailboxOwnerUPN, UserId),
+	xdm.source.user.upn = coalesce(UserId, MailboxOwnerUPN),
 	xdm.email.message_id = coalesce(Item -> InternetMessageId, ExchangeMetaData -> MessageID, MailboxGuid),
 	xdm.intermediate.user.identifier = MailboxOwnerSid,
 	xdm.source.user.identifier = coalesce(LogonUserSid, UserKey),
@@ -171,7 +172,7 @@ call o365_common_fields
 	xdm.alert.subcategory = if(Scope = 0, "Online", Scope = 1, "Onprem"),
 	xdm.network.http.browser = if(BrowserName = null, null, BrowserName ~= "^\s*$", null, BrowserName),
 	xdm.observer.name = EventSource,
-	xdm.source.user.upn = coalesce(SharePointMetaData -> From, UserId),
+	xdm.source.user.upn = coalesce(UserId, SharePointMetaData -> From),
 	xdm.alert.severity = Severity,
 	xdm.source.user_agent = if(UserAgent = null, null, UserAgent ~= "^\s*$", null, UserAgent),
 	xdm.source.user.identifier = UserKey,

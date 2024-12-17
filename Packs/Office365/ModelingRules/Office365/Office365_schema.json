@@ -32,7 +32,7 @@
             "type": "string",
             "is_array": false
         },
-        "members": {
+        "Members": {
             "type": "string",
             "is_array": false
         },
@@ -108,7 +108,7 @@
             "type": "string",
             "is_array": false
         },
-        "actoruserid": {
+        "ActorUserId": {
             "type": "string",
             "is_array": false
         },
