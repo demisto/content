@@ -13,7 +13,11 @@ import json
 import pytest
 
 import demistomock as demisto
-from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main
+from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids
+
+from unittest.mock import patch
+
+MOCK_MAX_ENTRIES = 2
 
 
 def util_load_json(path):
@@ -186,3 +190,35 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.security]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+class MockMicrosoft365DefenderClient(Client):
+    def __init__(self, mocker, response_data: dict,
+                 app_id='app_id',
+                 verify=False,
+                 proxy=False):
+        super().__init__(app_id, verify, proxy)
+        self.response_data = response_data
+
+    def incidents_list(self, *args, **kwargs) -> dict:
+        skip = kwargs.get("skip", 0)
+        batch = self.response_data["value"][skip:skip + MOCK_MAX_ENTRIES]
+        return {
+            "@odata.context": self.response_data["@odata.context"],
+            "value": batch
+        }
+
+
+# Test case
+@patch("Microsoft365Defender.MAX_ENTRIES", MOCK_MAX_ENTRIES)
+def test_fetch_modified_incident_ids_with_mocked_max_entries(mocker):
+    mock_responses = [util_load_json("./test_data/incidents_list_response.json"),
+                      util_load_json("./test_data/incidents_empty_list_response.json")]
+    for mock_response in mock_responses:
+        client = MockMicrosoft365DefenderClient(mocker, mock_response)
+        result = fetch_modified_incident_ids(client, last_update_time="2021-03-01T00:00:00Z")
+        expected_incidents = [str(incident["incidentId"]) for incident in mock_response["value"]]
+        assert result == expected_incidents
+
+
+
