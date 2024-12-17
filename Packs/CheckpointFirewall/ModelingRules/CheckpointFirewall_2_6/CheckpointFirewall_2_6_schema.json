@@ -1,0 +1,504 @@
+{
+    "check_point_vpn_1_firewall_1_raw": {
+      "rt": {
+          "type": "int",
+          "is_array": false
+      },
+      "cefDeviceVersion": {
+          "type": "string",
+          "is_array": false
+      },
+      "outzone": {
+          "type": "string",
+          "is_array": false
+      },            
+      "app": {
+          "type": "string",
+          "is_array": false
+      },
+      "service_id": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs2Label": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs2": {
+          "type": "string",
+          "is_array": false
+      },
+      "src": {
+          "type": "string",
+          "is_array": false
+      },
+      "dst": {
+          "type": "string",
+          "is_array": false
+      },
+      "loguid": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefDeviceEventClassId": {
+          "type": "string",
+          "is_array": false
+      },
+      "reason": {
+          "type": "string",
+          "is_array": false
+      },
+      "session_id_": {
+          "type": "string",
+          "is_array": false
+      },
+      "proto": {
+          "type": "string",
+          "is_array": false
+      },
+      "duration": {
+          "type": "string",
+          "is_array": false
+      },
+      "dns_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "dns_query": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefDeviceVendor": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefDeviceProduct": {
+          "type": "string",
+          "is_array": false
+      },
+      "act": {
+          "type": "string",
+          "is_array": false
+      },
+      "shost": {
+          "type": "string",
+          "is_array": false
+      },
+      "suser": {
+          "type": "string",
+          "is_array": false
+      },
+      "spt": {
+          "type": "int",
+          "is_array": false
+      },
+      "inzone": {
+          "type": "string",
+          "is_array": false
+      },
+      "dhost": {
+          "type": "string",
+          "is_array": false
+      },
+      "duser": {
+          "type": "string",
+          "is_array": false
+      },
+      "dpt": {
+          "type": "int",
+          "is_array": false
+      },
+      "cn1": {
+          "type": "int",
+          "is_array": false
+      },
+      "cn2": {
+          "type": "int",
+          "is_array": false
+      },
+      "cn3": {
+          "type": "int",
+          "is_array": false
+      },
+      "cs3": {
+          "type": "string",
+          "is_array": false
+      },
+      "msg": {
+          "type": "string",
+          "is_array": false
+      },
+      "in": {
+          "type": "int",
+          "is_array": false
+      },
+      "out": {
+          "type": "int",
+          "is_array": false
+      },
+        "ifname": {
+          "type": "string",
+          "is_array": false
+      },
+        "origin": {
+          "type": "string",
+          "is_array": false
+      },
+        "action_reason": {
+          "type": "string",
+          "is_array": false
+      },
+        "client_outbound_packets": {
+        "type": "int",
+        "is_array": false
+      },
+        "server_outbound_packets": {
+        "type": "int",
+        "is_array": false
+      },
+        "cn1Label": {
+          "type": "string",
+          "is_array": false
+      },
+        "cn2Label": {
+          "type": "string",
+          "is_array": false
+      },
+        "cn3Label": {
+          "type": "string",
+          "is_array": false
+      },
+        "cs3Label": {
+        "type": "string",
+        "is_array": false
+      }
+    },
+    "check_point_url_filtering_raw": {
+        "rt": {
+            "type": "int",
+            "is_array": false
+        },
+        "loguid": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceEventClassId": {
+            "type": "string",
+            "is_array": false
+        },         
+        "app": {
+            "type": "string",
+            "is_array": false
+        },
+        "service_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        },
+        "dst": {
+            "type": "string",
+            "is_array": false
+        },
+        "proto": {
+            "type": "string",
+            "is_array": false
+        },
+        "duration": {
+            "type": "string",
+            "is_array": false
+        },
+        "request": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestMethod": {
+            "type": "string",
+            "is_array": false
+        },
+        "cp_severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVendor": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceProduct": {
+            "type": "string",
+            "is_array": false
+        },
+        "act": {
+            "type": "string",
+            "is_array": false
+        },
+        "shost": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "duser": {
+            "type": "string",
+            "is_array": false
+        },
+        "dpt": {
+            "type": "int",
+            "is_array": false
+        }
+      },
+  "check_point_smartdefense_raw": {
+    "rt": {
+        "type": "int",
+        "is_array": false
+    },
+    "cs1Label": {
+        "type": "string",
+        "is_array": false
+    },
+    "cs1": {
+        "type": "string",
+        "is_array": false
+    },
+    "cs4Label": {
+        "type": "string",
+        "is_array": false
+    },
+    "cs4": {
+        "type": "string",
+        "is_array": false
+    },
+    "flexString2Label": {
+        "type": "string",
+        "is_array": false
+    },
+    "flexString2": {
+        "type": "string",
+        "is_array": false
+    },
+    "loguid": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefDeviceEventClassId": {
+        "type": "string",
+        "is_array": false
+    },
+    "session_id": {
+        "type": "string",
+        "is_array": false
+    },
+    "proto": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefSeverity": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefDeviceVendor": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefDeviceProduct": {
+        "type": "string",
+        "is_array": false
+    },
+    "act": {
+        "type": "string",
+        "is_array": false
+    },
+    "shost": {
+        "type": "string",
+        "is_array": false
+    },
+    "suser": {
+        "type": "string",
+        "is_array": false
+    },
+    "src": {
+        "type": "string",
+        "is_array": false
+    },
+    "dst": {
+        "type": "string",
+        "is_array": false
+    },
+    "spt": {
+        "type": "int",
+        "is_array": false
+    },
+    "dhost": {
+        "type": "string",
+        "is_array": false
+    },
+    "duser": {
+        "type": "string",
+        "is_array": false
+    },
+    "dpt": {
+        "type": "int",
+        "is_array": false
+    }
+  },
+  "check_point_application_control_raw": {
+    "rt": {
+        "type": "int",
+        "is_array": false
+    },
+    "loguid": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefDeviceEventClassId": {
+        "type": "string",
+        "is_array": false
+    },
+    "proto": {
+        "type": "string",
+        "is_array": false
+    },
+    "app": {
+        "type": "string",
+        "is_array": false
+    },
+    "service_id": {
+        "type": "string",
+        "is_array": false
+    },
+    "cs2Label": {
+        "type": "string",
+        "is_array": false
+    },
+    "cs2": {
+        "type": "string",
+        "is_array": false
+    },
+    "duration": {
+        "type": "string",
+        "is_array": false
+    },
+    "request": {
+        "type": "string",
+        "is_array": false
+    },
+    "requestMethod": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefSeverity": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefDeviceVendor": {
+        "type": "string",
+        "is_array": false
+    },
+    "cefDeviceProduct": {
+        "type": "string",
+        "is_array": false
+    },
+        "act": {
+        "type": "string",
+        "is_array": false
+    },
+    "src": {
+        "type": "string",
+        "is_array": false
+    },
+    "dst": {
+        "type": "string",
+        "is_array": false
+    },
+    "shost": {
+        "type": "string",
+        "is_array": false
+    },
+    "suser": {
+        "type": "string",
+        "is_array": false
+    },
+    "dhost": {
+        "type": "string",
+        "is_array": false
+    },
+    "duser": {
+        "type": "string",
+        "is_array": false
+    },
+    "dpt": {
+        "type": "int",
+        "is_array": false
+    }
+  },
+  "check_point_identity_awareness_raw": {
+    "rt": {
+      "type": "int",
+      "is_array": false
+    },
+    "loguid": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefDeviceEventClassId": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs5": {
+      "type": "string",
+      "is_array": false
+    },
+    "auth_status": {
+      "type": "string",
+      "is_array": false
+    },
+    "act": {
+      "type": "string",
+      "is_array": false
+    },
+    "reason": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefDeviceVendor": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefDeviceProduct": {
+      "type": "string",
+      "is_array": false
+    },
+    "src": {
+      "type": "string",
+      "is_array": false
+    },
+    "dst": {
+      "type": "string",
+      "is_array": false
+    },
+    "suser": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs3": {
+      "type": "string",
+      "is_array": false
+    },
+    "duser": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

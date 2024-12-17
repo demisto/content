@@ -1,0 +1,6 @@
+fromversion: 8.10.0
+id: alibaba_action_trail_modelingrule
+name: Alibaba Action Trail Modeling Rule
+rules: ''
+schema: ''
+tags: alibaba

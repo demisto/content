@@ -34,3 +34,4 @@ xql_query: "datamodel dataset = google_workspace_chrome_raw\n| filter xdm.event.
   \ xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser, xdm.source.user_agent,\
   \ xdm.target.resource.name, xdm.target.resource.id"
 fromversion: 8.4.0
+toversion: 8.9.0

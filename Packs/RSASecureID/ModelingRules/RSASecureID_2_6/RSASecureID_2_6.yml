@@ -1,0 +1,6 @@
+fromversion: 8.10.0
+id: rsa_securid_modelingrule
+name: RSA SecurID Modeling Rule
+rules: ''
+schema: ''
+tags: ''
