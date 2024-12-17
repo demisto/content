@@ -109,7 +109,7 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
     events: List[Dict] = []
     if not last_run and first_fetch_time:
         last_run['latest_event_time'] = first_fetch_time
-    elif type(last_run.get('latest_event_time')) == str:
+    elif type(last_run.get('latest_event_time')) is str:
         last_run['latest_event_time'] = parse_date_string(last_run.get('latest_event_time'))
     while True:
         response = client.get_events_request(params=query_params).json()

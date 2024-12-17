@@ -35,7 +35,7 @@ class Client(BaseClient):
             'demisto_command': demisto.command(),
             'demisto_args': demisto.args(),
         }
-        if 'demisto_args' in kwargs.keys():
+        if 'demisto_args' in kwargs:
             if args := kwargs.get('demisto_args'):
                 json_data.update({'demisto_args': args})
             kwargs.pop('demisto_args')
@@ -120,7 +120,7 @@ class Client(BaseClient):
         if list_ids := parsed_args.get("list_ids"):
             parsed_args["list_ids"] = list_ids.split(",")
         return self._call(
-            url_suffix=f'/v2/lists/entities/lookup', demisto_args=parsed_args
+            url_suffix='/v2/lists/entities/lookup', demisto_args=parsed_args
         )
 
 

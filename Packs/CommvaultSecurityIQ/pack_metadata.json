@@ -2,7 +2,7 @@
     "name": "Commvault Cloud",
     "description": "Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Commvault Systems",
     "url": "https://www.commvault.com/support",
     "email": "support@commvault.com",

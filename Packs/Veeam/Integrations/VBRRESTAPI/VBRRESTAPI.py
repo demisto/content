@@ -1114,6 +1114,9 @@ def get_configuration_backup_incident(
     last_successful_backup_date = last_successful_backup_date if last_successful_backup_date else ''
     if last_successful_backup_date:
         last_successful_backup_datetime = parser.isoparse(last_successful_backup_date)
+    else:
+        last_successful_backup_datetime = None
+        demisto.debug(f"no {last_successful_backup_date=}")
 
     last_fetch_time = datetime.now().strftime(DATE_FORMAT)
     response = client.get_configuration_backup_request()
@@ -1130,7 +1133,8 @@ def get_configuration_backup_incident(
     incident: dict = {}
     last_backup_datetime = parser.isoparse(last_time_backup)
     if difference is None or difference >= backup_older_then_days:
-        if not last_successful_backup_date or last_backup_datetime > last_successful_backup_datetime:
+        if not last_successful_backup_date or (last_successful_backup_datetime is not None
+                                               and last_backup_datetime > last_successful_backup_datetime):
             time_ = NOT_APPLICABLE if last_time_backup == EARLIEST_TIME else last_time_backup
             details = f"Last successful backup: {time_}"
             integration_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
@@ -1463,8 +1467,7 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
             else:
                 raise e
 
-    else:
-        raise ValueError('Failed to obtain valid API Key after 3 attempts')
+    raise ValueError('Failed to obtain valid API Key after 3 attempts')
 
 
 def main() -> None:

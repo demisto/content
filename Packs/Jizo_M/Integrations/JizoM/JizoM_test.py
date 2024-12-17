@@ -60,7 +60,7 @@ def test_get_token(requests_mock):
     requests_mock.post(f"{MOCK_URL}/login", json=load_mock_response("connect.json"), status_code=200)
     result = get_token(client)
     assert "token" in result
-    assert type(result['token']) == str
+    assert type(result['token']) is str
 
 
 def test_get_protocols_command(requests_mock):

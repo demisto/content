@@ -2,7 +2,7 @@
     "name": "Google Cloud SCC",
     "description": "This pack leverages the features of Google Cloud Security to provide an organization-wide framework for detection and response.",
     "support": "partner",
-    "currentVersion": "2.1.24",
+    "currentVersion": "2.1.25",
     "author": "GoogleCloudSCC",
     "url": "https://cloud.google.com/security-command-center",
     "email": "",

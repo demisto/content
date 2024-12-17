@@ -2,7 +2,7 @@
     "name": "Google Sheets",
     "description": "The Google Sheets API is a RESTful interface that lets you read and modify a spreadsheet's data. The most common uses of this API include the following tasks- create spreadsheets, read and write spreadsheets cells, update spreadsheet formatting",
     "support": "xsoar",
-    "currentVersion": "1.0.47",
+    "currentVersion": "1.0.48",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

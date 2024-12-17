@@ -631,7 +631,7 @@ def test_fetch_incidents(mocker):
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
-    assert ["sys_id1", "sys_id2"] == demisto.getIntegrationContext()["last_fetched_incident_ids"]
+    assert demisto.getIntegrationContext()["last_fetched_incident_ids"] == ["sys_id1", "sys_id2"]
 
 
 @freeze_time('2022-05-01 12:52:29')
@@ -1804,10 +1804,10 @@ TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19
 
 def ticket_fields(*args, **kwargs):
     state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
-    assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
-            'work_start': '0001-01-01T00:00:00Z'} == args[0]
+    assert args[0] == {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                       'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                       'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                       'work_start': '0001-01-01T00:00:00Z'}
 
     return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
             'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',

@@ -1,4 +1,3 @@
-from typing import Dict
 
 import urllib3
 from CommonServerPython import *
@@ -435,7 +434,7 @@ def test_module(client: LoginClient):
         raise Exception('Test Failure', e)
 
 
-def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int],
+def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: dict[str, int],
                     max_results: int, fetch_time):
     global SCROLL_ID_INCIDENT
     last_fetch = last_run.get('last_fetch', None)

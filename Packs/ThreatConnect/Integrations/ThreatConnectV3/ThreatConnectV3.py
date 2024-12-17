@@ -728,7 +728,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         from_date = f' AND dateAdded > "{from_date}" '
         tql_prefix = '?tql='
     if group_type:
-        if type(group_type) == list:
+        if type(group_type) is list:
             group_type = f' AND ({create_or_query(", ".join(group_type), "typeName")})'
         else:
             group_type = f' AND typeName EQ "{group_type}"'

@@ -80,7 +80,7 @@ def get_edl_command(base_url, edl_name, verify, creds=None):
     response = edl_http_request(base_url, edl_name, verify, creds)
 
     # check the response
-    if type(response) == dict:
+    if type(response) is dict:
         status = 400
         edl_response = response["error"]
         edl_items_on_list = 0
@@ -94,12 +94,16 @@ def get_edl_command(base_url, edl_name, verify, creds=None):
         elif status == 401:
             edl_response = 'Basic authentication failed. Make sure you are using the right credentials.'
             edl_items_on_list = 0
-        elif status == 400 and type(response) != dict:
+        elif status == 400 and type(response) is not dict:
             if response.json().get('error'):
                 edl_response = response.json().get('error')
             else:
                 edl_response = "Bad request."
             edl_items_on_list = 0
+        else:
+            edl_response = f"Bad request {status=}"
+            edl_items_on_list = 0
+            demisto.debug(f"unknown status {status}")
 
     # outputs for war room and context
     output = {
