@@ -1,29 +1,25 @@
 Deprecated. Use XSIAM/XDR Salesforce integration instead.
 
-## Configure Salesforce Event Collector on Cortex XSOAR
+## Configure Salesforce Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Salesforce Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Client ID |  | True |
-    | Client Secret |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Query to get Hourly Event Log Files | For more information, visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm | True |
-    | How many log files to fetch |  | True |
-    | First fetch time interval |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Client ID |  | True |
+| Client Secret |  | True |
+| Username |  | True |
+| Password |  | True |
+| Query to get Hourly Event Log Files | For more information, visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm | True |
+| How many log files to fetch |  | True |
+| First fetch time interval |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### salesforce-get-events

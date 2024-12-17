@@ -11,7 +11,7 @@ def main():
         output = [{
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': [urls],
+            'Contents': [urls.replace("==", "\\==")],  # This is used to escape MD in XSOAR
             'EntryContext': {'URL': urls},
         } for urls in formatted_urls]
 

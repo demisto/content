@@ -399,7 +399,7 @@ script:
     - contextPath: QualysFIM.Assets.created
       description: Date the asset was created.
       type: String
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.116439
   isfetch: true
   runonce: false
   script: '-'

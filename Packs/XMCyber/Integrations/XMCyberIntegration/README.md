@@ -1,29 +1,25 @@
 The XM Cyber integration creates unique incidents with valuable data collected daily, and enriches your existing incidents with attack simulation context. This enables you to prioritize your responses based on XM Cyber’s insights.
 This integration was integrated and tested with version 1.43.0.355 of XMCyber
 
-## Configure XM Cyber on Cortex XSOAR
+## Configure XM Cyber in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for XM Cyber.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key |  | True |
-    | URL |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | First fetch |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    |  |  | False |
-    |  |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key |  | True |
+| URL |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Maximum number of incidents per fetch |  | False |
+| First fetch |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+|  |  | False |
+|  |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xmcyber-affected-critical-assets-list
 ***

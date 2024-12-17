@@ -2,7 +2,7 @@
     "name": "JamfProtect",
     "description": "Apple Mobile and Mac endpoint protection",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
