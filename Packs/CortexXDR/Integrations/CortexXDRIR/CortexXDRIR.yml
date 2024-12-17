@@ -44,14 +44,6 @@ configuration:
   required: true
   displaypassword: API Key
   hiddenusername: true
-- defaultvalue: 'false'
-  display: Remove legacy incident fields
-  name: dont_format_sublists
-  type: 8
-  section: Collect
-  advanced: true
-  required: false
-  additionalinfo: Removes duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid).
 - display: Incident Mirroring Direction
   name: mirror_direction
   required: false
@@ -63,6 +55,14 @@ configuration:
   - Incoming
   - Outgoing
   - Both
+- defaultvalue: '1'
+  display: XDR mirroring delay in minutes
+  name: xdr_delay
+  type: 0
+  section: Mirroring
+  required: false
+  advanced: true
+  additionalinfo: Use this parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents
 - additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
   defaultvalue: 'true'
   display: Close Mirrored Cortex XSOAR Incident
@@ -79,14 +79,6 @@ configuration:
   section: Mirroring
   advanced: true
   required: false
-- defaultvalue: '1'
-  display: XDR mirroring delay in minutes
-  name: xdr_delay
-  type: 0
-  section: Mirroring
-  required: false
-  advanced: true
-  additionalinfo: Use this parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents
 - display: Custom close-reason mapping Cortex XSOAR -> Cortex XDR
   section: Collect
   advanced: true
@@ -102,6 +94,22 @@ configuration:
   name: custom_xdr_to_xsoar_close_reason_mapping
   defaultvalue: ''
   type: 0
+  required: false
+- additionalinfo: If no status is provided then incidents of all the statuses will be fetched
+  display: Incident Statuses to Fetch
+  name: status
+  options:
+  - new
+  - under_investigation
+  - resolved_known_issue
+  - resolved_false_positive
+  - resolved_true_positive
+  - resolved_security_testing
+  - resolved_other
+  - resolved_auto
+  type: 16
+  section: Collect
+  advanced: true
   required: false
 - display: API Key ID
   name: apikey_id
@@ -130,6 +138,7 @@ configuration:
   required: false
   additionalinfo: Cannot exceed 100.
   defaultvalue: '10'
+  advanced: true
 - display: First fetch timestamp
   additionalinfo: 'The format should be: <number> <time unit>. e.g., 12 hours, 7 days'
   name: fetch_time
@@ -137,6 +146,20 @@ configuration:
   section: Collect
   required: false
   defaultvalue: 3 days
+- defaultvalue: 3 days
+  display: Starred incidents fetch window
+  name: starred_incidents_fetch_window
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
+  advanced: true
+- display: Only fetch starred incidents
+  name: starred
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - display: Sync Incident Owners
   name: sync_owners
   type: 8
@@ -144,6 +167,14 @@ configuration:
   advanced: true
   required: false
   additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. For more https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir
+- defaultvalue: 'false'
+  display: Remove legacy incident fields
+  name: dont_format_sublists
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Removes duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid).
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -165,22 +196,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: If no status is provided then incidents of all the statuses will be fetched
-  display: Incident Statuses to Fetch
-  name: status
-  options:
-  - new
-  - under_investigation
-  - resolved_known_issue
-  - resolved_false_positive
-  - resolved_true_positive
-  - resolved_security_testing
-  - resolved_other
-  - resolved_auto
-  type: 16
-  section: Collect
-  advanced: true
-  required: false
 - additionalinfo: Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information
   display: Minimize Incident Information
   name: exclude_fields
@@ -196,20 +211,6 @@ configuration:
   advanced: true
   type: 8
   section: Mirroring
-- display: Only fetch starred incidents
-  name: starred
-  type: 8
-  section: Collect
-  advanced: true
-  required: false
-- defaultvalue: 3 days
-  display: Starred incidents fetch window
-  name: starred_incidents_fetch_window
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
-  advanced: true
 description: The integration enables direct execution of Cortex XDR actions within Cortex XSOAR.
 display: Cortex XDR - IR for golden standard
 name: Cortex XDR - IR for golden standard
