@@ -123,6 +123,14 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+- display: Skip events decoding
+  name: should_skip_decode_events
+  additionalinfo: Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate.
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
