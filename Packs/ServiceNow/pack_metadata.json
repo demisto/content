@@ -10,9 +10,19 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "IT",
+        "Security",
+        "Incident Handling"
+    ],
+    "useCases": [
+
+    ],
+    "keywords": [
+        "ServiceNow",
+        "Service Now",
+        "snow"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

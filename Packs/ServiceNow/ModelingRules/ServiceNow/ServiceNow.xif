@@ -16,7 +16,6 @@ filter source_log_type = "syslog transactions"
         // IP Extraction
         remote_ip_ipv4 = arrayindex(regextract(remote_ip , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0) ,
         remote_ip_ipv6 = arrayindex(regextract(remote_ip  , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0),
-
         created_by = sys_created_by ,
         system_identifier = system_id ,
         source_user_agent = user_agent ,
@@ -30,10 +29,8 @@ filter source_log_type = "syslog transactions"
         //database
         db_name = db_pool ,
         response_time = to_integer(multiply(to_integer(sql_time),1000)) // Convert from ms to s
-
 |alter 
-        table_name = to_string(if(len(`table`) >=1, `table` , tmp_trim_url ))
-        
+        table_name = to_string(if(len(`table`) >=1, `table` , tmp_trim_url ))     
 | alter event_duration = to_integer(add(event_duration_1 , event_duration_2 )),
         application_name = if(tmp_origin_scope_val="global", "Display Name: Global", concat("Display Name: ",app_scope ," ,ID: ",tmp_origin_scope_val ))
 
