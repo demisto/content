@@ -1181,7 +1181,7 @@ script:
     - description: Flag for the rate limit retry.
       name: ran_once_flag
       deprecated: true
-    description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.
+    description: Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.
     name: microsoft-atp-get-alert-related-user (Deprecated)
     outputs:
     - contextPath: MicrosoftATP.AlertUser.User.ID
@@ -1238,7 +1238,7 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
-    description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `fileDetails` as part of the alert details.
+    description: Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `fileDetails` as part of the alert details.
     name: microsoft-atp-get-alert-related-files (Deprecated)
     outputs:
     - contextPath: MicrosoftATP.AlertFile.Files.FilePublisher
@@ -1307,7 +1307,7 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
-    description: Deprecated. An alternative is the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details.
+    description: Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details.
     name: microsoft-atp-get-alert-related-ips (Deprecated)
     outputs:
     - contextPath: MicrosoftATP.AlertIP.IPs.IpAddress
@@ -1332,7 +1332,7 @@ script:
       name: ran_once_flag
       deprecated: true
     description: |-
-      Deprecated. Alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
+      Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
     name: microsoft-atp-get-alert-related-domains (Deprecated)
     outputs:
     - contextPath: MicrosoftATP.AlertDomain.Domains.Domain
