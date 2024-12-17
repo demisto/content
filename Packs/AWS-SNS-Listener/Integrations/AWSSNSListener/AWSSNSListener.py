@@ -295,7 +295,7 @@ def main():  # pragma: no cover
         if demisto.command() == 'test-module':
             return return_results(test_module())
         try:
-            port = int(PARAMS.get('longRunningPort', ''))
+            port = int(PARAMS.get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'long-running-execution':
