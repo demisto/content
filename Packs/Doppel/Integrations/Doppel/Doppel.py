@@ -16,6 +16,11 @@ from typing import Dict, Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+''' CONSTANTS '''
+XSOAR_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DOPPEL_API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+DOPPEL_PAYLOAD_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
 
 ''' CLIENT CLASS '''
 
@@ -293,21 +298,22 @@ def fetch_incidents_command(client: Client) -> None:
     # Fetch the last run (time of the last fetch)
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch", None)
-    # If no last run is found, set first_run (default to 24 hours ago)
-    
     last_fetch_str: str = None
-    if last_fetch:
-        last_fetch_datetime: datetime.datetime = datetime.datetime.fromtimestamp(int(last_fetch))
-        last_fetch_str = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    if last_fetch and isinstance(last_fetch, float):
+        last_fetch_str = datetime.datetime.fromtimestamp(last_fetch).strftime(DOPPEL_API_DATE_FORMAT)
         demisto.debug(f"Last run found: {last_fetch_str}")        
     else:
+        # If no last run is found, set first_run (default to 24 hours ago)
         first_run = datetime.datetime.now() - datetime.timedelta(days=1)
-        last_fetch_str = first_run.strftime("%Y-%m-%dT%H:%M:%S")
+        last_fetch_str = first_run.strftime(DOPPEL_API_DATE_FORMAT)
+        last_fetch = first_run.timestamp()
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch}")
         
     # Set the query parameters
     query_params = {
-        'created_after': last_fetch_str,  # Fetch alerts after the last_fetch
+        'created_after': last_fetch_str,  # Fetch alerts after the last_fetch,
+        'sort_type': 'date_sourced',
+        'sort_order': 'asc',
         'page': 0,
     }
     
@@ -322,22 +328,23 @@ def fetch_incidents_command(client: Client) -> None:
     new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
     for alert in alerts:
         # Building the incident structure
-        incident = {
-            "name": "Doppel Incident",
-            "type": "Doppel_Incident_Test",
-            "occurred": alert.get("created_at"),
-            "dbotMirrorId": str(alert.get("id")),
-            "rawJSON": json.dumps(alert),
-        }
-        
-        # TODO: Save the actual epoch for last fetch
-        new_last_fetch = None#int(datetime.datetime.strptime(alert.get("created_at"), "%Y-%m-%dT%H:%M:%S").timestamp()) * 1000
-        incidents.append(incident)
+        created_at_str = alert.get("created_at")
+        date_in_xsoar_format = datetime.datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
+        new_last_fetch = date_in_xsoar_format.timestamp()
+        if new_last_fetch > last_fetch:
+            incident = {
+                'name': 'Doppel Incident',
+                'type': 'Doppel_Incident_Test',
+                'occurred': date_in_xsoar_format.strftime(XSOAR_DATE_FORMAT),
+                'dbotMirrorId': str(alert.get("id")),
+                'rawJSON': json.dumps(alert),
+            }
+            incidents.append(incident)
     # Update last run with the new_last_fetch value
     demisto.setLastRun({"last_fetch": new_last_fetch})
     demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
     # Create incidents in XSOAR
-    if incidents:
+    if incidents and len(incidents) > 0:
         try:
             demisto.incidents(incidents)
             demisto.info(f"Successfully created {len(incidents)} incidents in XSOAR.")
@@ -345,6 +352,7 @@ def fetch_incidents_command(client: Client) -> None:
             raise ValueError(f"Incident creation failed due to: {str(e)}")
     else:
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
+
 
 
 ''' MAIN FUNCTION '''
