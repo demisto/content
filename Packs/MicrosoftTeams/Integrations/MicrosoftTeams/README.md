@@ -243,6 +243,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
    - ChatMessage.Send
    - ChannelSettings.ReadWrite.All
    - ChannelMember.Read.All
+   - ChannelMember.ReadWrite.All
+   - TeamsAppInstallation.ReadWriteForTeam
 9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
 
 
