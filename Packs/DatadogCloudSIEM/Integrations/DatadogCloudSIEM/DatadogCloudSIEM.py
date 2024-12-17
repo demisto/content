@@ -642,6 +642,7 @@ def get_host_tags_command(
         )
     else:
         readable_output = NO_RESULTS_FROM_API_MSG
+        context_output = {}
 
     return CommandResults(
         readable_output=readable_output,
@@ -764,6 +765,7 @@ def active_metrics_list_command(
     """
 
     from_arg: str | None = args.get("from")
+    from_timestamp = None
     if from_arg:
         from_timestamp: datetime | None = parse(
             from_arg, settings={"TIMEZONE": "UTC"}
@@ -806,6 +808,7 @@ def active_metrics_list_command(
             )
         else:
             readable_output = NO_RESULTS_FROM_API_MSG
+            context_output = {}
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=INTEGRATION_CONTEXT_NAME,
@@ -845,6 +848,7 @@ def metrics_search_command(
             )
         else:
             readable_output = NO_RESULTS_FROM_API_MSG
+            context_output = {}
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Metric",

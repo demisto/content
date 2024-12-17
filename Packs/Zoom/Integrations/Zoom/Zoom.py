@@ -2251,6 +2251,9 @@ def send_notification(client, **args):
         default_response = parsed_message.get('default_response')
     else:
         message = {"head": {"type": "message", "text": args.get("message", "")}}
+        reply = None
+        expiry = None
+        default_response = None
     if channel:  # if channel name provided
         channel_id = get_channel_jid_from_context(channel, investigation_id)
         if not channel_id:

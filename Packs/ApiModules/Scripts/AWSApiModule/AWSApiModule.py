@@ -86,6 +86,7 @@ class AWSClient:
     def aws_session(self, service, region=None, role_arn=None, role_session_name=None, role_session_duration=None,
                     role_policy=None):
         kwargs = {}
+        client = None
 
         self.update_config()
 

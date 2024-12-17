@@ -95,7 +95,7 @@ class ElasticsearchClient:
 
         else:  # Elasticsearch v7 and below or OpenSearch
             if self._api_key:
-                es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection,
+                es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection,  # pylint: disable=E0606
                                    verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
             else:
                 es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,

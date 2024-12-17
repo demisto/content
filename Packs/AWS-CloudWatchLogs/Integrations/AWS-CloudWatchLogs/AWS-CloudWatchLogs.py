@@ -435,6 +435,7 @@ def main():
                            retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
     command = demisto.command()
     args = demisto.args()
+    result = ""
 
     if command == 'test-module':
         # This is the call made when pressing the integration test button.

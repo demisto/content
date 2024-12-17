@@ -1385,7 +1385,8 @@ def create_instaquery():
     if artifact in match_value_type:
         value_type = re.findall(r'(?<=\.).*', match_value_type)[0]  # Remove the artifact prefix
     else:
-        demisto.error('The value type is not suitable with the selected artifact')
+        value_type = []
+        demisto.error(f'The value type is not suitable with the selected artifact {value_type=}')
 
     # Create request
     res = create_instaquery_request(name, description, artifact, value_type, match_values, match_type, zone_list)
