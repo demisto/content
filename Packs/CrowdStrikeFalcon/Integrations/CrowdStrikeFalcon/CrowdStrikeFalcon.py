@@ -782,7 +782,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         'occurred': detection.get(start_time_key),
         'rawJSON': json.dumps(detection)
     }
-    if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE):
+    if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE, OFP_DETECTION_TYPE):
         incident_context['name'] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context['last_updated'] = detection.get('updated_timestamp')
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
@@ -3225,7 +3225,7 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
                                                                 date_format=DETECTION_DATE_FORMAT)
     fetch_limit = current_fetch_info.get('limit') or INCIDENTS_PER_FETCH
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
-    if product_type == 'ods':
+    if product_type in {'ods', 'ofp'}:
         filter = filter.replace('product:', 'type:')
 
     if fetch_query:
@@ -3249,7 +3249,7 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
                 detection['incident_type'] = detections_type
                 detection_to_context = detection_to_incident_context(detection, detection_name_prefix, start_time_key)
                 detections.append(detection_to_context)
-        detections = truncate_long_time_str(detections, 'occurred') if product_type == 'ods' else detections
+        detections = truncate_long_time_str(detections, 'occurred') if product_type in {'ods', 'ofp'} else detections
         detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                               last_run=current_fetch_info,
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
