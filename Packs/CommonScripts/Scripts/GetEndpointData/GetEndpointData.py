@@ -725,7 +725,7 @@ def create_endpoints(raw_endpoints: list[dict[str, Any]], output_mapping: dict |
     """
     endpoints = []
     for raw_endpoint in raw_endpoints:
-        output_map = output_mapping(raw_endpoint) if isinstance(output_mapping, Callable) else output_mapping
+        output_map = output_mapping(raw_endpoint) if callable(output_mapping) else output_mapping
         endpoints.append(create_endpoint(raw_endpoint, output_map, brand))
     return endpoints
 
