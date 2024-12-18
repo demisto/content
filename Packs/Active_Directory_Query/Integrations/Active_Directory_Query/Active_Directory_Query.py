@@ -1625,8 +1625,8 @@ def add_member_to_group(default_base_dn):
 
     grp_dn = group_dn(args.get('group-cn'), search_base)
 
-    # Updated to take an array of member DNs to add to the group. Not detailed in the ldap3 documentation but per the function hints
-    # https://github.com/cannatag/ldap3/blob/dev/ldap3/extend/microsoft/addMembersToGroups.py
+    # Updated to take an array of member DNs to add to the group. Not detailed in the ldap3 documentation but per the function
+    # hints https://github.com/cannatag/ldap3/blob/dev/ldap3/extend/microsoft/addMembersToGroups.py
     # def ad_add_members_to_groups(connection, members_nd, groups_dn, fixe=True, raise_error=False):
     # """
     # :param connection: a bound Connection object
