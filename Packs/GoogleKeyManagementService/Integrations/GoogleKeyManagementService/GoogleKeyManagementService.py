@@ -606,6 +606,10 @@ def symmetric_decrypt_key_command(client: Client, args: dict[str, Any]) -> tuple
 
     elif args.get('simple_ciphertext') or args.get('entry_id'):
         plaintext = str(base64.b64decode(response.plaintext))[2:-1].replace('\\n', '\n')
+    else:
+        plaintext = ""
+        demisto.debug(f"{args.get('base64_ciphertext')=} {args.get('simple_ciphertext')=} {args.get('entry_id')=} didn't match "
+                      f"any of the previous conditions. {plaintext=}")
 
     if args.get('entry_id'):
         file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_decrypted.txt'
@@ -975,6 +979,10 @@ def asymmetric_decrypt_command(client: Client, args: dict[str, Any]) -> tuple[st
 
     elif args.get('simple_ciphertext') or args.get('entry_id'):
         plaintext = str(base64.b64decode(response.plaintext))[2:-1].replace('\\n', '\n')
+    else:
+        plaintext = ""
+        demisto.debug(f"{args.get('base64_ciphertext')=} {args.get('simple_ciphertext')=} {args.get('entry_id')=} didn't match "
+                      f"any of the conditions. {plaintext=}")
 
     if args.get('entry_id'):
         file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_decrypted.txt'

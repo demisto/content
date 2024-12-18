@@ -1559,6 +1559,11 @@ def send_notification(client: HTTPClient, **args):
         default_response = parsed_message.get('default_response', '')
         reply = parsed_message.get('reply', '')
         message_to_send = parsed_message.get('message', '')
+    else:
+        expiry = None
+        default_response = None
+        reply = None
+        demisto.debug(f"{mattermost_ask=} {expiry=} {default_response=} {reply=}")
 
     message_type = args.get('messageType', '')  # From server
     original_message = args.get('originalMessage', '')  # From server

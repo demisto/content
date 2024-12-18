@@ -1,3 +1,4 @@
+import demistomock
 from CommonServerPython import *
 """ Imports """
 import urllib3  # type: ignore
@@ -734,6 +735,9 @@ def query_command(client: Client, args: dict) -> CommandResults:
         query_link = query_link.replace("*", "&ast;")
         query_link = query_link.replace('"', "&quot;")
         human_readable += f"\n*To view the detailed query result please click [here]({query_link}).*"
+    else:
+        outputs = {}
+        demisto.debug(f"{query_response["message"]=} didn't match any condition. {outputs=}")
 
     return CommandResults(
         readable_output=human_readable, outputs=remove_empty_elements(outputs), raw_response=original_response
@@ -992,6 +996,9 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
             name=name, t=hr, headers=headers,
             removeNull=False
         )
+    else:
+        dbot_score_int = 0
+        demisto.debug(f'{response.get("riot")=} did not match the conditions. {dbot_score_int=}')
 
     try:
         response_quick: Any = ip_quick_check_command(client, {"ip": ip})
