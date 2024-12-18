@@ -653,7 +653,7 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
         command_results = CommandResults()
         interval_in_secs = int(args.get('interval_in_seconds', 5))
         scheduled_command = ScheduledCommand(command='xdr-xql-generic-query', next_run_in_seconds=interval_in_secs,
-                                             args=args, timeout_in_seconds=240)
+                                             args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = (f'The maximum allowed number of parallel running queries has been reached.'
                                            f' The query will be executed in the next interval, in {interval_in_secs} seconds.')
