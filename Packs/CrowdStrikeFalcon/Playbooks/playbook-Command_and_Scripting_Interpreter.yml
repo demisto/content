@@ -497,6 +497,7 @@ tasks:
       id: ee0c5d4f-5070-4a06-8c52-6e026f29e6c9
       version: -1
       name: Manual Response
+      description:  "Dear analyst, we've identified suspicious behavior and the playbook could not handle this alert automatically. Therefore, please choose the right remediation action."
       type: condition
       iscommand: false
       brand: ""
@@ -523,7 +524,7 @@ tasks:
       to:
       subject:
       body:
-        simple: The Terminate Process task failed, would you like to isolate the endpoint?
+        simple: "Dear analyst, we've identified suspicious behavior and the playbook could not handle this alert automatically. Therefore, please choose the right remediation action."
       methods: []
       format: ""
       bcc:
@@ -780,6 +781,7 @@ tasks:
       id: 857e3a9e-27db-4941-8c46-dcafd23d65a7
       version: -1
       name: Are there any additional affected endpoints?
+      description: Are there any additional affected endpoints?
       type: condition
       iscommand: false
       brand: ""
@@ -1427,6 +1429,7 @@ tasks:
       id: 622eab6e-6d25-4ca0-800b-e75f0621661c
       version: -1
       name: Is there a process to terminate?
+      description: Is there a process to terminate?
       type: condition
       iscommand: false
       brand: ""
@@ -1515,6 +1518,7 @@ tasks:
       id: 1d6d47c6-9981-4315-88d3-3aa34c73fd9e
       version: -1
       name: Are there any malicious indicators?
+      description: Are there any malicious indicators?
       type: condition
       iscommand: false
       brand: ""
@@ -1570,6 +1574,7 @@ tasks:
       id: 820dcf43-d785-4585-88ec-ac2c12d4ad8c
       version: -1
       name: Should open another incident to track findings?
+      description: Should open another incident to track findings?
       type: condition
       iscommand: false
       brand: ""
