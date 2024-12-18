@@ -64,6 +64,10 @@
             "type": "string",
             "is_array": false
         },
+        "operationnamevalue": {
+            "type": "string",
+            "is_array": false
+        },
         "properties": {
             "type": "string",
             "is_array": false
