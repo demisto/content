@@ -45,7 +45,8 @@ class Client:
 
             # used for device code flow
             resource='https://api.security.microsoft.com' if not client_credentials else None,
-            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not client_credentials else None,
+            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token'
+                                                                                    if not client_credentials else None,
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
