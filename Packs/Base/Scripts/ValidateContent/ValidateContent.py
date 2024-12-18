@@ -4,7 +4,7 @@ from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EX
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.logger import DEFAULT_CONSOLE_THRESHOLD, logging_setup
-from dataclasses import dataclass, asdict, fields
+from dataclasses import dataclass, asdict
 from shutil import copy
 from pathlib import Path
 from pkg_resources import get_distribution
@@ -13,8 +13,6 @@ from contextlib import contextmanager
 import zipfile
 import git
 import io
-import os
-# os.environ['DEMISTO_SDK_MAX_CPU_CORES'] = "1"  # TODO - Consider not specifying and use as much as available
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -35,16 +33,48 @@ DEFAULT_ERROR_PATTERN = {
 HOOK_ID_TO_PATTERN = {
     'xsoar-lint': DEFAULT_ERROR_PATTERN,
     'debug-statements': {
-        'pattern': 'File\s+"(.+)",\s+line\s+(\d+)\n\s+(.*)',
+        'regex': re.compile(r'File\s+"(.+)",\s+line\s+(\d+)(?:.*?\n.*?\^+\n)\s+([^\n]+)'),
         'groups': ['file', 'line', 'details']
     },
     'check-ast': {
-        'regex': re.compile(r'File "(Packs/TmpPack/[\w/]+/[\w/]+\.py)", line (\d+)\n\s+(.+)'),
+        'regex': re.compile(r'File\s"(Packs/.*?)",\sline\s(\d+)'),
+        'groups': ['file', 'line']
+    },
+    'mypy': {
+        'regex': re.compile(r'(.*?\.py):(\d+): error: ([\s\S]*?)(?=\nPacks\/|\nFound \d+ error)'),
         'groups': ['file', 'line', 'details']
     },
-    'mypy': DEFAULT_ERROR_PATTERN,
 }
 FILE_TYPE_TO_ERROR_TYPE = {'py': 'Code', 'ps1': 'Code', 'yml': 'Settings', 'json': 'Settings', 'md': 'Settings'}
+ALLOWED_FILE_TYPES = ['py', 'yml', 'yaml', 'json', 'ps1', 'zip']
+SKIPPED_HOOKS = [
+        'validate-deleted-files',
+        'pwsh-test-in-docker',
+        'pwsh-analyze-in-docker',
+        'coverage-pytest-analyze',
+        'merge-pytest-reports',
+        'format',
+        'validate',
+        'validate-content-paths',
+        'validate-conf-json',
+        'check-merge-conflict',
+        'name-tests-test',
+        'check-added-large-files',
+        'check-case-conflict',
+        'poetry-check',
+        'autopep8',
+        'pycln',
+        'ruff',
+        'xsoar-lint',
+        'check-yaml',
+        'check-json',
+    ]
+
+class FormattedResultFields:
+    NAME = 'Name'
+    ERROR = 'Error'
+    LINE = 'Line'
+    ERROR_CODE_OR_LINTER = 'Error Code/Linter'
 
 
 @dataclass
@@ -58,12 +88,10 @@ class ValidationResult:
     linter: str = ''
     severity: str = 'error'
     entityType: str = ''
-    col: int = 0
-    row: int = 0
+    col: int = -1
+    row: int = -1
     relatedField: str = ''
-
-    def to_json(self):
-        return json.dumps(asdict(self), indent=2)
+    ui: bool = True
 
     def to_dict(self):
         return asdict(self)
@@ -89,6 +117,14 @@ def log_demisto_sdk_version():
         demisto.debug(f'Using demisto-sdk version {get_distribution("demisto-sdk").version}')
     except Exception as e:
         demisto.debug(f'Could not get demisto-sdk version. Error: {e}')
+
+
+def setup_proxy(_args: dict):
+    if _args.get('use_system_proxy') == 'no':
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
 
 def strip_ansi_codes(text):
@@ -117,7 +153,7 @@ def extract_hook_id(output: str) -> str:
     return match.group(1) if match else None
 
 
-def extract_file_and_line(output: str, pattern_obj: dict) -> list[dict]:
+def parse_pre_commit_output(output: str, pattern_obj: dict) -> list[dict]:
     """
     Extracts information from pre-commit hook's output lines based on a given pattern.
 
@@ -129,7 +165,7 @@ def extract_file_and_line(output: str, pattern_obj: dict) -> list[dict]:
         dict: Extracted information for a single matching line.
     """
     results = []
-    demisto.debug(f'extract_file_and_line got {pattern_obj}')
+    demisto.debug(f'parse_pre_commit_output got {pattern_obj}')
     regex = pattern_obj['regex']
     group_names = pattern_obj['groups']
 
@@ -138,7 +174,6 @@ def extract_file_and_line(output: str, pattern_obj: dict) -> list[dict]:
         # Build the result dictionary based on the group names
         result = {}
         result.update({name: match_data[i] for i, name in enumerate(group_names) if i < len(match_data)})
-
         if result not in results:
             results.append(result)
 
@@ -146,30 +181,7 @@ def extract_file_and_line(output: str, pattern_obj: dict) -> list[dict]:
 
 
 def get_skipped_hooks():
-    return [
-        'validate-deleted-files',
-        'pwsh-test-in-docker',
-        'pwsh-analyze-in-docker',
-        'coverage-pytest-analyze',
-        'merge-pytest-reports',
-        'format',
-        'validate',
-        'validate-content-paths',
-        'validate-conf-json',
-        'check-merge-conflict',
-        # 'check-ast',
-        'name-tests-test',
-        'check-added-large-files',
-        'check-case-conflict',
-        'poetry-check',
-        'autopep8',
-        'pycln',
-        'ruff',
-        # 'mypy',
-        'xsoar-lint',
-        'check-yaml',
-        'check-json',
-    ]
+    return SKIPPED_HOOKS
 
 
 def set_pre_commit_template_path(value):
@@ -180,14 +192,15 @@ def set_pre_commit_template_path(value):
 def get_pre_commit_template_path() -> str | None:
     return pre_commit_template_path
 
-
-def setup_proxy(_args: dict):
-    if _args.get('use_system_proxy') == 'no':
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-
+def resolve_entity_type(file_path: str):
+    """ Resolve entity type from file path. """
+    parts = file_path.split("/")
+    if parts[0] == "Packs" and len(parts) > 2:
+        entity_type_directory_name = parts[2].lower()
+        entity_type = entity_type_directory_name[:-1] if entity_type_directory_name.endswith('s') else entity_type_directory_name
+    else:
+        entity_type = "contentpack"
+    return entity_type
 
 def get_pack_name(zip_fp: str) -> str:
     """ Returns the pack name from the zipped contribution file's metadata.json file. """
@@ -213,17 +226,18 @@ def _create_pack_base_files(self):
 
 def get_extracted_code_filepath(extractor: YmlSplitter) -> str:
     output_path = extractor.get_output_path()
+    demisto.debug(f'get_extracted_code_filepath {output_path}')
     base_name = os.path.basename(output_path) if not extractor.base_name else extractor.base_name
-    code_file = f'{output_path}/{base_name}'
+    code_file = f'get_extracted_code_filepath {output_path}/{base_name}'
     script = extractor.yml_data['script']
     lang_type: str = script['type'] if extractor.file_type == 'integration' else extractor.yml_data['type']
-    code_file = f'{code_file}{TYPE_TO_EXTENSION[lang_type]}'
+    code_file = f'get_extracted_code_filepath {code_file}{TYPE_TO_EXTENSION[lang_type]}'
     return code_file
 
 
 def content_item_to_package_format(
-    self, content_item_dir: str, del_unified: bool = True, source_mapping: dict | None = None,  # noqa: F841
-    code_fp_to_row_offset: dict = {}
+        self, content_item_dir: str, del_unified: bool = True, source_mapping: Optional[Dict] = None,  # noqa: F841
+        code_fp_to_row_offset: Dict = {}
 ) -> None:
     from demisto_sdk.commands.init.contribution_converter import AUTOMATION, INTEGRATION, SCRIPT, get_child_files
 
@@ -235,7 +249,11 @@ def content_item_to_package_format(
             file_type = find_type(content_item_file_path)
             file_type = file_type.value if file_type else file_type
             try:
-                extractor = find_type(path=content_item_file_path, file_type=file_type)
+                extractor = YmlSplitter(
+                    input=content_item_file_path,
+                    output=content_item_dir,
+                    file_type=file_type,
+                )
                 extractor.extract_to_package_format()
                 code_fp = get_extracted_code_filepath(extractor)
                 code_fp_to_row_offset[code_fp] = extractor.lines_inserted_at_code_start
@@ -247,7 +265,7 @@ def content_item_to_package_format(
                 os.remove(content_item_file_path)
 
 
-def convert_contribution_to_pack(contrib_converter: "ContributionConverter") -> dict:
+def convert_contribution_to_pack(contrib_converter: "ContributionConverter"):
     """
         Creates or updates a pack in the Content repo from the contents of a contributed zip file.
     Args:
@@ -262,6 +280,7 @@ def convert_contribution_to_pack(contrib_converter: "ContributionConverter") -> 
             with (zipfile.ZipFile(contrib_converter.contribution) as zipped_contrib,
                   zipped_contrib.open('metadata.json') as metadata_file):
                 metadata = json.loads(metadata_file.read())
+                demisto.debug(f'convert_contribution_to_pack {metadata=}')
                 contrib_converter.create_metadata_file(metadata)
 
         # Create base files.
@@ -277,37 +296,34 @@ def convert_contribution_to_pack(contrib_converter: "ContributionConverter") -> 
         contrib_converter.convert_contribution_dir_to_pack_contents(unpacked_contribution_dir)
 
     # Extract to package format.
-    code_fp_to_row_offset: dict[str, int] = {}
     for pack_subdir in get_child_directories(contrib_converter.pack_dir_path):
         basename = os.path.basename(pack_subdir)
         if basename in {SCRIPTS_DIR, INTEGRATIONS_DIR}:
             contrib_converter.content_item_to_package_format = types.MethodType(
                 content_item_to_package_format, contrib_converter
             )
+
             contrib_converter.content_item_to_package_format(
-                pack_subdir, del_unified=True, source_mapping=None, code_fp_to_row_offset=code_fp_to_row_offset
+                pack_subdir, del_unified=False, source_mapping=None,
             )
-    return code_fp_to_row_offset
 
-
-def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> tuple[str, dict]:
+def prepare_content_pack_for_validation(filename: str, data: bytes, content_dir_path: str) -> str:
     from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 
     # Write zip file data to file system.
-    zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
+    zip_path = os.path.abspath(os.path.join(content_dir_path, filename))
     with open(zip_path, 'wb') as fp:
         fp.write(data)
 
     pack_name = get_pack_name(zip_path)
-    contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path)
-    code_fp_to_row_offset = convert_contribution_to_pack(contrib_converter)
+    contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=content_dir_path)
+    convert_contribution_to_pack(contrib_converter)
 
-    # Call the standalone function and get the raw response
     os.remove(zip_path)
-    return contrib_converter.pack_dir_path, code_fp_to_row_offset
+    return contrib_converter.pack_dir_path
 
 
-def prepare_single_content_item_for_validation(file_name: str, data: bytes, packs_path: str) -> tuple[str, dict]:
+def prepare_single_content_item_for_validation(file_name: str, data: bytes, packs_path: str) -> str:
     from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 
     pack_name = 'TmpPack'
@@ -340,19 +356,17 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
     file_type = find_type(str(file_path))
     file_type = file_type.value if file_type else file_type
     if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
-        return str(file_path), {}
+        return str(file_path)
     extractor = YmlSplitter(
-        input=str(file_path), file_type=file_type, output=containing_dir,
-        no_logging=True, no_pipenv=True, no_basic_fmt=True
+        input=str(file_path), file_type=file_type, output=containing_dir
     )
     # Validate the resulting package files, ergo set path_to_validate to the package directory that results
     # from extracting the unified yaml to a package format
     extractor.extract_to_package_format()
-    code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
 
     output_path = extractor.get_output_path()
-    demisto.debug(f'prepare_single_content_item_for_validation {output_path=} | {code_fp_to_row_offset=}')
-    return output_path, code_fp_to_row_offset
+    demisto.debug(f'prepare_single_content_item_for_validation {output_path=}')
+    return output_path
 
 
 def run_validate(path_to_validate: str, json_output_file: str) -> int:
@@ -476,10 +490,6 @@ def get_content_modules(content_path: str, verify_ssl: bool = True) -> None:
                     f.write(res.content)
             demisto.debug(f'Copying from {cached_module_path} to {module_path}')
             copy(cached_module_path, module_path)
-            # Check if '.pre-commit-config_template.yaml' exists.
-            if module['file'] == PRE_COMMIT_TEMPLATE_PATH:
-                set_pre_commit_template_path(str(os.path.join(module_path, module["file"])))
-                demisto.debug(f'PRE_COMMIT {get_pre_commit_template_path()=}')
         except Exception as e:
             fallback_path = f'/home/demisto/{module["file"]}'
             demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. '
@@ -500,7 +510,6 @@ def run_pre_commit(output_path: Path) -> int:
     from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
     os.environ['DEMISTO_SDK_DISABLE_MULTIPROCESSING'] = 'true'
     demisto.debug(f'run_pre_commit | {get_skipped_hooks()=} | {PRE_COMMIT_TEMPLATE_PATH=} | {output_path=}')
-
     exit_code = pre_commit_manager(
         skip_hooks=get_skipped_hooks(),
         all_files=True,
@@ -513,7 +522,16 @@ def run_pre_commit(output_path: Path) -> int:
 
 
 def read_json_results(json_path: Path, results: list = None) -> list:
-    """ <DOCSTRING> """
+    """
+    Process JSON results file and append items to results list.
+
+    Args:
+        json_path: JSON file path
+        results: Existing results list
+
+    Returns:
+        Updated results with 'file_name' added to each result
+    """
     if results is None:
         results = []
 
@@ -534,6 +552,8 @@ def read_json_results(json_path: Path, results: list = None) -> list:
 
 
 def read_validate_results(json_path: Path):
+    if not json_path.exists():
+        raise DemistoException('Validation Results file does not exist.')
     raw_outputs = read_json_results(json_path)
     demisto.debug(f'read_validate_results: {raw_outputs=}')
 
@@ -541,20 +561,22 @@ def read_validate_results(json_path: Path):
     for output in raw_outputs:
         for validation in output.get('validations', []):
             file_path = validation.get('file path', '')
+            file_type = 'yml' if file_path.endswith(('.yml', '.yaml')) else ''
             error_code = validation.get('error code', '')
             message = validation.get('message', '')
-            # If you need more details mapped to other fields, let me know.
-
             results.append(
                 ValidationResult(
                     filePath=str(Path(file_path).absolute()) if file_path else None,
                     name=Path(file_path).stem,
-                    fileType='yml' if file_path.endswith(('.yml', '.yaml')) else '',
+                    fileType=file_type,
                     errorCode=error_code,
+                    errorType='Code' if file_type in {'py', 'ps1'} else 'Settings',
+                    entityType=resolve_entity_type(file_path),
                     message=message,
-                    linter='validate'
+                    linter='validate',
                 )
             )
+
     return results
 
 
@@ -569,26 +591,31 @@ def read_pre_commit_results(pre_commit_dir: Path):
 
             hook_id: str = extract_hook_id(stdout) or output.get('file_name', '')
             pattern_obj: dict = HOOK_ID_TO_PATTERN.get(hook_id, DEFAULT_ERROR_PATTERN)
-            parsed_results: list[dict] = extract_file_and_line(
+            parsed_results: list[dict] = parse_pre_commit_output(
                 stdout, pattern_obj
             )
+
             demisto.debug(f'extracted_data={json.dumps(parsed_results, indent=4)}')
             for result in parsed_results:
                 file_path = result.get('file', '')
                 # Isolating file's extension.
                 file_type = '' if not file_path else os.path.splitext(f'{file_path}')[1].lstrip('.')
                 error_type = FILE_TYPE_TO_ERROR_TYPE.get(file_type, '')
+                # 'check-ast' details value has to be treated individually as regex does not capture it properly.
+                if hook_id == 'check-ast':
+                    result['details'] = stdout.splitlines()[5:]  # Trimming error metadata info.
+                details = result['details'] if 'details' in result else ''
                 results.append(
                     ValidationResult(
                         filePath=file_path,
                         fileType=file_type,
-                        errorType=error_type,
-                        message=result.get('details', ''),
                         name=Path(file_path).stem,
+                        entityType=resolve_entity_type(file_path),
+                        errorType=error_type,
+                        message=details,
                         linter=hook_id,
                         col=result.get('column', 0),
                         row=int(result.get('line', 0)) - 1,  # Normalizing as UI adds a module registration line at row=0.
-
                     )
                 )
 
@@ -613,10 +640,10 @@ def validate_content(path_to_validate: str) -> tuple[list, list]:
     validations_output_path = output_base_dir / 'validation_res.json'
     pre_commit_dir = output_base_dir / 'pre-commit-output/'
     os.makedirs(pre_commit_dir, exist_ok=True)
+
     validate_exit_code = run_validate(path_to_validate, str(validations_output_path))
     demisto.info(f'Finished running `demisto-sdk validate` with exit code {validate_exit_code}.')
 
-    # support_multithreading()    # SDK runs multi-threaded code. TODO - Check perhaps multithreading is problematic.
     pre_commit_exit_code = run_pre_commit(pre_commit_dir)
     demisto.info(f'Finished running `demisto-sdk pre-commit` with exit code {pre_commit_exit_code}.')
 
@@ -624,21 +651,18 @@ def validate_content(path_to_validate: str) -> tuple[list, list]:
     if not (validate_exit_code or pre_commit_exit_code):
         return [], []
 
-    if not validations_output_path.exists():
-        raise DemistoException('Validation Results file does not exist.')
-
     raw_validation_results: list[ValidationResult] = []
     raw_validation_results += read_validate_results(validations_output_path)
     raw_validation_results += read_pre_commit_results(pre_commit_dir)
+    demisto.debug(f'{json.dumps([output.to_dict() for output in raw_validation_results], indent=4)}')
 
     formatted_results = []
     for result in raw_validation_results:
-        # if output.get('filePath') and output.get('fileType') :
         formatted_results.append({
-            'Name': result.name,
-            'Error': result.message,
-            'Line': result.row,
-            'ErrorCode/linter': result.errorCode or result.linter
+            FormattedResultFields.NAME: result.name,
+            FormattedResultFields.ERROR: result.message,
+            FormattedResultFields.LINE: result.row if int(result.row) > 0 else None,
+            FormattedResultFields.ERROR_CODE_OR_LINTER: result.errorCode or result.linter
         })
 
     return formatted_results, [output.to_dict() for output in raw_validation_results]
@@ -693,21 +717,23 @@ def setup_content_dir(file_name: str, file_contents: str, entry_id: str, verify_
 
     content_repo = setup_content_repo(CONTENT_DIR_PATH)
     file_name, file_contents = get_file_name_and_contents(file_name, file_contents, entry_id)
+    file_type = file_name.split('.')[-1]
+    if file_type not in ALLOWED_FILE_TYPES:
+        demisto.debug(f'resolved {file_type=}')
+        raise DemistoException(f'{file_name} does not define a content item. Files defining content items can be of '
+                               f'types: {ALLOWED_FILE_TYPES}')
 
     if file_name.endswith('.zip'):
-        path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
+        path_to_validate = prepare_content_pack_for_validation(
             file_name, file_contents, CONTENT_DIR_PATH
         )
     else:
-        path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
+        path_to_validate = prepare_single_content_item_for_validation(
             file_name, file_contents, packs_path
         )
     demisto.debug(f'setup_content_dir {path_to_validate=}')
-
+    # "git add packs_path"
     content_repo.index.add(os.path.join(packs_path))
-
-    if os.path.isdir(path_to_validate):
-        demisto.debug(f'setup_content_dir {os.listdir(path_to_validate)=}')
 
     os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
     get_content_modules(CONTENT_DIR_PATH, verify_ssl=verify_ssl)
@@ -720,6 +746,7 @@ def setup_envvars():
     os.environ['ARTIFACTS_FOLDER'] = '/tmp/artifacts'
     os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
     demisto.debug(f'setup_envvars: {os.environ}')
+
 
 def main():
     setup_envvars()
@@ -756,26 +783,22 @@ def main():
 
             # Got to be in content dir when running demisto-sdk commands.
             os.chdir(CONTENT_DIR_PATH)
-
             validation_results, raw_outputs = validate_content(path_to_validate)
             os.chdir(cwd)
 
-            demisto.debug(f'{json.dumps(validation_results, indent=4)}')
-
-            # todo - bring back - if not validation_results:
-            if False:
+            if not raw_outputs:
                 readable_output = 'All validations passed.'
             else:
                 readable_output = tableToMarkdown(
                     name='Validation Results',
-                    t=raw_outputs,
-                    headers=[field.name for field in fields(ValidationResult)],
+                    t=validation_results,
+                    headers=[
+                        FormattedResultFields.NAME,
+                        FormattedResultFields.ERROR,
+                        FormattedResultFields.LINE,
+                        FormattedResultFields.ERROR_CODE_OR_LINTER
+                    ]
                 )
-                # readable_output = tableToMarkdown(
-                #     'Validation Results',
-                #     validation_results,
-                #     headers=['Name', 'Error', 'Line', 'Error Code/Linter']
-                # )
             return_results(CommandResults(
                 readable_output=readable_output,
                 outputs_prefix='ValidationResult',
