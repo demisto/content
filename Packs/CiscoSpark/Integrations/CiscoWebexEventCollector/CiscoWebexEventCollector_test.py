@@ -42,7 +42,6 @@ def mocked_admin_client():
         'https://redirect.com',
         'admin_scope',
         '1',
-        command='fake_command',
     )
 
 
@@ -61,7 +60,6 @@ def mocked_compliance_officer_client():
         '1',
         'https://redirect.com',
         'co_scope',
-        command='fake_command',
     )
 
 
@@ -75,13 +73,15 @@ def mock_set_integration_context(context: dict = None) -> dict | None:
 def test_remove_integration_context_for_user(mocker):
     import CiscoWebexEventCollector
 
-    mock_integration_context = {'test_user': {'context_key': 'context_value'}}
+    mock_integration_context = {'test_user1': {'context_key': 'context_value'}, 'test_user2': {'context_key': 'context_value'}}
     mocker.patch.object(CiscoWebexEventCollector, 'get_integration_context', return_value=mock_integration_context)
     mock_context = mocker.patch('CiscoWebexEventCollector.set_integration_context', side_effect=mock_set_integration_context)
 
     assert CiscoWebexEventCollector.get_integration_context() == mock_integration_context
-    CiscoWebexEventCollector.remove_integration_context_for_user('test_user')
-    assert mock_context.call_args.args[0] == {'test_user': {}}
+    CiscoWebexEventCollector.remove_integration_context_for_user('test_user1')
+    assert mock_context.call_args.args[0] == {'test_user1': {}, 'test_user2': {'context_key': 'context_value'}}
+    CiscoWebexEventCollector.remove_integration_context_for_user('test_user2')
+    assert mock_context.call_args.args[0] == {'test_user1': {}, 'test_user2': {}}
 
 
 @freeze_time("2023-12-20 13:40:00 UTC")

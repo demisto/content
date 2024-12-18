@@ -2,16 +2,16 @@
     "2222": {
         "instance_id": "22222222-2222-2222-2222-222222222222",
         "chrome_options": "chrome_options2",
-        "rasteriztion_count": 1
+        "rasterization_count": 1
     },
     "3333": {
         "instance_id": "33333333-3333-3333-3333-333333333333",
         "chrome_options": "chrome_options3",
-        "rasteriztion_count": 1
+        "rasterization_count": 1
     },
     "9345": {
         "instance_id": "44444444-4444-4444-4444-444444444444",
         "chrome_options": "chrome_options4",
-        "rasteriztion_count": 1
+        "rasterization_count": 1
     }
 }

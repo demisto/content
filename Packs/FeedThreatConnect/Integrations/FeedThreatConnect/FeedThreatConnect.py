@@ -396,7 +396,7 @@ class Client(BaseClient):
         timestamp = round(time.time())
         if full_url:
             url_suffix = full_url.replace(demisto.getParam('tc_api_path').rstrip('/'), '')
-        to_sign = f'{url_suffix}:{method}:{timestamp}'
+        to_sign = f'{url_suffix}:{method.value}:{timestamp}'
         api_hash = base64.b64encode(
             hmac.new(self.api_secret.encode('utf8'), to_sign.encode('utf8'), hashlib.sha256).digest()).decode()
         return {'Authorization': f'TC {self.api_id}:{api_hash}', 'Timestamp': str(timestamp),
