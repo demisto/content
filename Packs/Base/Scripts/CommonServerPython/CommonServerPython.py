@@ -12655,6 +12655,7 @@ def find_and_remove_sensitive_text(text, pattern):
     :type pattern: str
 
     :return: None
+    :rtype: ``None``
     """
     sensitive_pattern = re.compile(pattern)
     matches = sensitive_pattern.findall(text)
