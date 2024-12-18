@@ -70,7 +70,6 @@ def test_get_taxii(mocker):
     assert mock_response_3 == val[0]
 
 
-@pytest.mark.skip(reason="Skipping this test since we are no longer returning an error.")
 def test_get_taxii_failure(mocker):
     from CybleThreatIntel import Client
     client = Client(params)
