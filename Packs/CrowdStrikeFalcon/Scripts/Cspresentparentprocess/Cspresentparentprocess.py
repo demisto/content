@@ -45,8 +45,8 @@ def main():
             'Type': entryTypes['note'],
             'Contents': MD,
             'ContentsFormat': formats['markdown']})
-    except:
-        print("No Policy Acttions were found on CrowdStrike.Detection key")
+    except Exception:
+        return_results("No Policy Actions were found on CrowdStrike.Detection key")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

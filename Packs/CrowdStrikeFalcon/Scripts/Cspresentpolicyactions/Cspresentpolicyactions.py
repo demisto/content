@@ -51,8 +51,8 @@ def main():
             'Contents': MD,
             'ContentsFormat': formats['markdown']
         })
-    except:
-        print("No Policy Actions were found on CrowdStrike.Detection context key")
+    except Exception:
+        return_results("No Policy Actions were found on CrowdStrike.Detection context key")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
