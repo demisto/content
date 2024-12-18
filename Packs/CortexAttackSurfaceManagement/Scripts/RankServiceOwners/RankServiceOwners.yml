@@ -5,6 +5,9 @@ args:
 - description: System IDs or names associated with the compute instance.
   isArray: true
   name: asmsystemids
+- description: The source of the alert or issue.
+  isArray: false
+  name: alertsource
 comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
   id: RankServiceOwners
