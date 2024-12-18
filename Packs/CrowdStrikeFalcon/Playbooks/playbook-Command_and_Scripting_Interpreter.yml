@@ -289,6 +289,7 @@ tasks:
       id: a7aaf887-5ebb-4d3b-8e09-ba59559d9758
       version: -1
       name: Is the process blocked?
+      description: Is the process blocked?
       type: condition
       iscommand: false
       brand: ""

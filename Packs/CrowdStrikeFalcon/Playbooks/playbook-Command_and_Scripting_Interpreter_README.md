@@ -11,6 +11,7 @@ An attacker can abuse these technologies in various ways as a means of executing
 
 Due to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. 
 The command line analysis does the following:
+
 - Checks and decodes base64
 - Extracts and enriches indicators from the command line
 - Checks specific arguments for malicious usage 
@@ -22,17 +23,17 @@ The playbook checks for additional activity using the 'Endpoint Investigation Pl
 
 After analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:
 
-* Isolate the endpoint based on playbook inputs.
+- Isolate the endpoint based on playbook inputs.
 
 When the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.
 
 This phase executes the following containment actions:
 
-* Automatically isolates the endpoint
+- Automatically isolates the endpoint
 
 It then continues with the following eradication actions:
 
-* process termination.
+- process termination.
 
 ## Dependencies
 
@@ -40,28 +41,28 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* CrowdStrike Falcon - Search Endpoints By Indicators
-* Crowdstrike Falcon - Isolate Endpoint
+- CrowdStrike Falcon - Search Endpoints By Indicators
+- Crowdstrike Falcon - Isolate Endpoint
 
 ### Integrations
 
-* CrowdStrikeFalcon
-* CrowdstrikeFalcon
+- CrowdStrikeFalcon
+- CrowdstrikeFalcon
 
 ### Scripts
 
-* CommandLineAnalysis
-* SetAndHandleEmpty
+- CommandLineAnalysis
+- SetAndHandleEmpty
 
 ### Commands
 
-* closeInvestigation
-* createNewIncident
-* cs-falcon-rtr-kill-process
-* endpoint
-* enrichIndicators
-* linkIncidents
-* setIncident
+- closeInvestigation
+- createNewIncident
+- cs-falcon-rtr-kill-process
+- endpoint
+- enrichIndicators
+- linkIncidents
+- setIncident
 
 ## Playbook Inputs
 
