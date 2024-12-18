@@ -35,13 +35,14 @@ def clean_non_base64_chars(encoded_str: str) -> str:
     Cleans and ensures the Base64 string contains only valid Base64 characters (+, /, =, alphanumeric).
     Adds proper padding if necessary.
     """
-    # Allow only valid Base64 characters: A-Z, a-z, 0-9, +, /, and =
+    # Remove all invalid Base64 characters
     cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', encoded_str)
 
     # Fix padding (Base64 strings should be a multiple of 4 in length)
     padding = len(cleaned_str) % 4
     if padding:
         cleaned_str += "=" * (4 - padding)
+
     return cleaned_str
 
 
@@ -55,22 +56,41 @@ def remove_null_bytes(decoded_str: str) -> str:
 def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[Optional[str], bool]:
     """
     Decodes a Base64-encoded string recursively up to a defined limit.
+    Returns the decoded string and a flag indicating if double encoding was detected.
     """
     try:
         recursion_depth = 0
-        while is_base64(encoded_str) and recursion_depth < max_recursions:
-            # Clean and ensure the string is valid
-            encoded_str = clean_non_base64_chars(encoded_str)
-            decoded_bytes = base64.b64decode(encoded_str)
+        was_double_encoded = False  # Flag for double encoding
+        current_input = encoded_str
+
+        while recursion_depth < max_recursions:
+            # Check if the current input is valid Base64
+            if not is_base64(current_input):
+                break
+
+            # Clean and decode the Base64 string
+            cleaned_input = clean_non_base64_chars(current_input)
+            decoded_bytes = base64.b64decode(cleaned_input)
             try:
-                encoded_str = decoded_bytes.decode('utf-8')
+                decoded_str = decoded_bytes.decode('utf-8')
             except UnicodeDecodeError:
-                encoded_str = decoded_bytes.decode('latin-1')  # Fallback for non-UTF-8 content
+                decoded_str = decoded_bytes.decode('latin-1')
+
+            # Increment recursion depth
             recursion_depth += 1
-        return encoded_str, recursion_depth > 1  # Return decoded string and if double encoding was detected
+
+            # Update flag for double encoding after the first successful decode
+            if recursion_depth > 1:
+                was_double_encoded = True
+
+            # Prepare for the next round of decoding
+            current_input = decoded_str
+
+        return current_input, was_double_encoded
     except Exception as e:
-        demisto.debug(f"Error decoding base64: {e}")
+        print(f"Error decoding Base64: {e}")
         return None, False
+
 
 
 def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
@@ -213,8 +233,8 @@ def check_windows_temp_paths(command_line: str) -> List[str]:
     patterns = [
         r'\bC:\\Temp\b',
         r'\bC:\\Windows\\System32\\Temp\b',
-        r'\b%TEMP%\b',
-        r'\b%TMP%\b',
+        r'%TEMP%',
+        r'%TMP%',
         r'\\Users\\Public\\Public\s+Downloads\b',
         r'\\AppData\\Local\\Temp\b',
         r'\\ProgramData\\Microsoft\\Windows\\Caches\b',

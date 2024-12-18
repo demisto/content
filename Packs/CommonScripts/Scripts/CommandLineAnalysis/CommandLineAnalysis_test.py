@@ -1,5 +1,4 @@
 import pytest
-from typing import Tuple
 from CommandLineAnalysis import (
     is_base64,
     clean_non_base64_chars,
@@ -19,12 +18,14 @@ from CommandLineAnalysis import (
 
 
 # Test data
-DOUBLE_ENCODED_STRING = "UmVjdXJzaXZlIGRlY29kZSBvZiBkMlVnZDJGdWRDQjBieUJrWldOdlpHVWdhWFFnVmtkb2NHTjVRbkJqZVVKb1NVaFNiR016VVdkak0xSjVZVmMxYmc9PQ=="
+DOUBLE_ENCODED_STRING = "cmVjdXJzaXZlIGRlY29kZSBaR1ZqYjJSbElGWkhhSEJqZVVKd1kzbENhRWxJVW14ak0xRm5Zek5TZVdGWE5XND0="
 MALICIOUS_COMMAND_LINE = "wevtutil cl Application VGhpcyBpcyBhIGxpc3RlbmVyKDExLjEwMS4xMjQuMjIp"
+
 
 @pytest.fixture
 def sample_encoded_command() -> str:
     return DOUBLE_ENCODED_STRING
+
 
 @pytest.fixture
 def sample_malicious_command() -> str:
@@ -56,8 +57,8 @@ def test_remove_null_bytes():
 # Test decode_base64
 def test_decode_base64(sample_encoded_command):
     decoded_str, double_encoded = decode_base64(sample_encoded_command)
-    assert "Recursive decode" in decoded_str
-    assert double_encoded is True
+    assert "recursive decode" in decoded_str  # Check successful decoding
+    assert double_encoded is True  # Verify double encoding is detected
 
 
 # Test identify_and_decode_base64
@@ -69,7 +70,7 @@ def test_identify_and_decode_base64(sample_malicious_command):
 
 # Test reverse_command
 def test_reverse_command():
-    reversed_string = "llehsrewoP"
+    reversed_string = "llehSrewoP"
     result, was_reversed = reverse_command(reversed_string)
     assert result == "PowerShell"
     assert was_reversed is True
