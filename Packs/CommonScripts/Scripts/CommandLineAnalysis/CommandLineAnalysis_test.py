@@ -1,7 +1,6 @@
 import pytest
 from CommandLineAnalysis import (
     is_base64,
-    clean_non_base64_chars,
     remove_null_bytes,
     decode_base64,
     identify_and_decode_base64,
@@ -39,13 +38,6 @@ def test_is_base64():
 
     assert is_base64(valid_base64) is True
     assert is_base64(invalid_base64) is False
-
-
-# Test clean_non_base64_chars
-def test_clean_non_base64_chars_valid_base64():
-    input_str = "VGhpcyBpcyBhIHZhbGlkIEJhc2U2NA=="  # Valid Base64 for "This is a valid Base64"
-    expected_output = "VGhpcyBpcyBhIHZhbGlkIEJhc2U2NA=="
-    assert clean_non_base64_chars(input_str) == expected_output
 
 
 # Test remove_null_bytes
