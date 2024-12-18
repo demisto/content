@@ -669,6 +669,18 @@
                 },
                 "Username": {
                     "simple": "user_name"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
                 }
             }
         },
