@@ -56,7 +56,7 @@ def test_decode_base64(sample_encoded_command):
 # Test identify_and_decode_base64
 def test_identify_and_decode_base64(sample_malicious_command):
     decoded_command, is_double_encoded = identify_and_decode_base64(sample_malicious_command)
-    assert "This is a listener" in decoded_command
+    assert "11.101.124.22" in decoded_command
     assert is_double_encoded is False
 
 
@@ -124,6 +124,6 @@ def test_check_powershell_suspicious_patterns():
 def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
     assert result["risk"] == "Medium Risk"
-    assert "VGhpcyBpcyBhIGxpc3RlbmVyKDExLjEwMS4xMjQuMjIp" in result["analysis"]["original"]["base64_encoding"]
+    assert "11.101.124.22" in result["analysis"]["original"]["base64_encoding"]
     assert "This is a listener(11.101.124.22)" in result["decoded_command"]
     assert "wevtutil cl Application" in result["original_command"]
