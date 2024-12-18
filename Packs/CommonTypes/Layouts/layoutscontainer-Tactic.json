@@ -1,0 +1,564 @@
+{
+    "description": "Tactic Indicator Layout",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "indicator",
+    "id": "Tactic Layout",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "sgzngfxnoq",
+                "name": "Summary",
+                "sections": [
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "id",
+                                "width": 110
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "severity",
+                                "width": 80
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "status",
+                                "width": 80
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "sgzngfxnoq-main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
+                        "isVisible": true,
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "sgzngfxnoq-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "comment",
+                                "height": 22,
+                                "id": "0b9dd200-a09e-11e9-8956-390f602b039a",
+                                "index": 0,
+                                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "55a26a10-81af-11ec-a247-cfbd25dcdbb6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
+                                "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
+                                "index": 2,
+                                "listId": "sgzngfxnoq-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "4ba88480-8345-11ec-957b-0b2fa4b6ab8a",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
+                                "index": 4,
+                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
+                                "index": 5,
+                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
+                                "index": 8,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
+                                "index": 8,
+                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tactic Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "sgzngfxnoq-main-acbc9a10-3d54-11ea-8f80-71a50769e869",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "sgzngfxnoq-main-e608e030-3d54-11ea-8f80-71a50769e869",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "sgzngfxnoq-main-a37f4790-cf12-11ea-99ca-719a20305a18",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
+                                "index": 0,
+                                "listId": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tactic Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "sgzngfxnoq-main-979b5ae0-979e-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "09urfmlizj",
+                "name": "Publications and notes",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 9,
+                        "hideName": false,
+                        "i": "09urfmlizj-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "f6abcbb0-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "f8eb5b70-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Publications and notes",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "vv7yhjfzjm",
+                "name": "Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "efc2ba20-84eb-11ec-a589-e73aadc98c9a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "d5429ba0-b306-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "listId": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "cbcdf420-b306-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "listId": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "cda1c9c0-b306-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "listId": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "killchainphases",
+                                "height": 22,
+                                "id": "d1afff00-b306-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "d30778b0-b306-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "f3ac1990-b306-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "f0eb24d0-b306-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tactic",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "vv7yhjfzjm-db1eda20-b306-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 44,
+                                "id": "e21191b0-b306-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tactic",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "vv7yhjfzjm-fde82fc0-b306-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "vv7yhjfzjm-003490c0-b307-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "se889tdxik",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Tactic Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
