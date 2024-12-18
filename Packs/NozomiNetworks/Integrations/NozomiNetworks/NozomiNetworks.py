@@ -12,15 +12,23 @@ urllib3.disable_warnings()
 
 
 class Client:
-    def __init__(self, base_url=None, headers=None, verify=None, proxies=None, auth=None):
+    def __init__(self, base_url=None, headers=None, verify=None, auth=None, proxy=None):
         self.base_url = base_url or demisto.params().get('endpoint')
         self.headers = headers or {'accept': "application/json"}
         self.verify = verify if verify is not None else not demisto.params().get('insecure', True)
-        self.proxies = proxies if proxies is not None else demisto.params().get('proxy', False)
+        self.proxy = proxy or demisto.params().get('proxy', False)
         self.auth = auth or (
             demisto.params().get("credentials", {}).get('identifier', ''),
             demisto.params().get("credentials", {}).get('password', '')
         )
+
+
+    def get_proxies(self):
+        if self.proxy:
+            return handle_proxy()
+        else:
+            return {}
+
 
     def _make_request(self, method, path, **kwargs):
         url = self.base_url + path
@@ -30,7 +38,7 @@ class Client:
             url=url,
             headers=self.headers,
             verify=self.verify,
-            proxies=self.proxies,
+            proxies=self.get_proxies(),
             auth=self.auth,
             **kwargs
         )
