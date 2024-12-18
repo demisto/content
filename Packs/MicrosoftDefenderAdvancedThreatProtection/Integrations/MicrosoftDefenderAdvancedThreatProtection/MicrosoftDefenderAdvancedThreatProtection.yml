@@ -766,7 +766,7 @@ script:
       name: ran_once_flag
       deprecated: true
     description: Deprecated. Use the 'msg-search-alerts' command in the 'Microsoft Graph Security' integration instead.
-    name: microsoft-atp-list-alerts (Deprecated)
+    name: microsoft-atp-list-alerts
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.
@@ -907,7 +907,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: "Deprecated. Use the 'msg-update-alert' command in the 'Microsoft Graph Security' integration instead."
-    name: microsoft-atp-update-alert (Deprecated)
+    name: microsoft-atp-update-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.
@@ -1020,7 +1020,7 @@ script:
     - description: If stated along with query, the response will be be saved in context under the Result.name path.
       name: name
     description: "Deprecated. Use the 'msg-advanced-hunting' command in the 'Microsoft Graph Security' integration instead."
-    name: microsoft-atp-advanced-hunting (Deprecated)
+    name: microsoft-atp-advanced-hunting
     outputs:
     - contextPath: MicrosoftATP.Hunt.Result
       description: The query results.
@@ -1095,7 +1095,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Deprecated. No available replacement.
-    name: microsoft-atp-create-alert (Deprecated)
+    name: microsoft-atp-create-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.
@@ -1182,7 +1182,7 @@ script:
       name: ran_once_flag
       deprecated: true
     description: Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.
-    name: microsoft-atp-get-alert-related-user (Deprecated)
+    name: microsoft-atp-get-alert-related-user
     outputs:
     - contextPath: MicrosoftATP.AlertUser.User.ID
       description: The user ID.
@@ -1239,7 +1239,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `fileDetails` as part of the alert details.
-    name: microsoft-atp-get-alert-related-files (Deprecated)
+    name: microsoft-atp-get-alert-related-files
     outputs:
     - contextPath: MicrosoftATP.AlertFile.Files.FilePublisher
       description: The file's publisher.
@@ -1308,7 +1308,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details.
-    name: microsoft-atp-get-alert-related-ips (Deprecated)
+    name: microsoft-atp-get-alert-related-ips
     outputs:
     - contextPath: MicrosoftATP.AlertIP.IPs.IpAddress
       description: The address of the IP.
@@ -1333,7 +1333,7 @@ script:
       deprecated: true
     description: |-
       Deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
-    name: microsoft-atp-get-alert-related-domains (Deprecated)
+    name: microsoft-atp-get-alert-related-domains
     outputs:
     - contextPath: MicrosoftATP.AlertDomain.Domains.Domain
       description: The domain address.
@@ -1764,7 +1764,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Deprecated. No available replacement.
-    name: microsoft-atp-get-domain-alerts (Deprecated)
+    name: microsoft-atp-get-domain-alerts
     outputs:
     - contextPath: MicrosoftATP.DomainAlert.Domain
       description: The domain address.
@@ -1984,7 +1984,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Deprecated. No available replacement.
-    name: microsoft-atp-get-file-alerts (Deprecated)
+    name: microsoft-atp-get-file-alerts
     outputs:
     - contextPath: MicrosoftATP.FileAlert.Sha1
       description: The file SHA1 hash.
@@ -2098,7 +2098,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Deprecated. No available replacement.
-    name: microsoft-atp-get-ip-alerts (Deprecated)
+    name: microsoft-atp-get-ip-alerts
     outputs:
     - contextPath: MicrosoftATP.IPAlert.IPAddress
       description: The IP address.
@@ -2190,7 +2190,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Deprecated. No available replacement.
-    name: microsoft-atp-get-user-alerts (Deprecated)
+    name: microsoft-atp-get-user-alerts
     outputs:
     - contextPath: MicrosoftATP.UserAlert.Username
       description: The username.
@@ -4577,7 +4577,7 @@ script:
       description: Whether the update failed.
       type: Boolean
     polling: true
-  - name: microsoft-atp-get-alert-by-id (Deprecated)
+  - name: microsoft-atp-get-alert-by-id
     description: "Deprecated. Use 'msg-get-alert-details' in the 'Microsoft Graph Security' integration instead."
     arguments:
     - name: alert_ids
@@ -5538,7 +5538,7 @@ script:
       name: ran_once_flag
       deprecated: true
     description: Deprecated. No available replacement.
-    name: microsoft-atp-get-machine-alerts (Deprecated)
+    name: microsoft-atp-get-machine-alerts
     outputs:
     - contextPath: MicrosoftATP.MachineAlerts.ID
       description: The alert ID.
