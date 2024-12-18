@@ -12556,6 +12556,7 @@ def find_and_remove_sensitive_text(text, pattern):
     """
     Finds all appearances of sensitive information in a string using regex and adds the sensitive
     information to the list of strings that should not appear in any logs.
+    The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word (e.g., finding the word after "password:").
 
     :param text: The input text containing the sensitive information.
     :type text: str
@@ -12570,15 +12571,17 @@ def find_and_remove_sensitive_text(text, pattern):
         return
 
     for match in matches:
+        # in case the regex serches for a group pattern , e.g r'(password:\s*)(\S+)').
         if isinstance(match, tuple):
             sensitive_text = match[1]
         else:
+            # in case the regex serches for a specific word
             sensitive_text = match
         add_sensitive_log_strs(sensitive_text)
     return
 
 
-from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
+from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402the
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
