@@ -25,23 +25,5 @@ Securely store the API Key, as it will not be displayed again.
 1. In the Cortex XDR platform, go to **Settings**> **Configurations** > **API Keys**.
 2. Click the **Copy API URL** button in the top-right corner.
 
-**Note**: Only one instance of this integration is supported at a time. If more than one is configured, instances will interrupt one another.
-
-### Severity
-
-The integration synchronizes the severity field (defined as a parameter) between Cortex XSOAR and Cortex XDR.
-
-#### Field Requirements:
-
-The severity field must be one of the following: 
-
-- A textual field
-- A single-select field, accepting the following values: **INFO**,**LOW**,**MEDIUM**,**HIGH**,**CRITICAL**. 
-
-#### Important Notes:
-
-- Using an invalid field (or one that is not present in the indicator) may cause fetching to stop working.
-
-- Due to XSOAR system limitations, once the severity is manually changed within XSOAR, it is excluded from being updated by the fetching process.
-
+**Note**: Only a single instance of this integration can be supported at a time. Configuring multiple instances will cause conflicts and disrupt proper functionality.
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ioc)

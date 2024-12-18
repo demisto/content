@@ -27,10 +27,13 @@ Key capabilities include retrieving incidents, isolating endpoints, executing re
     | Server URL (copy URL from Cortex XDR) | In Cortex XDR, navigate to Settings > Configurations > API Keys and click Copy API URL | True |
     | API Key ID | In Cortex XDR platform, go to Settings > Configurations > API Keys and copy the Key ID from the ID column | False |
     | API Key | In Cortex XDR, go to Settings > Configurations > API Keys, click + New Key, set Security Level to Standard, select an appropriate Role, and copy the Generated Key | False |
+    | Run on | Select an engine to run on | False |
     | HTTP Timeout | The timeout of the HTTP request sent to Cortex XDR API (in seconds) | False|
     | Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified | False |
     | Use system proxy settings | Use system proxy is enabled only when an engine is selected | False |
     | Prevent Only Mode | Whether the Cortex XDR tenant is prevented only | False |
+    | Log Level | Debug/Verbose logging can affect the performance of the integration. Recommended usage is to turn it on only during troubleshooting, and turn it off in production. This setting only affects the integration log. The server log is not affected | False |
+    | Do not use in CLI by default | | False |
     | Fetches incidents| Whether to fetch incidents from Cortex XDR | False |
     | Classifier| Determines the type of incident that is created for events ingested from this integration instance | False|
     | Incident type | Determines the Incident type that is created for events ingested from this integration instance. If a Classifier is selected, it will take precedence| False|
@@ -55,7 +58,7 @@ Key capabilities include retrieving incidents, isolating endpoints, executing re
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-## Playbooks
+## Playbook Highlight
 
 ---
 
@@ -136,12 +139,9 @@ However, Field A cannot be mirrored in both directions simultaneously.
 
 When enabling the mirroring feature for an existing instance or troubleshooting mirroring issues, ensure the following steps are taken:
 
-1. **Update the Default Playbook**:
-    - Verify that the default playbook for the **Cortex XDR Incident** incident type is not set to **Cortex XDR Incident Sync**.
-    - Replace it with a different playbook that does not utilize the XDRSyncScript to avoid conflicts.
-2. **Configure the Correct Mappers**:
-    - Set the incoming mapper for the Cortex XDR integration instance to **Cortex XDR - Incoming Mapper**.
+1. **Configure the Correct Mappers**: Set the incoming mapper for the Cortex XDR integration instance to **Cortex XDR - Incoming Mapper**.
 Set the outgoing mapper to **Cortex XDR - Outgoing Mapper**. This ensures proper synchronization of fields between Cortex XDR and Cortex XSOAR.
+2. **Make sure to enable mirroring**.
 
 ### Known Limitations:
 

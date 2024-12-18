@@ -18,8 +18,11 @@ The **Cortex XDR - XQL Query Engine** integration enables you to execute XQL que
 | Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL | True |
 | API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column | False |
 | API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key| False |
+| Run on | Select an engine to run on | False |
 | Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified | False |
 | Use system proxy settings | Use system proxy settings is enabled only when an Engine is selected | False |
+| Log Level | Debug/Verbose logging can affect the performance of the integration. Recommended usage is to turn it on only during troubleshooting, and turn it off in production. This setting only affects the integration log. The server log is not affected | False |
+| Do not use in CLI by default | | False |
 
 ## Commands
 

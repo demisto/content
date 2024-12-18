@@ -884,6 +884,8 @@ def main():  # pragma: no cover
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
     Client.override_severity = argToBoolean(params.get('override_severity', True))
+    if Client.override_severity and not Client.severity:
+        raise DemistoException("`Override severity` parameter is set to True, please specify a severity under `Overriding severity value` parameter.")
     Client.tlp_color = params.get('tlp_color')
     Client.comments_as_tags = argToBoolean(params.get('comments_as_tags', False))
 

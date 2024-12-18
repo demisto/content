@@ -7,7 +7,6 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 
 - Add IOCs (e.g., IPs, domains, hashes) to Cortex XDR.
 - Retrieve and update existing IOCs.
-- Delete IOCs when no longer relevant (currently not supported).
 - Automate threat intelligence management through playbooks and incident workflows.
 
 ## Use Cases
@@ -23,31 +22,40 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 | --- | --- | --- |  
 | Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL| True |  
 | API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column | True |  
-| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key | True | 
-| Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators | False |
-| Overriding severity value | When the **override severity** parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the original severity level of the indicator will be used | True | 
-| Tags | Supports CSV values | False|
-| Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR | True |
-| Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified | False |
-| Use system proxy settings | Use system proxy settings is enabled only when an Engine is selected | False |  
-| Indicator Reputation | Indicator Reputation | False |  
-| Source Reliability | Source Reliability | True |  
+| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key | True |
+| Source Reliability | Source Reliability | True |
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
-| Indicator Expiration Method | According to which method the indicators from this feed will be expired | False |  
-| Feed Fetch Interval | Feed Fetch Interval (make sure to set it to at least 15 minutes) | False |
-| XSOAR Severity Field | The Cortex XSOAR indicator field used as severity | True |
-| Comments as tags (CSV) | Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`. | True |
-| Override severity| When enabled, the severity value will be taken from the **Overriding severity value** parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken from the field specified in the **XSOAR Severity Field** parameter| False|
-| Bypass exclusion list | Bypass exclusion list | False |
-| Fetches indicators | Whether to fetch indicators from Cortex XDR | false |
-| XSOAR Comment Field Exporting To XDR | The Cortex XSOAR field where comments are stored. The default is comments. Expecting an XSOAR IOC format of a comment (nested dictionary). See Comments As Tags for more.| True |
+| Indicator Expiration Method | According to which method the indicators from this feed will be expired | False |
+| Run on | Select an engine to run on | False |
+| Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified | False |
+| Use system proxy settings | Use system proxy settings is enabled only when an Engine is selected | False |
 | Extensive logging | For debugging purposes. Do not use this option unless advised otherwise. Using this parameter may result in increased processing time| False |
+| Log Level | Debug/Verbose logging can affect the performance of the integration. Recommended usage is to turn it on only during troubleshooting, and turn it off in production. This setting only affects the integration log. The server log is not affected | False |
+| Do not use in CLI by default ||False|
+| Fetches indicators | Whether to fetch indicators from Cortex XDR | false |
+| Classifier | Determines the type of indicators that is created originated from this integration instance | False|
+| Mapper (incoming) | Determines how indicators fields from Cortex XDR are mapped to Cortex XSOAR indicator's fields | False|
+| Feed Fetch Interval | Feed Fetch Interval (make sure to set it to at least 15 minutes) | False |
+| Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR | True |
+| Tags | Supports CSV values | False|
+| Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators | False |
+| Indicator Reputation | Indicator Reputation | False |
+| XSOAR Severity Field | The Cortex XSOAR indicator field used as severity | True |
+| XSOAR Comment Field Exporting To XDR | The Cortex XSOAR field where comments are stored. The default is comments. Expecting an XSOAR IOC format of a comment (nested dictionary). See Comments As Tags for more.| True |
+| Overriding severity value | When the **override severity** parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the original severity level of the indicator will be used | True | 
+| Override severity| When enabled, the severity value will be taken from the **Overriding severity value** parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken from the field specified in the **XSOAR Severity Field** parameter| False|
+| Comments as tags (CSV) | Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`. | True |
+| Bypass exclusion list | Bypass exclusion list | False |
   
 ## Commands  
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.  
-After you successfully execute a command, a DBot message appears in the War Room with the command details.  
-### xdr-iocs-sync  
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### xdr-iocs-sync
+
 ***
+
 Sync IOCs with Cortex XDR.
 Run this command manually only when configuring the instance integration with fetch indicators disabled (run this only once).
 It is not recommended to run this manually when there are more then 40,000 indicators.
@@ -209,3 +217,5 @@ There is no context output for this command.
     - If using the **xdr-iocs-push** command, please go over the warnings in the war room.
 3. **Indicator Severity**:
     - In order to override severity, please enable the ***Override severity*** parameter and also choose a severity under ***Overriding severity value***.
+4. **Severity update from Cortex XSOAR to Cortex XDR**:
+    - Due to XSOAR system limitations, once the severity is manually changed within XSOAR, it is excluded from being updated by the fetching process.
