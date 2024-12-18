@@ -194,6 +194,7 @@ def uptycs_parse_date_range(timeago, start_time, end_time):
         timeago = "1 day"
 
     if end_time is not None and start_time is None:
+        temp_time_ago, now = None, None
         number = timeago.split(" ")[0]
         unit = timeago.split(" ")[1]
         if unit == 'minutes' or unit == 'minute':
@@ -1626,6 +1627,7 @@ def uptycs_set_asset_tag():
     tag_set = False
     tag_key = demisto.args().get('tag_key')
     tag_value = demisto.args().get('tag_value')
+    new_tag = ''
     for tag in tags:
         if tag_key in tag:
             temp_tag = tag.split('=')
