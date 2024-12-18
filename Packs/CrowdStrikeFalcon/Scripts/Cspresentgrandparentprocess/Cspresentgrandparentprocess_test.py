@@ -61,7 +61,7 @@ def test_main_no_results(mocker):
 
     # Assert the results
     assert results.call_count == 1
-    assert results.call_args[0][0] == 'No results found'
+    assert results.call_args[0][0] == 'No grand parent process information were found on CrowdStrike.Detection key'
 
 
 if __name__ == "__main__":

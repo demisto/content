@@ -46,7 +46,7 @@ def main():
             'Contents': MD,
             'ContentsFormat': formats['markdown']})
     except Exception:
-        return_results("No Policy Acttions were found on CrowdStrike.Detection key")
+        return_results("No grand parent process information were found on CrowdStrike.Detection key")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
