@@ -118,34 +118,17 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
     """Given a dictionary advisory, return an `Advisory` object"""
 
     return Advisory(
-        data_type=advisory_dict.get("data_type", ""),
-        data_format=advisory_dict.get("data_format", ""),
-        cve_id=advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
-        cve_title=advisory_dict.get("CVE_data_meta", {}).get("TITLE", ""),
-        cve_date_public=advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", ""),
-        description=advisory_dict.get("description", {}).get("description_data", [])[0].get("value", ""),
-        cvss_score=advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", ""),
-        cvss_severity=advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", ""),
-        cvss_vector_string=advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", ""),
-        affected_version_list=advisory_dict.get("x_affectedList", ""),
+        data_type=advisory_dict.get("dataType", ""),
+        data_format=advisory_dict.get("format", ""),
+        cve_id=advisory_dict.get("cveMetadata", {}).get("cveId", ""),
+        cve_title=advisory_dict.get("containers", {}).get("cna", {}).get("title", ""),
+        cve_date_public=advisory_dict.get("containers", {}).get("cna", {}).get("datePublic", ""),
+        description=advisory_dict.get("containers", {}).get("cna", {}).get("descriptions", [])[0].get("value", ""),
+        cvss_score=advisory_dict.get("containers", {}).get("cna", {}).get("metrics", "")[0].get("baseScore", ""),
+        cvss_severity=advisory_dict.get("containers", {}).get("cna", {}).get("metrics", "")[0].get("baseSeverity", ""),
+        cvss_vector_string=advisory_dict.get("containers", {}).get("cna", {}).get("metrics", "")[0].get("vectorString", ""),
+        affected_version_list=advisory_dict.get("containers", {}).get("cna", {}).get("x_affectedList", [])
     )
-
-# def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
-#     """Given a dictionary advisory, return an `Advisory` object"""
-#
-#     return Advisory(
-#             data_type=advisory_dict.get("dataType", ""),
-#             data_format=advisory_dict.get("format", ""),
-#             cve_id=advisory_dict.get("cveMetadata", {}).get("cveId", ""),
-#             cve_title=advisory_dict.get("containers", {}).get("cna", {}).get("title",""),
-#             cve_date_public=advisory_dict.get("containers", {}).get("cna", {}).get("datePublic",""),
-#             description=advisory_dict.get("containers", {}).get("cna", {}).get("descriptions","")[0].get("value", ""),
-#             cvss_score=advisory_dict.get("containers", {}).get("cna", {}).get("metrics","")[0].get("baseScore", ""),
-#             cvss_severity=advisory_dict.get("containers", {}).get("cna", {}).get("metrics","")[0].get("baseSeverity", ""),
-#             cvss_vector_string=advisory_dict.get("containers", {}).get("cna", {}).get("metrics","")[0].get("vectorString", ""),
-#             affected_version_list=advisory_dict.get("containers", {}).get("cna", {}).get("x_affectedList","")
-#     )
-
 
 def test_module(client: Client):
     """Test the connectivity to the advisory API by checking for products"""
