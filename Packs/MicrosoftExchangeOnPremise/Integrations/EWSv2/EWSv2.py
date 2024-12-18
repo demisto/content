@@ -604,7 +604,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
+def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
@@ -618,12 +618,11 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base64.b64decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name
-
         }
         attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
         last_index = m.end() - 1
         new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                         content_id=attachment.get('cid'), is_inline=True)
@@ -1333,16 +1332,17 @@ def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails
 
                     if len(incidents) >= MAX_FETCH:
                         break
-            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
-                if skip_unparsable_emails:
-                    error_msg = (
-                        "Encountered email parsing issue while fetching. "
-                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
-                    )
-                    demisto.debug(error_msg + f", Error: {str(e)}")
-                    demisto.updateModuleHealth(error_msg, is_error=False)
-                else:
-                    raise e
+            except Exception as e:
+                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
+                    raise
+
+                # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
+                error_msg = (
+                    "Encountered email parsing issue while fetching. "
+                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
+                )
+                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
+                demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
         last_fetch_time = last_run.get(LAST_RUN_TIME)

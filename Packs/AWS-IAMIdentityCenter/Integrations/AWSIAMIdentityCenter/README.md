@@ -2,33 +2,29 @@ Amazon Web Services Identity and Access Management Identity Center(IAM)
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-## Configure AWS - IAM Identity Center on Cortex XSOAR
+## Configure AWS - IAM Identity Center in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - IAM Identity Center.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Role Arn |  | False |
-    | Role Session Name | A descriptive name for the assumed role session. | False |
-    | AWS Default Region |  | True |
-    | Role Session Duration |  | False |
-    | Identity Store ID | The Identity Store ID parameter is required for API requests. It can be provided as a parameter or as an argument. If the Identity Store ID was not specified - Test failure. | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Role Arn |  | False |
+| Role Session Name | A descriptive name for the assumed role session. | False |
+| AWS Default Region |  | True |
+| Role Session Duration |  | False |
+| Identity Store ID | The Identity Store ID parameter is required for API requests. It can be provided as a parameter or as an argument. If the Identity Store ID was not specified - Test failure. | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-iam-identitycenter-create-user

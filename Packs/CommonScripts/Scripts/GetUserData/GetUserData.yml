@@ -24,6 +24,7 @@ args:
   - 'Microsoft Graph User'
   - 'SailPointIdentityIQ'
   - 'Cortex XDR - IR'
+  - 'Cortex Core - IR'
   - 'iam-get-user'
 - description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
   name: verbose

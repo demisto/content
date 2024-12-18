@@ -1,31 +1,27 @@
 Triggers by any alert from endpoint, cloud, and network security monitoring, with mitigation steps where applicable. Query Covalence for more detail.
 This integration was integrated and tested with version 3.0 of Covalence For Security Providers
 
-## Configure Covalence For Security Providers on Cortex XSOAR
+## Configure Covalence For Security Providers in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Covalence For Security Providers.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Broker | Set to true if connections are made through a broker | False |
-    | Host | Covalence's host \(IP or domain\) or broker's socket \(ip:port\) if using broker | True |
-    | Credentials |  | True |
-    | Password |  | True |
-    | Verify SSL | If set to false, will trust any certificate \(not secure\) | False |
-    | Timeout | Timeout in seconds | False |
-    | First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
-    | Fetch limit | Maximum number of alerts to be fetch per fetch command. It is advised to not fetch more than 200 alerts. | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | None |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Broker | Set to true if connections are made through a broker | False |
+| Host | Covalence's host \(IP or domain\) or broker's socket \(ip:port\) if using broker | True |
+| Credentials |  | True |
+| Password |  | True |
+| Verify SSL | If set to false, will trust any certificate \(not secure\) | False |
+| Timeout | Timeout in seconds | False |
+| First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
+| Fetch limit | Maximum number of alerts to be fetch per fetch command. It is advised to not fetch more than 200 alerts. | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| None |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cov-secpr-list-alerts
 ***
