@@ -26,7 +26,6 @@ call o365_common_fields
 	members_upn = arraystring(arraymap(Members -> [], "@element" -> UPN), ","),
 	members_displayname = arraystring(arraymap(Members -> [], "@element" -> DisplayName), "|"),
 	members_role = arraystring(arraymap(Members -> [], "@element" -> Role), "|"),
-	sourceworkload_name = if(sourceworkload = 0, "SharePoint Online", sourceworkload = 1, "	OneDrive for Business", sourceworkload = 2, "Microsoft Teams"),
 	Scope_name = if(Scope = 0, "Online", Scope = 1, "Onprem"),
 	check_objectid_filepath = if(arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), "") ~= "\.", arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), ""))
 | alter
@@ -80,7 +79,7 @@ call o365_common_fields
 	xdm.target.url = url, 
 	xdm.network.http.url = coalesce(eventdeeplink, deeplinkurl),
 	xdm.source.process.name = if(Application ~= "\.[Ee][Xx][Ee]", Application),
-	xdm.observer.type = coalesce(sourceworkload_name, Source, Workload),
+	xdm.observer.type = if(Workload != null, Workload, SourceWorkload = 0, "SharePoint Online", SourceWorkload = 1, "OneDrive for Business", SourceWorkload = 2, "Microsoft Teams", Source),
 	xdm.target.user.upn = members_upn;
 
 
@@ -174,7 +173,7 @@ call o365_common_fields
 	xdm.alert.severity = Severity,
 	xdm.source.user_agent = if(UserAgent = null, null, UserAgent ~= "^\s*$", null, UserAgent),
 	xdm.source.user.identifier = UserKey,
-	xdm.observer.type = coalesce(Source, Workload),
+	xdm.observer.type = coalesce(Workload, Source),
 	xdm.auth.auth_method = AuthenticationType,
 	xdm.source.ipv4 = src_ip_v4,
 	xdm.source.ipv6 = src_ip_v6,

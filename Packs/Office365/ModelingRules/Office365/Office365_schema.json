@@ -308,7 +308,7 @@
             "type": "int",
             "is_array": false
         },
-        "sourceworkload": {
+        "SourceWorkload": {
             "type": "int",
             "is_array": false
         },
