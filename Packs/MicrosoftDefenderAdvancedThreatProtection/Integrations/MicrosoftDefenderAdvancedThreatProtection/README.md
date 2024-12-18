@@ -135,7 +135,7 @@ Please add the following permissions to the app registration. Choose application
 
 ## Deprecation Announcement
 
-Following Microsoft's deprecation (and possible end of life) of certain features, we are deprecating the following:
+Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated (and possibly end-of-life) SIEM API to the Graph API, we are deprecating the following:
 
 - **14 commands**
 - **Fetch-incidents functionality**

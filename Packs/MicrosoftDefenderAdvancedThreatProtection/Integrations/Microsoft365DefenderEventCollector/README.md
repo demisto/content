@@ -1,6 +1,6 @@
 Microsoft Defender for Endpoint Alerts integration for Cortex XSIAM (Deprecated).
 
-Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft, the Event Collector is now deprecated.
+Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated (and possibly end-of-life) SIEM API to the Graph API, the Event Collector is now deprecated.
 
 Alternative: Use the XSIAM Office 365 Data Source, select Microsoft Graph API -> Alerts, and choose the "Use Microsoft Graph API V2" option.
 
