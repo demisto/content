@@ -173,6 +173,33 @@ MICROSOFT_365_DEFENDER_API_ENDPOINTS = {
     "dod": "https://api-gov.security.microsoft.us",
 }
 
+# https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
+MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS = {
+    'com': 'https://login.windows.net',
+    'geo-us': 'https://login.windows.net',
+    'geo-eu': 'https://login.windows.net',
+    'geo-uk': 'https://login.windows.net',
+    "geo-au": 'https://login.windows.net',
+    "geo-swa": 'https://login.windows.net',
+    "geo-ina": 'https://login.windows.net',
+    "gcc": "https://login.microsoftonline.com",
+    "gcc-high": "https://login.microsoftonline.us",
+    "dod": "https://login.microsoftonline.us",
+}
+
+MICROSOFT_365_DEFENDER_SCOPES = {
+    'com': 'https://security.microsoft.com',
+    'geo-us': 'https://security.microsoft.com',
+    'geo-eu': 'https://security.microsoft.com',
+    'geo-uk': 'https://security.microsoft.com',
+    "geo-au": 'https://security.microsoft.com',
+    "geo-swa": 'https://security.microsoft.com',
+    "geo-ina": 'https://security.microsoft.com',
+    'gcc': 'https://security.microsoft.com',
+    'gcc-high': 'https://security.microsoft.us',
+    'dod': 'https://security.apps.mil',
+}
+
 
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
