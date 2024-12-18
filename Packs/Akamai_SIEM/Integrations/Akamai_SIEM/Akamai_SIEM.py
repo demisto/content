@@ -485,9 +485,11 @@ def fetch_events_command(
     if events:
         demisto.info(f"got {len(events)} events, moving to processing events data.")
         if should_skip_decode_events:
+            demisto.info("Skipping decode events, adding _time fields to events.")
             for event in events:
                 event["_time"] = event["httpMessage"]["start"]
         else:
+            demisto.info("decoding and adding _time fields to events.")
             for event in events:
                 try:
                     event["_time"] = event["httpMessage"]["start"]
