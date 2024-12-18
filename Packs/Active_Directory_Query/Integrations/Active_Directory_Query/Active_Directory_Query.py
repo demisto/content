@@ -10,7 +10,6 @@ from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry,
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Active Directory Query, pack version = 1.6.38')
 
 
 ''' GLOBAL VARS '''
