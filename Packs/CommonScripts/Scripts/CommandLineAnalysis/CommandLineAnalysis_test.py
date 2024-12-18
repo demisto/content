@@ -18,7 +18,7 @@ from CommandLineAnalysis import (
 
 # Test data
 DOUBLE_ENCODED_STRING = "cmVjdXJzaXZlIGRlY29kZSBaR1ZqYjJSbElGWkhhSEJqZVVKd1kzbENhRWxJVW14ak0xRm5Zek5TZVdGWE5XND0="
-MALICIOUS_COMMAND_LINE = "wevtutil cl Application VGhpcyBpcyBhIGxpc3RlbmVyKDExLjEwMS4xMjQuMjIp"
+MALICIOUS_COMMAND_LINE = "wevtutil cl Application RG91YmxlIGVuY29kaW5nIFZHaHBjeUJwY3lCaElHeHBjM1JsYm1WeUtERXhMakV3TVM0eE1qUXVNaklw"
 
 
 @pytest.fixture
