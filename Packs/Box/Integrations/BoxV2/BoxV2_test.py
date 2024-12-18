@@ -1237,7 +1237,7 @@ def test_event_init_source_none_with_created_at():
         - Ensure the `created_at` field is set correctly.
         - Ensure no `AttributeError` is raised due to `source` being `None`.
     """
-
+    from BoxV2 import Event
     raw_input = {
         "created_at": "2024-12-16T15:00:00Z",
         "source": None,
