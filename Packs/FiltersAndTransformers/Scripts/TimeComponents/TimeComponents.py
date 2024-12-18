@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
-from datetime import timezone, tzinfo
+from datetime import timezone, tzinfo, UTC
 import dateparser
 import pytz
 
@@ -59,7 +59,7 @@ def parse_date_time_value(value: Any) -> datetime:
     :return: aware datetime object
     """
     if value in [None, '']:
-        return datetime.now(timezone.utc)
+        return datetime.now(UTC)
 
     if isinstance(value, int):
         # Parse as time stamp
@@ -69,7 +69,7 @@ def parse_date_time_value(value: Any) -> datetime:
             while value > 4294967295:
                 value /= 1000
 
-            return datetime.fromtimestamp(value).astimezone(timezone.utc)
+            return datetime.fromtimestamp(value).astimezone(UTC)
         except Exception as err:
             raise DemistoException(f'Error with input date / time - {err}')
 
