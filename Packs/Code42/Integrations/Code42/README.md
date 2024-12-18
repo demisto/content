@@ -84,7 +84,6 @@ Retrieve alert details by alert ID
 | Code42.SecurityAlert.ID | string | The alert ID. | 
 | Code42.SecurityAlert.Name | string | The alert rule name that generated the alert. | 
 | Code42.SecurityAlert.State | string | The alert state. | 
-| Code42.SecurityAlert.Type | string | The alert type. | 
 | Code42.SecurityAlert.Severity | string | The severity of the alert. | 
 
 ### code42-alert-update
