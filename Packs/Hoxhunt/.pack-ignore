@@ -1,6 +1,3 @@
-[file:Hox-Enrich-Incident.yml]
-ignore=RM116
-
 [file:incidentfield-HoxLikelyTargetEntity.json]
 ignore=IF115
 
