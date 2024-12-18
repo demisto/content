@@ -57,7 +57,7 @@ def test_decode_base64(sample_encoded_command):
 def test_identify_and_decode_base64(sample_malicious_command):
     decoded_command, is_double_encoded = identify_and_decode_base64(sample_malicious_command)
     assert "11.101.124.22" in decoded_command
-    assert is_double_encoded is False
+    assert is_double_encoded is True
 
 
 # Test reverse_command
