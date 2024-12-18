@@ -147,7 +147,7 @@ Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/confi
 ## Deprecation Details Table
 
 
-| **Command**                     | **Replacement**                                                                                                                                               |
+| **Deprecated Commands**                     | **Replacement**                                                                                                                                               |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Fetch incidents`    | Use `Fetch incidents` in the `Microsoft Graph Security` integration instead.                                                                                                                                    |
 | `microsoft-atp-create-alert`    | No available replacement.                                                                                                                                     |
