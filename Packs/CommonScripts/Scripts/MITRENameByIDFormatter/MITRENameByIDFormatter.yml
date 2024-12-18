@@ -1,0 +1,23 @@
+commonfields:
+  id: MITRENameByID_Formatter
+  version: -1
+name: MITRENameByID_Formatter
+script: ''
+type: python
+tags:
+- indicator-format
+comment: Get a MITRE ATT&CK object name by its ID. The script is using TIMs IOCs to find the correct name. (MITRE ATT&CK IOCs must exist in the Threat Intel data).
+enabled: true
+args:
+- name: input
+  required: true
+  description: The MITRE ATT&CK object ID.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.113941
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
