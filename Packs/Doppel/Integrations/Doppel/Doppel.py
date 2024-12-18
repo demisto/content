@@ -161,13 +161,14 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity=None)
     audit_logs = updated_doppel_alert['audit_logs']
     if len(audit_logs) > 0:
-        audit_log_datetime_str = audit_logs[len(audit_logs)-1]['timestamp']
+        audit_log = audit_logs[len(audit_logs)-1]
+        audit_log_datetime_str = audit_log['timestamp']
         audit_log_datetime = datetime.strptime(audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
         if audit_log_datetime > last_update:
             updated_doppel_alert['id'] = doppel_alert_id
             entries: list = [{
                 "Type": EntryType.NOTE,
-                "Contents": audit_logs[0],
+                "Contents": audit_log,
                 "ContentsFormat": EntryFormat.JSON,
             }]
             
