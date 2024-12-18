@@ -2747,8 +2747,6 @@ def insert_disk(args):
 
     if args.get('zone'):
         zone = args.get('zone')
-    else:
-        zone = None
 
     if args.get('disktype'):
         disk_type = args.get('disktype')
@@ -2988,14 +2986,14 @@ def set_disk_labels(args):
     disk = args.get('disk')
     zone = args.get('zone')
     labels = args.get('labels')
+    if args.get('labelFingerprint'):
+        label_fingerprint = args.get('labelFingerprint')
 
     labels = parse_labels(labels)
     body = {'labels': labels}
 
-    if args.get('labelFingerprint'):
-        label_fingerprint = args.get('labelFingerprint')
-        if label_fingerprint is not None:
-            body.update({'labelFingerprint': label_fingerprint})
+    if args.get('labelFingerprint') is not None:
+        body.update({'labelFingerprint': label_fingerprint})
 
     request = get_compute().disks().setLabels(
         project=project, zone=zone, resource=disk, body=body
@@ -4013,9 +4011,6 @@ def patch_firewall(args):
     if args.get('name'):
         name = args.get('name')
         config.update({'name': args.get('name')})
-    else:
-        name = None
-        demisto.debug(f"There isn't a firewall name {args.get('name')=}")
 
     if args.get('description'):
         config.update({'description': args.get('description')})

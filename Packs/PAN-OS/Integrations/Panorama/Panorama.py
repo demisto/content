@@ -2227,10 +2227,6 @@ def panorama_edit_address_group_command(args: dict):
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
         match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
-    else:
-        match_param = None
-        match_path = None
-        demisto.debug(f"{type_=} -> {match_param=} {match_path=}")
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -2252,10 +2248,6 @@ def panorama_edit_address_group_command(args: dict):
                 )
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
-    else:
-        addresses_param = None
-        addresses_path = None
-        demisto.debug(f"{type_=} -> {addresses_param=} {addresses_path=}")
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -2270,7 +2262,6 @@ def panorama_edit_address_group_command(args: dict):
 
     address_group_output = {'Name': address_group_name}
 
-    result = None
     if DEVICE_GROUP:
         address_group_output['DeviceGroup'] = DEVICE_GROUP
 
@@ -2799,7 +2790,6 @@ def panorama_edit_service_group(service_group_name: str, services: List[str], ta
         'element': '',
         'key': API_KEY,
     }
-    result = None
 
     if services:
         services_xpath = XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']/members"
@@ -4338,9 +4328,6 @@ def panorama_custom_block_rule_command(args: dict):
                                               log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['Application'] = object_value
-    else:
-        result = None
-        demisto.debug(f"{object_type=} didn't match any of the conditions. {result=}")
 
     return_results({
         'Type': entryTypes['note'],
@@ -14362,9 +14349,6 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
             'xpath': xpath,
             'key': API_KEY,
         }
-    else:
-        params = {}
-        demisto.debug(f"{action_type=} didn't match any of the conditions. {params=}")
 
     try:
         raw_response = http_request(URL, 'GET', params=params)

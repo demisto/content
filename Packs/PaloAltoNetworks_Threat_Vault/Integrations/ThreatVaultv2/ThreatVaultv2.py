@@ -560,8 +560,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
     """
     Get the reputation of a sha256 or a md5 representing an antivirus
     """
-    readable_output = ""
-    file = None
+
     hashes = argToList(args.get("file"))
     command_results_list: List[CommandResults] = []
     dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
@@ -640,8 +639,6 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
 
     cves = argToList(args.get("cve"))
     command_results_list: List[CommandResults] = []
-    readable_output = ""
-    _cve = None
 
     for cve in cves:
         try:

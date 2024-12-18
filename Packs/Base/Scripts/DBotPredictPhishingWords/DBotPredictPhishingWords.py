@@ -39,9 +39,6 @@ def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> t
         res = load_from_models(model_name) or load_from_list(model_name)
     elif store_type == "list":
         res = load_from_list(model_name) or load_from_models(model_name)
-    else:
-        res = None
-        demisto.debug(f"{store_type=} -> {res=}")
 
     return res or handle_error(f"error reading model {model_name} from Demisto", is_return_error)  # type: ignore
 
@@ -63,21 +60,12 @@ def preprocess_text(text, model_type, is_return_error):
         preprocess_type = 'none'
         hash_seed = None
         clean_html = 'false'
-    else:
-        hash_seed = None
-        preprocess_type = None
-        clean_html = None
-        demisto.debug(f"{model_type=} didn't match the above conditions. {hash_seed=} {preprocess_type=} {clean_html=}")
     if isinstance(text, str):
         input_type = 'string'
         input_ = text
     elif isinstance(text, list):
         input_type = 'json_string'
         input_ = json.dumps(text)
-    else:
-        input_ = ""
-        input_type = ""
-        demisto.debug(f"{text=} isn't of type str or list. {input_=} {input_type=}")
     language = demisto.args().get('language', 'English')
     tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
     args = {'input': input_,
