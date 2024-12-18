@@ -4,10 +4,10 @@ import base64
 import re
 import ipaddress
 import json
-from typing import List, Any, Optional, Tuple, Union
+from typing import Any
 
 
-def is_base64(possible_base64: Union[str, bytes]) -> bool:
+def is_base64(possible_base64: str | bytes) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
     """
@@ -57,8 +57,6 @@ def clean_non_base64_chars(encoded_str: str) -> str:
     return cleaned_str
 
 
-
-
 def remove_null_bytes(decoded_str: str) -> str:
     """
     Removes null bytes from the decoded string.
@@ -66,7 +64,7 @@ def remove_null_bytes(decoded_str: str) -> str:
     return decoded_str.replace("\x00", "")
 
 
-def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[str, bool]:
+def decode_base64(encoded_str: str, max_recursions: int = 5) -> tuple[str, bool]:
     """
     Decodes a Base64-encoded string recursively up to a defined limit.
     Handles mixed content if necessary and returns the fully decoded string and a flag indicating double encoding.
@@ -104,7 +102,7 @@ def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[str, bool]
         return "", False
 
 
-def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
+def identify_and_decode_base64(command_line: str) -> tuple[str, bool]:
     """
     Identifies and decodes all Base64 occurrences in a command line,
     returning the decoded content and a flag indicating if any double encoding was detected.
