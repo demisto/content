@@ -21,11 +21,13 @@ class Client(BaseClient):
         """
         Gets the list of Supported Products by the Advisories API
         """
-        return self._http_request(
+        res = self._http_request(
             method='GET',
             url_suffix=Client.PRODUCTS_ENDPOINT,
-            timeout=self.api_timeout
+            timeout=self.api_timeout,
+            resp_type='resp'
         )
+        return res
 
     def get_advisories(self, product: str, params: dict):
         """
@@ -128,11 +130,27 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
         affected_version_list=advisory_dict.get("x_affectedList", ""),
     )
 
+# def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
+#     """Given a dictionary advisory, return an `Advisory` object"""
+#
+#     return Advisory(
+#             data_type=advisory_dict.get("dataType", ""),
+#             data_format=advisory_dict.get("format", ""),
+#             cve_id=advisory_dict.get("cveMetadata", {}).get("cveId", ""),
+#             cve_title=advisory_dict.get("containers", {}).get("cna", {}).get("title",""),
+#             cve_date_public=advisory_dict.get("containers", {}).get("cna", {}).get("datePublic",""),
+#             description=advisory_dict.get("containers", {}).get("cna", {}).get("descriptions","")[0].get("value", ""),
+#             cvss_score=advisory_dict.get("containers", {}).get("cna", {}).get("metrics","")[0].get("baseScore", ""),
+#             cvss_severity=advisory_dict.get("containers", {}).get("cna", {}).get("metrics","")[0].get("baseSeverity", ""),
+#             cvss_vector_string=advisory_dict.get("containers", {}).get("cna", {}).get("metrics","")[0].get("vectorString", ""),
+#             affected_version_list=advisory_dict.get("containers", {}).get("cna", {}).get("x_affectedList","")
+#     )
+
 
 def test_module(client: Client):
     """Test the connectivity to the advisory API by checking for products"""
     request_result = client.get_products()
-    if request_result.get("success"):
+    if request_result.ok:
         return "ok"
     return None
 
@@ -256,7 +274,7 @@ def main():
     """Main entrypoint for script"""
 
     client = Client(
-        base_url=demisto.params().get("url")
+        base_url=demisto.params().get("url"), verify=(not demisto.params().get("insecure"))
     )
     command_name = demisto.command()
     demisto.info(f'Command being called is {command_name}')
