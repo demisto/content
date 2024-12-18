@@ -3862,4 +3862,4 @@ There is no context output for this command.
 4. **Mirroring Scope**:
     - Mirroring only applies to incidents fetched after mirroring is enabled for the instance. Incidents fetched with an incorrect mapper will not be updated retroactively by changing the mapper.
     - To resolve this, reset the last fetch run and re-fetch the incidents. This will create new incidents with the correct mappings, rendering the old ones obsolete.
-5. Avoid using the XDRSyncScript automation or any playbook that incorporates it (e.g., Cortex XDR Incident Sync or Cortex XDR Incident Handling v2), as doing so interferes with the proper functioning of the mirroring feature.
+5. Avoid using the XDRSyncScript automation (deprecated) or any playbook that incorporates it (e.g., Cortex XDR Incident Sync or Cortex XDR Incident Handling v2), as doing so interferes with the proper functioning of the mirroring feature.
