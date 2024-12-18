@@ -4,3 +4,4 @@ name: Corelight Zeek Modeling Rules
 rules: ''
 schema: ''
 tags: ''
+toversion: 8.9.0

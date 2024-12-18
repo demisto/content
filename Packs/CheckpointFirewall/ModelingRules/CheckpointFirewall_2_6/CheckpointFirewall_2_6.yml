@@ -1,0 +1,6 @@
+fromversion: 8.10.0
+id: Check_Point_Firewall_ModelingRule
+name: Check Point Firewall Modeling Rule
+rules: ''
+schema: ''
+tags: CheckPoint Firewall Event Collection
