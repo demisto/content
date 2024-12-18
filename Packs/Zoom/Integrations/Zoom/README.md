@@ -13,7 +13,7 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 | `Use system proxy settings` |  | False |
 | `Trust any certificate (not secure)` |  | False |
 | `Long running instance`| Enable in order to use zoom-ask and for mirroring. |False |
-| `Listen Port`|Listener port number. Required when choosing an external engine.  |False|
+| `Listen Port`|Listener port number. Required when choosing long running instance with an external engine for using the Zoom Bot.  |False|
 | `Bot JID`| Zoom Bot app JID. | False|
 | `Bot Client ID (OAuth)`| Zoom Bot app client ID. | False|
 | `Bot Client Secret (OAuth)`|  Zoom Bot app secret ID. | False|
