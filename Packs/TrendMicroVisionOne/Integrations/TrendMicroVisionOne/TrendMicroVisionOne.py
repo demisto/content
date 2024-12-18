@@ -673,6 +673,9 @@ def add_or_remove_from_block_list(
         response = client.http_request(
             POST, REMOVE_BLOCKLIST_ENDPOINT, data=json.dumps(body)
         )
+    else:
+        response = None
+        demisto.debug(f"{command} didn't mach any condition. {response=}")
 
     mapping_data = add_delete_block_list_mapping(response)
     results = CommandResults(
@@ -788,6 +791,9 @@ def quarantine_or_delete_email_message(
         response = client.http_request(
             POST, DELETE_EMAIL_ENDPOINT, data=json.dumps(body)
         )
+    else:
+        response = None
+        demisto.debug(f"{command=} didn't match any condition. {response=}")
 
     mapping_data = quarantine_delete_email_mapping(response)
     results = CommandResults(
@@ -1212,6 +1218,9 @@ def get_file_analysis_report(
                 data,
                 file_type=EntryType.ENTRY_INFO_FILE,
             )
+    else:
+        results = None
+        demisto.debug(f"The code didn't match any condition. {results=}")
     return results
 
 
@@ -1472,6 +1481,9 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
         update_status = RESOLVED_TRUE_POSITIVE
     elif status == "resolved_false_positive":
         update_status = RESOLVED_FALSE_POSITIVE
+    else:
+        update_status = None
+        demisto.debug(f"{status=} didn't match any condition. {update_status=}")
 
     body = {"investigationStatus": update_status}
     response = client.http_request(

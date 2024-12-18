@@ -886,6 +886,8 @@ def create_historical_investigation(client: Client, args):
         headers = ['taskId', 'serverName', 'serverGuid']
         readable_output = tableToMarkdown('The historical investigation was created successfully',
                                           context, headers=headers, removeNull=True)
+    else:
+        readable_output = ''
 
     return CommandResults(
         readable_output=readable_output,
@@ -900,6 +902,7 @@ def investigation_result_list_command(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.investigation_result_list(**assign_params(**args))
     context = {}
+    readable_output = ''
     if response:
         content_list = response.get('Data', {}).get('Data', {}).get('content', [])
         if content_list:
