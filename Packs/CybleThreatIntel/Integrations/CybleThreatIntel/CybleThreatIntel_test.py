@@ -1,3 +1,5 @@
+import demistomock as demisto
+
 from datetime import datetime, timedelta, timezone
 import json
 import pytz
@@ -80,7 +82,6 @@ def test_get_taxii_failure(mocker):
     assert [] == val
 
 
-@pytest.mark.skip(reason="Skipping this test since we are no longer returning an error.")
 def test_get_taxii_error(mocker, capfd):
     from CybleThreatIntel import Client
     client = Client(params)
@@ -90,13 +91,10 @@ def test_get_taxii_error(mocker, capfd):
                 </stix:STIX_Package>
                 """
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
-    with capfd.disabled():
-        try:
-            val, time = Client.get_taxii(client, args)
-        except Exception as e:
-            error_val = e.args[0]
+    mocker.patch.object(demisto, 'debug')
+    Client.get_taxii(client, args)
 
-    assert "Namespace prefix stix on STIX_Package is not defined" in error_val
+    assert "Namespace prefix stix on STIX_Package is not defined" in demisto.debug.call_args[0][0]
 
 
 def test_get_services(mocker):
