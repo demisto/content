@@ -486,6 +486,26 @@ def test_sign_in_exception_handling(requests_mock):
     assert client.bearer_token is None
     assert client.use_basic_auth
 
+@patch('NozomiNetworks.handle_proxy')
+def test_get_proxies_with_proxy_enabled(mock_handle_proxy):
+    mock_handle_proxy.return_value = {'http': 'http://proxy.com'}
+
+    client = Client(base_url="https://test.com", proxy=True)
+    proxies = client.get_proxies()
+
+    assert proxies == {'http': 'http://proxy.com'}
+    mock_handle_proxy.assert_called_once()
+
+def test_get_proxies_without_proxy():
+    client = Client(base_url="https://test.com", proxy=False)
+    proxies = client.get_proxies()
+    assert proxies == {}
+
+def test_get_proxies_with_none_proxy():
+    client = Client(base_url="https://test.com", proxy=None)
+    proxies = client.get_proxies()
+    assert proxies == {}
+
 
 @pytest.mark.parametrize("use_basic_auth, bearer_token, expected_headers", [
     (True, "dummy_token", {"accept": "application/json"}),
@@ -496,6 +516,12 @@ def test_get_headers(use_basic_auth, bearer_token, expected_headers):
     client = Client(bearer_token=bearer_token, use_basic_auth= use_basic_auth)
     assert client.get_headers() == expected_headers
 
+
+@pytest.fixture
+def handle_proxy_mock():
+    mock = Mock()
+    mock.return_value = {'http': 'http://proxy.com'}
+    return mock
 
 def __get_client(dummy_responses, requests_mock):
     requests_mock.post(f"{NOZOMIGUARDIAN_URL}/api/open/sign_in", json={

@@ -10,10 +10,10 @@ urllib3.disable_warnings()
 
 
 class Client:
-    def __init__(self, base_url=None, verify=None, proxies=None, auth_credentials=None, use_basic_auth=None, bearer_token=None):
+    def __init__(self, base_url=None, verify=None, auth_credentials=None, use_basic_auth=None, bearer_token=None, proxy=None):
         self.base_url = base_url or demisto.params().get('endpoint')
         self.verify = verify if verify is not None else not demisto.params().get('insecure', True)
-        self.proxies = proxies if proxies is not None else demisto.params().get('proxy', False)
+        self.proxy = proxy or demisto.params().get('proxy', False)
         self.auth_credentials = auth_credentials or (
             demisto.params().get("credentials", {}).get('identifier', ''),
             demisto.params().get("credentials", {}).get('password', '')
@@ -27,7 +27,7 @@ class Client:
             "key_token": self.auth_credentials[1]
         }
         try:
-            response = requests.post(f"{self.base_url}/api/open/sign_in", json=payload, verify=self.verify, proxies=self.proxies)
+            response = requests.post(f"{self.base_url}/api/open/sign_in", json=payload, verify=self.verify, proxies=self.get_proxies())
             if response.status_code != 200:
                 raise Exception(f"Authentication failed with status code {response.status_code}: {response.text}")
 
@@ -36,6 +36,14 @@ class Client:
         except Exception as e:
             demisto.info(f"Sign-in failed: {str(e)}. Falling back to basic authentication.")
             self.use_basic_auth = True
+
+
+    def get_proxies(self):
+        if self.proxy:
+            return handle_proxy()
+        else:
+            return {}
+
 
     def get_headers(self):
         if self.use_basic_auth:
@@ -62,7 +70,7 @@ class Client:
             url=url,
             headers=self.get_headers(),
             verify=self.verify,
-            proxies=self.proxies,
+            proxies=self.get_proxies(),
             **kwargs
         )
 
