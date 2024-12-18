@@ -227,6 +227,7 @@ def read_file(input_data, input_type):
     data = []  # type: ignore
     if not input_data:
         return data
+    file_content = ''
     if input_type.endswith("string"):
         if 'b64' in input_type:
             input_data = base64.b64decode(input_data)
@@ -478,6 +479,7 @@ def main():
     # output
     file_name = str(uuid.uuid4())
     output_format = demisto.args()['outputFormat']
+    data_encoded = ''
     if output_format == 'pickle':
         data_encoded = pickle.dumps(data, protocol=2)
     elif output_format == 'json':

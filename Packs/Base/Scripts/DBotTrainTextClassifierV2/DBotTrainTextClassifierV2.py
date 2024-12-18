@@ -52,6 +52,7 @@ def read_file(input_data, input_type):
     data = []  # type: List[Dict[str, str]]
     if not input_data:
         return data
+    file_content = ''
     if input_type.endswith("string"):
         if 'b64' in input_type:
             input_data = base64.b64decode(input_data)

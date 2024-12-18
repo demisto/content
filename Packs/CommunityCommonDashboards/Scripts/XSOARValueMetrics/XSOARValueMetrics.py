@@ -105,6 +105,7 @@ def BuildWindows(start_date_str, end_date_str):
     # Increment the window and store the first and last dates until reaching the end date
     while current_date <= end_date:
         # Get the first day of the current month
+        day = 1  # initializing the parameter
         if current_date != start_date:
             start = current_date
         else:
