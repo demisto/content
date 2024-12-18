@@ -173,7 +173,7 @@ filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
 
 // XDM Mappings for Azure Activity Logs follows the resource log schema
 filter category in("Administrative", "Policy", "Alert") and (CategoryValue = null or CategoryValue = "")
-| call msft_azure_entra_id_map_common_fields
+| call msft_azure_resource_logs_map_common_fields
 | alter
         xdm.event.type = arrayindex(split(operationName, "/"), 0),
         xdm.target.cloud.project_hierarchy = if(arraystring(split(properties -> hierarchy, "/"), "") != "", split(properties -> hierarchy, "/"), arraystring(arraycreate(properties -> tenantId, properties -> subscriptionId), "") != "", arraycreate(properties -> tenantId, properties -> subscriptionId), null),
