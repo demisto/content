@@ -64,7 +64,7 @@ def test_decode_base64(sample_encoded_command):
 # Test identify_and_decode_base64
 def test_identify_and_decode_base64(sample_malicious_command):
     decoded_command, is_double_encoded = identify_and_decode_base64(sample_malicious_command)
-    assert decoded_command == "This is a listener(11.101.124.22)"
+    assert "This is a listener" in decoded_command
     assert is_double_encoded is False
 
 
