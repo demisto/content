@@ -4649,6 +4649,9 @@ def run_script_command():
         full_command = f'runscript -CloudFile={script_name}'
     elif raw:
         full_command = f'runscript -Raw=```{raw}```'
+    else:
+        full_command = ''
+        demisto.debug(f"No condition was met, {full_command=}")
     full_command += f' -Timeout={timeout}'
 
     command_type = 'runscript'

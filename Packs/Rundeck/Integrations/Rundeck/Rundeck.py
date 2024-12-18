@@ -450,7 +450,7 @@ class Client(BaseClient):
         :param auth_token: auto token of the webhook
         :return: api response
         """
-
+        request_params = ""
         if options:
             request_params: str = options
         else:

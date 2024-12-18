@@ -313,6 +313,10 @@ class NetscoutClient(BaseClient):
         elif self.alert_class:
             key = 'alert_class'
             class_type_list = self.alert_class
+        else:
+            key = ''
+            class_type_list = []
+            demisto.debug(f"No condition was matched {key=} {class_type_list=}")
 
         if self.alert_class or self.alert_type:
             for item in class_type_list:
