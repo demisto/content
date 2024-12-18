@@ -7,7 +7,7 @@ def convert_json_to_markdown_table(json_data):
     if not isinstance(json_data, dict):
         raise ValueError("Input data is not a valid JSON object")
 
-    markdown = "| ***Parent Process Information*** |  ***Value*** |\n"
+    markdown = "| ***Parent Process Information*** | ***Value*** |\n"
     markdown += "| --- | ----- |\n"
 
     # Loop through the JSON and format it into a table

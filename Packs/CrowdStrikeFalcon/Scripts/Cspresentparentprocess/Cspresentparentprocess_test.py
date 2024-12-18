@@ -23,15 +23,24 @@ def raw_response():
     }
 
 
-def test_main(mocker):
+def test_main(mocker, raw_response):
     # Mock demisto.args()
     mocker.patch.object(demisto, 'args', return_value={})
 
+    # Mock demisto.context()
+    mock_context = {
+        'CrowdStrike': {
+            'Detection': [
+                {
+                    'parentprocess': raw_response['resources'][0]
+                }
+            ]
+        }
+    }
+    mocker.patch.object(demisto, 'context', return_value=mock_context)
+
     # Mock demisto.results()
     results = mocker.patch.object(demisto, 'results')
-
-    # Mock demisto.executeCommand()
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': raw_response()}])
 
     # Call the main function
     main()
@@ -40,10 +49,10 @@ def test_main(mocker):
     assert results.call_count == 1
     output = results.call_args[0][0]
     assert isinstance(output, dict)
-    assert 'CrowdStrike' in output
-    assert len(output['CrowdStrike']) == 2
-    assert output['CrowdStrike'][0]['DeviceId'] == 'device1'
-    assert output['CrowdStrike'][1]['DeviceId'] == 'device2'
+    assert 'Contents' in output
+    assert '| ***Parent Process Information*** | ***Value*** |' in output['Contents']
+    assert 'device_id' in output['Contents']
+    assert 'parent_process_id' in output['Contents']
 
 
 def test_main_no_results(mocker):
