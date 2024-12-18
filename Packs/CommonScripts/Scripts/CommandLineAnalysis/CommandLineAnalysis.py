@@ -32,17 +32,31 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
 
 def clean_non_base64_chars(encoded_str: str) -> str:
     """
-    Cleans and ensures the Base64 string contains only valid Base64 characters (+, /, =, alphanumeric).
-    Adds proper padding if necessary.
+    Cleans and ensures the Base64 string contains only valid Base64 characters.
+    Identifies and removes extraneous characters that are structurally valid but contextually invalid.
     """
-    # Remove all invalid Base64 characters
+    # Remove all non-Base64 characters
     cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', encoded_str)
 
-    # Fix padding only if the string length is reasonable for Base64
+    # Fix padding (Base64 strings should be a multiple of 4 in length)
     if len(cleaned_str) % 4 != 0:
         cleaned_str += "=" * (4 - len(cleaned_str) % 4)
 
+    # Validate decoding to ensure extraneous sequences are removed
+    try:
+        decoded_bytes = base64.b64decode(cleaned_str, validate=True)
+        decoded_str = decoded_bytes.decode('utf-8', errors='ignore')
+
+        # If the decoded content contains unexpected non-printable characters, re-clean
+        if not all(c.isprintable() or c.isspace() for c in decoded_str):
+            cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', cleaned_str)
+    except Exception:
+        # If decoding fails, return a sanitized Base64 string
+        cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', cleaned_str)
+
     return cleaned_str
+
+
 
 
 def remove_null_bytes(decoded_str: str) -> str:

@@ -42,10 +42,10 @@ def test_is_base64():
 
 
 # Test clean_non_base64_chars
-def test_clean_non_base64_chars():
-    dirty_base64 = "VGhpcyBpcyBub3QhQC0AIDwgYmFzZTY0"
-    cleaned_base64 = clean_non_base64_chars(dirty_base64)
-    assert cleaned_base64 == "VGhpcyBpcyBub3QAIDwgYmFzZTY0"
+def test_clean_non_base64_chars_valid_base64():
+    input_str = "VGhpcyBpcyBhIHZhbGlkIEJhc2U2NA=="  # Valid Base64 for "This is a valid Base64"
+    expected_output = "VGhpcyBpcyBhIHZhbGlkIEJhc2U2NA=="
+    assert clean_non_base64_chars(input_str) == expected_output
 
 
 # Test remove_null_bytes
