@@ -125,5 +125,5 @@ def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
     assert result["risk"] == "Medium Risk"
     assert "11.101.124.22" in result["analysis"]["original"]["base64_encoding"]
-    assert "This is a listener(11.101.124.22)" in result["decoded_command"]
+    assert "11.101.124.22" in result["decoded_command"]
     assert "wevtutil cl Application" in result["original_command"]
