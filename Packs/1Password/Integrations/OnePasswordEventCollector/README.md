@@ -9,7 +9,7 @@ This integration was integrated and tested with V2 endpoints of the 1Password Ev
 The integration can be configured to fetch three types of events from 1Password:
 
 - **Audit events** - Information about actions performed by team members within a 1Password account. Events include when an action was performed and by whom, along with details about the type and object of the action and any other information about the activity.
-    
+
 - **Item usage actions** - Information about items in shared vaults that have been modified, accessed, or used. Events include the name and IP address of the user who accessed the item, when the item was accessed, and the vault where the item is stored.
   
 - **Sign in attempts** - Information about sign-in attempts. Events include the name and IP address of the user who attempted to sign in to the account, when the attempt was made, and, for failed attempts, the cause of the failure.
@@ -44,9 +44,9 @@ Fetch events from 1Password.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to fetch for the given event type. | Optional | 
-| should_push_events | Set this argument to True in order to push events to XSIAM, otherwise the command will only display them. Possible values are: true, false. Default is False. | Required | 
-| event_type | 1Password event type. If none specified, all event types will be fetched. Possible values are: Audit events, Item usage actions, Sign in attempts. | Optional | 
+| limit | The maximum number of events to fetch for the given event type. | Optional |
+| should_push_events | Set this argument to True in order to push events to XSIAM, otherwise the command will only display them. Possible values are: true, false. Default is False. | Required |
+| event_type | 1Password event type. If none specified, all event types will be fetched. Possible values are: Audit events, Item usage actions, Sign in attempts. | Optional |
 
 #### Context Output
 
