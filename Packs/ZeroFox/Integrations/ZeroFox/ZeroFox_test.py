@@ -2,11 +2,16 @@ import json
 from urllib.parse import urlencode, urljoin
 
 from dateparser import parse as parse_date
+import pytest
 from ZeroFox import (
     # Constants
     DATE_FORMAT,
     # Client
     ZFClient,
+    ZeroFoxAlertActionException,
+    ZeroFoxGetAlertException,
+    ZeroFoxGetAlertsException,
+    ZeroFoxModifyNotesException,
     alert_cancel_takedown_command,
     alert_request_takedown_command,
     alert_user_assignment_command,
@@ -78,6 +83,23 @@ def get_formatted_date(str_date: str):
     if formatted_date is None:
         raise ValueError("date must be a valid string date")
     return formatted_date.strftime(DATE_FORMAT)
+
+
+def test_fetch_incidents_raises_get_alerts_exception_when_token_endpoint_fails(requests_mock, mocker):
+    """
+    Given
+        The token endpoint fails
+    When
+        Calling fetch_incidents
+    Then
+        It should raise an exception specific to that endpoint
+    """
+    requests_mock.post(TOKEN_AUTH_ENDPOINT, status_code=400)
+    client = build_zf_client()
+    last_run: dict = {}
+    first_fetch_time = "2023-06-01T00:00:00.000000"
+    with pytest.raises(ZeroFoxGetAlertsException):
+        _ = fetch_incidents(client, last_run, first_fetch_time)
 
 
 def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
@@ -349,6 +371,25 @@ def test_get_alert_command(requests_mock, mocker):
     assert results.outputs_prefix == "ZeroFox.Alert"
 
 
+def test_get_alert_command_raises_exception_on_alert_not_found(requests_mock, mocker):
+    """
+        Given
+            An alert ID
+        When
+            /alerts/{alert_id}/ returns an error
+        Then
+            It should raise an exception specific to that endpoint
+    """
+    alert_id = 123
+    requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
+    requests_mock.get(f"/1.0/alerts/{alert_id}/", json={}, status_code=404)
+    client = build_zf_client()
+    args = {"alert_id": alert_id}
+    _ = mocker.spy(client, "get_alert")
+    with pytest.raises(ZeroFoxGetAlertException):
+        _ = get_alert_command(client, args)
+
+
 def test_alert_user_assignment_command(requests_mock, mocker):
     """
     Given
@@ -418,6 +459,29 @@ def test_close_alert_command(requests_mock, mocker):
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
+
+
+def test_close_alert_command_raises_exception_on_endpoint_error(requests_mock, mocker):
+    """
+    Given
+        There is an alert id
+    When
+        Calling close_alert_command
+    Then
+        It should call the close alert with the alert id
+        And call fetch alert with the alert id
+        And return the alert as output
+        And with the correct output prefix
+    """
+    alert_id = "123"
+    alert_response = load_json("test_data/alerts/closed_alert.json")
+    requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
+    requests_mock.post(f"/1.0/alerts/{alert_id}/close/", status_code=400)
+    requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
+    client = build_zf_client()
+    args = {"alert_id": alert_id}
+    with pytest.raises(ZeroFoxAlertActionException):
+        _ = close_alert_command(client, args)
 
 
 def test_open_alert_command(requests_mock, mocker):
@@ -503,7 +567,7 @@ def test_alert_cancel_takedown_command(requests_mock, mocker):
     alert_id = "123"
     alert_response = load_json("test_data/alerts/opened_alert.json")
     requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
-    requests_mock.post(f"/1.0/alerts/{alert_id}/cancel_takedown/")
+    requests_mock.post(f"/1.0/alerts/{alert_id}/cancel_takedown/", status_code=200)
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
     spy_cancel_takedown = mocker.spy(client, "alert_cancel_takedown")
@@ -928,6 +992,32 @@ def test_modify_alert_notes_command(requests_mock, mocker):
     assert int(alert_id) == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
+
+
+def test_modify_alert_notes_command_raises_exception_on_endpoint_error(requests_mock, mocker):
+    """
+    Given
+        There is an alert id
+    When
+        Calling modify_alert_notes_command
+    Then
+        It should call the modify alert notes with the alert id
+        And the notes
+        And the action
+        And call fetch alert with the alert id
+        And return the alert as output
+        And with the correct output prefix
+    """
+    alert_id = "123"
+    notes = "some notes"
+    alert_response = load_json("test_data/alerts/opened_alert.json")
+    requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
+    requests_mock.post(f"/1.0/alerts/{alert_id}/", status_code=400)
+    requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
+    client = build_zf_client()
+    args = {"alert_id": alert_id, "notes": notes}
+    with pytest.raises(ZeroFoxModifyNotesException):
+        _ = modify_alert_notes_command(client, args)
 
 
 def test_append_extra_notes_to_alert(requests_mock, mocker):
