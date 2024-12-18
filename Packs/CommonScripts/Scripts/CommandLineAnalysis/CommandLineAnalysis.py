@@ -88,7 +88,7 @@ def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[Optional[s
 
         return current_input, was_double_encoded
     except Exception as e:
-        print(f"Error decoding Base64: {e}")
+        LOG(f"Error decoding Base64: {e}")
         return None, False
 
 
