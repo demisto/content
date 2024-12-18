@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import MagicMock
 from Cspresentpolicyactions import convert_json_to_markdown_table, main
 import demistomock as demisto
 
@@ -41,16 +42,18 @@ def test_main_with_data(monkeypatch, context_value, expected_output):
     def mock_context():
         return {"CrowdStrike": {"Detection": context_value}}
     monkeypatch.setattr(demisto, "context", mock_context)
-    monkeypatch.setattr(demisto, "results", lambda x: None)
+    mock_results = MagicMock()
+    monkeypatch.setattr(demisto, "results", mock_results)
     main()
-    assert demisto.results.call_count == 1
-    assert expected_output in demisto.results.call_args[0][0]['Contents']
+    mock_results.assert_called_once()
+    assert expected_output in mock_results.call_args[0][0]['Contents']
 
 def test_main_exception(monkeypatch):
     def mock_context():
         return {}
     monkeypatch.setattr(demisto, "context", mock_context)
-    monkeypatch.setattr(demisto, "results", lambda x: None)
+    mock_results = MagicMock()
+    monkeypatch.setattr(demisto, "results", mock_results)
     main()
-    assert demisto.results.call_count == 1
-    assert "No Policy Actions were found" in demisto.results.call_args[0][0]
+    mock_results.assert_called_once()
+    assert "No Policy Actions were found" in mock_results.call_args[0][0]
