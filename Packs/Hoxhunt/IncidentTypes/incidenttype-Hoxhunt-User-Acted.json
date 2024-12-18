@@ -1,0 +1,30 @@
+{
+    "id": "Hoxhunt User Acted",
+    "autorun": true,
+    "playbookId": "Hoxhunt - Enrich Incident",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Hoxhunt User Acted",
+    "prevName": "Hoxhunt User Acted",
+    "color": "#D6EB8D",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": true,
+    "default": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Hoxhunt Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    }
+}
