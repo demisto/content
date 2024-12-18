@@ -1,0 +1,6 @@
+fromversion: 8.10.0
+id: trend_micro_tippingpoint_modelingrule
+name: Trend Micro TippingPoint Modeling Rule
+rules: ''
+schema: ''
+tags:
