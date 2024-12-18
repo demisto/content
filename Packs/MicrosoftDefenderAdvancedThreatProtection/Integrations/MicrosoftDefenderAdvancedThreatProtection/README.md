@@ -149,6 +149,7 @@ Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/confi
 
 | **Command**                     | **Replacement**                                                                                                                                               |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Fetch incidents`    | Use the `Fetch incidents` in the `Microsoft Graph Security` integration instead.                                                                                                                                    |
 | `microsoft-atp-create-alert`    | No available replacement.                                                                                                                                     |
 | `microsoft-atp-get-alert-by-id` | Use `msg-get-alert-details` in the `Microsoft Graph Security` integration instead.                                                                            |
 | `microsoft-atp-get-alert-related-files` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `fileDetails` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-fileevidence?view=graph-rest-1.0). |
