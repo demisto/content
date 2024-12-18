@@ -201,13 +201,13 @@ class EndpointCommandRunner:
 
         for entry in results:
             if is_error(entry):
-                command_error_outputs.append(prepare_human_readable(command, args, get_error(entry), is_error=True))
+                command_error_outputs.append(hr_to_command_results(command, args, get_error(entry), is_error=True))
             else:
                 command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
 
         human_readable = "\n".join(human_readable_outputs)
-        human_readable = [hr] if (hr := prepare_human_readable(command, args, human_readable)) else []
+        human_readable = [hr] if (hr := hr_to_command_results(command, args, human_readable)) else []
         return command_context_outputs, human_readable, command_error_outputs
 
 
@@ -363,8 +363,9 @@ def run_single_args_commands(
             if endpoint_output:
                 single_endpoint_outputs.append(endpoint_output)
             else:
+                keys = (agent_id, agent_ip, agent_hostname)
                 endpoints_not_found_list.append({
-                    'Key': agent_id or agent_ip or agent_hostname,
+                    'Key': ', '.join([key for key in keys if key]),
                     'Source': command.brand
                 })
             single_endpoint_readable_outputs.extend(readable_outputs)
@@ -509,7 +510,7 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
     return command_args
 
 
-def prepare_human_readable(
+def hr_to_command_results(
     command_name: str, args: dict[str, Any], human_readable: str, is_error: bool = False
 ) -> CommandResults | None:
     """

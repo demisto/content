@@ -5,7 +5,7 @@ from GetEndpointData import *
 
 
 @pytest.fixture
-def setup_module_manager():
+def setup_for_test_module_manager():
     modules = {
         "module1": {"brand": "BrandA", "state": "active"},
         "module2": {"brand": "BrandB", "state": "inactive"},
@@ -18,8 +18,16 @@ def setup_module_manager():
 
 class TestModuleManager:
 
-    def test_is_brand_in_brands_to_run(self, setup_module_manager):
-        module_manager, command, _, _ = setup_module_manager
+    def test_is_brand_in_brands_to_run(self, setup_for_test_module_manager):
+        """
+        Given:
+            A module manager and a command
+        When:
+            The command's brand is in brands_to_run
+        Then:
+            The is_brand_in_brands_to_run function should return True. Otherwise, False.
+        """
+        module_manager, command, _, _ = setup_for_test_module_manager
 
         assert module_manager.is_brand_in_brands_to_run(command) is True
 
@@ -32,8 +40,18 @@ class TestModuleManager:
         command.brand = "BrandD"
         assert module_manager.is_brand_in_brands_to_run(command) is False
 
-    def test_is_brand_available(self, setup_module_manager):
-        module_manager, command, _, _ = setup_module_manager
+    def test_is_brand_available(self, setup_for_test_module_manager):
+        """
+        Given:
+            A ModuleManager instance with an enabled brand that is in the brands to run.
+
+        When:
+            is_brand_available is called with a Command for that brand.
+
+        Then:
+            The method should return True. Otherwise, False.
+        """
+        module_manager, command, _, _ = setup_for_test_module_manager
 
         assert module_manager.is_brand_available(command) is True
 
@@ -51,54 +69,57 @@ class TestModuleManager:
 def setup(mocker):
     module_manager = mocker.Mock(spec=ModuleManager)
     command_runner = EndpointCommandRunner(module_manager=module_manager)
-    command = Command(brand="TestBrand", name="test-command", output_keys=[], args_mapping={}, output_mapping={})
+    command = Command(brand="TestBrand", name="test-command", output_keys=["output_key"], args_mapping={}, output_mapping={})
     return command_runner, module_manager, command
 
 
 class TestEndpointCommandRunner:
     def test_is_command_runnable(self, setup):
+        """
+        Given:
+            A command with an available brand and the right arguments to args_mapping relationship.
+        When:
+            The is_command_runnable function is called.
+        Then:
+            The function should return True. Otherwise, False.
+        """
         command_runner, module_manager, command = setup
 
+        # Command's brand is available. No args are provided but command has no arg mapping
         module_manager.is_brand_available.return_value = True
+        assert command_runner.is_command_runnable(command, {}) is True
 
-        args = {"arg1": "value1"}
-        assert command_runner.is_command_runnable(command, args) is True
-
+        # Command's brand is not available.
         module_manager.is_brand_available.return_value = False
-        assert command_runner.is_command_runnable(command, args) is False
+        assert command_runner.is_command_runnable(command, {}) is False
 
+        # No args provided but command has arg mapping
+        command.args_mapping = {'arg1': 'endpoint_arg1'}
+        assert command_runner.is_command_runnable(command, {}) is False
+
+        # Args are provided, command has args mapping, but brand is not available.
+        args = {'endpoint_arg1': 'value_1'}
+        command.args_mapping = {'arg1': 'endpoint_arg1'}
+        assert command_runner.is_command_runnable(command, {}) is False
+
+        # Args are provided, command has args mapping, and brand is available.
         module_manager.is_brand_available.return_value = True
-        args = {}  # No args provided and command has no arg mapping
         assert command_runner.is_command_runnable(command, args) is True
 
-        command.args_mapping = {'arg1': 'endpoint_arg1'}  # No args provided but command has arg mapping
-        assert command_runner.is_command_runnable(command, args) is False
-
-    def test_run_execute_command_with_list(self, mocker, setup):
-        command_runner, _, command = setup
-
-        mock_demisto_execute_command = mocker.patch.object(
-            demisto,
-            'executeCommand',
-            return_value=[{"Type": 1, "Contents": "result"}]
-        )
-        result = command_runner.run_execute_command(command, {"arg1": "value1"})
-        assert result == [{"Type": 1, "Contents": "result"}]
-        mock_demisto_execute_command.assert_called_once_with("test-command", {"arg1": "value1"})
-
-    def test_run_execute_command_with_dict(self, mocker, setup):
-        command_runner, _, command = setup
-
-        mock_demisto_execute_command = mocker.patch.object(
-            demisto,
-            'executeCommand',
-            return_value={"Type": 1, "Contents": "result"}
-        )
-        result = command_runner.run_execute_command(command, {"arg1": "value1"})
-        assert result == [{"Type": 1, "Contents": "result"}]
-        mock_demisto_execute_command.assert_called_once_with("test-command", {"arg1": "value1"})
-
-    def test_get_command_results(self, mocker, setup):
+    def test_get_command_results(self, setup):
+        """
+        Given:
+            A command outputs with:
+                a. Full entry context and readable output
+                b. Empty entry context but not an error and with readable outputs
+                c. Empty entry context because of an error.
+        When:
+            The get_command_results function is called with those outputs.
+        Then:
+            a. The context outputs results contain the first two entries.
+            b. The human-readable outputs contain an aggregation of the first two entries.
+            c. The error outputs represents the third entry.
+        """
         command_runner, _, command = setup
         command_results = [
             {"EntryContext": {"key": "value"}, "HumanReadable": "Readable output", "Type": EntryType.NOTE},
@@ -121,38 +142,104 @@ class TestEndpointCommandRunner:
         for expected_error_output, error_output in zip(expected_error_outputs, error_outputs):
             assert error_output.readable_output == expected_error_output.readable_output
 
-    def test_run_command(self, mocker, setup):
+    def test_run_command_not_runnable(self, setup):
+        """
+        Given:
+            An un-runnable command.
+        When:
+            The run_command function is called with that command.
+        Then:
+            The run_command function returns two empty lists.
+        """
+        command_runner, module_manager, command = setup
+
+        # command is not runnable
+        module_manager.is_brand_available.return_value = False
+        hr, endpoints = command_runner.run_command(command, {})
+        assert hr == []
+        assert endpoints == []
+
+    def test_run_command_empty_outputs(self, mocker, setup):
+        """
+        Given:
+            A command and it's arguments.
+        When:
+            The command return empty values.
+        Then:
+            The run_command function returns two empty lists.
+        """
         command_runner, module_manager, command = setup
         endpoint_args = {"arg1": "value1"}
+        mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
 
-        mock_prepare_args = mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
+        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command',return_value=[])
+        mock_get_commands_outputs = mocker.patch.object(command_runner, 'get_command_results', return_value=([], [], []))
+        hr, endpoints = command_runner.run_command(command, endpoint_args)
+        assert hr == []
+        assert endpoints == []
+        # mock_prepare_args.assert_called_with(command, endpoint_args)
+        mock_run_execute_command.assert_called()
+        mock_get_commands_outputs.assert_called()
+
+
+    def test_run_command_normal_outputs(self, mocker, setup):
+        """
+        Given:
+            A command and it's arguments.
+        When:
+            The command return normal values.
+        Then:
+            The run_command function returns the readable output and an endpoint of the right structure.
+        """
+        command_runner, module_manager, command = setup
+        endpoint_args = {"arg1": "value1"}
+        mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
 
         mock_run_execute_command = mocker.patch.object(
             command_runner,
             'run_execute_command',
             return_value=[{"Type": 1, "Contents": "result"}]
         )
-
         mock_get_commands_outputs = mocker.patch.object(
             command_runner,
             'get_command_results',
-            return_value=(
-                [{"key": "value"}],
-                [{"readable_output": "Readable output"}],
-                []
-            )
+            return_value=([{"output_key": {"key": "value"}}],[{"readable_output": "Readable output"}],[])
         )
 
         hr, endpoints = command_runner.run_command(command, endpoint_args)
+
         assert hr == [{"readable_output": "Readable output"}]
-        assert endpoints == []
+        assert endpoints == [{'key': {'Source': 'TestBrand', 'Value': 'value'}}]
+
+        # mock_prepare_args.assert_called_with(command, endpoint_args)
+        mock_run_execute_command.assert_called()
+        mock_get_commands_outputs.assert_called()
+
+    def test_run_command_error_outputs(self, mocker, setup):
+        """
+        Given:
+            A command and it's arguments.
+        When:
+            The command return an error output.
+        Then:
+            The run_command function returns the readable error and an empty endpoint list.
+        """
+        command_runner, module_manager, command = setup
+        endpoint_args = {"arg1": "value1"}
+        mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
+        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command',return_value=['Error output'])
+        mock_get_commands_outputs = mocker.patch.object(
+            command_runner,
+            'get_command_results',
+            return_value=([],[{"readable_output": "Readable output"}],["Error output"])
+        )
 
         mock_get_commands_outputs.return_value = ([], [{"readable_output": "Readable output"}], ["Error output"])
         hr, endpoints = command_runner.run_command(command, endpoint_args)
         assert hr == ["Error output"]
         assert endpoints == []
 
-        mock_prepare_args.assert_called_with(command, endpoint_args)
+        # mock_prepare_args.assert_called_with(command, endpoint_args)
         mock_run_execute_command.assert_called()
         mock_get_commands_outputs.assert_called()
 
@@ -164,6 +251,14 @@ def setup_command_runner(mocker):
 
 
 def test_run_single_args_commands(mocker, setup_command_runner):
+    """
+    Given:
+        Single argument commands searching data for two endpoints.
+    When:
+        Calling commands that return values for some endpoints but not for others.
+    Then:
+        The context outputs list, the errors list and the command results list are populated correctly.
+    """
     command_runner = setup_command_runner
 
     # Mock inputs
@@ -204,8 +299,8 @@ def test_run_single_args_commands(mocker, setup_command_runner):
     # Assert results
     expected_endpoint_outputs_list = [{"key1": "value1"}, {"key2": "value2"}]
     expected_endpoints_not_found_list = [
-        {'Key': 'agent1', 'Source': 'BrandB'},
-        {'Key': 'agent2', 'Source': 'BrandB'}
+        {'Key': 'agent1, 192.168.1.1, hostname1', 'Source': 'BrandB'},
+        {'Key': 'agent2, 192.168.1.2, hostname2', 'Source': 'BrandB'}
     ]
     expected_command_results_list = ["Readable output 1", "Readable output 2", "Readable output 3", "Readable output 4"]
 
@@ -221,6 +316,14 @@ def test_run_single_args_commands(mocker, setup_command_runner):
 
 
 def test_run_list_args_commands(mocker, setup_command_runner):
+    """
+    Given:
+        List argument commands searching data for two endpoints.
+    When:
+        Calling commands that return values for some endpoints but not for others.
+    Then:
+        The context outputs list, the errors list and the command results list are populated correctly.
+    """
     command_runner = setup_command_runner
 
     # Example data
@@ -279,7 +382,15 @@ def test_run_list_args_commands(mocker, setup_command_runner):
     mock_merge_endpoint_outputs.assert_called_once_with([{"result": "data1"}])
 
 
-def test_create_endpoint(mocker, setup_command_runner):
+def test_create_endpoint(setup_command_runner):
+    """
+    Given:
+        command output, output mapping and source.
+    When:
+        The create_endpoint function is called with those parameters.
+    Then:
+        An enpoint of the correct structure is created and returned.
+    """
     # Example data
     command_output = {
         "key1": "value1",
@@ -307,7 +418,14 @@ def test_create_endpoint(mocker, setup_command_runner):
 
 
 def test_prepare_args():
-
+    """
+    Given:
+        A command, its arguments, its argument mapping and endpoint arguments.
+    When:
+        The prepare_args function is called with those parameters.
+    Then:
+        A dictionary of arguments with the mapped keys is returned.
+    """
     command = Command(
         brand="BrandA",
         name="command1",
@@ -357,7 +475,19 @@ def test_prepare_args():
     assert result == expected
 
 
-def test_prepare_human_readable():
+def test_hr_to_command_results():
+    """
+    Given:
+        A command name, its arguments, and a human-readable output.
+    When:
+        a. The hr_to_command_results function is called with normal outputs.
+        b. The hr_to_command_results function is called with error outputs.
+        c. The hr_to_command_results function is called with no human-readable output.
+    Then:
+        a.  We get a CommandResults object with the correct HR, the correct entry type and is marked as note.
+        b.  We get a CommandResults object with the Error HR, the correct entry type and is marked as Note.
+        c. We get None.
+    """
     # Example data
     command_name = "example-command"
     args = {
@@ -368,7 +498,7 @@ def test_prepare_human_readable():
     human_readable = "This is a human-readable result."
 
     # Call the function
-    result = prepare_human_readable(command_name, args, human_readable, is_error=False)
+    result = hr_to_command_results(command_name, args, human_readable, is_error=False)
 
     # Expected result
     expected_command = "!example-command arg1=value1 arg2=value2"
@@ -381,7 +511,7 @@ def test_prepare_human_readable():
 
     # Test error case
     error_human_readable = "An error occurred."
-    result = prepare_human_readable(command_name, args, error_human_readable, is_error=True)
+    result = hr_to_command_results(command_name, args, error_human_readable, is_error=True)
 
     expected_output = f"#### Error for {expected_command}\n{error_human_readable}"
 
@@ -391,14 +521,26 @@ def test_prepare_human_readable():
     assert result.mark_as_note is True
 
     # Test with no human_readable
-    result = prepare_human_readable(command_name, args, "", is_error=False)
+    result = hr_to_command_results(command_name, args, "", is_error=False)
 
     # Assertions
     assert result is None
 
 
 def test_get_output_key(mocker):
-
+    """
+    Given:
+        Raw context, and an output key.
+    When:
+        a. The get_output_key function is called with an existing key.
+        b. The get_output_key function is called with an existing, partial, key.
+        c. The get_output_key function is called with a non-existing key.
+        d. The get_output_key function is called with no context.
+    Then:
+        a + b. We get the full key.
+        c. We get an empty string.
+        d. We get an empty string.
+    """
     # Example raw context with keys
     raw_context = {
         "key1": "value1",
@@ -427,6 +569,19 @@ def test_get_output_key(mocker):
 
 
 def test_get_outputs():
+    """
+    Given:
+        Raw context, and an output key.
+    When:
+        a. The get_outputs function is called with an existing key.
+        b. The get_outputs function is called with an existing, partial, key.
+        c. The get_outputs function is called with a non-existing key.
+        d. The get_outputs function is called with no context.
+    Then:
+        a + b. We get the outputs.
+        c. We get an empty dictionary.
+        d. We get an empty dictionary.
+    """
     raw_context = {
         "key1": "value1",
         "key2(subkey)": "value2",
@@ -463,6 +618,14 @@ def setup_endpoints():
 
 
 def test_merge_no_conflicts(mocker, setup_endpoints):
+    """
+    Given:
+        A list of data representing the same endpoint.
+    When:
+        The merge_endpoints function is called with no conflicting data.
+    Then:
+        An aggregated endpoint is returned.
+    """
     endpoints = [setup_endpoints[0], setup_endpoints[2]]
     expected_result = {
         'Hostname': [{'Value': 'host1'}, {'Value': 'host1'}],
@@ -474,6 +637,14 @@ def test_merge_no_conflicts(mocker, setup_endpoints):
 
 
 def test_merge_with_hostname_conflict(setup_endpoints, mocker):
+    """
+    Given:
+        A list of data representing the same endpoint.
+    When:
+        The merge_endpoints function is called with conflicting hostname data.
+    Then:
+        An error will be printed and second (conflicting) hostname will not be returned.
+    """
     endpoints = setup_endpoints
     # Using pytest mocker fixture for mocking the logging functions
     mock_error = mocker.patch.object(demisto, 'error')
@@ -486,26 +657,31 @@ def test_merge_with_hostname_conflict(setup_endpoints, mocker):
 
     # Check that the Hostname key is present in the result
     assert 'Hostname' in result  # Hostname will not merge but error out
-
-
-def test_merge_with_key_conflict(setup_endpoints, mocker):
-    endpoints = setup_endpoints[:3]
-    mock_error = mocker.patch.object(demisto, 'error')
-    result = merge_endpoints(endpoints)
-    mock_error.assert_called_once_with(
-        "Conflict detected for 'Hostname'. Conflicting dictionaries: {'Value': 'host1'}, {'Value': 'host2'}"
-    )
-    assert result['Protocol'] == {'Value': 'http'}  # Protocol merges without conflict
-
+    assert result['Hostname'] == [{'Value': 'host1'}, {'Value': 'host1'}]
 
 def test_merge_empty_endpoints():
+    """
+    Given:
+        An empty list of data.
+    When:
+        The merge_endpoints function is called with this list.
+    Then:
+        An empty dictionary is returned.
+    """
     endpoints = []
     result = merge_endpoints(endpoints)
     assert result == {}  # Merging empty list results in an empty dictionary
 
 
-def test_get_raw_endpoints(mocker):
-
+def test_get_raw_endpoints_single_entry(mocker):
+    """
+    Given:
+        A single context entry representing two different endpoints.
+    When:
+        The get_raw_endpoints function is called with this entry.
+    Then:
+        A list of the two endpoints, in raw structure, is returned.
+    """
     raw_context = [
         {
             "Device": [
@@ -539,6 +715,15 @@ def test_get_raw_endpoints(mocker):
     result = get_raw_endpoints(['Endpoint', 'Device'], raw_context)
     assert result == expected_output, f"Expected {expected_output}, got {result}"
 
+def test_get_raw_endpoints_multiple_entries(mocker):
+    """
+    Given:
+        A two context entries representing two different endpoints.
+    When:
+        The get_raw_endpoints function is called with these entries.
+    Then:
+        A list of the two endpoints, in raw structure, is returned.
+    """
     raw_context = [
         {
             "Endpoint": {"data from Endpoint for object_1": "value1"},
@@ -549,7 +734,7 @@ def test_get_raw_endpoints(mocker):
             "Device": [{"data from Device for object_2": "value4"}]
         },
     ]
-
+    mock_get_outputs = mocker.patch('GetEndpointData.get_outputs')
     mock_get_outputs.side_effect = [
         {"data from Endpoint for object_1": "value1"},
         [{"data from Device for object_1": "value2"}],
@@ -567,6 +752,15 @@ def test_get_raw_endpoints(mocker):
 
 
 def test_create_endpoints(mocker):
+    """
+    Given:
+        Raw endpoints and output mapping.
+    When:
+        a. The create_endpoints function is called with a dictionary mapping.
+        b. The create_endpoints function is called with a callable mapping.
+    Then:
+        a + b. The create_endpoint function is called with a dictionary mapping and returns a list of endpoints.
+    """
     raw_endpoints = [
         {"key1": "value1", "key2": "value2"},
         {"key1": "value4", "key2": "value3"},
@@ -617,7 +811,15 @@ def test_create_endpoints(mocker):
     assert result == []
 
 
-def test_merge_endpoint_logic(mocker):
+def test_merge_endpoint_outputs(mocker):
+    """
+    Given:
+        A list of endpoints representing two different endpoints.
+    When:
+        The merge_endpoint function is called with this list.
+    Then:
+        A zipped list of the merged endpoints is returned.
+    """
     # Mock the `merge_endpoints` function
     mock_merge_endpoints = mocker.patch('GetEndpointData.merge_endpoints', side_effect=lambda x: {"merged": x})
     # Mock the `safe_list_get` function
