@@ -82,4 +82,4 @@ There are no outputs for this playbook.
 
 ---
 
-![T1059 - Command and Scripting Interpreter](../doc_files/T1059_-_Command_and_Scripting_Interpreter.png)
+![T1059 - Command and Scripting Interpreter](../doc_files/Command_and_Scripting_Interpreter.png)

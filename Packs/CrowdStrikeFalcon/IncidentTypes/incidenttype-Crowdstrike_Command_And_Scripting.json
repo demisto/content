@@ -108,7 +108,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "Crowdstrike Command And Scripting",
-    "layout": "fb6f971f-46ab-432d-85ef-1d42493c97fa",
+    "layout": "CrowdStrike Falcon Layout",
     "locked": false,
     "name": "Crowdstrike Command And Scripting",
     "onChangeRepAlg": 0,
