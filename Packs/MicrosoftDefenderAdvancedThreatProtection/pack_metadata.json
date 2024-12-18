@@ -66,5 +66,5 @@
         "CommonPlaybooks",
         "CommonTypes"
     ],
-    "defaultDataSource": "Microsoft 365 Defender Event Collector"
+    "defaultDataSource": "Microsoft Defender Advanced Threat Protection"
 }
