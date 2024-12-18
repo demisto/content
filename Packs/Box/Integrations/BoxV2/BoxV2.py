@@ -145,7 +145,7 @@ class Event:
         #  Created at time is stored in either or two locations, never both.
         demisto.debug(f"Event init: created_at={raw_input.get('created_at')}, source exists= {bool(raw_input.get('source'))}")
         created_at = raw_input.get('created_at')
-        _created_at = raw_input.get('source', {}).get('created_at')
+        _created_at = raw_input.get('source', {}).get('created_at') if raw_input.get('source') else None
         self.created_at = created_at if created_at is not None else _created_at
         demisto.debug(f"Event init:{self.created_at=}")
         self.event_id = raw_input.get('event_id')
