@@ -1,5 +1,5 @@
 {
-    "fromVersion": "6.10.0",
+    "description": "Tactic Indicator Layout",
     "edit": {
         "sections": [
             {
@@ -67,30 +67,11 @@
                 "queryType": "",
                 "readOnly": false,
                 "type": ""
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "indicator_killchainphases",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_aliases",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Custom fields - unique",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
             }
         ]
     },
     "group": "indicator",
-    "id": "STIX Attack Pattern",
+    "id": "Tactic Layout",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -197,31 +178,11 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "aliases",
-                                "height": 22,
-                                "id": "60dd8e70-a81e-11eb-8bae-034332f83c9b",
-                                "index": 3,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "killchainphases",
-                                "height": 22,
-                                "id": "4635b630-8345-11ec-957b-0b2fa4b6ab8a",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "operatingsystemrefs",
                                 "height": 22,
                                 "id": "4ba88480-8345-11ec-957b-0b2fa4b6ab8a",
-                                "index": 5,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -231,7 +192,7 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 6,
+                                "index": 4,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -242,7 +203,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 7,
+                                "index": 5,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -285,7 +246,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Attack Pattern Details",
+                        "name": "Tactic Details",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -341,7 +302,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Attack Pattern Description",
+                        "name": "Tactic Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -407,10 +368,10 @@
                 "type": "custom"
             },
             {
+                "hidden": false,
                 "id": "canvas",
                 "name": "Canvas",
-                "type": "canvas",
-                "hidden": false
+                "type": "canvas"
             }
         ]
     },
@@ -509,7 +470,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Attack Pattern Details",
+                        "name": "Tactic",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -535,7 +496,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Attack Pattern Description",
+                        "name": "Tactic",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -596,8 +557,8 @@
             }
         ]
     },
-    "name": "Attack Pattern",
+    "name": "Tactic Layout",
     "system": false,
     "version": -1,
-    "description": "Attack Pattern Indicator Layout"
+    "fromVersion": "6.10.0"
 }
