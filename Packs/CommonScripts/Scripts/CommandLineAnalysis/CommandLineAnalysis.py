@@ -4,7 +4,7 @@ import base64
 import re
 import ipaddress
 import json
-from typing import Any
+from typing import List, Any, Optional, Tuple, Union
 
 
 def is_base64(possible_base64: Union[str, bytes]) -> bool:
