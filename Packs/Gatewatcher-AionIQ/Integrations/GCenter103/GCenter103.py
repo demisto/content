@@ -491,19 +491,15 @@ def handle_big_fetch_metadata(client: GwClient, query: dict, max_fetch: int, fet
 
 def handle_little_fetch_alerts(client: GwClient, fetch_type: str, engine_selection: list, query: dict) -> list:
 
-    gw_alerts = []
-   
-    if fetch_type in ("Alerts", "Both"):
+    gw_alerts: list = []
 
-        query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[0])
-        res_a = query_es_alerts(client=client,query=query)
-        gw_alerts = res_a
+    for i in range(0, len(engine_selection)):
 
-    for i in range(1, len(engine_selection)):
+        if fetch_type in ("Alerts", "Both"):
 
-        query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[i])
-        res_a = query_es_alerts(client=client,query=query)
-        gw_alerts += res_a
+            query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[i])
+            res_a = query_es_alerts(client=client,query=query)
+            gw_alerts += res_a
     
     return gw_alerts
 
@@ -669,11 +665,15 @@ def fetch_selected_engines(client: GwClient, engine_selection: list, params: dic
     else:
 
         gw_alerts = handle_little_fetch_alerts(client=client, query=query, engine_selection=engine_selection, fetch_type=fetch_type)
-        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
+        incidents_a: list = []
+        if len(gw_alerts) > 0:
+            incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
         gw_metadata = handle_little_fetch_metadata(client=client, query=query, fetch_type=fetch_type)
-        incidents_m = index_metadata_incidents(to_index=gw_metadata, incidents=incidents)
+        incidents_m: list = []
+        if len(gw_metadata) > 0:
+            incidents_m = index_metadata_incidents(to_index=gw_metadata, incidents=incidents)
 
         return incidents_a + incidents_m
 
@@ -696,11 +696,15 @@ def fetch_empty_selected_engines(client: GwClient, max_fetch: int, fetch_type: s
     else:
 
         gw_alerts = handle_little_fetch_empty_selected_engines(client=client, query=query, fetch_type=fetch_type)
-        incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
+        incidents_a: list = []
+        if len(gw_alerts) > 0:
+            incidents_a = index_alerts_incidents(to_index=gw_alerts, incidents=incidents, params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
         gw_metadata = handle_little_fetch_metadata(client=client, query=query, fetch_type=fetch_type)
-        incidents_m = index_metadata_incidents(to_index=gw_metadata, incidents=incidents)
+        incidents_m: list = []
+        if len(gw_metadata) > 0:
+            incidents_m = index_metadata_incidents(to_index=gw_metadata, incidents=incidents)
 
         return incidents_a + incidents_m
 
@@ -736,7 +740,7 @@ def fetch_incidents():
     params = demisto.params()
     args = demisto.args()
 
-    max_fetch = arg_to_number(args.get('max_fetch')) or params.get('max_fetch', '200')
+    max_fetch = params.get('max_fetch', '200')
     max_fetch = int(max_fetch)
     
     fetch_type = str(params['fetch_type'])
