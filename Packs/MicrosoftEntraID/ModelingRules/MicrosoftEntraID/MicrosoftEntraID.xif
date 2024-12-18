@@ -187,7 +187,7 @@ filter CategoryValue in("Administrative", "Policy", "Alert") and (category = nul
         HTTPRequest_clientIpAddress = HTTPRequest -> clientIpAddress,
         HTTPRequest_method = HTTPRequest -> method,
         log_level = uppercase(to_string(level)),
-        message_operation_array = if(properties -> message != null, split(properties -> message, "/"), properties -> operationName != null, split(properties -> operationName, "/"), null),
+        message_operation_array = if(properties -> message != null, split(properties -> message, "/"), properties -> operationName != null, split(properties -> operationName, "/"), operationnamevalue != null, split(operationnamevalue, "/"), null),
         statusMessage_error_message = to_json_string(properties -> statusMessage) -> error.message
 | alter
         xdm.source.user.upn = if(caller contains "@", caller, null),
