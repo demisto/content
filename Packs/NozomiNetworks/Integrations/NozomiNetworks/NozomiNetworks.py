@@ -20,13 +20,11 @@ class Client:
             demisto.params().get("credentials", {}).get('password', '')
         )
 
-
     def get_proxies(self):
         if self.proxy:
             return handle_proxy()
         else:
             return {}
-
 
     def _make_request(self, method, path, **kwargs):
         url = self.base_url + path
