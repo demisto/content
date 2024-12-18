@@ -12,6 +12,7 @@ import threading
 import time
 import traceback
 import websocket
+import uuid
 import json
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
@@ -671,13 +672,8 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
             tab.Page.navigate(url=path)
 
         demisto.debug(f'Waiting for tab_ready_event on {tab.id=}')
-        success_flag = tab_ready_event.wait(navigation_timeout)
+        tab_ready_event.wait(navigation_timeout)
         demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
-
-        if not success_flag:
-            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
-            demisto.error(message)
-            return_error(message)
 
         if wait_time > 0:
             demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
@@ -990,7 +986,7 @@ def rasterize_email_command():  # pragma: no cover
     offline = demisto.args().get('offline', 'false') == 'true'
 
     rasterize_type_arg = demisto.args().get('type', 'png').lower()
-    file_name = demisto.args().get('file_name', 'email')
+    file_name = demisto.args().get('file_name', uuid.uuid4())
     file_name = f'{file_name}.{rasterize_type_arg}'
     rasterize_type = RasterizeType(rasterize_type_arg)
 
@@ -1127,6 +1123,8 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg('url')
+    # Do not remove this line, as rasterize does not support array in `url`.
+    urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
