@@ -15,15 +15,15 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
         if isinstance(possible_base64, str):
             possible_base64 = possible_base64.encode('ascii')
 
-        # Check for valid Base64 characters
+        # Check for valid Base64 characters and correct padding
         if not re.fullmatch(b'[A-Za-z0-9+/]*={0,2}', possible_base64):
             return False
 
-        # Validate padding
+        # Ensure length is a multiple of 4
         if len(possible_base64) % 4 != 0:
             return False
 
-        # Attempt decoding
+        # Attempt decoding strictly
         base64.b64decode(possible_base64, validate=True)
         return True
     except Exception:
@@ -38,10 +38,9 @@ def clean_non_base64_chars(encoded_str: str) -> str:
     # Remove all invalid Base64 characters
     cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', encoded_str)
 
-    # Fix padding (Base64 strings should be a multiple of 4 in length)
-    padding = len(cleaned_str) % 4
-    if padding:
-        cleaned_str += "=" * (4 - padding)
+    # Fix padding only if the string length is reasonable for Base64
+    if len(cleaned_str) % 4 != 0:
+        cleaned_str += "=" * (4 - len(cleaned_str) % 4)
 
     return cleaned_str
 
@@ -53,78 +52,77 @@ def remove_null_bytes(decoded_str: str) -> str:
     return decoded_str.replace("\x00", "")
 
 
-def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[Optional[str], bool]:
+def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[str, bool]:
     """
     Decodes a Base64-encoded string recursively up to a defined limit.
-    Returns the decoded string and a flag indicating if double encoding was detected.
+    Handles mixed content if necessary and returns the fully decoded string and a flag indicating double encoding.
     """
     try:
         recursion_depth = 0
-        was_double_encoded = False  # Flag for double encoding
-        current_input = encoded_str
+        double_encoded_detected = False
+        result = encoded_str  # Keep the original input as the working result
 
         while recursion_depth < max_recursions:
-            # Check if the current input is valid Base64
-            if not is_base64(current_input):
-                break
+            # Extract potential Base64 parts from the string
+            base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
+            matches = base64_pattern.findall(result)
 
-            # Clean and decode the Base64 string
-            cleaned_input = clean_non_base64_chars(current_input)
-            decoded_bytes = base64.b64decode(cleaned_input)
-            try:
-                decoded_str = decoded_bytes.decode('utf-8')
-            except UnicodeDecodeError:
-                decoded_str = decoded_bytes.decode('latin-1')
+            if not matches:
+                break  # Stop if no Base64 content is found
 
-            # Increment recursion depth
+            for match in matches:
+                if is_base64(match):
+                    # Clean and decode the Base64 string
+                    cleaned_input = clean_non_base64_chars(match)
+                    try:
+                        decoded_bytes = base64.b64decode(cleaned_input)
+                        decoded_str = decoded_bytes.decode('utf-8', errors='ignore')  # Decode as UTF-8
+                        result = result.replace(match, decoded_str, 1)  # Replace the Base64 part with its decoded value
+                        double_encoded_detected = double_encoded_detected or recursion_depth > 0
+                    except Exception:
+                        continue  # Skip invalid Base64 matches
+
             recursion_depth += 1
 
-            # Update flag for double encoding after the first successful decode
-            if recursion_depth > 1:
-                was_double_encoded = True
-
-            # Prepare for the next round of decoding
-            current_input = decoded_str
-
-        return current_input, was_double_encoded
+        return result, double_encoded_detected
     except Exception as e:
-        print(f"Error decoding Base64: {e}")
-        return None, False
-
+        demisto.debug(f"Error decoding Base64: {e}")
+        return "", False
 
 
 def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
     """
     Identifies and decodes all Base64 occurrences in a command line,
-    returning the original command line, the fully decoded content, and a flag for double encoding.
+    returning the decoded content and a flag indicating if any double encoding was detected.
+    Handles both pure Base64 strings and mixed content.
     """
-    # Base64 regex pattern
-    base64_pattern = re.compile(
-        r'((?:[A-Za-z0-9+/]{4}){4,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})?)'
-    )
+    try:
+        double_encoded_detected = False
 
-    matches = base64_pattern.findall(command_line)
-    fully_decoded_content: List[str] = []  # Collect decoded Base64 strings
-    double_encoded_detected = False
+        # First, check if the entire command_line is Base64
+        if is_base64(command_line):
+            decoded_str, is_double_encoded = decode_base64(command_line)
+            return decoded_str, is_double_encoded
 
-    for match in matches:
-        if is_base64(match):  # Validate Base64
-            # Decode Base64 recursively
-            decoded_str, is_double_encoded = decode_base64(match)
-            if decoded_str:
-                # Preprocess decoded content: remove non-printable characters, line breaks, and excess whitespace
-                cleaned_decoded = ''.join(c for c in decoded_str if c.isprintable())
-                cleaned_decoded = cleaned_decoded.replace("\n", "").replace("\r", "").strip()
-                fully_decoded_content.append(cleaned_decoded)
+        # If not pure Base64, extract Base64 portions using regex
+        base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
+        matches = base64_pattern.findall(command_line)
 
-                # Track double encoding
-                if is_double_encoded:
-                    double_encoded_detected = True
+        if not matches:
+            return command_line, False  # No Base64 content found
 
-    # Join all decoded Base64 strings to form the fully decoded command
-    decoded_command_line = ''.join(fully_decoded_content)
+        result = command_line
+        for match in matches:
+            if is_base64(match):  # Ensure the match is valid Base64
+                decoded_str, is_double_encoded = decode_base64(match)
+                result = result.replace(match, decoded_str, 1)
+                double_encoded_detected = double_encoded_detected or is_double_encoded
 
-    return decoded_command_line, double_encoded_detected
+        return result, double_encoded_detected
+
+    except Exception as e:
+        demisto.debug(f"Error identifying and decoding Base64: {e}")
+        return command_line, False
 
 
 def reverse_command(command_line: str) -> Tuple[str, bool]:
