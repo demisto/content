@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-supportlevelheader: xsoar
 commonfields:
   id: Code42 Event Collector
   version: -1
