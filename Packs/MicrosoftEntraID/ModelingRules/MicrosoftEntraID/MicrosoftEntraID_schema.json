@@ -1,6 +1,10 @@
 {
     "msft_azure_raw": {
-        "activitystatusvalue":{
+        "activitystatusvalue": {
+            "type": "string",
+            "is_array": false
+        },
+        "activitysubstatusvalue": {
             "type": "string",
             "is_array": false
         },
