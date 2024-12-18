@@ -170,8 +170,7 @@ script:
       - Headless CLI - Preferred
       - Headless CLI - Only
       deprecated: true
-    - defaultValue: email
-      description: The name the file will be saved as.
+    - description: The name the file will be saved as.
       name: file_name
     - auto: PREDEFINED
       defaultValue: "False"
