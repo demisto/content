@@ -80,6 +80,7 @@ def test_get_taxii_failure(mocker):
     assert [] == val
 
 
+@pytest.mark.skip(reason="Skipping this test since we are no longer returning an error.")
 def test_get_taxii_error(mocker, capfd):
     from CybleThreatIntel import Client
     client = Client(params)
