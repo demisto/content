@@ -106,7 +106,7 @@ Follow these steps for a self-deployed configuration:
 
 When incidents are mirrored into Cortex XSOAR from Microsoft 365 Defender:
 
-1. **Comments** mirrored from Microsoft 365 Defender will be added to the incident as entries in XSOAR and tagged with the **Comment Entry Tag From Microsoft 365 Defender**.  
+1. **Comments** mirrored from Microsoft 365 Defender will be added to the incident as entries in Cortex XSOAR and tagged with **Comment Entry Tag From Microsoft 365 Defender**.  
    * By default, the tag is set to: `CommentFromMicrosoft365Defender`.  
 
 2. If an incident is closed in Microsoft 365 Defender (`status` = **Resolved**) and Close Mirrored Cortex XSOAR Incidents is enabled:  
