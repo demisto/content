@@ -77,12 +77,12 @@ configuration:
 
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 7
+  type: 8
   required: false
 
 - display: Use system proxy settings
   name: proxy
-  type: 9
+  type: 8
   required: false
 
 script:
@@ -93,9 +93,6 @@ script:
     - name: message
       required: true
       description: The message that the GPT model will respond to.
-    - name: message
-      required: true
-      description: DUPLICATE ON PURPOSE
 
     - name: reset_conversation_history
       required: false
