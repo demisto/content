@@ -1412,7 +1412,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             score=dbot_score_file,
             reliability=RELIABILITY)
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
-        demisto.error(f'Report not found. Error: {exc}')
+        logging.error(f'Report not found. Error: {exc}')
         relationships = None
     except Exception as e:
         entry_context['Status'] = str(e)
@@ -1426,7 +1426,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             score=dbot_score_file,
             reliability=RELIABILITY)
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
-        demisto.error(f'Error: {e}')
+        logging.error(f'Error: {e}')
         relationships = None
     finally:
         try:
@@ -1436,9 +1436,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
                                              relationships=relationships)
             return command_results, entry_context.get('Status')
         except Exception as e:
-            demisto.error(f'An error occurred on the following entry context: {entry_context}')
-            demisto.error(f'An error occurred trying to get the report from the API: {str(e)} - {format_exc()}')
-            raise DemistoException('Error while trying to get the report from the API.')
+            raise DemistoException(f'Error while trying to get the report from the API: {str(e)} - {format_exc()}')
 
 
 def wildfire_get_report_command(args: dict):
