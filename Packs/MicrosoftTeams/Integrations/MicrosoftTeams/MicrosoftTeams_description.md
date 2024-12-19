@@ -1,11 +1,11 @@
 Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings. 
 Note: The integration is supported in Cortex XSOAR 8 and Cortex XSIAM without using an engine.
 
-To create an instance of the Microsoft Teams integration in Cortex XSOAR, complete the following:
+### To create an instance of the Microsoft Teams integration in Cortex XSOAR, complete the following:
 
 1. Create the Demisto Bot in Microsoft Teams
 2. Grant the Demisto Bot Permissions in Microsoft Graph
-3. Configure Microsoft Teams on Demisto
+3. Configure Microsoft Teams on Cortex XSOAR or Cortex XSIAM
 4. Add the Demisto Bot to a Team
  
 Important note: resetting the integration cache removes all data about teams, channels, members saved in the integration context. Performing this step requires removing the bot from all teams it was added to.
@@ -30,5 +30,6 @@ In order to use the following commands, you must use the **Authorization Code fl
   - ***microsoft-teams-chat-update***
 
 
-**Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation. 
-          To verify that authentication was configured correctly, run the ***!microsoft-teams-auth-test*** command.
+**Notes:** 
+- When switching from the **Client Credentials Flow** to the **Authorization Code Flow** do as follow: Save the instance, run the ***!microsoft-teams-generate-login-url*** command and follow the instructions mentioned there. Once done, test the validity of your instance by running the ***!microsoft-teams-auth-test*** command. When switching from the **Authorization Code Flow** to the **Client Credentials Flow**, test the validity of the instance by clicking the 'Test' button.
+- When using the **Authorization Code flow**, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation. To verify that authentication was configured correctly, run the ***!microsoft-teams-auth-test*** command.
