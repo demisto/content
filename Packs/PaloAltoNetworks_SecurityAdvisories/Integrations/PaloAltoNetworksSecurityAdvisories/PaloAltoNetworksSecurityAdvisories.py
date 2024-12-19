@@ -128,6 +128,7 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
         affected_version_list=advisory_dict.get("containers", {}).get("cna", {}).get("x_affectedList", [])
     )
 
+
 def test_module(client: Client):
     """Test the connectivity to the advisory API by checking for products"""
     request_result = client.get_products()
