@@ -194,7 +194,7 @@ def get_classifier_mapper() -> tuple[Any, Any, Any]:
         class_data, i_mapper_data, o_mapper_data = separate_classfier_mapper(filtered_data)
     else:
         return_error("No classifier and mapper data found.")
-    return class_data, i_mapper_data, o_mapper_data
+    return class_data, i_mapper_data, o_mapper_data  # pylint: disable=E0606
 
 
 def get_playbooks() -> list:

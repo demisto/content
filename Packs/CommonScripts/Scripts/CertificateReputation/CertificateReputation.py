@@ -281,6 +281,11 @@ def certificate_reputation_command(args: dict[str, Any]) -> dict[str, Any]:
             certificate_stdcontext = certificate_stdcontext[0] if certificate_stdcontext else {}
         demisto.debug(f"{certificate_stdcontext!r}")
         tags, check_comments, dbot_score = dbot_context(indicator_value, certificate_stdcontext)
+    else:
+        dbot_score = {}
+        tags = None
+        check_comments = []
+        demisto.debug(f"Initializing {dbot_score=} {tags=} {check_comments=}")
 
     standard_context.update(dbot_score)
 

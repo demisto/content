@@ -90,6 +90,11 @@ class Client(BaseClient):
             field_name = 'IpAddress'
             value = ip_address
 
+        else:
+            field_name = ''
+            value = ''
+            demisto.debug(f"No host_name or ip_address -> {field_name=} {value=}")
+
         params = {
             'accessType': '3',
             'search': json.dumps({
@@ -653,6 +658,10 @@ def get_endpoint_id(client: Client, endpoint_ip: list = None, endpoint_name: lis
     elif endpoint_name:
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
+
+    else:
+        endpoint_id = {}
+        demisto.debug(f"No endpoint_ip or endpoint_name -> {endpoint_id=}")
 
     return endpoint_id
 

@@ -491,6 +491,7 @@ def create_group_command(client, args):
 
 
 def update_group_command(client, args):
+    res = None
     scim = safe_load_json(args.get('scim'))
 
     group_id = scim.get('id')

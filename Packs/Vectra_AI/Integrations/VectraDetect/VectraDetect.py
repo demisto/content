@@ -1393,6 +1393,8 @@ def build_search_query(object_type, params: dict) -> str:
         The Lucene search query
     """
     query = ''
+    attribute = ''
+    operator = ''
 
     for key, value in params.items():
         if key.startswith('min_'):
@@ -2519,6 +2521,9 @@ def fetch_incidents(client: Client, integration_params: Dict, is_test: bool = Fa
                     incident, incident_last_run = host_to_incident(client, event, detection_category, detection_type)
                 elif entity_type == 'Detections':
                     incident, incident_last_run = detection_to_incident(event)
+                else:
+                    demisto.debug(f"The {entity_type=} didn't match any condition, can't create an incident, continue.")
+                    continue
 
                 # Search this incident in the last_run, if it's in, skip it, if not create it
                 # Create incident UID and search for it

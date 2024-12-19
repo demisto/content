@@ -84,6 +84,7 @@ class Client(BaseClient):
         return result
 
     def search_by_name(self, key, value):
+        url = ""
         if value:
             value = value.replace(' ', '+')
         else:
@@ -371,7 +372,11 @@ def blueliv_malware(client: Client, args):
         elif len(hashValue) == 32:
             hash_type = 'md5'
         else:
+            hash_type = ""
             notFound()
+    else:
+        hash_type = ""
+        demisto.debug(f"No hashValue -> {hash_type=}")
 
     if not malwareId:
         result = client.get_malware_hash_info(hashValue, hash_type)

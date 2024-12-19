@@ -167,6 +167,9 @@ def main():
             # if http request successful find the latest tag by date in the response
             if tags:
                 tag = find_latest_tag_by_date(tags)
+            else:
+                tag = ''
+                demisto.debug(f"No tags, {tag=}")
 
         else:
             # if http request did not successed than get tags using the API.
@@ -182,6 +185,9 @@ def main():
             tags = res.json().get('tags', [])
             if tags:
                 tag = lexical_find_latest_tag(tags)
+            else:
+                tag = ''
+                demisto.debug(f"No tags, {tag=}")
 
         demisto.results(tag)
     except Exception as ex:

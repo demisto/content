@@ -938,6 +938,10 @@ class ExtFilter:
                     return None
                 (parent, parent_path), \
                     (child, child_name) = get_parent_child(root, path)
+            else:
+                child_name = ""
+                parent_path = ""
+                demisto.debug(f"{path=} -> {child_name=} {parent_path=}")
 
             for x in self.__conds_items(conds, root):
                 coptype, cconds = x

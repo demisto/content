@@ -1,4 +1,6 @@
 import urllib3
+
+import demistomock
 from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -456,6 +458,9 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability,
 
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         context = iair_to_context(analysis_info)
+    else:
+        context = {}
+        demisto.debug(f"There is no {res=} -> {context=}")
 
     return CommandResults(indicator=indicator,
                           outputs=context,

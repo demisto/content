@@ -151,8 +151,7 @@ def get_role_id_command():
     role_name = args.get('role_name')
     path = f'/auth/approle/role/{role_name}/role-id'
     response = send_request(path=path, method='get', body={'role_name': role_name})
-    if response:
-        role_id = response.get('data', {}).get('role_id', '')
+    role_id = response.get('data', {}).get('role_id', '') if response else ''
 
     if not role_id:
         raise DemistoException(f"Role ID not found for AppRole '{role_name}'. Please check the role name and try again.")

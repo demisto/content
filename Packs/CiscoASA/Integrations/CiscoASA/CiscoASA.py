@@ -320,6 +320,7 @@ class Client(BaseClient):
             GET - rule info
             PATCH - edit rule
         """
+        rule = {}
         resp_type = {"GET": "json",
                      "DELETE": "text",
                      "PATCH": "response"
@@ -350,6 +351,7 @@ class Client(BaseClient):
         Returns:
             The new created rule's information.
         """
+        res = {}
         if interface_type == "Global":
             res = self._http_request("POST", '/api/access/global/rules', json_data=rule_body, resp_type="response")
         if interface_type == 'In':

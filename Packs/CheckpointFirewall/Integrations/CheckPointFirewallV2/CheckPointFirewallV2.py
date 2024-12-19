@@ -1834,6 +1834,8 @@ def checkpoint_delete_threat_protections_command(client: Client, args):
 
         readable_output = tableToMarkdown('CheckPoint data for delete threat protections command:',
                                           result)
+    else:
+        readable_output = 'No result was found.'
     command_results = CommandResults(
         outputs_prefix='CheckPoint.DeletedThreatProtections',
         outputs_key_field='task-id',

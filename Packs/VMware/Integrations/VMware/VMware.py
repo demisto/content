@@ -856,6 +856,7 @@ def main():  # pragma: no cover
     res = []
     si = None
     try:
+        result = ''
         si = login(demisto.params())
         if demisto.command() == 'test-module':
             result = test_module(si)

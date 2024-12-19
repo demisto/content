@@ -638,6 +638,9 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
             response = client.case_search_request(kwargs)
         elif item_type == "alert":
             response = client.alert_search_request(kwargs)
+        else:
+            response = {}
+            demisto.debug(f"{item_type=} -> {response=}")
         data_response = response.get("rows", [])
         table_name = f"{item_type.capitalize()}s"
 

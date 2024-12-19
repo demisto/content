@@ -201,6 +201,10 @@ def get_command(client: Client,
         human_readable = tableToMarkdown(f'Aha! get {aha_type.get_type_plural()}',
                                          message,
                                          removeNull=True)
+    else:
+        human_readable = ''
+        demisto.debug(f"{response=} -> {human_readable=}")
+
     return CommandResults(
         outputs_prefix=f'AHA.{aha_type.get_type_for_outputs()}',
         outputs_key_field='id',
@@ -222,6 +226,10 @@ def edit_command(client: Client,
         human_readable = tableToMarkdown(f'Aha! edit {aha_type.get_type_singular()}',
                                          message,
                                          removeNull=True)
+    else:
+        human_readable = ''
+        demisto.debug(f"{response=} -> {human_readable=}")
+
     return CommandResults(
         outputs_prefix=f'AHA.{aha_type.get_type_for_outputs()}',
         outputs_key_field='id',

@@ -180,6 +180,7 @@ def validate_timezone_helper(TIMEZONE):
     """
     Validates Timezone format is correct before assuming it is.
     """
+    tz = None
     if TIMEZONE not in pytz.all_timezones:
         return_error(f'Error: Timezone format "{TIMEZONE}" invalid')
     else:

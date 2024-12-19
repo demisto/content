@@ -222,6 +222,9 @@ def main():
         if listName != "":
             listlines = demisto.executeCommand("getList", {'listName': listName})[0]['Contents']
             buf = io.StringIO(listlines)
+        else:
+            buf = None
+            demisto.debug(f"{listName=} -> {buf=}")
 
         # Add the tasks to the playbook and execute it
         if testType == "Automation":
