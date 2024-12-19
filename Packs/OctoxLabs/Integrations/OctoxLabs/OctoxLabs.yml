@@ -606,10 +606,10 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page. (Default: 1)'
+        description: 'Page (Default: 1).'
         name: page
       - default:
-        description: 'Size. (Default: 50)'
+        description: 'Size (Default: 50).'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -632,10 +632,10 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page. (Default: 1)'
+        description: 'Page (Default: 1).'
         name: page
       - default:
-        description: 'Size. (Default: 50)'
+        description: 'Size (Default: 50).'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -658,10 +658,10 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Page. (Default: 1)'
+        description: 'Page (Default: 1).'
         name: page
       - default:
-        description: 'Size. (Default: 50)'
+        description: 'Size (Default: 50).'
         name: size
       - default:
         description: 'Specific Discovery Id.'
@@ -708,13 +708,13 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Size. (Default: 50)'
+        description: 'Size (Default: 50).'
         name: size
       - default:
         description: 'Specific Discovery Id.'
         name: discovery_id
       - default:
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         name: scroll_id
     outputs:
       - contextPath: OctoxLabs.ScrolledDevices.count
@@ -737,13 +737,13 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Size. (Default: 50)'
+        description: 'Size (Default: 50).'
         name: size
       - default:
         description: 'Specific Discovery Id.'
         name: discovery_id
       - default:
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         name: scroll_id
     outputs:
       - contextPath: OctoxLabs.ScrolledUsers.count
@@ -766,13 +766,13 @@ script:
         isArray: true
         name: fields
       - default:
-        description: 'Size. (Default: 50)'
+        description: 'Size (Default: 50).'
         name: size
       - default:
         description: 'Specific Discovery Id.'
         name: discovery_id
       - default:
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         name: scroll_id
     outputs:
       - contextPath: OctoxLabs.ScrolledApplications.count
@@ -791,13 +791,13 @@ script:
         description: 'Query.'
         name: query
       - default:
-        description: 'Size.'
+        description: 'Size (Default: 50).'
         name: size
       - default:
         description: 'Specific Discovery Id.'
         name: discovery_id
       - default:
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         name: scroll_id
     outputs:
       - contextPath: OctoxLabs.ScrolledAVM.count
