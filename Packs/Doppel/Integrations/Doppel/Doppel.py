@@ -452,13 +452,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     :rtype: ``str``
     """
-    new_incident_id: str = None
     demisto.debug(f'Arguments for the update-remote-system is: {args}')
     parsed_args = UpdateRemoteSystemArgs(args)
+    new_incident_id: str = parsed_args.remote_incident_id
     # We will Update the Doppel Alert only if the XSOAR Incident is closed
     if parsed_args.delta and parsed_args.delta.get('closeReason'):
         demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system')
-        new_incident_id = parsed_args.remote_incident_id
         if not parsed_args.remote_incident_id or parsed_args.incident_changed:
             if parsed_args.remote_incident_id:
                 # First, get the incident as we need the version
