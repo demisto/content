@@ -15,7 +15,7 @@
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| case | Default is 'capital. Can also be 'title' or 'swap'. |
+| case | Default is "capital". Can also be "title" or "swap". |
 | value |  |
 
 ## Outputs
