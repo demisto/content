@@ -28,7 +28,7 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
         # Apply heuristic for short strings
         if len(possible_base64) <= 16:
             # For shorter strings, require at least one '+' or '/' or '='
-            if b'+' not in possible_base64 and b'/' not in possible_base64 and b'=' not in possible_base64:
+            if b'=' not in possible_base64:
                 return False
 
         # Attempt strict decoding
@@ -36,6 +36,7 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
         return True
     except Exception:
         return False
+
 
 def clean_non_base64_chars(encoded_str: str) -> str:
     """
@@ -60,50 +61,50 @@ def remove_null_bytes(decoded_str: str) -> str:
 
 
 def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: bool = False) -> Tuple[str, bool]:
-    """
-    Decodes a Base64-encoded string recursively up to a defined limit.
-    If force_utf16_le is True, decode with UTF-16-LE. Otherwise, use UTF-8 by default.
-    Detects multiple layers of Base64 to identify double encoding.
-    """
     try:
         recursion_depth = 0
-        double_encoded_detected = False
         result = encoded_str
 
         while recursion_depth < max_recursions:
-            # Extract potential Base64 parts
             base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
             matches = base64_pattern.findall(result)
 
             if not matches:
-                break  # No more base64 found
+                break  # No potential base64 strings found
 
             decoded_any = False
             for match in matches:
+                # Check if the match is actually valid Base64 before decoding
                 if is_base64(match):
                     cleaned_input = clean_non_base64_chars(match)
                     try:
-                        decoded_bytes = base64.b64decode(cleaned_input)
-                        # If force_utf16_le, decode as UTF-16-LE; otherwise UTF-8
-                        if force_utf16_le:
-                            decoded_str = decoded_bytes.decode('utf-16-le', errors='replace')
-                        else:
-                            decoded_str = decoded_bytes.decode('utf-8', errors='replace')
+                        decoded_bytes = base64.b64decode(cleaned_input, validate=True)
+                        decoded_str = (decoded_bytes.decode('utf-16-le', errors='replace')
+                                       if force_utf16_le else
+                                       decoded_bytes.decode('utf-8', errors='replace'))
 
-                        result = result.replace(match, decoded_str, 1)
-                        double_encoded_detected = double_encoded_detected or recursion_depth > 0
-                        decoded_any = True
+                        # If decoded string differs from the original match, then a decode happened
+                        if decoded_str != match:
+                            result = result.replace(match, decoded_str, 1)
+                            decoded_any = True
                     except Exception:
+                        # If decoding fails despite is_base64 check, just continue
                         continue
 
             if not decoded_any:
+                # No successful decoding occurred this recursion, so stop
                 break
+
             recursion_depth += 1
 
+        # Double encoding is detected if we performed more than one decoding recursion
+        double_encoded_detected = (recursion_depth > 1)
         return result, double_encoded_detected
+
     except Exception as e:
         demisto.debug(f"Error decoding Base64: {e}")
         return "", False
+
 
 
 def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
