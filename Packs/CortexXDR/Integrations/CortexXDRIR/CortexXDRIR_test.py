@@ -411,7 +411,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
+    assert response.entries.get('Contents') == {'dbotIncidentReopen': True}
 
 
 def test_get_remote_data_command_with_rate_limit_exception(mocker):
@@ -602,7 +602,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
+    assert response.entries.get('Contents') == {'dbotIncidentReopen': True}
 
 
 @pytest.mark.parametrize('last_update',
@@ -1882,7 +1882,6 @@ def test_handle_incoming_incident(capfd, mocker, custom_mapping):
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
 
-
     for xdr_reopen_reason in XDR_OPEN_STATUS_TO_XSOAR:
         incident_data = load_test_data('./test_data/resolved_incident_data.json')
         # Set incident status to be tested reopen-reason.
@@ -1897,4 +1896,4 @@ def test_handle_incoming_incident(capfd, mocker, custom_mapping):
                 'dbotIncidentReopen': True
             },
             'ContentsFormat': EntryFormat.JSON
-    }
+        }
