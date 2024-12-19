@@ -4457,7 +4457,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
-        list_limit = int(args.get('limit', 50))
+        list_limit = int(args.get('limit', 10))
 
         try:
             outputs = get_func().get('reply', [])[:list_limit]

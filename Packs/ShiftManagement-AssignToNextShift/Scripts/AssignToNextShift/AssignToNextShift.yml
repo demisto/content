@@ -17,7 +17,7 @@ comment: 'Randomly assigns the incidents to users on call (requires shift manage
 commonfields:
   id: AssignToNextShift
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: AssignToNextShift
 script: ''
