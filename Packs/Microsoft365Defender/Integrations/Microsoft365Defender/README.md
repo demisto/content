@@ -102,7 +102,7 @@ Follow these steps for a self-deployed configuration:
 
 ## Incident Mirroring
 
-### Mirroring In (Microsoft 365 Defender → XSOAR)
+### Mirroring In (Microsoft 365 Defender → Cortex XSOAR)
 
 When incidents are mirrored into Cortex XSOAR from Microsoft 365 Defender:
 
@@ -125,22 +125,22 @@ When incidents are mirrored out from Cortex XSOAR to Microsoft 365 Defender:
    * **Microsoft 365 Defender Tags**  
 
 2. **Comments**:  
-   * XSOAR entries with the **Comment Entry Tag To Microsoft 365 Defender** tag are mirrored as comments in Microsoft 365 Defender.  
+   * Cortex XSOAR entries with the **Comment Entry Tag To Microsoft 365 Defender** tag are mirrored as comments in Microsoft 365 Defender.  
    * **Note**: Comments cannot be edited or deleted in Microsoft 365 Defender, as this functionality is not supported.
 
-3. If an incident is closed in XSOAR and Close Mirrored Microsoft 365 Defender Incidents is enabled:  
+3. If an incident is closed in Cortex XSOAR and Close Mirrored Microsoft 365 Defender Incidents is enabled:  
    * The **Close Reason** field is mirrored to the `status` and `classification` fields in Microsoft 365 Defender.  
 
 
 ### Closing Logic
 
-#### Incoming Closing Logic (Microsoft 365 Defender → XSOAR)
+#### Incoming Closing Logic (Microsoft 365 Defender → Cortex XSOAR)
 
 When an incident is resolved in Microsoft 365 Defender:
 
 1. If the `status` = **Resolved**:  
-   * The **"classification"** field will be mapped to the **Close Reason** field in XSOAR using the **Close Reason Mapping Table**.  
-   * The **"classification"** and  **"determination"** fields will be mirrored into the **Microsoft 365 Defender Classification** field in XSOAR.
+   * The **"classification"** field will be mapped to the **Close Reason** field in Cortex XSOAR using the **Close Reason Mapping Table**.  
+   * The **"classification"** and  **"determination"** fields will be mirrored into the **Microsoft 365 Defender Classification** field in Cortex XSOAR.
 
 **Example**:  
 * An incident closed in Microsoft 365 Defender with:  
@@ -148,13 +148,13 @@ When an incident is resolved in Microsoft 365 Defender:
   * `Classification` = **True Positive**  
   * `Determination` = **Phishing**  
 
-  Results in XSOAR:  
+  Results in Cortex XSOAR:  
   * `Close Reason` = **Resolved**  
   * `Microsoft 365 Defender Classification` = **True Positive - Phishing**
 
 **Close Reason Mapping Table (Incoming)**:
 
-| Classification in Microsoft 365 Defender | Close Reason in XSOAR      |
+| Classification in Microsoft 365 Defender | Close Reason in Cortex XSOAR      |
 |-----------------------------------------|----------------------------|
 | Not set                                 | Other                      |
 | True Positive                           | Resolved                   |
@@ -162,30 +162,30 @@ When an incident is resolved in Microsoft 365 Defender:
 | Informational / Expected Activity       | Resolved                   |
 
 
-#### Outgoing Closing Logic (XSOAR → Microsoft 365 Defender)
+#### Outgoing Closing Logic (Cortex XSOAR → Microsoft 365 Defender)
 
-When closing incidents from XSOAR to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** and **Microsoft 365 Defender Classification** fields:
+When closing incidents from Cortex XSOAR to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** and **Microsoft 365 Defender Classification** fields:
 
 1. **General Status Update**:  
-   When an incident is marked as closed in XSOAR, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
+   When an incident is marked as closed in Cortex XSOAR, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
 
 2. **Close Reason: Resolved**  
-  If the **Close Reason** in XSOAR is **Resolved**, the **Microsoft 365 Defender Classification** field is mirrored to classification and determination fields **as-is** into Microsoft 365 Defender without any changes.  
+  If the **Close Reason** in Cortex XSOAR is **Resolved**, the **Microsoft 365 Defender Classification** field is mirrored to classification and determination fields **as-is** into Microsoft 365 Defender without any changes.  
 
 3. **Close Reason: False Positive**  
-   If the **Close Reason** in XSOAR is **FalsePositive**, but the `classification` field does not already equal `FalsePositive`, the following updates occur:  
+   If the **Close Reason** in Cortex XSOAR is **FalsePositive**, but the `classification` field does not already equal `FalsePositive`, the following updates occur:  
    * **classification** → `FalsePositive`  
    * **determination** → `Other`  
 
 3. **Close Reason: Other or Duplicate**  
-   If the **Close Reason** in XSOAR is either **Other** or **Duplicate**, the following updates occur:  
+   If the **Close Reason** in Cortex XSOAR is either **Other** or **Duplicate**, the following updates occur:  
    * **classification** → `Unknown`  
    * **determination** → `NotAvailable`  
 
 
 **Close Reason Mapping Table (Outgoing)**:
 
-| Close Reason in XSOAR | Classification in Microsoft 365 Defender | Determination in Microsoft 365 Defender | Status in Defender |
+| Close Reason in Cortex XSOAR | Classification in Microsoft 365 Defender | Determination in Microsoft 365 Defender | Status in Defender |
 |-----------------------|------------------------------------------|-----------------------------------------|--------------------|
 | Resolved              | Mirrored as-is                           | Mirrored as-is                          | Resolved           |
 | FalsePositive         | FalsePositive                            | Mirrored as-is \ Other                  | Resolved           |
@@ -197,7 +197,7 @@ When closing incidents from XSOAR to Microsoft 365 Defender, the following logic
 #### Notes
 
 1. **Configuration Requirements for Closing Incidents**:  
-   To close incidents in both directions, ensure the following settings in XSOAR:  
+   To close incidents in both directions, ensure the following settings in Cortex XSOAR:  
    * **Close Mirrored XSOAR Incident** checkbox = **True**  
    * **Close Mirrored Microsoft 365 Defender Incident** checkbox = **True**  
 
@@ -206,7 +206,7 @@ When closing incidents from XSOAR to Microsoft 365 Defender, the following logic
 
 ### Configure Incident Mirroring
 
-**This feature is compliant with XSOAR version 6.0 and above.**  
+**This feature is compliant with Cortex XSOAR version 6.0 and above.**  
 When mirroring incidents, you can make changes in Microsoft 365 Defender that will be reflected in Cortex XSOAR, or vice versa. 
 Mirroring out of the box includes the following fields:
 
@@ -223,7 +223,7 @@ For information about classification and mapping see [Classification and Mapping
 1. Navigate to **Integrations** and search for ** Microsoft 365 Defender**.
 2. Click **Add instance**.
 3. Select **Fetches incidents**.
-4. Select the **Incident Mirroring Direction**:  
+4. Select **Incident Mirroring Direction**:  
    * **Incoming** - Mirrors changes on the Microsoft 365 Defender incident in to the Cortex XSOAR incident.
    * **Outgoing** - Mirrors changes on the Cortex XSOAR incident to the Microsoft 365 Defender incident.
    * **Incoming And Outgoing** - Mirrors changes both in and out on both incidents.
@@ -242,9 +242,9 @@ These tags work only for mirroring comments from Cortex XSOAR to Microsoft 365 D
 **Note:**
 Any modifications require that the mappers be cloned before any changes can be applied.
 
-1. Navigate to **Classification and Mapping** and for **Incidents** search for the **Microsoft 365 Defender - Incoming Mapper**.
-2. Select it and click **Duplicate**.
-3. Under the **Incident Type** dropdown, select Microsoft 365 Defender Incident.
+1. Navigate to **Classification and Mapping** and for **Incidents** search for **Microsoft 365 Defender - Incoming Mapper**.
+2. Select **Microsoft 365 Defender - Incoming Mapper** and click **Duplicate**.
+3. Under **Incident Type**, select **Microsoft 365 Defender Incident**.
 4. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
     * **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the incident. This should be the incidentId of the Microsoft 365 Defender Incident.
     * **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
@@ -258,11 +258,11 @@ Any modifications require that the mappers be cloned before any changes can be a
 **Note:**  
 Any modifications require that the mappers be cloned before any changes can be applied.
 
-1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **Microsoft 365 Defender - Outgoing Mapper.**
-2. Select it and click **Duplicate**.  
+1. Navigate to **Classification and Mapping**, and for **Incidents** search for **Microsoft 365 Defender - Outgoing Mapper**.
+2. Select **Microsoft 365 Defender - Outgoing Mapper** and click **Duplicate**.  
   The left side of the screen shows the Microsoft 365 Defender fields to which to map and the right side of the
 screen shows the Cortex XSOAR fields by which you are mapping.
-3. Under the **Incident Type** dropdown, select the relevant incident type (for example **Microsoft 365 Defender Incident**).
+3. Under **Incident Type** , select the relevant incident type (for example **Microsoft 365 Defender Incident**).
 4. Under **Schema Type**, select **incident**. The Schema Type represents the Microsoft 365 Defender entity that
 you are mapping to.
 5. On the right side of the screen, under **Incident**, select the incident based on which you want to
@@ -278,8 +278,8 @@ For purposes of this use case, it can be a simple incident. The new incident wil
 
 In the example below, we have written *A comment from Cortex XSOAR to Microsoft 365 Defender*.
 
-1. Create an entry in the incidents' war room.
-2. Click Actions > Tags and add the Comment Entry Tag To Microsoft 365 Defender tag.
+1. Create an entry in the incidents' War Room.
+2. Click **Actions** > **Tags** and add the **Comment Entry Tag To Microsoft 365 Defender** tag.
 3. Navigate back to the incident in Microsoft 365 Defender and within approximately one minute, the changes will be reflected there, too. The note is mirrored out as a comment in Microsoft 365 Defender.  
   You can make additional changes like closing the incident or changing the assignee and those will be reflected in both systems.
 
@@ -518,7 +518,7 @@ Update the incident with the given ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: Active, Resolved, Redirected, InProgress. | Optional | 
+| status | Categorize incidents. Possible values are: Active, Resolved, Redirected, InProgress. | Optional | 
 | assigned_to | Owner of the incident. | Optional | 
 | id | Incident's ID. | Required | 
 | classification | The specification for the incident. Possible values are: Unknown, FalsePositive, TruePositive, InformationalExpectedActivity. | Optional | 
