@@ -1193,6 +1193,19 @@ def main():  # pragma: no cover
     demisto.debug(f"main, {demisto.command()=}")
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
     threading.excepthook = excepthook_recv_loop
+
+    # Iterate over all running processes
+    for proc in psutil.process_iter(['pid', 'name', 'status']):
+        try:
+            # Check if the process is a zombie
+            if proc.info['status'] == psutil.STATUS_ZOMBIE:
+                print(f'found zombie process with pid {proc.pid}')
+                waitres = os.waitpid(int(proc.pid), os.WNOHANG)
+                demisto.info(f"waitpid result: {waitres}")
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            # Handle cases where process may have already terminated or access is denied
+            continue
+
     try:
         if demisto.command() == 'test-module':
             module_test()
