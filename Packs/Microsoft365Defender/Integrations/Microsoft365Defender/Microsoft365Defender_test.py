@@ -9,6 +9,7 @@ you are implementing with your integration
 """
 
 import json
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import pytest
@@ -19,6 +20,7 @@ from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries
 
 MOCK_MAX_ENTRIES = 2
+COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
 
 
 def util_load_json(path):
@@ -309,3 +311,58 @@ def test_get_modified_incidents_empty_list(mocker):
     """
     result = get_modified_incidents_close_or_repopen_entries([], close_incident=True)
     assert result == []
+
+
+def test_get_entries_for_comments_new_incident():
+    from Microsoft365Defender import get_entries_for_comments
+
+    comments = [
+        {"comment": "Test comment 1", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
+        {"comment": "Test comment 2", "createdBy": "User2@gmail.com", "createdTime": "2024-01-02T12:00:00.8404534Z"}
+    ]
+    last_update = datetime.utcnow() - timedelta(days=1)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, True)
+
+    assert len(result) == 2
+    assert result[0]["Contents"].startswith("Created By: User1@gmail.com")
+    assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
+    assert result[0]["Note"] is True
+
+
+def test_get_entries_for_comments_filter_by_last_update():
+    from Microsoft365Defender import get_entries_for_comments
+
+    comments = [
+        {"comment": "Old comment", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
+        {"comment": "New comment", "createdBy": "User2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+    ]
+    last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=timezone.utc)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
+
+    assert len(result) == 1
+    assert result[0]["Contents"].startswith("Created By: User2@gmail.com")
+    assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
+
+
+def test_get_entries_for_comments_ignores_mirrored_comments():
+    from Microsoft365Defender import get_entries_for_comments, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
+
+    comments = [
+        {"comment": f"Ignored comment {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}",
+         "createdBy": "User1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+    ]
+
+    last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=timezone.utc)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
+
+    assert len(result) == 0
+
+
+def test_get_entries_for_comments_empty_comments():
+    from Microsoft365Defender import get_entries_for_comments
+
+    comments = []
+    last_update = datetime.utcnow() - timedelta(days=1)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
+
+    assert len(result) == 0
