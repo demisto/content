@@ -6,7 +6,7 @@ comment: "Extract files from log bundle - supports tar.gz & tar \n\nhandle unsup
 commonfields:
   id: HealthCheckUnpack
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: HealthCheckUnpack
 outputs:
