@@ -261,7 +261,7 @@ script:
       description: The field value depth.
       type: Number
   - arguments:
-    - description: The entry ID of the file in Cortex XSOAR context.
+    - description: A comma seperated list of entry IDs of the file in Cortex XSOAR context.
       name: entryId
       required: true
     - description: ID of the application to upload the file to.
@@ -269,7 +269,7 @@ script:
     - description: The content (record) ID to update.
       name: contentId
     - defaultValue: Supporting Documentation
-      description: Archer field name to associate the file with. This is a unique field, You can't upload two files with the same associatedField.
+      description: Archer field name to associate the file with.
       name: associatedField
     description: Uploads a file to Archer.
     name: archer-upload-file
