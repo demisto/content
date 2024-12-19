@@ -1,5 +1,6 @@
 import shutil
 
+from git import Actor
 from ruamel.yaml import YAML
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
@@ -668,7 +669,10 @@ def setup_content_repo(content_path: str):
     # Check if the repository has any commits, make an initial commit if needed.
     if not content_repo.head.is_valid():
         # Make an empty initial commit to create the master branch.
-        content_repo.index.commit("Initial commit")
+        commit = content_repo.index.commit("Initial commit",
+                                           committer=Actor('root', f'root@{socket.gethostname()}'))
+        committer = commit.committer
+        demisto.debug(f'setup_content_repo {str(committer)=} | {committer.name=} | {committer.email=}')
 
     # Set up the remote branch and fetch it.
     content_repo.create_remote('origin', CONTENT_REPO_URL)
@@ -818,5 +822,9 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    import time
     log_demisto_sdk_version()
+    start_time = time.time()
     main()
+    end_time = time.time()
+    print(f'Validation took {end_time - start_time} seconds.')
