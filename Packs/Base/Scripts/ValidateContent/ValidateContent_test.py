@@ -38,7 +38,7 @@ def test_strip_ansi_codes():
 def test_extract_hook_id():
     output = "Running hook: check-ast\n- hook id: check-ast\nAn error occurred"
     assert extract_hook_id(output) == "check-ast"
-    assert extract_hook_id("No hook id") is None
+    assert extract_hook_id("No hook id") == ''
 
 
 def test_parse_pre_commit_output_check_ast():
