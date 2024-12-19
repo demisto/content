@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401 #todo: revert
+from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
@@ -699,7 +699,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time: str) -> List[s
         # HTTP request
         demisto.debug(f"Microsoft Defender 365 - fetch_modified_incident_ids - fetching incidents with offset {offset}")
         response = client.incidents_list(timeout=50, last_update_time=last_update_time,
-                                         skip=offset)  # todo: should include timeout?
+                                         skip=offset)
         raw_incidents = response.get('value')
         demisto.debug(
             f"Microsoft Defender 365 - fetch_modified_incident_ids - fetched {len(raw_incidents)} incidents: {raw_incidents}")
