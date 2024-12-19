@@ -21,13 +21,12 @@ class Client(BaseClient):
         """
         Gets the list of Supported Products by the Advisories API
         """
-        res = self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix=Client.PRODUCTS_ENDPOINT,
             timeout=self.api_timeout,
             resp_type='resp'
         )
-        return res
 
     def get_advisories(self, product: str, params: dict):
         """
@@ -133,7 +132,7 @@ def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
 def test_module(client: Client):
     """Test the connectivity to the advisory API by checking for products"""
     request_result = client.get_products()
-    if request_result.ok:
+    if request_result.get("success"):
         return "ok"
     return None
 
@@ -257,7 +256,7 @@ def main():
     """Main entrypoint for script"""
 
     client = Client(
-        base_url=demisto.params().get("url"), verify=(not demisto.params().get("insecure"))
+        base_url=demisto.params().get("url")
     )
     command_name = demisto.command()
     demisto.info(f'Command being called is {command_name}')
