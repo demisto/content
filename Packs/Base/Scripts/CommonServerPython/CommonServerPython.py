@@ -12648,6 +12648,15 @@ def find_and_remove_sensitive_text(text, pattern):
     Finds all appearances of sensitive information in a string using regex and adds the sensitive
     information to the list of strings that should not appear in any logs.
     The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
+        Examples:
+    >>> text = "first secret is ID123 and the second secret is id321 and the token: ABC"
+    >>> pattern = r'(token:\s*)(\S+)'  # Capturing groups: (token:\s*) and (\S+)
+    >>> find_and_remove_sensitive_text(text, pattern)
+    Sensitive text added to be masked in the logs: ABC
+
+    >>> pattern = r'\bid\w*\b'  # Match words starting with "id", case insensitive
+    >>> find_and_remove_sensitive_text(text, pattern)
+    Sensitive text added to be masked in the logs: ID123 and id321
 
     :param text: The input text containing the sensitive information.
     :type text: str
@@ -12656,18 +12665,8 @@ def find_and_remove_sensitive_text(text, pattern):
 
     :return: None
     :rtype: ``None``
-    
-    Examples:
-    >>> text = "first secret is ID123 and the second secret is id321 and the token: ABC"
-    >>> pattern = r'(token:\s*)(\S+)'  # Capturing groups: (token:\s*) and (\S+)
-    >>> find_and_remove_sensitive_text(text, pattern)
-    Sensitive text to be masked in the logs: ABC
-
-    >>> pattern = r'\bid\w*\b'  # Match words starting with "id", case insensitive
-    >>> find_and_remove_sensitive_text(text, pattern)
-    Sensitive text added to be masked in the logs: ID123 and id321
     """
-    
+
     sensitive_pattern = re.compile(pattern)
     matches = sensitive_pattern.findall(text)
     if not matches:
