@@ -208,7 +208,6 @@ When closing incidents from XSOAR to Microsoft 365 Defender, the following logic
 
 **This feature is compliant with XSOAR version 6.0 and above.**  
 When mirroring incidents, you can make changes in Microsoft 365 Defender that will be reflected in Cortex XSOAR, or vice versa. 
-Mirroring out of the box includes the following fields:
 
 The following instructions include steps for configuring the integration and incoming and outgoing mappers. However, they do not cover every option available in the integration nor classification and mapping features. 
 For information about classification and mapping see [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).  
