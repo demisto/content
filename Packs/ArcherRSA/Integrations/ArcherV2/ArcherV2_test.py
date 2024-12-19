@@ -5,7 +5,7 @@ from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
-    search_records_soap_request
+    search_records_soap_request, upload_and_associate_command
 
 BASE_URL = 'https://test.com/'
 
@@ -1077,3 +1077,78 @@ class TestArcherV2:
         else:
             assert not new_token_mocker.called
         assert soap_mocker.call_count == len(http_call_attempt_results)
+
+    def test_upload_and_associate_command(self, mocker):
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        assert mock_upload_file.call_args_list[1] == mocker.call(client, {"entryId": "entry2"})
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2",
+            "fieldsToValues": '{"field1": ["123", "123"]}'
+        })
+
+    def test_upload_and_associate_command_single_file(self, mocker):
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 1
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1",
+            "fieldsToValues": '{"field1": ["123"]}'
+        })
+
+    def test_upload_and_associate_command_without_association(self, mocker):
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        args = {"entryId": "entry1"}
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 1
+        mock_upload_file.assert_called_once_with(client, {
+            "entryId": "entry1",
+        })
+
+    def test_upload_and_associate_command_missing_args(self, mocker):
+        client = Client(BASE_URL, '', '', '', '', 400)
+
+        # Test error when only applicationId is provided
+        args = {"applicationId": "app1", "entryId": "entry1"}
+        with pytest.raises(DemistoException) as e:
+            upload_and_associate_command(client, args)
+        assert str(e.value) == 'Found arguments to associate an attachment to a record, but not all required arguments supplied'
+
+        # Test error when only contentId is provided
+        args = {"contentId": "content1", "entryId": "entry1"}
+        with pytest.raises(DemistoException) as e:
+            upload_and_associate_command(client, args)
+        assert str(e.value) == 'Found arguments to associate an attachment to a record, but not all required arguments supplied'
+

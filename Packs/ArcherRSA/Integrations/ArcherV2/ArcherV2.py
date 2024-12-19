@@ -1491,9 +1491,13 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
             "Found arguments to associate an attachment to a record, but not all required arguments supplied"
         )
 
-    attachment_id = upload_file_command(client, args)
+    entry_ids: list = argToList(args.get("entryId"))
+    attachment_ids: list = []
+    for entry_id in entry_ids:
+        attachment_ids.append(upload_file_command(client, {"entryId": entry_id}))
+
     if should_associate_to_record:
-        args["fieldsToValues"] = json.dumps({associate_field: [attachment_id]})
+        args["fieldsToValues"] = json.dumps({associate_field: attachment_ids})
         update_record_command(client, args)
 
 
