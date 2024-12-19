@@ -24,8 +24,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=Client.PRODUCTS_ENDPOINT,
-            timeout=self.api_timeout,
-            resp_type='resp'
+            timeout=self.api_timeout
         )
 
     def get_advisories(self, product: str, params: dict):
