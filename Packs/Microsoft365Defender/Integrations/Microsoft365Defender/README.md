@@ -110,7 +110,7 @@ When incidents are mirrored into Cortex XSOAR from Microsoft 365 Defender:
    * By default, the tag is set to: `CommentFromMicrosoft365Defender`.  
 
 2. If an incident is closed in Microsoft 365 Defender (`status` = **Resolved**) and Close Mirrored Cortex XSOAR Incidents is enabled:  
-   * The **"classification"** field in Microsoft 365 Defender will be mapped to the **Close Reason** field in XSOAR.  
+   * The **"classification"** field in Microsoft 365 Defender will be mapped to the **Close Reason** field in Cortex XSOAR.  
 
 
 ### Mirroring Out (XSOAR → Microsoft 365 Defender)
