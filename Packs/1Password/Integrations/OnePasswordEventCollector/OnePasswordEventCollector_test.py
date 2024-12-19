@@ -47,7 +47,7 @@ def test_get_unauthorized_event_types():
         ),
         pytest.param(
             'Audit events',
-            "Either a 'pagination_cursor' or a 'start_time' need to be specified.",
+            "Either a 'pagination_cursor' or a 'from_date' need to be specified.",
             id='Valid event type but missing other params',
         )
     ]

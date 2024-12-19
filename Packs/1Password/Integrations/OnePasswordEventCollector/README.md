@@ -46,7 +46,8 @@ Fetch events from 1Password.
 | --- | --- | --- |
 | limit | The maximum number of events to fetch for the given event type. | Optional |
 | should_push_events | Set this argument to True in order to push events to XSIAM, otherwise the command will only display them. Possible values are: true, false. Default is False. | Required |
-| event_type | 1Password event type. If none specified, all event types will be fetched. Possible values are: Audit events, Item usage actions, Sign in attempts. | Optional |
+| event_type | 1Password event type. If not specified, all event types will be fetched. Possible values are: Audit events, Item usage actions, Sign in attempts. | Optional |
+| from_date | The date from which to get events. If not specified, events from the last 7 days will be fetched. | Optional |
 
 #### Context Output
 

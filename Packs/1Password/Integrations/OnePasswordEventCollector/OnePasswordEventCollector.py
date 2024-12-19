@@ -4,6 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from http import HTTPStatus
+from datetime import datetime, UTC, timedelta
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -12,11 +13,11 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-EVENT_TYPE_FEATURE = {
+EVENT_TYPE_MAPPING = {
+    # Lowercase display name: API Feature and endpoint name
     'item usage actions': 'itemusages',
     'audit events': 'auditevents',
     'sign in attempts': 'signinattempts',
-    'sign-in attempts': 'signinattempts',
 }
 
 ''' CLIENT CLASS '''
@@ -41,7 +42,7 @@ class Client(BaseClient):
         self,
         event_type: str,
         limit: int | None = None,
-        start_time: str | None = None,
+        from_date: datetime | None = None,
         pagination_cursor: str | None = None,
     ):
         """Gets events from 1Password based on the specified event type
@@ -49,7 +50,7 @@ class Client(BaseClient):
         Args:
             event_type (str): Type of 1Password event.
             limit (int): The maximum number of records in response; must be ≤ 1000 otherwise API raises HTTP 400 [Bad Request].
-            start_time (str | None): ISO8601 format timestamp (e.g. 2023-03-15T16:32:50-03:00).
+            from_date_time (datetime | None): Optional datetime from which to get events.
             pagination_cursor (str | None): Pagination Cursor from previous API response.
 
         Raises:
@@ -59,19 +60,20 @@ class Client(BaseClient):
         Returns:
             dict: The response JSON from the event endpoint.
         """
-        feature = EVENT_TYPE_FEATURE.get(event_type.lower())
+        feature = EVENT_TYPE_MAPPING.get(event_type.lower())
         if not feature:
             raise ValueError(f'Invalid or unsupported 1Password event type: {event_type}.')
 
-        if not (pagination_cursor or start_time):
-            raise ValueError("Either a 'pagination_cursor' or a 'start_time' need to be specified.")
-
         if pagination_cursor:
             body = {'cursor': pagination_cursor}
-        else:
-            body = assign_params(limit=limit, start_time=start_time)
 
-        return self._http_request(method='POST', url_suffix=f'/{feature}', data=body, raise_on_status=True)
+        elif from_date:
+            body = assign_params(limit=limit, start_time=from_date.isoformat())
+
+        else:
+            raise ValueError("Either a 'pagination_cursor' or a 'from_date' need to be specified.")
+
+        return self._http_request(method='POST', url_suffix=f'/{feature}', data=json.dumps(body), raise_on_status=True)
 
 
 ''' HELPER FUNCTIONS '''
@@ -90,7 +92,7 @@ def get_unauthorized_event_types(auth_introspection_response: dict[str, Any], ev
     authorized_features = auth_introspection_response['features']
     return [
         event_type for event_type in event_types
-        if EVENT_TYPE_FEATURE.get(event_type.lower()) not in authorized_features
+        if EVENT_TYPE_MAPPING.get(event_type.lower()) not in authorized_features
     ]
 
 
@@ -133,13 +135,40 @@ def test_module_command(client: Client, event_types: list[str]) -> str:
         raise e
 
 
+def get_events_command(client: Client, args: dict) -> tuple[list[dict], list[CommandResults]]:
+    """_summary_
+
+    Args:
+        client (Client): 1Password Events API client.
+        args (dict): The '1password-get-events' command arguments.
+
+    Returns:
+        tuple[list[dict], list[CommandResults]]: List of events and list of CommandResults with human readable output.
+    """
+    limit = arg_to_number(args.get('limit')) or 1000
+    from_date = arg_to_datetime(args.get('from_date')) or (datetime.now(tz=UTC) - timedelta(weeks=1))
+    event_types = argToList(args.get('event_type')) or list(EVENT_TYPE_MAPPING.keys())
+
+    events: list[dict[str, Any]] = []
+    command_results: list[CommandResults] = []
+
+    for event_type in event_types:
+        response = client.get_events(event_type=event_type, limit=limit, from_date=from_date)
+        events.extend(response['items'])
+
+        human_readable = tableToMarkdown(name=f'Events of type: {event_type}', t=flattenTable(response['items']))
+        command_results.append(CommandResults(readable_output=human_readable))
+
+    return events, command_results
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-    # args = demisto.args()
+    args = demisto.args()
 
     # required
     base_url = urljoin(params['url'], '/api/v2')
@@ -163,8 +192,15 @@ def main() -> None:  # pragma: no cover
             result = test_module_command(client, event_types)
             return_results(result)
 
-        if command == '1password-get-events':
-            return_results(CommandResults(readable_output='Testing'))
+        if command == 'one-password-get-events':
+            should_push_events = argToBoolean(args.pop('should_push_events'))
+            _, results = get_events_command(client, args)
+            return_results(results)
+
+            if should_push_events:
+                pass
+                # add_time_to_events
+                # send_events_to_xsiam
 
         else:
             raise NotImplementedError(f'Unknown command {command!r}')
