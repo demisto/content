@@ -1151,4 +1151,3 @@ class TestArcherV2:
         with pytest.raises(DemistoException) as e:
             upload_and_associate_command(client, args)
         assert str(e.value) == 'Found arguments to associate an attachment to a record, but not all required arguments supplied'
-
