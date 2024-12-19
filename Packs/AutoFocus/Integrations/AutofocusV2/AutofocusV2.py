@@ -280,8 +280,8 @@ API_POINTS_TABLE = CommandResults(
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, verify: bool = True):
-        super().__init__(base_url=url, verify=verify)
+    def __init__(self, url: str, verify: bool = True, proxy: bool = False):
+        super().__init__(base_url=url, verify=verify, proxy=proxy)
 
     def parse_response(self, resp: requests.Response, err_operation: str | None) -> dict:
         try:
@@ -1972,14 +1972,13 @@ def main():
     demisto.debug(f'Command being called is {command}')
     reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
     create_relationships = PARAMS.get('create_relationships', True)
+    proxy = PARAMS.get('proxy', False)
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
-    client = Client(url=BASE_URL, verify=USE_SSL)
-    # Remove proxy if not set to true in params
-    handle_proxy()
+    client = Client(url=BASE_URL, verify=USE_SSL, proxy=proxy)
     args = demisto.args() | {
         'reliability': reliability,
         'create_relationships': create_relationships,
