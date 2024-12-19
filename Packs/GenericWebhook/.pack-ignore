@@ -1,6 +1,9 @@
 [file:GenericWebhook.yml]
 ignore=BA124
 
+[file:README.md]
+ignore=RM106
+
 [known_words]
 Webhook
 rawJSON
