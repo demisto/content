@@ -133,7 +133,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -172,7 +172,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1001,7 +1001,7 @@ tasks:
     task:
       id: b09a9327-e34b-4f81-8782-e54ae932ca27
       version: -1
-      name: Check if a forwarding address domain exist
+      name: Check if a forwarding address domain exists
       type: condition
       iscommand: false
       brand: ""
