@@ -1,0 +1,1352 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Hoxhunt-mapper-incoming",
+    "mapping": {
+        "Hoxhunt Campaign": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Hox Incident Rule Actions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ruleMatches",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "actions,timestamp,incidentRule"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "action_dt": {
+                                        "isContext": false
+                                    },
+                                    "ignore_case": {
+                                        "isContext": false
+                                    },
+                                    "multi_line": {
+                                        "isContext": false
+                                    },
+                                    "output_format": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\\1"
+                                        }
+                                    },
+                                    "period_matches_newline": {
+                                        "isContext": false
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_id: ([a-f0-9]+)(\u003cbr\u003e.*)?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexReplace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "incidentRuleId"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "incidentRule"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Attachments": {
+                    "complex": {
+                        "accessor": "attachments",
+                        "filters": [],
+                        "root": "firstThreat.[0].email",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "name,type,hash,size"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Links": {
+                    "complex": {
+                        "accessor": "links",
+                        "filters": [],
+                        "root": "firstThreat.[0].enrichments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "label,href"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox Notes": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notes",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "text,timestamp"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Body Link": {
+                    "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
+                },
+                "Hox FT Email From": {
+                    "simple": "firstThreat.[0].email.from.[0].address"
+                },
+                "Hox FT Email To": {
+                    "simple": "firstThreat.[0].email.to.[0].address"
+                },
+                "Hox FT ID": {
+                    "simple": "firstThreat.[0]._id"
+                },
+                "Hox FT Internal Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "firstThreat.[0].hoxhuntClassification",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Maliciousness Probability": {
+                    "complex": {
+                        "accessor": "mlopsIocEmailMaliciousnessProbability",
+                        "filters": [],
+                        "root": "firstThreat.[0].prediction",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "withSign": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toPercent"
+                            },
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "precision"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "%"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Message Id": {
+                    "simple": "firstThreat.[0].email.messageId"
+                },
+                "Hox FT Subject": {
+                    "simple": "firstThreat.[0].email.subject"
+                },
+                "Hox External Classification": {
+                    "simple": "externalClassification"
+                },
+                "Hox First Reported At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "firstReportedAt",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "format": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toString"
+                            }
+                        ]
+                    }
+                },
+                "Hox Global Report Count": {
+                    "simple": "globalThreatCount"
+                },
+                "Hox Has Sensitive Information": {
+                    "simple": "hasSensitiveInformation"
+                },
+                "Hox ID": {
+                    "simple": "_id"
+                },
+                "Hox Inbox Report Count": {
+                    "simple": "threatMetadata.reportCountFromInbox"
+                },
+                "Hox Threat Indicators": {
+                    "complex": {
+                        "accessor": "threatIndicators",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "mlops_ioc_email_"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Hox User Actions": {
+                    "complex": {
+                        "accessor": "userActions",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": []
+                    }
+                },
+                "Hox Internal Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "hoxhuntClassification",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Hox Report Count": {
+                    "simple": "threatMetadata.threatCount"
+                },
+                "Hox Last Reported At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastReportedAt",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "format": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toString"
+                            }
+                        ]
+                    }
+                },
+                "Hox Likely Target Entity": {
+                    "complex": {
+                        "accessor": "likelyTargetEntity",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "LastArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Hox Phish Report Count": {
+                    "simple": "threatMetadata.phishReportCount"
+                },
+                "Hox State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            }
+                        ]
+                    }
+                },
+                "Hox URL": {
+                    "simple": "responseUrl"
+                },
+                "Hox VIP Report Count": {
+                    "simple": "threatMetadata.vipReportCount"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorLastSync": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "last_mirrored_in",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Hoxhunt BEC": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Hox Incident Rule Actions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ruleMatches",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "actions,timestamp,incidentRule"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "action_dt": {
+                                        "isContext": false
+                                    },
+                                    "ignore_case": {
+                                        "isContext": false
+                                    },
+                                    "multi_line": {
+                                        "isContext": false
+                                    },
+                                    "output_format": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\\1"
+                                        }
+                                    },
+                                    "period_matches_newline": {
+                                        "isContext": false
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_id: ([a-f0-9]+)(\u003cbr\u003e.*)?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexReplace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "incidentRuleId"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "incidentRule"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Hox Threat Indicators": {
+                    "complex": {
+                        "accessor": "threatIndicators",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "mlops_ioc_email_"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Hox User Actions": {
+                    "complex": {
+                        "accessor": "userActions",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": []
+                    }
+                },
+                "Hox FT Attachments": {
+                    "complex": {
+                        "accessor": "attachments",
+                        "filters": [],
+                        "root": "firstThreat.[0].email",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "name,type,hash,size"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Links": {
+                    "complex": {
+                        "accessor": "links",
+                        "filters": [],
+                        "root": "firstThreat.[0].enrichments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "label,href"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox Notes": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notes",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "text,timestamp"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Body Link": {
+                    "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
+                },
+                "Hox FT Email From": {
+                    "simple": "firstThreat.[0].email.from.[0].address"
+                },
+                "Hox FT Email To": {
+                    "simple": "firstThreat.[0].email.to.[0].address"
+                },
+                "Hox FT ID": {
+                    "simple": "firstThreat.[0]._id"
+                },
+                "Hox FT Internal Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "firstThreat.[0].hoxhuntClassification",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Maliciousness Probability": {
+                    "complex": {
+                        "accessor": "mlopsIocEmailMaliciousnessProbability",
+                        "filters": [],
+                        "root": "firstThreat.[0].prediction",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "withSign": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toPercent"
+                            },
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "precision"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "%"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Message Id": {
+                    "simple": "firstThreat.[0].email.messageId"
+                },
+                "Hox FT Subject": {
+                    "simple": "firstThreat.[0].email.subject"
+                },
+                "Hox External Classification": {
+                    "simple": "externalClassification"
+                },
+                "Hox First Reported At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "firstReportedAt",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "format": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toString"
+                            }
+                        ]
+                    }
+                },
+                "Hox Global Report Count": {
+                    "simple": "globalThreatCount"
+                },
+                "Hox Has Sensitive Information": {
+                    "simple": "hasSensitiveInformation"
+                },
+                "Hox ID": {
+                    "simple": "_id"
+                },
+                "Hox Inbox Report Count": {
+                    "simple": "threatMetadata.reportCountFromInbox"
+                },
+                "Hox Internal Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "hoxhuntClassification",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Hox Report Count": {
+                    "simple": "threatMetadata.threatCount"
+                },
+                "Hox Last Reported At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastReportedAt",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "format": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toString"
+                            }
+                        ]
+                    }
+                },
+                "Hox Likely Target Entity": {
+                    "complex": {
+                        "accessor": "likelyTargetEntity",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "LastArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Hox Phish Report Count": {
+                    "simple": "threatMetadata.phishReportCount"
+                },
+                "Hox State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            }
+                        ]
+                    }
+                },
+                "Hox URL": {
+                    "simple": "responseUrl"
+                },
+                "Hox VIP Report Count": {
+                    "simple": "threatMetadata.vipReportCount"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorLastSync": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "last_mirrored_in",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Hoxhunt User Acted": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Hox Incident Rule Actions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ruleMatches",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "actions,timestamp,incidentRule"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "action_dt": {
+                                        "isContext": false
+                                    },
+                                    "ignore_case": {
+                                        "isContext": false
+                                    },
+                                    "multi_line": {
+                                        "isContext": false
+                                    },
+                                    "output_format": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\\1"
+                                        }
+                                    },
+                                    "period_matches_newline": {
+                                        "isContext": false
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_id: ([a-f0-9]+)(\u003cbr\u003e.*)?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexReplace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "incidentRuleId"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "incidentRule"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Hox Threat Indicators": {
+                    "complex": {
+                        "accessor": "threatIndicators",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "mlops_ioc_email_"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Hox User Actions": {
+                    "complex": {
+                        "accessor": "userActions",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": []
+                    }
+                },
+                "Hox FT Attachments": {
+                    "complex": {
+                        "accessor": "attachments",
+                        "filters": [],
+                        "root": "firstThreat.[0].email",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "name,type,hash,size"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Links": {
+                    "complex": {
+                        "accessor": "links",
+                        "filters": [],
+                        "root": "firstThreat.[0].enrichments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "label,href"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox Notes": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notes",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "text,timestamp"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Body Link": {
+                    "simple": "firstThreat.[0].email.sanitizedBody.signedUrl"
+                },
+                "Hox FT Email From": {
+                    "simple": "firstThreat.[0].email.from.[0].address"
+                },
+                "Hox FT Email To": {
+                    "simple": "firstThreat.[0].email.to.[0].address"
+                },
+                "Hox FT ID": {
+                    "simple": "firstThreat.[0]._id"
+                },
+                "Hox FT Internal Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "firstThreat.[0].hoxhuntClassification",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Maliciousness Probability": {
+                    "complex": {
+                        "accessor": "mlopsIocEmailMaliciousnessProbability",
+                        "filters": [],
+                        "root": "firstThreat.[0].prediction",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "withSign": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toPercent"
+                            },
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "precision"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "%"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "Hox FT Message Id": {
+                    "simple": "firstThreat.[0].email.messageId"
+                },
+                "Hox FT Subject": {
+                    "simple": "firstThreat.[0].email.subject"
+                },
+                "Hox External Classification": {
+                    "simple": "externalClassification"
+                },
+                "Hox First Reported At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "firstReportedAt",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "format": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toString"
+                            }
+                        ]
+                    }
+                },
+                "Hox Global Report Count": {
+                    "simple": "globalThreatCount"
+                },
+                "Hox Has Sensitive Information": {
+                    "simple": "hasSensitiveInformation"
+                },
+                "Hox ID": {
+                    "simple": "_id"
+                },
+                "Hox Inbox Report Count": {
+                    "simple": "threatMetadata.reportCountFromInbox"
+                },
+                "Hox Internal Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "hoxhuntClassification",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Hox Report Count": {
+                    "simple": "threatMetadata.threatCount"
+                },
+                "Hox Last Reported At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastReportedAt",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "format": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "toString"
+                            }
+                        ]
+                    }
+                },
+                "Hox Likely Target Entity": {
+                    "complex": {
+                        "accessor": "likelyTargetEntity",
+                        "filters": [],
+                        "root": "threatMetadata",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "LastArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Hox Phish Report Count": {
+                    "simple": "threatMetadata.phishReportCount"
+                },
+                "Hox State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": [
+                            {
+                                "operator": "toLowerCase"
+                            }
+                        ]
+                    }
+                },
+                "Hox URL": {
+                    "simple": "responseUrl"
+                },
+                "Hox VIP Report Count": {
+                    "simple": "threatMetadata.vipReportCount"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorLastSync": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "last_mirrored_in",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "fromVersion": "6.10.0",
+    "name": "Hoxhunt-mapper-incoming",
+    "type": "mapping-incoming",
+    "version": -1
+}
