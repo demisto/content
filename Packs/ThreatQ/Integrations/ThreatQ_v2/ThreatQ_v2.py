@@ -297,6 +297,9 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         elif value.startswith('https://'):
             value_without_proto = value.replace('https://', '')
             is_httpx = True
+        else:
+            value_without_proto = value
+            demisto.debug("value doesn't start with either prefixes. Initializing value_without_proto to value.")
 
         if is_httpx:
             body = {"criteria": {"+or": [{"value": value}, {"value": value_without_proto}]},

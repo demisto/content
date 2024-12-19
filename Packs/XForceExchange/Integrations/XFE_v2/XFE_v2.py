@@ -419,6 +419,9 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             file = Common.File(sha1=file_hash, dbot_score=dbot_score, relationships=relationship)
         elif hash_type == 'sha256':
             file = Common.File(sha256=file_hash, dbot_score=dbot_score, relationships=relationship)
+        else:
+            file = None
+            demisto.debug(f"{hash_type=} doesn't match any condition. {file=}")
 
         context[f'XFE.{outputPaths["file"]}'] = hash_info
 

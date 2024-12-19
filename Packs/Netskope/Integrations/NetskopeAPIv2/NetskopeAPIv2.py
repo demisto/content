@@ -958,6 +958,9 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     if (event_types and (event_max_fetch := arg_to_number(
             params["max_events_fetch"])) is not None):
         max_fetch_per_event_type = event_max_fetch // (len(event_types))
+    else:
+        max_fetch_per_event_type = 0
+        demisto.debug(f"The condition wasn't met. Initializing {max_fetch_per_event_type=}")
 
     if params.get("fetch_events") and event_types:
         events, events_last_run = fetch_events_as_incidents(

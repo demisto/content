@@ -29,10 +29,14 @@ def close_linked_signal_incidents_command(args: Dict[str, Any]) -> CommandResult
             result = {'message': f"Incident ID {incident_id} not found"}
             cur_incident = None
         else:
+            result = {}
             cur_incident = search_raw[0]['Contents']['data'][0]
+            demisto.debug(f"{search_raw[0]['Contents']['total']=} != 0 -> {result=}")
     if cur_incident is not None and cur_incident['rawType'] != 'Sumo Logic Insight':
         result = {'message': 'Please run this on a valid Sumo Logic Insight incident only'}
     elif cur_incident is not None:
+        result = {}
+        demisto.debug(f"Initializing {result=}")
         linked_incidents = cur_incident.get('linkedIncidents')
         if (linked_incidents):
             # print('Current Linked Signal Incidents:', linked_incidents)
@@ -45,6 +49,9 @@ def close_linked_signal_incidents_command(args: Dict[str, Any]) -> CommandResult
         else:
             # print('There are no linked Signal Incidents')
             result = {'message': 'There are no linked incidents'}
+    else:
+        result = {}
+        demisto.debug(f"cur_incident is None. {result=}")
 
     return CommandResults(
         outputs_prefix='BaseScript',

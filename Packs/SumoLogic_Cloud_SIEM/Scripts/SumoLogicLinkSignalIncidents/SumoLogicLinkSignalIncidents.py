@@ -24,6 +24,8 @@ def link_incidents_command(args: Dict[str, Any]) -> CommandResults:
     :return: Result of link action
     :rtype: CommandResults
     """
+    result = {}
+    demisto.debug(f"Initializing {result=}")
 
     if not ('id' in demisto.args()):
         cur_incident = demisto.incident()

@@ -2,7 +2,7 @@
     "name": "Tanium",
     "description": "Tanium endpoint security and systems management",
     "support": "xsoar",
-    "currentVersion": "1.0.35",
+    "currentVersion": "1.0.36",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

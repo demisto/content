@@ -13,7 +13,7 @@ def view_timeline(notes, ztap_tags) -> str:
     fields = []
     for note in notes:
         message = None
-
+        occurred = ""
         # Filter out notes that do not relate to ZTAP
         tags = note.get("Tags") or []
         if all(tag not in ztap_tags for tag in tags):

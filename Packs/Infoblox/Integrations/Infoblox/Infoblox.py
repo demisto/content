@@ -933,6 +933,9 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
             max_results=max_results,
             extended_attributes=extended_attributes
         )
+    else:
+        raw_response = {}
+        demisto.debug(f"No condition was met, {raw_response=}")
 
     ip_list = raw_response.get('result')
 

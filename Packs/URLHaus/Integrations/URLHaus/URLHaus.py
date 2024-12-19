@@ -574,6 +574,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
              Returns:
                  result (CommandResults): The CommandResults object representing the file command results.
         """
+    hash_type = ""
     if len(hash) == 32:
         hash_type = 'md5'
     elif len(hash) == 64:

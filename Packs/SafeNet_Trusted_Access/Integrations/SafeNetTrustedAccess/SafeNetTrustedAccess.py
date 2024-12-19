@@ -82,6 +82,9 @@ class Client(BaseClient):
             items_count = len(response.json()['page']['items'])
             quotient = limit // items_count
             reminder = limit % items_count
+        else:
+            reminder = 0
+            demisto.debug(f"{limit=} -> {reminder=}")
         paged_results = response.json()['page']['items']
 
         while "next" in response.json()['links'] and len(response.json()['page']['items']) > 0:

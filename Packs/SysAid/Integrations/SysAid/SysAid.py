@@ -558,8 +558,7 @@ def service_record_to_incident_context(service_record: Dict[str, Any]):
             title = service_record_info['valueCaption']
 
     occurred_datetime = get_service_record_update_time(service_record)
-    if occurred_datetime:
-        occurred = occurred_datetime.strftime(DATE_FORMAT)
+    occurred = occurred_datetime.strftime(DATE_FORMAT) if occurred_datetime else None
 
     incident_context = {
         'name': title,

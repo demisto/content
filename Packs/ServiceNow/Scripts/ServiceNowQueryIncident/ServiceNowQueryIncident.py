@@ -112,6 +112,9 @@ def main():
         query = 'number=' + incident_number
     elif user_id:
         query = 'assigned_to=' + user_id
+    else:
+        query = ""
+        demisto.debug(f"No incident_id,incident_number or user_id. {query=}")
 
     command_args['query'] = query
 

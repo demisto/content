@@ -23,6 +23,9 @@ def NewWidgetStat(name: str, color: str, label: str, data: list) -> dict:
 def NewWidget(formatt: str, layout: str, wstat: list) -> dict:
     if formatt in FORMATS and layout in LAYOUTS:
         widget = {'Type': 17, 'ContentsFormat': formatt, 'Contents': {'stats': wstat, 'params': {'layout': layout}}}
+    else:
+        widget = {}
+        demisto.debug(f"{format=} and {layout=} don't match any condition. {widget=}")
     return widget
 
 

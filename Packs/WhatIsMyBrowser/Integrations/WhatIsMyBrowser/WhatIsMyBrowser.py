@@ -54,6 +54,8 @@ def ua_parse_command():
     user_agent = demisto.args().get('UserAgent')
     raw = ua_parse(user_agent)
     r = json.loads(raw)
+    dbot_score = {}
+    demisto.debug("Initializing dbot_score")
     if 'success' in r['result']['code']:
         parsed = r['parse']
         hr = defaultdict()  # type: dict

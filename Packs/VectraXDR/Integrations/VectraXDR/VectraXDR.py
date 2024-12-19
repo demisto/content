@@ -3155,6 +3155,7 @@ def update_remote_system_command(client: VectraClient, args: Dict) -> str:
                 demisto.info(
                     f"Skipping outgoing mirroring for entity note with XSOAR Incident ID:{xsoar_incident_id}, "
                     "because the note length exceeds 8000 characters.")
+                entry_user = ""
             else:
                 entry_user = entry.get('user', 'dbot') or 'dbot'
 

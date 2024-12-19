@@ -123,6 +123,7 @@ def do_post(token, is_xml, suffix, body):
     url = fix_url(server) + suffix
     res = requests.post(url, headers={'Authorization': 'Bearer ' + token}, data=body, verify=not insecure)
     res.raise_for_status()
+    parsed_response = {}
     if is_xml:
         if res.content:
             parsed_response = xml2json(res.content)
@@ -252,6 +253,7 @@ def get_computer_id_by_hostname(token, hostname):
 
 
 def get_computer_id(token, endpoint_ip, endpoint_host_name):
+    computer_id = ""
     if endpoint_ip:
         try:
             computer_id = get_computer_id_by_ip(token, endpoint_ip)
@@ -496,6 +498,7 @@ def get_location_list(token, group_id):
 
 
 def get_id_by_endpoint(token, endpoint):
+    computer_id = ""
     if not endpoint:
         return_error('Please provide the IP address or the hostname of endpoint.')
     elif validate_ip(endpoint):
