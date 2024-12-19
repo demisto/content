@@ -2,6 +2,11 @@ args:
 - defaultValue: capital
   description: Default is 'capital'. Can also be 'title' or 'swap'.
   name: case
+  auto: PREDEFINED
+  predefined:
+  - capital
+  - title
+  - swap
   required: true
 - default: true
   name: value
