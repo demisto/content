@@ -23,9 +23,10 @@ configuration:
   required: true
 - display: Export Profiles
   additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles.
-  name: export_profiles
+  name: export_profile
   required: true
   type: 16  # Multi Select
+  defaultvalue: defaultExportProfile
   options:
     - defaultExportProfile
   section: Connect

@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "#### Digital Guardian ARC Event Collector\n- The 'Max events per fetch' parameter has been removed.\n- The 'Export Profile' text parameter has been replaced with 'Export Profiles' multi-select parameter.\nRefer to the release notes for additional details."
+    "breakingChangesNotes": "#### Digital Guardian ARC Event Collector\nThe 'Max events per fetch' parameter has been removed.\nRefer to the release notes for additional details."
 }

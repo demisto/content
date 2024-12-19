@@ -143,7 +143,7 @@ def test_module(client: Client, export_profiles: list[str]) -> str:
                 raise
 
     if invalid_export_profiles:
-        return f'Invalid export profiles: {", ".join(invalid_export_profiles)}'
+        return f'Invalid export profiles: {", ".join(invalid_export_profiles)}. Refer to the help documentation.'
 
     return 'ok'
 
@@ -261,7 +261,7 @@ def main() -> None:  # pragma: no cover
     base_url = params['gateway_base_url']
     client_id = params['credentials']['identifier']
     client_secret = params['credentials']['password']
-    export_profiles = argToList(params['export_profiles'])
+    export_profiles = argToList(params['export_profile'])
     # optional
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
