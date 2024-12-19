@@ -5883,9 +5883,9 @@ def main():  # pragma: no cover
             return_results(reset_auth())
 
     except Exception as err:
-    #TODO Following the CIAC-12304 ticket, many commands, including fetch incidents, are deprecated.
-    # In the future, if the deprecation reaches end-of-life, we may receive a unique error.
-    # It would be worth handling that error and adding explanations if needed.
+        # TODO Following the CIAC-12304 ticket, many commands, including fetch incidents, are deprecated.
+        # In the future, if the deprecation reaches end-of-life, we may receive a unique error.
+        # It would be worth handling that error and adding explanations if needed.
         return_error(str(err))
 
 
