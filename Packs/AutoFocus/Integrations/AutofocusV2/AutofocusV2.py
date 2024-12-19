@@ -15,8 +15,7 @@ API_KEY = AutoFocusKeyRetriever(PARAMS.get('credentials', {}).get('password') or
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
-# Should we use SSL
-USE_SSL = not PARAMS.get('insecure', False)
+
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
 VENDOR_NAME = 'AutoFocus V2'
@@ -1973,6 +1972,7 @@ def main():
     reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
     create_relationships = PARAMS.get('create_relationships', True)
     proxy = PARAMS.get('proxy', False)
+    USE_SSL = not PARAMS.get('insecure', False)     # Should we use SSL
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
