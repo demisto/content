@@ -26,7 +26,8 @@ MIRROR_DIRECTION = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-
+DOPPEL_ALERT = 'Doppel Alert'
+DOPPEL_INCIDENT = 'Doppel Incident'
 
 ''' CLIENT CLASS '''
 
@@ -191,6 +192,34 @@ def _get_mirroring_fields():
         "incident_type": "Doppel_Incident_Test",
     }
 
+def _get_last_fetch_datetime():
+    # Fetch the last run (time of the last fetch)
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get("last_fetch", None)
+    last_fetch_datetime: datetime = datetime.now()
+    if last_fetch and isinstance(last_fetch, float):
+        last_fetch_datetime = datetime.fromtimestamp(last_fetch)
+        demisto.debug(f"Alerts were fetch last on: {last_fetch_datetime}")  
+    else:
+        # If no last run is found, set first_run (default to 24 hours ago)
+        last_fetch_datetime = datetime.now() - timedelta(days=1)
+        demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch_datetime}")
+        
+    return last_fetch_datetime
+
+def _paginated_call_to_get_alerts(client, page, last_fetch_datetime):
+    # Set the query parameters
+    last_fetch_str: str = last_fetch_datetime.strftime(DOPPEL_API_DATE_FORMAT)
+    query_params = {
+        'created_after': last_fetch_str,  # Fetch alerts after the last_fetch,
+        'sort_type': 'date_sourced',
+        'sort_order': 'asc',
+        'page': page,
+    }
+    get_alerts_response = client.get_alerts(params=query_params)
+    alerts = get_alerts_response.get('alerts', None)
+    return alerts
+    
 
 ''' COMMAND FUNCTIONS '''
 
@@ -337,35 +366,17 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     """
     demisto.debug("Fetching alerts from Doppel.")
     # Fetch the last run (time of the last fetch)
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get("last_fetch", None)
-    last_fetch_str: str = None
-    if last_fetch and isinstance(last_fetch, float):
-        last_fetch_str = datetime.fromtimestamp(last_fetch).strftime(DOPPEL_API_DATE_FORMAT)
-        demisto.debug(f"Last run found: {last_fetch_str}")        
-    else:
-        # If no last run is found, set first_run (default to 24 hours ago)
-        first_run = datetime.now() - timedelta(days=1)
-        last_fetch_str = first_run.strftime(DOPPEL_API_DATE_FORMAT)
-        last_fetch = first_run.timestamp()
-        demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch}")
+    last_fetch_datetime: datetime = _get_last_fetch_datetime()
     
     # Fetch alerts
     page: int = 0
     while True:
-        # Set the query parameters
-        query_params = {
-            'created_after': last_fetch_str,  # Fetch alerts after the last_fetch,
-            'sort_type': 'date_sourced',
-            'sort_order': 'asc',
-            'page': page,
-        }
-        get_alerts_response = client.get_alerts(params=query_params)
-        alerts = get_alerts_response.get('alerts', None)
+        alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
         if not alerts:
             demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
             return
         incidents = []
+        last_fetch = last_fetch_datetime.timestamp()
         new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
         for alert in alerts:
             # Building the incident structure
@@ -375,8 +386,8 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
             if new_last_fetch > last_fetch:
                 alert.update(_get_mirroring_fields())
                 incident = {
-                    'name': 'Doppel Incident',
-                    'type': 'Doppel_Incident_Test',
+                    'name': DOPPEL_INCIDENT,
+                    'type': DOPPEL_ALERT,
                     'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
                     'dbotMirrorId': str(alert.get("id")),
                     'rawJSON': json.dumps(alert),
@@ -476,7 +487,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return new_incident_id
 
 def get_mapping_fields_command(client: Client, args: Dict[str, Any]):
-    xdr_incident_type_scheme = SchemeTypeMapping(type_name='Doppel_Incident_Test')
+    xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
     xdr_incident_type_scheme.add_field(name='queue_state', description='Queue State of the Doppel Alert')
     return GetMappingFieldsResponse(xdr_incident_type_scheme)
 
