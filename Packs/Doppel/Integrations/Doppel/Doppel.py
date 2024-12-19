@@ -258,7 +258,7 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
             raise e
     return message
 
-def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     id: str = args.get('id', None)
     entity: str = args.get('entity', None)
@@ -275,7 +275,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs=result,
     )
 
-def update_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_update_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Executes the update alert command.
 
@@ -301,7 +301,7 @@ def update_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs=result,
     )
 
-def get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Command to fetch multiple alerts based on query parameters.
 
@@ -332,7 +332,7 @@ def get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not results:
         raise ValueError("No alerts were found with the given parameters.")
 
-def create_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_create_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity = args.get('entity')
     if not entity:
         raise ValueError("Entity must be specified to create an alert.")
@@ -345,7 +345,7 @@ def create_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs=result,
     )
 
-def create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     entity = args.get('entity')
     if not entity:
@@ -362,7 +362,7 @@ def create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
 def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     """
     Fetch incidents from Doppel alerts, map fields to custom XSOAR fields, and create incidents.
-    This function fetches alerts directly from Doppel using the `get_alerts_command` and creates incidents in XSOAR.
+    This function fetches alerts directly from Doppel
     """
     demisto.debug("Fetching alerts from Doppel.")
     # Fetch the last run (time of the last fetch)
@@ -514,11 +514,11 @@ def main() -> None:
         'get-mapping-fields': get_mapping_fields_command,
         
         # Doppel Specific alerts
-        'get-alert': get_alert_command,
-        'update-alert': update_alert_command,
-        'get-alerts': get_alerts_command,
-        'create-alert': create_alert_command,
-        'create-abuse-alert': create_abuse_alert_command,
+        'doppel-get-alert': doppel_get_alert_command,
+        'doppel-update-alert': doppel_update_alert_command,
+        'doppel-get-alerts': doppel_get_alerts_command,
+        'doppel-create-alert': doppel_create_alert_command,
+        'doppel-create-abuse-alert': doppel_create_abuse_alert_command,
     }
     
     demisto.info(f'Command being called is {demisto.command()}')
