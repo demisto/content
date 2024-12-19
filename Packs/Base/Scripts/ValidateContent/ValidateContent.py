@@ -588,7 +588,7 @@ def read_pre_commit_results(pre_commit_dir: Path):
                 error_type = FILE_TYPE_TO_ERROR_TYPE.get(file_type, '')
                 # 'check-ast' details value has to be treated individually as regex does not capture it properly.
                 if hook_id == 'check-ast':
-                    result['details'] = stdout.splitlines()[5:]  # Trimming error metadata info.
+                    result['details'] = '\n'.join(stdout.splitlines()[5:])  # Trimming error metadata info (5 lines of it).
                 details = result['details'] if 'details' in result else ''
                 results.append(
                     ValidationResult(
@@ -651,6 +651,7 @@ def validate_content(path_to_validate: str) -> tuple[list, list]:
     raw_validation_results: list[ValidationResult] = []
     raw_validation_results += read_validate_results(validations_output_path)
     raw_validation_results += read_pre_commit_results(pre_commit_dir)
+
     demisto.debug(f'{json.dumps([output.to_dict() for output in raw_validation_results], indent=4)}')
 
     formatted_results = []
@@ -702,7 +703,7 @@ def get_file_name_and_contents(
     return None
 
 
-def setup_content_dir(file_name: str, file_contents: Union[bytes, str], entry_id: str, verify_ssl=False) -> str:
+def setup_content_dir(file_name: str, file_contents: Optional[str], entry_id: str, verify_ssl=False) -> str:
     """ Sets up the content directory to validate the content items in it. """
 
     # Set up the content directory path globally, required for demisto-sdk logic.
@@ -811,7 +812,7 @@ def main():
             return_results(CommandResults(
                 readable_output=readable_output,
                 outputs_prefix='ValidationResult',
-                outputs=raw_outputs,
+                outputs=validation_results,
                 raw_response=raw_outputs,
             ))
 
