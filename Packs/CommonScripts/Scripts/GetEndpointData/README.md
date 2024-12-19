@@ -7,7 +7,7 @@ This script gathers endpoint data from multiple integrations and returns an Endp
 | **Name** | **Description** |
 | --- |-----------------|
 | Script Type | python3         |
-| Cortex XSOAR Version | 8.8.0           |
+| Cortex XSOAR Version | 6.10.0          |
 
 ## Inputs
 
