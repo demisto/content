@@ -13,7 +13,6 @@ import urllib3
 from akamai.edgegrid import EdgeGridAuth
 # Local imports
 from CommonServerUserPython import *
-import concurrent.futures
 
 
 """GLOBALS/PARAMS
@@ -41,7 +40,6 @@ TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
-SLEEP_TIME_INSUFFICIENT_EVENT_QT = 60
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -471,7 +469,7 @@ def fetch_events_command(
     except DemistoException as e:
         demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
         if "Requested Range Not Satisfiable" in str(e):
-            err_msg = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
+            e = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
                 "This occurred due to offset pointing to events older than 12 hours.\n" \
                 "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
                 "If you wish to fetch more up to date events, " \
@@ -479,9 +477,10 @@ def fetch_events_command(
                 'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                 f'original error: [{e}]'
             set_integration_context({"from_time": "11 hours"})
-            raise DemistoException(err_msg)
-        else:
-            raise DemistoException(e)
+        demisto.updateModuleHealth(e, is_error=True)
+        demisto.info("Going to sleep for 60 seconds.")
+        time.sleep(60)
+        demisto.info("Done sleeping 60 seconds.")
     if events:
         demisto.info(f"got {len(events)} events, moving to processing events data.")
         if should_skip_decode_events:
@@ -585,9 +584,9 @@ def main():  # pragma: no cover
                         demisto.info("Finished executing send_events_to_xsiam, waiting for futures to end.")
                     if not events or is_last_request_smaller_than_page_size(len(events), page_size):
                         demisto.info(f"got {len(events)} events which is {ALLOWED_PAGE_SIZE_DELTA_RATIO}{page_size=} rr lower," \
-                                     f"going to sleep for {SLEEP_TIME_INSUFFICIENT_EVENT_QT} seconds.")
-                        time.sleep(SLEEP_TIME_INSUFFICIENT_EVENT_QT)
-                        demisto.info(f"Finished sleeping for {SLEEP_TIME_INSUFFICIENT_EVENT_QT} seconds.")
+                                     "going to sleep for 60 seconds.")
+                        time.sleep(60)
+                        demisto.info("Finished sleeping for 60 seconds.")
                     set_integration_context({"offset": offset})
                 demisto.updateModuleHealth({'eventsPulled': (len(events))})
         else:
