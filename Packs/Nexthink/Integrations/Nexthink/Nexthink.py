@@ -156,6 +156,7 @@ def nexthink_installed_packages(device: None, package: None):
 
 
 def nexthink_compliance_check(device: None, ip: None):
+    data = ""
     if not device and not ip:
         return_results('Please provide hostname or ipaddress argument')
         sys.exit(0)

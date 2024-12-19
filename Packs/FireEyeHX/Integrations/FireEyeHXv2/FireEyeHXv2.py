@@ -1357,6 +1357,7 @@ def general_context_from_event(alert: Dict):
 
 def oneFromList(list_of_args, args):
     checker = 0
+    result = None
     for arg in list_of_args:
         if args.get(arg):
             checker += 1
@@ -2130,6 +2131,9 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Static Host Set {host_set_name} with id {host_set_id} was created successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2209,6 +2213,9 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Dynamic Host Set {host_set_name} with id {host_set_id} was created successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2248,6 +2255,9 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
             date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             message = f'Dynamic Host Set {host_set_name} was updated successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):

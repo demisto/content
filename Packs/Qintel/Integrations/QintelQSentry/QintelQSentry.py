@@ -121,8 +121,7 @@ def _process_ip_record(ip, data, return_data):
     as_owner = data.get('asn_name')
     if as_owner:
         asn_owner = as_owner.title()
-
-    return_data['IP']['as_owner'] = asn_owner
+        return_data['IP']['as_owner'] = asn_owner
 
     tags = data.get('tags')
     if tags:

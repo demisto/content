@@ -74,6 +74,7 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
 
 
 def output_file(data, description, output_format):
+    data_encoded = ''
     file_name = str(uuid.uuid4())
     if output_format == 'pickle':
         pickled_incidents = []

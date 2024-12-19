@@ -174,6 +174,8 @@ class Client(BaseClient):
             comments = self.sendRequestInSession("GET", f"sobjects/Case/{cases[0]['Id']}/CaseComments")
         elif oid:
             comments = self.sendRequestInSession("GET", f"sobjects/Case/{oid}/CaseComments")
+        else:
+            comments = ""
 
         return comments
 
@@ -186,8 +188,14 @@ class Client(BaseClient):
                 # retrieve object type based on OwnerId
                 obj_type = self.identifyObjectType(cases[0].get('OwnerId'))
                 users = self.getObject(f"{obj_type}/{cases[0].get('OwnerId')}")
+            else:
+                users = ""
+                demisto.debug(f"{len(cases)=} != 1. {users=}")
         elif oid:
             users = self.getObject(f"User/{oid}")
+        else:
+            users = ""
+            demisto.debug(f"not caseNumber and not oid. {users=}")
 
         return users
 
@@ -389,7 +397,7 @@ def commentToEntry(raw_info, title, userMapping):
 
 
 def objectToEntry(client, raw_info):
-
+    title = ""
     if isinstance(raw_info, dict):
         obj_id = raw_info.get('Id')
         obj_type = client.identifyObjectType(obj_id)
@@ -468,6 +476,9 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         result = client.getObject(path)
     elif oid := args.get('oid'):
         result = client.getObject(oid)
+    else:
+        result = ""
+        demisto.debug(f"no path or oid. {result=}")
 
     return objectToEntry(client, result)
 

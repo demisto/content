@@ -841,6 +841,7 @@ def get_group_command(client, args):
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
                                                     errorMessage="Group Not Found", details=res_json)
             else:
+                generic_iam_context = OutputContext()
                 group_search_result = res_json
         else:
             generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,

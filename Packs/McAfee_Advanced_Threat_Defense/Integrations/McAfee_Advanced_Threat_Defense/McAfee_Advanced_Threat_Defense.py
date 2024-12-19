@@ -465,6 +465,9 @@ def file_upload(submit_type, sample, vm_profile_list,
         result_obj = file_upload_raw(body, file_entry_id, filename_to_upload)
     elif submit_type in SUBMIT_TYPE_WITH_URL:
         result_obj = url_upload_raw(body)
+    else:
+        result_obj = b''
+        demisto.debug(f"{submit_type=} doesn't match the conditions, {result_obj=}")
     return {
         'taskId': result_obj['results'][0]['taskId'],
         'resultObj': result_obj

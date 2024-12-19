@@ -606,6 +606,9 @@ def update_group_command(client, args):
         res_json = res.json()
         if res.status_code == 200:
             generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name, details=res_json)
+        else:
+            generic_iam_context = OutputContext()
+            demisto.debug(f"{res.status_code=} , not 200. Initializing generic_iam_context.")
     except DemistoException as exc:
         if exc.res.status_code == 404:
             generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
@@ -640,6 +643,9 @@ def delete_group_command(client, args):
     try:
         if res.status_code == 204:
             generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name)
+        else:
+            generic_iam_context = OutputContext()
+            demisto.debug(f"{res.status_code=} , not 204. Initializing generic_iam_context.")
     except DemistoException as exc:
         if exc.res.status_code == 404:
             generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,

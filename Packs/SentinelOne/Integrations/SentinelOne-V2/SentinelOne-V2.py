@@ -1906,6 +1906,9 @@ def create_power_query(client: Client, args: dict) -> CommandResults:
             context_entries.append(temp)
 
         meta = 'Provides summary information and details aboput the power query and its id \n your search criteria.'
+    else:
+        meta = ""
+        demisto.debug(f"{response['status']=} -> {meta=}")
 
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Create a Power Query and Get QueryId', context_entries, removeNull=True,
@@ -3736,7 +3739,8 @@ def fetch_handler(client: Client, args):
 
     elif args.get('fetch_type') == 'Alerts':
         incidents, current_fetch = fetch_alerts(client, args)
-    elif args.get('fetch_type') == 'Threats':
+    else:  # args.get('fetch_type') == 'Threats':
+        demisto.debug(f"{args.get('fetch_type')=} should be Threats")
         incidents, current_fetch = fetch_threats(client, args)
 
     demisto.setLastRun({'time': current_fetch})
