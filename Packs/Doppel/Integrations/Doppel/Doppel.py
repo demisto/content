@@ -439,50 +439,40 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     :rtype: ``str``
     """
+    new_incident_id: str = None
+    demisto.debug(f'Arguments for the update-remote-system is: {args}')
     parsed_args = UpdateRemoteSystemArgs(args)
-    if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {list(parsed_args.delta)}')
-        
-    demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n')
-    new_incident_id: str = parsed_args.remote_incident_id
-    updated_incident = {}
-    if not parsed_args.remote_incident_id or parsed_args.incident_changed:
-        if parsed_args.remote_incident_id:
-            # First, get the incident as we need the version
-            old_incident = client.get_alert(id=parsed_args.remote_incident_id, entity=None)
-            for changed_key in parsed_args.delta.keys():
-                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-            parsed_args.data = old_incident
+    # We will Update the Doppel Alert only if the XSOAR Incident is closed
+    if parsed_args.delta and parsed_args.delta.get('closeReason'):
+        demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system')
+        new_incident_id = parsed_args.remote_incident_id
+        if not parsed_args.remote_incident_id or parsed_args.incident_changed:
+            if parsed_args.remote_incident_id:
+                # First, get the incident as we need the version
+                old_incident = client.get_alert(id=parsed_args.remote_incident_id, entity=None)
+                for changed_key in parsed_args.delta.keys():
+                    old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+                parsed_args.data = old_incident
+            else:
+                parsed_args.data['createInvestigation'] = True
+
+            # Update the queue_state value in the Doppel alert, if already not same
+            current_queue_state = parsed_args.data.get('queue_state')
+            target_queue_state = 'archived'
+            if current_queue_state != target_queue_state:
+                client.update_alert(
+                    queue_state=target_queue_state,
+                    entity_state=old_incident['entity_state'], # Keep the old entity_state
+                    alert_id=new_incident_id
+                )
         else:
-            parsed_args.data['createInvestigation'] = True
-
-        # TODO: remove hardcoded values
-        updated_incident = client.update_alert(queue_state='actioned', entity_state='active')
-        new_incident_id = updated_incident['id']
-        demisto.debug(f'Got back ID [{new_incident_id}]')
+            demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
+                        f'not new nor changed.')
     else:
-        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
-                      f'not new nor changed.')
-
-    # TODO: Remove the commented code
-#    if parsed_args.entries:
-#        for entry in parsed_args.entries:
-#            demisto.debug(f'Sending entry {entry.get("id")}')
-#            client.add_incident_entry(incident_id=new_incident_id, entry=entry)
-#
-#    # Close incident if relevant
-#    if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
-#        demisto.debug(f'Closing remote incident {new_incident_id}')
-#        client.close_incident(
-#            new_incident_id,
-#            updated_incident.get('version'),  # type: ignore
-#            parsed_args.data.get('closeReason'),
-#            parsed_args.data.get('closeNotes')
-#        )
-
+        demisto.debug(f'The incident changed, but it is not closed. Hence will not update the Doppel alert at this time')
+        
     return new_incident_id
 
-    #TODO: Review the changes to make sure this correct fields are used
 def get_mapping_fields_command(client: Client, args: Dict[str, Any]):
     xdr_incident_type_scheme = SchemeTypeMapping(type_name='Doppel_Incident_Test')
     xdr_incident_type_scheme.add_field(name='queue_state', description='Queue State of the Doppel Alert')
