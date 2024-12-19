@@ -159,20 +159,24 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
     demisto.debug(f'Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}')
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity=None)
+    demisto.debug(f'Received alert data for {doppel_alert_id}')
     audit_logs = updated_doppel_alert['audit_logs']
-    if len(audit_logs) > 0:
-        audit_log = audit_logs[len(audit_logs)-1]
-        audit_log_datetime_str = audit_log['timestamp']
-        audit_log_datetime = datetime.strptime(audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-        if audit_log_datetime > last_update:
-            updated_doppel_alert['id'] = doppel_alert_id
-            entries: list = [{
-                "Type": EntryType.NOTE,
-                "Contents": audit_log,
-                "ContentsFormat": EntryFormat.JSON,
-            }]
-            
-            return updated_doppel_alert, entries
+    demisto.debug(f'The alert contains {len(audit_logs)} audit logs')
+    
+    most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log['timestamp'])
+    demisto.debug(f'Most recent audit log is {most_recent_audit_log}')
+    recent_audit_log_datetime_str = most_recent_audit_log['timestamp']
+    recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
+    demisto.debug(f'The event was modified recently on {recent_audit_log_datetime}')
+    if recent_audit_log_datetime > last_update:
+        updated_doppel_alert['id'] = doppel_alert_id
+        entries: list = [{
+            "Type": EntryType.NOTE,
+            "Contents": most_recent_audit_log,
+            "ContentsFormat": EntryFormat.JSON,
+        }]
+        demisto.debug(f'Successfully returning the updated alert and entries: {updated_doppel_alert, entries}')
+        return updated_doppel_alert, entries
         
     return None, []
 
@@ -182,7 +186,7 @@ def _get_mirroring_fields(params):
     """
 
     return {
-        "mirror_direction": MIRROR_DIRECTION.get("Incoming"),
+        "mirror_direction": MIRROR_DIRECTION.get("Incoming And Outgoing"),
         "mirror_instance": demisto.integrationInstance(),
         "incident_type": "Doppel_Incident_Test",
     }
