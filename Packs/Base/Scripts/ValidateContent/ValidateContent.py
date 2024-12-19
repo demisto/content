@@ -588,7 +588,7 @@ def read_pre_commit_results(pre_commit_dir: Path):
                 error_type = FILE_TYPE_TO_ERROR_TYPE.get(file_type, '')
                 # 'check-ast' details value has to be treated individually as regex does not capture it properly.
                 if hook_id == 'check-ast':
-                    result['details'] = '\n'.join(stdout.splitlines()[5:])  # Trimming error metadata info (5 lines of it).
+                    result['details'] = stdout.splitlines()[5:]  # Trimming error metadata info (5 lines of it).
                 details = result['details'] if 'details' in result else ''
                 results.append(
                     ValidationResult(
