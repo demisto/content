@@ -277,19 +277,28 @@ def setup_server():  # pragma: no cover
                         certificate_path=certificate_path, private_key_path=private_key_path)
 
 
+def test_module():  # pragma: no cover
+    """
+    Assigns a temporary port for longRunningPort and returns 'ok'.
+    """
+    if not PARAMS.get('longRunningPort'):
+        PARAMS['longRunningPort'] = '1111'
+    return 'ok'
+
+
 ''' MAIN FUNCTION '''
 
 
 def main():  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        if demisto.command() == 'test-module':
+            return return_results(test_module())
         try:
-            port = PARAMS.get('longRunningPort')
+            port = int(demisto.params().get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
-        if demisto.command() == 'test-module':
-            return_results("ok")
-        elif demisto.command() == 'long-running-execution':
+        if demisto.command() == 'long-running-execution':
             demisto.debug('Started long-running-execution.')
             while True:
                 server_config = setup_server()
