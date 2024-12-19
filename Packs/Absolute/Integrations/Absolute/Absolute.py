@@ -893,6 +893,13 @@ def get_device_location_command(args, client) -> CommandResults:
             readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
 
+''' EVENT COLLECTOR '''
+
+
+def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    pass
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -919,6 +926,7 @@ def main() -> None:  # pragma: no cover
             secret_key=secret_key,
             x_abs_date=x_abs_date,
         )
+
         args = demisto.args()
         if demisto.command() == 'test-module':
             return_results(test_module(client))
@@ -965,6 +973,14 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'absolute-device-location-get':
             return_results(get_device_location_command(args=args, client=client))
 
+        elif demisto.command() == 'fetch-events':
+            max_events_per_fetch = int(arg_to_number(params.get('max_events_per_fetch', 10000)))  # type:ignore
+            events, last_run_object = fetch_events(client, max_events_per_fetch, demisto.getLastRun())
+            if events:
+                pass
+                #     add_time_to_events(events)
+                #     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                #     demisto.setLastRun(last_run_object)
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing {INTEGRATION} command.')
 
