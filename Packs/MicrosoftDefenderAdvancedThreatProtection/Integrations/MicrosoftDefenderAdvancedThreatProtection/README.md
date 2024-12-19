@@ -135,7 +135,7 @@ Please add the following permissions to the app registration. Choose application
 
 ## Deprecation Announcement
 
-Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated (and possibly end-of-life) SIEM API to the Graph API, we are deprecating the following:
+Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
 
 - **14 commands**
 - **Fetch-incidents functionality**
@@ -144,12 +144,12 @@ Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/confi
 - Some commands have direct replacements in the **Microsoft Graph Security** integration.
 - Others do not have exact replacements but offer alternatives that return similar data.
 - A few commands have no available replacements.
-## Deprecation Details Table
+## Deprecation Details
 
 
 | **Deprecated Commands**                     | **Replacement**                                                                                                                                               |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Fetch incidents`    | Use `Fetch incidents` in the `Microsoft Graph Security` integration instead.                                                                                                                                    |
+| `Fetch incidents`    | Use `Fetch incidents` in the `Microsoft Graph Security` integration, and select `Graph Security Alert` under the `Alert type`.                                                   |
 | `microsoft-atp-create-alert`    | No available replacement.                                                                                                                                     |
 | `microsoft-atp-get-alert-by-id` | Use `msg-get-alert-details` in the `Microsoft Graph Security` integration instead.                                                                            |
 | `microsoft-atp-get-alert-related-files` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `fileDetails` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-fileevidence?view=graph-rest-1.0). |

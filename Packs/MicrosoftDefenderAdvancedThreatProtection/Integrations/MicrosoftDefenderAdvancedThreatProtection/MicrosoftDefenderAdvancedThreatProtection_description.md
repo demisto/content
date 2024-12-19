@@ -1,4 +1,5 @@
-Note: `Fetch incidents` is deprecated. Use the `Microsoft Graph Security `integration instead.
+### Deprecation Note: 
+`Fetch incidents` is deprecated. Use the `Microsoft Graph Security `integration instead.
 
 # Authentication
 ### Authentication Based on Azure Active Directory Applications
