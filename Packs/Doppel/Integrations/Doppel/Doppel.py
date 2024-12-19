@@ -180,7 +180,7 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
         
     return None, []
 
-def _get_mirroring_fields(params):
+def _get_mirroring_fields():
     """
     Get tickets mirroring.
     """
@@ -212,7 +212,6 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
     try:
         # Using the same dates so that we do not fetch any data for testing,
         # but still get the response as 200
-        # TODO: convert both the dates to current timestamps
         current_datetime_str = datetime.now().strftime(DOPPEL_API_DATE_FORMAT)
         query_params = {
             'created_before': current_datetime_str,
@@ -350,52 +349,55 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         last_fetch_str = first_run.strftime(DOPPEL_API_DATE_FORMAT)
         last_fetch = first_run.timestamp()
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch}")
-        
-    # Set the query parameters
-    query_params = {
-        'created_after': last_fetch_str,  # Fetch alerts after the last_fetch,
-        'sort_type': 'date_sourced',
-        'sort_order': 'asc',
-        'page': 0,
-    }
     
-    #TODO: Implement the pagination for fetching all the alerts within the time range
     # Fetch alerts
-    get_alerts_response = client.get_alerts(params=query_params)
-    alerts = get_alerts_response.get('alerts', None)
-    if not alerts:
-        demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
-        return
-    incidents = []
-    new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
-    for alert in alerts:
-        # Building the incident structure
-        created_at_str = alert.get("created_at")
-        created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-        new_last_fetch = created_at_datetime.timestamp()
-        if new_last_fetch > last_fetch:
-            alert.update(_get_mirroring_fields(args))
-            incident = {
-                'name': 'Doppel Incident',
-                'type': 'Doppel_Incident_Test',
-                'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
-                'dbotMirrorId': str(alert.get("id")),
-                'rawJSON': json.dumps(alert),
-            }
-            incidents.append(incident)
-    # Update last run with the new_last_fetch value
-    demisto.setLastRun({"last_fetch": new_last_fetch})
-    demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
-    # Create incidents in XSOAR
-    if incidents and len(incidents) > 0:
-        try:
-            demisto.incidents(incidents)
-            demisto.info(f"Successfully created {len(incidents)} incidents in XSOAR.")
-        except Exception as e:
-            raise ValueError(f"Incident creation failed due to: {str(e)}")
-    else:
-        demisto.incidents([])
-        demisto.info("No incidents to create. Exiting fetch_incidents_command.")
+    page: int = 0
+    while True:
+        # Set the query parameters
+        query_params = {
+            'created_after': last_fetch_str,  # Fetch alerts after the last_fetch,
+            'sort_type': 'date_sourced',
+            'sort_order': 'asc',
+            'page': page,
+        }
+        get_alerts_response = client.get_alerts(params=query_params)
+        alerts = get_alerts_response.get('alerts', None)
+        if not alerts:
+            demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
+            return
+        incidents = []
+        new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
+        for alert in alerts:
+            # Building the incident structure
+            created_at_str = alert.get("created_at")
+            created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
+            new_last_fetch = created_at_datetime.timestamp()
+            if new_last_fetch > last_fetch:
+                alert.update(_get_mirroring_fields())
+                incident = {
+                    'name': 'Doppel Incident',
+                    'type': 'Doppel_Incident_Test',
+                    'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
+                    'dbotMirrorId': str(alert.get("id")),
+                    'rawJSON': json.dumps(alert),
+                }
+                incidents.append(incident)
+        # Update last run with the new_last_fetch value
+        demisto.setLastRun({"last_fetch": new_last_fetch})
+        demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
+        # Create incidents in XSOAR
+        if incidents and len(incidents) > 0:
+            try:
+                demisto.incidents(incidents)
+                demisto.info(f"Successfully created {len(incidents)} incidents in XSOAR.")
+            except Exception as e:
+                raise ValueError(f"Incident creation failed due to: {str(e)}")
+        else:
+            demisto.incidents([])
+            demisto.info("No incidents to create. Exiting fetch_incidents_command.")
+
+        demisto.info(f'Fetched Doppel alerts from page {page} Successfully.')
+        page = page+1
 
 def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
     demisto.debug('Command get-modified-remote-data is not implemented')
