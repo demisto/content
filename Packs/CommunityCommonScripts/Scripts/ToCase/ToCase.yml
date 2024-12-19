@@ -1,6 +1,6 @@
 args:
 - defaultValue: capital
-  description: Default is 'capital. Can also be 'title' or 'swap'.
+  description: Default is 'capital'. Can also be 'title' or 'swap'.
   name: case
   required: true
 - default: true
