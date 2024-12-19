@@ -638,12 +638,6 @@ def validate_content(path_to_validate: str) -> tuple[list, list]:
                 pre_commit_exit_code = future.result()
                 demisto.info(f'Finished running `demisto-sdk pre-commit` with exit code {pre_commit_exit_code}.')
 
-    # validate_exit_code = run_validate(path_to_validate, str(validations_output_path))
-    # demisto.info(f'Finished running `demisto-sdk validate` with exit code {validate_exit_code}.')
-
-    # pre_commit_exit_code = run_pre_commit(pre_commit_dir)
-    # demisto.info(f'Finished running `demisto-sdk pre-commit` with exit code {pre_commit_exit_code}.')
-
     # If no errors were found.
     if not (validate_exit_code or pre_commit_exit_code):
         return [], []
@@ -703,7 +697,7 @@ def get_file_name_and_contents(
     return None
 
 
-def setup_content_dir(file_name: str, file_contents: Optional[str], entry_id: str, verify_ssl=False) -> str:
+def setup_content_dir(file_name: str, file_contents: Union[bytes, str], entry_id: str, verify_ssl=False) -> str:
     """ Sets up the content directory to validate the content items in it. """
 
     # Set up the content directory path globally, required for demisto-sdk logic.
@@ -714,7 +708,7 @@ def setup_content_dir(file_name: str, file_contents: Optional[str], entry_id: st
     demisto.debug(f"created packs directory in {packs_path}")
 
     content_repo = setup_content_repo(CONTENT_DIR_PATH)
-    file_name, file_contents = get_file_name_and_contents(file_name, file_contents, entry_id)
+    file_name, file_contents = get_file_name_and_contents(file_name, str(file_contents), entry_id)
     file_type = file_name.split('.')[-1]
     if file_type not in ALLOWED_FILE_TYPES:
         demisto.debug(f'resolved {file_type=}')
@@ -757,7 +751,6 @@ def setup_envvars():
     demisto.debug(f'setup_envvars: {os.environ}')
 
 
-@content_profiler
 def main():
     setup_envvars()
     # Save working directory for later return, as working directory changes during runtime.
