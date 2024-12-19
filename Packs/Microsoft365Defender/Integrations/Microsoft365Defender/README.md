@@ -115,7 +115,7 @@ When incidents are mirrored into Cortex XSOAR from Microsoft 365 Defender:
 
 ### Mirroring Out (Cortex XSOAR → Microsoft 365 Defender)
 
-When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
+When incidents are mirrored out from Cortex XSOAR to Microsoft 365 Defender:
 
 1. **Supported Fields**:  
    The following fields are mirrored:  
