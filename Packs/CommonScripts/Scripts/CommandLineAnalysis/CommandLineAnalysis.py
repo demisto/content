@@ -10,6 +10,8 @@ from typing import List, Any, Optional, Tuple, Union
 def is_base64(possible_base64: Union[str, bytes]) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
+    For strings of length 16 or less, require that the string must contain '+', '/' or '='.
+    For longer strings, rely solely on strict base64 decoding.
     """
     try:
         if isinstance(possible_base64, str):
@@ -23,40 +25,31 @@ def is_base64(possible_base64: Union[str, bytes]) -> bool:
         if len(possible_base64) % 4 != 0:
             return False
 
-        # Attempt decoding strictly
+        # Apply heuristic for short strings
+        if len(possible_base64) <= 16:
+            # For shorter strings, require at least one '+' or '/' or '='
+            if b'+' not in possible_base64 and b'/' not in possible_base64 and b'=' not in possible_base64:
+                return False
+
+        # Attempt strict decoding
         base64.b64decode(possible_base64, validate=True)
         return True
     except Exception:
         return False
 
-
 def clean_non_base64_chars(encoded_str: str) -> str:
     """
-    Cleans and ensures the Base64 string contains only valid Base64 characters.
-    Identifies and removes extraneous characters that are structurally valid but contextually invalid.
+    Cleans and ensures the Base64 string contains only valid Base64 characters (+, /, =, alphanumeric).
+    Adds proper padding if necessary.
     """
-    # Remove all non-Base64 characters
+    # Remove all invalid Base64 characters
     cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', encoded_str)
 
-    # Fix padding (Base64 strings should be a multiple of 4 in length)
+    # Fix padding only if the string length is reasonable for Base64
     if len(cleaned_str) % 4 != 0:
         cleaned_str += "=" * (4 - len(cleaned_str) % 4)
 
-    # Validate decoding to ensure extraneous sequences are removed
-    try:
-        decoded_bytes = base64.b64decode(cleaned_str, validate=True)
-        decoded_str = decoded_bytes.decode('utf-8', errors='ignore')
-
-        # If the decoded content contains unexpected non-printable characters, re-clean
-        if not all(c.isprintable() or c.isspace() for c in decoded_str):
-            cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', cleaned_str)
-    except Exception:
-        # If decoding fails, return a sanitized Base64 string
-        cleaned_str = re.sub(r'[^A-Za-z0-9+/=]', '', cleaned_str)
-
     return cleaned_str
-
-
 
 
 def remove_null_bytes(decoded_str: str) -> str:
@@ -66,36 +59,45 @@ def remove_null_bytes(decoded_str: str) -> str:
     return decoded_str.replace("\x00", "")
 
 
-def decode_base64(encoded_str: str, max_recursions: int = 5) -> Tuple[str, bool]:
+def decode_base64(encoded_str: str, max_recursions: int = 5, force_utf16_le: bool = False) -> Tuple[str, bool]:
     """
     Decodes a Base64-encoded string recursively up to a defined limit.
-    Handles mixed content if necessary and returns the fully decoded string and a flag indicating double encoding.
+    If force_utf16_le is True, decode with UTF-16-LE. Otherwise, use UTF-8 by default.
+    Detects multiple layers of Base64 to identify double encoding.
     """
     try:
         recursion_depth = 0
         double_encoded_detected = False
-        result = encoded_str  # Keep the original input as the working result
+        result = encoded_str
 
         while recursion_depth < max_recursions:
-            # Extract potential Base64 parts from the string
+            # Extract potential Base64 parts
             base64_pattern = re.compile(r'([A-Za-z0-9+/]{4,}(?:={0,2}))')
             matches = base64_pattern.findall(result)
 
             if not matches:
-                break  # Stop if no Base64 content is found
+                break  # No more base64 found
 
+            decoded_any = False
             for match in matches:
                 if is_base64(match):
-                    # Clean and decode the Base64 string
                     cleaned_input = clean_non_base64_chars(match)
                     try:
                         decoded_bytes = base64.b64decode(cleaned_input)
-                        decoded_str = decoded_bytes.decode('utf-8', errors='ignore')  # Decode as UTF-8
-                        result = result.replace(match, decoded_str, 1)  # Replace the Base64 part with its decoded value
-                        double_encoded_detected = double_encoded_detected or recursion_depth > 0
-                    except Exception:
-                        continue  # Skip invalid Base64 matches
+                        # If force_utf16_le, decode as UTF-16-LE; otherwise UTF-8
+                        if force_utf16_le:
+                            decoded_str = decoded_bytes.decode('utf-16-le', errors='replace')
+                        else:
+                            decoded_str = decoded_bytes.decode('utf-8', errors='replace')
 
+                        result = result.replace(match, decoded_str, 1)
+                        double_encoded_detected = double_encoded_detected or recursion_depth > 0
+                        decoded_any = True
+                    except Exception:
+                        continue
+
+            if not decoded_any:
+                break
             recursion_depth += 1
 
         return result, double_encoded_detected
@@ -108,14 +110,18 @@ def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
     """
     Identifies and decodes all Base64 occurrences in a command line,
     returning the decoded content and a flag indicating if any double encoding was detected.
-    Handles both pure Base64 strings and mixed content.
+    If `-EncodedCommand` is detected, the base64 payload after it will be considered UTF-16-LE.
     """
     try:
         double_encoded_detected = False
 
+        # Check if `-EncodedCommand` is in the original command line
+        # If so, we will force UTF-16-LE decoding on any base64 following it.
+        encoded_command_present = "-EncodedCommand" in command_line or "-enc " in command_line
+
         # First, check if the entire command_line is Base64
         if is_base64(command_line):
-            decoded_str, is_double_encoded = decode_base64(command_line)
+            decoded_str, is_double_encoded = decode_base64(command_line, force_utf16_le=encoded_command_present)
             return decoded_str, is_double_encoded
 
         # If not pure Base64, extract Base64 portions using regex
@@ -127,8 +133,8 @@ def identify_and_decode_base64(command_line: str) -> Tuple[str, bool]:
 
         result = command_line
         for match in matches:
-            if is_base64(match):  # Ensure the match is valid Base64
-                decoded_str, is_double_encoded = decode_base64(match)
+            if is_base64(match):
+                decoded_str, is_double_encoded = decode_base64(match, force_utf16_le=encoded_command_present)
                 result = result.replace(match, decoded_str, 1)
                 double_encoded_detected = double_encoded_detected or is_double_encoded
 
