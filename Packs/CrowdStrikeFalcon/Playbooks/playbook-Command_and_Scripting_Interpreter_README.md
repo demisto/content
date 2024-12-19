@@ -1,39 +1,27 @@
 This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.
-An attacker might abuse command and script interpreters to execute commands, scripts, or binaries.
-Most systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.
+An attacker might abuse command and script interpreters to execute commands, scripts, or binaries
 
-
-**Attacker's Goals:**
-
-An attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.
+The playbook executes the following stages:
 
 **Analysis**
 
-Due to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. 
-The command line analysis does the following:
-
-- Checks and decodes base64
-- Extracts and enriches indicators from the command line
-- Checks specific arguments for malicious usage 
+- Initiates the CommandLineAnalysiss tool which will determine if the command lines have any suspicious artifacts that might indicate malicious behavior.
+- Enriches any indicates found during the command lines analysis phase.
 
 **Investigative Actions:**
-The playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.
+- In case malicious indicators were found, the playbook will initiate a check against CrowdStrike Falcon to identify if any other endpoint has been associated with the same indicators.  
+- If there are any, the playbook will update the layout and create a new incident for further investigation.
 
-**Response Actions**
+**Remediation:**
 
-After analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:
+- Terminate the process if the CrowdStike Falcon agent doesn't block it.
+- If the process failed or the parent process command line was suspicious as well, A manual action will be provided to the analyst to choose how to proceed further:
+    - Terminate the parent process
+    - Isolate the endpoint
+**Additional Phases:**
 
-- Isolate the endpoint based on playbook inputs.
-
-When the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.
-
-This phase executes the following containment actions:
-
-- Automatically isolates the endpoint
-
-It then continues with the following eradication actions:
-
-- process termination.
+- Handle malicious alerts by closing the alert as True Positive.
+- Handle non-malicious alerts by closing the alert as False Positive.
 
 ## Dependencies
 
@@ -41,28 +29,28 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-- CrowdStrike Falcon - Search Endpoints By Indicators
-- Crowdstrike Falcon - Isolate Endpoint
+* CrowdStrike Falcon - Search Endpoints By Indicators
+* Crowdstrike Falcon - Isolate Endpoint
 
 ### Integrations
 
-- CrowdStrikeFalcon
-- CrowdstrikeFalcon
+* CrowdStrikeFalcon
+* CrowdstrikeFalcon
 
 ### Scripts
 
-- CommandLineAnalysis
-- SetAndHandleEmpty
+* CommandLineAnalysis
+* SetAndHandleEmpty
 
 ### Commands
 
-- closeInvestigation
-- createNewIncident
-- cs-falcon-rtr-kill-process
-- endpoint
-- enrichIndicators
-- linkIncidents
-- setIncident
+* closeInvestigation
+* createNewIncident
+* cs-falcon-rtr-kill-process
+* endpoint
+* enrichIndicators
+* linkIncidents
+* setIncident
 
 ## Playbook Inputs
 
@@ -70,8 +58,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| CommandLines |  | incident.commandline | Optional |
-| CreateNewIncidnetForIndicators |  | True | Optional |
+| CommandLines | The command line analysis that was found in the alert. By default, we will analyze the command line and its parent command line. | incident.commandline | Optional |
+| CreateNewIncidnetForIndicators | If the playbook identifies malicious indicators associated with other hosts, a new incident will be generated with relevant information for the analysts. | True | Optional |
 
 ## Playbook Outputs
 
@@ -82,4 +70,4 @@ There are no outputs for this playbook.
 
 ---
 
-![T1059 - Command and Scripting Interpreter](../doc_files/Command_and_Scripting_Interpreter.png)
+![Command and Scripting Interpreter](../doc_files/Command_and_Scripting_Interpreter.png)
