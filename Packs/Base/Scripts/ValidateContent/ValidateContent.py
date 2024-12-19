@@ -184,29 +184,23 @@ def get_skipped_hooks():
     return SKIPPED_HOOKS
 
 
-def set_pre_commit_template_path(value):
-    global pre_commit_template_path
-    pre_commit_template_path = value
-
-
-def get_pre_commit_template_path() -> str | None:
-    return pre_commit_template_path
-
 def resolve_entity_type(file_path: str):
     """ Resolve entity type from file path. """
     parts = file_path.split("/")
-    if parts[0] == "Packs" and len(parts) > 2:
-        entity_type_directory_name = parts[2].lower()
+    if parts[0] == "Packs" and len(parts) > 2 and (entity_type_directory_name := parts[2].lower()):
         entity_type = entity_type_directory_name[:-1] if entity_type_directory_name.endswith('s') else entity_type_directory_name
-    else:
-        entity_type = "contentpack"
+        return entity_type
+    entity_type = "contentpack"
     return entity_type
 
-def get_pack_name(zip_fp: str) -> str:
+def get_pack_name(zip_filepath: str) -> str:
     """ Returns the pack name from the zipped contribution file's metadata.json file. """
-    with zipfile.ZipFile(zip_fp) as zipped_contrib, zipped_contrib.open('metadata.json') as metadata_file:
+    with zipfile.ZipFile(zip_filepath) as zipped_contrib, zipped_contrib.open('metadata.json') as metadata_file:
         metadata = json.loads(metadata_file.read())
-    return metadata.get('name', 'ServerSidePackValidationDefaultName')
+    if pack_name := metadata.get('name'):
+        return pack_name
+    demisto.error(f'Could not find pack name in metadata.json')
+    return 'TmpPack'
 
 
 def _create_pack_base_files(self):

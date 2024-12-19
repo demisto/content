@@ -2,11 +2,40 @@ import json
 import os
 import tempfile
 import zipfile
+from unittest.mock import MagicMock, mock_open, patch
 import git
 import pytest
+import json
+import zipfile
+import pytest
+from unittest import mock
+from io import BytesIO
+from ValidateContent import get_pack_name, BRANCH_MASTER
+from ValidateContent import resolve_entity_type, CONTENT_REPO_URL, HOOK_ID_TO_PATTERN, get_extracted_code_filepath, get_file_name_and_contents, get_pack_name, read_json_results, read_pre_commit_results, read_validate_results, run_validate, setup_content_dir, setup_content_repo, strip_ansi_codes, extract_hook_id, parse_pre_commit_output, get_skipped_hooks, DEFAULT_ERROR_PATTERN
 
-from ValidateContent import CONTENT_REPO_URL, HOOK_ID_TO_PATTERN, get_extracted_code_filepath, get_file_name_and_contents, get_pack_name, read_json_results, read_pre_commit_results, read_validate_results, run_validate, setup_content_dir, setup_content_repo, strip_ansi_codes, extract_hook_id, parse_pre_commit_output, get_skipped_hooks, DEFAULT_ERROR_PATTERN
+import demistomock as demisto  # noqa: F401
 
+def create_mock_zip_file_with_metadata(metadata_content):
+    """
+    Helper function to create a mock zip file with metadata.json
+
+    Args:
+        metadata_content:
+
+    Returns:
+        mock_zip: a mock zip file with metadata.json containing metadata_content.
+    """
+
+    mock_zip = mock.MagicMock()
+    mock_metadata_file = BytesIO(json.dumps(metadata_content).encode('utf-8'))
+
+    def mock_open(name, *args, **kwargs):
+        if name == 'metadata.json':
+            return mock_metadata_file
+        raise KeyError(f"No such file: {name}")
+
+    mock_zip.open = mock_open
+    return mock_zip
 
 def test_strip_ansi_codes():
     ansi_text = "\033[31mRed text\033[0m"
@@ -34,7 +63,7 @@ Packs/TmpPack/Integrations/HelloWorldTest/HelloWorldTest.py: failed parsing with
  elif command == 'hello
  ^
  SyntaxError: unterminated string literal (detected at line 1413)"""
- 
+
     pattern_obj = HOOK_ID_TO_PATTERN['check-ast']
     result = parse_pre_commit_output(output, pattern_obj)
     assert result == [{'file': 'Packs/TmpPack/Integrations/HelloWorldTest/HelloWorldTest.py', 'line': '1413'}]
@@ -86,4 +115,50 @@ Found 3 errors in 1 file (checked 1 source file)"""
         }
     ]
 
+def test_resolve_entity_type():
+    assert resolve_entity_type("Packs/SomePack/Integrations/SomeIntegration") == "integration"
+    assert resolve_entity_type("Packs/SomePack/Scripts/SomeScript") == "script"
+    assert resolve_entity_type("Packs/SomePack/Playbooks/SomePlaybook") == "playbook"
+    assert resolve_entity_type("Packs/SomePack/TestPlaybooks/SomeTestPlaybook") == "testplaybook"
+    assert resolve_entity_type("Packs/SomePack/") == "contentpack"
 
+# def test_get_pack_name():
+#     # Mock JSON metadata as bytes
+#     mock_metadata = json.dumps({"name": "TestPack"}).encode("utf-8")
+#
+#     # Create a mock for the file-like object returned by `open`
+#     mock_file = MagicMock()
+#     mock_file.read.return_value = mock_metadata
+#
+#     # Mock the ZipFile object and its `open` method
+#     mock_zipfile = MagicMock()
+#     mock_zipfile.open.return_value = mock_file
+#
+#     # Patch `zipfile.ZipFile` to return the mocked ZipFile object
+#     with patch("zipfile.ZipFile", return_value=mock_zipfile):
+#         pack_name = get_pack_name("dummy_path.zip")
+#         assert pack_name == "TestPack"
+
+@patch("git.Repo")
+@patch("os.listdir")
+def test_setup_content_repo_initial_commit(mock_listdir, mock_repo, mocker):
+    # Mocks and expected behaviors
+    mocker.patch.object(demisto, "debug")
+    mock_content_repo = MagicMock()
+    mock_repo.init.return_value = mock_content_repo
+    mock_content_repo.head.is_valid.return_value = False  # Simulate no commits in the repo
+    mock_listdir.return_value = ["file1", "file2"]
+
+    # Call the function
+    content_path = "/dummy/content/path"
+    result = setup_content_repo(content_path)
+
+    # Assertions
+    mock_repo.init.assert_called_once_with(content_path)
+    demisto.debug.assert_called_with(f'main created content_repo {os.listdir(content_path)=}')
+    mock_content_repo.index.commit.assert_called_once_with("Initial commit")
+    mock_content_repo.create_remote.assert_called_once_with('origin', CONTENT_REPO_URL)
+    mock_content_repo.remotes.origin.fetch.assert_called_once_with('master', depth=1)
+    mock_content_repo.create_head.assert_called_once_with(BRANCH_MASTER)
+    mock_content_repo.heads.master.checkout.assert_called_once()
+    assert result == mock_content_repo
