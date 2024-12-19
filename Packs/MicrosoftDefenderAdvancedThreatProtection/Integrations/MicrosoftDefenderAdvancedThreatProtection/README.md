@@ -3,6 +3,21 @@
 ---
 Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) integration for preventative protection, post-breach detection, automated investigation, and response.
 
+
+## Deprecation Announcement
+
+Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
+
+- **14 commands**
+- **Fetch-incidents functionality**
+
+### Replacement Options:
+- Some commands have direct replacements in the **Microsoft Graph Security** integration.
+- Others do not have exact replacements but offer alternatives that return similar data.
+- A few commands have no available replacements.
+Below, you'll find details on the deprecated commands and their replacements or alternatives.
+[Go to details](#deprecation-details)
+
 ## Microsoft Defender Advanced Threat Protection Playbook
 
 ---
@@ -133,37 +148,7 @@ Please add the following permissions to the app registration. Choose application
 - comments
 - evidence
 
-## Deprecation Announcement
 
-Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
-
-- **14 commands**
-- **Fetch-incidents functionality**
-
-### Replacement Options:
-- Some commands have direct replacements in the **Microsoft Graph Security** integration.
-- Others do not have exact replacements but offer alternatives that return similar data.
-- A few commands have no available replacements.
-## Deprecation Details
-
-
-| **Deprecated Commands**                     | **Replacement**                                                                                                                                               |
-|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Fetch incidents`    | Use `Fetch incidents` in the `Microsoft Graph Security` integration, and select `Graph Security Alert` under the `Alert type`.                                                   |
-| `microsoft-atp-create-alert`    | No available replacement.                                                                                                                                     |
-| `microsoft-atp-get-alert-by-id` | Use `msg-get-alert-details` in the `Microsoft Graph Security` integration instead.                                                                            |
-| `microsoft-atp-get-alert-related-files` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `fileDetails` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-fileevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-alert-related-ips`   | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `IpAddress` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-ipevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-alert-related-user`  | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `userAccount` information as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-alert-related-domains` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration to retrieve `DomainName` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-domain-alerts`       | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-file-alerts`         | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-ip-alerts`           | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-machine-alerts`      | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-user-alerts`         | No available replacement.                                                                                                                                 |
-| `microsoft-atp-list-alerts`             | Use the `msg-search-alerts` command in the `Microsoft Graph Security` integration instead.                                                                |
-| `microsoft-atp-update-alert`            | Use the `msg-update-alert` command in the `Microsoft Graph Security` integration instead.                                                                 |
-| `microsoft-atp-advanced-hunting`        | Use the `msg-advanced-hunting` command in the `Microsoft Graph Security` integration instead.                                                             |
 
 
 ## Commands
@@ -7318,3 +7303,25 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 >|---|---|---|---|---|---|---|---|
 >| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |
+
+
+## Deprecation Details
+
+
+| **Deprecated Commands**                     | **Replacement**                                                                                                                                               |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Fetch incidents`    | Use `Fetch incidents` in the `Microsoft Graph Security` integration, and select `Graph Security Alert` under the `Alert type`.                                                   |
+| `microsoft-atp-create-alert`    | No available replacement.                                                                                                                                     |
+| `microsoft-atp-get-alert-by-id` | Use `msg-get-alert-details` in the `Microsoft Graph Security` integration instead.                                                                            |
+| `microsoft-atp-get-alert-related-files` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `fileDetails` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-fileevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-alert-related-ips`   | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `IpAddress` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-ipevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-alert-related-user`  | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `userAccount` information as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-alert-related-domains` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration to retrieve `DomainName` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-domain-alerts`       | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-file-alerts`         | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-ip-alerts`           | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-machine-alerts`      | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-user-alerts`         | No available replacement.                                                                                                                                 |
+| `microsoft-atp-list-alerts`             | Use the `msg-search-alerts` command in the `Microsoft Graph Security` integration instead.                                                                |
+| `microsoft-atp-update-alert`            | Use the `msg-update-alert` command in the `Microsoft Graph Security` integration instead.                                                                 |
+| `microsoft-atp-advanced-hunting`        | Use the `msg-advanced-hunting` command in the `Microsoft Graph Security` integration instead.                                                             |
