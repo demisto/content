@@ -1,10 +1,10 @@
 [RULE: msft_azure_resourcelogs_commonfields]
 alter
-	xdm.target.resource.id = coalesce(resourceId, arrayindex(regextract(resourceId, "/SUBSCRIPTIONS/([^\/]+)"), 0)),
+	xdm.target.resource.id = resourceId,
 	xdm.event.type = if(
 		category = "ApplicationGatewayFirewallLog", "Application Gateway Firewall Log",
 		category = "ApplicationGatewayAccessLog", "Application Gateway Access Log"),
-	xdm.source.cloud.project_id = tenantId,
+	xdm.source.cloud.project_id = coalesce(tenantId, arrayindex(regextract(resourceId, "/SUBSCRIPTIONS/([^\/]+)"), 0)),
 	xdm.event.original_event_type = category,
 	xdm.event.operation_sub_type = operationName,	
 	xdm.event.outcome_reason = if(resultType !~= "\d+", resultType, resultType ~= "\d+" and resultDescription != null, concat(resultDescription, " Error Code: ", resultType), concat("Error Code: ", resultType)),
