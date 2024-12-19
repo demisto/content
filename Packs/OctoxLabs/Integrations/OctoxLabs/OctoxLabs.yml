@@ -721,7 +721,7 @@ script:
         description: 'Total devices count.'
         type: Number
       - contextPath: OctoxLabs.ScrolledDevices.scroll_id
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         type: String
       - contextPath: OctoxLabs.ScrolledDevices.results
         description: 'List Device information.'
@@ -750,7 +750,7 @@ script:
         description: 'Total users count.'
         type: Number
       - contextPath: OctoxLabs.ScrolledUsers.scroll_id
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         type: String
       - contextPath: OctoxLabs.ScrolledUsers.results
         description: 'List Users information.'
@@ -779,7 +779,7 @@ script:
         description: 'Total applications count.'
         type: Number
       - contextPath: OctoxLabs.ScrolledApplications.scroll_id
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         type: String
       - contextPath: OctoxLabs.ScrolledApplications.results
         description: 'List Application information.'
@@ -804,7 +804,7 @@ script:
         description: 'Total vulnerabilities count.'
         type: Number
       - contextPath: OctoxLabs.ScrolledAVM.scroll_id
-        description: 'Specific Scroll Id'
+        description: 'Specific Scroll Id.'
         type: String
       - contextPath: OctoxLabs.ScrolledAVM.results
         description: 'List Vulnerability information.'
