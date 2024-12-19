@@ -113,7 +113,7 @@ When incidents are mirrored into Cortex XSOAR from Microsoft 365 Defender:
    * The **"classification"** field in Microsoft 365 Defender will be mapped to the **Close Reason** field in Cortex XSOAR.  
 
 
-### Mirroring Out (XSOAR → Microsoft 365 Defender)
+### Mirroring Out (Cortex XSOAR → Microsoft 365 Defender)
 
 When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
 
