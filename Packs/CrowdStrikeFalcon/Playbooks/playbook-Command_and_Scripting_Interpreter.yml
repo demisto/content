@@ -3,7 +3,31 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: T1059 - Command and Scripting Interpreter
-description: "This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. \nThe command line analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response Actions**\n\nAfter analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.\n\nThis phase executes the following containment actions:\n\n* Automatically isolates the endpoint\n\nIt then continues with the following eradication actions:\n\n* process termination."
+description: |-
+  This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.
+  An attacker might abuse command and script interpreters to execute commands, scripts, or binaries
+
+  The playbook executes the following stages:
+
+  **Analysis**
+
+  - Initiates the CommandLineAnalysiss tool which will determine if the command lines have any suspicious artifacts that might indicate malicious behavior.
+  - Enriches any indicates found during the command lines analysis phase.
+
+  **Investigative Actions:**
+  - In case malicious indicators were found, the playbook will initiate a check against CrowdStrike Falcon to identify if any other endpoint has been associated with the same indicators.  
+  - If there are any, the playbook will update the layout and create a new incident for further investigation.
+
+  **Remediation:**
+
+  - Terminate the process if the CrowdStike Falcon agent doesn't block it.
+  - If the process failed or the parent process command line was suspicious as well, A manual action will be provided to the analyst to choose how to proceed further:
+      - Terminate the parent process
+      - Isolate the endpoint
+  **Additional Phases:**
+
+  - Handle malicious alerts by closing the alert as True Positive.
+  - Handle non-malicious alerts by closing the alert as False Positive.
 starttaskid: "0"
 tasks:
   "0":
@@ -71,10 +95,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 845447d3-682b-47c8-8f7f-47e426135115
+    taskid: 893c7ef4-e2a2-48cf-83e6-0dde5035a0c7
     type: regular
     task:
-      id: 845447d3-682b-47c8-8f7f-47e426135115
+      id: 893c7ef4-e2a2-48cf-83e6-0dde5035a0c7
       version: -1
       name: Close Alert - True Positive
       description: Closes the alert in Cortex XSIAM
@@ -86,8 +110,10 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
+      closeNotes:
+        simple: Resolved As True Positive alert - Threat Handled
       closeReason:
-        simple: Resolved - Threat Handled
+        simple: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -283,13 +309,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: a7aaf887-5ebb-4d3b-8e09-ba59559d9758
+    taskid: 9295e1a2-7179-4325-8c78-27414e33a3c9
     type: condition
     task:
-      id: a7aaf887-5ebb-4d3b-8e09-ba59559d9758
+      id: 9295e1a2-7179-4325-8c78-27414e33a3c9
       version: -1
       name: Is the process blocked?
-      description: Is the process blocked?
+      description: Check if the CrowdStrike Falcon agent blocked the suspicious process.
       type: condition
       iscommand: false
       brand: ""
@@ -492,13 +518,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: ee0c5d4f-5070-4a06-8c52-6e026f29e6c9
+    taskid: 40dd73b5-d156-4b22-84bd-b5b09f0cb144
     type: condition
     task:
-      id: ee0c5d4f-5070-4a06-8c52-6e026f29e6c9
+      id: 40dd73b5-d156-4b22-84bd-b5b09f0cb144
       version: -1
       name: Manual Response
-      description:  "Dear analyst, we've identified suspicious behavior and the playbook could not handle this alert automatically. Therefore, please choose the right remediation action."
+      description: Manual Response - Analyst actions is required.
       type: condition
       iscommand: false
       brand: ""
@@ -525,7 +551,7 @@ tasks:
       to:
       subject:
       body:
-        simple: "Dear analyst, we've identified suspicious behavior and the playbook could not handle this alert automatically. Therefore, please choose the right remediation action."
+        simple: Dear analyst, we've identified suspicious behavior and the playbook could not handle this alert automatically. Therefore, please choose the right remediation action.
       methods: []
       format: ""
       bcc:
@@ -628,10 +654,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 911e04b5-8fb8-4720-8b52-12b65486e0f6
+    taskid: 99231bed-c5f1-4160-8a69-d05d21436797
     type: regular
     task:
-      id: 911e04b5-8fb8-4720-8b52-12b65486e0f6
+      id: 99231bed-c5f1-4160-8a69-d05d21436797
       version: -1
       name: Close Alert - False Positive
       description: Closes the alert in Cortex XSIAM
@@ -643,8 +669,10 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
+      closeNotes:
+        simple: Alert Resolved as False Positive.
       closeReason:
-        simple: Resolved - False Positive
+        simple: False Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -694,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 95015e7c-df77-4ea0-8491-73275c39e803
+    taskid: 85443065-cdf3-4d67-81ba-0a218af503c2
     type: condition
     task:
-      id: 95015e7c-df77-4ea0-8491-73275c39e803
+      id: 85443065-cdf3-4d67-81ba-0a218af503c2
       version: -1
       name: No suspicious artifacts were found - How would you like to proceed?
       description: "Dear Analyst, \n\nWe've performed several operations and found no suspicious activity. \n\nThe Process Chain we've received is:\n${CrowdStrike.Detection.grandparentprocess=val.filename +' --> ' }${CrowdStrike.Detection.parentprocess=val.filename +' --> ' } \n${incident.filenames.[0]}\n\n\n**Please Choose how would you should this incident be classified:**\n#### Option 1: True Positive   \n-> This action will go ahead and try to terminate the process in case it is still running, If not, you will be promoted with an additional manual task to choose from  if you want to isolate the machine or kill the parent process in the alert\n\n--- \n\n\n#### Option 2: False Positive  \n-> The incident will be closed and classified as False Positive\n\n"
@@ -776,13 +804,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 857e3a9e-27db-4941-8c46-dcafd23d65a7
+    taskid: f73afee4-91e7-4e25-82d2-a3619625b170
     type: condition
     task:
-      id: 857e3a9e-27db-4941-8c46-dcafd23d65a7
+      id: f73afee4-91e7-4e25-82d2-a3619625b170
       version: -1
       name: Are there any additional affected endpoints?
-      description: Are there any additional affected endpoints?
+      description: Check if there are any additional affected endpoints from malicious indicators.
       type: condition
       iscommand: false
       brand: ""
@@ -1424,13 +1452,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "105":
     id: "105"
-    taskid: 622eab6e-6d25-4ca0-800b-e75f0621661c
+    taskid: 98bf182c-5c8f-4f0a-8ec7-dd6638a69def
     type: condition
     task:
-      id: 622eab6e-6d25-4ca0-800b-e75f0621661c
+      id: 98bf182c-5c8f-4f0a-8ec7-dd6638a69def
       version: -1
       name: Is there a process to terminate?
-      description: Is there a process to terminate?
+      description: Check if the parent process id is located in the context.
       type: condition
       iscommand: false
       brand: ""
@@ -1513,13 +1541,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 1d6d47c6-9981-4315-88d3-3aa34c73fd9e
+    taskid: 6720c1eb-b438-4eac-8d85-38f489059de3
     type: condition
     task:
-      id: 1d6d47c6-9981-4315-88d3-3aa34c73fd9e
+      id: 6720c1eb-b438-4eac-8d85-38f489059de3
       version: -1
       name: Are there any malicious indicators?
-      description: Are there any malicious indicators?
+      description: Check if there are any malicious indicators.
       type: condition
       iscommand: false
       brand: ""
@@ -1569,10 +1597,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: 820dcf43-d785-4585-88ec-ac2c12d4ad8c
+    taskid: 4876f1ac-57db-48f5-84b9-e8ebeb766802
     type: condition
     task:
-      id: 820dcf43-d785-4585-88ec-ac2c12d4ad8c
+      id: 4876f1ac-57db-48f5-84b9-e8ebeb766802
       version: -1
       name: Should open another incident to track findings?
       description: Should open another incident to track findings?
@@ -1632,24 +1660,6 @@ view: |-
       }
     }
   }
-  {
-    "linkLabelsPosition": {
-      "105_17_#default#": 0.81,
-      "61_62_#default#": 0.52,
-      "76_78_Manual Remediation  ": 0.51,
-      "77_78_#error#": 0.49,
-      "91_49_True Positive": 0.46,
-      "91_92_False Positive": 0.54
-    },
-    "paper": {
-      "dimensions": {
-        "height": 3995,
-        "width": 1840,
-        "x": 350,
-        "y": -760
-      }
-    }
-  }
 inputs:
 - key: CommandLines
   value:
@@ -1678,16 +1688,18 @@ inputs:
       - operator: RemoveEmpty
         args:
           empty_values: {}
-          remove_keys: {}
+          remove_keys:
+            value:
+              simple: "true"
       - operator: uniq
   required: false
-  description: ""
+  description: The command line analysis that was found in the alert. By default, we will analyze the command line and its parent command line.
   playbookInputQuery:
 - key: CreateNewIncidnetForIndicators
   value:
     simple: "True"
   required: false
-  description: ""
+  description: If the playbook identifies malicious indicators associated with other hosts, a new incident will be generated with relevant information for the analysts.
   playbookInputQuery:
 inputSections:
 - inputs:
