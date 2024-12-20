@@ -1,7 +1,7 @@
 id: Rubrik Workload Analysis - Rubrik Security Cloud
 version: -1
 name: Rubrik Workload Analysis - Rubrik Security Cloud
-description: This playbook fetches workload information for the provided IPs or domains, and then increases the incident severity based on the workload risk levels and threat information.
+description: This playbook fetches workload information for the provided IPs or domains, and then increases the XSOAR incident severity based on the workload risk levels and threat information.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,8 +41,8 @@ tasks:
     task:
       id: ffc3a86f-c4e3-4db4-8716-f5969a59c476
       version: -1
-      name: Is Rubrik Polaris integration enabled?
-      description: Checks whether Rubrik Polaris integration is enabled or not.
+      name: Is Rubrik Security Cloud integration enabled?
+      description: Checks whether Rubrik Security Cloud integration is enabled or not.
       type: condition
       iscommand: false
       brand: ""
@@ -101,7 +101,7 @@ tasks:
     task:
       id: 5600df97-3517-4bf1-8ee8-1053355d9cc8
       version: -1
-      name: Delete Context.
+      name: Delete Context
       description: |-
         Delete field from context.
 
@@ -143,7 +143,7 @@ tasks:
     task:
       id: 962d42be-66a6-4b12-830a-6717d28c0e9a
       version: -1
-      name: Get Indicators.
+      name: Get Indicators
       description: commands.local.cmd.find.indicators
       script: Builtin|||findIndicators
       type: regular
@@ -190,7 +190,7 @@ tasks:
     task:
       id: 1872b686-b785-45a4-821f-0ad0ab8f4b95
       version: -1
-      name: Check for IP indicator.
+      name: Check for IP indicator
       description: Return all the detailed information available for the given IP address(es).
       script: RubrikPolaris|||ip
       type: regular
@@ -248,8 +248,8 @@ tasks:
     task:
       id: ea61438f-5e3d-4d2f-89be-f531a7e644cd
       version: -1
-      name: Set Incident Severity.
-      description: Script used to set the incident severity using the risk level(s) provided from the argument.
+      name: Set XSOAR Incident Severity
+      description: Script used to set the XSOAR incident severity using the risk level(s) provided from the argument.
       scriptName: RubrikSetIncidentSeverityUsingWorkLoadRiskLevel
       type: regular
       iscommand: false
@@ -324,7 +324,7 @@ tasks:
     task:
       id: 83eb8f64-fe43-46c8-8d74-237a17d60b1b
       version: -1
-      name: Check whether IPs or domains are available in playbook input.
+      name: Check whether IPs or domains are available in playbook input
       description: Check whether ips or domains are available in playbook input.
       type: condition
       iscommand: false
@@ -378,7 +378,7 @@ tasks:
     task:
       id: be556a30-526d-430f-824f-e863a90f85b8
       version: -1
-      name: Check for domain indicator.
+      name: Check for domain indicator
       description: Retrieve the sensitive information available for the given domain(s).
       script: RubrikPolaris|||domain
       type: regular
@@ -436,7 +436,7 @@ tasks:
     task:
       id: c09e4bfd-0a78-49ea-8515-2569a992e090
       version: -1
-      name: Check for malicious indicators.
+      name: Check for indicators
       type: title
       iscommand: false
       brand: ""
@@ -468,7 +468,7 @@ tasks:
     task:
       id: 97143252-e0a0-4dc5-8b56-00ea7c455cc8
       version: -1
-      name: Check that IP indicators are present or not.
+      name: Check that IP indicators are present or not
       description: Check that IP address(es) is present or not.
       type: condition
       iscommand: false
@@ -532,7 +532,7 @@ tasks:
     task:
       id: ad618db1-0cf1-45bc-8e9b-f61085bc12f3
       version: -1
-      name: Check that domain indicators are present or not.
+      name: Check that domain indicators are present or not
       description: Check that domain(s) is present or not.
       type: condition
       iscommand: false
@@ -596,7 +596,7 @@ tasks:
     task:
       id: c1a2dd6a-f918-49bd-857a-40f5a4be5f7e
       version: -1
-      name: Check that any workload data found or not.
+      name: Check that any workload data found or not
       description: Check that any workload data(riskLevel, threatMonitoringMalicious, threatHuntMalicious, anomalySeverity) found or not.
       type: condition
       iscommand: false
@@ -679,17 +679,17 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Specify the level by which to increase the incident severity. Only applicable if match found for the malicious threat hunt or for the malicious threat monitoring of workload.
+  description: "Specify the level in number by which to increase the XSOAR incident severity. Only applicable if match found for the malicious threat hunt or for the malicious threat monitoring of workload.\n\nNote: The value can range from 1 to 4.\n\nExample: If the current XSOAR incident severity is 1 (Low) and the playbook is set to increase the severity by 2, the XSOAR incident severity will be set to 3 (high)."
   playbookInputQuery:
 - key: ip_addresses
   value: {}
   required: false
-  description: The IP address(es) for which to use workload information to increase incident severity.
+  description: The optional comma-separated list of IP address(es) for which to use workload information to increase the XSOAR incident severity.
   playbookInputQuery:
 - key: domains
   value: {}
   required: false
-  description: The domain(s) for which to use workload information to increase incident severity.
+  description: The optional comma-separated list of domain(s) for which to use workload information to increase the XSOAR incident severity.
   playbookInputQuery:
 outputs: []
 tests:
