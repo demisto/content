@@ -181,18 +181,18 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
         
     return None, []
 
-def _get_mirroring_fields(args: Dict[str, Any]):
+def _get_mirroring_fields():
     """
     Get tickets mirroring.
     """
-
+    mirror_direction: str = demisto.params().get('mirror_direction', None)
     return {
-        "mirror_direction": MIRROR_DIRECTION.get("Incoming And Outgoing"),
+        "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
         "mirror_instance": demisto.integrationInstance(),
         "incident_type": "Doppel_Incident_Test",
     }
 
-def _get_last_fetch_datetime(args: Dict[str, Any]):
+def _get_last_fetch_datetime():
     # Fetch the last run (time of the last fetch)
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch", None)
@@ -203,7 +203,7 @@ def _get_last_fetch_datetime(args: Dict[str, Any]):
     else:
         # If no last run is found
         historical_days: int = 1
-        historical_days_str: str = args.get('historical_days', None)
+        historical_days_str: str = demisto.params().get('historical_days', None)
         if historical_days_str:
             try:
                 historical_days = int(historical_days_str)
@@ -374,7 +374,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     """
     demisto.debug("Fetching alerts from Doppel.")
     # Fetch the last run (time of the last fetch)
-    last_fetch_datetime: datetime = _get_last_fetch_datetime(args)
+    last_fetch_datetime: datetime = _get_last_fetch_datetime()
     
     # Fetch alerts
     page: int = 0
@@ -392,7 +392,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
             created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
             new_last_fetch = created_at_datetime.timestamp()
             if new_last_fetch > last_fetch:
-                alert.update(_get_mirroring_fields(args))
+                alert.update(_get_mirroring_fields())
                 incident = {
                     'name': DOPPEL_INCIDENT,
                     'type': DOPPEL_ALERT,
