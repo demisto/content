@@ -378,12 +378,12 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     
     # Fetch alerts
     page: int = 0
+    incidents = []
     while True:
         alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
         if not alerts:
             demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
-            return
-        incidents = []
+            break
         last_fetch = last_fetch_datetime.timestamp()
         new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
         for alert in alerts:
@@ -404,19 +404,18 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         # Update last run with the new_last_fetch value
         demisto.setLastRun({"last_fetch": new_last_fetch})
         demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
-        # Create incidents in XSOAR
-        if incidents and len(incidents) > 0:
-            try:
-                demisto.incidents(incidents)
-                demisto.info(f"Successfully created {len(incidents)} incidents in XSOAR.")
-            except Exception as e:
-                raise ValueError(f"Incident creation failed due to: {str(e)}")
-        else:
-            demisto.incidents([])
-            demisto.info("No incidents to create. Exiting fetch_incidents_command.")
-
         demisto.info(f'Fetched Doppel alerts from page {page} Successfully.')
         page = page+1
+    # Create incidents in XSOAR
+    if incidents and len(incidents) > 0:
+        try:
+            demisto.incidents(incidents)
+            demisto.info(f"Successfully created {len(incidents)} incidents in XSOAR.")
+        except Exception as e:
+            raise ValueError(f"Incident creation failed due to: {str(e)}")
+    else:
+        demisto.incidents([])
+        demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
 def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
     demisto.debug('Command get-modified-remote-data is not implemented')
