@@ -1,0 +1,38 @@
+{
+	"autorun": false,
+	"cacheVersn": 0,
+	"closureScript": "",
+	"color": "#C9C598",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Doppel Alert",
+	"itemVersion": "",
+	"layout": "acdb3cde-b78d-4fa0-86e3-ef0a01606a26",
+	"locked": false,
+	"name": "Doppel Alert",
+	"onChangeRepAlg": 0,
+	"packID": "c3beb3d4-5d11-46e9-85ec-87a0586dd624",
+	"packName": "Fields",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
