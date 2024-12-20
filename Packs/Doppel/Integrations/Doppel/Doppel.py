@@ -181,18 +181,18 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
         
     return None, []
 
-def _get_mirroring_fields():
+def _get_mirroring_fields(args: Dict[str, Any]):
     """
     Get tickets mirroring.
     """
 
     return {
-        "mirror_direction": MIRROR_DIRECTION.get("Incoming And Outgoing"),
+        "mirror_direction": MIRROR_DIRECTION.get(args.get('mirror_direction', 'None')),
         "mirror_instance": demisto.integrationInstance(),
         "incident_type": "Doppel_Incident_Test",
     }
 
-def _get_last_fetch_datetime():
+def _get_last_fetch_datetime(args: Dict[str, Any]):
     # Fetch the last run (time of the last fetch)
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch", None)
@@ -201,8 +201,16 @@ def _get_last_fetch_datetime():
         last_fetch_datetime = datetime.fromtimestamp(last_fetch)
         demisto.debug(f"Alerts were fetch last on: {last_fetch_datetime}")  
     else:
-        # If no last run is found, set first_run (default to 24 hours ago)
-        last_fetch_datetime = datetime.now() - timedelta(days=1)
+        # If no last run is found
+        historical_days: int = 1
+        historical_days_str: str = args.get('historical_days', None)
+        if historical_days_str:
+            try:
+                historical_days = int(historical_days_str)
+            except ValueError:
+                demisto.error(f'{historical_days} is not an int value. We will use the default historical value as {historical_days} day')
+        demisto.info(f'Fetching alerts created in last {historical_days} days')
+        last_fetch_datetime = datetime.now() - timedelta(days=historical_days)
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch_datetime}")
         
     return last_fetch_datetime
@@ -366,7 +374,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     """
     demisto.debug("Fetching alerts from Doppel.")
     # Fetch the last run (time of the last fetch)
-    last_fetch_datetime: datetime = _get_last_fetch_datetime()
+    last_fetch_datetime: datetime = _get_last_fetch_datetime(args)
     
     # Fetch alerts
     page: int = 0
@@ -384,7 +392,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
             created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
             new_last_fetch = created_at_datetime.timestamp()
             if new_last_fetch > last_fetch:
-                alert.update(_get_mirroring_fields())
+                alert.update(_get_mirroring_fields(args))
                 incident = {
                     'name': DOPPEL_INCIDENT,
                     'type': DOPPEL_ALERT,
