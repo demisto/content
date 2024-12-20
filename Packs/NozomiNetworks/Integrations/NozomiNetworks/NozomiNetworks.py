@@ -27,7 +27,8 @@ class Client:
             "key_token": self.auth_credentials[1]
         }
         try:
-            response = requests.post(f"{self.base_url}/api/open/sign_in", json=payload, verify=self.verify, proxies=self.get_proxies())
+            response = requests.post(f"{self.base_url}/api/open/sign_in", json=payload, verify=self.verify,
+                                     proxies=self.build_proxies())
             if response.status_code != 200:
                 raise Exception(f"Authentication failed with status code {response.status_code}: {response.text}")
 
@@ -38,14 +39,14 @@ class Client:
             self.use_basic_auth = True
 
 
-    def get_proxies(self):
+    def build_proxies(self):
         if self.proxy:
             return handle_proxy()
         else:
             return {}
 
 
-    def get_headers(self):
+    def build_headers(self):
         if self.use_basic_auth:
             return {
                 "accept": "application/json"
@@ -68,9 +69,9 @@ class Client:
         response = requests.request(
             method=method,
             url=url,
-            headers=self.get_headers(),
+            headers=self.build_headers(),
             verify=self.verify,
-            proxies=self.get_proxies(),
+            proxies=self.build_proxies(),
             **kwargs
         )
 
@@ -81,6 +82,7 @@ class Client:
         return response.json()
 
     def http_get_request(self, path):
+        demisto.info(f"path {path}")
         return self._make_request('GET', path)
 
     def http_post_request(self, path, data):
@@ -94,7 +96,7 @@ QUERY_ALERTS_PATH = '/api/open/query/do?query=alerts'
 QUERY_ASSETS_PATH = '/api/open/query/do?query=assets | sort id'
 JOB_STATUS_MAX_RETRY = 5
 DEFAULT_HEAD_ASSETS = 50
-DEFAULT_HEAD_ALERTS = 20
+DEFAULT_COUNT_ALERTS = 100
 DEFAULT_HEAD_QUERY = 500
 MAX_ASSETS_FINDABLE_BY_A_COMMAND = 100
 DEFAULT_ASSETS_FINDABLE_BY_A_COMMAND = 50
@@ -146,13 +148,6 @@ def better_than_time_filter(st):
     return t
 
 
-def equal_than_time_filter(st):
-    t = ''
-    if st:
-        t = f' | where record_created_at == {st}'
-    return t
-
-
 def better_than_id_filter(id):
     res = ''
     if id:
@@ -174,19 +169,14 @@ def has_last_run(lr):
     return lr is not None and 'last_fetch' in lr
 
 
-def incidents_better_than_time(st, risk, also_n2os_incidents, client):
-    head = demisto.params().get('incidentPerRun', DEFAULT_HEAD_ALERTS)
-    return client.http_get_request(
+def incidents_better_than_time(st, page, risk, also_n2os_incidents, client):
+    query = (
         f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{better_than_time_filter(st)}'
-        f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {min(int(head), 1000)}'
-    )['result']
-
-
-def incidents_equal_than_time(st, risk, also_n2os_incidents, client):
-    return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{equal_than_time_filter(st)}'
         f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)}'
-    )['result']
+    )
+    #TODO extract method adding page and count
+    full_path = f'{query}&page={page}&count={min(int(incident_per_run()), 1000)}'
+    return client.http_get_request(full_path)['result']
 
 
 def also_n2os_incidents_filter(also_n2os_incidents):
@@ -200,52 +190,27 @@ def risk_filter(risk):
     return f' | where risk >= {int(risk)}' if risk else ''
 
 
-def incidents_better_than_id(incidents_to_filter, the_id):
-    if incidents_to_filter is None:
-        return []
-    return [incident for incident in incidents_to_filter if incident['id'] > the_id]
-
-
-def incidents_equal_time_better_id(st, last_id, risk, also_n2os_incidents, client):
-    if last_id:
-        return incidents_better_than_id(
-            incidents_equal_than_time(st, risk, also_n2os_incidents, client),
-            last_id)
-    else:
-        return []
-
-
-def incidents(st, last_id, last_run, risk, also_n2os_incidents, client):
+def incidents(st, last_run, risk, also_n2os_incidents, client):
     def get_incident_name(i):
         return i['name']
 
-    ibtt = incidents_better_than_time(st, risk, also_n2os_incidents, client)
+    ibtt = incidents_better_than_time(st, last_run.get('page', 1), risk, also_n2os_incidents, client)
 
     lft = last_fetched_time(ibtt, last_run)
-    lfid = last_fetched_id(ibtt, last_run)
 
     if ibtt is None:
-        return [], lft, lfid
+        return [], lft
 
-    incidents_merged = incidents_equal_time_better_id(st, last_id, risk, also_n2os_incidents, client) + ibtt
-
-    parsed_incidents = [parse_incident(i) for i in incidents_merged]
+    parsed_incidents = [parse_incident(i) for i in ibtt]
     parsed_incidents.sort(key=get_incident_name)
 
-    return \
-        parsed_incidents, \
-        lft, \
-        lfid
+    return parsed_incidents, lft
 
 
 def last_fetched_time(inc, last_run):
     if inc and len(inc) > 0 and 'record_created_at' in inc[-1]:
         return inc[-1]['record_created_at']
     return last_run.get("last_fetch", 0)
-
-
-def last_fetched_id(inc, last_run):
-    return inc[-1]['id'] if inc and len(inc) > 0 else last_run.get("last_id", None)
 
 
 def last_asset_id(response):
@@ -290,17 +255,6 @@ def close_alerts(args, close_action, client):
     }
 
 
-def has_last_id(lr):
-    return lr is not None and 'last_id' in lr
-
-
-def get_last_id(last_run):
-    result = None
-    if has_last_id(last_run):
-        result = f'{last_run.get("last_id", 0)}'
-    return result
-
-
 def filter_from_args(args):
     if args and args.get('filter', '') != '':
         filter = args.get('filter', '')
@@ -341,29 +295,48 @@ def humanize_api_error(error):
 
 
 def fetch_incidents(
-        client,
-        st=None,
-        last_run=None,
-        last_id=None,
-        risk=None,
-        fetch_also_n2os_incidents=None,
-        test_mode=False
+    client,
+    st=None,
+    last_run=None,
+    risk=None,
+    fetch_also_n2os_incidents=None,
+    test_mode=False
 ):
     st = st or start_time(demisto.getLastRun(), demisto.params().get('fetchTime', '7 days').strip())
     last_run = last_run or demisto.getLastRun()
-    last_id = last_id or get_last_id(demisto.getLastRun())
     risk = risk or demisto.params().get('riskFrom', None)
     fetch_also_n2os_incidents = fetch_also_n2os_incidents or demisto.params().get('fecthAlsoIncidents', False)
 
-    demisto_incidents, last_fetch, last_id_returned = \
-        incidents(st, last_id, last_run, risk, fetch_also_n2os_incidents, client)
+    demisto_incidents, last_fetch = incidents(st, last_run, risk, fetch_also_n2os_incidents, client)
 
     if not test_mode:
-        demisto.setLastRun({'last_fetch': last_fetch, 'last_id': last_id_returned})
-        ack_alerts(nozomi_alerts_ids_from_demisto_incidents(demisto_incidents), client)
+        current_page = last_run.get('page', 1)
+
+        #TODO extract calculate_next_page(current_page, incidents_found_count)
+        if current_page >= 100 or len(demisto_incidents) < incident_per_run():
+            if len(demisto_incidents) == 0:
+                #if demisto_incidents for this page is empty will be queried until returns at least one item
+                next_page = current_page
+            else:
+                next_page = 1
+        else:
+            next_page = current_page + 1
+
+        #TODO extract calculate_last_fetch_to_set
+        last_fetch_to_set = last_fetch if next_page == 1 else st
+
+        demisto.info(f"incident found {len(demisto_incidents)} next_page {next_page} current_page {current_page} last_fetch_to_set {last_fetch_to_set}")
+
+        demisto.setLastRun({'last_fetch': last_fetch_to_set, 'page': next_page})
         demisto.incidents(demisto_incidents)
+        ack_alerts(nozomi_alerts_ids_from_demisto_incidents(demisto_incidents), client)
 
     return demisto_incidents, last_fetch
+
+
+#TODO test me
+def incident_per_run():
+    return int(demisto.params().get('incidentPerRun', DEFAULT_COUNT_ALERTS))
 
 
 def is_alive(client):

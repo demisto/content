@@ -25,11 +25,6 @@ def client_with_mock_sign_in():
     return client
 
 
-@pytest.mark.parametrize('obj, expected', [({'last_id': "an_id"}, True), ({}, False), (None, False)])
-def test_has_last_id(obj, expected):
-    assert has_last_id(obj) is expected
-
-
 @pytest.mark.parametrize('obj, expected', [({'last_fetch': "a_timestamp"}, True), ({}, False), (None, False)])
 def test_has_last_run(obj, expected):
     assert has_last_run(obj) is expected
@@ -63,18 +58,6 @@ def test_time_filter(obj, expected):
     assert better_than_time_filter(obj) == expected
 
 
-@pytest.mark.parametrize(
-    'obj, expected',
-    [
-        (None, ''),
-        ('', ''),
-        ("1540390400000", " | where record_created_at == 1540390400000"),
-    ]
-)
-def test_equal_time_filter_with_ts(obj, expected):
-    assert equal_than_time_filter(obj) == expected
-
-
 def test_incidents_when_ibtt_is_none(requests_mock):
     st = '1392048082000'
     last_id = None
@@ -85,11 +68,10 @@ def test_incidents_when_ibtt_is_none(requests_mock):
     client = __get_client([], requests_mock)
 
     with patch('NozomiNetworks.incidents_better_than_time', return_value=None):
-        incidents_result, lft, lfid = incidents(st, last_id, last_run, risk, also_n2os_incidents, client)
+        incidents_result, lft = incidents(st, last_run, risk, also_n2os_incidents, client)
 
         assert incidents_result == []
         assert lft == last_run.get('last_fetch', st)
-        assert lfid == last_run.get('last_id', last_id)
 
 
 def test_parse_incidents():
@@ -153,11 +135,6 @@ def test_http_incident_request(requests_mock):
     assert r['total'] == 126
 
 
-def test_incidents_better_than_id():
-    filtered = incidents_better_than_id([{'id': 'a'}, {'id': 'b'}, {'id': 'f'}, {'id': '0'}], 'a')
-    assert filtered == [{'id': 'b'}, {'id': 'f'}]
-
-
 def test_response_with_error():
     client = MagicMock()
 
@@ -167,19 +144,17 @@ def test_response_with_error():
 
 
 def test_incidents_filtered(requests_mock):
-    fi, lr, lid = incidents(
+    fi, lr = incidents(
         '1392048082000',
-        None,
         {},
         '4',
         True,
         __get_client(
             [{'json': __load_test_data('./test_data/incidents_better_than_time.json'),
               'path': '/api/open/query/do?query=alerts | sort record_created_at asc | sort id asc '
-              '| where record_created_at > 1392048082000 | where risk >= 4 | head 20'}],
+              '| where record_created_at > 1392048082000 | where risk >= 4&page=1&count=100'}],
             requests_mock))
 
-    assert lid is not None
     assert lr == 1392048082242
     assert list(map(lambda i: {
         'name': f"{i['name'].partition('_')[0]}",
@@ -366,8 +341,8 @@ def test_ip_from_mac_not_found(requests_mock):
 def test_incidents_head_limit(requests_mock):
     import urllib.parse
 
-    query = "alerts | sort record_created_at asc | sort id asc | where record_created_at > 1392048082000 | where risk >= 4 | head 20"
-    request_path = f"/api/open/query/do?query={urllib.parse.quote(query)}"
+    query = "alerts | sort record_created_at asc | sort id asc | where record_created_at > 1392048082000 | where risk >= 4"
+    request_path = f"/api/open/query/do?query={urllib.parse.quote(query)}&page=1&count=100"
 
     client = __get_client(
         [
@@ -395,9 +370,8 @@ def test_incidents_head_limit(requests_mock):
         requests_mock
     )
 
-    incidents_result, lft, lfid = incidents(
+    incidents_result, lft = incidents(
         '1392048082000',
-        None,
         {},
         '4',
         True,
@@ -406,7 +380,6 @@ def test_incidents_head_limit(requests_mock):
 
     assert requests_mock.called
     assert lft == 1392048082002
-    assert lfid == 2
     assert len(incidents_result) == 2
     assert incidents_result[0]['name'] == "Mock Incident 1_1"
     assert incidents_result[1]['name'] == "Mock Incident 2_2"
@@ -486,24 +459,25 @@ def test_sign_in_exception_handling(requests_mock):
     assert client.bearer_token is None
     assert client.use_basic_auth
 
+
 @patch('NozomiNetworks.handle_proxy')
-def test_get_proxies_with_proxy_enabled(mock_handle_proxy):
+def test_build_proxies_with_proxy_enabled(mock_handle_proxy):
     mock_handle_proxy.return_value = {'http': 'http://proxy.com'}
 
     client = Client(base_url="https://test.com", proxy=True)
-    proxies = client.get_proxies()
+    proxies = client.build_proxies()
 
     assert proxies == {'http': 'http://proxy.com'}
     mock_handle_proxy.assert_called_once()
 
-def test_get_proxies_without_proxy():
+def test_build_proxies_without_proxy():
     client = Client(base_url="https://test.com", proxy=False)
-    proxies = client.get_proxies()
+    proxies = client.build_proxies()
     assert proxies == {}
 
-def test_get_proxies_with_none_proxy():
+def test_build_proxies_with_none_proxy():
     client = Client(base_url="https://test.com", proxy=None)
-    proxies = client.get_proxies()
+    proxies = client.build_proxies()
     assert proxies == {}
 
 
@@ -512,16 +486,10 @@ def test_get_proxies_with_none_proxy():
     (False, "Bearer my_token", {"accept": "application/json", "Authorization": "Bearer my_token"}),
     (True, None, {"accept": "application/json"})
 ])
-def test_get_headers(use_basic_auth, bearer_token, expected_headers):
+def test_build_headers(use_basic_auth, bearer_token, expected_headers):
     client = Client(bearer_token=bearer_token, use_basic_auth= use_basic_auth)
-    assert client.get_headers() == expected_headers
+    assert client.build_headers() == expected_headers
 
-
-@pytest.fixture
-def handle_proxy_mock():
-    mock = Mock()
-    mock.return_value = {'http': 'http://proxy.com'}
-    return mock
 
 def __get_client(dummy_responses, requests_mock):
     requests_mock.post(f"{NOZOMIGUARDIAN_URL}/api/open/sign_in", json={
@@ -536,9 +504,7 @@ def __get_client(dummy_responses, requests_mock):
             json=dummy_response["json"]
         )
 
-    client = Client(
-        base_url=NOZOMIGUARDIAN_URL
-    )
+    client = Client(base_url=NOZOMIGUARDIAN_URL)
 
     client.sign_in()
 
