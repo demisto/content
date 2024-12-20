@@ -187,7 +187,7 @@ def _get_mirroring_fields(args: Dict[str, Any]):
     """
 
     return {
-        "mirror_direction": MIRROR_DIRECTION.get(args.get('mirror_direction', 'None')),
+        "mirror_direction": MIRROR_DIRECTION.get("Incoming And Outgoing"),
         "mirror_instance": demisto.integrationInstance(),
         "incident_type": "Doppel_Incident_Test",
     }
