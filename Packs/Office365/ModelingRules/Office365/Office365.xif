@@ -133,7 +133,7 @@ call o365_common_fields
 	xdm.email.subject = coalesce(replex(Item -> Subject, "\"", ""), replex(ExchangeMetaData -> Subject, "\"", "")),
 	xdm.source.process.name = arraystring(regextract(ClientProcessName, "^(\S+)\.\S+"), ""),
 	xdm.email.sender = coalesce(ExchangeMetaData -> From, sender),
-	xdm.email.recipients = if(arraystring(arraycreate(receivers), ", ") != "", arraymap(receivers -> [], trim("@element", "\"")), arraymap(ExchangeMetaData -> To[], replex("@element", "\"", ""))),
+    xdm.email.recipients = if(array_length(receivers -> []) > 0, arraymap(receivers -> [], trim("@element", "\"")), arraymap(ExchangeMetaData -> To[], trim("@element", "\""))),
 	xdm.email.cc = arraymap(ExchangeMetaData -> CC[], replex("@element", "\"", "")),
 	xdm.email.bcc = arraymap(ExchangeMetaData -> BCC[], replex("@element", "\"", "")),
 	xdm.email.origination_timestamp = parse_timestamp( "%Y-%m-%dT%H:%M:%S", ExchangeMetaData -> Sent),
