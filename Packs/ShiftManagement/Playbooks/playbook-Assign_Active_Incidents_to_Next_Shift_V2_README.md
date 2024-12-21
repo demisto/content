@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Assign Active Incidents to Next Shift V2](../doc_files/Assign_Active_Incidents_to_Next_Shift_V2.png)
+![Assign Active Incidents to Next Shift V2](../doc_files/Shift_management_-_Assign_Active_Incidents_to_Next_Shift_V2.png)
