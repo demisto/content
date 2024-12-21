@@ -223,7 +223,7 @@ filter CategoryValue in("Administrative", "Policy", "Alert") and (category = nul
         xdm.source.cloud.region = properties -> resourceLocation,
         xdm.network.rule = if(category = "Policy", to_string (properties -> policies), null);
 
-// Fall XDM Mappings for unspecified categories
+// Fallback XDM Mappings for unspecified categories
 filter category not in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs", "AuditLogs", "ProvisioningLogs", "RiskyUsers", "RiskyServicePrincipals", "UserRiskEvents", "ServicePrincipalRiskEvents", "Administrative", "Policy", "Alert") and CategoryValue not in ("Administrative", "Policy", "Alert")
 | call msft_azure_resource_logs_map_common_fields;
 
