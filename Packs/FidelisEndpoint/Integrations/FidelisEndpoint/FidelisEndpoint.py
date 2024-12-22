@@ -157,7 +157,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def execute_script(self, script_id: str = None, endpoint_ip: str = None, answer: str | int = None,
+    def execute_script(self, script_id: str = None, endpoint_ip: str = None, answer: str | int | None= None,
                        time_out: int = None, additional_answer: None | str = None) -> dict:
 
         url_suffix = '/jobs/createTask'

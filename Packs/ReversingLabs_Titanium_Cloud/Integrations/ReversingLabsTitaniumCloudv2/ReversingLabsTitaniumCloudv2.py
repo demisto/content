@@ -1,4 +1,7 @@
 from copy import deepcopy
+
+from requests import Response
+
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
@@ -1216,7 +1219,7 @@ def certificate_analytics_output(response_json, thumbprint):
 
 
 def yara_ruleset_command():
-    response = None
+    response = Response()
     output_key = ''
     yara = YARAHunting(
         host=TICLOUD_URL,
@@ -1352,7 +1355,7 @@ def yara_matches_feed_output(response_json, time_value):
 
 
 def yara_retro_actions_command():
-    response = None
+    response = Response()
     output_key = ''
     retro = YARARetroHunting(
         host=TICLOUD_URL,

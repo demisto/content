@@ -243,7 +243,6 @@ class VectraClient(BaseClient):
             # set new access token
             set_integration_context({'access_token': access_token, 'refresh_token': refresh_token})
             return access_token
-        return None
 
     def list_users_request(self, username: Optional[str], role=Optional[str],
                            last_login_timestamp=Optional[datetime]) -> dict:

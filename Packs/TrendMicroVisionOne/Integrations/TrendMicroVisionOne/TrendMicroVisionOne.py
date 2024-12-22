@@ -1220,7 +1220,7 @@ def get_file_analysis_report(
                 file_type=EntryType.ENTRY_INFO_FILE,
             )
     else:
-        results = None
+        results = CommandResults()
         demisto.debug(f"The code didn't match any condition. {results=}")
     return results
 

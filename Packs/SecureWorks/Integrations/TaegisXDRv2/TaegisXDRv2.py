@@ -990,7 +990,7 @@ def fetch_incidents(
         }
     else:
         query = ""
-        variables = ""
+        variables = {}
         demisto.debug(f"No condition was met -> {query=} {variables=}")
 
     result = client.graphql_run(query=query, variables=variables)

@@ -452,7 +452,7 @@ class Client(BaseClient):
         """
         request_params = ""
         if options:
-            request_params: str = options
+            request_params = options
         else:
             if free_json:
                 request_params = free_json

@@ -283,7 +283,7 @@ def certificate_reputation_command(args: dict[str, Any]) -> dict[str, Any]:
         tags, check_comments, dbot_score = dbot_context(indicator_value, certificate_stdcontext)
     else:
         dbot_score = {}
-        tags = None
+        tags = [CertificateValidationTag]
         check_comments = []
         demisto.debug(f"Initializing {dbot_score=} {tags=} {check_comments=}")
 

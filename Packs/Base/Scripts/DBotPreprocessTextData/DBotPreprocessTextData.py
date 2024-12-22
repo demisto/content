@@ -479,7 +479,7 @@ def main():
     # output
     file_name = str(uuid.uuid4())
     output_format = demisto.args()['outputFormat']
-    data_encoded = ''
+    data_encoded = b''
     if output_format == 'pickle':
         data_encoded = pickle.dumps(data, protocol=2)
     elif output_format == 'json':

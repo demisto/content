@@ -211,7 +211,7 @@ def ad_get_user_command(args):
     """
     Returns the user details from our simulated AD if the user is found
     """
-    user = {}
+    user: dict | None = {}
     demisto.debug(f"Initializing {user=}")
 
     # error handing if one of username, email or dn is not passed to the command

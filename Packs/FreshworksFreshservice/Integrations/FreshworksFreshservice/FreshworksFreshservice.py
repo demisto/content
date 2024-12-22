@@ -3004,7 +3004,7 @@ def convert_date_time(date_time: str) -> str | None:
     if isinstance(datetime_arg, datetime):
         updated_datetime_arg = datetime_arg.strftime(STRFTIME)
     else:
-        updated_datetime_arg = datetime_arg
+        updated_datetime_arg = date_time
         demisto.debug(f"{datetime_arg=} isn't of type datetime.")
     return updated_datetime_arg
 

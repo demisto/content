@@ -907,7 +907,7 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
             if response.get("link") is None:
-                link = None
+                link = ""
                 demisto.info(f"got bad response, {response}")
             else:
                 demisto.info(f"got good response, {response}")

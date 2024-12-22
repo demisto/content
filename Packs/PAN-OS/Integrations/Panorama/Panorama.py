@@ -2253,8 +2253,8 @@ def panorama_edit_address_group_command(args: dict):
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
     else:
-        addresses_param = None
-        addresses_path = None
+        addresses_param = ""
+        addresses_path = ""
         demisto.debug(f"{type_=} -> {addresses_param=} {addresses_path=}")
 
     description = args.get('description')

@@ -1,3 +1,5 @@
+from requests import Response
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any
@@ -352,7 +354,7 @@ class Client(BaseClient):
         Returns:
             The new created rule's information.
         """
-        res = {}
+        res = Response()
         if interface_type == "Global":
             res = self._http_request("POST", '/api/access/global/rules', json_data=rule_body, resp_type="response")
         if interface_type == 'In':

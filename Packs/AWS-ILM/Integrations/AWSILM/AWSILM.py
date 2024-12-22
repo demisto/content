@@ -1,3 +1,5 @@
+from requests import Response
+
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
@@ -491,7 +493,7 @@ def create_group_command(client, args):
 
 
 def update_group_command(client, args):
-    res = None
+    res = Response()
     scim = safe_load_json(args.get('scim'))
 
     group_id = scim.get('id')
