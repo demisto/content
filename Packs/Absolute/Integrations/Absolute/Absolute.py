@@ -10,6 +10,8 @@ import urllib3
 from typing import Any
 import hmac
 
+from datetime import timedelta
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -101,6 +103,7 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
     "geoData.location.lastUpdateDateTimeUtc",
 ]
 
+SEIM_EVENTS_PAGE_SIZE = 1000
 
 class Client(BaseClient):
     def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
@@ -897,7 +900,41 @@ def get_device_location_command(args, client) -> CommandResults:
 
 
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    pass
+    last_end_date = last_run.get('end_date', datetime.utcnow())
+    start_date = last_run.get('fromDateTimeUtc', (datetime.utcnow() - timedelta(days=3)))
+    end_date = last_run.get('toDateTimeUtc', datetime.utcnow())
+
+    next_page = last_run.get('nextPage', '')
+
+    events, started_new_query, next_page = run_fetch_mechanism(client, fetch_limit, next_page, start_date, end_date)
+
+
+def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_date: int, end_date: int):
+    all_events = []
+    started_new_query = False
+    while len(all_events) < fetch_limit and (next_page or not started_new_query):
+        page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
+        started_new_query = started_new_query or not next_page
+        response = run_get_events_query(client, next_page, start_date, end_date, page_size)
+
+        events = response.get('data', [])
+        next_page = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
+        all_events.extend(events)
+
+    return all_events, started_new_query, next_page
+
+def run_get_events_query(client: Client, next_page, start_date, end_date, page_size: int) -> dict[str, Any]:
+    if not next_page:
+        demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
+        response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
+        demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
+
+    else:
+        demisto.debug(f'searching events with next_link: {next_page} and page size: {SEIM_EVENTS_PAGE_SIZE}')
+        response = client.search_events(limit=page_size, next_link=next_page)
+        demisto.debug(f'Found {response["size"]} events in the current page')
+
+    return response
 
 
 ''' MAIN FUNCTION '''
@@ -974,7 +1011,7 @@ def main() -> None:  # pragma: no cover
             return_results(get_device_location_command(args=args, client=client))
 
         elif demisto.command() == 'fetch-events':
-            max_events_per_fetch = int(arg_to_number(params.get('max_events_per_fetch', 10000)))  # type:ignore
+            max_events_per_fetch = int(arg_to_number(params.get('max_events_per_fetch', 10000)))
             events, last_run_object = fetch_events(client, max_events_per_fetch, demisto.getLastRun())
             if events:
                 pass
