@@ -360,7 +360,7 @@ script:
       name: pageSize
     - description: The name of the group to which the endpoint belongs. A wild card search can be done using '*'at the end of the query.
       name: groupName
-    - description: desiredVersion
+    - description: desiredVersion.
       name: desiredVersion
     description: Get endpoints for a running version that is different than the target version or the desired version (if specified).
     name: sep-identify-old-clients

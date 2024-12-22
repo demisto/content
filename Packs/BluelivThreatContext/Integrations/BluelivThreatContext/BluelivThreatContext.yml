@@ -148,7 +148,7 @@ script:
       description: Indicator last seen date.
       type: Date
     - contextPath: BluelivThreatContext.indicator.risk
-      description: Indicator risk
+      description: Indicator risk.
       type: Number
     - contextPath: BluelivThreatContext.indicator.latitude
       description: Indicator latitude.
@@ -643,3 +643,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

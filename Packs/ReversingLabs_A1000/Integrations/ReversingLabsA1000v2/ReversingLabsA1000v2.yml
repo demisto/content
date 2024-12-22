@@ -713,7 +713,7 @@ script:
       - contextPath: ReversingLabs.a1000_upload_from_url_actions
         description: Actions for uploading a sample from a URL and fetching the analysis results.
         type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.98754
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.117236
   runonce: false
   script: '-'
   subtype: python3
