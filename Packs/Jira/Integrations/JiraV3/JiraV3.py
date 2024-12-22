@@ -3568,7 +3568,8 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
     demisto.debug(
-        f'Params to validate: {issue_field_to_fetch_from=}, {new_fetch_created_time=}, {last_fetch_created_time=}, {new_fetch_updated_time=},{last_fetch_updated_time=}')
+        f'Params to validate: {issue_field_to_fetch_from=}, {new_fetch_created_time=}, 
+        {last_fetch_created_time=}, {new_fetch_updated_time=},{last_fetch_updated_time=}')
 
     if (
         (issue_field_to_fetch_from == 'created date'
