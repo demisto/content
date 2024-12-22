@@ -6,13 +6,13 @@ import demistomock as demisto
 
 def test_convert_json_to_markdown_table_basic():
     input_data = {"Action1": "Value1", "Action2": "Value2"}
-    expected_output = "| ***Policy Action*** | ***Opration Executed*** |\n| --- | ----- |\n| Action2 | Value2 |\n| Action1 | Value1 |\n"  # noqa: E501
+    expected_output = "| ***Policy Action*** | ***Opration Executed*** |\n| --- | ----- |\n| Action2 | Value2 |\n| Action1 | Value1 |\n" # noqa: E501
     assert convert_json_to_markdown_table(input_data) == expected_output
 
 
 def test_convert_json_to_markdown_table_with_dict():
     input_data = {"Action1": {"subkey": "subvalue"}}
-    expected_output = "| ***Policy Action*** | ***Opration Executed*** |\n| --- | ----- |\n| Action1 | ```json\n{\n    \"subkey\": \"subvalue\"\n}\n``` |\n"  # noqa: E501
+    expected_output = "| ***Policy Action*** | ***Opration Executed*** |\n| --- | ----- |\n| Action1 | ```json\n{\n    \"subkey\": \"subvalue\"\n}\n``` |\n" # noqa: E501
     assert convert_json_to_markdown_table(input_data) == expected_output
 
 
