@@ -55,8 +55,6 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
-NUM_OF_WORKERS = 20
-THREAD_POOL_EXECUTOR = None
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -118,19 +116,6 @@ def _find_relevant_module(line):
                 relevant_module = module
 
     return relevant_module
-
-
-def get_thread_pool_executor():
-    """A singleton for thread pool executor and support_multithreading
-
-    Returns:
-        _type_: _description_
-    """
-    global THREAD_POOL_EXECUTOR
-    if not THREAD_POOL_EXECUTOR:
-        support_multithreading()
-        THREAD_POOL_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-    return THREAD_POOL_EXECUTOR
 
 
 def fix_traceback_line_numbers(trace_str):
@@ -249,7 +234,7 @@ PROFILING_DUMP_ROWS_LIMIT = 20
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
-    import concurrent.futures
+    import asyncio
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
@@ -672,7 +657,6 @@ class ThreatIntel:
         TOOL = 'Tool'
         THREAT_ACTOR = 'Threat Actor'
         INFRASTRUCTURE = 'Infrastructure'
-        TACTIC = 'Tactic'
 
     class ObjectsScore(object):
         """
@@ -689,7 +673,6 @@ class ThreatIntel:
         TOOL = 2
         THREAT_ACTOR = 3
         INFRASTRUCTURE = 2
-        TACTIC = 0
 
     class KillChainPhases(object):
         """
@@ -1628,19 +1611,6 @@ def stringUnEscape(st):
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
-def doubleBackslashes(st):
-    """
-       Double any backslashes in the given string if it contains two backslashes.
-
-       :type st: ``str``
-       :param st: The string to be modified (required).
-
-       :return: A modified string with doubled backslashes.
-       :rtype: ``str``
-    """
-    return st.replace('\\', '\\\\')
-
-
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1721,7 +1691,6 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
-                to_add.append(doubleBackslashes(a))
                 js = json.dumps(a)
                 if js.startswith('"'):
                     js = js[1:]
@@ -6465,95 +6434,6 @@ class Common(object):
 
             return ret_value
 
-    class Tactic(Indicator):
-        """
-        Tactic indicator
-
-        :type stix_id: ``str``
-        :param stix_id: The Tactic STIX ID
-
-        :type first_seen_by_source: ``str``
-        :param first_seen_by_source: The Tactic first seen by source
-
-        :type description: ``str``
-        :param description: The Tactic description
-
-        :type publications: ``str``
-        :param publications: The Tactic publications
-
-        :type mitre_id: ``str``
-        :param mitre_id: The Tactic mitre id.
-
-        :type tags: ``str``
-        :param tags: The Tactic tags.
-
-        :type dbot_score: ``DBotScore``
-        :param dbot_score:  If the address has reputation then create DBotScore object.
-
-        :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the Tactic.
-
-        :type community_notes: ``CommunityNotes``
-        :param community_notes:  A list of community notes for the Tactic.
-
-        :type external_references: ``ExternalReference``
-        :param external_references:  A list of id's and description of the Tactic via external refs.
-
-        :type value: ``str``
-        :param value: The Tactic value (name) - example: "Plist File Modification"
-
-        :return: None
-        :rtype: ``None``
-        """
-        CONTEXT_PATH = 'Tactic(val.Name && val.Name == obj.Name)'
-
-        def __init__(self, stix_id, first_seen_by_source=None, description=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
-
-            self.community_notes = community_notes
-            self.description = description
-            self.external_references = external_references
-            self.first_seen_by_source = first_seen_by_source
-            self.mitre_id = mitre_id
-            self.publications = publications
-            self.stix_id = stix_id
-            self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
-            self.value = value
-            self.dbot_score = dbot_score
-
-        def to_context(self):
-            attack_pattern_context = {
-                'STIXID': self.stix_id,
-                "FirstSeenBySource": self.first_seen_by_source,
-                "Publications": self.publications,
-                "MITREID": self.mitre_id,
-                "Value": self.value,
-                "Tags": self.tags,
-                "Description": self.description
-            }
-
-            if self.external_references:
-                attack_pattern_context['ExternalReferences'] = self.create_context_table(self.external_references)
-
-            if self.traffic_light_protocol:
-                attack_pattern_context['TrafficLightProtocol'] = self.traffic_light_protocol
-
-            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
-                attack_pattern_context['Malicious'] = {
-                    'Vendor': self.dbot_score.integration_name,
-                    'Description': self.dbot_score.malicious_description
-                }
-
-            ret_value = {
-                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
-            }
-
-            if self.dbot_score:
-                ret_value.update(self.dbot_score.to_context())
-
-            return ret_value
-
 
 class ScheduledCommand:
     """
@@ -10785,24 +10665,27 @@ def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
 
 def support_multithreading():  # pragma: no cover
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
-    Note that this function shouldn't be called more than once during an exeuction.
+
     :return: No data returned
     :rtype: ``None``
     """
-    global demisto
-    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
-    demisto.lock = Lock()  # type: ignore[attr-defined]
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_YET
+    if not HAVE_SUPPORT_MULTITHREADING_CALLED_YET:
+        global demisto
+        prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+        demisto.lock = Lock()  # type: ignore[attr-defined]
 
-    def locked_do(cmd):
-        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
-            try:
-                return prev_do(cmd)  # type: ignore[call-arg]
-            finally:
-                demisto.lock.release()  # type: ignore[attr-defined]
-        else:
-            raise RuntimeError('Failed acquiring lock')
+        def locked_do(cmd):
+            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+                try:
+                    return prev_do(cmd)  # type: ignore[call-arg]
+                finally:
+                    demisto.lock.release()  # type: ignore[attr-defined]
+            else:
+                raise RuntimeError('Failed acquiring lock')
 
-    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+        demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+        HAVE_SUPPORT_MULTITHREADING_CALLED_YET = True
 
 
 def get_tenant_account_name():
@@ -12415,14 +12298,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.info("Sending events to xsiam with multiple threads.")
         all_chunks = [chunk for chunk in data_chunks]
         demisto.info("Finished appending all data_chunks to a list.")
-        futures = []
-        executor = get_thread_pool_executor()
-        for chunk in all_chunks:
-            future = executor.submit(send_events, chunk)
-            futures.append(future)
+        support_multithreading()
+        tasks = [asyncio.create_task(send_events(chunk)) for chunk in all_chunks]
 
-        demisto.info('Finished submiting {} Futures.'.format(len(futures)))
-        return futures
+        demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
+        return tasks
     else:
         demisto.info("Sending events to xsiam with a single thread.")
         for chunk in data_chunks:
@@ -12618,11 +12498,11 @@ def content_profiler(func):
             timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
             timeout_seconds = timeout_nanoseconds / 1e9
             event_set = signal_event.wait(timeout_seconds - 5)
+            if not event_set:
+                raise DemistoException("The profiled function '{}' failed due to a timeout.".format(func.__name__))
             profiler.disable()
             dump_result()
             demisto.debug("Profiler finished.")
-            if not event_set:
-                return_error("The profiled function '{}' failed due to a timeout.".format(func.__name__))
 
         def function_runner(func, profiler, signal_event,
                             results, *args, **kwargs):
@@ -12656,47 +12536,7 @@ def content_profiler(func):
     return profiler_wrapper
 
 
-def find_and_remove_sensitive_text(text, pattern):
-    """
-    Finds all appearances of sensitive information in a string using regex and adds the sensitive
-    information to the list of strings that should not appear in any logs.
-    The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
-        Examples:
-    >>> text = "first secret is ID123 and the second secret is id321 and the token: ABC"
-    >>> pattern = r'(token:\s*)(\S+)'  # Capturing groups: (token:\s*) and (\S+)
-    >>> find_and_remove_sensitive_text(text, pattern)
-    Sensitive text added to be masked in the logs: ABC
-
-    >>> pattern = r'\bid\w*\b'  # Match words starting with "id", case insensitive
-    >>> find_and_remove_sensitive_text(text, pattern)
-    Sensitive text added to be masked in the logs: ID123 and id321
-
-    :param text: The input text containing the sensitive information.
-    :type text: str
-    :param pattern: The regex pattern to match the sensitive information.
-    :type pattern: str
-
-    :return: None
-    :rtype: ``None``
-    """
-
-    sensitive_pattern = re.compile(pattern)
-    matches = sensitive_pattern.findall(text)
-    if not matches:
-        return
-
-    for match in matches:
-        # in case the regex serches for a group pattern
-        if isinstance(match, tuple):
-            sensitive_text = match[1]
-        else:
-            # in case the regex serches for a specific word
-            sensitive_text = match
-        add_sensitive_log_strs(sensitive_text)
-    return
-
-
-from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402the
+from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
