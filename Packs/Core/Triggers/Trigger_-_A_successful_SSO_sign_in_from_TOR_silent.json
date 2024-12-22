@@ -1,5 +1,5 @@
 {
-  "trigger_id": "4a90702e6a1e31ff82c4a5b8e27360cd",
+  "trigger_id": "4a90702e6a1e31ff82c4a5b8e27360dd",
   "playbook_id": "A successful SSO sign-in from TOR silent",
   "suggestion_reason": "Recommended for 'A successful SSO sign-in from TOR' and 'A successful SSO sign-in from TOR via a mobile device' alerts",
   "description": "This trigger is responsible for handling the 'A successful SSO sign-in from TOR' and the 'A successful SSO sign-in from TOR via a mobile device' alerts",
