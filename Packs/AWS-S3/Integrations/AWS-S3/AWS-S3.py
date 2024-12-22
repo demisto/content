@@ -115,7 +115,7 @@ def put_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> Co
     kwargs = {'Bucket': args.get('bucket', '').lower(), 'Policy': args.get('policy')}
     if args.get('confirmRemoveSelfBucketAccess') is not None:
         kwargs.update(
-            {'ConfirmRemoveSelfBucketAccess': True if args.get('confirmRemoveSelfBucketAccess') == 'True' else False})
+            {'ConfirmRemoveSelfBucketAccess': args.get('confirmRemoveSelfBucketAccess') == 'True'})
 
     response = client.put_bucket_policy(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:

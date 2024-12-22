@@ -42,7 +42,7 @@ def test_filter_results_when_response_is_dict(mocker):
 
     result = filter_results(results_to_filter, "key1", "_")
     assert "key1" not in result.keys()
-    assert "key3" in result.keys()
+    assert "key3" in result
 
 
 def test_filter_results_when_response_is_list(mocker):
@@ -60,7 +60,7 @@ def test_filter_results_when_response_is_list(mocker):
     result = filter_results(results_to_filter, "key1", "_")
 
     assert "key1" not in result[0].keys()
-    assert "key3" in result[1].keys()
+    assert "key3" in result[1]
 
 
 def test_attribute_pairs_to_dict(mocker):

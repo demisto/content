@@ -229,6 +229,7 @@ class Client(BaseClient):
                 raise ValueError(f'Operation failed - {response.get("Meta", {}).get("ErrorMsg")}')
 
             return response
+        return None
 
     def udso_add_file(self, file_content_base64_string, file_name, file_scan_action, note: str = ""):
         payload = {
@@ -286,7 +287,7 @@ class Client(BaseClient):
     def verify_format_and_convert_to_timestamp(since_time: str):
         if since_time == '0':  # '0' is the default timestamp
             return since_time
-        if not (since_time.endswith('GMT+00:00') or since_time.endswith('Z')):
+        if not (since_time.endswith(('GMT+00:00', 'Z'))):
             raise ValueError("'since_time' argument should be in one of the following formats:"
                              "'2020-06-21T08:00:00Z', 'Jun 21 2020 08:00:00 GMT+00:00'")
 
@@ -480,7 +481,7 @@ class Client(BaseClient):
 
         # fix the keys to their correct name
         new_log = log.copy()
-        for key in log.keys():
+        for key in log:
             if key in keys_to_fix:
                 new_log[CEF_HEADERS_TO_TREND_MICRO_HEADERS[key]] = new_log.pop(key)
             if key == 'rt':  # this key is always referencing to 'Creation Time' header
@@ -503,7 +504,7 @@ class Client(BaseClient):
     def update_agents_info_in_payload(payload_data, agent_guids):
         agent_guids_dict = json.loads(agent_guids)  # this is a dict of { server_guids : [agent_guids] }
         payload_data["agentGuid"] = agent_guids_dict
-        payload_data["serverGuid"] = [server_guid for server_guid in agent_guids_dict.keys()]
+        payload_data["serverGuid"] = list(agent_guids_dict.keys())
 
         return payload_data
 
@@ -764,9 +765,8 @@ def list_logs_command(client: Client, args):
     response = client.logs_list(**assign_params(**args))
     parsed_logs_list = []
 
-    if response:
-        if response.get('Data', {}).get('Logs'):
-            parsed_logs_list = client.parse_cef_logs_to_dict_logs(response)[:limit]
+    if response and response.get('Data', {}).get('Logs'):
+        parsed_logs_list = client.parse_cef_logs_to_dict_logs(response)[:limit]
 
     log_type = args.get('log_type')
     headers = ['EventName', 'EventID', 'CreationTime', 'LogVersion', 'ApplianceVersion', 'ApplianceProduct',
@@ -807,9 +807,8 @@ def servers_list_command(client: Client, args):
         item['ip_address_list'] = item.get('ip_address_list', '').split(',')
 
     context = human_readable_table = []
-    if response:
-        if response.get('result_content'):
-            context = human_readable_table = response.get('result_content')
+    if response and response.get('result_content'):
+        context = human_readable_table = response.get('result_content')
 
     headers = ['entity_id', 'product', 'host_name', 'ip_address_list', 'capabilities']
     readable_output = tableToMarkdown('Trend Micro Apex One Servers List', human_readable_table, headers,
@@ -832,9 +831,8 @@ def agents_list_command(client: Client, args):
         item['ip_address_list'] = item.get('ip_address_list', '').split(',')
 
     context = human_readable_table = []
-    if response:
-        if response.get('result_content'):
-            context = human_readable_table = response.get('result_content')
+    if response and response.get('result_content'):
+        context = human_readable_table = response.get('result_content')
 
     readable_output = tableToMarkdown('Trend Micro Apex One Agents List', human_readable_table,
                                       headerTransform=string_to_table_header,

@@ -7,7 +7,6 @@ import pandas as pd
 from datetime import datetime
 from calendar import monthrange
 from collections import defaultdict
-from typing import Tuple
 
 MAXINC = 2000
 XDEBUG = True
@@ -71,13 +70,12 @@ def IncidentRecord(inc: dict, slatimers: list, windowstart: str, windowend: str,
             if timer in inc['CustomFields'] and inc['CustomFields'][timer]['runStatus'] == "ended":
                 record[timer] = inc['CustomFields'][timer]['totalDuration']
 
-        if windowstart != "" and windowend != "":
-            if windowstart in inc['CustomFields'] and windowend in inc['CustomFields']:
-                if inc['CustomFields'][windowstart]['runStatus'] == "ended" and \
+        if windowstart != "" and windowend != "" and windowstart in inc['CustomFields'] and windowend in inc['CustomFields']:
+            if inc['CustomFields'][windowstart]['runStatus'] == "ended" and \
                         inc['CustomFields'][windowend]['runStatus'] == "ended":
-                    winduration = ToDatetime(inc['CustomFields'][windowend]['endDate']) - \
+                winduration = ToDatetime(inc['CustomFields'][windowend]['endDate']) - \
                         ToDatetime(inc['CustomFields'][windowstart]['startDate'])
-                    record['UserWindow'] = winduration.total_seconds()
+                record['UserWindow'] = winduration.total_seconds()
 
     return record
 
@@ -229,12 +227,12 @@ def SlaMetrics(records: list, slatimers: list) -> str:
 def BuildCsv(key: str, data: dict) -> str:
     df = pd.DataFrame(data).fillna(0).astype(int)
     df[key] = df.index
-    df.set_index(key, inplace=True)
+    df = df.set_index(key)
     csv_data_string = df.to_csv()
     return csv_data_string
 
 
-def SplitRecords(records: list) -> Tuple[list, list]:
+def SplitRecords(records: list) -> tuple[list, list]:
     curyear = ""
     thisyear: list = []
     lastyear: list = []
@@ -251,7 +249,7 @@ def SplitRecords(records: list) -> Tuple[list, list]:
     return lastyear, thisyear
 
 
-def GenerateTables(startday: str, endday: str, records: list, slatimers: list) -> Tuple[str, dict, str, dict]:
+def GenerateTables(startday: str, endday: str, records: list, slatimers: list) -> tuple[str, dict, str, dict]:
     json_met: dict = {}
     json_met2: dict = {}
     json_met['YEAR'] = startday.split("-")[0]
@@ -349,10 +347,7 @@ def ProcessResponse(w, response, monthly, period, inccount, slatimers, windowsta
 
 def ValidArgs(args: dict) -> bool:
     array_args = ['status', 'notstatus', 'severity', 'owner', 'type']
-    for key, value in args.items():
-        if key not in array_args:
-            return False
-    return True
+    return all(key in array_args for key, value in args.items())
 
 
 def ValidFilter(fil: list) -> bool:
@@ -406,12 +401,10 @@ def CsvToJson(csv_text: str) -> dict:
 
 def RollYearList(thisyearlist: str, lastyearlist: str, curmetrics: dict):
     existing_metrics = LoadJsonList(thisyearlist)
-    if 'YEAR' in existing_metrics:
-        if existing_metrics['YEAR'] != curmetrics['YEAR']:
-            SaveJsonList(lastyearlist, existing_metrics)
-            existing_metrics = {}
+    if 'YEAR' in existing_metrics and existing_metrics['YEAR'] != curmetrics['YEAR']:
+        SaveJsonList(lastyearlist, existing_metrics)
+        existing_metrics = {}
     SaveJsonList(thisyearlist, existing_metrics)
-    return
 
 
 def UpdateMetricsList(listname: str, curmetrics: dict, mode: str):
@@ -427,7 +420,6 @@ def UpdateMetricsList(listname: str, curmetrics: dict, mode: str):
             existing_metrics[key] = val
 
     SaveJsonList(listname, existing_metrics)
-    return
 
 
 def UpdateDict(existing_dict: dict, new_dict: dict, mode: str) -> dict:
@@ -469,7 +461,6 @@ def SaveJsonList(list_name: str, json_data: dict):
             'listName': list_name,
             'listData': json.dumps(json_data)
         })
-    return
 
 
 def NormalDate(date_str: str, first_day=True) -> str:
@@ -490,6 +481,7 @@ def FoundIncidents(res: List):
         elif res[0]['Contents']['data'] is None:
             return False
         return True
+    return None
 
 
 def main():

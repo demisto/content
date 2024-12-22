@@ -41,7 +41,7 @@ def main():
         wstats: list = []
         length = len(COLORS)
         i = length
-        for key, val in stats.items():
+        for _key, val in stats.items():
             if val[STATFIELD] == 0:
                 continue
             newstat = NewWidgetStat("", COLORS[i % length], val['name'], val[STATFIELD])

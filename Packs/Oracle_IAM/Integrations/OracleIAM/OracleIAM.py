@@ -18,7 +18,7 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
     operations = []
     for key, value in new_user_data.items():
         operation = {
-            'op': 'replace' if key in old_user_data.keys() else 'add',
+            'op': 'replace' if key in old_user_data else 'add',
             'path': key,
             'value': [value] if key in ('emails', 'phoneNumbers') and not isinstance(value, list) else value,
         }
@@ -35,7 +35,7 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, client_id=None,
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, client_id=None,
                  client_secret=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.base_url = base_url

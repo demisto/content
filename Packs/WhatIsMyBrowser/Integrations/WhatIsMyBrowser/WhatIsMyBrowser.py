@@ -106,7 +106,7 @@ def ua_parse_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': r,
-            'HumanReadable': tableToMarkdown('Parsed result for {}'.format(user_agent), hr),
+            'HumanReadable': tableToMarkdown(f'Parsed result for {user_agent}', hr),
             'EntryContext': ec
         })
     if r['result']['code'] == 'error':
@@ -115,7 +115,7 @@ def ua_parse_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': r,
-            'HumanReadable': '{}'.format(error_msg)
+            'HumanReadable': f'{error_msg}'
         })
 
 

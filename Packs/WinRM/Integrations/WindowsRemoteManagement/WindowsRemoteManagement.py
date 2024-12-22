@@ -8,7 +8,7 @@ import winrm
 ''' Helper functions '''
 
 
-class Client(object):
+class Client:
     def __init__(self, username, password, auth_type, realm, default_host, decode):
         self.username = username
         self.password = password

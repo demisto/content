@@ -6,47 +6,47 @@ import pytest
 RETURN_ERROR_TARGET = 'GetDockerImageLatestTag.return_error'
 
 MOCK_TAG_LIST = [{
-    u'last_updated': u'2019-10-23T09:13:30.84299Z',
-    u'name': u'1.0.0.2876',
-    u'repository': 7863337,
-    u'creator': 4824052,
-    u'image_id': None,
-    u'v2': True,
-    u'last_updater_username': u'containersci',
-    u'last_updater': 4824052,
-    u'images': [{
-        u'features': u'',
-        u'os_features': u'',
-        u'variant': None,
-        u'os_version': None,
-        u'architecture': u'amd64',
-        u'os': u'linux',
-        u'digest': u'sha256:776a9e00733cd130a2b06ee94254c72c0ae5e11dcfeff24e68c2e1980e320685',
-        u'size': 79019268
+    'last_updated': '2019-10-23T09:13:30.84299Z',
+    'name': '1.0.0.2876',
+    'repository': 7863337,
+    'creator': 4824052,
+    'image_id': None,
+    'v2': True,
+    'last_updater_username': 'containersci',
+    'last_updater': 4824052,
+    'images': [{
+        'features': '',
+        'os_features': '',
+        'variant': None,
+        'os_version': None,
+        'architecture': 'amd64',
+        'os': 'linux',
+        'digest': 'sha256:776a9e00733cd130a2b06ee94254c72c0ae5e11dcfeff24e68c2e1980e320685',
+        'size': 79019268
     }],
-    u'full_size': 79019268,
-    u'id': 73482510
+    'full_size': 79019268,
+    'id': 73482510
 }, {
-    u'last_updated': u'2019-10-16T06:47:29.631011Z',
-    u'name': u'1.0.0.2689',
-    u'repository': 7863337,
-    u'creator': 4824052,
-    u'image_id': None,
-    u'v2': True,
-    u'last_updater_username': u'containersci',
-    u'last_updater': 4824052,
-    u'images': [{
-        u'features': u'',
-        u'os_features': u'',
-        u'variant': None,
-        u'os_version': None,
-        u'architecture': u'amd64',
-        u'os': u'linux',
-        u'digest': u'sha256:95aaaadeec53a11ec2ce58769e3d00acc593981f470c31e22ceba8f2bc673fcb',
-        u'size': 77021619
+    'last_updated': '2019-10-16T06:47:29.631011Z',
+    'name': '1.0.0.2689',
+    'repository': 7863337,
+    'creator': 4824052,
+    'image_id': None,
+    'v2': True,
+    'last_updater_username': 'containersci',
+    'last_updater': 4824052,
+    'images': [{
+        'features': '',
+        'os_features': '',
+        'variant': None,
+        'os_version': None,
+        'architecture': 'amd64',
+        'os': 'linux',
+        'digest': 'sha256:95aaaadeec53a11ec2ce58769e3d00acc593981f470c31e22ceba8f2bc673fcb',
+        'size': 77021619
     }],
-    u'full_size': 77021619,
-    u'id': 72714981
+    'full_size': 77021619,
+    'id': 72714981
 }]
 
 

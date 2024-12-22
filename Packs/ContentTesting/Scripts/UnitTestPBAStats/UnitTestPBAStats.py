@@ -58,7 +58,7 @@ def main():
         if len(stats) == 0:
             return
         wstats: list = []
-        for key, val in stats.items():
+        for _key, val in stats.items():
             tw = TaskWidget(val)
             wstats = TaskWidgetGroup(wstats, val['name'], tw)
         widget = NewWidget("bar", "vertical", wstats)
