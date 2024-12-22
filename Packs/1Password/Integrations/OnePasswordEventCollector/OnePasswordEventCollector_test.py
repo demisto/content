@@ -31,7 +31,7 @@ def test_get_unauthorized_event_types():
     """
     from OnePasswordEventCollector import get_unauthorized_event_types
 
-    event_types = ['Audit events', 'Item usage actions', 'Sign in attempts']
+    event_types = ['audit events', 'item usage actions', 'sign in attempts']
     mock_response = util_load_json('test_data/introspection_response.json')
     unauthorized_event_types = get_unauthorized_event_types(mock_response, event_types)
     assert unauthorized_event_types == []
@@ -46,7 +46,7 @@ def test_get_unauthorized_event_types():
             id='Invalid Event Type',
         ),
         pytest.param(
-            'Audit events',
+            'audit events',
             "Either a 'pagination_cursor' or a 'from_date' need to be specified.",
             id='Valid event type but missing other params',
         )
