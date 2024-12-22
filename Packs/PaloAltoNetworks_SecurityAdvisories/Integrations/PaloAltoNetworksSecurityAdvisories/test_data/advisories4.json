@@ -499,8 +499,8 @@
             ],
             "cvss": 9.3,
             "cvssscore": 9.3,
-            "cvssvector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red",
-            "sourceoriginalseverity": "MEDIUM",
+            "cvssvector": "'CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red",
+            "sourceoriginalseverity": "CRITICAL",
             "cvedescription": "An authentication bypass in Palo Alto Networks PAN-OS software.",
             "description": "An authentication bypass in Palo Alto Networks PAN-OS software.",
             "published": "2024-11-18T14:20:00.000Z",
@@ -589,7 +589,7 @@
                 },
                 {
                     "metrics": "Vector String",
-                    "value": "CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red"
+                    "value": "'CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red"
                 }
             ]
         }
