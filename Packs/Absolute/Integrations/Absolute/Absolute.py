@@ -961,7 +961,6 @@ def main() -> None:  # pragma: no cover
             secret_key=secret_key,
             x_abs_date=x_abs_date,
         )
-
         args = demisto.args()
         if demisto.command() == 'test-module':
             return_results(test_module(client))
