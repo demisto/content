@@ -45,7 +45,6 @@ class Client:
             grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
 
             # used for device code flow
-            # resource='https://api.security.microsoft.com' if not client_credentials else None,
             resource=MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
             token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
                                 f'/organizations/oauth2/v2.0/token' if not client_credentials else None,

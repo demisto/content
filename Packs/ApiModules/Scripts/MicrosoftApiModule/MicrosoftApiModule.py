@@ -164,7 +164,7 @@ MICROSOFT_365_DEFENDER_API_ENDPOINTS = {
     "com": "https://api.security.microsoft.com",
     "geo-us": "https://us.api.security.microsoft.com",
     "geo-eu": "https://eu.api.security.microsoft.com",
-    "geo-uk": "ttps://uk.api.security.microsoft.com",
+    "geo-uk": "https://uk.api.security.microsoft.com",
     "geo-au": "https://au.api.security.microsoft.com",
     "geo-swa": "https://swa.api.security.microsoft.com",
     "geo-ina": "https://ina.api.security.microsoft.com",
@@ -700,6 +700,7 @@ def microsoft_defender_get_base_url(endpoint_type, base_url):
     else:
         url = MICROSOFT_365_DEFENDER_API_ENDPOINTS[MICROSOFT_365_DEFENDER_TYPE.get(endpoint_type)]
     return url
+
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
