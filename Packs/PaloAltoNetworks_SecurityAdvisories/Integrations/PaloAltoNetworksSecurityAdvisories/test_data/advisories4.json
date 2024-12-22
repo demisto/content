@@ -173,7 +173,7 @@
                         "providerUrgency":"RED",
                         "baseSeverity":"CRITICAL",
                         "baseScore":9.3,
-                        "vectorString":"CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:L/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red"
+                        "vectorString":"'CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red"
                      }
                   }
                ],
