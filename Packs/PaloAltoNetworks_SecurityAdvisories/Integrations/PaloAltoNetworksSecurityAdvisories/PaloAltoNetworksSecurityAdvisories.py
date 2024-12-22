@@ -190,8 +190,8 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
         fields['publications'] = [
             {
                 "link": x.get('url'),
-                "title": x.get('name'),  # todo: not in new version
-                "source": x.get('refsource')    # todo: not in new version
+                "title": x.get('url'),  # todo: not in new version
+                "source": x.get('refsource', "")    # todo: not in new version
             } for x in references]
 
     # impact: dict = advisory_dict.get("impact", {})
