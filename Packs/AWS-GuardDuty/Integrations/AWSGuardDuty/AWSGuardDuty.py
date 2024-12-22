@@ -4,7 +4,7 @@ import json
 from datetime import datetime, date
 from AWSApiModule import *  # noqa: E402
 from collections import defaultdict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 # The following import are used only for type hints and autocomplete.
 # It is not used at runtime, and not exist in the docker image.

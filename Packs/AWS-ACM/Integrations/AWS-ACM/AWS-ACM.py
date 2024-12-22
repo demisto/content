@@ -18,7 +18,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug(f'could not parse field: {f}')
+            demisto.debug('could not parse field: %s' % (f,))
             continue
 
         tags.append({
@@ -34,7 +34,7 @@ def parse_subnet_mappings(subnets_str):
     for f in subnets_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug(f'could not parse field: {f}')
+            demisto.debug('could not parse field: %s' % (f,))
             continue
 
         subnets.append({
@@ -94,7 +94,7 @@ def describe_certificate(args, aws_client):
     try:
         raw = json.loads(json.dumps(response['Certificate'], cls=DatetimeEncoder))
     except ValueError as e:
-        return_error(f'Could not decode/encode the raw response - {e}')
+        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
 
     if raw:
         raw.update({'Region': obj['_user_provided_options']['region_name']})

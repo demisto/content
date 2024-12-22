@@ -2,6 +2,7 @@ import pytest
 from contextlib import nullcontext as does_not_raise
 from datetime import datetime
 from unittest.mock import call
+from typing import Optional
 
 from AWSGuardDutyEventCollector import get_events
 from test_data.finding_for_test import FINDING, FINDING_OUTPUT, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
@@ -30,8 +31,8 @@ FINDINGS = {
 }
 
 
-def get_expected_list_finding_args(detector_id: str, updated_at_ts: int, gd_severity: int, max_results: int | None,
-                                   next_token: str | None):
+def get_expected_list_finding_args(detector_id: str, updated_at_ts: int, gd_severity: int, max_results: Optional[int],
+                                   next_token: Optional[str]):
     """Return arguments as expected in the AWSClient session list_finding function."""
     list_finding_args = {
         'DetectorId': detector_id,
