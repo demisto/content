@@ -327,7 +327,7 @@ class Client(BaseClient):
             return res.json()
         return None
 
-    def fetch_events(self, page_size: int, start_date: str = None, end_date: str = None, next_page: str = None) -> dict:
+    def fetch_events(self, page_size: int, start_date: datetime = None, end_date: datetime = None, next_page: str = None) -> dict:
         # https://api.absolute.com/v3/reporting/siem-events
         return self._http_request(
             method='GET',
@@ -907,6 +907,7 @@ def get_device_location_command(args, client) -> CommandResults:
 
 
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    # TODO: fix setup
     last_end_date = last_run.get('end_date', datetime.utcnow())
     start_date = last_run.get('fromDateTimeUtc', (datetime.utcnow() - timedelta(days=3)))
     end_date = last_run.get('toDateTimeUtc', datetime.utcnow())
@@ -914,9 +915,14 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
     next_page = last_run.get('nextPage', '')
 
     events, started_new_query, next_page = run_fetch_mechanism(client, fetch_limit, next_page, start_date, end_date)
+    if not events:
+        # debug
+        return [], {'next_page': None, 'end_date': last_end_date}
+
+    return events, {'next_page': next_page, 'end_date': end_date if started_new_query else last_end_date}
 
 
-def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_date: int, end_date: int):
+def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_date: datetime, end_date: datetime):
     all_events = []
     started_new_query = False
     while len(all_events) < fetch_limit and (next_page or not started_new_query):
@@ -926,7 +932,7 @@ def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_
         if next_page:
             response = client.fetch_events(page_size=page_size, next_page=next_page)
         else:
-            response = client.fetch_events(page_size=page_size, start_date=str(start_date), end_date=str(end_date))
+            response = client.fetch_events(page_size=page_size, start_date=start_date, end_date=end_date)
 
         events = response.get('data', [])
         next_page = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
