@@ -1,0 +1,22 @@
+{
+    "name": "GenericEventCollector",
+    "description": "",
+    "support": "xsoar",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "created": "2024-11-28T01:23:00Z",
+    "useCases": [],
+    "keywords": [],
+    "price": 0,
+    "dependencies": {},
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
