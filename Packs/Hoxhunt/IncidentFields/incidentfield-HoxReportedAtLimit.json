@@ -1,0 +1,40 @@
+{
+    "id": "incident_hoxreportedatlimit",
+    "version": -1,
+    "modified": "2024-10-23T06:44:19.787558746Z",
+    "fromVersion": "6.10.0",
+    "name": "Hox Reported At Limit",
+    "ownerOnly": false,
+    "description": "Date in the past for specifying which users to send feedback to based on when an incident-related threat was last reported. For example, if set to 7 days, only users who have reported emails related to the threat in the last 7 days are provided with feedback",
+    "cliName": "hoxreportedatlimit",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "7 days",
+        "30 days",
+        "60 days",
+        "90 days"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Hoxhunt BEC",
+        "Hoxhunt Campaign",
+        "Hoxhunt User Acted"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}
