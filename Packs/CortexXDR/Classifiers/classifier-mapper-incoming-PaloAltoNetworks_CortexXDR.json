@@ -8,12 +8,12 @@
     "fromVersion": "6.0.0",
 	"mapping": {
 		"Cortex XDR - Lite": {
-			"dontMapEventToLabels": false,
+			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"Additional Data": {
 					"complex": {
 						"filters": [],
-						"root": "alerts",
+						"root": "additional_data",
 						"transformers": [
 							{
 								"operator": "uniq"

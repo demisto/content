@@ -24,6 +24,7 @@ FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts'
 ]
+POSSIBLE_EXCLUDE_INCIDENT_FIELDS = ['network_artifacts','file_artifacts', 'additional_data']
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
                               "investigation\",\"resolved_known_issue\","
@@ -195,20 +196,28 @@ def handle_excluded_data_param(excluded_alert_fields: list = []):
 
 
 class Client(CoreClient):
-    def __init__(self, base_url, proxy, verify, timeout, params=None):
+    def __init__(self, base_url, proxy, verify, timeout, params=None, remove_additional_data: bool=False):
         if not params:
             params = {}
         self._params = params
+        self._remove_additional_data = remove_additional_data
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout)
 
     @property
     def headers(self):
         return get_headers(self._params)
 
-    def test_module(self, first_fetch_time):
+    def remove_additional_data(self):
+        return self._remove_additional_data
+        
+
+    def test_module(self, first_fetch_time, exclude_artifacts: list):
         """
             Performs basic get request to get item samples
         """
+        for field in exclude_artifacts:
+            if field not in POSSIBLE_EXCLUDE_INCIDENT_FIELDS:
+                raise DemistoException(f"`Minimize Incident Information` parameter can include the following values only: network_artifacts, file_artifacts and additional_data. Please remove {field}.")
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
             self.get_incidents(lte_creation_time=last_one_day, limit=1)
@@ -312,7 +321,7 @@ class Client(CoreClient):
             timeout=self.timeout
         )
 
-    def get_incident_extra_data(self, incident_id, alerts_limit=1000, exclude_artifacts: bool = False,
+    def get_incident_extra_data(self, incident_id, alerts_limit=1000, exclude_artifacts: list= [],
                                 excluded_alert_fields: List = [], remove_nulls_from_alerts: bool = False):
         """
         Returns incident by id
@@ -331,9 +340,6 @@ class Client(CoreClient):
             request_data['alert_fields_to_exclude'] = excluded_alert_fields
         if remove_nulls_from_alerts:
             request_data['drop_nulls'] = True
-# TODO fields_to_exclude does not appear in the xdr api
-        if exclude_artifacts:
-            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE
         demisto.debug(f"{exclude_artifacts=} , {type(exclude_artifacts)}, {excluded_alert_fields=}, {type(excluded_alert_fields)}, {remove_nulls_from_alerts=}, {type(remove_nulls_from_alerts)}")
 
         reply = self._http_request(
@@ -347,9 +353,9 @@ class Client(CoreClient):
         incident = reply.get('reply')
         demisto.debug(f"{incident.get('network_artifacts')=}")
         demisto.debug(f"{incident.get('file_artifacts')=}")
-        # Workaround for the TODO
+        # Workaround since fields_to_exclude is not implemented in get_incident_extra_data XDR api
         if exclude_artifacts:
-            for field in FIELDS_TO_EXCLUDE:
+            for field in exclude_artifacts:
                 incident.pop(field, None)
         demisto.debug(f"{incident.get('file_artifacts', 'aaaaa')=}")
         return incident
@@ -408,7 +414,7 @@ class Client(CoreClient):
         )
         return reply.get('reply', {})
 
-    def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
+    def get_multiple_incidents_extra_data(self, exclude_artifacts: list = [], incident_id_list=[], gte_creation_time_milliseconds=0,
                                           status=None, starred=None, starred_incidents_fetch_window=None,
                                           page_number=0, limit=100, excluded_alert_fields=[], remove_nulls_from_alerts=False):
         """
@@ -429,9 +435,9 @@ class Client(CoreClient):
                 'operator': 'eq',
                 'value': status
             })
-        demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}")
+        demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}, {exclude_artifacts=}")
         if exclude_artifacts:
-            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
+            request_data['fields_to_exclude'] = exclude_artifacts
         if excluded_alert_fields:
             request_data['alert_fields_to_exclude'] = excluded_alert_fields
         if remove_nulls_from_alerts:
@@ -628,8 +634,8 @@ def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
-    exclude_artifacts = argToBoolean(args.get('excluding_artifacts', 'False'))
-    # TODO check the type of args.get('alert_fields_to_exclude' and type of args.get('drop_nulls'
+    exclude_artifacts, _ = handle_exclude_incident_fields(argToBoolean(args.get('excluding_artifacts', 'False')),
+                                                       args.get('exclude_incidents_fields', []))
     alert_fields_to_exclude = args.get('alert_fields_to_exclude', [])
     drop_nulls = args.get('drop_nulls', False)
     demisto.debug(f"{exclude_artifacts=} , {type(exclude_artifacts)}, {alert_fields_to_exclude=}, {type(alert_fields_to_exclude)}, {drop_nulls=}, {type(drop_nulls)}")
@@ -960,8 +966,8 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
 
-def get_remote_data_command(client, args, exclude_artifacts=False, excluded_alert_fields=[], remove_nulls_from_alerts=False):
-    demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}")
+def get_remote_data_command(client, args, exclude_artifacts: list=[], excluded_alert_fields=[], remove_nulls_from_alerts=False):
+    demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}, {exclude_artifacts=}")
     remote_args = GetRemoteDataArgs(args)
     demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id}')
 
@@ -979,7 +985,7 @@ def get_remote_data_command(client, args, exclude_artifacts=False, excluded_aler
         if remove_nulls_from_alerts:
             requested_data['drop_nulls'] = True
         if exclude_artifacts:
-            requested_data['excluding_artifacts'] = True
+            requested_data['exclude_incidents_fields'] = exclude_artifacts
         incident_data = get_incident_extra_data_command(client, requested_data)
         if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
@@ -1012,6 +1018,9 @@ def get_remote_data_command(client, args, exclude_artifacts=False, excluded_aler
                     reformatted_entries.append(entry)
 
             incident_data['in_mirror_error'] = ''
+            if client.remove_additional_data():
+                incident_data['additional_data'] = incident_data.get('alerts')
+            # TODO add it to mapper
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
@@ -1125,7 +1134,7 @@ def update_related_alerts(client: Client, args: dict):
         return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
+def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: list, last_run: dict = None,
                     max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
                     starred_incidents_fetch_window: str = None, excluded_alert_fields: List = [],
                     remove_nulls_from_alerts: bool = True):
@@ -1203,6 +1212,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
+            if client.remove_additional_data():
+                incident_data['additional_data'] = incident_data.get('alerts')
             description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
             incident: Dict[str, Any] = {
@@ -1361,6 +1372,29 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
                           )
 
+def handle_exclude_incident_fields(bool_exclude_field_value: bool, list_exclude_field_value: list) -> Tuple[list,bool]:
+    """handle the exclude_field param/argument
+
+    Args:
+        bool_exclude_field_value (bool): there are two scenarios for this variable-
+                                            1. param- bool param in order for backwards compatibility
+                                            2. argument - bool arg
+        list_exclude_field_value (list): exclude_field is a list variable (new type)
+
+    Returns:
+        list: the exclude_fields to append to the xdr api request
+    """
+    demisto.debug(f"handle_exclude_incident_fields: {bool_exclude_field_value=}, {list_exclude_field_value=}")
+    remove_additional_data = False
+    if bool_exclude_field_value: # For param backwards compatibility OR argument in a command
+        return FIELDS_TO_EXCLUDE, remove_additional_data
+    for field in list_exclude_field_value:
+        if field == 'additinal_data':
+            remove_additional_data = True
+            list_exclude_field_value.remove('additinal_data')
+        elif field not in POSSIBLE_EXCLUDE_INCIDENT_FIELDS:
+            raise DemistoException(f"`Minimize Incident Information` parameter can include the following values only: network_artifacts, file_artifacts and additional_data. Please remove {field}.")
+    return list_exclude_field_value, remove_additional_data
 
 def main():  # pragma: no cover
     """
@@ -1377,7 +1411,8 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
+    exclude_artifacts, remove_additional_data = handle_exclude_incident_fields(argToBoolean(params.get('exclude_fields', False)),
+                                                       argToList(params.get('excluded_incident_fields', [])))
     excluded_alert_fields = argToList(params.get('excluded_alert_fields', 'null_values'))
     excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_param(excluded_alert_fields)
     demisto.debug(f"{excluded_alert_fields}, {remove_nulls_from_alerts}")
@@ -1398,7 +1433,8 @@ def main():  # pragma: no cover
         proxy=proxy,
         verify=verify_cert,
         timeout=timeout,
-        params=params
+        params=params,
+        remove_additional_data=remove_additional_data
     )
 
     args = demisto.args()
@@ -1406,7 +1442,7 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     try:
         if command == 'test-module':
-            client.test_module(first_fetch_time)
+            client.test_module(first_fetch_time, exclude_artifacts)
             demisto.results('ok')
 
         elif command == 'fetch-incidents':
