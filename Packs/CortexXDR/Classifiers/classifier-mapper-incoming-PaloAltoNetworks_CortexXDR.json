@@ -1,6 +1,6 @@
 {
-	"description": "Maps incoming Cortex XDR incidents fields.",
-	"feed": false,
+    "description": "Maps incoming Cortex XDR incidents fields.",
+    "feed": false,
     "id": "Cortex XDR - IR-mapper",
     "name": "XDR - Incoming Mapper",
     "type": "mapping-incoming",
@@ -24,15 +24,15 @@
                 "Agent Version": {
                     "complex": {
                         "accessor": "agentversion",
-						"filters": [],
-						"root": "alerts",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
 				"Agents ID": {
 					"complex": {
 						"accessor": "endpoint_id",
