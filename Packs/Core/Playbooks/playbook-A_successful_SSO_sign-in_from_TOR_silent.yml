@@ -652,6 +652,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-issilent: true
+isSilent: true
 marketplaces:
 - marketplacev2

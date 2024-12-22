@@ -4,7 +4,7 @@
   "suggestion_reason": "Recommended for 'A successful SSO sign-in from TOR' and 'A successful SSO sign-in from TOR via a mobile device' alerts",
   "description": "This trigger is responsible for handling the 'A successful SSO sign-in from TOR' and the 'A successful SSO sign-in from TOR via a mobile device' alerts",
   "trigger_name": "A successful SSO sign-in from TOR silent",
-  "issilent": "true",
+  "isSilent": "true",
   "alerts_filter": {
     "filter": {
         "AND": [
