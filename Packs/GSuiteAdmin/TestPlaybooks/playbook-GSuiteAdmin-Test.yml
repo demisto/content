@@ -2,7 +2,7 @@ id: GSuiteAdmin-Test
 version: -1
 name: GSuiteAdmin-Test
 description: |-
-  This playbook uses the G Suite Admin integration and tests the scenarios
+  test This playbook uses the G Suite Admin integration and tests the scenarios
   of the various commands like gsuite-user-create, gsuite-mobile-update, gsuite-mobile-delete, gsuite-role-assignment-list, gsuite-role-assignment-create, gsuite-user-alias-add, gsuite-token-revoke, gsuite-datatransfer-request-create, gsuite-datatransfer-list, gsuite-group-create, gsuite-role-create, gsuite-custom-user-schema-create, gsuite-custom-user-schema-update, gsuite-user-update, and gsuite-user-delete.
 starttaskid: "0"
 tasks:
