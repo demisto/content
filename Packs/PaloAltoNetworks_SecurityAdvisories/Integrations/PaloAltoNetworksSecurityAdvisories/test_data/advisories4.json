@@ -125,7 +125,7 @@
                "descriptions":[
                   {
                      "lang":"en",
-                     "value":"An authentication bypass in Palo Alto Networks PAN-OS software enables an unauthenticated attacker with network access to the management web interface to gain PAN-OS administrator privileges to perform administrative actions, tamper with the configuration, or exploit other authenticated privilege escalation vulnerabilities like CVE-2024-9474 (https://security.paloaltonetworks.com/CVE-2024-9474).\n\nThe risk of this issue is greatly reduced if you secure access to the management web interface by restricting access to only trusted internal IP addresses according to our recommended best practice deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/ba-p/464431).\n\nThis issue is applicable only to PAN-OS 10.2, PAN-OS 11.0, PAN-OS 11.1, and PAN-OS 11.2 software on PA-Series, VM-Series, and CN-Series firewalls and on Panorama (virtual and M-Series).\n\n\nCloud NGFW and Prisma Access are not impacted by this vulnerability.",
+                     "value":"An authentication bypass in Palo Alto Networks PAN-OS software.",
                      "supportingMedia":[
                         {
                            "type":"text/html",
@@ -501,8 +501,8 @@
             "cvssscore": 9.3,
             "cvssvector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red",
             "sourceoriginalseverity": "MEDIUM",
-            "cvedescription": "BGP software such as FRRouting FRR included as part of the PAN-OS",
-            "description": "An authentication bypass in Palo Alto Networks PAN-OS software enables an unauthenticated attacker with network access to the management web interface to gain PAN-OS administrator privileges to perform administrative actions, tamper with the configuration, or exploit other authenticated privilege escalation vulnerabilities like CVE-2024-9474 (https://security.paloaltonetworks.com/CVE-2024-9474).\n\nThe risk of this issue is greatly reduced if you secure access to the management web interface by restricting access to only trusted internal IP addresses according to our recommended best practice deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/ba-p/464431).\n\nThis issue is applicable only to PAN-OS 10.2, PAN-OS 11.0, PAN-OS 11.1, and PAN-OS 11.2 software on PA-Series, VM-Series, and CN-Series firewalls and on Panorama (virtual and M-Series).\n\n\nCloud NGFW and Prisma Access are not impacted by this vulnerability.",
+            "cvedescription": "An authentication bypass in Palo Alto Networks PAN-OS software.",
+            "description": "An authentication bypass in Palo Alto Networks PAN-OS software.",
             "published": "2024-11-18T14:20:00.000Z",
             "name": "PAN-OS: Authentication Bypass in the Management Web Interface (PAN-SA-2024-0015)",
             "cvssversion": "4.0",
