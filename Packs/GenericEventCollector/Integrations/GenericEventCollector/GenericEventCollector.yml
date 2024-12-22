@@ -120,7 +120,6 @@ configuration:
     type: 0
     required: false
     additionalinfo: 'Flag examples: {has_more: True}, {next: True} etc'
-
   - section: Connect
     display: "Connection Test Type"
     name: test_type
