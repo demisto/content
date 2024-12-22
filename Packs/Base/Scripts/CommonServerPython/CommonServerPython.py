@@ -56,6 +56,7 @@ SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
+THREAD_POOL_EXECUTOR = None
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -117,6 +118,19 @@ def _find_relevant_module(line):
                 relevant_module = module
 
     return relevant_module
+
+
+def get_thread_pool_executor():
+    """A singleton for thread pool executor and support_multithreading
+
+    Returns:
+        _type_: _description_
+    """
+    global THREAD_POOL_EXECUTOR
+    if not THREAD_POOL_EXECUTOR:
+        support_multithreading()
+        THREAD_POOL_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+    return THREAD_POOL_EXECUTOR
 
 
 def fix_traceback_line_numbers(trace_str):
@@ -10771,7 +10785,7 @@ def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
 
 def support_multithreading():  # pragma: no cover
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
-
+    Note that this function shouldn't be called more than once during an exeuction.
     :return: No data returned
     :rtype: ``None``
     """
@@ -12401,9 +12415,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.info("Sending events to xsiam with multiple threads.")
         all_chunks = [chunk for chunk in data_chunks]
         demisto.info("Finished appending all data_chunks to a list.")
-        support_multithreading()
         futures = []
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+        executor = get_thread_pool_executor()
         for chunk in all_chunks:
             future = executor.submit(send_events, chunk)
             futures.append(future)
