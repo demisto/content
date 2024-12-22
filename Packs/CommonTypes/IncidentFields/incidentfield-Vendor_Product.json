@@ -34,6 +34,9 @@
         "CrowdStrike Falcon On-Demand Scans Detection",
         "CrowdStrike Falcon OFP Detection"
     ],
+    "systemAssociatedTypes": [
+        "CrowdStrike Falcon OFP Detection"
+    ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,

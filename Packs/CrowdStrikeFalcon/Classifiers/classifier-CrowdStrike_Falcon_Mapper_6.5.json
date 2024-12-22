@@ -572,7 +572,7 @@
                     "simple": "device.product_type_desc"
                 },
                 "Cloud Service": {
-                    "simple": "device.service_provider"
+                    "simple": "service_provider"
                 },
                 "Cloud Account ID": {
                     "simple": "device.service_provider_account_id"
@@ -664,7 +664,7 @@
                 "Last Update Time": {
                     "simple": "updated_timestamp"
                 },
-                "User Id": {
+                "User ID": {
                     "simple": "user_id"
                 },
                 "Username": {
