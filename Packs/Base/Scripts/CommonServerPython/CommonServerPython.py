@@ -55,12 +55,17 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
-<<<<<<< HEAD
-HAVE_SUPPORT_MULTITHREADING_CALLED_YET = False
-=======
 NUM_OF_WORKERS = 20
+THREAD_POOL_EXECUTOR = None
+HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
->>>>>>> parent of 7e4f0ca65c (threadpool singleton)
+def get_thread_pool_executor():
+    global THREAD_POOL_EXECUTOR
+    if not THREAD_POOL_EXECUTOR:
+        support_multithreading()
+        THREAD_POOL_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+    return THREAD_POOL_EXECUTOR
+
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -239,7 +244,7 @@ PROFILING_DUMP_ROWS_LIMIT = 20
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
-    import asyncio
+    import concurrent.futures
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
@@ -10674,8 +10679,8 @@ def support_multithreading():  # pragma: no cover
     :return: No data returned
     :rtype: ``None``
     """
-    global HAVE_SUPPORT_MULTITHREADING_CALLED_YET
-    if not HAVE_SUPPORT_MULTITHREADING_CALLED_YET:
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
+    if not HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
         global demisto
         prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
         demisto.lock = Lock()  # type: ignore[attr-defined]
@@ -10690,7 +10695,7 @@ def support_multithreading():  # pragma: no cover
                 raise RuntimeError('Failed acquiring lock')
 
         demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
-        HAVE_SUPPORT_MULTITHREADING_CALLED_YET = True
+        HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
 
 
 def get_tenant_account_name():
@@ -12303,19 +12308,14 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.info("Sending events to xsiam with multiple threads.")
         all_chunks = [chunk for chunk in data_chunks]
         demisto.info("Finished appending all data_chunks to a list.")
-        support_multithreading()
-<<<<<<< HEAD
-        tasks = [asyncio.create_task(send_events(chunk)) for chunk in all_chunks]
-=======
         futures = []
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+        executor = get_thread_pool_executor()
         for chunk in all_chunks:
             future = executor.submit(send_events, chunk)
             futures.append(future)
->>>>>>> parent of 7e4f0ca65c (threadpool singleton)
 
-        demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
-        return tasks
+        demisto.info('Finished submiting {} Futures.'.format(len(futures)))
+        return futures
     else:
         demisto.info("Sending events to xsiam with a single thread.")
         for chunk in data_chunks:
