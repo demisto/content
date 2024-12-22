@@ -327,6 +327,13 @@ class Client(BaseClient):
             return res.json()
         return None
 
+    def fetch_events(self, page_size: int, start_date: str = None, end_date: str = None, next_page: str = None) -> dict:
+        # https://api.absolute.com/v3/reporting/siem-events
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/reporting/siem-events',
+            params=None if next_page else {'pageSize': page_size, 'fromDateTimeUtc': start_date, 'toDateTimeUtc': end_date}
+        )
 
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
@@ -915,26 +922,17 @@ def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_
     while len(all_events) < fetch_limit and (next_page or not started_new_query):
         page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
         started_new_query = started_new_query or not next_page
-        response = run_get_events_query(client, next_page, start_date, end_date, page_size)
+
+        if next_page:
+            response = client.fetch_events(page_size=page_size, next_page=next_page)
+        else:
+            response = client.fetch_events(page_size=page_size, start_date=str(start_date), end_date=str(end_date))
 
         events = response.get('data', [])
         next_page = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
         all_events.extend(events)
 
     return all_events, started_new_query, next_page
-
-def run_get_events_query(client: Client, next_page, start_date, end_date, page_size: int) -> dict[str, Any]:
-    if not next_page:
-        demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
-        response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
-        demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
-
-    else:
-        demisto.debug(f'searching events with next_link: {next_page} and page size: {SEIM_EVENTS_PAGE_SIZE}')
-        response = client.search_events(limit=page_size, next_link=next_page)
-        demisto.debug(f'Found {response["size"]} events in the current page')
-
-    return response
 
 
 ''' MAIN FUNCTION '''
