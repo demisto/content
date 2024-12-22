@@ -48,13 +48,12 @@ class Client(BaseClient):
                         for key, value in full_event.items():
 
                             if isinstance(value, int | str):
-                                new_value = {key: value}
-                                events_list.update(new_value)
+                                events_list[key] = value
 
                             elif isinstance(value, dict):
 
                                 dict_values_to_extract_back_to_list = value
-                                new_value = {key: value}
+                                new_value: Any = {key: value}
                                 events_list.update(new_value)
 
                                 for item in dict_values_to_extract_back_to_list:
@@ -68,18 +67,16 @@ class Client(BaseClient):
         elif isinstance(raw_events, list):
             full_event_list = raw_events
             for event in full_event_list:
-                events_list = {}
+                events_list: Dict[Any, Any] = {}
                 for key, value in event.items():
 
                     if isinstance(value, int | str):
-                        new_value = {key: value}
-                        events_list.update(new_value)
+                        events_list[key] = value
 
                     elif isinstance(value, dict):
 
                         dict_values_to_extract_back_to_list = value
-                        new_value = {key: value}
-                        events_list.update(new_value)
+                        events_list[key] = value
 
                         for item in dict_values_to_extract_back_to_list:
                             key = item
