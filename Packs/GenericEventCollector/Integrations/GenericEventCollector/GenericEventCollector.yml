@@ -1,0 +1,178 @@
+category: Analytics & SIEM
+commonfields:
+  id: Generic_Rest_API_Collector
+  version: -1
+configuration:
+  - section: Connect
+    display: Incident type
+    name: incidentType
+    type: 13
+    required: false
+  - section: Connect
+    display: Vendor
+    name: vendor
+    type: 0
+    required: true
+    additionalinfo: 'Enter vendor name for dataset'
+  - section: Connect
+    display: Product
+    name: product
+    type: 0
+    required: true
+    additionalinfo: 'Enter product name for dataset'
+  - section: Connect
+    display: Server URL
+    name: base_url
+    type: 0
+    required: true
+  - section: Connect
+    display: Endpoint
+    name: endpoint
+    type: 0
+    required: true
+    additionalinfo: Add the endpoint you want to collect data from (Alert/Events Etc..)
+  - section: Connect
+    display: Authentication Type
+    name: authentication
+    type: 15
+    required: true
+    options:
+      - Basic
+      - Token
+      - Username&Password
+      - Bearer
+      - No Authorization
+      - Api-Key
+    additionalinfo: Select the authentication method
+  - section: Connect
+    display: 'HTTP Method'
+    name: http_method
+    defaultvalue: GET
+    type: 15
+    required: true
+    options:
+      - GET
+      - POST
+  - section: Connect
+    display: Token
+    name: token
+    type: 4
+    required: false
+    additionalinfo: 3rd party token / 3rd party API key
+  - section: Connect
+    display: ""
+    displaypassword: Username
+    name: username
+    type: 9
+    required: false
+    hiddenusername: true
+  - section: Connect
+    display: ""
+    displaypassword: Password
+    name: password
+    type: 9
+    required: false
+    hiddenusername: true
+  - section: Connect
+    display: Add Fields To header
+    name: add_fields_to_header
+    type: 0
+    required: false
+    additionalinfo: 'If the product authentication requires more fields to add to the
+    header please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Connect
+    display: 'Request Parameters'
+    name: request_params
+    type: 0
+    required: false
+    additionalinfo: 'If the product authentication requires more fields to add to the
+    DATA please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Connect
+    display: 'Query Parameters  '
+    name: query_params
+    type: 0
+    required: false
+    additionalinfo: 'If the product authentication allowes to filter the results using query Parameters
+   please add it here in a dictionary format {unique_field : 286} if there''s
+    a need to add more then one use it in this format: {''field-1'': value_example,
+    ''field-2'': value_2, ''field-3'': value_3}'
+  - section: Connect
+    display: 'Is pagination Needed'
+    name: pagination_needed
+    defaultvalue: "False"
+    type: 15
+    required: True
+    options:
+      - True
+      - False
+  - section: Connect
+    display: Pagination Field Name
+    name: pagination_field_name
+    type: 0
+    required: false
+  - section: Connect
+    display: Pagination Flag
+    name: pagination_flag
+    type: 0
+    required: false
+    additionalinfo: 'Flag examples: {has_more: True}, {next: True} etc'
+
+  - section: Connect
+    display: "Connection Test Type"
+    name: test_type
+    defaultvalue: connection
+    type: 15
+    required: true
+    options:
+      - connection
+      - push_to_dataset
+    additionalinfo: Pick connection if you just want to make sure the authentication
+      is working. Pick push_to_dataset if you want to see the data from the endpoint
+      in your dataset
+  - section: Connect
+    display: Use system proxy settings
+    name: proxy
+    defaultvalue: "false"
+    type: 8
+    required: false
+  - section: Connect
+    display: Trust and certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - section: Collect
+    display: First fetch time
+    name: first_fetch
+    defaultvalue: 3 days
+    type: 0
+    required: true
+  - section: Collect
+    display: Fetch Events
+    advanced: true
+    name: isFetchEvents
+    type: 8
+    required: false
+  - section: Collect
+    display: Events Fetch Interval
+    advanced: true
+    name: eventFetchInterval
+    defaultvalue: "1"
+    type: 19
+    required: false
+description: 'Collect logs from 3rd party vendors'
+display: Generic REST API Collector
+name: Generic_Rest_API_Collector
+script:
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.14.100715
+  isfetchevents: true
+fromversion: 6.8.0
+marketplaces:
+  - marketplacev2
+tests:
+  - No tests (auto formatted)
