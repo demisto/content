@@ -526,7 +526,7 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:2.0.0.91583
+  dockerimage: demisto/vmware:2.0.0.117325
   script: ""
   subtype: python3
   type: python
