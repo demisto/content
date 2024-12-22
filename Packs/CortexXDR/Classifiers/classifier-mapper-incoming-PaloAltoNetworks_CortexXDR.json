@@ -7,23 +7,23 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "mapping": {
-		"Cortex XDR - Lite": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Additional Data": {
-					"complex": {
-						"filters": [],
-						"root": "additional_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Agent Version": {
-					"complex": {
-						"accessor": "agentversion",
+        "Cortex XDR - Lite": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Additional Data": {
+                    "complex": {
+                        "filters": [],
+                        "root": "additional_data",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Agent Version": {
+                    "complex": {
+                        "accessor": "agentversion",
 						"filters": [],
 						"root": "alerts",
 						"transformers": [
