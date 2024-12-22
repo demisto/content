@@ -1,0 +1,50 @@
+{
+  "sessionId": "sessionid-abc-123",
+  "tenantId": "sometenantid",
+  "actorId": "someactorid",
+  "beginTime": 1726082760680,
+  "endTime": 1726082762722,
+  "firstObserved": 1726083300017,
+  "lastUpdated": 1726083000011,
+  "noRiskEvents": 3,
+  "lowEvents": 0,
+  "moderateEvents": 1,
+  "highEvents": 0,
+  "criticalEvents": 0,
+  "notes": [],
+  "riskIndicators": [
+    {
+      "id": "Document",
+      "weight": 0,
+      "eventCount": 1,
+      "name": "Document"
+    }
+  ],
+  "scores": [
+    {
+      "score": 5,
+      "severity": 2,
+      "sourceTimestamp": 1726083300017
+    }
+  ],
+  "triggeredAlerts": [
+    {
+      "alertId": "alert-id-abc-123",
+      "ruleId": "rule-id-abc-123",
+      "lessonId": null
+    }
+  ],
+  "states": [
+    {
+      "state": "OPEN",
+      "sourceTimestamp": 1726083300017,
+      "userId": null
+    }
+  ],
+  "exfiltrationSummary": "document file(s) shared via link from corporate Box",
+  "contextSummary": "",
+  "contentInspectionResults": {
+    "status": "UNPROCESSED",
+    "eventResults": []
+  }
+}
