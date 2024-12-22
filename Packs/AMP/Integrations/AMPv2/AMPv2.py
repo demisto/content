@@ -1208,6 +1208,8 @@ def fetch_incidents(
     # being duplicates for the next fetch
     new_previous_ids = previous_ids.copy()
 
+    demisto.debug(f"Running fetch with previous: {','.join(previous_ids)}")
+    
     # If a last fetch run doesn't exist, use the first fetch time.
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -1221,6 +1223,7 @@ def fetch_incidents(
     # fetches all the events from the current time up
     # to the provided start_time or last_fetch
     while True:
+        demisto.debug("looping on page")
         response = client.event_list_request(start_date=last_fetch,
                                              event_types=event_types,
                                              limit=500,
@@ -1231,10 +1234,14 @@ def fetch_incidents(
         if "next" not in response["metadata"]["links"]:
             # Reverses the list of events so that the list is in ascending order
             # so that the earliest event will be the first in the list
+            demisto.debug("found last page, returning results.")
             items.reverse()
             break
+        
+        demisto.debug(f"setting offset to: {len(items)}")
         offset = len(items)
 
+    demisto.debug(f"Recieved total of {len(items)}. IDs: {",".join(str(item.get("id")) for item in items)}")
     incidents: list[dict[str, Any]] = []
     incident_name = 'Cisco AMP Event ID:"{event_id}"'
 
@@ -1247,6 +1254,9 @@ def fetch_incidents(
         incident_severities.append(None)
 
     for item in items:
+        demisto.debug("Looping on results to filter.")
+        
+        item_id = str(item.get("id"))
         # Break once the maximum number of incidents has been achieved.
         if len(incidents) >= max_incidents_to_fetch:
             break
@@ -1255,10 +1265,12 @@ def fetch_incidents(
 
         # Skip if the incident severity isn't in the requested severities.
         if severity not in incident_severities:
+            demisto.debug(f"incident {item_id} filtered due to severity: {severity}")
             continue
 
         # Skip if the incident ID has been fetched already.
-        if (incident_id := str(item.get("id"))) in previous_ids:
+        if (incident_id := item_id) in previous_ids:
+            demisto.debug(f"incident {item_id} filtered due to severity: {severity}")
             continue
 
         incident_timestamp = item["timestamp"] * 1000
@@ -1276,7 +1288,8 @@ def fetch_incidents(
                 "dbotMirrorId": incident_id,
             }
         )
-
+    
+        demisto.debug(f"incident {item_id} inserted to system.")
         incidents.append(incident)
 
         # Update the latest incident time that was fetched.
@@ -1294,6 +1307,7 @@ def fetch_incidents(
         "last_fetch": timestamp_to_datestring(last_fetch_timestamp),
         "previous_ids": list(new_previous_ids),
     }
+    demisto.debug(f"Setting last run: {next_run}")
 
     return next_run, incidents
 
