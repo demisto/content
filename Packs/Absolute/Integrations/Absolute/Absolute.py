@@ -908,9 +908,9 @@ def get_device_location_command(args, client) -> CommandResults:
 
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     # TODO: fix setup
-    last_end_date = last_run.get('end_date', datetime.utcnow())
-    start_date = last_run.get('fromDateTimeUtc', (datetime.utcnow() - timedelta(days=3)))
+    last_end_date = last_run.get('end_date', 0)
     end_date = last_run.get('toDateTimeUtc', datetime.utcnow())
+    start_date = last_end_date + timedelta(milliseconds=1) if last_end_date else end_date - timedelta(milliseconds=1)
 
     next_page = last_run.get('nextPage', '')
 
