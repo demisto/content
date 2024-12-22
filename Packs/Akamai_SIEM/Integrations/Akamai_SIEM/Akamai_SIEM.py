@@ -438,6 +438,96 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
     demisto.info(f"Checking if execution should break with {time_since_interval_beginning=}, {max_time_took=}.")
     return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
 
+def generate_events():
+    original_dict = {
+  "attackData": {
+    "clientIP": "192.0.2.82",
+    "configId": "14227",
+    "policyId": "qik1_26545",
+    "ruleActions": "YWxlcnQ%3d%3bYWxlcnQ%3d%3bZGVueQ%3d%3d",
+    "ruleData": "dGVsbmV0LmV4ZQ%3d%3d%3bdGVsbmV0LmV4ZQ%3d%3d%3bVmVjdG9yIFNjb3JlOiAxMCwgREVOWSB0aHJlc2hvbGQ6IDksIEFsZXJ0IFJ1bGVzOiA5NTAwMDI6OTUwMDA2LCBEZW55IFJ1bGU6ICwgTGFzdCBNYXRjaGVkIE1lc3NhZ2U6IFN5c3RlbSBDb21tYW5kIEluamVjdGlvbg%3d%3d",
+    "ruleMessages": "U3lzdGVtIENvbW1hbmQgQWNjZXNz%3bU3lzdGVtIENvbW1hbmQgSW5qZWN0aW9u%3bQW5vbWFseSBTY29yZSBFeGNlZWRlZCBmb3IgQ29tbWFuZCBJbmplY3Rpb24%3d",
+    "ruleSelectors": "QVJHUzpvcHRpb24%3d%3bQVJHUzpvcHRpb24%3d%3b",
+    "ruleTags": "T1dBU1BfQ1JTL1dFQl9BVFRBQ0svRklMRV9JTkpFQ1RJT04%3d%3bT1dBU1BfQ1JTL1dFQl9BVFRBQ0svQ09NTUFORF9JTkpFQ1RJT04%3d%3bQUtBTUFJL1BPTElDWS9DTURfSU5KRUNUSU9OX0FOT01BTFk%3d",
+    "ruleVersions": "NA%3d%3d%3bNA%3d%3d%3bMQ%3d%3d",
+    "rules": "OTUwMDAy%3bOTUwMDA2%3bQ01ELUlOSkVDVElPTi1BTk9NQUxZ"
+  },
+  "botData": {
+    "botScore": "100",
+    "responseSegment": "3"
+  },
+  "clientData": {
+    "appBundleId": "com.mydomain.myapp",
+    "appVersion": "1.23",
+    "sdkVersion": "4.7.1",
+    "telemetryType": "2"
+  },
+  "format": "json",
+  "geo": {
+    "asn": "14618",
+    "city": "ASHBURN",
+    "continent": "288",
+    "country": "US",
+    "regionCode": "VA"
+  },
+  "httpMessage": {
+    "bytes": "266",
+    "host": "www.hmapi.com",
+    "method": "GET",
+    "path": "/",
+    "port": "80",
+    "protocol": "HTTP/1.1",
+    "query": "option=com_jce%20telnet.exe",
+    "requestHeaders": "User-Agent%3a%20BOT%2f0.1%20(BOT%20for%20JCE)%0d%0aAccept%3a%20text%2fhtml,application%2fxhtml+xml,application%2fxml%3bq%3d0.9,*%2f*%3bq%3d0.8%0d%0auniqueID%3a%20CR_H8%0d%0aAccept-Language%3a%20en-US,en%3bq%3d0.5%0d%0aAccept-Encoding%3a%20gzip,%20deflate%0d%0aConnection%3a%20keep-alive%0d%0aHost%3a%20www.hmapi.com%0d%0aContent-Length%3a%200%0d%0a",
+    "requestId": "1158db1758e37bfe67b7c09",
+    "responseHeaders": "Server%3a%20AkamaiGHost%0d%0aMime-Version%3a%201.0%0d%0aContent-Type%3a%20text%2fhtml%0d%0aContent-Length%3a%20266%0d%0aExpires%3a%20Tue,%2004%20Apr%202017%2010%3a57%3a02%20GMT%0d%0aDate%3a%20Tue,%2004%20Apr%202017%2010%3a57%3a02%20GMT%0d%0aConnection%3a%20close%0d%0aSet-Cookie%3a%20ak_bmsc%3dAFE4B6D8CEEDBD286FB10F37AC7B256617DB580D417F0000FE7BE3580429E23D%7epluPrgNmaBdJqOLZFwxqQLSkGGMy4zGMNXrpRIc1Md4qtsDfgjLCojg1hs2HC8JqaaB97QwQRR3YS1ulk+6e9Dbto0YASJAM909Ujbo6Qfyh1XpG0MniBzVbPMUV8oKhBLLPVSNCp0xXMnH8iXGZUHlUsHqWONt3+EGSbWUU320h4GKiGCJkig5r+hc6V1pi3tt7u3LglG3DloEilchdo8D7iu4lrvvAEzyYQI8Hao8M0%3d%3b%20expires%3dTue,%2004%20Apr%202017%2012%3a57%3a02%20GMT%3b%20max-age%3d7200%3b%20path%3d%2f%3b%20domain%3d.hmapi.com%3b%20HttpOnly%0d%0a",
+    "start": "1491303422",
+    "status": "200"
+  },
+  "type": "akamai_siem",
+  "userRiskData": {
+    "allow": "0",
+    "general": "duc_1h:10|duc_1d:30",
+    "originUserId": "jsmith007",
+    "risk": "udfp:1325gdg4g4343g/M|unp:74256/H",
+    "score": "75",
+    "status": "0",
+    "trust": "ugp:US",
+    "username": "jsmith@example.com",
+    "uuid": "964d54b7-0821-413a-a4d6-8131770ec8d5"
+  },
+  "version": "1.0"
+}
+    padding_string = "LARGER_DATA_" * 100
+    duplicated_dicts = []
+    target_size = 10000
+    import random
+    import copy
+    for i in range(target_size):
+        duplicated_dict = copy.deepcopy(original_dict)
+        
+        # Modify attackData
+        for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors', 'ruleActions', 'ruleVersions']:
+            timestamp = str(time.time())
+            encoded_timestamp = base64.b64encode(timestamp.encode()).decode()
+            duplicated_dict['attackData'][attack_data_key] += f"{encoded_timestamp}"
+        
+        random_value = str(random.randint(1, 1000))
+        encoded_random_value = urllib.parse.quote(random_value)
+        duplicated_dict["httpMessage"]["requestHeaders"] += f"%3brandom_value%3A{encoded_random_value}{duplicated_dict['httpMessage']['requestHeaders']}{duplicated_dict['httpMessage']['requestHeaders']}{duplicated_dict['httpMessage']['requestHeaders']}{duplicated_dict['httpMessage']['requestHeaders']}"
+        
+        # Modify responseHeaders with the current index (URL-encode if needed)
+        encoded_index = urllib.parse.quote(str(i))
+        duplicated_dict["httpMessage"]["responseHeaders"] += f"%3bindex%3A{encoded_index}{duplicated_dict['httpMessage']['responseHeaders']}{duplicated_dict['httpMessage']['responseHeaders']}{duplicated_dict['httpMessage']['responseHeaders']}{duplicated_dict['httpMessage']['responseHeaders']}{duplicated_dict['httpMessage']['responseHeaders']}{duplicated_dict['httpMessage']['responseHeaders']}"
+        
+        for key in duplicated_dict.keys():
+            if key not in ["httpMessage", "attackData", "version", "format", "type"] and  isinstance(duplicated_dict[key], dict):
+                for key2 in duplicated_dict[key].keys():
+                    duplicated_dict[key][key2] += padding_string
+                
+        duplicated_dicts.append(duplicated_dict)
+    return duplicated_dicts
+
 
 @logger
 def fetch_events_command(
@@ -486,7 +576,9 @@ def fetch_events_command(
             page_size = remaining_events_to_fetch
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         try:
-            events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+            # events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+            events = generate_events()
+            offset = "bla"
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
@@ -527,8 +619,8 @@ def fetch_events_command(
                     config_id = event.get('attackData', {}).get('configId', "")
                     policy_id = event.get('attackData', {}).get('policyId', "")
                     demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-            total_events_count += len(events)
-            execution_counter += 1
+        total_events_count += len(events)
+        execution_counter += 1
         yield events, offset, total_events_count, auto_trigger_next_run
     yield [], offset, total_events_count, auto_trigger_next_run
 
