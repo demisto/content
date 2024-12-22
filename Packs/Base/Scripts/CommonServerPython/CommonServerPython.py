@@ -55,7 +55,12 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
+<<<<<<< HEAD
 HAVE_SUPPORT_MULTITHREADING_CALLED_YET = False
+=======
+NUM_OF_WORKERS = 20
+
+>>>>>>> parent of 7e4f0ca65c (threadpool singleton)
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -12299,7 +12304,15 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         all_chunks = [chunk for chunk in data_chunks]
         demisto.info("Finished appending all data_chunks to a list.")
         support_multithreading()
+<<<<<<< HEAD
         tasks = [asyncio.create_task(send_events(chunk)) for chunk in all_chunks]
+=======
+        futures = []
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+        for chunk in all_chunks:
+            future = executor.submit(send_events, chunk)
+            futures.append(future)
+>>>>>>> parent of 7e4f0ca65c (threadpool singleton)
 
         demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
         return tasks
