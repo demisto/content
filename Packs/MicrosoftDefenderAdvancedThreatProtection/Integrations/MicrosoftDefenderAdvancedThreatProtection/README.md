@@ -15,8 +15,7 @@ Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/confi
 - Some commands have direct replacements in the **Microsoft Graph Security** integration.
 - Others do not have exact replacements but offer alternatives that return similar data.
 - A few commands have no available replacements.
-Below, you'll find details on the deprecated commands and their replacements or alternatives.
-[Go to details](#deprecation-details)
+[See Deprecation Details](#deprecation-details) to find details on the deprecated commands and their replacements or alternatives.
 
 ## Microsoft Defender Advanced Threat Protection Playbook
 
