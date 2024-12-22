@@ -6,7 +6,7 @@
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0",
-	"mapping": {
+    "mapping": {
 		"Cortex XDR - Lite": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
