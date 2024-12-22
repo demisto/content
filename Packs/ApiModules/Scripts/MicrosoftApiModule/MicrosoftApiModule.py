@@ -692,7 +692,7 @@ def get_azure_cloud(params, integration_name):
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
 
-def microsoft_defender_get_base_url(base_url, endpoint_type='com'):
+def microsoft_defender_get_base_url(base_url, endpoint_type):
     if endpoint_type == 'Custom':
         if not base_url:
             raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
