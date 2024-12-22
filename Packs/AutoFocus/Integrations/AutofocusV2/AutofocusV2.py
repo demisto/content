@@ -997,6 +997,9 @@ def build_indicator_children_query(used_indicator, indicators_values):
         field_api_name = API_PARAM_DICT['search_arguments'][used_indicator]['api_name']  # type: ignore
         operator = API_PARAM_DICT['search_arguments'][used_indicator]['operator']  # type: ignore
         children_list = children_list_generator(field_api_name, operator, indicators_values)
+    else:
+        children_list = []
+        demisto.debug(f"{indicators_values=} -> {children_list=}")
     return children_list
 
 
