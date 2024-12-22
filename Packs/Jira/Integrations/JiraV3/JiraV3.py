@@ -1206,7 +1206,8 @@ class JiraOnPremClient(JiraBaseClient):
         elif response.status_code == 200:
             return response.json()
         else:
-            demisto.debug(f'EXTRA LOG - GOT OTHER RESPONSE: {response}')
+            demisto.debug('Received unexpected response.')
+            return {} 
 
 
 class JiraIssueFieldsParser:
@@ -1899,15 +1900,14 @@ def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[List, List
     try:
         response = client.issue_get_forms(issue_id=issue_id)
     except Exception as e:
-        demisto.debug(f"EXTRA LOG - forms exception {str(e)}")
+        raise DemistoException(f"Forms fetching exception {str(e)}")
         response = {}
     
-    demisto.debug(f'Response from Jira API rest/proforma/api/2/issues/{issue_id}/forms: {json.dumps(response)}')
+    demisto.debug(f'Finished getting forms.')
     outputs = []
-    demisto.debug(f'EXTRA LOG - LOOPING ON {response}')
 
     for form in response:
-        demisto.debug(f'EXTRA LOG - FORMS - Running on {form}')
+        demisto.debug(f'FORMS - Running on {form}')
 
         questions = []
         for question_id, question_data in form.get('design', {}).get('questions').items():
@@ -3455,7 +3455,6 @@ def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tupl
     jql_query = f'{query} ORDER BY created ASC' if query else 'ORDER BY created ASC'
     query_params = create_query_params(jql_query=jql_query, max_results=1)
     res = client.run_query(query_params=query_params)
-    demisto.debug('EXTRA LOG -  got lowest id: {res}.')
 
     if (issues := res.get('issues', [])):
         return res, issues[0].get('id', '')
@@ -3526,23 +3525,23 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     try:
         if query_res := client.run_query(query_params=query_params):
             for issue in query_res.get('issues', []):
-                demisto.debug(f'EXTRA LOG -  Creating an incident for Jira issue: {issue}')
+                demisto.debug(f'Creating an incident for Jira issue: {issue}')
 
                 issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
-                demisto.debug(f'EXTRA LOG - Creating an incident for Jira issue with ID: {issue_id}')
+                demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
                 new_issue_ids.append(issue_id)
                 last_fetch_id = issue_id
-                demisto.debug(f'EXTRA LOG -  incident we got so far: {new_issue_ids}')
+                demisto.debug(f'Incident we got so far: {new_issue_ids}')
                 new_fetch_created_time = convert_string_date_to_specific_format(
                     string_date=demisto.get(issue, 'fields.created') or '')
-                demisto.debug(f'EXTRA LOG -  converted created time to {new_fetch_created_time}')
+                demisto.debug(f'Converted created time to {new_fetch_created_time}')
                 new_fetch_updated_time = convert_string_date_to_specific_format(
                     string_date=demisto.get(issue, 'fields.updated') or '')
-                demisto.debug(f'EXTRA LOG -  converted updated time to {new_fetch_updated_time}')
-                demisto.debug('EXTRA LOG -  starting to parse custom fields.')
+                demisto.debug(f'Converted updated time to {new_fetch_updated_time}')
+                demisto.debug('Starting to parse custom fields.')
 
                 parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
-                demisto.debug('EXTRA LOG -  finished parsing custom fields. Starting build an incident')
+                demisto.debug('Finished parsing custom fields. Starting build an incident')
 
                 incidents.append(create_incident_from_issue(
                     client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
@@ -3551,15 +3550,14 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                     comment_tag_to_jira=comment_tag_to_jira,
                     attachment_tag_from_jira=attachment_tag_from_jira,
                     attachment_tag_to_jira=attachment_tag_to_jira))
-                demisto.debug('EXTRA LOG -  Finished building incident.')
+                demisto.debug('Finished building incident.')
 
     except Exception as e:
-        demisto.debug('EXTRA LOG -  Failure detected: {e}.')
+        demisto.debug('Failure detected: {e}.')
 
         if 'Issue does not exist' in str(e) and issue_field_to_fetch_from == 'id' and str(id_offset) == str(last_fetch_id):
             # If entered here, this means the user wants to fetch using the issue ID, and has given an incorrect issue ID
             # to start fetching from, other than 0.
-            demisto.debug('EXTRA LOG -  Going To IF.')
             _, smallest_issue_id = get_smallest_id_offset_for_query(client=client, query=fetch_query)
             raise DemistoException(
                 f'The smallest issue ID with respect to the fetch query is {smallest_issue_id}, please configure it in the'
@@ -3570,8 +3568,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
-    demisto.debug('EXTRA LOG -  Exception has NOT occured. Moving on.')
-    demisto.debug(f'EXTRA LOG -  params to validate: {issue_field_to_fetch_from=}, {new_fetch_created_time=}, {last_fetch_created_time=}, {new_fetch_updated_time=},{last_fetch_updated_time=}')
+    demisto.debug(f'Params to validate: {issue_field_to_fetch_from=}, {new_fetch_created_time=}, {last_fetch_created_time=}, {new_fetch_updated_time=},{last_fetch_updated_time=}')
 
     if (
         (issue_field_to_fetch_from == 'created date'
@@ -3580,7 +3577,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             and new_fetch_updated_time == last_fetch_updated_time)
     ):
         new_issue_ids.extend(last_fetch_issue_ids)
-    demisto.debug('EXTRA LOG -  setting last run.')
+    demisto.debug('Setting last run.')
 
     demisto.setLastRun({
         'issue_ids': new_issue_ids or last_fetch_issue_ids,
@@ -3751,10 +3748,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     Returns:
         Dict[str, Any]: A dictionary that is represents an incident.
     """
-    demisto.debug(f'EXTRA LOG - create incident - starting. raw data: {issue}')
-
     issue_description: str = JiraIssueFieldsParser.get_description_context(issue_data=issue).get('Description') or ''
-    demisto.debug(f'EXTRA LOG - create incident - manage to get description: {issue_description}')
 
     issue_id = str(issue.get('id'))
     labels = [
@@ -3772,22 +3766,23 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         {'type': 'description', 'value': issue_description},
     ]
     issue['parsedDescription'] = issue_description
-    demisto.debug('EXTRA LOG - create incident - extracting extra data.')
+    demisto.debug(f'Extracting extra data for {issue_id}.')
 
     issue |= add_extracted_data_to_incident(issue=issue)
     incident_name = f"Jira issue: {issue.get('id')}"
-    demisto.debug('EXTRA LOG - create incident - got so far.')
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, 'fields.priority') or {})
 
     attachments: List[Dict[str, Any]] = []
     if fetch_attachments:
+        demisto.debug(f'Fetching attachment for {issue_id}.')
         attachments = get_fetched_attachments(client=client, issue=issue)
     if fetch_comments:
+        demisto.debug(f'Fetching comments for {issue_id}.')
+
         comments_entries = get_fetched_comments(client, issue_id)
         issue['extractedComments'] = comments_entries
         labels.append({'type': 'comments', 'value': str(comments_entries)})
-    demisto.debug('EXTRA LOG - create incident - got so far 2.')
 
     issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction)
 
@@ -3799,13 +3794,16 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
     issue['extractedAttachments'] = attachments
-    demisto.debug('EXTRA LOG - create incident - got so far 3.')
 
-    # Fetch any forms for the issue
+    # Fetch any forms for the issue. When using DataCenter onPrem this will fail.
     if isinstance(client, JiraOnPremClient):
-        _, forms = get_issue_forms(client, str(issue.get('key')))
-        issue['forms'] = forms
-    demisto.debug('EXTRA LOG - create incident - got so far 4.')
+        try:
+            _, forms = get_issue_forms(client, str(issue.get('key')))
+            issue['forms'] = forms
+        except Exception as e:
+            demisto.debug(f'Failed to get reports for {issue_id}. Error: {traceback.format_exc()}')
+            
+    demisto.debug(f'Incident for ticket {issue_id} is being created.')
 
     return {
         "name": incident_name,
