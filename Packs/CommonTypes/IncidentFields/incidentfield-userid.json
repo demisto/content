@@ -24,6 +24,9 @@
         "IAM - Group Membership Update",
         "CrowdStrike Falcon OFP Detection"
     ],
+    "systemAssociatedTypes": [
+        "CrowdStrike Falcon OFP Detection"
+    ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,

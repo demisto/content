@@ -664,7 +664,7 @@
                 "Last Update Time": {
                     "simple": "updated_timestamp"
                 },
-                "User ID": {
+                "User Id": {
                     "simple": "user_id"
                 },
                 "Username": {
