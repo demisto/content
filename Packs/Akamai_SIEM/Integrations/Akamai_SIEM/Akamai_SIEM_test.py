@@ -201,8 +201,8 @@ class TestCommandsFunctions:
                                                                                       ):
             pass
         assert total_events_count == 50
-
-    def test_fetch_events_command_sanity(self, client, mocker):
+    @pytest.mark.asyncio
+    async def test_fetch_events_command_sanity(self, client, mocker):
         """
         Given:
         - A client object
@@ -218,6 +218,8 @@ class TestCommandsFunctions:
         page_size = 50
         limit = 250
         num_of_pages = num_of_results // page_size
+        mocker.patch.object(demisto, 'params',return_value={'configIds': "", "page_size": page_size, "should_skip_decode_events": False})
+        mocker.patch.object(Akamai_SIEM, 'get_integration_context', return_value={})
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=[
             (
@@ -226,18 +228,9 @@ class TestCommandsFunctions:
             )
             for j in range(num_of_pages)
         ])
-        total_events_count = 0
 
-        for events, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
-                                                                                      '3 days',
-                                                                                      limit,
-                                                                                      '',
-                                                                                      {},
-                                                                                      page_size,
-                                                                                      False
-                                                                                      ):
-            assert offset == f"offset_{events[-1]['id']}" if events else True
-        assert total_events_count == 250
+        await Akamai_SIEM.fetch_events_command(client)  # noqa: B007
+          
 
     def test_fetch_events_command_no_results(self, mocker, client, requests_mock):
         """

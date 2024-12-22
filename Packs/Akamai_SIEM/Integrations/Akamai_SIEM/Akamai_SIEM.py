@@ -7,10 +7,12 @@ from base64 import b64decode
 
 # 3-rd party imports
 from typing import Any
-from collections.abc import Iterator, Sequence
+from collections.abc import Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
+import asyncio
+
 # Local imports
 from CommonServerUserPython import *
 
@@ -40,6 +42,8 @@ TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
+MODULE_HEALTH_UPDATE_LOCK = None
+EVENTS_COUNT_CURRENT_INTERVAL = 0
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -437,76 +441,96 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
     return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
 
 
+async def update_total_events_fetched(events_amount):
+    async with MODULE_HEALTH_UPDATE_LOCK:
+        global EVENTS_COUNT_CURRENT_INTERVAL
+        EVENTS_COUNT_CURRENT_INTERVAL += events_amount
+
+
+async def update_module_health():
+    async with MODULE_HEALTH_UPDATE_LOCK:
+        global EVENTS_COUNT_CURRENT_INTERVAL
+        if EVENTS_COUNT_CURRENT_INTERVAL:
+            demisto.updateModuleHealth({'eventsPulled': (EVENTS_COUNT_CURRENT_INTERVAL)})
+        EVENTS_COUNT_CURRENT_INTERVAL = 0
+
+
+async def process_and_send_events_to_xsiam(events, should_skip_decode_events):
+    demisto.info(f"got {len(events)} events, moving to processing events data.")
+    if should_skip_decode_events:
+        demisto.info("Skipping decode events, adding _time fields to events.")
+        for event in events:
+            event["_time"] = event["httpMessage"]["start"]
+    else:
+        demisto.info("decoding and adding _time fields to events.")
+        for event in events:
+            try:
+                event["_time"] = event["httpMessage"]["start"]
+                if "attackData" in event:
+                    for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
+                                            'ruleActions', 'ruleVersions']:
+                        event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
+                                                                                                                ""))
+                if "httpMessage" in event:
+                    event['httpMessage']['requestHeaders'] = decode_url(
+                        event.get('httpMessage', {}).get('requestHeaders', ""))
+                    event['httpMessage']['responseHeaders'] = decode_url(
+                        event.get('httpMessage', {}).get('responseHeaders', ""))
+            except Exception as e:
+                config_id = event.get('attackData', {}).get('configId', "")
+                policy_id = event.get('attackData', {}).get('policyId', "")
+                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
+        demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
+                    f"latest event time is: {events[-1]['_time']}")
+        tasks: list = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
+                            chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True)
+        demisto.info("Finished executing send_events_to_xsiam, waiting for tasks to end.")
+        await asyncio.gather(*tasks)
+        demisto.info("Finished gathering all tasks.")
+        asyncio.create_task(update_total_events_fetched(len(events)))  # noqa: RUF006
+            
 @logger
-def fetch_events_command(
-    client: Client,
-    fetch_time: str,
-    config_ids: str,
-    ctx: dict,
-    page_size: int,
-    should_skip_decode_events: bool
-) -> Iterator[Any]:
-    """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
+async def fetch_events_command(client: Client):
+    """Asynchronously gathers events from Akamai SIEM. Decode them, and send them to xsiam.
 
     Args:
         client: Client object with request
-        fetch_time: From when to fetch if first time, e.g. `3 days`
-        fetch_limit: limit of events in a fetch
-        config_ids: security configuration ids to fetch, e.g. `51000;56080`
-        ctx: The integration context
-        page_size: The number of events to limit for every request.
-        should_skip_decode_events: Wether to skip events decoding or not.
 
-    Yields:
-        (list[dict], str, int, set[str], bool): events, new offset, total number of events fetched,
-        event hashes from current fetch, and whether to set nexttrigger=0 for next execution.
     """
-    offset = ctx.get("offset")
-    from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", fetch_time), date_format='%s')
-    demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
-    try:
-        events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
-    except DemistoException as e:
-        demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
-        if "Requested Range Not Satisfiable" in str(e):
-            e = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
-                "This occurred due to offset pointing to events older than 12 hours.\n" \
-                "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
-                "If you wish to fetch more up to date events, " \
-                "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
-                'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
-                f'original error: [{e}]'
-            set_integration_context({"from_time": "11 hours"})
-        demisto.updateModuleHealth(e, is_error=True)
-        demisto.info("Going to sleep for 60 seconds.")
-        time.sleep(60)
-        demisto.info("Done sleeping 60 seconds.")
-    if events:
-        demisto.info(f"got {len(events)} events, moving to processing events data.")
-        if should_skip_decode_events:
-            demisto.info("Skipping decode events, adding _time fields to events.")
-            for event in events:
-                event["_time"] = event["httpMessage"]["start"]
-        else:
-            demisto.info("decoding and adding _time fields to events.")
-            for event in events:
-                try:
-                    event["_time"] = event["httpMessage"]["start"]
-                    if "attackData" in event:
-                        for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
-                                                'ruleActions', 'ruleVersions']:
-                            event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
-                                                                                                                    ""))
-                    if "httpMessage" in event:
-                        event['httpMessage']['requestHeaders'] = decode_url(
-                            event.get('httpMessage', {}).get('requestHeaders', ""))
-                        event['httpMessage']['responseHeaders'] = decode_url(
-                            event.get('httpMessage', {}).get('responseHeaders', ""))
-                except Exception as e:
-                    config_id = event.get('attackData', {}).get('configId', "")
-                    policy_id = event.get('attackData', {}).get('policyId', "")
-                    demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-    yield events, offset
+    while True:
+        params = demisto.params()
+        config_ids = params.get("configIds", "")
+        page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
+        should_skip_decode_events = params.get("should_skip_decode_events", False)
+        ctx = get_integration_context() or {}
+        offset = ctx.get("offset")
+        from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", "5 minutes"), date_format='%s')
+        demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
+        try:
+            events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+        except DemistoException as e:
+            demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
+            if "Requested Range Not Satisfiable" in str(e):
+                e = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
+                    "This occurred due to offset pointing to events older than 12 hours.\n" \
+                    "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
+                    "If you wish to fetch more up to date events, " \
+                    "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
+                    'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
+                    f'original error: [{e}]'
+                set_integration_context({"from_time": "11 hours"})
+            demisto.updateModuleHealth(e, is_error=True)
+            demisto.info("Going to sleep for 60 seconds.")
+            await asyncio.sleep(60)
+            demisto.info("Done sleeping 60 seconds.")
+        if events:
+            asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events))  # noqa: RUF006
+        if not events or is_last_request_smaller_than_page_size(len(events), page_size):
+            demisto.info(f"got {len(events)} events which is {ALLOWED_PAGE_SIZE_DELTA_RATIO}{page_size=} rr lower," \
+                            "going to sleep for 60 seconds.")
+            await asyncio.sleep(60)
+            demisto.info("Finished sleeping for 60 seconds.")
+        set_integration_context({"offset": offset})
 
 
 def decode_url(headers: str) -> dict:
@@ -564,31 +588,10 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "long-running-execution":
-            while True:
-                page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
-                should_skip_decode_events = params.get("should_skip_decode_events", False)
-                for events, offset in (  # noqa: B007
-                fetch_events_command(
-                    client,
-                    "5 minutes",
-                    config_ids=params.get("configIds", ""),
-                    ctx=get_integration_context() or {},
-                    page_size=page_size,
-                    should_skip_decode_events=should_skip_decode_events
-                )):
-                    if events:
-                        demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
-                                    f"latest event time is: {events[-1]['_time']}")
-                        send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
-                                            chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True)
-                        demisto.info("Finished executing send_events_to_xsiam, waiting for futures to end.")
-                    if not events or is_last_request_smaller_than_page_size(len(events), page_size):
-                        demisto.info(f"got {len(events)} events which is {ALLOWED_PAGE_SIZE_DELTA_RATIO}{page_size=} rr lower," \
-                                     "going to sleep for 60 seconds.")
-                        time.sleep(60)
-                        demisto.info("Finished sleeping for 60 seconds.")
-                    set_integration_context({"offset": offset})
-                demisto.updateModuleHealth({'eventsPulled': (len(events))})
+            global MODULE_HEALTH_UPDATE_LOCK
+            MODULE_HEALTH_UPDATE_LOCK = asyncio.Lock()
+            demisto.info("Starting long-running execution.")
+            asyncio.run(fetch_events_command(client))
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)

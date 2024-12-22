@@ -55,14 +55,6 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
-NUM_OF_WORKERS = 20
-THREAD_POOL_EXECUTOR = None
-
-def get_thread_pool_executor():
-    global THREAD_POOL_EXECUTOR
-    if not THREAD_POOL_EXECUTOR:
-        THREAD_POOL_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-    return THREAD_POOL_EXECUTOR
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -242,7 +234,7 @@ PROFILING_DUMP_ROWS_LIMIT = 20
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
-    import concurrent.futures
+    import asyncio
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
@@ -10677,20 +10669,23 @@ def support_multithreading():  # pragma: no cover
     :return: No data returned
     :rtype: ``None``
     """
-    global demisto
-    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
-    demisto.lock = Lock()  # type: ignore[attr-defined]
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_YET
+    if not HAVE_SUPPORT_MULTITHREADING_CALLED_YET:
+        global demisto
+        prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+        demisto.lock = Lock()  # type: ignore[attr-defined]
 
-    def locked_do(cmd):
-        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
-            try:
-                return prev_do(cmd)  # type: ignore[call-arg]
-            finally:
-                demisto.lock.release()  # type: ignore[attr-defined]
-        else:
-            raise RuntimeError('Failed acquiring lock')
+        def locked_do(cmd):
+            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+                try:
+                    return prev_do(cmd)  # type: ignore[call-arg]
+                finally:
+                    demisto.lock.release()  # type: ignore[attr-defined]
+            else:
+                raise RuntimeError('Failed acquiring lock')
 
-    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+        demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+        HAVE_SUPPORT_MULTITHREADING_CALLED_YET = True
 
 
 def get_tenant_account_name():
@@ -12304,14 +12299,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         all_chunks = [chunk for chunk in data_chunks]
         demisto.info("Finished appending all data_chunks to a list.")
         support_multithreading()
-        futures = []
-        executor = get_thread_pool_executor()
-        for chunk in all_chunks:
-            future = executor.submit(send_events, chunk)
-            futures.append(future)
+        tasks = [asyncio.create_task(send_events(chunk)) for chunk in all_chunks]
 
-        demisto.info('Finished submiting {} Futures.'.format(len(futures)))
-        return futures
+        demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
+        return tasks
     else:
         demisto.info("Sending events to xsiam with a single thread.")
         for chunk in data_chunks:
