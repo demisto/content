@@ -361,12 +361,6 @@ repos:
     needs:
     - pytest-in-docker
 
-  - id: sort-yaml
-    name: sort-yaml
-    description: Sort YAML content files to ensure consistency.
-    entry: sort-yaml
-    language: python
-    files: ^Packs/\.*ya?ml$
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
