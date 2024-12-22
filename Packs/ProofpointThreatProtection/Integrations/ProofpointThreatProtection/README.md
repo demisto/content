@@ -1,24 +1,20 @@
 Threat Protection APIs are REST APIs that allow Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
-## Configure Proofpoint Threat Protection on Cortex XSOAR
+## Configure Proofpoint Threat Protection in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Proofpoint Threat Protection.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL | True |
-    | Client ID | True |
-    | Client Secret | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Cluster ID | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| URL | True |
+| Client ID | True |
+| Client Secret | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Cluster ID | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### proofpoint-tp-blocklist-get

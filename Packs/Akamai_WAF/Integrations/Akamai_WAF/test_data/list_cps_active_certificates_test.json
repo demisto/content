@@ -1,0 +1,211 @@
+{
+    "human_readable": "### Akamai WAF - cps list active certificates command\n|assignedSlots|certificateType|csr|enableMultiStackedCertificates|id|location|pendingChanges|production|productionSlots|staging|stagingSlots|\n|---|---|---|---|---|---|---|---|---|---|---|\n| 38634 | san | cn: dv-nplus1.Rel4-14-1.akatest<br>sans: dv-nplus1.rel4-14-1.akatest,<br>san-dv-nplus1.rel4-14-1.akatest | false | 10000 | /cps/v2/enrollments/10000 | {'changeType': 'renewal', 'location': '/cps/v2/enrollments/10000/changes/10002'} | location: /cps/v2/enrollments/10000/deployments/production<br>multiStackedCertificates: {'expiry': '2024-10-18T23:59:59Z', 'issuer': 'CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US', 'keyAlgorithm': 'RSA', 'serial': 'test_test_test', 'sha256Fingerprint': 'test_test_test', 'signatureAlgorithm': 'SHA-256'}<br>networkConfiguration: {\"disallowedTlsVersions\": [\"TLSv1\", \"TLSv1_1\"], \"dnsNames\": \"null\", \"fipsMode\": \"true\", \"geography\": \"core\", \"mustHaveCiphers\": \"ak-akamai-2020q1\", \"ocspStapling\": \"on\", \"preferredCiphers\": \"ak-akamai-2020q1\", \"quicEnabled\": \"false\", \"secureNetwork\": \"enhanced-tls\", \"sniOnly\": \"false\"}<br>primaryCertificate: {\"expiry\": \"2021-09-12T14:16:59z\", \"issuer\": \"CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US\", \"keyAlgorithm\": \"RSA\", \"serial\": \"test_test_test\", \"sha256Fingerprint\": \"test_test_test\", \"signatureAlgorithm\": \"SHA-256\"} | 38634 | location: /cps/v2/enrollments/10000/deployments/staging<br>multiStackedCertificates: {'expiry': '2024-10-18T23:59:59Z', 'issuer': 'CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US', 'keyAlgorithm': 'RSA', 'serial': 'test_test_test', 'sha256Fingerprint': 'test_test_test', 'signatureAlgorithm': 'SHA-256'}<br>networkConfiguration: {\"disallowedTlsVersions\": [\"TLSv1\", \"TLSv1_1\"], \"dnsNames\": \"null\", \"fipsMode\": \"true\", \"geography\": \"core\", \"mustHaveCiphers\": \"ak-akamai-2020q1\", \"ocspStapling\": \"on\", \"preferredCiphers\": \"ak-akamai-2020q1\", \"quicEnabled\": \"false\", \"secureNetwork\": \"enhanced-tls\", \"sniOnly\": \"false\"}<br>primaryCertificate: {\"expiry\": \"2021-09-12T14:16:59z\", \"issuer\": \"CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US\", \"keyAlgorithm\": \"RSA\", \"serial\": \"test_test_test\", \"sha256Fingerprint\": \"test_test_test\", \"signatureAlgorithm\": \"SHA-256\"} | 38634 |\n",
+    "context_entry": {
+        "Akamai.Cps.Active.Certificates.Enrollments": [
+            {
+                "assignedSlots": [
+                    38634
+                ],
+                "certificateType": "san",
+                "csr": {
+                    "cn": "dv-nplus1.Rel4-14-1.akatest",
+                    "sans": [
+                        "dv-nplus1.rel4-14-1.akatest",
+                        "san-dv-nplus1.rel4-14-1.akatest"
+                    ]
+                },
+                "enableMultiStackedCertificates": "false",
+                "id": 10000,
+                "location": "/cps/v2/enrollments/10000",
+                "pendingChanges": [
+                    {
+                        "changeType": "renewal",
+                        "location": "/cps/v2/enrollments/10000/changes/10002"
+                    }
+                ],
+                "production": {
+                    "location": "/cps/v2/enrollments/10000/deployments/production",
+                    "multiStackedCertificates": [
+                        {
+                            "expiry": "2024-10-18T23:59:59Z",
+                            "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                            "keyAlgorithm": "RSA",
+                            "serial": "test_test_test",
+                            "sha256Fingerprint": "test_test_test",
+                            "signatureAlgorithm": "SHA-256"
+                        }
+                    ],
+                    "networkConfiguration": {
+                        "disallowedTlsVersions": [
+                            "TLSv1",
+                            "TLSv1_1"
+                        ],
+                        "dnsNames": "null",
+                        "fipsMode": "true",
+                        "geography": "core",
+                        "mustHaveCiphers": "ak-akamai-2020q1",
+                        "ocspStapling": "on",
+                        "preferredCiphers": "ak-akamai-2020q1",
+                        "quicEnabled": "false",
+                        "secureNetwork": "enhanced-tls",
+                        "sniOnly": "false"
+                    },
+                    "primaryCertificate": {
+                        "expiry": "2021-09-12T14:16:59z",
+                        "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                        "keyAlgorithm": "RSA",
+                        "serial": "test_test_test",
+                        "sha256Fingerprint": "test_test_test",
+                        "signatureAlgorithm": "SHA-256"
+                    }
+                },
+                "productionSlots": [
+                    38634
+                ],
+                "staging": {
+                    "location": "/cps/v2/enrollments/10000/deployments/staging",
+                    "multiStackedCertificates": [
+                        {
+                            "expiry": "2024-10-18T23:59:59Z",
+                            "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                            "keyAlgorithm": "RSA",
+                            "serial": "test_test_test",
+                            "sha256Fingerprint": "test_test_test",
+                            "signatureAlgorithm": "SHA-256"
+                        }
+                    ],
+                    "networkConfiguration": {
+                        "disallowedTlsVersions": [
+                            "TLSv1",
+                            "TLSv1_1"
+                        ],
+                        "dnsNames": "null",
+                        "fipsMode": "true",
+                        "geography": "core",
+                        "mustHaveCiphers": "ak-akamai-2020q1",
+                        "ocspStapling": "on",
+                        "preferredCiphers": "ak-akamai-2020q1",
+                        "quicEnabled": "false",
+                        "secureNetwork": "enhanced-tls",
+                        "sniOnly": "false"
+                    },
+                    "primaryCertificate": {
+                        "expiry": "2021-09-12T14:16:59z",
+                        "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                        "keyAlgorithm": "RSA",
+                        "serial": "test_test_test",
+                        "sha256Fingerprint": "test_test_test",
+                        "signatureAlgorithm": "SHA-256"
+                    }
+                },
+                "stagingSlots": [
+                    38634
+                ]
+            }
+        ]
+    },
+    "raw_response": {
+        "enrollments": [
+            {
+                "assignedSlots": [
+                    38634
+                ],
+                "certificateType": "san",
+                "csr": {
+                    "cn": "dv-nplus1.Rel4-14-1.akatest",
+                    "sans": [
+                        "dv-nplus1.rel4-14-1.akatest",
+                        "san-dv-nplus1.rel4-14-1.akatest"
+                    ]
+                },
+                "enableMultiStackedCertificates": "false",
+                "id": 10000,
+                "location": "/cps/v2/enrollments/10000",
+                "pendingChanges": [
+                    {
+                        "changeType": "renewal",
+                        "location": "/cps/v2/enrollments/10000/changes/10002"
+                    }
+                ],
+                "production": {
+                    "location": "/cps/v2/enrollments/10000/deployments/production",
+                    "multiStackedCertificates": [
+                        {
+                            "expiry": "2024-10-18T23:59:59Z",
+                            "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                            "keyAlgorithm": "RSA",
+                            "serial": "test_test_test",
+                            "sha256Fingerprint": "test_test_test",
+                            "signatureAlgorithm": "SHA-256"
+                        }
+                    ],
+                    "networkConfiguration": {
+                        "disallowedTlsVersions": [
+                            "TLSv1",
+                            "TLSv1_1"
+                        ],
+                        "dnsNames": "null",
+                        "fipsMode": "true",
+                        "geography": "core",
+                        "mustHaveCiphers": "ak-akamai-2020q1",
+                        "ocspStapling": "on",
+                        "preferredCiphers": "ak-akamai-2020q1",
+                        "quicEnabled": "false",
+                        "secureNetwork": "enhanced-tls",
+                        "sniOnly": "false"
+                    },
+                    "primaryCertificate": {
+                        "expiry": "2021-09-12T14:16:59z",
+                        "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                        "keyAlgorithm": "RSA",
+                        "serial": "test_test_test",
+                        "sha256Fingerprint": "test_test_test",
+                        "signatureAlgorithm": "SHA-256"
+                    }
+                },
+                "productionSlots": [
+                    38634
+                ],
+                "staging": {
+                    "location": "/cps/v2/enrollments/10000/deployments/staging",
+                    "multiStackedCertificates": [
+                        {
+                            "expiry": "2024-10-18T23:59:59Z",
+                            "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                            "keyAlgorithm": "RSA",
+                            "serial": "test_test_test",
+                            "sha256Fingerprint": "test_test_test",
+                            "signatureAlgorithm": "SHA-256"
+                        }
+                    ],
+                    "networkConfiguration": {
+                        "disallowedTlsVersions": [
+                            "TLSv1",
+                            "TLSv1_1"
+                        ],
+                        "dnsNames": "null",
+                        "fipsMode": "true",
+                        "geography": "core",
+                        "mustHaveCiphers": "ak-akamai-2020q1",
+                        "ocspStapling": "on",
+                        "preferredCiphers": "ak-akamai-2020q1",
+                        "quicEnabled": "false",
+                        "secureNetwork": "enhanced-tls",
+                        "sniOnly": "false"
+                    },
+                    "primaryCertificate": {
+                        "expiry": "2021-09-12T14:16:59z",
+                        "issuer": "CN=DigiCert TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US",
+                        "keyAlgorithm": "RSA",
+                        "serial": "test_test_test",
+                        "sha256Fingerprint": "test_test_test",
+                        "signatureAlgorithm": "SHA-256"
+                    }
+                },
+                "stagingSlots": [
+                    38634
+                ]
+            }
+        ]
+    }
+}

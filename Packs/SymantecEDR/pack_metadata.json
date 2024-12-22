@@ -2,7 +2,7 @@
     "name": "Symantec Endpoint Detection and Response",
     "description": "Symantec EDR On-prem helps to detect threats on your network by filtering endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s) contain suspicious events, isolate potentially compromised devices, and delete malicious files and associated artifacts.",
     "support": "xsoar",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

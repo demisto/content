@@ -1,37 +1,66 @@
 import email
 import hashlib
-from multiprocessing import Process
 import uuid
+from email.policy import SMTP, SMTPUTF8
+from io import StringIO
+from multiprocessing import Process
 
 import dateparser  # type: ignore
 import exchangelib
-
-from CommonServerPython import *
-from io import StringIO
-from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
-                         Build, Configuration, Credentials, EWSDateTime,
-                         EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version, Body, FolderCollection)
-from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
-                                ErrorInvalidIdMalformed,
-                                ErrorInvalidPropertyRequest,
-                                ErrorIrresolvableConflict, ErrorItemNotFound,
-                                ErrorMailboxMoveInProgress,
-                                ErrorMailboxStoreUnavailable,
-                                ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
+from exchangelib import (
+    BASIC,
+    DELEGATE,
+    DIGEST,
+    IMPERSONATION,
+    NTLM,
+    Account,
+    Body,
+    Build,
+    Configuration,
+    Credentials,
+    EWSDateTime,
+    EWSTimeZone,
+    FileAttachment,
+    Folder,
+    FolderCollection,
+    HTMLBody,
+    ItemAttachment,
+    Version,
+)
+from exchangelib.errors import (
+    AutoDiscoverFailed,
+    ErrorFolderNotFound,
+    ErrorInvalidIdMalformed,
+    ErrorInvalidPropertyRequest,
+    ErrorIrresolvableConflict,
+    ErrorItemNotFound,
+    ErrorMailboxMoveInProgress,
+    ErrorMailboxStoreUnavailable,
+    ErrorMimeContentConversionFailed,
+    ErrorNameResolutionNoResults,
+    RateLimitError,
+    ResponseMessageError,
+    TransportError,
+)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol, FaultTolerance
+from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
-from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
-                                 EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2013_SP1,
-                                 EXCHANGE_2016, EXCHANGE_2019)
+from exchangelib.version import (
+    EXCHANGE_2007,
+    EXCHANGE_2010,
+    EXCHANGE_2010_SP2,
+    EXCHANGE_2013,
+    EXCHANGE_2013_SP1,
+    EXCHANGE_2016,
+    EXCHANGE_2019,
+)
+from exchangelib.version import VERSIONS as EXC_VERSIONS
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
-from exchangelib.version import VERSIONS as EXC_VERSIONS
-from email.policy import SMTP, SMTPUTF8
+
+from CommonServerPython import *
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
@@ -575,7 +604,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
-def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
+def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
@@ -589,12 +618,11 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base64.b64decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name
-
         }
         attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
         last_index = m.end() - 1
         new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
                                         content_id=attachment.get('cid'), is_inline=True)
@@ -1278,7 +1306,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(account_email, folder_name):
+def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails: bool = False):
     last_run = get_last_run()
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
 
@@ -1292,17 +1320,29 @@ def fetch_emails_as_incidents(account_email, folder_name):
         last_incident_run_time = None
 
         for item in last_emails:
-            if item.message_id:
-                current_fetch_ids.add(item.message_id)
-                incident = parse_incident_from_item(item, True)
-                demisto.debug(f'Parsed incident: {item.message_id}')
-                if incident:
-                    incidents.append(incident)
-                    last_incident_run_time = item.datetime_received
-                    demisto.debug(f'Appended incident: {item.message_id}')
+            try:
+                if item.message_id:
+                    current_fetch_ids.add(item.message_id)
+                    incident = parse_incident_from_item(item, True)
+                    demisto.debug(f"Parsed incident: {item.message_id}")
+                    if incident:
+                        incidents.append(incident)
+                        last_incident_run_time = item.datetime_received
+                        demisto.debug(f"Appended incident: {item.message_id}")
 
-                if len(incidents) >= MAX_FETCH:
-                    break
+                    if len(incidents) >= MAX_FETCH:
+                        break
+            except Exception as e:
+                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
+                    raise
+
+                # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
+                error_msg = (
+                    "Encountered email parsing issue while fetching. "
+                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
+                )
+                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
+                demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
         last_fetch_time = last_run.get(LAST_RUN_TIME)
@@ -2183,10 +2223,12 @@ def encode_and_submit_results(obj):  # pragma: no cover
 def sub_main():  # pragma: no cover
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
     global config, credentials
-    EWS_SERVER = demisto.params()['ewsServer']
-    USERNAME = demisto.params()['credentials']['identifier']
-    ACCOUNT_EMAIL = demisto.params()['defaultTargetMailbox']
-    PASSWORD = demisto.params()['credentials']['password']
+    params = demisto.params()
+    EWS_SERVER = params['ewsServer']
+    USERNAME = params['credentials']['identifier']
+    ACCOUNT_EMAIL = params['defaultTargetMailbox']
+    PASSWORD = params['credentials']['password']
+    skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
     config, credentials = prepare()
     args = prepare_args(demisto.args())
     fix_2010()
@@ -2195,7 +2237,7 @@ def sub_main():  # pragma: no cover
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
-            incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
+            incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME, skip_unparsable_emails)
             demisto.incidents(incidents)
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))

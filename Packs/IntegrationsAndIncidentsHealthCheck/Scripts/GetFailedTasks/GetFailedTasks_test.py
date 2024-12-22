@@ -1,7 +1,9 @@
+from pytest_mock import MockerFixture
 import demistomock as demisto
 import pytest
 import json
-from GetFailedTasks import main, get_failed_tasks_output, get_incident_tasks_using_internal_request, get_incident_data
+from GetFailedTasks import main, get_failed_tasks_output, get_incident_tasks_using_internal_request, get_incident_data, \
+    get_custom_scripts_map_id_and_name, get_rest_api_instance
 from test_data.constants import INCIDENTS_RESULT, RESTAPI_TAS_RESULT, INTERNAL_TASKS_RESULT
 
 
@@ -111,7 +113,7 @@ def test_get_incident_data_using_rest_api_instance(mocker):
     """
     mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_rest_api_instance', return_value=[])
     mocker.patch('GetFailedTasks.get_tenant_name', return_value='test')
-    result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1], 'instance_mock')
+    result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1], {}, 'instance_mock')
     assert mock_res.call_count == 1
     assert result[0] == []
 
@@ -128,29 +130,125 @@ def test_get_incident_data_using_internal_http_request(mocker):
             - Validates that get_incident_tasks_using_internal_request was called.
     """
     mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_internal_request', return_value=[])
-    result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1], None)
+    result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1], {}, None)
     assert mock_res.call_count == 1
     assert result[0] == []
 
 
-def test_get_incident_data_internal_http_request_fail(mocker):
+def test_get_rest_api_instance_with_provided_instance(mocker):
     """
-        Given:
-            - An incident and no Core REST API instance.
-
-        When:
-            - Running the get_incident_data function.
-
-        Then:
-            - Validates that get_incident_tasks_using_rest_api_instance was called after
-              get_incident_tasks_using_internal_request raised an exception.
+    Given:
+        A REST API instance is provided as an argument.
+    When:
+        The get_rest_api_instance function is called.
+    Then:
+        It should return the provided REST API instance and log a debug message.
     """
-    internal_request_mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_internal_request', side_effect=ValueError)
-    mocker.patch('GetFailedTasks.get_rest_api_instance_to_use', return_value='instance_mock')
-    mocker.patch('GetFailedTasks.get_tenant_name', return_value='test')
-    api_instanc_mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_rest_api_instance', return_value=[])
+    mock_debug = mocker.patch('GetFailedTasks.demisto.debug')
 
-    result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1])
-    assert internal_request_mock_res.call_count == 1
-    assert api_instanc_mock_res.call_count == 1
-    assert result[0] == []
+    result = get_rest_api_instance('test_instance')
+
+    assert result == 'test_instance'
+    mock_debug.assert_called_once_with("Using REST API instance: test_instance, that provided as an argument.")
+
+
+def test_get_rest_api_instance_without_provided_instance_using_internal_request(mocker):
+    """
+    Given:
+        No REST API instance is provided and the internal HTTP request succeeds.
+    When:
+        The get_rest_api_instance function is called.
+    Then:
+        It should return None and log a debug message about using internal HTTP request.
+    """
+    mocker.patch('GetFailedTasks.get_incident_tasks_using_internal_request')
+    mock_debug = mocker.patch('GetFailedTasks.demisto.debug')
+
+    result = get_rest_api_instance(None)
+
+    assert result is None
+    mock_debug.assert_called_once_with("Using internal HTTP request to retrieve incident tasks.")
+
+
+def test_get_rest_api_instance_without_provided_instance_using_rest_api(mocker):
+    """
+    Given:
+        No REST API instance is provided and the internal HTTP request fails.
+    When:
+        The get_rest_api_instance function is called.
+    Then:
+        It should return a REST API instance from get_rest_api_instance_to_use and log appropriate debug messages.
+    """
+    mocker.patch('GetFailedTasks.get_incident_tasks_using_internal_request', side_effect=ValueError)
+    mocker.patch('GetFailedTasks.get_rest_api_instance_to_use', return_value='auto_instance')
+    mock_debug = mocker.patch('GetFailedTasks.demisto.debug')
+
+    result = get_rest_api_instance(None)
+
+    assert result == 'auto_instance'
+    mock_debug.assert_called_with("Using REST API instance: auto_instance to retrieve incident tasks.")
+
+
+def test_get_custom_scripts_map_id_and_name_with_rest_api(mocker: MockerFixture):
+    """
+    Given:
+        A REST API instance is provided.
+    When:
+        The get_custom_scripts_map_id_and_name function is called.
+    Then:
+        It should use the core-api-post command and return the correct script map.
+    """
+    mock_execute_command = mocker.patch.object(demisto, 'executeCommand')
+    mock_execute_command.return_value = [{
+        'Contents': {
+            'response': {
+                'scripts': [
+                    {'id': 'script1', 'name': 'Script One'},
+                    {'id': 'script2', 'name': 'Script Two'}
+                ]
+            }
+        },
+        "Type": 1
+    }]
+
+    result = get_custom_scripts_map_id_and_name('rest_api_instance')
+
+    assert result == {'script1': 'Script One', 'script2': 'Script Two'}
+    mock_execute_command.assert_called_once_with(
+        'core-api-post',
+        {
+            'uri': 'automation/search',
+            'body': {'query': 'system:F'},
+            'using': 'rest_api_instance'
+        }
+    )
+
+
+def test_get_custom_scripts_map_id_and_name_without_rest_api(mocker):
+    """
+    Given:
+        No REST API instance is provided.
+    When:
+        The get_custom_scripts_map_id_and_name function is called.
+    Then:
+        It should use the internalHttpRequest and return the correct script map.
+    """
+    mock_internal_request = mocker.patch('GetFailedTasks.demisto.internalHttpRequest')
+    mock_internal_request.return_value = {
+        'statusCode': 200,
+        'body': json.dumps({
+            'scripts': [
+                {'id': 'script3', 'name': 'Script Three'},
+                {'id': 'script4', 'name': 'Script Four'}
+            ]
+        })
+    }
+
+    result = get_custom_scripts_map_id_and_name()
+
+    assert result == {'script3': 'Script Three', 'script4': 'Script Four'}
+    mock_internal_request.assert_called_once_with(
+        method='POST',
+        uri='automation/search',
+        body={'query': 'system:F'}
+    )

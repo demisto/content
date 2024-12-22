@@ -122,6 +122,12 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+- display: Skip unparsable emails during fetch incidents
+  name: skip_unparsable_emails
+  section: Collect
+  type: 8
+  advanced: true
+  required: false
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
@@ -318,7 +324,7 @@ script:
       required: true
     - description: The mailbox on which to run the command.
       name: target-mailbox
-    description: Delete items from mailbox.
+    description: Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
     name: ews-delete-items
     outputs:
     - contextPath: EWS.Items.itemId
@@ -1030,7 +1036,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.4.3.112114
+  dockerimage: demisto/py-ews:5.5.0.115394
   isfetch: true
   runonce: false
   script: '-'
