@@ -1901,7 +1901,6 @@ def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[List, List
         response = client.issue_get_forms(issue_id=issue_id)
     except Exception as e:
         raise DemistoException(f"Forms fetching exception {str(e)}")
-        response = {}
     
     demisto.debug(f'Finished getting forms.')
     outputs = []
@@ -3800,10 +3799,11 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         try:
             _, forms = get_issue_forms(client, str(issue.get('key')))
             issue['forms'] = forms
-        except Exception as e:
-            demisto.debug(f'Failed to get reports for {issue_id}. Error: {traceback.format_exc()}')
+        except DemistoException as e:
+            demisto.debug(f'Failed to get reports for {issue_id}, Not retrieving. Error: {traceback.format_exc()}')
+            pass
             
-    demisto.debug(f'Incident for ticket {issue_id} is being created.')
+    demisto.debug(f'Incident for issue {issue_id} is being created.')
 
     return {
         "name": incident_name,
