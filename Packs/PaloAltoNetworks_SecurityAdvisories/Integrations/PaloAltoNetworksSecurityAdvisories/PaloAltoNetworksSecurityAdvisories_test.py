@@ -3,7 +3,6 @@ import os
 from unittest.mock import patch
 from pathlib import Path
 import pytest
-import PaloAltoNetworksSecurityAdvisories
 from PaloAltoNetworksSecurityAdvisories import Client, fetch_indicators, get_advisories, advisory_to_indicator
 
 
