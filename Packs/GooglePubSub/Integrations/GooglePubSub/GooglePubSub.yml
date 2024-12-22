@@ -105,7 +105,7 @@ script:
       name: attributes
     - description: Project ID.
       name: project_id
-    - description: Set delimiter of attributes split
+    - description: Set delimiter of attributes split.
       name: delim_char_attributes
       defaultValue: ','
       type: unknown
@@ -240,7 +240,7 @@ script:
       predefined:
       - 'false'
       - 'true'
-    - description: The amount of time to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
+    - description: The amount of time to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s".
       name: message_retention_duration
     - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
@@ -377,7 +377,7 @@ script:
       predefined:
       - 'false'
       - 'true'
-    - description: How long to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
+    - description: How long to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s".
       name: message_retention_duration
     - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
@@ -480,7 +480,7 @@ script:
       name: project_id
     - description: |-
         The snapshot is guaranteed to exist up until this time. A newly-created snapshot expires no later than 7 days from the time of its creation.
-        The timestamp is in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2020-04-01T08:01:23.045678910Z"
+        The timestamp is in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2020-04-01T08:01:23.045678910Z".
       name: expire_time
     - description: 'The input format is "key=val" pairs separated by commas.'
       name: labels
