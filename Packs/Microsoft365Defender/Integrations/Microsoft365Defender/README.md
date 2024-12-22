@@ -54,18 +54,13 @@ Follow these steps for a self-deployed configuration:
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| Application ID or Client ID | The API key to use to connect. | False |
 | Endpoint Type | The endpoint type. When selecting the Custom option, the Server URL parameter must be filled. | False |
 | Server URL | Custom Server URL. Required when Endpoint Type is Custom. | False |
-| ID or Client ID |  | False |
-| Token or Tenant ID |  | False |
-| Application ID | The API key to use to connect. | False |
 | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-| Tenant ID (for Client Credentials mode) |  | False |
-| Client Secret (for Client Credentials mode) |  | False |
-| Client Secret |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-| Private Key |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
+| Token or Tenant ID (for Client Credentials mode) |  | False |
+| Password |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
 | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
@@ -76,10 +71,6 @@ Follow these steps for a self-deployed configuration:
 | Fetch incidents |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Application ID (Deprecated) |  | False |
-| Tenant ID (for Client Credentials mode) (Deprecated) |  | False |
-| Client Secret (for Client Credentials mode) (Deprecated) |  | False |
-| Incidents Fetch Interval |  | False |
 
 
 4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
