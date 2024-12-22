@@ -1,24 +1,15 @@
 
-## Netmiko SSH module integration
+## NetQuest OMX module integration
 
-This integration provides ssh-based access to network devices, servers, and other appliances that support this method of configuration. For a complete list of supported platforms, visit the following URL:
-
-[Netmiko Platforms.md on Github](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md)
+NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
+This integration was integrated and tested with version 3.7.5a of NetQuestOMX.
 
 ## Configuration Parameters
 
  - ***Name*** - Integration instance name
- - ***Platform*** - The Netmiko-specific platform name
- - ***Hostname*** - The IP address, Hostname, or FQDN to connect to over SSH
- - ***Port*** - The port to use for the SSH connection
- - ***Credentials*** - The credentials should be the same as the Tanium client.
- - ***Override the default timeout value*** - Override the default read timeout value used for a SSH connection (useful for slow-responding devices).
-
-**NOTE**: Platform names are taken from the supported
-[SSH](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-ssh-device_type-values) or [Telnet](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-telnet-device_type-values) device type lists on GitHub.
-  
-### SSH Keys
-
-To provide SSH Keys for a login, and for security purposes, this can only be done by using the **credentials** store under *Integrations->Credentials* and placing the private key in the *Certificate* section. This requires from the **-----BEGIN RSA PRIVATE KEY-----** (or equivalent key type) to the **-----END RSA PRIVATE KEY-----** (or equivalent key type).
-
-When you **DO** provide SSH keys in the credentials, the password becomes the password for the SSH key.
+ - ***Server URL*** - The IP of the 5G device which using NetQuestOMX , formatted as https://X.X.X.X
+ - ***Username*** - Username & Password (The credentials)
+ - ***slot number*** - Target NetQuest device slot number.
+ - ***Port number*** - Target NetQuest device port number
+ - ***Fetch Events*** - If fetching is needed, check the box.
+ - ***Statistic types to fetch*** - Four types are available, it's a multiselect.
