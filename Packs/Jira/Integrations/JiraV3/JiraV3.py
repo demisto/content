@@ -1207,7 +1207,7 @@ class JiraOnPremClient(JiraBaseClient):
             return response.json()
         else:
             demisto.debug('Received unexpected response.')
-            return {} 
+            return []
 
 
 class JiraIssueFieldsParser:
@@ -1901,8 +1901,8 @@ def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[List, List
         response = client.issue_get_forms(issue_id=issue_id)
     except Exception as e:
         raise DemistoException(f"Forms fetching exception {str(e)}")
-    
-    demisto.debug(f'Finished getting forms.')
+
+    demisto.debug('Finished getting forms.')
     outputs = []
 
     for form in response:
@@ -3567,7 +3567,8 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
-    demisto.debug(f'Params to validate: {issue_field_to_fetch_from=}, {new_fetch_created_time=}, {last_fetch_created_time=}, {new_fetch_updated_time=},{last_fetch_updated_time=}')
+    demisto.debug(
+        f'Params to validate: {issue_field_to_fetch_from=}, {new_fetch_created_time=}, {last_fetch_created_time=}, {new_fetch_updated_time=},{last_fetch_updated_time=}')
 
     if (
         (issue_field_to_fetch_from == 'created date'
@@ -3799,10 +3800,10 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         try:
             _, forms = get_issue_forms(client, str(issue.get('key')))
             issue['forms'] = forms
-        except DemistoException as e:
+        except DemistoException:
             demisto.debug(f'Failed to get reports for {issue_id}, Not retrieving. Error: {traceback.format_exc()}')
             pass
-            
+
     demisto.debug(f'Incident for issue {issue_id} is being created.')
 
     return {
