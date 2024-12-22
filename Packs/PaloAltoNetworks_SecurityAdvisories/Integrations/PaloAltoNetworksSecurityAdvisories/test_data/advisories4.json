@@ -537,11 +537,11 @@
                 },
                 {
                     "metrics": "Sub Confidentiality Impact",
-                    "value": "NONE"
+                    "value": "LOW"
                 },
                 {
                     "metrics": "Vuln Integrity Impact",
-                    "value": "NONE"
+                    "value": "HIGH"
                 },
                 {
                     "metrics": "Sub Integrity Impact",
@@ -561,7 +561,7 @@
                 },
                 {
                     "metrics": "Automatable",
-                    "value": "YES"
+                    "value": "NO"
                 },
                 {
                     "metrics": "Recovery",
@@ -581,7 +581,7 @@
                 },
                 {
                     "metrics": "Base Severity",
-                    "value": "HIGH"
+                    "value": "CRITICAL"
                 },
                 {
                     "metrics": "Base Score",
@@ -589,7 +589,7 @@
                 },
                 {
                     "metrics": "Vector String",
-                    "value": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/AU:Y/R:A/V:C/RE:L/U:Amber"
+                    "value": "CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red"
                 }
             ]
         }
