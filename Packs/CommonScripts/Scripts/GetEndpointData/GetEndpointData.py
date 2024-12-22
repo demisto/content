@@ -362,14 +362,13 @@ def run_single_args_commands(
 
             if endpoint_output:
                 single_endpoint_outputs.append(endpoint_output)
-            else:
-                keys = (agent_id, agent_ip, agent_hostname)
-                endpoints_not_found_list.append({
-                    'Key': ', '.join([key for key in keys if key]),
-                    'Source': command.brand
-                })
             single_endpoint_readable_outputs.extend(readable_outputs)
 
+        if not single_endpoint_outputs:
+            keys = (agent_id, agent_ip, agent_hostname)
+            endpoints_not_found_list.append({
+                'Key': ', '.join([key for key in keys if key])
+            })
         if verbose:
             command_results_list.extend(single_endpoint_readable_outputs)
 
@@ -423,16 +422,34 @@ def run_list_args_commands(
 
         if endpoint_output:
             multiple_endpoint_outputs.append(endpoint_output)
-        else:
-            for agent_id, agent_ip, agent_hostname in zipped_args:
-                endpoints_not_found_list.append({
-                    'Key': agent_id or agent_ip or agent_hostname,
-                    'Source': command.brand
-                })
+        # else:
+        #     for agent_id, agent_ip, agent_hostname in zipped_args:
+        #         endpoints_not_found_list.append({
+        #             'Key': agent_id or agent_ip or agent_hostname,
+        #             'Source': command.brand
+        #         })
         if verbose:
             multiple_endpoint_readable_outputs.extend(readable_outputs)
 
     merged_endpoints = merge_endpoint_outputs(multiple_endpoint_outputs)
+    if len(merged_endpoints) < len(zipped_args):
+        hostnames = set()
+        ids = set()
+        ips = set()
+        for endpoint in merged_endpoints:
+            hostnames_list = [hostname['Value'] for hostname in to_list(endpoint.get('Hostname'))]
+            ids_list = [id['Value'] for id in to_list(endpoint.get('ID'))]
+            ips_list = [ip['Value'] for ip in to_list(endpoint.get('IPAddress'))]
+            hostnames.update(hostnames_list)
+            ids.update(ids_list)
+            ips.update(ips_list)
+        for agent_id, agent_ip, agent_hostname in zipped_args:
+            if agent_id not in ids and agent_ip not in ips and agent_hostname not in hostnames:
+                keys = (agent_id, agent_ip, agent_hostname)
+                endpoints_not_found_list.append({
+                    'Key': ', '.join([key for key in keys if key])
+                })
+
     endpoint_outputs_list.extend(merged_endpoints)
 
     return endpoint_outputs_list, endpoints_not_found_list, multiple_endpoint_readable_outputs
