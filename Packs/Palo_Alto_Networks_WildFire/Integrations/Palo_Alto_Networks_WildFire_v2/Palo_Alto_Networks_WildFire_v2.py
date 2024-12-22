@@ -1412,7 +1412,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             score=dbot_score_file,
             reliability=RELIABILITY)
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
-        logging.error(f'Report not found. Error: {exc}')
+        demisto.error(f'Report not found. Error: {str(exc)}')
         relationships = None
     except Exception as e:
         entry_context['Status'] = str(e)
@@ -1426,7 +1426,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             score=dbot_score_file,
             reliability=RELIABILITY)
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
-        logging.error(f'Error: {e}')
+        demisto.error(f'Report error: {str(e)}')
         relationships = None
     finally:
         try:
