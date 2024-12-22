@@ -207,8 +207,13 @@ def fetch_events(
     last_run_ids = set(event_last_run.get('ids', []))
     from_date = arg_to_datetime(event_last_run.get('from_date')) or first_fetch_date
 
-    events = get_events_from_client(client, event_type=event_type, from_date=from_date,
-                                    max_events=max_events, ids_to_skip=last_run_ids)
+    events = get_events_from_client(
+        client=client,
+        event_type=event_type,
+        from_date=from_date,
+        max_events=max_events,
+        ids_to_skip=last_run_ids,
+    )
 
     # API returns events sorted by timestamp in ascending order (oldest to newest), so last event has max timestamp
     max_timestamp = events[-1]['timestamp'] if events else None

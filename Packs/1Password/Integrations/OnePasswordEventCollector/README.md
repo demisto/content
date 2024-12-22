@@ -22,6 +22,7 @@ The integration can be configured to fetch three types of events from 1Password:
 | Use system proxy settings |  | False |
 | Fetch Events | Whether to fetch events from 1Password. | False |
 | Types of events to fetch | Types of events to fetch from 1Password. Possible values are: Audit events, Item usage actions, Sign in attempts. | True |
+| First fetch time | First event timestamp to fetch. For example: "1 min ago", "2 weeks ago", "3 months ago". Default is "2 weeks ago". | False |
 | Maximum number of audit events per fetch |  | True |
 | Maximum number of item usage actions per fetch |  | True |
 | Maximum number of sign in attempts per fetch |  | True |
@@ -31,14 +32,14 @@ The integration can be configured to fetch three types of events from 1Password:
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### 1password-get-events
+### one-password-get-events
 
 ***
 Fetch events from 1Password.
 
 #### Base Command
 
-`1password-get-events`
+`one-password-get-events`
 
 #### Input
 

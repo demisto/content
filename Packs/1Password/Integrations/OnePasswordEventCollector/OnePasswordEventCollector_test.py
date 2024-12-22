@@ -18,6 +18,23 @@ def authenticated_client() -> Client:
     return Client(base_url=BASE_URL, verify=False, proxy=False, headers=HEADERS)
 
 
+def test_get_limit_param():
+    from OnePasswordEventCollector import get_limit_param
+
+    expected_audit_events_limit = '500'
+    expected_sign_in_attempts_limit = '4000'
+    params = {
+        'audit_events_limit': expected_audit_events_limit,
+        'sign_in_attempts_limit': expected_sign_in_attempts_limit,
+    }
+
+    audit_events_limit = get_limit_param(params, event_type='audit events')
+    sign_in_attempts_limit = get_limit_param(params, event_type='sign in attempts')
+
+    assert audit_events_limit == int(expected_audit_events_limit)
+    assert sign_in_attempts_limit == int(expected_sign_in_attempts_limit)
+
+
 def test_get_unauthorized_event_types():
     """
     Given:
@@ -35,6 +52,25 @@ def test_get_unauthorized_event_types():
     mock_response = util_load_json('test_data/introspection_response.json')
     unauthorized_event_types = get_unauthorized_event_types(mock_response, event_types)
     assert unauthorized_event_types == []
+
+
+def test_add_fields_event():
+    from OnePasswordEventCollector import add_fields_to_event, arg_to_datetime, DATE_FORMAT
+
+    event_timestamp = '2024-12-02T11:54:19.710457472Z'
+    expected_event_time = arg_to_datetime(event_timestamp).strftime(DATE_FORMAT)
+
+    event_type = 'audit event'
+    raw_event = {
+        'uuid': '12345',
+        'timestamp': event_timestamp,
+        'action': 'create',
+        'object_type': 'device',
+    }
+    add_fields_to_event(raw_event, event_type)
+
+    assert raw_event['_time'] == expected_event_time
+    assert raw_event['event_type'] == event_type
 
 
 @pytest.mark.parametrize(
