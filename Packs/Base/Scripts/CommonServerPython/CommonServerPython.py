@@ -55,7 +55,7 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
-
+HAVE_SUPPORT_MULTITHREADING_CALLED_YET = False
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
