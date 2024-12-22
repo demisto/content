@@ -82,9 +82,7 @@ For more information, see [Managed identities for Azure resources](https://learn
 
 
 ### Using National Cloud
-Using a national cloud endpoint is supported by setting the *Server URL* parameter to one of the following options:
+Using a national cloud endpoint is supported by setting the *Endpoint Type* parameter to one of the following options:
 * US Government GCC Endpoint: `https://api-gcc.security.microsoft.us`
 * US Government GCC-High Endpoint: `https://api-gov.security.microsoft.us`
-* US Government Department of Defence (DoD) Endpoint: `https://dod-graph.microsoft.us`
-
-Please refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
+* US Government Department of Defence (DoD) Endpoint: `https://api-gov.security.microsoft.us`
