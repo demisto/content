@@ -10777,22 +10777,23 @@ def support_multithreading():  # pragma: no cover
     :rtype: ``None``
     """
     global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
-    if not HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
-        global demisto
-        prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
-        demisto.lock = Lock()  # type: ignore[attr-defined]
+    if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
+        return
+    HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
 
-        def locked_do(cmd):
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
-                try:
-                    return prev_do(cmd)  # type: ignore[call-arg]
-                finally:
-                    demisto.lock.release()  # type: ignore[attr-defined]
-            else:
-                raise RuntimeError('Failed acquiring lock')
+    def locked_do(cmd):
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
+                return prev_do(cmd)  # type: ignore[call-arg]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
 
-        demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
-        HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
 
 def get_tenant_account_name():
