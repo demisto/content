@@ -6,7 +6,6 @@ commonfields:
   id: Microsoft 365 Defender
   version: -1
 configuration:
-
 - additionalinfo: |-
     The endpoint type. When selecting the Custom option, the Server URL parameter must be filled.
   defaultvalue: Worldwide
@@ -35,7 +34,6 @@ configuration:
   required: false
   type: 0
   section: Connect
-
 - name: creds_client_id
   type: 9
   displaypassword: ID or Client ID
