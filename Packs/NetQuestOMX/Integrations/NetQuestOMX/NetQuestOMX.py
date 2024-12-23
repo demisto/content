@@ -161,7 +161,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when deleting the {list_name_to_delete} IP list."
-                f"{str(e)}"
             ) from e
 
     def metering_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
@@ -174,7 +173,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when requesting for an event of Metering Stats type."
-                f"{str(e)}"
             ) from e
 
         metering_stats_event["STAT_TYPE"] = 'MeteringStats'
@@ -191,7 +189,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when requesting for an event of Export Stats type."
-                f"{str(e)}"
             ) from e
 
         export_stats_event["STAT_TYPE"] = 'ExportStats'
@@ -208,7 +205,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when requesting for an event of Export Peaks FPS type."
-                f"{str(e)}"
             ) from e
 
         export_peaks_FPS_event["STAT_TYPE"] = 'ExportPeaksFPS'
@@ -225,7 +221,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when requesting for an event of Optimization Stats type."
-                f"{str(e)}"
             ) from e
 
         optimization_stats_event["STAT_TYPE"] = 'OptimizationStats'
@@ -366,7 +361,7 @@ def fetch_events(client: Client, slot_number: str, port_number: str, statistic_t
         events (list[dict]): A list of events (number of events equal to the number of statistic types given)
         that will be created in XSIAM.
     """
-    demisto.debug(f'Starting Fetch: the given slot number is = {slot_number} and the given port number is {port_number}')
+    demisto.debug(f'Starting Fetch: {slot_number=}, {port_number=}')
 
     events: list[dict] = []
     statistic_types_mapping: Dict[str, Callable] = {
