@@ -112,7 +112,7 @@ class Client(BaseClient):
                 )
         except Exception as e:
             raise DemistoException(f"An error occurred while uploading the file {file_name}."
-                                   f"{str(e)}") from e
+                                   ) from e
         finally:
             # Ensure the temporary file is deleted
             Path(temp_file_name).unlink(missing_ok=True)
