@@ -3233,7 +3233,7 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
                                                                 date_format=DETECTION_DATE_FORMAT)
     fetch_limit = current_fetch_info.get('limit') or INCIDENTS_PER_FETCH
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
-    if product_type in {'ods', 'ofp'}:
+    if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
         filter = filter.replace('product:', 'type:')
 
     if fetch_query:
