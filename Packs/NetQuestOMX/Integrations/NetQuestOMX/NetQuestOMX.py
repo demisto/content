@@ -414,7 +414,7 @@ def get_events(client: Client, params: dict, args: dict) -> list[dict]:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
