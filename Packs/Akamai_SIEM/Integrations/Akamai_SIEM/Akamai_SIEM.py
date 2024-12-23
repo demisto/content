@@ -490,17 +490,14 @@ def fetch_events_command(
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
-                err_msg = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
+                e = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
                     "This occurred due to offset pointing to events older than 12 hours.\n" \
                     "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
                     "If you wish to fetch more up to date events, " \
                     "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
-                set_integration_context({"from_time": "11 hours"})
-                raise DemistoException(err_msg)
-            else:
-                raise DemistoException(e)
+            raise DemistoException(e)
 
         if not events:
             demisto.info("Didn't receive any events, breaking.")
