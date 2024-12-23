@@ -6,7 +6,6 @@ import os
 import subprocess
 import sys
 import traceback
-import uuid
 import warnings
 from email import _header_value_parser as parser
 from email.policy import SMTP, SMTPUTF8

@@ -53,9 +53,11 @@ SUPPORTED_ON_PREM_BUILDS = {
     '2019': EXCHANGE_2019,
 }
 
+
 class IncidentFilter(str, Enum):
     MODIFIED_FILTER = 'modified-time'
     RECEIVED_FILTER = 'received-time'
+
 
 class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
     def __init__(self, azure_cloud: AzureCloud, **kwargs):
@@ -83,6 +85,7 @@ class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
         """
         return [f'{self.exchange_online_scope}/.default']
 
+
 class ProxyAdapter(HTTPAdapter):
     """
     Proxy Adapter used to add PROXY to requests
@@ -91,6 +94,7 @@ class ProxyAdapter(HTTPAdapter):
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
         return super().send(*args, **kwargs)
+
 
 class InsecureSSLAdapter(SSLAdapter):
     """
@@ -107,10 +111,12 @@ class InsecureSSLAdapter(SSLAdapter):
         del verify
         super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
+
 class InsecureProxyAdapter(InsecureSSLAdapter):
     """
     Insecure Proxy Adapter used to add proxy to requests.
     """
+
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
         return super().send(*args, **kwargs)
@@ -202,7 +208,6 @@ class EWSClient:
         self.config, self.credentials, self.server_build = self._configure_auth()
         self._protocol = Protocol(config=self.config) if self.config else None
 
-
     def _configure_auth(self) -> tuple[Optional[Configuration], BaseCredentials, Optional[Build]]:
         """
         Prepares the client protocol, credentials and configuration based on the authentication type.
@@ -213,7 +218,6 @@ class EWSClient:
             return self._configure_oauth()
 
         return self._configure_onprem()
-
 
     def _configure_oauth(self) -> tuple[Configuration, CustomDomainOAuth2Credentials, Build]:
         """
@@ -347,17 +351,17 @@ class EWSClient:
 
         return self._protocol
 
-    def get_account(self, target_mailbox: Optional[str]=None, time_zone=None) -> Account:
+    def get_account(self, target_mailbox: Optional[str] = None, time_zone=None) -> Account:
         """
         Request an account from EWS
-        
+
         :param: target_mailbox: Mailbox associated with the requested account
 
         :return: exchangelib Account
         """
         if not target_mailbox:
             target_mailbox = self.account_email
-            
+
         if self.auto_discover:
             return self.get_account_autodiscover(target_mailbox, time_zone)
 
@@ -368,7 +372,7 @@ class EWSClient:
             access_type=self.access_type,
             default_timezone=time_zone,
         )
-        
+
     def get_account_autodiscover(self, target_mailbox: str, time_zone=None) -> Account:
         """
         Request an account from EWS using the autodiscovery mechanism
@@ -417,7 +421,6 @@ class EWSClient:
 
         return account
 
-
     def get_items_from_mailbox(self, account: Optional[Union[Account, str]], item_ids):
         """
         Request specific items from a mailbox associated with an account
@@ -455,7 +458,7 @@ class EWSClient:
             raise Exception(f'ItemId {str(item_id)} not found')
         return result[0]
 
-    def get_attachments_for_item(self, item_id, account: Optional[Union[Account, str]], attachment_ids: list=[]):
+    def get_attachments_for_item(self, item_id, account: Optional[Union[Account, str]], attachment_ids: list = []):
         """
         Request attachments for an item
 
@@ -478,7 +481,7 @@ class EWSClient:
                 attachments.append(attachment)
 
         if attachment_ids and len(attachments) < len(attachment_ids):
-            raise DemistoException( f'Some attachment id was not found for message: {str(attachment_ids)}')
+            raise DemistoException(f'Some attachment id was not found for message: {str(attachment_ids)}')
 
         return attachments
 
@@ -548,10 +551,10 @@ class EWSClient:
         message.send_and_save()
 
     def reply_email(self, inReplyTo: str, to: list[str], body: str, subject: str, bcc: list[str], cc: list[str],
-                    htmlBody: Optional[str], attachments: list, from_mailbox: Optional[str]=None) -> Message:
+                    htmlBody: Optional[str], attachments: list, from_mailbox: Optional[str] = None) -> Message:
         """
         Send a reply email using the EWS account associated with this client, based on the provided parameters.
-        
+
         :param inReplyTo: ID of the email to reply to
         :param to: List of email addresses for the "To" field
         :param body: Body of the email
@@ -565,7 +568,7 @@ class EWSClient:
         :return: The sent message
         """
         account = self.get_account()
-        item_to_reply_to = account.inbox.get(id=inReplyTo)  # type: ignore
+        item_to_reply_to = account.inbox.get(id=inReplyTo)  # pylint: disable=E1101
         if isinstance(item_to_reply_to, ErrorItemNotFound):
             raise Exception(item_to_reply_to)
 
@@ -575,7 +578,7 @@ class EWSClient:
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc, bcc_recipients=bcc, author=from_mailbox)
         reply = reply.save(account.drafts)
-        m = account.inbox.get(id=reply.id)
+        m = account.inbox.get(id=reply.id)  # pylint: disable=E1101
 
         attachments += htmlAttachments
         for attachment in attachments:
@@ -584,13 +587,13 @@ class EWSClient:
                     attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
                 else:
                     attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                                    is_inline=True, content_id=attachment.get('cid'))
+                                                is_inline=True, content_id=attachment.get('cid'))
             m.attach(attachment)
         m.send()
 
         return m
-    
-    
+
+
 def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
@@ -620,6 +623,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     clean_body += html_body[last_index:]
     return clean_body, attachments
 
+
 def get_config_args_from_context(context: dict, credentials: BaseCredentials):
     """
     Create a configuration obj from the cached autodiscovery results in the provided integration context.
@@ -642,6 +646,7 @@ def get_config_args_from_context(context: dict, credentials: BaseCredentials):
     }
     return config_args
 
+
 def get_build_from_context(context: dict):
     """
     Create a Build object from the cached autodiscovery results in the provided integration context.
@@ -654,6 +659,7 @@ def get_build_from_context(context: dict):
     build_params = [int(i) for i in build_params]
     return Build(*build_params)
 
+
 def get_endpoint_from_context(context_dict: dict):
     """
     Get the EWS Server endpoint from the cached autodiscovery results in the provided integration context.
@@ -663,6 +669,7 @@ def get_endpoint_from_context(context_dict: dict):
     :return: endpoint: The endpoint from the previously discovered connection params
     """
     return context_dict['service_endpoint']
+
 
 def cache_autodiscover_results(context: dict, account: Account):
     """
@@ -677,13 +684,14 @@ def cache_autodiscover_results(context: dict, account: Account):
     context['service_endpoint'] = account.protocol.service_endpoint
     context['build'] = str(account.protocol.version.build)
     context['api_version'] = account.protocol.version.api_version
-    
+
     return context
+
 
 def get_on_prem_build(version: str):
     """
     Convert a version string to a Build object for supported on-prem Exchange Server versions.
-    
+
     :param version: The version string (e.g. '2013', '2016', '2019')
 
     :return: A Build object representing the on-premises Exchange Server build
@@ -693,6 +701,7 @@ def get_on_prem_build(version: str):
         raise ValueError(f'{version} is not a supported version. Choose one of: {supported_versions}.')
 
     return SUPPORTED_ON_PREM_BUILDS[version]
+
 
 def get_on_prem_version(version: str):
     """

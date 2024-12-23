@@ -27,15 +27,15 @@ from MicrosoftApiModule import AzureCloud, AzureCloudEndpoints
 
 ''' Constants '''
 
-CLIENT_ID='test_client_id'
-CLIENT_SECRET='test_client_secret'
-ACCESS_TYPE=DELEGATE
-DEFAULT_TARGET_MAILBOX='test@default_target_mailbox.com'
-EWS_SERVER='http://test_ews_server.com'
+CLIENT_ID = 'test_client_id'
+CLIENT_SECRET = 'test_client_secret'
+ACCESS_TYPE = DELEGATE
+DEFAULT_TARGET_MAILBOX = 'test@default_target_mailbox.com'
+EWS_SERVER = 'http://test_ews_server.com'
 MAX_FETCH = 10
-FOLDER='test_folder'
-REQUEST_TIMEOUT='120'
-VERSION_STR='2013'
+FOLDER = 'test_folder'
+REQUEST_TIMEOUT = '120'
+VERSION_STR = '2013'
 BUILD = exchangelib.version.EXCHANGE_2013
 VERSION = exchangelib.Version(BUILD)
 AUTH_TYPE = BASIC
@@ -46,9 +46,11 @@ DISCOVERY_VERSION = exchangelib.Version(DISCOVERY_SERVER_BUILD)
 
 ''' Utilities '''
 
+
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 def assert_configs_equal(config1: Configuration, config2: Configuration):
     assert config1.credentials == config2.credentials
@@ -57,6 +59,7 @@ def assert_configs_equal(config1: Configuration, config2: Configuration):
     assert config1.service_endpoint == config2.service_endpoint
     assert config1.server == config2.server
 
+
 class MockAccount():
     class MockRights:
         def __init__(self, *args, **kwargs):
@@ -64,22 +67,22 @@ class MockAccount():
 
     def __init__(self, primary_smtp_address, access_type, autodiscover, credentials=None, config=None, default_timezone=None,
                  *args, **kwargs):
-        self.smtp_address=primary_smtp_address
-        self.access_type=access_type
-        self.autodiscover=autodiscover
-        self.credentials=credentials
-        self.config=config
-        self.default_timezone=default_timezone
+        self.smtp_address = primary_smtp_address
+        self.access_type = access_type
+        self.autodiscover = autodiscover
+        self.credentials = credentials
+        self.config = config
+        self.default_timezone = default_timezone
 
         if autodiscover:
             if not credentials:
                 raise ValueError('Credentials must be provided for autodiscovery')
 
             config = Configuration(
-                service_endpoint = DICSOVERY_EWS_SERVER,
-                credentials = credentials,
-                auth_type = AUTH_TYPE,
-                version = DISCOVERY_VERSION,
+                service_endpoint=DICSOVERY_EWS_SERVER,
+                credentials=credentials,
+                auth_type=AUTH_TYPE,
+                version=DISCOVERY_VERSION,
             )
         elif not config:
             raise ValueError('Autodiscovery is false and no config was provided')
@@ -89,6 +92,7 @@ class MockAccount():
 
         self.root = MagicMock()
         self.root.tois = MagicMock()
+
         def mock_floordiv(name):
             return self.root.tois
         self.root.tois.__floordiv__.side_effect = mock_floordiv
@@ -98,8 +102,9 @@ class MockAccount():
         self.inbox = MagicMock()
         self.drafts = MagicMock()
         self.drafts.messages = {MSG_ID: Message(account=MagicMock(spec=exchangelib.Account),
-                                              id=MSG_ID, subject='Test subject', body='Test body')}
+                                                id=MSG_ID, subject='Test subject', body='Test body')}
         self.inbox.get = MagicMock(side_effect=lambda id: self.drafts.messages.get(id))
+
 
 @pytest.fixture()
 def mock_account(mocker):
@@ -107,7 +112,9 @@ def mock_account(mocker):
     mocker.patch('EWSApiModule.Account', mockAccount)
     return mockAccount
 
+
 ''' Tests '''
+
 
 def test_client_configure_oauth(mocker):
     """
@@ -119,6 +126,7 @@ def test_client_configure_oauth(mocker):
         - The Credentials and Configuration objects are created correctly
     """
     ACCESS_TOKEN = 'test_access_token'
+
     class MockMSClient:
         def __init__(self, *args, **kwargs):
             pass
@@ -129,12 +137,11 @@ def test_client_configure_oauth(mocker):
     mocker.patch('EWSApiModule.MicrosoftClient', MockMSClient)
 
     azure_cloud = AzureCloud(
-            origin='test_origin',
-            name='test_name',
-            abbreviation='test_abrv',
-            endpoints=AzureCloudEndpoints(active_directory='', exchange_online='https://outlook.office365.com')
+        origin='test_origin',
+        name='test_name',
+        abbreviation='test_abrv',
+        endpoints=AzureCloudEndpoints(active_directory='', exchange_online='https://outlook.office365.com')
     )
-
 
     client = EWSClient(
         client_id=CLIENT_ID,
@@ -163,7 +170,7 @@ def test_client_configure_oauth(mocker):
 
 
 @pytest.mark.parametrize('manual_username, expected_username', [(None, CLIENT_ID),
-                                                                 ('test_manual_username', 'test_manual_username')])
+                                                                ('test_manual_username', 'test_manual_username')])
 def test_client_configure_onprem(mocker, manual_username, expected_username):
     """
     Given:
@@ -401,6 +408,7 @@ def test_client_get_account_autodiscover(mock_account):
     assert account.default_timezone == time_zone
     assert not account.autodiscover
 
+
 def test_client_get_items_from_mailbox(mocker):
     """
     Given:
@@ -414,6 +422,7 @@ def test_client_get_items_from_mailbox(mocker):
                   'item_id_2': 'item_2',
                   'item_id_3': 'item_3',
                   }
+
     def mock_account_fetch(self, ids: list[exchangelib.items.Item]):
         mocked_items = []
         for item in ids:
@@ -444,6 +453,7 @@ def test_client_get_items_from_mailbox(mocker):
         assert item.id in mock_items
         assert item.value == mock_items[item.id]
 
+
 def test_client_get_item_from_mailbox(mocker):
     """
     Given:
@@ -457,6 +467,7 @@ def test_client_get_item_from_mailbox(mocker):
                   'item_id_2': 'item_2',
                   'item_id_3': 'item_3',
                   }
+
     def mock_account_fetch(self, ids: list[exchangelib.items.Item]):
         mocked_items = []
         for item in ids:
@@ -483,8 +494,9 @@ def test_client_get_item_from_mailbox(mocker):
     )
     item = client.get_item_from_mailbox(client.get_account(), list(mock_items.keys())[0])
 
-    assert item.id ==  list(mock_items.keys())[0]
+    assert item.id == list(mock_items.keys())[0]
     assert item.value == mock_items[item.id]
+
 
 def test_client_get_attachments_for_item(mocker):
     """
@@ -496,7 +508,7 @@ def test_client_get_attachments_for_item(mocker):
         - The attachments for the item are returned as expected
     """
     item_id = 'item_id_1'
-    attach_ids = ['attach_id_1', 'attach_id_2',  'attach_id_3']
+    attach_ids = ['attach_id_1', 'attach_id_2', 'attach_id_3']
     mock_item = mocker.MagicMock()
     mock_item.id = item_id
     mock_item.attachments = [mocker.MagicMock(attachment_id=mocker.MagicMock(id=id)) for id in attach_ids]
@@ -550,6 +562,7 @@ def test_client_is_default_folder(folder_path, is_public, expected_is_public):
 
     assert client.is_default_folder(folder_path) == expected_is_public
 
+
 @pytest.mark.parametrize('is_public', [True, False])
 def test_client_is_default_folder_with_override(is_public):
     """
@@ -574,6 +587,7 @@ def test_client_is_default_folder_with_override(is_public):
     )
 
     assert client.is_default_folder(FOLDER, is_public) == is_public
+
 
 def test_client_get_folder_by_path(mocker, mock_account):
     """
@@ -603,7 +617,8 @@ def test_client_get_folder_by_path(mocker, mock_account):
     client.get_folder_by_path(path, account)
 
     expected_calls = [mocker.call(part) for part in path.split('/')]
-    assert account.root.tois.__floordiv__.call_args_list == expected_calls # type: ignore
+    assert account.root.tois.__floordiv__.call_args_list == expected_calls  # type: ignore
+
 
 def test_client_send_email(mocker, mock_account):
     """
@@ -617,8 +632,8 @@ def test_client_send_email(mocker, mock_account):
     """
     send_and_save_mock = mocker.patch.object(EWSApiModule.Message, 'send_and_save')
     message = Message(
-            subject='Test subject',
-            body='Test message',
+        subject='Test subject',
+        body='Test message',
     )
 
     client = EWSClient(
@@ -649,6 +664,7 @@ def test_client_reply_email(mocker, mock_account):
     Then:
         - The reply is created and sent successfully
     """
+
     def mock_save(self, folder):
         folder.messages['reply_1'] = self
         return mocker.MagicMock(id='reply_1')
@@ -705,9 +721,10 @@ def test_handle_html(mocker):
 
     html_input = '<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>'
     expected_output = ('<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>',
-      [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}])
+                       [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}])
 
     assert handle_html(html_input) == expected_output
+
 
 def test_handle_html_no_images(mocker):
     """
@@ -814,11 +831,11 @@ def test_get_build_from_context():
     Then:
      - A Build object is returned based on the context information
     """
-    context = {'build': '15.1.2.3'}
+    context = {'build': '10.0.10.1'}
 
     build = get_build_from_context(context)
 
-    assert build == exchangelib.Build(15, 1, 2, 3)
+    assert build == exchangelib.Build(10, 0, 10, 1)
 
 
 @pytest.mark.parametrize('version, expected', [
