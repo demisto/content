@@ -2585,7 +2585,7 @@ def create_get_group_members_request(group_id=-1, limit=100):
 
     meta = {}
     data = {}
-    page_size = API_MAX_VALUE if all_results else int(limit)
+    page_size = API_MAX_VALUE if all_results else arg_to_number(limit)
     meta['pagination'] = {'pageSize': page_size}
     data['id'] = group_id
     payload = {
