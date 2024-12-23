@@ -33,7 +33,7 @@ See the table below that lists these additional log types, along the relevant ma
   | Log Type | Marketplace Pack | 
   | :------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------- |
   | [Azure Firewall Resource Logs](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#resource-logs) | [Azure Firewall](https://cortex.marketplace.pan.dev/marketplace/details/AzureFirewall/) |
-  | [Azure WAF Resource Logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#resource-logs) | [Azure Firewall](https://cortex.marketplace.pan.dev/marketplace/details/AzureWAF/) |
+  | [Azure WAF Resource Logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#resource-logs) | [Azure WAF](https://cortex.marketplace.pan.dev/marketplace/details/AzureWAF/) |
 
 ***
 
