@@ -173,7 +173,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when requesting for an event of Metering Stats type."
-                f"{str(e)}"
             ) from e
 
         metering_stats_event["STAT_TYPE"] = 'MeteringStats'
