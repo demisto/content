@@ -67,7 +67,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when creating a new token. Please verify your credentials."
+                "An error was occurred when creating a new token. Please verify your credentials."
             ) from e
 
         new_token = response.headers["X-Auth-Token"]
@@ -123,7 +123,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when optimizing the list of IPs."
+                "An error was occurred when optimizing the list of IPs."
             ) from e
 
         return response_json
@@ -136,7 +136,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when creating the list of IPs."
+                "An error was occurred when creating the list of IPs."
             ) from e
 
     def address_list_rename_request(self, new_name: str, existing_name: str):
@@ -418,7 +418,8 @@ def get_events(client: Client, params: dict, args: dict) -> list[dict]:
 
     for statistic_type in statistic_types_to_fetch:
         if statistic_type not in StatType._value2member_map_:
-            raise DemistoException(f"{statistic_types_to_fetch} is not a valid type. Valid types are {list(StatType._value2member_map_.keys())}."
+            raise DemistoException(f"{statistic_types_to_fetch} is not a valid type."
+                                   f" Valid types are {list(StatType._value2member_map_.keys())}."
                                    f" Execute the command get-events again with valid input.")
 
     # execute the command

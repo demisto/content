@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta
 
-import CommonServerPython
+from CommonServerPython import *  # noqa: F401
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from NetQuestOMX import Client, TOKEN_TTL_S, DATE_FORMAT_FOR_TOKEN, demisto, fetch_events, get_events, \
     address_list_upload_command, address_list_optimize_command, address_list_create_command, address_list_rename_command, \
-    address_list_delete_command
+    address_list_delete_command, StatType
 import json
 import pytest
 
@@ -42,7 +41,7 @@ def test_new_token_login_client(requests_mock):
     requests_mock.post(f'{BASE_URL}SessionService/Sessions', status_code=200, headers={"X-Auth-Token": "TEST"})
 
     Client(base_url='https://www.example.com', credentials=credentials, verify=True, proxy=False)
-    integration_context = CommonServerPython.get_integration_context()
+    integration_context = get_integration_context()
 
     assert integration_context["expiration_time"] == \
         (datetime.utcnow() + timedelta(seconds=TOKEN_TTL_S)).strftime(DATE_FORMAT_FOR_TOKEN)
@@ -153,8 +152,10 @@ def test_get_events_invalid_input(net_quest_omx_client):
 
     params = {"slot": "1", "port": "1"}
     args = {"statistic_types_to_fetch": "Metering ,Export"}
-    with pytest.raises(CommonServerPython.DemistoException):
+    with pytest.raises(DemistoException) as de:
         get_events(net_quest_omx_client, params, args)
+    assert f"{argToList(args['statistic_types_to_fetch'])} is not a valid type" in de.value.message
+    assert f"Valid types are {list(StatType._value2member_map_.keys())}" in de.value.message
 
 
 def test_address_list_upload_command(mocker, requests_mock, net_quest_omx_client):
@@ -172,6 +173,7 @@ def test_address_list_upload_command(mocker, requests_mock, net_quest_omx_client
     result = address_list_upload_command(client=net_quest_omx_client, args={"entry_id": "AAAAAAaaaa"})
     assert result.readable_output == "Address list was successfully uploaded"
     assert requests_post.called
+
 
 def test_address_list_optimize_command(requests_mock, net_quest_omx_client):
     """
