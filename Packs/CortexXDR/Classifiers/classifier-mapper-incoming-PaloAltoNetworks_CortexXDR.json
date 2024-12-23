@@ -181,10 +181,28 @@
                     "simple": "incident_id"
                 },
                 "File Names": {
-                    "simple": "alerts.action_file_name"
+                    "complex": {
+                        "accessor": "action_file_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "File Paths": {
-                    "simple": "alerts.action_file_path"
+                    "complex": {
+                        "accessor": "action_file_path",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "File SHA256": {
                     "simple": "file_artifacts.filesha256"
@@ -339,7 +357,16 @@
                     }
                 },
                 "Process SHA256": {
-                    "simple": "alerts.actor_process_image_sha256"
+                    "complex": {
+                        "accessor": "actor_process_image_sha256",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Users": {
                     "simple": "users"
@@ -360,7 +387,16 @@
                     "simple": "alert_count"
                 },
                 "XDR Alert Name": {
-                    "simple": "alerts.name"
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "alerts",
+						"transformers": [
+                            {
+                                "operator": "uniq"
+							}
+						]
+                    }
                 },
                 "XDR Alerts": {
                     "simple": "alerts"
@@ -1179,10 +1215,28 @@
                     }
                 },
                 "Agents ID": {
-                    "simple": "alerts.endpoint_id"
+                    "complex": {
+						"accessor": "endpoint_id",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "CMD line": {
-                    "simple": "alerts.action_process_image_command_line"
+                    "complex": {
+						"accessor": "action_process_image_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Description": {
                     "simple": "description"
@@ -1200,7 +1254,16 @@
                     }
                 },
                 "Device Internal IPs": {
-                    "simple": "alerts.host_ip"
+                    "complex": {
+						"accessor": "host_ip",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Device Local IP": {
                     "simple": "alerts.[0].host_ip"
@@ -1230,7 +1293,16 @@
                     }
                 },
                 "External Category Name": {
-                    "simple": "alerts.category"
+                    "complex": {
+						"accessor": "category",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "External End Time": {
                     "simple": "modification_time"
@@ -1248,10 +1320,29 @@
                     "simple": "incident_id"
                 },
                 "File Names": {
-                    "simple": "alerts.action_file_name"
+                    "complex": {
+						"accessor": "action_file_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                    
                 },
                 "File Paths": {
-                    "simple": "alerts.action_file_path"
+                    "complex": {
+						"accessor": "action_file_path",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "File SHA256": {
                     "simple": "file_artifacts.filesha256"
@@ -1298,25 +1389,88 @@
                     "simple": "out_mirror_error"
                 },
                 "Parent CMD line": {
-                    "simple": "alerts.causality_actor_process_command_line"
+                    "complex": {
+                        "accessor": "causality_actor_process_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process CMD": {
-                    "simple": "alerts.causality_actor_process_command_line"
+                    "complex": {
+                        "accessor": "causality_actor_process_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process MD5": {
-                    "simple": "alerts.causality_actor_process_image_md5"
+                    "complex": {
+                        "accessor": "causality_actor_process_image_md5",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process Name": {
-                    "simple": "alerts.causalityactorprocessimagename"
+                    "complex": {
+                        "accessor": "causality_actor_process_image_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process SHA256": {
-                    "simple": "alerts.causality_actor_process_image_sha256"
+                    "complex": {
+                        "accessor": "causality_actor_process_image_sha256",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Process CMD": {
-                    "simple": "alerts.actor_process_command_line"
+                    "complex": {
+                        "accessor": "actor_process_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Process MD5": {
-                    "simple": "alerts.actor_process_image_md5"
+                    "complex": {
+                        "accessor": "actor_process_image_md5",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Process Names": {
                     "complex": {
@@ -1343,7 +1497,16 @@
                     }
                 },
                 "Process SHA256": {
-                    "simple": "alerts.actor_process_image_sha256"
+                    "complex": {
+                        "accessor": "actor_process_image_sha256",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Source IPs": {
                     "complex": {
