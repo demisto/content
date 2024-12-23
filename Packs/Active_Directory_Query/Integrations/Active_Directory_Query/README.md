@@ -45,7 +45,7 @@ Use Cases
 | **Parameter** | **Description**                                                                                  | **Required** |
 |--------------------------------------------------------------------------------------------------| --- | --- |
 | Server IP address (for example, 192.168.0.1) | The Server IP that should be used to access Active Directory.                                    | True |
-| Port  | Server port. If not specified, the default port is 389, or 636 for LDAPS.                        | False |
+| Port  | Server port. If not specified, the default port is 389, 636 for LDAPS, or 3268 for global catalog servers.                        | False |
 | Credentials | User credentials.                                                                                                 | True |
 | Password |                                                                                                  | True |
 | NTLM authentication | Indicates whether to use NTLM authentication.                                                                                                 | False |
@@ -59,7 +59,8 @@ Use Cases
 | Group CN for terminated employees |                                                                                                  | False |
 | Create user if does not exist | If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only. | False |
 
-
+> <i>Note:</i> For queries and operations across multiple domains within a forest the server port should be 3268. This port is used for queries specifically targeted for the global catalog. LDAP requests sent to port 3268 can be used to search for objects in the entire forest.
+For more information on global catalog see the [Microsoft documentation](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/planning-global-catalog-server-placement).
 
 ##### Identity Lifecycle Management premium pack configuration
 
