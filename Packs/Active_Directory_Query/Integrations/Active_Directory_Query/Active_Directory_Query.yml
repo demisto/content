@@ -14,7 +14,7 @@ configuration:
   type: 0
   required: true
   section: Connect
-- display: Server port. If not specified, the default port is 389, 636 for LDAPS, or 3268 for global catalog servers.
+- display: Server port. If not specified, the default port is 389 for LDAP, 636 for LDAPS, or 3268 for global catalog servers.
   name: port
   type: 0
   section: Connect
