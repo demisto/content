@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Set **Remove legacy incident fields** to default true- which means that the incident data before going through the mapper is in the following format word1_word2 (and not word1word2) for example: alert_id and not alertid."
+}
