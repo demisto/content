@@ -297,7 +297,7 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
         args (dict): The '1password-get-events' command arguments.
 
     Returns:
-        tuple[list[dict], list[CommandResults]]: List of events and list of CommandResults with human readable output.
+        tuple[list[dict], CommandResults]: List of events and CommandResults with human readable output.
     """
     event_type = args['event_type'].lower()
     limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_EVENTS_PER_FETCH
