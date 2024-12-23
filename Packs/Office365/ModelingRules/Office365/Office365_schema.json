@@ -16,11 +16,11 @@
             "type": "string",
             "is_array": false
         },
-        "userip": {
+        "UserIp": {
             "type": "string",
             "is_array": false
         },
-        "senderip": {
+        "SenderIp": {
             "type": "string",
             "is_array": false
         },
