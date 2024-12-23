@@ -4278,6 +4278,7 @@ def panorama_custom_block_rule_command(args: dict):
     tags = argToList(args['tags']) if 'tags' in args else None
     where = args.get('where', 'bottom')
     dst = args.get('dst')
+    result = None
 
     if not DEVICE_GROUP:
         if target:
@@ -4338,8 +4339,6 @@ def panorama_custom_block_rule_command(args: dict):
                                               log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['Application'] = object_value
-    else:
-        result = None
 
     return_results({
         'Type': entryTypes['note'],

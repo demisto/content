@@ -263,7 +263,7 @@ def get_generic_indicators_elastic_v7(es, search, src_val, src_type, default_typ
     """
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     ioc_lst: list = []
-    scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)
+    scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)  # pylint: disable=E0606
     for hit in scan_res:
         hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
         ioc_lst.extend(hit_lst)

@@ -865,6 +865,9 @@ def isolate_or_restore_connection(
         response = client.http_request(
             POST, RESTORE_CONNECTION_ENDPOINT, data=json.dumps(body)
         )
+    else:
+        response = {}
+        demisto.debug(f"The {command=} didn't match the conditions. {response=}")
 
     mapping_data = isolate_restore_endpoint_mapping(response)
 
