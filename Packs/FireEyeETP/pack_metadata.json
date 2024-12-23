@@ -2,7 +2,7 @@
     "name": "FireEye ETP",
     "description": "FireEye Email Threat Prevention (ETP Cloud) is a cloud-based platform that protects against advanced email attacks.",
     "support": "xsoar",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

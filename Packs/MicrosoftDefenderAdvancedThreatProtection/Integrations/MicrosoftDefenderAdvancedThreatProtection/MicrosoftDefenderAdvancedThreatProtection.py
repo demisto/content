@@ -5166,7 +5166,7 @@ def validate_args_endpoint_command(hostnames, ips, ids):
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
 
-def handle_machines(machines_response: list) -> list[CommandResults]:
+def handle_machines(machines_response: dict) -> list[CommandResults]:
     """Converts the raw response of the API to a CommandResults list with relevant keys.
     Args:
         The raw API response, a list of machines.
@@ -5178,7 +5178,7 @@ def handle_machines(machines_response: list) -> list[CommandResults]:
 
     machines_outputs = []
 
-    for machine in machines_response:
+    for machine in machines_response.get("value", []):
         machine_data = get_machine_data(machine)
         machine_data['MACAddress'] = get_machine_mac_address(machine)
         endpoint_indicator = create_endpoint_verdict(machine_data)
@@ -5218,14 +5218,15 @@ def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResul
 
     filter = f"(ip='{ip}',timestamp={timestamp})"
 
-    machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
-    machines_response = machines_response.get('value', [])
+    raw_machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
+    machines_response = raw_machines_response.get('value', [])
 
     demisto.debug(f'limit is set to: {limit}')
     limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
+    raw_machines_response["value"] = limited_machines_response
 
     demisto.debug('Calling handle_machines function to convert raw response to CommandResults list')
-    return handle_machines(limited_machines_response)
+    return handle_machines(raw_machines_response)
 
 
 def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
@@ -5240,7 +5241,7 @@ def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
     validate_args_endpoint_command(hostnames, ips, ids)
     machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
 
-    return handle_machines(machines_response.get('value', []))
+    return handle_machines(machines_response)
 
 
 def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
@@ -5882,6 +5883,9 @@ def main():  # pragma: no cover
             return_results(reset_auth())
 
     except Exception as err:
+        # TODO Following the CIAC-12304 ticket, many commands, including fetch incidents, are deprecated.
+        # In the future, if the deprecation reaches end-of-life, we may receive a unique error.
+        # It would be worth handling that error and adding explanations if needed.
         return_error(str(err))
 
 
