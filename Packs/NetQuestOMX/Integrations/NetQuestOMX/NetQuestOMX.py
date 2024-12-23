@@ -337,7 +337,7 @@ def address_list_delete_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"Successfully deleted {list_name_to_delete} list")
 
 
-def add_time_to_events(events: list[dict]):
+def add_time_to_events(events: list[dict]) -> None:
     """
     Adds the _time key to the events.
     Args:
