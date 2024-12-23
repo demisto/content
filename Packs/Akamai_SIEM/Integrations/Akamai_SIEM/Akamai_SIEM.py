@@ -42,7 +42,7 @@ TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
-MODULE_HEALTH_UPDATE_LOCK = None
+LOCKED_UPDATES_LOCK = None
 EVENTS_COUNT_CURRENT_INTERVAL = 0
 
 # Disable insecure warnings
@@ -396,8 +396,7 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
 
 def reset_offset_command(client: Client):  # pragma: no cover
     ctx = get_integration_context()
-    if "offset" in ctx:
-        del ctx["offset"]
+    ctx["reset_offset"] = True
     set_integration_context(ctx)
     return 'Offset was reset successfully.', {}, {}
 
@@ -441,21 +440,22 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
     return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
 
 
-async def update_total_events_fetched(events_amount):
-    async with MODULE_HEALTH_UPDATE_LOCK:
+async def update_total_events_fetched_and_offset(events_amount, offset):
+    async with LOCKED_UPDATES_LOCK:
         global EVENTS_COUNT_CURRENT_INTERVAL
         EVENTS_COUNT_CURRENT_INTERVAL += events_amount
+        set_integration_context({"offset": offset})
 
 
 async def update_module_health():
-    async with MODULE_HEALTH_UPDATE_LOCK:
+    async with LOCKED_UPDATES_LOCK:
         global EVENTS_COUNT_CURRENT_INTERVAL
         if EVENTS_COUNT_CURRENT_INTERVAL:
             demisto.updateModuleHealth({'eventsPulled': (EVENTS_COUNT_CURRENT_INTERVAL)})
         EVENTS_COUNT_CURRENT_INTERVAL = 0
 
 
-async def process_and_send_events_to_xsiam(events, should_skip_decode_events):
+async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset):
     demisto.info(f"got {len(events)} events, moving to processing events data.")
     if should_skip_decode_events:
         demisto.info("Skipping decode events, adding _time fields to events.")
@@ -482,12 +482,12 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events):
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
                     f"latest event time is: {events[-1]['_time']}")
-        tasks: list = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
-                            chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True)
+        tasks = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
+                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True)
         demisto.info("Finished executing send_events_to_xsiam, waiting for tasks to end.")
         await asyncio.gather(*tasks)
         demisto.info("Finished gathering all tasks.")
-        asyncio.create_task(update_total_events_fetched(len(events)))  # noqa: RUF006
+        asyncio.create_task(update_total_events_fetched_and_offset(len(events), offset))  # noqa: RUF006
             
 @logger
 async def fetch_events_command(client: Client):
@@ -497,14 +497,18 @@ async def fetch_events_command(client: Client):
         client: Client object with request
 
     """
+    params = demisto.params()
+    config_ids = params.get("configIds", "")
+    page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
+    should_skip_decode_events = params.get("should_skip_decode_events", False)
+    offset = None
+    from_epoch = None
     while True:
-        params = demisto.params()
-        config_ids = params.get("configIds", "")
-        page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
-        should_skip_decode_events = params.get("should_skip_decode_events", False)
         ctx = get_integration_context() or {}
-        offset = ctx.get("offset")
-        from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", "5 minutes"), date_format='%s')
+        offset = offset or ctx.get("offset")
+        if ctx.get("reset_offset", False):
+            offset = None
+        from_epoch, _ = parse_date_range(date_range=params.get("from_time", "5 minutes"), date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
@@ -519,18 +523,18 @@ async def fetch_events_command(client: Client):
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
                 set_integration_context({"from_time": "11 hours"})
+                offset = None
             demisto.updateModuleHealth(e, is_error=True)
             demisto.info("Going to sleep for 60 seconds.")
             await asyncio.sleep(60)
             demisto.info("Done sleeping 60 seconds.")
         if events:
-            asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events))  # noqa: RUF006
+            asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             demisto.info(f"got {len(events)} events which is {ALLOWED_PAGE_SIZE_DELTA_RATIO}{page_size=} rr lower," \
                             "going to sleep for 60 seconds.")
             await asyncio.sleep(60)
             demisto.info("Finished sleeping for 60 seconds.")
-        set_integration_context({"offset": offset})
 
 
 def decode_url(headers: str) -> dict:
@@ -588,8 +592,8 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "long-running-execution":
-            global MODULE_HEALTH_UPDATE_LOCK
-            MODULE_HEALTH_UPDATE_LOCK = asyncio.Lock()
+            global LOCKED_UPDATES_LOCK
+            LOCKED_UPDATES_LOCK = asyncio.Lock()
             demisto.info("Starting long-running execution.")
             asyncio.run(fetch_events_command(client))
         else:
