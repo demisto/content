@@ -2560,7 +2560,7 @@ def retrieve_all_results(response, all_results, api_endpoint, meta, data, limit=
         limit (int, optional): the limit of group members to retrieve. Defaults to 100.
     """
     next_page = response.get('meta', {}).get('pagination', {}).get('next')
-    group_members = response.get('data', [{}])[0].get('groupMembers', {})
+    group_members = response.get('data', [{}])[0].get('groupMembers', [])
     while (int(limit) > len(group_members) and next_page) or (all_results and next_page):
         meta['pagination'] = {
             'pageToken': next_page
@@ -2571,7 +2571,7 @@ def retrieve_all_results(response, all_results, api_endpoint, meta, data, limit=
         }
         current_response = http_request('POST', api_endpoint, payload)
         next_page = current_response.get('meta', {}).get('pagination', {}).get('next')
-        current_group_members = current_response.get('data', [{}])[0].get('groupMembers', {})
+        current_group_members = current_response.get('data', [{}])[0].get('groupMembers', [])
         group_members.extend(current_group_members)
 
 
@@ -2601,7 +2601,7 @@ def create_get_group_members_request(group_id=-1, limit=100):
 
 
 def group_members_api_response_to_markdown(api_response):
-    num_users_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+    num_users_found = len(api_response.get('data', [{}])[0].get('groupMembers', []))
     group_id = demisto.args().get('group_id', '')
 
     if not num_users_found:
