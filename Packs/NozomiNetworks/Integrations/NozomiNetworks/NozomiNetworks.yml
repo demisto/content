@@ -1,7 +1,6 @@
 commonfields:
   id: Nozomi Networks
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Nozomi Networks
 display: Nozomi Networks
 category: Network Security
@@ -661,3 +660,6 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
+  tests:
+  - No tests - partner instance test in NonCircleFolder
+  fromversion: 5.0.0
