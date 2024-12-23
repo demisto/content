@@ -466,7 +466,7 @@ def fetch_events_command(
     """
     total_events_count = 0
     offset = ctx.get("offset")
-    from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", fetch_time), date_format='%s')
+    from_epoch, _ = parse_date_range(fetch_time, date_format='%s')
     auto_trigger_next_run = False
     worst_case_time: float = 0
     execution_counter = 0
@@ -600,7 +600,7 @@ def main():  # pragma: no cover
             for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
             fetch_events_command(
                 client,
-                "5 minutes",
+                params.get("fetchTime", "5 minutes"),
                 fetch_limit=limit,
                 config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
