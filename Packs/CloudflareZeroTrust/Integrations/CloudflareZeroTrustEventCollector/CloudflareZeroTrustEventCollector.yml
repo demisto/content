@@ -3,43 +3,81 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CloudflareZeroTrustEventCollector
+  id: Cloudflare Zero Trust
   version: -1
 configuration:
-- defaultvalue: https://test.com
+- name: url
+  defaultvalue: https://api.cloudflare.com/
   display: Server URL
-  name: url
-  required: false
+  required: true
   type: 0
   section: Connect
-- defaultvalue: ACTIVE
-  section: Collect
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
-  required: false
-  type: 15
-- defaultvalue: 10000
-  section: Collect
-  display: Max number of events per fetch
-  name: max_events_per_fetch
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
+- name: max_fetch_account_audit_logs
+  defaultvalue: 1000
+  section: Collect
+  display: Maximum number of account audit logs per fetch
+  advanced: true
+  required: false
+  type: 0
+- name: max_fetch_user_audit_logs
+  defaultvalue: 1000
+  section: Collect
+  display: Maximum number of user audit logs per fetch
+  advanced: true
+  required: false
+  type: 0
+- name: max_fetch_access_authentication_logs
+  defaultvalue: 1000
+  section: Collect
+  display: Maximum number of access authentication logs per fetch
+  advanced: true
+  required: false
+  type: 0
+- display: ""
+  additionalinfo: Bearer auth token.
+  displaypassword: API token
+  name: api_token
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: API email
+  section: Connect
+  displaypassword: Global API key
+  name: credentials
+  type: 9
+  required: true
+- display: Account ID
+  name: account_id
+  type: 0
+  required: true
+  section: Connect
+- display: Event types to fetch
+  name: event_types_to_fetch
+  type: 16
+  defaultvalue: account_audit_logs, user_audit_logs, access_authentication_logs
+  section: Collect
+  advanced: true
+  options:
+  - account_audit_logs
+  - user_audit_logs
+  - access_authentication_logs
+  required: true
 description: Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and since 2010, a content distribution network to provide content across its network of servers.
-display: CloudflareZeroTrustEventCollector
-name: CloudflareZeroTrustEventCollector
+display: Cloudflare Zero Trust
+name: Cloudflare Zero Trust
 script:
   commands:
   - arguments:
