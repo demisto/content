@@ -10,7 +10,7 @@ import pycef
 import hashlib
 import time
 import json
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from dateutil.parser import parse
 
 # Disable insecure warnings
