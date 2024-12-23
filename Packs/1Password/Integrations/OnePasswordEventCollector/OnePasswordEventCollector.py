@@ -21,6 +21,8 @@ PRODUCT = '1Password'
 # < 1000 increases the number of requests and may eventually trigger HTTP 429 [Rate Limit]
 DEFAULT_RESULTS_PER_PAGE = 1000
 
+DEFAULT_MAX_EVENTS_PER_FETCH = 1000
+
 DEFAULT_FETCH_FROM_DATE = datetime.now() - timedelta(weeks=2)
 
 EVENT_TYPE_MAPPING = {
@@ -101,7 +103,7 @@ def get_limit_param(params: dict[str, str], event_type: str) -> int:
         int: The maximum number of events per fetch.
     """
     param_name = event_type.lower().replace(' ', '_') + '_limit'
-    return arg_to_number(params.get(param_name)) or 1000
+    return arg_to_number(params.get(param_name)) or DEFAULT_MAX_EVENTS_PER_FETCH
 
 
 def get_unauthorized_event_types(auth_introspection_response: dict[str, Any], event_types: list[str]) -> list[str]:
@@ -298,7 +300,7 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
         tuple[list[dict], list[CommandResults]]: List of events and list of CommandResults with human readable output.
     """
     event_type = args['event_type'].lower()
-    limit = arg_to_number(args.get('limit')) or 1000
+    limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_EVENTS_PER_FETCH
     from_date = arg_to_datetime(args.get('from_date')) or DEFAULT_FETCH_FROM_DATE
 
     events = get_events_from_client(client, event_type=event_type, from_date=from_date, max_events=limit)
