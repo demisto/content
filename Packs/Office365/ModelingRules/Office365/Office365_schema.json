@@ -212,7 +212,7 @@
             "type": "string",
             "is_array": false
         },
-        "sha256": {
+        "Sha256": {
             "type": "string",
             "is_array": false
         },
