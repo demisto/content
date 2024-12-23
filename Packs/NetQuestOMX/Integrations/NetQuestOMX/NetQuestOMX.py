@@ -68,7 +68,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when creating a new token. Please verify your credentials."
-                f"{str(e)}"
             ) from e
 
         new_token = response.headers["X-Auth-Token"]
@@ -112,7 +111,7 @@ class Client(BaseClient):
                 )
         except Exception as e:
             raise DemistoException(f"An error occurred while uploading the file {file_name}."
-                                   f"{str(e)}") from e
+                                   ) from e
         finally:
             # Ensure the temporary file is deleted
             Path(temp_file_name).unlink(missing_ok=True)
@@ -125,7 +124,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when optimizing the list of IPs."
-                f"{str(e)}"
             ) from e
 
         return response_json
@@ -139,7 +137,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when creating the list of IPs."
-                f"{str(e)}"
             ) from e
 
     def address_list_rename_request(self, new_name: str, existing_name: str):
@@ -152,7 +149,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error occurred when renaming the {existing_name} IP list to {new_name}."
-                f"{str(e)}"
             ) from e
 
     def address_list_delete_request(self, list_name_to_delete: str):
@@ -422,9 +418,8 @@ def get_events(client: Client, params: dict, args: dict) -> list[dict]:
 
     for statistic_type in statistic_types_to_fetch:
         if statistic_type not in StatType._value2member_map_:
-            raise DemistoException(f"Those are the valid types: {list(StatType._value2member_map_.keys())}."
-                                   f" Please execute the command get-events again with valid input."
-                                   f" This input is invalid: {statistic_types_to_fetch}")
+            raise DemistoException(f"{statistic_types_to_fetch} is not a valid type. Valid types are {list(StatType._value2member_map_.keys())}."
+                                   f" Execute the command get-events again with valid input.")
 
     # execute the command
     events = fetch_events(
@@ -489,7 +484,7 @@ def main() -> None:
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-            demisto.debug(f'fetched {len(events)} events.')
+            demisto.debug(f'fetched and sent {len(events)} events to xsiam.')
 
         elif command == "get-events":
             events = get_events(client, params, args)
