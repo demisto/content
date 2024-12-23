@@ -1018,7 +1018,7 @@ def get_remote_data_command(client, args, exclude_artifacts: list=[], excluded_a
                     reformatted_entries.append(entry)
 
             incident_data['in_mirror_error'] = ''
-            if client.remove_additional_data():
+            if not client.remove_additional_data():
                 incident_data['additional_data'] = incident_data.get('alerts')
             # TODO add it to mapper
 
@@ -1212,7 +1212,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
-            if client.remove_additional_data():
+            if not client.remove_additional_data():
                 incident_data['additional_data'] = incident_data.get('alerts')
             description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
