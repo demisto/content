@@ -151,7 +151,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error occurred when renaming the {existing_name} IP list to {new_name}."
-                f"{str(e)}"
             ) from e
 
     def address_list_delete_request(self, list_name_to_delete: str):
