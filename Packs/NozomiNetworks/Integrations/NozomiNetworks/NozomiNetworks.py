@@ -27,8 +27,10 @@ class Client:
             "key_token": self.auth_credentials[1]
         }
         try:
-            response = requests.post(f"{self.base_url}/api/open/sign_in", json=payload, verify=self.verify,
-                                     proxies=self.build_proxies())
+            url = f"{self.base_url}/api/open/sign_in"
+            proxies = self.build_proxies()
+            response = requests.post(url, json=payload, verify=self.verify, proxies=proxies)
+
             if response.status_code != 200:
                 raise Exception(f"Authentication failed with status code {response.status_code}: {response.text}")
 
@@ -60,7 +62,6 @@ class Client:
         url = self.base_url + path
 
         if not self.bearer_token and not self.use_basic_auth:
-            demisto.info(f"Token missing. Signing in.")
             self.sign_in()
 
         if self.use_basic_auth:
@@ -82,7 +83,6 @@ class Client:
         return response.json()
 
     def http_get_request(self, path):
-        demisto.info(f"path {path}")
         return self._make_request('GET', path)
 
     def http_post_request(self, path, data):
@@ -171,10 +171,10 @@ def has_last_run(lr):
 
 def incidents_better_than_time(st, page, risk, also_n2os_incidents, client):
     query = (
-        f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{better_than_time_filter(st)}'
+        f'{QUERY_ALERTS_PATH} | sort record_created_at asc{better_than_time_filter(st)}'
         f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)}'
     )
-    #TODO extract method adding page and count
+
     full_path = f'{query}&page={page}&count={min(int(incident_per_run()), 1000)}'
     return client.http_get_request(full_path)['result']
 
@@ -195,7 +195,6 @@ def incidents(st, last_run, risk, also_n2os_incidents, client):
         return i['name']
 
     ibtt = incidents_better_than_time(st, last_run.get('page', 1), risk, also_n2os_incidents, client)
-
     lft = last_fetched_time(ibtt, last_run)
 
     if ibtt is None:
@@ -310,31 +309,31 @@ def fetch_incidents(
     demisto_incidents, last_fetch = incidents(st, last_run, risk, fetch_also_n2os_incidents, client)
 
     if not test_mode:
-        current_page = last_run.get('page', 1)
+        next_page = build_next_page(last_run.get('page', 1), len(demisto_incidents))
 
-        #TODO extract calculate_next_page(current_page, incidents_found_count)
-        if current_page >= 100 or len(demisto_incidents) < incident_per_run():
-            if len(demisto_incidents) == 0:
-                #if demisto_incidents for this page is empty will be queried until returns at least one item
-                next_page = current_page
-            else:
-                next_page = 1
-        else:
-            next_page = current_page + 1
-
-        #TODO extract calculate_last_fetch_to_set
-        last_fetch_to_set = last_fetch if next_page == 1 else st
-
-        demisto.info(f"incident found {len(demisto_incidents)} next_page {next_page} current_page {current_page} last_fetch_to_set {last_fetch_to_set}")
-
-        demisto.setLastRun({'last_fetch': last_fetch_to_set, 'page': next_page})
+        demisto.setLastRun({'last_fetch': last_fetch_to_set(last_fetch, next_page, st), 'page': next_page})
         demisto.incidents(demisto_incidents)
         ack_alerts(nozomi_alerts_ids_from_demisto_incidents(demisto_incidents), client)
 
     return demisto_incidents, last_fetch
 
 
-#TODO test me
+def last_fetch_to_set(last_fetch, next_page, st):
+    return last_fetch if next_page == 1 else st
+
+
+def build_next_page (current_page, incidents_count):
+    if current_page >= 100 or incidents_count < incident_per_run():
+        if incidents_count == 0:
+            # if demisto_incidents for this page is empty will be queried until returns at least one item
+            next_page = current_page
+        else:
+            next_page = 1
+    else:
+        next_page = current_page + 1
+    return next_page
+
+
 def incident_per_run():
     return int(demisto.params().get('incidentPerRun', DEFAULT_COUNT_ALERTS))
 

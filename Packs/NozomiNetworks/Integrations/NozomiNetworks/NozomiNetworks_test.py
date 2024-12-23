@@ -60,7 +60,6 @@ def test_time_filter(obj, expected):
 
 def test_incidents_when_ibtt_is_none(requests_mock):
     st = '1392048082000'
-    last_id = None
     last_run = {'last_fetch': '1392048082000'}
     risk = '4'
     also_n2os_incidents = True
@@ -151,7 +150,7 @@ def test_incidents_filtered(requests_mock):
         True,
         __get_client(
             [{'json': __load_test_data('./test_data/incidents_better_than_time.json'),
-              'path': '/api/open/query/do?query=alerts | sort record_created_at asc | sort id asc '
+              'path': '/api/open/query/do?query=alerts | sort record_created_at asc '
               '| where record_created_at > 1392048082000 | where risk >= 4&page=1&count=100'}],
             requests_mock))
 
@@ -341,7 +340,7 @@ def test_ip_from_mac_not_found(requests_mock):
 def test_incidents_head_limit(requests_mock):
     import urllib.parse
 
-    query = "alerts | sort record_created_at asc | sort id asc | where record_created_at > 1392048082000 | where risk >= 4"
+    query = "alerts | sort record_created_at asc | where record_created_at > 1392048082000 | where risk >= 4"
     request_path = f"/api/open/query/do?query={urllib.parse.quote(query)}&page=1&count=100"
 
     client = __get_client(
@@ -489,6 +488,56 @@ def test_build_proxies_with_none_proxy():
 def test_build_headers(use_basic_auth, bearer_token, expected_headers):
     client = Client(bearer_token=bearer_token, use_basic_auth= use_basic_auth)
     assert client.build_headers() == expected_headers
+
+
+@pytest.mark.parametrize(
+    "demisto_params, expected_result, expect_exception",
+    [
+        ({'incidentPerRun': '15'}, 15, False),
+        ({}, DEFAULT_COUNT_ALERTS, False),
+        ({'incidentPerRun': 'abc'}, None, True),
+    ]
+)
+def test_incident_per_run(demisto_params, expected_result, expect_exception):
+    with patch('NozomiNetworks.demisto') as mock_demisto:
+        mock_demisto.params.return_value = demisto_params
+        if expect_exception:
+            with pytest.raises(ValueError):
+                incident_per_run()
+        else:
+            result = incident_per_run()
+            assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "current_page, incidents_count, incident_per_run_value, expected_next_page",
+    [
+        (50, 10, 20, 1),
+        (50, 30, 20, 51),
+        (100, 10, 20, 1),
+        (99, 0, 20, 99),
+        (100, 0, 20, 100),
+        (50, 20, 20, 51),
+        (100, 50, 20, 1),
+    ]
+)
+def test_build_next_page(current_page, incidents_count, incident_per_run_value, expected_next_page):
+    with patch('NozomiNetworks.incident_per_run', return_value=incident_per_run_value):
+        result = build_next_page(current_page, incidents_count)
+        assert result == expected_next_page
+
+
+@pytest.mark.parametrize(
+    "last_fetch, next_page, st, expected_result",
+    [
+        (1672531200000, 1, 1672617600000, 1672531200000),
+        (1672531200000, 2, 1672617600000, 1672617600000),
+        (1672531200000, 10, 1672617600000, 1672617600000)
+    ]
+)
+def test_last_fetch_to_set(last_fetch, next_page, st, expected_result):
+    result = last_fetch_to_set(last_fetch, next_page, st)
+    assert result == expected_result
 
 
 def __get_client(dummy_responses, requests_mock):
