@@ -23,7 +23,7 @@
                 },
                 "Agent Version": {
                     "complex": {
-                        "accessor": "agentversion",
+                        "accessor": "agent_version",
                         "filters": [],
                         "root": "alerts",
                         "transformers": [
@@ -33,35 +33,35 @@
                         ]
                     }
                 },
-				"Agents ID": {
-					"complex": {
-						"accessor": "endpoint_id",
-						"filters": [],
-						"root": "alerts",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"CMD line": {
-					"complex": {
-						"accessor": "action_process_image_command_line",
-						"filters": [],
-						"root": "alerts",
-						"transformers": []
-					}
-				},
-				"Cloud Provider": {
-					"complex": {
-						"accessor": "cloudprovider",
-						"filters": [],
-						"root": "alerts",
-						"transformers": []
-					}
-				},
-				"Detected User": {
+                "Agents ID": {
+                    "complex": {
+                        "accessor": "endpoint_id",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "CMD line": {
+                    "complex": {
+                        "accessor": "action_process_image_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "Cloud Provider": {
+                    "complex": {
+                        "accessor": "cloud_provider",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "Detected User": {
 					"complex": {
 						"accessor": "user_name",
 						"filters": [],
@@ -119,7 +119,7 @@
 				},
 				"Device Name": {
 					"complex": {
-						"accessor": "hostname",
+						"accessor": "host_name",
 						"filters": [],
 						"root": "alerts",
 						"transformers": [
@@ -240,7 +240,7 @@
 					"simple": "alerts.causality_actor_process_image_md5"
 				},
 				"Parent Process Name": {
-					"simple": "alerts.causalityactorprocessimagename"
+					"simple": "alerts.causality_actor_process_image_name"
 				},
 				"Parent Process SHA256": {
 					"simple": "alerts.causality_actor_process_image_sha256"
@@ -1105,7 +1105,7 @@
 				},
 				"Agent Version": {
 					"complex": {
-						"accessor": "agentversion",
+						"accessor": "agent_version",
 						"filters": [],
 						"root": "alerts",
 						"transformers": [
