@@ -119,7 +119,7 @@
                 },
                 "Device Name": {
                     "complex": {
-						"accessor": "host_name",
+                        "accessor": "host_name",
                         "filters": [],
                         "root": "alerts",
                         "transformers": [
