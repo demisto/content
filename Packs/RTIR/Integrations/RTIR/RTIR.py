@@ -267,7 +267,7 @@ def create_ticket():
     referred_to_by = args.get('referred-to-by')
 
     if members or member_of or depends_on or depended_on_by or refers_to or referred_to_by:
-        edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
+        edit_links(ticket_id, member_of, members, depends_on, depended_on_by, refers_to, referred_to_by)
 
     ticket_context = ({
         'ID': ticket_id,
@@ -534,7 +534,7 @@ def edit_ticket():
     referred_to_by = args.get('referred-to-by')
 
     if members or member_of or depends_on or depended_on_by or refers_to or referred_to_by:
-        links = edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
+        links = edit_links(ticket_id, member_of, members, depends_on, depended_on_by, refers_to, referred_to_by)
         if "200 Ok" in links.text:
             edit_succeeded = True
 
