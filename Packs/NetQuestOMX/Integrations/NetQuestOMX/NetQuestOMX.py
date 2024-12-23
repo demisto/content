@@ -172,7 +172,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of Metering Stats type."
+                "An error was occurred when requesting for an event of Metering Stats type."
             ) from e
 
         metering_stats_event["STAT_TYPE"] = 'MeteringStats'
@@ -188,7 +188,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of Export Stats type."
+                "An error was occurred when requesting for an event of Export Stats type."
             ) from e
 
         export_stats_event["STAT_TYPE"] = 'ExportStats'
@@ -204,7 +204,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of Export Peaks FPS type."
+                "An error was occurred when requesting for an event of Export Peaks FPS type."
             ) from e
 
         export_peaks_FPS_event["STAT_TYPE"] = 'ExportPeaksFPS'
@@ -220,7 +220,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                f"An error was occurred when requesting for an event of Optimization Stats type."
+                "An error was occurred when requesting for an event of Optimization Stats type."
             ) from e
 
         optimization_stats_event["STAT_TYPE"] = 'OptimizationStats'
