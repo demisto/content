@@ -205,7 +205,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when requesting for an event of Export Peaks FPS type."
-                f"{str(e)}"
             ) from e
 
         export_peaks_FPS_event["STAT_TYPE"] = 'ExportPeaksFPS'
