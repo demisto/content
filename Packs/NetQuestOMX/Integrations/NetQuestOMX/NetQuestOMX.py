@@ -342,23 +342,6 @@ def address_list_delete_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"Successfully deleted {list_name_to_delete} list")
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    return 'ok'
-
-
 def add_time_to_events(events: list[dict]):
     """
     Adds the _time key to the events.
@@ -468,8 +451,8 @@ def main() -> None:
         }
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+            # This is the call made when pressing the integration Test button - it returns 'ok' (success) if the client was built.
+            return_results('ok')
 
         elif command in commands:
             return_results(commands[command](client, args))
