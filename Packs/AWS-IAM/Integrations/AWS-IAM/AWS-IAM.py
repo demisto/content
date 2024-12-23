@@ -212,8 +212,8 @@ def add_user_to_group(args, client):  # pragma: no cover
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The user {} was added to the IAM group: {}".format(args.get('userName'),
-                                                                              args.get(
-                                                                                  'groupName')))
+                                                                            args.get(
+            'groupName')))
 
 
 def create_access_key(args, client):  # pragma: no cover
@@ -246,7 +246,7 @@ def update_access_key(args, client):  # pragma: no cover
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
             "Access Key with ID {} was set to status: {}".format(args.get('accessKeyId'),
-                                                                   args.get('status')))
+                                                                 args.get('status')))
 
 
 def list_access_key_for_user(args, client):  # pragma: no cover
@@ -374,7 +374,7 @@ def remove_user_from_group(args, client):  # pragma: no cover
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
             "The User {} has been removed from the group {}".format(args.get('userName'),
-                                                                      args.get('groupName')))
+                                                                    args.get('groupName')))
 
 
 def delete_access_key(args, client):  # pragma: no cover
@@ -496,7 +496,7 @@ def add_role_to_instance_profile(args, client):  # pragma: no cover
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
             "The Role: {} was added to the Instance Profile: {}".format(args.get('roleName'),
-                                                                          args.get('instanceProfileName'))
+                                                                        args.get('instanceProfileName'))
         )
 
 
@@ -510,8 +510,8 @@ def remove_role_from_instance_profile(args, client):  # pragma: no cover
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
             "The Role: {} was removed from the Instance Profile: {}".format(args.get('roleName'),
-                                                                              args.get(
-                                                                                  'instanceProfileName')))
+                                                                            args.get(
+                'instanceProfileName')))
 
 
 def list_instance_profiles_for_role(args, client):  # pragma: no cover

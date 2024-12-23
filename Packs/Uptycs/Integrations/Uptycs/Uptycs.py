@@ -133,7 +133,7 @@ def apply_equals_cuts(query, cuts):
                     query = ("%s AND" % query)
                 if "time" in key:
                     query = ("{} {}=CAST('{}' AS TIMESTAMP)".format(query, key,
-                                                                cuts.get(key)))
+                                                                    cuts.get(key)))
                     use_and = True
                 else:
                     if type(cuts.get(key)) == str:
@@ -175,10 +175,10 @@ def apply_datetime_cuts(query, name, start, finish):
 
     if finish is None:
         query = ("{} {} AFTER CAST('{}' AS TIMESTAMP)".format(query, name,
-                                                          start))
+                                                              start))
     if start is None:
         query = ("{} {} BEFORE CAST('{}' AS TIMESTAMP)".format(query, name,
-                                                           finish))
+                                                               finish))
     if start is not None and finish is not None:
         query = ("{} {} BETWEEN CAST('{}' AS TIMESTAMP) AND \
 CAST('{}' AS TIMESTAMP)".format(query, name, start, finish))

@@ -1068,6 +1068,7 @@ def main() -> None:  # pragma: no cover
         args = demisto.args()
         command = demisto.command()
         client: "WAFV2Client" = aws_client.aws_session(service=SERVICE, region=args.get('region'))
+        result = CommandResults()
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.

@@ -203,11 +203,11 @@ def apply_get_vms_filters(args, vm_summery):
 
 def get_priority(priority):
     if priority == 'highPriority':
-        return vim.VirtualMachine.MovePriority().highPriority  # type: ignore
+        return vim.VirtualMachine.MovePriority('').highPriority  # type: ignore
     elif priority == 'lowPriority':
-        return vim.VirtualMachine.MovePriority().lowPriority  # type: ignore
+        return vim.VirtualMachine.MovePriority('').lowPriority  # type: ignore
     else:
-        return vim.VirtualMachine.MovePriority().defaultPriority  # type: ignore
+        return vim.VirtualMachine.MovePriority('').defaultPriority  # type: ignore
 
 
 def get_vms(si, args):

@@ -4255,7 +4255,7 @@ def new_papi_cpcode_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
     title = ""
-    human_readable_ec:list = []
+    human_readable_ec: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_cpcodeid_bygroup(contract_id=contract_id, group_id=group_id)

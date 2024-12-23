@@ -137,7 +137,7 @@ def main():
                 # Map fields according to fields_to_map that were defined earlier
                 mapped_records = [
                     {fields_to_map[key]: value for (key, value) in
-                         [k_v for k_v in list(r.items()) if k_v[0] in list(fields_to_map.keys())]}
+                     [k_v for k_v in list(r.items()) if k_v[0] in list(fields_to_map.keys())]}
                     for r in records
                 ]
 

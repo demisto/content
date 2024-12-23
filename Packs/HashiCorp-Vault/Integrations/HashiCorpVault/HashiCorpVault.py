@@ -645,9 +645,9 @@ def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600',
     if aws_method:
         engine_conf['aws_method'] = aws_method
 
-    ENGINE_CONFIGS.append(engine_conf) # pylint: disable=E0606
+    ENGINE_CONFIGS.append(engine_conf)  # pylint: disable=E0606
 
-    set_integration_context({'configs': ENGINE_CONFIGS}) # pylint: disable=E0606
+    set_integration_context({'configs': ENGINE_CONFIGS})  # pylint: disable=E0606
 
 
 def fetch_credentials():  # pragma: no cover

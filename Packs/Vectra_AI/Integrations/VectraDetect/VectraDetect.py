@@ -1929,7 +1929,7 @@ def iso_date_to_vectra_start_time(iso_date: str, look_back: str = BACK_IN_TIME_S
                 date = date - timedelta(minutes=look_back_int)  # type: ignore
                 backward_start_datetime = date.strftime('%Y-%m-%dT%H%M')  # type: ignore
                 demisto.debug('Manipulated time as backward search. '
-                               f'Changed the Start time from : {start_datetime} to : {backward_start_datetime}')
+                              f'Changed the Start time from : {start_datetime} to : {backward_start_datetime}')
                 start_datetime = backward_start_datetime
 
     else:

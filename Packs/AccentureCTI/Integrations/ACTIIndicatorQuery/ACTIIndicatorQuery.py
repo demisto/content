@@ -33,9 +33,9 @@ class Client(BaseClient):
             "User-Agent": f"AccentureCTI Pack/{PACK_VERSION} Palo Alto XSOAR/{DEMISTO_VERSION}"
         }
         super().__init__(base_url=base_url,
-                                     verify=verify_certificate,
-                                     headers=headers,
-                                     proxy=proxy)
+                         verify=verify_certificate,
+                         headers=headers,
+                         proxy=proxy)
 
     def threat_indicator_search(self, url_suffix: str, data: dict = {}) -> dict:
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)

@@ -72,9 +72,9 @@ def IncidentRecord(inc: dict, slatimers: list, windowstart: str, windowend: str,
 
         if windowstart != "" and windowend != "" and windowstart in inc['CustomFields'] and windowend in inc['CustomFields']:
             if inc['CustomFields'][windowstart]['runStatus'] == "ended" and \
-                        inc['CustomFields'][windowend]['runStatus'] == "ended":
+                    inc['CustomFields'][windowend]['runStatus'] == "ended":
                 winduration = ToDatetime(inc['CustomFields'][windowend]['endDate']) - \
-                        ToDatetime(inc['CustomFields'][windowstart]['startDate'])
+                    ToDatetime(inc['CustomFields'][windowstart]['startDate'])
                 record['UserWindow'] = winduration.total_seconds()
 
     return record
