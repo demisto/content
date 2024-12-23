@@ -62,29 +62,29 @@
                     }
                 },
                 "Detected User": {
-					"complex": {
-						"accessor": "user_name",
-						"filters": [],
-						"root": "alerts",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Device Id": {
-					"complex": {
-						"accessor": "endpoint_id",
-						"filters": [],
-						"root": "alerts",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "accessor": "user_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Device Id": {
+                    "complex": {
+                        "accessor": "endpoint_id",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
 				"Device Internal IPs": {
 					"complex": {
 						"accessor": "host_ip",
