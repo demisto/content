@@ -9,7 +9,7 @@ you are implementing with your integration
 """
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from unittest.mock import patch
 
 import pytest
@@ -336,7 +336,7 @@ def test_get_entries_for_comments_filter_by_last_update():
         {"comment": "Old comment", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
         {"comment": "New comment", "createdBy": "User2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
     ]
-    last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=timezone.utc)
+    last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
 
     assert len(result) == 1
@@ -352,7 +352,7 @@ def test_get_entries_for_comments_ignores_mirrored_comments():
          "createdBy": "User1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
     ]
 
-    last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=timezone.utc)
+    last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
 
     assert len(result) == 0
