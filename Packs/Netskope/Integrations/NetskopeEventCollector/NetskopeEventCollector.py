@@ -359,7 +359,6 @@ def main() -> None:  # pragma: no cover
         last_run = setup_last_run(demisto.getLastRun(), event_types_to_fetch)
         demisto.debug(f'Running with the following last_run - {last_run}')
 
-        # events: list[dict] = []
         all_event_types: list[dict] = []
         new_last_run: dict = {}
         if command_name == 'test-module':
