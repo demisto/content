@@ -56,7 +56,7 @@ def set_incident_severity_using_risk_level_command(args: dict[str, Any]) -> Comm
     # Get current incident severity.
     current_severity: int = demisto.incident().get('severity', 0)
 
-    if not isinstance(current_severity, (float, int)):
+    if not isinstance(current_severity, float | int):
         raise DemistoException('Not able to get the correct value for the current incident severity.')
 
     anomaly_severity, threat_hunt_severity, risk_level_severity = 0, 0, 0

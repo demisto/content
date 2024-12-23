@@ -137,9 +137,8 @@ def test_main_with_exception(mock_execute_command, mocker, capfd):
     mock_return_results = mocker.patch('RubrikSetIncidentSeverityUsingWorkLoadRiskLevel.return_results')
 
     # Act and Assert
-    with capfd.disabled():
-        with pytest.raises(SystemExit) as err:
-            main()
+    with capfd.disabled(), pytest.raises(SystemExit) as err:
+        main()
 
     assert err.value.code == 0
     mock_execute_command.assert_called_once_with('setIncident', {"severity": 3})

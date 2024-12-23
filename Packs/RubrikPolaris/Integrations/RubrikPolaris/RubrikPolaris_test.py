@@ -48,7 +48,7 @@ def util_load_json(path):
 
 def util_load_text_data(path: str) -> str:
     """Load a text file."""
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return f.read()
 
 
@@ -2842,7 +2842,7 @@ def test_ip_command_success(mock_return, client, requests_mock, capfd):
     assert output == command_output[0].outputs
     assert response == command_output[0].raw_response
     assert ip_hr == command_output[0].readable_output
-    assert 'ip' == command_output[0].outputs_key_field
+    assert command_output[0].outputs_key_field == 'ip'
     assert OUTPUT_PREFIX['IP'] == command_output[0].outputs_prefix
     assert ip_indicator == command_output[0].indicator.to_context()
 
@@ -2900,6 +2900,6 @@ def test_domain_command_success(mock_return, client, requests_mock, capfd):
     assert output == command_output[0].outputs
     assert response == command_output[0].raw_response
     assert domain_hr == command_output[0].readable_output
-    assert 'domain' == command_output[0].outputs_key_field
+    assert command_output[0].outputs_key_field == 'domain'
     assert OUTPUT_PREFIX['DOMAIN'] == command_output[0].outputs_prefix
     assert domain_indicator == command_output[0].indicator.to_context()

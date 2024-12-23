@@ -1,4 +1,3 @@
-from typing import Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Main file for RubrikPolaris Integration."""
@@ -2158,7 +2157,7 @@ def prepare_score_and_hr_for_reputation_command(response: dict, indicator_value:
     return severity_score, human_readable
 
 
-def validate_ip_addresses(ips_list: List[str]) -> Tuple[List[str], List[str]]:
+def validate_ip_addresses(ips_list: List[str]) -> tuple[List[str], List[str]]:
     '''
     Given a list of IP addresses, returns the invalid and valid ips.
 
@@ -4131,7 +4130,7 @@ def ip_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResul
 
     for ip in valid_ips:
         raw_resp = requests.get(
-            "{}/thirdparty/workload_summary".format(client._baseurl),
+            f"{client._baseurl}/thirdparty/workload_summary",
             params={"search_string": ip, "search_type": "ipv6" if is_ipv6_valid(ip) else "ipv4"},
             headers=client.prepare_headers(),
             verify=client._verify,
@@ -4207,7 +4206,7 @@ def domain_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandR
 
     for domain in domains:
         raw_resp = requests.get(
-            "{}/thirdparty/workload_summary".format(client._baseurl),
+            f"{client._baseurl}/thirdparty/workload_summary",
             params={"search_string": domain, "search_type": "name"},
             headers=client.prepare_headers(),
             verify=client._verify,
