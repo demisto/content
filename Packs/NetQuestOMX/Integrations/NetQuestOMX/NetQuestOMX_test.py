@@ -168,10 +168,10 @@ def test_address_list_upload_command(mocker, requests_mock, net_quest_omx_client
         - Ensure command is not failed and the readable_output as expected
     """
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/test_file.txt', 'name': 'test_file'})
-    requests_mock.post(f'{BASE_URL}v1/UpdateService/ImportList/Config', json={})
+    requests_post = requests_mock.post(f'{BASE_URL}v1/UpdateService/ImportList/Config', json={})
     result = address_list_upload_command(client=net_quest_omx_client, args={"entry_id": "AAAAAAaaaa"})
     assert result.readable_output == "Address list was successfully uploaded"
-
+    assert requests_post.called
 
 def test_address_list_optimize_command(requests_mock, net_quest_omx_client):
     """
