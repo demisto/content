@@ -124,7 +124,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when optimizing the list of IPs."
-                f"{str(e)}"
             ) from e
 
         return response_json
