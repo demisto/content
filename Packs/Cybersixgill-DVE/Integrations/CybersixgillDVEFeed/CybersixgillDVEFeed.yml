@@ -67,7 +67,7 @@ configuration:
   name: feedFetchInterval
   type: 19
   required: false
-- defaultvalue: '1000'
+- defaultvalue: '100'
   display: The maximum number of indicators to fetch.
   name: maxIndicators
   type: 0
