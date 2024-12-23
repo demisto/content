@@ -139,7 +139,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when creating the list of IPs."
-                f"{str(e)}"
             ) from e
 
     def address_list_rename_request(self, new_name: str, existing_name: str):
