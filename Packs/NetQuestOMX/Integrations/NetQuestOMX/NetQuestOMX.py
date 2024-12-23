@@ -68,7 +68,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when creating a new token. Please verify your credentials."
-                f"{str(e)}"
             ) from e
 
         new_token = response.headers["X-Auth-Token"]
