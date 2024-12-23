@@ -3257,7 +3257,7 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
                 detection['incident_type'] = detections_type
                 detection_to_context = detection_to_incident_context(detection, detection_name_prefix, start_time_key)
                 detections.append(detection_to_context)
-        detections = truncate_long_time_str(detections, 'occurred') if product_type in {'ods', 'ofp'} else detections
+        detections = truncate_long_time_str(detections, 'occurred') if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value} else detections
         detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                               last_run=current_fetch_info,
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
