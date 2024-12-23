@@ -161,7 +161,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when deleting the {list_name_to_delete} IP list."
-                f"{str(e)}"
             ) from e
 
     def metering_stats_request(self, slot_number: str, port_number: str) -> dict[str, Any]:
