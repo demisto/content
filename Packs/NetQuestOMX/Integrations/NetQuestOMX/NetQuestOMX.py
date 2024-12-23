@@ -378,7 +378,7 @@ def fetch_events(client: Client, slot_number: str, port_number: str, statistic_t
         events (list[dict]): A list of events (number of events equal to the number of statistic types given)
         that will be created in XSIAM.
     """
-    demisto.debug(f'Starting Fetch: the given slot number is = {slot_number} and the given port number is {port_number}')
+    demisto.debug(f'Starting Fetch: {slot_number=}, {port_number=}')
 
     events: list[dict] = []
     statistic_types_mapping: Dict[str, Callable] = {
