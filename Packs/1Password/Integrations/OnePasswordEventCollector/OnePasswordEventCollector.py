@@ -4,6 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from http import HTTPStatus
+from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
 
 # Disable insecure warnings
@@ -25,12 +26,15 @@ DEFAULT_MAX_EVENTS_PER_FETCH = 1000
 
 DEFAULT_FETCH_FROM_DATE = datetime.now() - timedelta(weeks=2)
 
-EVENT_TYPE_MAPPING = {
-    # Lowercase display name: API Feature and endpoint name
-    'item usage actions': 'itemusages',
-    'audit events': 'auditevents',
-    'sign in attempts': 'signinattempts',
-}
+EVENT_TYPE_MAPPING = CaseInsensitiveDict(
+    {
+        # Display name: API Feature and endpoint name
+        'Item usage actions': 'itemusages',
+        'Audit events': 'auditevents',
+        'Sign in attempts': 'signinattempts',
+    }
+)
+
 
 ''' CLIENT CLASS '''
 
@@ -299,7 +303,7 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
     Returns:
         tuple[list[dict], CommandResults]: List of events and CommandResults with human readable output.
     """
-    event_type = args['event_type'].lower()
+    event_type = args['event_type']
     limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_EVENTS_PER_FETCH
     from_date = arg_to_datetime(args.get('from_date')) or DEFAULT_FETCH_FROM_DATE
 
@@ -321,7 +325,7 @@ def main() -> None:  # pragma: no cover
     # required
     base_url: str = urljoin(params['url'], '/api/v2')
     token: str = params['credentials']['password']
-    event_types: list[str] = argToList(params['event_types'], transform=lambda event_type: event_type.lower())
+    event_types: list[str] = argToList(params['event_types'])
     first_fetch_date: datetime = dateparser.parse(params.get('first_fetch', '')) or DEFAULT_FETCH_FROM_DATE
 
     # optional

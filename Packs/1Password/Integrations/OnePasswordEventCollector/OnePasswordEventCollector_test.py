@@ -147,7 +147,7 @@ def test_client_get_events_valid_inputs(authenticated_client: Client, requests_m
     """
     from OnePasswordEventCollector import urljoin
 
-    event_type = 'sign in attempts'
+    event_type = 'Sign in attempts'
     from_date = datetime(2024, 12, 2, 11, 50)
 
     event_url = urljoin(BASE_URL, '/signinattempts')
