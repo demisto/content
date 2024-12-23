@@ -1424,7 +1424,8 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             indicator_type=DBotScoreType.FILE,
             integration_name=INTEGRATION_NAME,
             score=dbot_score_file,
-            reliability=RELIABILITY)
+            reliability=RELIABILITY,
+            )
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
         demisto.error(f'Report error: {str(e)}')
         relationships = None
