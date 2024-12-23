@@ -231,25 +231,88 @@
                     "simple": "out_mirror_error"
                 },
                 "Parent CMD line": {
-                    "simple": "alerts.causality_actor_process_command_line"
+                    "complex": {
+                        "accessor": "causality_actor_process_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process CMD": {
-                    "simple": "alerts.causality_actor_process_command_line"
+                    "complex": {
+                        "accessor": "causality_actor_process_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process MD5": {
-                    "simple": "alerts.causality_actor_process_image_md5"
+                    "complex": {
+                        "accessor": "causality_actor_process_image_md5",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process Name": {
-                    "simple": "alerts.causality_actor_process_image_name"
+                    "complex": {
+                        "accessor": "causality_actor_process_image_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Parent Process SHA256": {
-                    "simple": "alerts.causality_actor_process_image_sha256"
+                    "complex": {
+                        "accessor": "causality_actor_process_image_sha256",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Process CMD": {
-                    "simple": "alerts.actor_process_command_line"
+                    "complex": {
+                        "accessor": "actor_process_command_line",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Process MD5": {
-                    "simple": "alerts.actor_process_image_md5"
+                    "complex": {
+                        "accessor": "actor_process_image_md5",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "Process Names": {
                     "complex": {
