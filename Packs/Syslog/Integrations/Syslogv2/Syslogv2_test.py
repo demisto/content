@@ -411,11 +411,11 @@ def test_prepare_globals_and_create_server(message_regex, certificate, private_k
 
 @pytest.mark.parametrize('params, expected_err_message',
                          [({'log_format': 'RFC3164'},
-                           'Invalid listen port - None. Make sure your port is a number'),
+                           'Please select an engine and insert a valid listen port.'),
                           ({'log_format': 'RFC5424'},
-                           'Invalid listen port - None. Make sure your port is a number'),
+                           'Please select an engine and insert a valid listen port.'),
                           ({'log_format': 'RFC3164', 'longRunningPort': 'a'},
-                           'Invalid listen port - a. Make sure your port is a number'),
+                           'Please select an engine and insert a valid listen port.'),
                           ({'log_format': 'RFC5424', 'longRunningPort': -2},
                            'Given port: -2 is not valid and must be between 0-65535')
                           ])
