@@ -13,14 +13,14 @@ BASE_URL = 'http://example.com'
 HEADERS = {'Authorization': 'Bearer MY-TOKEN-123', 'Content-Type': 'application/json'}
 
 
-def util_load_json(path: str) -> list | dict:
+def util_load_json(path: str):
     """Loads the contents of a JSON file with the given path.
 
     Args:
         path (str): Path to JSON file.
 
     Returns:
-        dict | list: Decoded JSON file contents.
+        Decoded JSON file contents.
     """
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
@@ -220,6 +220,37 @@ def test_get_events_from_client(authenticated_client: Client, mocker: MockerFixt
     assert events == expected_events
 
 
+def test_push_events(mocker: MockerFixture):
+    """
+    Given:
+        - A list of 1Password events of type 'audit events' and a next run dictionary.
+
+    When:
+        - Calling push_events.
+
+    Assert:
+        - Ensure send_events_to_xsiam and demisto.setLastRun are each called once with the correct inputs.
+    """
+    from OnePasswordEventCollector import push_events, VENDOR as EXPECTED_VENDOR, PRODUCT as EXPECTED_PRODUCT
+
+    send_events_to_xsiam = mocker.patch('OnePasswordEventCollector.send_events_to_xsiam')
+    demisto_set_last_run = mocker.patch('OnePasswordEventCollector.demisto.setLastRun')
+
+    expected_events = util_load_json('test_data/auditevents_expected_events.json')
+    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:21.297797084Z', 'ids': ['NTKKXWCQJDPCEVSYGCBC4SDR64']}}
+    push_events(expected_events, next_run=next_run)
+
+    send_events_to_xsiam_kwargs = send_events_to_xsiam.call_args.kwargs
+
+    assert send_events_to_xsiam.call_count == 1
+    assert send_events_to_xsiam_kwargs['events'] == expected_events
+    assert send_events_to_xsiam_kwargs['vendor'] == EXPECTED_VENDOR
+    assert send_events_to_xsiam_kwargs['product'] == EXPECTED_PRODUCT
+
+    assert demisto_set_last_run.call_count == 1
+    assert demisto_set_last_run.call_args[0][0] == next_run
+
+
 def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
     """
     Given:
@@ -239,15 +270,15 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
     first_fetch_date = datetime(2024, 12, 2, 11, 55)
 
     # Expected outputs
-    expected_last_run = {'from_date': '2024-12-02T11:55:21.297797084Z', 'ids': ['NTKKXWCQJDPCEVSYGCBC4SDR64']}
+    expected_type_last_run = {'from_date': '2024-12-02T11:55:21.297797084Z', 'ids': ['NTKKXWCQJDPCEVSYGCBC4SDR64']}
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
     get_events_from_client = mocker.patch('OnePasswordEventCollector.get_events_from_client', return_value=expected_events)
-    last_run, events = fetch_events(
+    type_last_run, events = fetch_events(
         authenticated_client,
         event_type=event_type,
         first_fetch_date=first_fetch_date,
-        event_last_run={},
+        type_last_run={},
         max_events=1000,
     )
 
@@ -258,7 +289,7 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
     assert get_events_from_client_kwargs['from_date'] == first_fetch_date
 
     # Assert correct outputs
-    assert last_run == expected_last_run
+    assert type_last_run == expected_type_last_run
     assert events == expected_events
 
 

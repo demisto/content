@@ -156,11 +156,12 @@ def get_events_from_client(
     ids_to_skip = ids_to_skip or set()
 
     # First call to the paginated API needs to to include a date filter
-    should_fetch_more_events = True
+    has_more_events = True
     client_kwargs: dict[str, Any] = {'event_type': event_type, 'from_date': from_date}
 
-    while should_fetch_more_events:
+    while has_more_events:
         response = client.get_events(**client_kwargs)
+        pagination_cursor = response['cursor']
 
         for event in response['items']:
             event_id = event['uuid']
@@ -175,11 +176,31 @@ def get_events_from_client(
             events.append(event)
             ids_to_skip.add(event_id)
 
+        demisto.debug(
+            f'Response has {len(response["items"])} events and pagination cursor: {pagination_cursor}.'
+            f'Used client arguments: {client_kwargs}.'
+        )
+
         # Followup API calls need to include pagination cursor (if any more events)
-        should_fetch_more_events = False if len(events) == max_events else response['has_more']
-        client_kwargs = {'event_type': event_type, 'pagination_cursor': response['cursor']}
+        has_more_events = False if len(events) == max_events else response['has_more']
+        client_kwargs = {'event_type': event_type, 'pagination_cursor': pagination_cursor}
 
     return events
+
+
+def push_events(events: list[dict], next_run: dict[str, Any] | None = None) -> None:
+    """Sends events to XSIAM and optionally sets next run (if `next_run` is given).
+
+    Args:
+        events (list): List of event dictionaries.
+        next_run (dict | None): Optional next run dictionary of all event types. Defaults to None.
+    """
+    demisto.debug(f'Sending {len(events)} to XSIAM')
+    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+
+    if next_run:
+        demisto.debug(f'Setting next run to {next_run}')
+        demisto.setLastRun(next_run)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -189,7 +210,7 @@ def fetch_events(
     client: Client,
     event_type: str,
     first_fetch_date: datetime,
-    event_last_run: dict[str, Any],
+    type_last_run: dict[str, Any],
     max_events: int
 ) -> tuple[dict, list]:
     """Fetches new events via 1Password Events API client based on a specified event type.
@@ -198,14 +219,16 @@ def fetch_events(
         client (Client): 1Password Events API client.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
         first_fetch_date (datetime): Datetime from which to get events.
-        event_last_run (dict): Dictionary of the last run (if any) of the event type with optional 'from_date' and 'ids' list.
+        type_last_run (dict): Dictionary of the last run (if any) of the event type with optional 'from_date' and 'ids' list.
         max_events (int): The maximum number of events to fetch.
 
     Returns:
         tuple[dict, list]: Dictionary of the next run of the event type with 'from_date' and 'ids' list, list of fetched events.
     """
-    last_run_ids = set(event_last_run.get('ids', []))
-    from_date = arg_to_datetime(event_last_run.get('from_date')) or first_fetch_date
+    last_run_ids = set(type_last_run.get('ids') or [])
+    from_date = arg_to_datetime(type_last_run.get('from_date')) or first_fetch_date
+
+    demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.isoformat()}')
 
     events = get_events_from_client(
         client=client,
@@ -218,10 +241,14 @@ def fetch_events(
     # API returns events sorted by timestamp in ascending order (oldest to newest), so last event has max timestamp
     max_timestamp = events[-1]['timestamp'] if events else None
     next_run_ids = [event['uuid'] for event in events if event['timestamp'] == max_timestamp]
+    type_next_run = {'from_date': max_timestamp, 'ids': next_run_ids}
 
-    event_type_next_run = {'from_date': max_timestamp, 'ids': next_run_ids}
+    demisto.debug(
+        f'Fetched {len(events)} events of type: {event_type} out of a maximum of {max_events}.'
+        f'Last event timestamp: {max_timestamp}'
+    )
 
-    return event_type_next_run, events
+    return type_next_run, events
 
 
 def test_module_command(client: Client, event_types: list[str]) -> str:
@@ -319,30 +346,30 @@ def main() -> None:  # pragma: no cover
             return_results(results)
 
             if should_push_events:
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                push_events(events)
 
         elif command == 'fetch-events':
+            all_events: list[dict] = []
             last_run = demisto.getLastRun()
-
             next_run: dict[str, Any] = {}
+
             for event_type in event_types:
                 event_type_key = EVENT_TYPE_MAPPING[event_type]
 
-                event_last_run: dict = last_run.get(event_type_key, {})
-                event_max_results: int = get_limit_param(params, event_type)
+                type_last_run: dict = last_run.get(event_type_key, {})
+                type_max_results: int = get_limit_param(params, event_type)
 
-                next_run, events = fetch_events(
+                type_next_run, events = fetch_events(
                     client=client,
                     event_type=event_type,
                     first_fetch_date=first_fetch_date,
-                    event_last_run=event_last_run,
-                    max_events=event_max_results,
+                    type_last_run=type_last_run,
+                    max_events=type_max_results,
                 )
+                all_events.extend(events)
+                next_run[event_type_key] = type_next_run
 
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                next_run[event_type_key] = next_run
-
-            demisto.setLastRun(next_run)
+            push_events(events, next_run=next_run)
 
         else:
             raise NotImplementedError(f'Unknown command {command!r}')

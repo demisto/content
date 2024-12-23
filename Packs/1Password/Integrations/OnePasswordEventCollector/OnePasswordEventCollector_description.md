@@ -1,6 +1,6 @@
 ## 1Password Event Collector Help
 
-### How to Connect?
+### Connect
 
 #### Server URL
 
@@ -27,3 +27,9 @@ Every call to the 1Password Events API must be authorized with a bearer token. T
    * Sign-in attempts
 5. Click '**Issue Token**' to generate a new bearer token.
 6. Save the token in a secure location and use it in configuring this integration instance.
+
+---
+
+### Collect
+
+It is recommended to configure the integration instance so that the maximum number of fetched events does not exceed **100,000 per minute per event type**. Otherwise, the 1Password Events API may raise rate limit errors (HTTP 429).
