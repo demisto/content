@@ -11,7 +11,8 @@
     ],
     "tags": [
         "IAM",
-        "marketplacev2:Data Source"
+        "marketplacev2:Data Source",
+        "Alerts"
     ],
     "useCases": [
         "Identity and Access Management"
@@ -23,7 +24,8 @@
         "Active Directory",
         "Entra",
         "EntraID",
-        "Entra ID"
+        "Entra ID",
+        "Activity Logs"
     ],
     "marketplaces": [
         "marketplacev2"
