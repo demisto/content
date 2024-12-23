@@ -420,9 +420,8 @@ def get_events(client: Client, params: dict, args: dict) -> list[dict]:
 
     for statistic_type in statistic_types_to_fetch:
         if statistic_type not in StatType._value2member_map_:
-            raise DemistoException(f"Those are the valid types: {list(StatType._value2member_map_.keys())}."
-                                   f" Please execute the command get-events again with valid input."
-                                   f" This input is invalid: {statistic_types_to_fetch}")
+            raise DemistoException(f"{statistic_types_to_fetch} is not a valid type. Valid types are {list(StatType._value2member_map_.keys())}."
+                                   f" Execute the command get-events again with valid input.")
 
     # execute the command
     events = fetch_events(
