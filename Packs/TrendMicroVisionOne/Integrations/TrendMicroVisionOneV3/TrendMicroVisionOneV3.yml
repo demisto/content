@@ -1234,6 +1234,18 @@ script:
       - open
       - in_progress
       - closed
+    - description: The status of an investigation, this field is deprecated. e.g. inv_status="in_progress".
+      name: inv_status
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - new
+      - closed
+      - in_progress
+      - true_positive
+      - false_positive
+      - benign_true_positive
+      hidden: true
     - description: The findings of a case or investigation. e.g. inv_result="true_positive".
       name: inv_result
       required: false
