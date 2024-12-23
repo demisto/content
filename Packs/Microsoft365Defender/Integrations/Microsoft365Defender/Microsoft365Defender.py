@@ -603,7 +603,7 @@ def main() -> None:
     app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
     endpoint_type = params.get('endpoint_type', 'Worldwide')
-
+    endpoint = MICROSOFT_365_DEFENDER_TYPE.get(endpoint_type, 'com')
     base_url = microsoft_defender_get_base_url(base_url, endpoint_type)
 
     tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
@@ -639,7 +639,7 @@ def main() -> None:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            endpoint=endpoint_type
+            endpoint=endpoint
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
