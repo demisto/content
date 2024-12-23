@@ -265,7 +265,6 @@ def get_all_events(client: Client, last_run: dict, all_event_types: list, limit:
         dict: The updated last_run object.
     """
 
-    # all_event_types = []
     execution_start_time = datetime.utcnow()
     for event_type in client.event_types_to_fetch:
         event_type_operation = last_run.get(event_type, {}).get('operation')
