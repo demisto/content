@@ -221,7 +221,6 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 f"An error was occurred when requesting for an event of Optimization Stats type."
-                f"{str(e)}"
             ) from e
 
         optimization_stats_event["STAT_TYPE"] = 'OptimizationStats'
