@@ -1389,9 +1389,9 @@ def handle_exclude_incident_fields(bool_exclude_field_value: bool, list_exclude_
     if bool_exclude_field_value: # For param backwards compatibility OR argument in a command
         return FIELDS_TO_EXCLUDE, remove_additional_data
     for field in list_exclude_field_value:
-        if field == 'additinal_data':
+        if field == 'additional_data':
             remove_additional_data = True
-            list_exclude_field_value.remove('additinal_data')
+            list_exclude_field_value.remove('additional_data')
         elif field not in POSSIBLE_EXCLUDE_INCIDENT_FIELDS:
             raise DemistoException(f"`Minimize Incident Information` parameter can include the following values only: network_artifacts, file_artifacts and additional_data. Please remove {field}.")
     return list_exclude_field_value, remove_additional_data

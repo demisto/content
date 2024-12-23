@@ -184,13 +184,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: "Whether to fetch only the essential Incident's fields - in order to minimize the incident's information. Possible values: network_artifacts, file_artifacts and additinal_data (if the incident type is XDR incident Lite)"
+- additionalinfo: "Whether to fetch only the essential Incident's fields - in order to minimize the incident's information. Possible values: network_artifacts, file_artifacts and additional_data (if the incident type is XDR incident Lite)"
   display: Minimize Incident Information
   name: excluded_incident_fields
   required: false
   type: 16
   section: Collect
-  defaultvalue: ['network_artifacts','file_artifacts']
+  defaultvalue: 'network_artifacts,file_artifacts'
   advanced: true
 - additionalinfo: "Whether to fetch only the essential Alert's fields - in order to minimize the incident's information. Can either choose null_values to remove all null values or any required field."
   display: Minimize Alert Information
