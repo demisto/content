@@ -679,6 +679,10 @@ def main() -> None:
             incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)
             demisto.incidents(incidents)
         else:
+            url = base_url
+            scope = client.ms_client.scope
+            resource = client.ms_client.resource
+            token_retrieval_url = client.ms_client.token_retrieval_url
             raise NotImplementedError
     # Log exceptions and return errors
     except Exception as e:

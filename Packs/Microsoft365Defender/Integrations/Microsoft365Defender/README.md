@@ -73,6 +73,24 @@ Follow these steps for a self-deployed configuration:
 | Use system proxy settings |  | False |
 
 
+Endpoint Type Options:
+
+| Endpoint Type | Description                                                                             |
+|--------|-----------------------------------------------------------------------------------------|
+| Worldwide | The publicly accessible Microsoft 365 Defender.                                         |
+| US Geo Proximity | Microsoft 365 Defender Geo proximity endpoint for the US customers.                     |
+| EU Geo Proximity | Microsoft 365 Defender Geo proximity endpoint for the EU customers.                     |
+| UK Geo Proximity | Microsoft 365 Defender Geo proximity endpoint  for the UK customers.                    |
+| AU Geo Proximity | Microsoft 365 Defender Geo proximity endpoint  for the AU customers.                    |
+| SWA Geo Proximity | Microsoft 365 Defender Geo proximity endpoint  for the SWA customers.                   |
+| INA Geo Proximity    | Microsoft 365 Defender Geo proximity endpoint  for the INA customers.                   |
+| US GCC | Microsoft 365 Defender endpoint for the USA Government Cloud Community (GCC).           |
+| US GCC-High | Microsoft 365 Defender endpoint for the USA Government Cloud Community High (GCC-High). |
+| DoD | Microsoft 365 Defender endpoint for the USA Department of Defense (DoD).                |
+| Custom | Custom endpoint configuration for Microsoft 365 Defender.                               |
+
+
+
 4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
 ## Commands
