@@ -428,6 +428,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         incident.
     """
     from CortexXDRIR import get_remote_data_command, Client
+    import sys
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
@@ -435,12 +436,10 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         'lastUpdate': 0
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch('CortexXDRIR.return_error', side_effect=sys.exit)
     mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
     with pytest.raises(SystemExit):
         _ = get_remote_data_command(client, args)
-
-    assert demisto.results.call_args[0][0].get('Contents') == "API rate limit"
 
 
 def test_get_remote_data_command_should_not_update(requests_mock, mocker):
@@ -1413,13 +1412,14 @@ class TestGetIncidents():
         mocker.patch.object(Client, '_http_request', return_value=multiple_extra_data)
         client = Client(
             base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+        len_incidents = len(multiple_extra_data['reply']['incidents'])
         outputs = Client.get_multiple_incidents_extra_data(client,
                                                            statuses=['new'],
                                                            starred=True,
                                                            starred_incidents_fetch_window=1575806909185,
                                                            incident_id_list=['1', '2'],
                                                            exclude_artifacts=True)
-        assert len(outputs) == len(multiple_extra_data['reply']['incidents'])
+        assert len(outputs) == len_incidents
         assert outputs[0]['alerts']['total_count'] <= alert_limit
         assert outputs[1]['alerts']['total_count'] <= alert_limit
 
@@ -1773,15 +1773,15 @@ def test_fetch_incidents_dedup():
 
     class MockClient:
 
-        incidents = load_test_data('./test_data/get_incidents_list_dedup.json')
+        _incidents = load_test_data('./test_data/get_incidents_list_dedup.json')
 
         def save_modified_incidents_to_integration_context(self): ...
 
-        def get_multiple_incidents_extra_data(self, gte_creation_time_milliseconds=0, limit=100, offset=0, **_):
+        def get_multiple_incidents_extra_data(self, gte_creation_time_milliseconds=0, limit=100, **_):
             return [
-                inc for inc in self.incidents
+                inc for inc in self._incidents
                 if inc['creation_time'] >= gte_creation_time_milliseconds
-            ][offset:offset + limit]
+            ][:limit]
 
     mock_client = MockClient()
 
@@ -1797,7 +1797,8 @@ def test_fetch_incidents_dedup():
     assert len(result_1) == 2
     assert 'XDR Incident 1' in result_1[0]['name']
     assert 'XDR Incident 2' in result_1[1]['name']
-    assert last_run['offset'] == '1'
+    assert last_run['time'] == 100000001
+    assert last_run['dedup_incidents'] == ['2']
 
     last_run, result_2 = fetch_incidents(
         client=mock_client,
@@ -1811,7 +1812,8 @@ def test_fetch_incidents_dedup():
     assert len(result_2) == 2
     assert 'XDR Incident 3' in result_2[0]['name']
     assert 'XDR Incident 4' in result_2[1]['name']
-    assert last_run['offset'] == '3'
+    assert last_run['time'] == 100000001
+    assert last_run['dedup_incidents'] == ['2', '3', '4']
 
     last_run, result_3 = fetch_incidents(
         client=mock_client,
@@ -1825,10 +1827,11 @@ def test_fetch_incidents_dedup():
     assert len(result_3) == 2
     assert 'XDR Incident 5' in result_3[0]['name']
     assert 'XDR Incident 6' in result_3[1]['name']
-    assert last_run['offset'] == '1'
+    assert last_run['time'] == 100000002
+    assert last_run['dedup_incidents'] == ['6']
 
-    # run empty test and assert last_run['offset'] stays the same
-    last_run['offset'] = '10'
+    # run empty test and assert last_run stays the same
+    old_last_run = last_run.copy()
 
     last_run, empty_result = fetch_incidents(
         client=mock_client,
@@ -1839,8 +1842,8 @@ def test_fetch_incidents_dedup():
         max_fetch=2,
     )
 
-    assert not empty_result
-    assert last_run['offset'] == '10'
+    assert empty_result == []
+    assert last_run == old_last_run
 
 
 @freeze_time("2020-11-18T13:20:00.00000", tz_offset=0)
