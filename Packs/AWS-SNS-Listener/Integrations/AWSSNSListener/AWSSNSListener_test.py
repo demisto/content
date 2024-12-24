@@ -65,6 +65,7 @@ def test_is_valid_sns_message(mock_client, mock_x509, mock_PKey):
 @patch("AWSSNSListener.X509")
 @patch("M2Crypto.EVP.PKey")
 def test_not_valid_sns_message(mock_client, mock_x509, mock_PKey, capfd):
+    sNSCertificateManager = SNSCertificateManager()
     mock_resp = requests.models.Response()
     mock_resp.status_code = 200
     response_content = '''-----BEGIN INVALID CERTIFICATE-----
@@ -75,7 +76,7 @@ def test_not_valid_sns_message(mock_client, mock_x509, mock_PKey, capfd):
     mock_x509.get_pubkey.return_value = mock_PKey
     mock_x509.load_cert_string.return_value = mock_x509
     with capfd.disabled():
-        is_valid = is_valid_sns_message(VALID_PAYLOAD)
+        is_valid = sNSCertificateManager.is_valid_sns_message(VALID_PAYLOAD)
         assert is_valid is False
 
 
