@@ -46,6 +46,7 @@ class ServerConfig():  # pragma: no cover
         self.log_config = log_config
         self.ssl_args = ssl_args
 
+
 class SNSCertificateManager():
     def __init__(self):
         self.cached_cert_url = None
@@ -125,6 +126,7 @@ class SNSCertificateManager():
         demisto.debug('Signature verification succeeded.')
         self.cached_cert_url = sns_payload["SigningCertURL"]
         return True
+
 
 sns_cert_manager = SNSCertificateManager()
 
