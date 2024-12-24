@@ -382,7 +382,7 @@ repos:
     skip: true
 
 - repo: https://github.com/dorschw/riff
-  rev: 5ebeb5eb51d8ae458dcb8c74b436bb1afb71b1d7
+  rev: 20261d565a300176cef8490c98809afea8bdc59b
   hooks:
   - id: riff
     entry: riff
