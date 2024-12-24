@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cortex XDR - IOC for golden standard
+  id: Cortex XDR - IOC
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -148,7 +148,7 @@ configuration:
   advanced: true
   required: false
 - additionalinfo: When the `override severity` parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the original severity level of the indicator will be used.
-  display: Overriding severity value
+  display: Override severity value
   name: severity
   type: 15
   options:
@@ -159,6 +159,7 @@ configuration:
   - critical
   advanced: true
   section: Collect
+  required: false
 - additionalinfo: When enabled, the severity value will be taken from the `Overriding severity value` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken from the field specified in the `XSOAR Severity Field` parameter.
   display: Override severity
   name: override_severity
@@ -167,6 +168,15 @@ configuration:
   required: false
   section: Collect
   advanced: true
+  deprecated: true
+  hidden: true
+- display: Do not use override_severity parameter
+  additionalinfo: Used in order to identify usage of the new configuration of severity param
+  name: new_configuration
+  section: Collect
+  advanced: true
+  hidden: true
+  defaultvalue: true
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
@@ -190,8 +200,8 @@ configuration:
   advanced: true
   required: false
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
-display: Cortex XDR - IOC for golden standard
-name: Cortex XDR - IOC for golden standard
+display: Cortex XDR - IOC
+name: Cortex XDR - IOC
 script:
   commands:
   - description: Create a file with all the IOCs that are going to sync to Cortex XDR.

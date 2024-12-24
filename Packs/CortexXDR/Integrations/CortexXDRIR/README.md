@@ -2,7 +2,7 @@
 
 ---
 
-The **Cortex XDR - IR** integration allows security teams to automate and streamline incident response workflows by interacting directly with Cortex XDR. With this integration, users can investigate, respond to, and manage incidents efficiently within the Cortex XSOAR platform.
+The **Palo Alto Networks Cortex XDR - Investigation and Response** integration allows security teams to automate and streamline incident response workflows by interacting directly with Cortex XDR. With this integration, users can investigate, respond to, and manage incidents efficiently within the Cortex XSOAR platform.
 Key capabilities include retrieving incidents, isolating endpoints, executing remediation actions, and fetching forensic data to enhance incident investigation and resolution.
 
 ## Use Cases
@@ -86,7 +86,7 @@ The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the select
 
 ---
 
-The Cortex XDR - IR integration supports bidirectional mirroring of incident fields, enabling synchronization between Cortex XSOAR and Cortex XDR. However, each incident and its fields can only mirror in a single direction at any given time. This ensures consistency and prevents conflicts.
+The **Palo Alto Networks Cortex XDR - Investigation and Response** integration supports bidirectional mirroring of incident fields, enabling synchronization between Cortex XSOAR and Cortex XDR. However, each incident and its fields can only mirror in a single direction at any given time. This ensures consistency and prevents conflicts.
 
 ### Mirroring Directions:
 
