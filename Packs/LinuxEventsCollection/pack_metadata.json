@@ -9,9 +9,14 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "linux"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
