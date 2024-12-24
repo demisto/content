@@ -1,81 +1,81 @@
-commonfields:
-  id: SlackBlockBuilder
-  version: -1
 name: SlackBlockBuilder
-script: ''
-type: python
-tags:
-- slack
-enabled: true
-comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
 args:
-- description: The URL copied from Slack's Block Builder.
-  name: blocks_url
-- description: The name of the Cortex XSOAR list to use as the block's input.
-  name: list_name
-- description: The Slack user to send the message to. Can be either an email address or a Slack user name.
-  name: user
-- description: The Slack channel to send the message to.
-  name: channel
-- description: The Slack channel ID to send the message to.
-  name: channel_id
-- description: The task to close with the reply. If empty, then no playbook tasks will be closed.
-  name: task
-- description: Tag to add to email reply entries.
-  name: replyEntriesTag
-- auto: PREDEFINED
+- name: blocks_url
+  description: The URL copied from Slack's Block Builder.
+- name: list_name
+  description: The name of the Cortex XSOAR list to use as the block's input.
+- name: user
+  description: The Slack user to send the message to. Can be either an email address or a Slack user name.
+- name: channel
+  description: The Slack channel to send the message to.
+- name: channel_id
+  description: The Slack channel ID to send the message to.
+- name: task
+  description: The task to close with the reply. If empty, then no playbook tasks will be closed.
+- name: replyEntriesTag
+  description: Tag to add to email reply entries.
+- name: persistent
+  auto: PREDEFINED
   defaultValue: 'false'
   description: Indicates whether to use one-time entitlement or persistent entitlement.
-  name: persistent
   predefined:
   - 'true'
   - 'false'
-- defaultValue: Thank you for your response.
+- name: reply
+  defaultValue: Thank you for your response.
   description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply (i.e., "Thank you {user}. You have answered {response}.").
-  name: reply
-- defaultValue: 1 day
+- name: lifetime
+  defaultValue: 1 day
   description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
-  name: lifetime
-- description: Default response in case the question expires.
-  name: defaultResponse
+- name: defaultResponse
   defaultValue: NoResponse
-- description: The instance of SlackV3 this script should use.
-  name: slackInstance
-- description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
-  name: thread_id
-outputs:
-- contextPath: SlackBlockState
-  type: unknown
-  description: The state of the response from the user will be stored under this context path.
-- contextPath: SlackBlockBuilder.ThreadID
-  type: unknown
-  description: The thread ID retrieved from the message notification.
-- contextPath: SlackBlockBuilder.Channel
-  type: unknown
-  description: The channel name retrieved from the message notification.
-- contextPath: SlackBlockBuilder.Text
-  type: unknown
-  description: The text contents retrieved from the message notification.
-- contextPath: SlackBlockBuilder.BotID
-  type: unknown
-  description: The bot ID retrieved from the message notification.
-- contextPath: SlackBlockBuilder.Username
-  type: unknown
-  description: The username retrieved from the message notification.
-- contextPath: SlackBlockBuilder.AppID
-  type: unknown
-  description: The app ID retrieved from the message notification.
-scripttarget: 0
-subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
-runas: DBotWeakRole
-dependson:
-  must:
-  - SlackV3|||send-notification
-fromversion: 6.2.0
-tests:
-- No tests (auto formatted)
+  description: Default response in case the question expires.
+- name: slackInstance
+  description: The instance of SlackV3 this script should use.
+- name: thread_id
+  description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
+comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
+commonfields:
+  id: SlackBlockBuilder
+  version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
+dependson:
+  must:
+  - SlackV3|||send-notification
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+fromversion: 6.2.0
+outputs:
+- contextPath: SlackBlockState
+  description: The state of the response from the user will be stored under this context path.
+  type: unknown
+- contextPath: SlackBlockBuilder.ThreadID
+  description: The thread ID retrieved from the message notification.
+  type: unknown
+- contextPath: SlackBlockBuilder.Channel
+  description: The channel name retrieved from the message notification.
+  type: unknown
+- contextPath: SlackBlockBuilder.Text
+  description: The text contents retrieved from the message notification.
+  type: unknown
+- contextPath: SlackBlockBuilder.BotID
+  description: The bot ID retrieved from the message notification.
+  type: unknown
+- contextPath: SlackBlockBuilder.Username
+  description: The username retrieved from the message notification.
+  type: unknown
+- contextPath: SlackBlockBuilder.AppID
+  description: The app ID retrieved from the message notification.
+  type: unknown
+runas: DBotWeakRole
 runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- slack
+tests:
+- No tests (auto formatted)
+type: python
