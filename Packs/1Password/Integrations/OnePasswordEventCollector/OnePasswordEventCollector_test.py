@@ -1,5 +1,4 @@
 import json
-from contextlib import contextmanager
 from datetime import datetime
 
 import pytest
@@ -24,22 +23,6 @@ def util_load_json(path: str):
     """
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
-
-
-@contextmanager
-def assert_not_raises(exception: type[BaseException]):
-    """Asserts the given exception is not raised during a unit test.
-
-    Args:
-        exception (type[BaseException]): Any type of exception.
-
-    Raises:
-        pytest.fail: If the given exception is raised.
-    """
-    try:
-        yield
-    except exception:
-        raise pytest.fail(f'Raised {exception}')
 
 
 @pytest.fixture
@@ -154,8 +137,7 @@ def test_client_get_events_valid_inputs(authenticated_client: Client, requests_m
     mock_response = util_load_json('test_data/signinattempts_response.json')
     requests_mock.post(event_url, json=mock_response)
 
-    with assert_not_raises(Exception):
-        response = authenticated_client.get_events(event_type=event_type, from_date=from_date)
+    response = authenticated_client.get_events(event_type=event_type, from_date=from_date)
 
     assert response == mock_response
 
