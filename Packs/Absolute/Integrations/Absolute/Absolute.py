@@ -907,15 +907,15 @@ def get_device_location_command(args, client) -> CommandResults:
 
 
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    last_end_date = last_run.get('end_date', 0)
-    end_date = last_run.get('toDateTimeUtc', datetime.utcnow())
-    start_date = last_end_date + timedelta(milliseconds=1) if last_end_date else end_date - timedelta(milliseconds=1)
+    last_end_date = last_run.get('end_date')
+    end_date = datetime.utcnow()
+    start_date = last_end_date + timedelta(milliseconds=1) if last_end_date else end_date - timedelta(minutes=1)
 
     next_page = last_run.get('nextPage', '')
 
     events, started_new_query, next_page = run_fetch_mechanism(client, fetch_limit, next_page, start_date, end_date)
     if not events:
-        # debug
+        # demisto.debug
         return [], {'next_page': None, 'end_date': last_end_date}
 
     return events, {'next_page': next_page, 'end_date': end_date if started_new_query else last_end_date}
@@ -1029,6 +1029,10 @@ def main() -> None:  # pragma: no cover
                 #     add_time_to_events(events)
                 #     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 #     demisto.setLastRun(last_run_object)
+        elif demisto.command() == 'absolute-device-get-events':
+            events, command_result = get_events(client, args)
+            return_results(command_result)
+
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing {INTEGRATION} command.')
 
