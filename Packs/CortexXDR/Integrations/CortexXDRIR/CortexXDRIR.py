@@ -5,7 +5,6 @@ import secrets
 import string
 from itertools import zip_longest
 from datetime import datetime, timedelta
-import pytz
 
 from CoreIRApiModule import *
 
@@ -893,12 +892,18 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         last_update = remote_args.last_update
         demisto.debug(f"using {remote_args.last_update=} for last_update")
 
+    if not last_update:
+        default_last_update = datetime_to_string(datetime.utcnow() - timedelta(minutes=xdr_delay + 1))
+        demisto.debug(f'Mirror last update is: {last_update=} will set it to {default_last_update=}')
+        last_update = default_last_update
+
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
+    if not last_update_utc:
+        raise DemistoException(f'Failed to parse {last_update=} got {last_update_utc=}')
 
-    if last_update_utc:
-        gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
-        lte_modification_time_milliseconds = gte_modification_time_milliseconds + timedelta(minutes=1)
+    gte_modification_time_milliseconds = last_update_utc
+    lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)
     demisto.debug(
         f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
         f'{lte_modification_time_milliseconds=}'
@@ -908,12 +913,10 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
         lte_modification_time_milliseconds=lte_modification_time_milliseconds,
         limit=100)
     last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
-    # Format with milliseconds as string, truncate microseconds
-    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
-        '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
+    last_run_mirroring_str = last_run_mirroring.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
-    demisto.debug(f"{last_run_mirroring_str=}, modified alerts {id_to_modification_time=}")
+    demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
 
     return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
@@ -1006,73 +1009,56 @@ def get_remote_data_command(client, args):
 
 
 def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-    incident_id = remote_args.remote_incident_id
-    remote_data = remote_args.data
-    demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
-    demisto.debug(f"update_remote_system_command {incident_id=} , {remote_data.get('closeReason')=}, "
-                  f"{remote_data.get('closeNotes')=}")
+    parsed_args = UpdateRemoteSystemArgs(args)
+    demisto.debug(f"update_remote_system_command command args are:"
+                  f"id: {parsed_args.remote_incident_id}, "
+                  f"data: {parsed_args.data}, "
+                  f"entries: {parsed_args.entries}, "
+                  f"incident_changed: {parsed_args.incident_changed}, "
+                  f"remote_incident_id: {parsed_args.remote_incident_id}, "
+                  f"inc_status: {parsed_args.inc_status}, "
+                  f"delta: {parsed_args.delta}")
 
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
     try:
-        if remote_args.incident_changed:
-            demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
-            update_args = get_update_args(remote_args)
+        if parsed_args.incident_changed:
+            demisto.debug(
+                f'For incident ID: {parsed_args.remote_incident_id} got the following'
+                f' delta keys {str(list(parsed_args.delta.keys()))} to update.')
+            xsoar_to_xdr_delta = get_update_args(parsed_args)
+            demisto.debug(f"update_remote_system_command: After returning from get_update_args, {xsoar_to_xdr_delta=}")
+            xsoar_to_xdr_delta['incident_id'] = parsed_args.remote_incident_id
 
-            update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            demisto.debug(f"Before checking status {update_args=}")
-            current_remote_status = remote_args.data.get('status') if remote_args.data else None
-            is_closed_delta = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
-                               or update_args.get('resolve_comment') or update_args.get('closingUserId'))
-            is_closed_data = (remote_data.get('closeReason') or remote_data.get('close_reason') or remote_data.get('closeNotes'))
-            demisto.debug(f"update_remote_system_command {is_closed_delta=}, {is_closed_data=}")
-            is_closed = is_closed_delta or is_closed_data
-            closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
-            remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
-            demisto.debug(f"{remote_is_already_closed=}")
-            if is_closed and closed_without_status and not remote_is_already_closed:
-                update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
-            demisto.debug(f"After checking status {update_args=}")
-
-            close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
-
+            should_close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
             status = ""
             # If the client does not want to close the incident in XDR, temporarily remove the status from the arguments
             # to update the incident, and add it back later to close the alerts.
-            if not close_xdr_incident and (update_args.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
-                status = update_args.pop('status')
-                resolve_comment = update_args.pop('resolve_comment', None)
-
+            if not should_close_xdr_incident and (xsoar_to_xdr_delta.get('status') in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
+                status = xsoar_to_xdr_delta.pop('status')
+                resolve_comment = xsoar_to_xdr_delta.pop('resolve_comment', None)
                 demisto.debug(f"Popped status {status} and {resolve_comment=} from update_args,"
                               f" incident status won't be updated in XDR.")
 
-            update_incident_command(client, update_args)
+            demisto.debug(f"update_remote_system_command: Update incident with the following delta {xsoar_to_xdr_delta}")
+            update_incident_command(client, xsoar_to_xdr_delta)  # updating xdr with the delta
 
-            close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-            # Check all relevant fields for an incident being closed in XSOAR UI
-            demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
-            if is_closed and closed_without_status and remote_is_already_closed:
-                update_args['status'] = current_remote_status
-            if close_alerts_in_xdr and is_closed:
+            should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+
+            if should_close_alerts_in_xdr and xsoar_to_xdr_delta.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
                 if status:
-                    update_args['status'] = status
+                    xsoar_to_xdr_delta['status'] = status
                     demisto.debug(f'Restored {status=} in order to update the alerts status.')
-                update_related_alerts(client, update_args)
-
+                update_related_alerts(client, xsoar_to_xdr_delta)
+                demisto.debug("update_remote_system_command: closed xdr alerts")
         else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+            demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] '
                           f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
+        return parsed_args.remote_incident_id
 
     except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
+        demisto.debug(f"Error in outgoing mirror for incident {parsed_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
 
-        return remote_args.remote_incident_id
+        return parsed_args.remote_incident_id
 
 
 def update_related_alerts(client: Client, args: dict):
@@ -1598,7 +1584,7 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            last_run_mirroring: Dict[str, Any] = demisto.getLastRun()
+            last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
             demisto.debug(f"before get-modified-remote-data, last run={last_run_mirroring}")
 
             modified_incidents, next_mirroring_time = get_modified_remote_data_command(
@@ -1608,7 +1594,7 @@ def main():  # pragma: no cover
                 xdr_delay=xdr_delay,
             )
             last_run_mirroring['mirroring_last_update'] = next_mirroring_time
-            demisto.setLastRun(last_run_mirroring)
+            set_last_mirror_run(last_run_mirroring)
             demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
             return_results(modified_incidents)
 

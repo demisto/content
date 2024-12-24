@@ -4,20 +4,23 @@ import json
 import demistomock as demisto
 
 
-def test_convert_to_string_if_datetime():
-    from GoogleBigQuery import convert_to_string_if_datetime
-    test_conversion_for_none = convert_to_string_if_datetime(None)
+def test_convert_to_string():
+    from GoogleBigQuery import convert_to_string
+    test_conversion_for_none = convert_to_string(None)
     assert test_conversion_for_none is None
 
     now = datetime.datetime.now()
-    convert_to_string_if_datetime(now)
-    test_conversion_for_empty_string = convert_to_string_if_datetime("")
+    convert_to_string(now)
+    test_conversion_for_empty_string = convert_to_string("")
     assert test_conversion_for_empty_string == ""
 
     today = datetime.date.today()
-    convert_to_string_if_datetime(today)
-    test_conversion_for_empty_string = convert_to_string_if_datetime("")
+    convert_to_string(today)
+    test_conversion_for_empty_string = convert_to_string("")
     assert test_conversion_for_empty_string == ""
+
+    assert convert_to_string(b'test') == 'test'
+    assert convert_to_string('test') == 'test'
 
 
 def test_remove_outdated_incident_ids_keep_equal():

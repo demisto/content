@@ -1,40 +1,36 @@
 Case management that enables visibility across your tools for continual IR improvement.
 
-## Configure IBM Resilient Systems on Cortex XSOAR
+## Configure IBM Resilient Systems in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IBM Security QRadar SOAR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. 192.168.0.1) |  | True |
-    | Organization name |  | True |
-    | API key ID |  | False |
-    | API key secret |  | False |
-    | API key ID |  | True |
-    | API key secret |  | True |
-    | Credentials (Deprecated - use API Key authentication instead) |  | False |
-    | Password |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Fetch closed incidents |  | False |
-    | Fetch notes |  |  |
-    | Fetch tasks |  |  |
-    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | True |
-    | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
-    | Incident Mirroring Direction |  | False |
-    | Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
-    | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient. | False |
-    | Tag from IBM Qradar SOAR | Add this tag to an entry to mirror it from IBM Qradar SOAR. | False |
-    | Tag to IBM QRadar SOAR | Add this tag to an entry to mirror it to IBM Qradar SOAR. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. 192.168.0.1) |  | True |
+| Organization name |  | True |
+| API key ID |  | False |
+| API key secret |  | False |
+| API key ID |  | True |
+| API key secret |  | True |
+| Credentials (Deprecated - use API Key authentication instead) |  | False |
+| Password |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Fetch closed incidents |  | False |
+| Fetch notes |  |  |
+| Fetch tasks |  |  |
+| First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | True |
+| Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
+| Incident Mirroring Direction |  | False |
+| Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
+| Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient. | False |
+| Tag from IBM Qradar SOAR | Add this tag to an entry to mirror it from IBM Qradar SOAR. | False |
+| Tag to IBM QRadar SOAR | Add this tag to an entry to mirror it to IBM Qradar SOAR. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### rs-search-incidents
 

@@ -4,30 +4,26 @@ This integration was integrated and tested with version v3 of EWS Extension Onli
 **Note:** This integration does not replace the **O365 - EWS - Extension** integration, but an additional EWS extension integration
 which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
 
-## Configure EWS Extension Online Powershell v3 on Cortex XSOAR
+## Configure EWS Extension Online Powershell v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS Extension Online Powershell v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Name | The name of the integration | True |
-    | Exchange Online URL | https://outlook.office365.com | True |
-    | Certificate | A txt certificate encoded in Base64. | True |
-    | The organization used in app-only authentication. |  | True |
-    | The application ID from the Azure portal |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Name | The name of the integration | True |
+| Exchange Online URL | https://outlook.office365.com | True |
+| Certificate | A txt certificate encoded in Base64. | True |
+| The organization used in app-only authentication. |  | True |
+| The application ID from the Azure portal |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ### Important Notes
 ---
-* It is strongly recommended to follow the [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
+* It is strongly recommended to follow the [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide), to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
 * If your instance does experience memory management issues, please configure your playbooks to use *Retry on error*.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ews-mailbox-list
 ***
@@ -1793,3 +1789,216 @@ There are no context outputs for this command.
 #### Human Readable Output
 
 >Rule 1845290268845146113 has been deleted successfully
+
+### ews-rule-disable
+***
+Disable an existing inbox rule in a given mailbox.
+
+#### Base Command
+
+`ews-rule-disable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the inbox rule. | Required | 
+| identity | The inbox rule that you want to disable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+
+>Rule 1845290268845146113 has been disabled successfully
+
+### ews-rule-enable
+***
+Enable an existing inbox rule in a given mailbox.
+
+#### Base Command
+
+`ews-rule-enable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the inbox rule. | Required | 
+| identity | The inbox rule that you want to enable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+
+>Rule 1845290268845146113  has been enabled successfully
+
+### ews-mail-flow-rules-list
+***
+List all mail flow rules (transport rules) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rules-list`
+#### Input
+| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note**        |
+|-------------------|----------------------------------------------------------------|---------------------|--------------| --- |-----------------|
+| extended_output   | Determine whether the output will be in verbose format or not. | Boolean             | No           | No | Default = False |
+| limit             | The amount of mail flow rules to return. | Number             | No           | No | Default is 1000  |
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- |----------| --- |
+| EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
+| EWS.MailFlowRule.ExpiryDate | Date     | The date and time when the mail flow rule is set to expire and no longer apply. |
+| EWS.MailFlowRule.Mode | String   | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
+| EWS.MailFlowRule.Quarantine | Boolean  | Specifies whether the rule actions include quarantining messages that match the rule. |
+| EWS.MailFlowRule.Guid | String   | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.OrganizationId | String   | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
+| EWS.MailFlowRule.DistinguishedName | String   | The distinguished name of the mail flow rule in the Exchange directory structure. |
+| EWS.MailFlowRule.IsValid | Boolean  | Indicates whether the mail flow rule is valid and functional. |
+| EWS.MailFlowRule.Conditions | Array    | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
+| EWS.MailFlowRule.Comments | Unknown  | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
+| EWS.MailFlowRule.WhenChanged | Date     | The date and time when the mail flow rule was last modified. |
+| EWS.MailFlowRule.Description | String   | A brief description of the mail flow rule's purpose or functionality. |
+| EWS.MailFlowRule.Actions |    Array      | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
+| EWS.MailFlowRule.ImmutableId |   String       |  A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
+| EWS.MailFlowRule.Identity |   String       |The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.  |
+| EWS.MailFlowRule.Name |   String       |  The user-friendly name of the mail flow rule, typically used for easy identification. |
+| EWS.MailFlowRule.CreatedBy |     String     | The user or process that created the mail flow rule. |
+| EWS.MailFlowRule.RouteMessageOutboundConnector |   Unknown       | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
+
+#### Human Readable Output
+
+>### Results of ews-rule-list
+>| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
+>|-----------|----------|----------|---------|----------------------------| --- |
+>| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
+>| demisto-2 | Enabled  | 2        | comment | 2019-11-15T010:21:45+00:00 | Kemp Kimmons
+>| demisto-3 | Enabled  | 3        | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner
+
+### ews-mail-flow-rule-get
+***
+Get a mail flow rule (transport rules) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-get`
+#### Input
+
+| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
+| --- |----------------------------------------------------------------|---------------------| --- | --- | --- |
+| extended_output | Determine whether the output will be in verbose format or not. | Boolean             | No | No | Default = False |
+| identity | Specifies the rule that you want to view.                      | string             | No | No |  |
+
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- |----------| --- |
+| EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
+| EWS.MailFlowRule.ExpiryDate | Date     | The date and time when the mail flow rule is set to expire and no longer apply. |
+| EWS.MailFlowRule.Mode | String   | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
+| EWS.MailFlowRule.Quarantine | Boolean  | Specifies whether the rule actions include quarantining messages that match the rule. |
+| EWS.MailFlowRule.Guid | String   | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.OrganizationId | String   | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
+| EWS.MailFlowRule.DistinguishedName | String   | The distinguished name of the mail flow rule in the Exchange directory structure. |
+| EWS.MailFlowRule.IsValid | Boolean  | Indicates whether the mail flow rule is valid and functional. |
+| EWS.MailFlowRule.Conditions | Array    | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
+| EWS.MailFlowRule.Comments | Unknown  | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
+| EWS.MailFlowRule.WhenChanged | Date     | The date and time when the mail flow rule was last modified. |
+| EWS.MailFlowRule.Description | String   | A brief description of the mail flow rule's purpose or functionality. |
+| EWS.MailFlowRule.Actions |    Array      | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
+| EWS.MailFlowRule.ImmutableId |   String       |  A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
+| EWS.MailFlowRule.Identity |   String       |The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.  |
+| EWS.MailFlowRule.Name |   String       |  The user-friendly name of the mail flow rule, typically used for easy identification. |
+| EWS.MailFlowRule.CreatedBy |     String     | The user or process that created the mail flow rule. |
+| EWS.MailFlowRule.RouteMessageOutboundConnector |   Unknown       | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
+
+#### Human Readable Output
+
+>### Results of ews-rule-list
+>| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
+>|-----------|----------|----------|---------|----------------------------| --- |
+>| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
+
+### ews-mail-flow-rule-remove
+***
+Remove a mail flow rule (transport rule) from the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The rule that you want to remove. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail flow rule 1845290268845146113 has been removed successfully
+
+### ews-mail-flow-rule-disable
+***
+Disable a mail flow rule (transport rule) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-disable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The rule that you want to disable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail flow rule 1845290268845146113 has been disabled successfully
+
+### ews-mail-flow-rule-enable
+***
+Enable a mail flow rule (transport rule) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-enable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The rule that you want to enable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail flow rule 1845290268845146113 has been enabled successfully
+
+### ews-mail-forwarding-disable
+***
+Disable mail forwarding for a given user.
+
+#### Base Command
+
+`ews-mail-forwarding-disable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The mailbox that you want to modify. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail forwarding for user 1845290268845146113 has been disabled successfully
+
