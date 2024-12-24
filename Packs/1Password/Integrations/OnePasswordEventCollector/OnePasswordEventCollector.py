@@ -72,16 +72,18 @@ class Client(BaseClient):
         Returns:
             dict: The response JSON from the event endpoint.
         """
-        feature = EVENT_TYPE_MAPPING.get(event_type)
-        if not feature:
+        if not (feature := EVENT_TYPE_MAPPING.get(event_type)):
             raise ValueError(f'Invalid or unsupported 1Password event type: {event_type}.')
 
         body: dict[str, Any]
         if pagination_cursor:
+            demisto.debug(f'Requesting events of type: {event_type} using pagination cursor: {pagination_cursor}')
             body = {'cursor': pagination_cursor}
 
         elif from_date:
-            body = {'limit': results_per_page, 'start_time': from_date.isoformat()}
+            formatted_from_date: str = from_date.isoformat()
+            demisto.debug(f'Requesting events of type: {event_type} using from date: {formatted_from_date}')
+            body = {'limit': results_per_page, 'start_time': formatted_from_date}
 
         else:
             raise ValueError("Either a 'pagination_cursor' or a 'from_date' need to be specified.")
