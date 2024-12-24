@@ -11,7 +11,7 @@ from operator import itemgetter
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
+# Just to trig build
 ''' CONSTANTS '''
 API_VERSION = '/api/now/cmdb/instance/'
 CREAT_RECORD_DATA_FIELDS = ['attributes', 'inbound_relations', 'outbound_relations', 'source']
