@@ -41,6 +41,7 @@ from exchangelib.errors import (
     RateLimitError,
     ResponseMessageError,
     TransportError,
+    ErrorCannotOpenFileAttachment,
 )
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
@@ -1182,6 +1183,11 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
                                 raise
+                            continue
+                        except ErrorCannotOpenFileAttachment as e:
+                            if str(e) != "The attachment could not be opened.":
+                                raise
+                            demisto.error(f"Skipped attachment: {attachment.name} - {e}")
                             continue
                     else:
                         # other item attachment
