@@ -10,9 +10,16 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Azure",
+        "WAF",
+        "Web Application Firewall"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

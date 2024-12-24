@@ -75,7 +75,8 @@ def test_get_all_events(requests_mock):
                     proxy=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
     url_matcher = re.compile('https://netskope[.]example[.]com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
-    events, new_last_run = get_all_events(client, FIRST_LAST_RUN)
+    events = []
+    new_last_run = get_all_events(client, FIRST_LAST_RUN, all_event_types=events)
     assert len(events) == 26
     assert events[0].get('event_id') == '1'
     assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
@@ -95,9 +96,9 @@ def test_get_events_command(mocker):
     """
     from NetskopeEventCollector import get_events_command
     client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
-    mocker.patch('NetskopeEventCollector.get_all_events', return_value=[MOCK_ENTRY, {}])
+    mocker.patch('NetskopeEventCollector.get_all_events', return_value={})
     mocker.patch.object(time, "sleep")
-    results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN)
+    results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN, events=MOCK_ENTRY)
     assert 'Events List' in results.readable_output
     assert len(events) == 9
     assert results.outputs_prefix == 'Netskope.Event'
@@ -274,9 +275,10 @@ def test_incident_endpoint(mocker):
     mocker.patch('NetskopeEventCollector.print_event_statistics_logs')
     client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=['incident'])
     mock_response = MagicMock()
-    mock_response.json.return_value = {'result': 'fake_result', 'wait_time': 0}
+    mock_response.json.return_value = {'result': EVENTS_RAW['result'], 'wait_time': 0}
     request_mock = mocker.patch.object(Client, '_http_request', return_value=mock_response)
-    handle_data_export_single_event_type(client, 'incident', 'next', limit=50, execution_start_time=datetime.now())
+    handle_data_export_single_event_type(client, 'incident', 'next', limit=50,
+                                         execution_start_time=datetime.now(), all_event_types=[])
     kwargs = request_mock.call_args.kwargs
     assert kwargs['url_suffix'] == 'events/dataexport/events/incident'
     assert kwargs['params'] == {'index': 'xsoar_collector_test_instance_incident', 'operation': 'next'}
