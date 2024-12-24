@@ -274,7 +274,7 @@ def get_event_command(client: Client, args: dict):
                           readable_output=readable_output)
 
 
-def list_incidents_command(client: Client, args: dict):
+def list_incidents_command(client: Client, args: dict) -> CommandResults:
     """
     List all relevant incidents.
 
@@ -324,7 +324,7 @@ def list_incidents_command(client: Client, args: dict):
                           readable_output=readable_output)
 
 
-def list_incident_events_command(client: Client, args: dict):
+def list_incident_events_command(client, args):
     """
     Get a specific incident's events by incident ID.
 
