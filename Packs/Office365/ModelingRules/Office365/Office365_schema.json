@@ -236,7 +236,7 @@
             "type": "string",
             "is_array": false
         },
-        "entityname": {
+        "EntityName": {
             "type": "string",
             "is_array": false
         },

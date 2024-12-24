@@ -60,7 +60,7 @@ call o365_common_fields
 	xdm.observer.type = if(Workload != null, Workload, SourceWorkload = 0, "SharePoint Online", SourceWorkload = 1, "OneDrive for Business", SourceWorkload = 2, "Microsoft Teams", Source),
 	xdm.source.application.name = SourceApp,
 	xdm.source.host.device_id = EntityId,
-	xdm.source.host.hostname = coalesce(entityname, DeviceName),
+	xdm.source.host.hostname = coalesce(EntityName, DeviceName),
 	xdm.source.host.ipv4_addresses = if(array_length(src_ipv4_addresses) > 0, src_ipv4_addresses),
 	xdm.source.host.ipv4_public_addresses = if(array_length(src_ipv4_public_addresses) > 0, src_ipv4_public_addresses),
 	xdm.source.host.ipv6_addresses = if(array_length(src_ipv6_addresses) > 0, src_ipv6_addresses),
