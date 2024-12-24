@@ -288,7 +288,7 @@ def test_module_command(client: Client, event_types: list[str]) -> str:
             return 'Endpoint Not Found: Make sure the API server URL is correctly set'
 
         # Some other unknown / unexpected error
-        raise e
+        raise
 
 
 def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict], CommandResults]:
