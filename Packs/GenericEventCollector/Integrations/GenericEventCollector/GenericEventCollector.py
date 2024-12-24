@@ -38,6 +38,7 @@ class Client(BaseClient):
 
         raw_events = events
         events_to_xsiam = []
+        events_list: Dict[Any, Any]
 
         if isinstance(raw_events, dict):
             for event in raw_events:
@@ -67,7 +68,7 @@ class Client(BaseClient):
         elif isinstance(raw_events, list):
             full_event_list = raw_events
             for event in full_event_list:
-                events_list: Dict[Any, Any] = {}
+                events_list = {}
                 for key, value in event.items():
 
                     if isinstance(value, int | str):
