@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 from http import HTTPStatus
 from requests.structures import CaseInsensitiveDict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 
 ''' CONSTANTS '''
@@ -20,7 +20,7 @@ DEFAULT_RESULTS_PER_PAGE = 1000
 
 DEFAULT_MAX_EVENTS_PER_FETCH = 1000
 
-DEFAULT_FETCH_FROM_DATE = datetime.now() - timedelta(weeks=2)
+DEFAULT_FETCH_FROM_DATE = datetime.now(tz=UTC) - timedelta(weeks=2)  # 2 weeks ago in UTC timezone
 
 EVENT_TYPE_MAPPING = CaseInsensitiveDict(
     {
@@ -214,8 +214,8 @@ def fetch_events(
     client: Client,
     event_type: str,
     first_fetch_date: datetime,
-    type_last_run: dict[str, Any],
-    max_events: int
+    event_type_last_run: dict[str, Any],
+    event_type_max_results: int
 ) -> tuple[dict, list]:
     """Fetches new events via 1Password Events API client based on a specified event type.
 
@@ -223,36 +223,36 @@ def fetch_events(
         client (Client): 1Password Events API client.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
         first_fetch_date (datetime): Datetime from which to get events.
-        type_last_run (dict): Dictionary of the last run (if any) of the event type with optional 'from_date' and 'ids' list.
-        max_events (int): The maximum number of events to fetch.
+        event_type_last_run (dict): Dictionary of the event type last run (if exists) with optional 'from_date' and 'ids' list.
+        event_type_max_results (int): The maximum number of events of the specified event type to fetch.
 
     Returns:
         tuple[dict, list]: Dictionary of the next run of the event type with 'from_date' and 'ids' list, list of fetched events.
     """
-    last_run_ids = set(type_last_run.get('ids') or [])
-    from_date = arg_to_datetime(type_last_run.get('from_date')) or first_fetch_date
+    last_run_skip_ids = set(event_type_last_run.get('ids') or [])
+    from_date = arg_to_datetime(event_type_last_run.get('from_date')) or first_fetch_date
 
     demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.isoformat()}')
 
-    events = get_events_from_client(
+    event_type_events = get_events_from_client(
         client=client,
         event_type=event_type,
         from_date=from_date,
-        max_events=max_events,
-        ids_to_skip=last_run_ids,
+        max_events=event_type_max_results,
+        ids_to_skip=last_run_skip_ids,
     )
 
     # API returns events sorted by timestamp in ascending order (oldest to newest), so last event has max timestamp
-    max_timestamp = events[-1]['timestamp'] if events else None
-    next_run_ids = [event['uuid'] for event in events if event['timestamp'] == max_timestamp]
-    type_next_run = {'from_date': max_timestamp, 'ids': next_run_ids}
+    max_timestamp = event_type_events[-1]['timestamp'] if event_type_events else None
+    next_run_skip_ids = [event['uuid'] for event in event_type_events if event['timestamp'] == max_timestamp]
+    event_type_next_run = {'from_date': max_timestamp, 'ids': next_run_skip_ids}
 
     demisto.debug(
-        f'Fetched {len(events)} events of type: {event_type} out of a maximum of {max_events}.'
+        f'Fetched {len(event_type_events)} events of type: {event_type} out of a maximum of {event_type_max_results}.'
         f'Last event timestamp: {max_timestamp}'
     )
 
-    return type_next_run, events
+    return event_type_next_run, event_type_events
 
 
 def test_module_command(client: Client, event_types: list[str]) -> str:
@@ -360,20 +360,20 @@ def main() -> None:  # pragma: no cover
             for event_type in event_types:
                 event_type_key = EVENT_TYPE_MAPPING[event_type]
 
-                type_last_run: dict = last_run.get(event_type_key, {})
-                type_max_results: int = get_limit_param(params, event_type)
+                event_type_last_run: dict = last_run.get(event_type_key, {})
+                event_type_max_results: int = get_limit_param(params, event_type)
 
-                type_next_run, events = fetch_events(
+                event_type_next_run, event_type_events = fetch_events(
                     client=client,
                     event_type=event_type,
                     first_fetch_date=first_fetch_date,
-                    type_last_run=type_last_run,
-                    max_events=type_max_results,
+                    event_type_last_run=event_type_last_run,
+                    event_type_max_results=event_type_max_results,
                 )
-                all_events.extend(events)
-                next_run[event_type_key] = type_next_run
+                all_events.extend(event_type_events)
+                next_run[event_type_key] = event_type_next_run
 
-            push_events(events, next_run=next_run)
+            push_events(all_events, next_run=next_run)
 
         else:
             raise NotImplementedError(f'Unknown command {command!r}')

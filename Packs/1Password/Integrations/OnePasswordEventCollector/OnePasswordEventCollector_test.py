@@ -260,8 +260,8 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
         authenticated_client,
         event_type=event_type,
         first_fetch_date=first_fetch_date,
-        type_last_run={},
-        max_events=1000,
+        event_type_last_run={},
+        event_type_max_results=1000,
     )
 
     get_events_from_client_kwargs = get_events_from_client.call_args.kwargs
