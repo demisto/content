@@ -1,8 +1,6 @@
-import uuid
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
 from urllib.parse import unquote, urlencode
 
 
@@ -344,8 +342,8 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", True)
 
     proxy = params.get("proxy", False)
-    max_alerts_per_fetch = params.get("max_alerts_per_fetch", DEFAULT_MAX_FETCH_ALERT)
-    max_events_per_fetch = params.get("max_events_per_fetch", DEFAULT_MAX_FETCH_AUDIT_EVENTS)
+    max_alerts_per_fetch = arg_to_number(params.get("max_alerts_per_fetch", DEFAULT_MAX_FETCH_ALERT))
+    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch", DEFAULT_MAX_FETCH_AUDIT_EVENTS))
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -357,7 +355,7 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
 
-        elif command == "cisko-thousandeyes-get-events":
+        elif command == "cisco-thousandeyes-get-events":
             should_push_events = argToBoolean(args.get("should_push_events", "false"))
             events, results = get_events_command(client, demisto.args())
             return_results(results)

@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CiscoThousandEyesEventCollector
+  id: CiscoThousandEyes
   version: -1
 configuration:
 - defaultvalue: https://api.thousandeyes.com
@@ -45,8 +45,8 @@ configuration:
   section: Connect
   advanced: true
 description: This is the Cisco ThousandEyes event collector integration for Cortex XSIAM.
-display: CiscoThousandEyesEventCollector
-name: CiscoThousandEyesEventCollector
+display: CiscoThousandEyes
+name: CiscoThousandEyes
 script:
   commands:
   - arguments:
