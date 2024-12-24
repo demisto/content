@@ -2791,9 +2791,9 @@ def get_distribution_url_command(client, args):
 
     url = client.get_distribution_url(distribution_id, package_type)
 
-    if download_package and  package_type not in ['x64', 'x86']:
+    if download_package and package_type not in ['x64', 'x86']:
         raise DemistoException("`download_package` argument can be used only for package_type 'x64' or 'x86'.")
-    
+
     if not download_package:
         return CommandResults(
             outputs={
