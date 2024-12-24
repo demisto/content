@@ -1,9 +1,9 @@
 {
   "trigger_id": "4a90702e6a1e31ff82c4a5b8e27360dd",
-  "playbook_id": "silent A successful SSO sign-in from TOR",
+  "playbook_id": "silent- A successful SSO sign-in from TOR test",
   "suggestion_reason": "Recommended for 'A successful SSO sign-in from TOR' and 'A successful SSO sign-in from TOR via a mobile device' alerts",
   "description": "This trigger is responsible for handling the 'A successful SSO sign-in from TOR' and the 'A successful SSO sign-in from TOR via a mobile device' alerts",
-  "trigger_name": "silent A successful SSO sign-in from TOR",
+  "trigger_name": "silent- A successful SSO sign-in from TOR test",
   "issilent": true,
   "alerts_filter": {
     "filter": {
