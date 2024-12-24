@@ -1,0 +1,51 @@
+args:
+- description: The title for the event.
+  name: title
+  required: true
+- description: The start date in the format YYYY/MM/DD.
+  name: start_date
+  required: true
+- description: The start time in the format HH:MM.
+  name: start_time
+  required: true
+- defaultValue: Europe/Berlin
+  description: The time zone of the start date/time.
+  name: start_time_zone
+- description: The end date in the format YYYY/MM/DD.
+  name: end_date
+  required: true
+- description: The end time in the format HH:MM.
+  name: end_time
+  required: true
+- defaultValue: Europe/Berlin
+  description: The time zone of the end date/time.
+  name: end_time_zone
+- description: An optional description for the event.
+  name: description
+- description: An optional URL to be added to the event. In case none is provided, the script will try to determine the URL of the incident to create a direct link.
+  name: url
+- description: Optional argument allowing to override the email UID. Use in case the invite may need to be updated.
+  name: uid
+comment: Creates an iCal event and stores it as a file object within XSOAR.
+commonfields:
+  id: iCalEntryCreate
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.7.117934
+enabled: true
+engineinfo: {}
+name: iCalEntryCreate
+outputs:
+- {}
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

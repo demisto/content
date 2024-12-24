@@ -1,0 +1,21 @@
+{
+    "name": "iCal Invite Creation",
+    "description": "This pack contains an automation that creates .ics files with calendar invites based on given arguments. The included playbook uses this automation and the send-mail integration to send this to specified recipients.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Lukas Kubik",
+    "url": "",
+    "email": "",
+    "created": "2024-12-24T10:11:51Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "DeKubus"
+    ]
+}
