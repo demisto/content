@@ -1078,10 +1078,47 @@ class TestArcherV2:
             assert not new_token_mocker.called
         assert soap_mocker.call_count == len(http_call_attempt_results)
 
-    def test_upload_and_associate_command(self, mocker):
+    def test_upload_and_associate_command_record_has_attachments(self, mocker):
+        """
+        Given: A record with existing attachments and multiple files to upload
+        When: The upload_and_associate_command is called
+        Then: Files are uploaded, associated with the record, and existing attachments are preserved
+        """
         client = Client(BASE_URL, '', '', '', '', 400)
         mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
         mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'Archer': {'Record': {'Attachments': ['456', '789']}}}, '', ''))
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        assert mock_upload_file.call_args_list[1] == mocker.call(client, {"entryId": "entry2"})
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2",
+            "fieldsToValues": '{"field1": ["123", "123", "456", "789"]}'
+        })
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+
+    def test_upload_and_associate_command_record_has_no_attachments(self, mocker):
+        """
+        Given: A record without existing attachments and multiple files to upload
+        When: The upload_and_associate_command is called
+        Then: Files are uploaded and associated with the record
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'Archer': {'Record': {'ID': '123'}}}, '', ''))
         args = {
             "applicationId": "app1",
             "contentId": "content1",
@@ -1101,8 +1138,47 @@ class TestArcherV2:
             "entryId": "entry1, entry2",
             "fieldsToValues": '{"field1": ["123", "123"]}'
         })
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+
+    def test_upload_and_associate_command_record_with_error(self, mocker):
+        """
+        Given: An error occurs during record retrieval
+        When: The upload_and_associate_command is called
+        Then: Files are uploaded, association is attempted, and an error is returned
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'Archer': {'Record': {'ID': '123'}}}, '', 'error'))
+        mock_error = mocker.patch("ArcherV2.return_error")
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        assert mock_upload_file.call_args_list[1] == mocker.call(client, {"entryId": "entry2"})
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2",
+            "fieldsToValues": '{"field1": ["123", "123"]}'
+        })
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+        mock_error.assert_called_once_with('error')
 
     def test_upload_and_associate_command_single_file(self, mocker):
+        """
+        Given: A single file to upload and associate
+        When: The upload_and_associate_command is called
+        Then: The file is uploaded and associated with the record
+        """
         client = Client(BASE_URL, '', '', '', '', 400)
         mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
         mock_update_record = mocker.patch("ArcherV2.update_record_command")
@@ -1126,6 +1202,11 @@ class TestArcherV2:
         })
 
     def test_upload_and_associate_command_without_association(self, mocker):
+        """
+        Given: A file to upload without association to a record
+        When: The upload_and_associate_command is called
+        Then: The file is uploaded without being associated to any record
+        """
         client = Client(BASE_URL, '', '', '', '', 400)
         mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
         args = {"entryId": "entry1"}
@@ -1138,6 +1219,11 @@ class TestArcherV2:
         })
 
     def test_upload_and_associate_command_missing_args(self, mocker):
+        """
+        Given: Incomplete arguments for upload and associate command
+        When: The upload_and_associate_command is called
+        Then: An exception is raised indicating missing required arguments
+        """
         client = Client(BASE_URL, '', '', '', '', 400)
 
         # Test error when only applicationId is provided
