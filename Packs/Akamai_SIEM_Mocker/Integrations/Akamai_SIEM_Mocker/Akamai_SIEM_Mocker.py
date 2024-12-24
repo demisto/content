@@ -1,14 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from fastapi.security.api_key import APIKey, APIKeyHeader
-from secrets import compare_digest
 import uvicorn
 from uvicorn.logging import AccessFormatter
 from fastapi import Depends, FastAPI, Request, Response, status
-from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
-from fastapi_utils.tasks import repeat_every
 from CommonServerUserPython import *  # noqa
 from copy import copy
 from traceback import format_exc
@@ -22,7 +18,12 @@ from tempfile import NamedTemporaryFile
 app = FastAPI()
 # Disable insecure warnings
 urllib3.disable_warnings()
-
+JSON_STRUCTURE = {
+    "event": "answer",
+    "payload": {
+        "answer": "your answer"
+    }
+}
 
 ''' CONSTANTS '''
 
@@ -90,70 +91,23 @@ async def handle_listen_error(error: str):
     demisto.updateModuleHealth(error)
 
 ''' HELPER FUNCTIONS '''
-@app.get('/')
-async def handle_get_response(request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth),
-                               token: APIKey = Depends(token_auth)):
+
+def validate_json_structure(json_data):
+    # Check the overall structure and specific 'event' and 'payload->answer' existence
+    if json_data.get('event') == 'answer' and isinstance(json_data.get('payload'), dict) and 'answer' in json_data['payload']:
+        return True
+    return False
+
+@app.options('/')
+async def handle_options_response():
     """handle any response that came from Zoom app
     Args:
         request : zoom request
     Returns:
         JSONResponse:response to zoom
     """
-    # request = await request.json()
-    # demisto.debug(f"WH: Got request; {request}")
-    # credentials_param = demisto.params().get('credentials')
-    # auth_failed = False
-    # v_token = demisto.params().get('verification_token', {}).get('password')
-    # if not str(token).startswith('Basic') and v_token:
-    #     if token != v_token:
-    #         auth_failed = True
+    return Response(status_code=status.HTTP_200_OK, content=f'Welcome to the riddle game!\n\n1. To connect and send your answers, use the first endpoint: "riddle_1".\n2. To answer the questions, use the following body structure: \n{JSON_STRUCTURE}\n3. Use the GET method to request the riddles, and the POST method to send your answer.')
 
-    # elif credentials and credentials_param and (username := credentials_param.get('identifier')):
-    #     password = credentials_param.get('password', '')
-    #     if not compare_digest(credentials.username, username) or not compare_digest(credentials.password, password):
-    #         auth_failed = True
-    # if auth_failed:
-    #     demisto.debug('Authorization failed')
-    #     return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed. Try another route')
-    
-    return Response(status_code=status.HTTP_200_OK, content='Great that you conected, ')
-
-@app.post('/')
-async def handle_post_response(request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth),
-                               token: APIKey = Depends(token_auth)):
-    """handle any response that came from Zoom app
-    Args:
-        request : zoom request
-    Returns:
-        JSONResponse:response to zoom
-    """
-    request = await request.json()
-    demisto.debug(f"WH: Got request; {request}")
-    # credentials_param = demisto.params().get('credentials')
-    # auth_failed = False
-    # v_token = demisto.params().get('verification_token', {}).get('password')
-    # if not str(token).startswith('Basic') and v_token:
-    #     if token != v_token:
-    #         auth_failed = True
-
-    # elif credentials and credentials_param and (username := credentials_param.get('identifier')):
-    #     password = credentials_param.get('password', '')
-    #     if not compare_digest(credentials.username, username) or not compare_digest(credentials.password, password):
-    #         auth_failed = True
-    # if auth_failed:
-    #     demisto.debug('Authorization failed')
-    #     return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
-
-    event_type = request['event']
-    payload = request['payload']
-    
-    try:
-        if payload:
-            return Response(status_code=status.HTTP_200_OK, content=f'Yayy, got {event_type=} and {payload=}')
-        else:
-            return Response(status_code=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        await handle_listen_error(f'An error occurred while handling a response: {e}')
 
 ''' COMMAND FUNCTIONS '''
 
