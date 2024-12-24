@@ -28,7 +28,7 @@ args:
   predefined:
   - 'True'
   - 'False'
-  description: Use system proxy settings
+  description: Use system proxy settings.
   auto: PREDEFINED
   defaultValue: 'False'
 - name: insecure
