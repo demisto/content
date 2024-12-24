@@ -556,7 +556,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command  .\nError:\n{str(e)}')  #trig build
 
 
 from ServiceNowApiModule import *  # noqa: E402

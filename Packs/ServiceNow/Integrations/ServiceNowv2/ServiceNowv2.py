@@ -3372,7 +3372,7 @@ def main():
         LOG(err)
         LOG.print_log()
         if not raise_exception:
-            return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
+            return_error(f'Unexpected error:   {str(err)}', error=traceback.format_exc())  #trig build
         else:
             raise
 

@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 370
         }
       }
