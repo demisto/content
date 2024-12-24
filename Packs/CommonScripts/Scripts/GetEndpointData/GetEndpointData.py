@@ -462,8 +462,6 @@ def create_endpoint(
     Returns:
         dict[str, Any]: A structured endpoint dictionary with values and their sources.
     """
-
-    demisto.debug(f'creating endpoint from {command_output}')
     if not command_output:
         return {}
 
@@ -472,7 +470,6 @@ def create_endpoint(
         endpoint_key = mapped_key if (mapped_key := output_mapping.get(key)) else key
         endpoint[endpoint_key] = {'Value': value, 'Source': source}
 
-    demisto.debug(f'created {endpoint=}')
     return endpoint
 
 
@@ -573,7 +570,6 @@ def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The processed context, or an empty dictionary if not found.
     """
-    demisto.debug(f'Starting get_outputs for {output_key=} with {raw_context=}')
     full_output_key = get_output_key(output_key, raw_context)
     if not (raw_context and full_output_key):
         return {}
@@ -599,10 +595,8 @@ def merge_endpoints(endpoints: list[dict[str, dict[str, Any]]]) -> dict[str, Any
         - Conflicts for 'Hostname' are treated as errors and logged.
         - For other keys, conflicting values are combined into a list.
     """
-    demisto.debug(f'merging endpoints with {endpoints=}')
     merged_endpoint: dict[str, Any] = {}
     for endpoint in endpoints:
-        demisto.debug(f'current endpoint: {endpoint}')
         for key, value in endpoint.items():
             # If a different hostname was somehow returned by a vendor
             if key == 'Hostname' and key in merged_endpoint and value['Value'] != merged_endpoint[key]['Value']:
@@ -744,7 +738,6 @@ def merge_endpoint_outputs(endpoint_outputs: list[list[dict[str, Any]]]) -> list
     merged_endpoints = []
     for index in range(max(map(len, endpoint_outputs), default=0)):
         unmerged_endpoints = [safe_list_get(lst, index, {}) for lst in endpoint_outputs]
-        demisto.debug(f'merging endpoints {unmerged_endpoints=}, {index=}')
         if unmerged_endpoints:
             merged_endpoint = merge_endpoints(unmerged_endpoints)
             merged_endpoints.append(merged_endpoint)
@@ -768,7 +761,6 @@ def create_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args
     hostnames = set()
     ids = set()
     ips = set()
-    demisto.debug(f'{endpoints=}, {zipped_args=}')
     for endpoint in endpoints:
         hostnames_list = [hostname['Value'] for hostname in to_list(endpoint.get('Hostname'))]
         ids_list = [id['Value'] for id in to_list(endpoint.get('ID'))]
@@ -811,10 +803,8 @@ def cylance_filtering(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> 
 
 
 def active_directory_post(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> list[dict[str, Any]]:
-    demisto.debug(f'active_directory_post: {endpoints=}')
     fixed_endpoints = []
     for endpoint in endpoints:
-        demisto.debug(f'active_directory_post: {endpoint=}')
         endpoint_hostname = endpoint['Hostname']['Value']
         if isinstance(endpoint_hostname, str):
             fixed_endpoints.append(endpoint)
@@ -823,7 +813,6 @@ def active_directory_post(endpoints: list[dict[str, Any]], args: dict[str, Any])
             fixed_endpoints.append(endpoint)
         else:
             raise ValueError('Invalid hostname')
-    demisto.debug(f'fixed_endpoints: {fixed_endpoints=}')
     return fixed_endpoints
 
 
