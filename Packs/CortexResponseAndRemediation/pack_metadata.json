@@ -1,6 +1,6 @@
 {
-    "name": "Cortex Remediation And Response",
-    "description": "Cortexs Remediation And Response",
+    "name": "Cortex Response And Remediation",
+    "description": "Cortex Response And Remediation",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
