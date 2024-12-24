@@ -1,90 +1,90 @@
+display: Slack Event Collector
+name: Slack Event Collector
 category: Analytics & SIEM
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Slack Event Collector
   version: -1
 configuration:
-- defaultvalue: https://api.slack.com/audit/v1/
-  display: Server URL
+- display: Server URL
   name: url
-  type: 0
+  defaultvalue: https://api.slack.com/audit/v1/
   required: true
   section: Connect
+  type: 0
 - display: ''
-  displaypassword: User Token
   name: user_token
-  type: 9
-  required: true
+  displaypassword: User Token
   hiddenusername: true
+  required: true
   section: Connect
-- defaultvalue: 1000
-  display: The maximum number of audit logs to fetch
+  type: 9
+- display: The maximum number of audit logs to fetch
   name: limit
-  type: 0
-  section: Collect
+  defaultvalue: 1000
   required: false
-- defaultvalue: 3 days ago
-  display: First fetch time interval
+  section: Collect
+  type: 0
+- display: First fetch time interval
   name: oldest
-  type: 0
   additionalinfo: Data is not available prior to March 2018.
-  section: Collect
+  defaultvalue: 3 days ago
   required: false
+  section: Collect
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   additionalinfo:
-  section: Connect
   advanced: true
   required: false
+  section: Connect
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   additionalinfo:
-  section: Connect
   advanced: true
   required: false
+  section: Connect
+  type: 8
 description: Slack logs event collector integration for XSIAM.
-display: Slack Event Collector
-name: Slack Event Collector
+fromversion: 6.8.0
+marketplaces:
+- marketplacev2
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
+  - name: slack-get-events
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
-      name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - description: Number of results to return, maximum is 9999. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
-      name: limit
+    - name: limit
       defaultValue: 10
-    - description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the Audit Logs API call. For further information, visit Slack documentation - https://api.slack.com/docs/pagination#cursors
-      name: cursor
-    - description: Occurrence time of the least recent audit event to include (inclusive). Data is not available prior to March 2018.
-      name: oldest
+      description: Number of results to return, maximum is 9999. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
+    - name: cursor
+      description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the Audit Logs API call. For further information, visit Slack documentation - https://api.slack.com/docs/pagination#cursors
+    - name: oldest
       defaultValue: 3 days
-    - description: Occurrence time of the most recent audit event to include (inclusive).
-      name: latest
-    - description: Name of the action.
-      name: action
-    - description: ID of the user who initiated the action.
-      name: actor
-    - description: ID of the target entity of the action (such as a channel, workspace, organization, file).
-      name: entity
+      description: Occurrence time of the least recent audit event to include (inclusive). Data is not available prior to March 2018.
+    - name: latest
+      description: Occurrence time of the most recent audit event to include (inclusive).
+    - name: action
+      description: Name of the action.
+    - name: actor
+      description: ID of the user who initiated the action.
+    - name: entity
+      description: ID of the target entity of the action (such as a channel, workspace, organization, file).
     description: Gets audit log events from Slack.
-    name: slack-get-events
-  script: '-'
-  type: python
-  subtype: python3
-  isfetchevents: true
   dockerimage: demisto/python3:3.11.10.115186
-marketplaces:
-- marketplacev2
-fromversion: 6.8.0
+  isfetchevents: true
+  script: '-'
+  subtype: python3
+  type: python
+sectionOrder:
+- Connect
+- Collect
 tests:
 - No tests (auto formatted)

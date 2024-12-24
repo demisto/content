@@ -1,24 +1,24 @@
+name: GetSlackBlockBuilderResponse
+comment: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response and insert it into an incident's context.
 commonfields:
   id: GetSlackBlockBuilderResponse
   version: -1
-name: GetSlackBlockBuilderResponse
-script: '-'
-type: python
-tags:
-- slack
-enabled: true
-comment: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response and insert it into an incident's context.
-outputs:
-- contextPath: SlackBlockState
-  type: unknown
-  description: The state of the response from the user will be stored under this context path.
-scripttarget: 0
-subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
-runas: DBotWeakRole
 dependson:
   must:
   - SlackV3|||send-notification
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
 fromversion: 6.10.0
+outputs:
+- contextPath: SlackBlockState
+  description: The state of the response from the user will be stored under this context path.
+  type: unknown
+runas: DBotWeakRole
+script: '-'
+scripttarget: 0
+subtype: python3
+tags:
+- slack
 tests:
 - No tests (auto formatted)
+type: python
