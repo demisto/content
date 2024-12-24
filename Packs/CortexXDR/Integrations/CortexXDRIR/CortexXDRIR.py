@@ -1122,6 +1122,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             gte_creation_time_milliseconds=last_fetch,
             statuses=statuses, limit=max_fetch + len(dedup_incidents), starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
+            # adding len of deduped events so that we wont have lim - 1or 2 returned each time. There might be a case where deduped incident doesnt come back and we are returning more than the limit. 
             exclude_artifacts=exclude_artifacts,
         )
 
