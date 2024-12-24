@@ -1497,16 +1497,20 @@ def datetime_to_string(datetime_obj):
         return datetime_obj.__str__()
 
 
-def remove_empty_elements(d):
+def remove_empty_elements(d, remove_none_only: bool = False):
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary.
     :param d: Input dictionary.
     :type d: dict
+    :param remove_none_only: If True, only remove None elements, otherwise, remove empty lists and dictionaries as well.
+    :type remove_none_only: bool
     :return: Dictionary with all empty lists, and empty dictionaries removed.
     :rtype: dict
     """
 
     def empty(x):
+        if remove_none_only:
+            return x is None
         return x is None or x == {} or x == []
 
     if not isinstance(d, (dict, list)):

@@ -1,5 +1,9 @@
+from urllib.parse import urljoin
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import BaseClient
 
 """ Imports """
 import copy
@@ -1071,7 +1075,8 @@ class Client(BaseClient):
                     "excluded-member": build_dicts_from_list(excluded_members),
                     "exclude": exclude,
                     "allow-routing": allow_routing,
-                }
+                },
+                remove_none_only=True,
             ),
             error_handler=Client._error_handler,
         )
