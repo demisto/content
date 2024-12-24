@@ -461,12 +461,12 @@ def test_sign_in_exception_handling(requests_mock):
 
 @patch('NozomiNetworks.handle_proxy')
 def test_build_proxies_with_proxy_enabled(mock_handle_proxy):
-    mock_handle_proxy.return_value = {'http': 'http://proxy.com'}
+    mock_handle_proxy.return_value = {'http': 'http://pippo.com'}
 
     client = Client(base_url="https://test.com", proxy=True)
     proxies = client.build_proxies()
 
-    assert proxies == {'http': 'http://proxy.com'}
+    assert proxies == {'http': 'http://pippo.com'}
     mock_handle_proxy.assert_called_once()
 
 def test_build_proxies_without_proxy():
