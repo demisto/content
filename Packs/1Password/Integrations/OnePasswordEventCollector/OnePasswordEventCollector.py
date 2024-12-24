@@ -86,7 +86,7 @@ class Client(BaseClient):
         else:
             raise ValueError("Either a 'pagination_cursor' or a 'from_date' need to be specified.")
 
-        return self._http_request(method='POST', url_suffix=f'/{feature}', data=json.dumps(body), raise_on_status=True)
+        return self._http_request(method='POST', url_suffix=f'/{feature}', json_data=body, raise_on_status=True)
 
 
 ''' HELPER FUNCTIONS '''
