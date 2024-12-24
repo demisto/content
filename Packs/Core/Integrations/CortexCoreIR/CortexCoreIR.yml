@@ -2881,7 +2881,7 @@ script:
       name: user_id
     - description: Limit the number of users that will appear in the list. (limit should be used when no specific host is requested).
       name: limit
-      defaultValue: 10
+      defaultValue: 50
     name: core-list-risky-users
     description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -2914,7 +2914,7 @@ script:
       name: host_id
     - description: Limit the number of hosts that will appear in the list. (Use limit when no specific host is requested).
       name: limit
-      defaultValue: 10
+      defaultValue: 50
     name: core-list-risky-hosts
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:

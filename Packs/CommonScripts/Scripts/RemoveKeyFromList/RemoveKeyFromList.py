@@ -6,7 +6,7 @@ Removes a Key from a JSON-backed List
 
 from CommonServerUserPython import *  # noqa
 
-from typing import Any
+from typing import Dict, Any
 import traceback
 
 
@@ -23,7 +23,7 @@ def remove_key_from_list(list_name: str, key_name: str) -> str:
     ):
         raise ValueError(f'Cannot retrieve list {list_name}')
 
-    list_data: dict = {}
+    list_data: Dict = {}
     data: str = res[0]['Contents']
     if data and len(data) > 0:
         try:
@@ -42,7 +42,7 @@ def remove_key_from_list(list_name: str, key_name: str) -> str:
 ''' COMMAND FUNCTION '''
 
 
-def remove_key_from_list_command(args: dict[str, Any]) -> CommandResults:
+def remove_key_from_list_command(args: Dict[str, Any]) -> CommandResults:
 
     list_name = args.get('listName', None)
     if not list_name:

@@ -1,15 +1,15 @@
-id: UploadFile Test
+id: DemistoUploadFileV2 Test
 version: -1
-name: UploadFile Test
+name: DemistoUploadFileV2 Test
 description: Test file uploading to incident with and without comments.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6e3c636b-7ccd-4725-8133-e84fa42b2a2f
+    taskid: e2e243c0-7dba-4880-8ed9-542d59f39771
     type: start
     task:
-      id: 6e3c636b-7ccd-4725-8133-e84fa42b2a2f
+      id: e2e243c0-7dba-4880-8ed9-542d59f39771
       version: -1
       name: ""
       iscommand: false
@@ -19,7 +19,6 @@ tasks:
       '#none#':
       - "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 74f4c05e-1ddc-48ca-8469-938b8e3686aa
+    taskid: 167b2a15-2ef5-497f-8f5c-3fc89fe16f2f
     type: regular
     task:
-      id: 74f4c05e-1ddc-48ca-8469-938b8e3686aa
+      id: 167b2a15-2ef5-497f-8f5c-3fc89fe16f2f
       version: -1
       name: Download Image and Add to Context
       scriptName: http
@@ -61,7 +60,6 @@ tasks:
       url:
         simple: https://github.com/demisto/content/raw/master/xsoar_content_logo.png
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -78,14 +76,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 4709dded-bc09-4f4d-8420-6668a0a66eb0
+    taskid: af426c32-7d80-4ecf-8dcb-e968dcf708f0
     type: regular
     task:
-      id: 4709dded-bc09-4f4d-8420-6668a0a66eb0
+      id: af426c32-7d80-4ecf-8dcb-e968dcf708f0
       version: -1
       name: Upload Downloaded File to War Room
-      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-      scriptName: UploadFile
+      description: Upload file from incident war room to another incident's war room
+      scriptName: DemistoUploadFileV2
       type: regular
       iscommand: false
       brand: ""
@@ -106,16 +104,15 @@ tasks:
                 value:
                   simple: image.png
           accessor: EntryID
-      incID:
+      incidentID:
         complex:
           root: CreatedIncidentID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
@@ -127,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ab055dd7-b27a-4414-86ea-8be0a18ff806
+    taskid: 5d6925f4-2be8-42f6-88d0-79781f6257de
     type: regular
     task:
-      id: ab055dd7-b27a-4414-86ea-8be0a18ff806
+      id: 5d6925f4-2be8-42f6-88d0-79781f6257de
       version: -1
       name: createNewIncident
       description: Create a new incident
@@ -140,12 +137,11 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "12"
+      - "2"
     scriptarguments:
       name:
         simple: DemistoUploadFile - test incident
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -162,10 +158,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f09a1a3f-efb5-4b5d-82b2-8e1cb0b6d78a
+    taskid: f2955d34-c3c5-4f33-85cc-681497269e3a
     type: regular
     task:
-      id: f09a1a3f-efb5-4b5d-82b2-8e1cb0b6d78a
+      id: f2955d34-c3c5-4f33-85cc-681497269e3a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -180,7 +176,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -197,10 +192,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 5ddbdd21-1a10-477a-8b4a-195dd0f105d5
+    taskid: 22cf566d-6872-4423-8c90-89d2daad3414
     type: regular
     task:
-      id: 5ddbdd21-1a10-477a-8b4a-195dd0f105d5
+      id: 22cf566d-6872-4423-8c90-89d2daad3414
       version: -1
       name: getContext
       description: Retrieve context of another incident to be used in this script
@@ -219,12 +214,11 @@ tasks:
         complex:
           root: CreatedIncidentID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
@@ -236,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 76a6a3dc-e411-4962-87fe-6c43b689f1ac
+    taskid: 300fe368-549c-448b-8c8c-a08a1a424642
     type: condition
     task:
-      id: 76a6a3dc-e411-4962-87fe-6c43b689f1ac
+      id: 300fe368-549c-448b-8c8c-a08a1a424642
       version: -1
       name: Verify upload was successful
       type: condition
@@ -266,12 +260,11 @@ tasks:
           right:
             value:
               simple: Test Comment
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
@@ -283,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7b3d72d0-a26c-47b8-88bc-b58c5a7dfa2c
+    taskid: f61691e3-3a54-4da3-8ea2-0a641f43d045
     type: title
     task:
-      id: 7b3d72d0-a26c-47b8-88bc-b58c5a7dfa2c
+      id: f61691e3-3a54-4da3-8ea2-0a641f43d045
       version: -1
       name: Done
       type: title
@@ -294,12 +287,11 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
@@ -311,14 +303,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: c9afd9fb-ac4c-45af-805f-df52a93e47a8
+    taskid: d9164595-fd56-4046-8a5e-6f31de527050
     type: regular
     task:
-      id: c9afd9fb-ac4c-45af-805f-df52a93e47a8
+      id: d9164595-fd56-4046-8a5e-6f31de527050
       version: -1
       name: Upload Downloaded File to War Room with a Comment
-      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-      scriptName: UploadFile
+      description: Upload file from incident war room to another incident's war room
+      scriptName: DemistoUploadFileV2
       type: regular
       iscommand: false
       brand: ""
@@ -341,16 +333,15 @@ tasks:
                 value:
                   simple: image.png
           accessor: EntryID
-      incID:
+      incidentID:
         complex:
           root: CreatedIncidentID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
@@ -362,10 +353,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: fcac8c26-96d6-4511-8aa5-9ffc134a2dc4
+    taskid: e75bc7e0-d549-4632-81f2-a03312c6d601
     type: regular
     task:
-      id: fcac8c26-96d6-4511-8aa5-9ffc134a2dc4
+      id: e75bc7e0-d549-4632-81f2-a03312c6d601
       version: -1
       name: Get File Comment (File With Comment)
       description: send HTTP GET requests
@@ -403,12 +394,11 @@ tasks:
                   simple: /entry/load/
               suffix: {}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -420,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 88c5c283-60a1-413c-88f8-adb3ba31f12a
+    taskid: 1e7a050f-e396-40a3-842f-dd7aeef10c9c
     type: regular
     task:
-      id: 88c5c283-60a1-413c-88f8-adb3ba31f12a
+      id: 1e7a050f-e396-40a3-842f-dd7aeef10c9c
       version: -1
       name: Get File Comment (File Without Comment)
       description: send HTTP GET requests
@@ -461,86 +451,11 @@ tasks:
                   simple: /entry/load/
               suffix: {}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: ae7ba50c-7968-4306-8b90-e779acf83fed
-    type: regular
-    task:
-      id: ae7ba50c-7968-4306-8b90-e779acf83fed
-      version: -1
-      name: Begin investigating the incident (allow it to fail)
-      description: Start the investigation of the incident to change its status to
-        'Active', allowing the incident to be used for uploading.
-      script: Builtin|||investigate
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      id:
-        complex:
-          root: CreatedIncidentID
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: d18b33df-6c09-45fb-87fa-3f5c2f2da841
-    type: regular
-    task:
-      id: d18b33df-6c09-45fb-87fa-3f5c2f2da841
-      version: -1
-      name: Wait for investigation to begin
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds:
-        simple: "10"
-    reputationcalc: 1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -555,7 +470,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 1610,
         "width": 810,
         "x": 50,
         "y": 50

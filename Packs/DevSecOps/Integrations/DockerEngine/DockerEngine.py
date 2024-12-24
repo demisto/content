@@ -2550,7 +2550,7 @@ def swarm_init_command(client, args):
     response = client.swarm_init_request(listenaddr, advertiseaddr, datapathaddr,
                                          datapathport, defaultaddrpool, forcenewcluster,
                                          subnetsize, spec)
-    if type(response) is str:
+    if type(response) == str:
         response = {
             "Node ID": response
         }
@@ -2607,7 +2607,7 @@ def swarm_leave_command(client, args):
 
     response = client.swarm_leave_request(force)
 
-    if type(response) is dict:
+    if type(response) == dict:
         command_results = CommandResults(
             outputs_prefix='Docker',
             outputs_key_field='',

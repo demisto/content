@@ -75,11 +75,10 @@ MIS_CLASSIFICATION_OPTIONS = {
 }
 
 
-def arg_to_bool(arg: Optional[str]) -> bool:
-    try:
+def arg_to_bool(arg: Optional[str]) -> Union[bool, None]:
+    if arg:
         return argToBoolean(arg)
-    except ValueError:
-        return False
+    return None
 
 
 class Client(BaseClient):
@@ -181,15 +180,11 @@ class Client(BaseClient):
             url_suffix='scopes'
         )
 
-    def restore_requests(self, start_date: str, saas: str, include_denied: bool, include_accepted: bool) -> dict[str, Any]:
-        denied_attr_op = 'is' if include_denied else 'isNot'
-        accepted_attr_op = 'is' if include_accepted else 'isNot'
-        fifteen_days_ago = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=15)).isoformat()
+    def restore_requests(self, start_date: str, saas: str) -> dict[str, Any]:
         entity_filter = {
             'saas': saas,
-            'startDate': fifteen_days_ago,
+            'startDate': start_date,
         }
-
         request_data: dict[str, Any] = {
             'entityFilter': entity_filter,
             'entityExtendedFilter': [
@@ -199,19 +194,19 @@ class Client(BaseClient):
                     'saasAttrValue': 'true'
                 },
                 {
-                    'saasAttrName': 'entityPayload.restoreRequestTime',
-                    'saasAttrOp': 'greaterThan',
-                    'saasAttrValue': start_date
-                },
-                {
                     'saasAttrName': 'entityPayload.isRestoreDeclined',
-                    'saasAttrOp': denied_attr_op,
+                    'saasAttrOp': 'isNot',
                     'saasAttrValue': 'true'
                 },
                 {
                     'saasAttrName': 'entityPayload.isRestored',
-                    'saasAttrOp': accepted_attr_op,
+                    'saasAttrOp': 'isNot',
                     'saasAttrValue': 'true'
+                },
+                {
+                    'saasAttrName': 'entityPayload.restoreRequestTime',
+                    'saasAttrOp': 'greaterThan',
+                    'saasAttrValue': (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=15)).isoformat()
                 }
             ]
         }
@@ -764,10 +759,8 @@ def fetch_restore_requests(client: Client, params: dict):
     counter = 0
     incidents: List[dict[str, Any]] = []
 
-    include_denied_rr = arg_to_bool(params.get('include_denied_requests'))
-    include_accepted_rr = arg_to_bool(params.get('include_accepted_requests'))
     for saas in saas_apps:
-        result = client.restore_requests(last_fetch, saas, include_denied_rr, include_accepted_rr)
+        result = client.restore_requests(last_fetch, saas)
         for restore_request in result['responseData']:
             entity_info = restore_request.get('entityInfo')
             entity_payload = restore_request.get('entityPayload')

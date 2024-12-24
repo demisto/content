@@ -1332,17 +1332,16 @@ def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails
 
                     if len(incidents) >= MAX_FETCH:
                         break
-            except Exception as e:
-                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
-                    raise
-
-                # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
-                error_msg = (
-                    "Encountered email parsing issue while fetching. "
-                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
-                )
-                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
-                demisto.updateModuleHealth(error_msg, is_error=False)
+            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
+                if skip_unparsable_emails:
+                    error_msg = (
+                        "Encountered email parsing issue while fetching. "
+                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
+                    )
+                    demisto.debug(error_msg + f", Error: {str(e)}")
+                    demisto.updateModuleHealth(error_msg, is_error=False)
+                else:
+                    raise e
 
         demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
         last_fetch_time = last_run.get(LAST_RUN_TIME)
@@ -1605,7 +1604,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
 def delete_items(item_ids, delete_type, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     deleted_items = []
-    if type(item_ids) is not list:
+    if type(item_ids) != list:
         item_ids = item_ids.split(",")
     items = get_items_from_mailbox(account, item_ids)
     delete_type = delete_type.lower()
@@ -1721,7 +1720,7 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
     is_public = is_default_folder(target_folder_path, is_public)
     target_folder = get_folder_by_path(account, target_folder_path, is_public)
     recovered_messages = []
-    if type(message_ids) is not list:
+    if type(message_ids) != list:
         message_ids = message_ids.split(",")
     items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
         message_id__in=message_ids).all()  # pylint: disable=E1101
@@ -1885,7 +1884,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
 
 def get_items(item_ids, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    if type(item_ids) is not list:
+    if type(item_ids) != list:
         item_ids = item_ids.split(",")
 
     items = get_items_from_mailbox(account, item_ids)

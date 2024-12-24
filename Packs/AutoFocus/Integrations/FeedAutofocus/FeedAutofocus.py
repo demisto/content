@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import re
 import requests
 import urllib3
+from typing import List, Optional
 from datetime import datetime
 
 # Disable insecure warnings
@@ -376,7 +377,7 @@ class Client(BaseClient):
 
         return parsed_indicators
 
-    def build_iterator(self, feed_tags: list, tlp_color: str | None, limit=None, offset=None):
+    def build_iterator(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None):
         """Builds a list of indicators.
 
         Returns:
@@ -403,7 +404,7 @@ class Client(BaseClient):
         return parsed_indicators
 
 
-def module_test_command(client: Client, args: dict, feed_tags: list, tlp_color: str | None):
+def module_test_command(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -483,7 +484,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags, tlp_color):
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client, feed_tags: list, tlp_color: str | None, limit=None, offset=None):
+def fetch_indicators_command(client: Client, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None):
     """Fetch-indicators command from AutoFocus Feeds
 
     Args:

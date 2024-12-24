@@ -55,7 +55,7 @@ repos:
     skip:nightly: true
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.8.0
+  rev: v0.0.272
   hooks:
   - id: ruff
     parallel: false

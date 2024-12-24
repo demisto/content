@@ -1,4 +1,5 @@
 import json
+import io
 import pytest
 import GoogleSheets
 import os
@@ -9,7 +10,7 @@ from googleapiclient.http import HttpMockSequence
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -45,7 +46,7 @@ def test_make_markdown_matrix():
         - return a Markdown table with the headers of the sheets and the data inside them
     '''
     path = 'test_data/helper_functions/test_make_markdown_matrix/'
-    with open(path + 'result.md') as file:
+    with open(path + 'result.md', 'r') as file:
         result = file.read()
     assert GoogleSheets.make_markdown_matrix(util_load_json(os.path.join(path, 'sheets.json'))) == result
 
@@ -91,7 +92,7 @@ def test_prepare_result_with_echo(mocker):
                                       {'SheetId': 0, 'Sheet title': "Sheet1"}])
     response = util_load_json('test_data/helper_functions/test_prepare_result_echo/response.json')
     command_result = GoogleSheets.prepare_result(response, {"echo_spreadsheet": "true"}, "")
-    with open('test_data/helper_functions/test_prepare_result_echo/markdown_result.md') as file:
+    with open('test_data/helper_functions/test_prepare_result_echo/markdown_result.md', 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
     assert command_result.outputs == response
@@ -205,7 +206,7 @@ def test_markdown_single_get(mocker):
     mocker.patch.object(GoogleSheets, 'create_list_id_title', return_value=[{'SheetId': 0, 'Sheet title': 'Sheet1'}])
     response = util_load_json(os.path.join(path, 'get_response.json'))
     markdown = GoogleSheets.markdown_single_get(response)
-    with open(os.path.join(path, 'markdown_assert.md')) as file:
+    with open(os.path.join(path, 'markdown_assert.md'), 'r') as file:
         markdown_assert = file.read()
     assert markdown == markdown_assert
 
@@ -259,7 +260,7 @@ def test_create_spreadsheet():
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     args = util_load_json(path + 'args.json')
     command_result = GoogleSheets.create_spreadsheet(service, args)
-    with open(os.path.join(path, 'command_results_readable_output.md')) as file:
+    with open(os.path.join(path, 'command_results_readable_output.md'), 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
     assert command_result.outputs == util_load_json(os.path.join(path, 'command_results_outputs.json'))
@@ -286,7 +287,7 @@ def test_get_single_spreadsheet(path):
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     command_result = GoogleSheets.get_spreadsheet(service, util_load_json(os.path.join(path, 'args.json')))
-    with open(path + 'markdown.md') as file:
+    with open(path + 'markdown.md', 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
     assert command_result.outputs == util_load_json(os.path.join(path, 'output.json'))
@@ -317,7 +318,7 @@ def test_get_multiple_spreadsheets():
                     http=http,
                     developerKey=api_key)
     command_result = GoogleSheets.get_spreadsheet(service, args)
-    with open(os.path.join(path, 'markdown.md')) as file:
+    with open(os.path.join(path, 'markdown.md'), 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
     assert command_result.outputs is None
@@ -368,6 +369,6 @@ def test_sheet_create_both_ways(path):
     args = util_load_json(os.path.join(path, 'args.json'))
     command_result = GoogleSheets.create_sheet(service, args)
     assert command_result.outputs == util_load_json(os.path.join(path, 'command_result_output.json'))
-    with open(os.path.join(path, 'readable_output.md')) as file:
+    with open(os.path.join(path, 'readable_output.md'), 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert

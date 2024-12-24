@@ -828,7 +828,7 @@ def list_client_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    pagination_data = pagination(args, False)
+    pagination_data = pagination(args)
 
     page = pagination_data.updated_page
     limit = pagination_data.limit
@@ -1758,24 +1758,23 @@ def validate_pagination_arguments(
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
-def pagination(args: dict[str, Any], start_count_from_zero: bool = True) -> Pagination:
+def pagination(args: dict[str, Any]) -> Pagination:
     """Return the correct limit and offset for the API
         based on the user arguments page and limit.
 
     Args:
         args (Dict[str, Any]): Command arguments from XSOAR.
-        start_count_from_zero (bool, optional): Whether to start the offset count from or 1.
-            Defaults to True.
+
     Returns:
         Tuple: page, limit, pagination_message.
     """
-    page = arg_to_number(args.get("page")) or 1
+    page = arg_to_number(args.get("page", 1))
     limit = arg_to_number(args.get("limit")) or 50
 
     validate_pagination_arguments(page, limit)
 
     pagination_message = f"Showing page {page}. \n Current page size: {limit}."
-    updated_page = (page - 1) * limit + (0 if start_count_from_zero else 1)
+    updated_page = page - 1 if isinstance(page, int) else 1
     return Pagination(updated_page, limit, pagination_message)
 
 

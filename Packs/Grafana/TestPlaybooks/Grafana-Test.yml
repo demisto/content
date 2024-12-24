@@ -274,14 +274,14 @@ tasks:
             value:
               simple: Grafana.Alert.id
             iscontext: true
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
               simple: Grafana.Alert.state
             iscontext: true
           right:
             value:
-              simple: paused
+              simple: un-paused
     view: |-
       {
         "position": {

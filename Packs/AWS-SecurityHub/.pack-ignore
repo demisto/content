@@ -8,5 +8,3 @@ securityhub
 [file:AWSSecurityHubModelingRules.yml]
 ignore=MR108
 
-[file:README.md]
-ignore=RM106

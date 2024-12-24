@@ -23,7 +23,7 @@ HelloWorld Integration code.
 
 from CommonServerUserPython import *
 
-from typing import Any
+from typing import Dict, Any
 
 
 ''' STANDALONE FUNCTION '''
@@ -46,7 +46,7 @@ def say_hello(name: str) -> str:
 ''' COMMAND FUNCTION '''
 
 
-def say_hello_command(args: dict[str, Any]) -> CommandResults:
+def say_hello_command(args: Dict[str, Any]) -> CommandResults:
     """helloworld-say-hello command: Returns Hello {somename}
 
     Args:

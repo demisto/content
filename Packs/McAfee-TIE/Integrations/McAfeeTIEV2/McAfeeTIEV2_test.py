@@ -1,10 +1,11 @@
 from unittest.mock import patch
+import io
 import json
 import pytest
 
 
 def util_load_json(path: str):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 

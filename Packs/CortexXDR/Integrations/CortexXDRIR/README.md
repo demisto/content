@@ -3231,10 +3231,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                         | **Required** |
-| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
-| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>.             | Optional | 
-| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 10. | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
 
@@ -3289,10 +3289,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                           | **Required** |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| host_id | The host name of a specific host.                                                                                                                         | Optional | 
-| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 10. | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host name of a specific host. | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
 

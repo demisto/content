@@ -5,7 +5,7 @@ import json
 import dateparser
 import traceback
 import urllib.parse
-from typing import Any, cast
+from typing import Any, Dict, Tuple, List, Optional, cast
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -40,10 +40,10 @@ class Client(BaseClient):
 
         return res
 
-    def xm_trigger_workflow(self, recipients: str | None = None,
-                            subject: str | None = None, body: str | None = None,
-                            incident_id: str | None = None,
-                            close_task_id: str | None = None) -> dict[str, Any]:
+    def xm_trigger_workflow(self, recipients: Optional[str] = None,
+                            subject: Optional[str] = None, body: Optional[str] = None,
+                            incident_id: Optional[str] = None,
+                            close_task_id: Optional[str] = None) -> Dict[str, Any]:
         """Triggers a workflow in xMatters.
 
         :type recipients: ``Optional[str]``
@@ -65,7 +65,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        request_params: dict[str, Any] = {
+        request_params: Dict[str, Any] = {
         }
 
         if recipients:
@@ -91,11 +91,11 @@ class Client(BaseClient):
 
         return res
 
-    def search_alerts(self, max_fetch: int = 100, alert_status: str | None = None, priority: str | None = None,
-                      start_time: int | None = None, property_name: str | None = None,
-                      property_value: str | None = None, request_id: str | None = None,
-                      from_time: str | None = None, to_time: str | None = None,
-                      workflow: str | None = None, form: str | None = None) -> list[dict[str, Any]]:
+    def search_alerts(self, max_fetch: int = 100, alert_status: Optional[str] = None, priority: Optional[str] = None,
+                      start_time: Optional[int] = None, property_name: Optional[str] = None,
+                      property_value: Optional[str] = None, request_id: Optional[str] = None,
+                      from_time: Optional[str] = None, to_time: Optional[str] = None,
+                      workflow: Optional[str] = None, form: Optional[str] = None) -> List[Dict[str, Any]]:
         """Searches for xMatters alerts using the '/events' API endpoint
 
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -139,7 +139,7 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
 
-        request_params: dict[str, Any] = {}
+        request_params: Dict[str, Any] = {}
 
         request_params['limit'] = max_fetch
 
@@ -239,7 +239,7 @@ def convert_to_demisto_severity(severity: str) -> int:
     }[severity.lower()]
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -294,13 +294,13 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
 
 def fetch_incidents(client: Client,
                     max_fetch: int = 100,
-                    last_run: dict[str, int] = {},
-                    first_fetch_time: int | None = None,
-                    alert_status: str | None = None,
-                    priority: str | None = None,
-                    property_name: str | None = None,
-                    property_value: str | None = None
-                    ) -> tuple[dict[str, int], list[dict]]:
+                    last_run: Dict[str, int] = {},
+                    first_fetch_time: Optional[int] = None,
+                    alert_status: Optional[str] = None,
+                    priority: Optional[str] = None,
+                    property_name: Optional[str] = None,
+                    property_value: Optional[str] = None
+                    ) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     This function has to implement the logic of making sure that incidents are
@@ -368,7 +368,7 @@ def fetch_incidents(client: Client,
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: list[dict[str, Any]] = []
+    incidents: List[Dict[str, Any]] = []
 
     if last_fetch is not None:
         start_time = timestamp_to_datestring(last_fetch * 1000)
@@ -453,6 +453,7 @@ def fetch_incidents(client: Client,
             demisto.info("Issue with event")
             demisto.info(str(alert))
             demisto.info(str(e))
+            pass
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
@@ -522,11 +523,11 @@ def xm_trigger_workflow_command(client: Client, recipients: str,
     )
 
 
-def xm_get_events_command(client: Client, request_id: str | None = None, status: str | None = None,
-                          priority: str | None = None, from_time: str | None = None,
-                          to_time: str | None = None, workflow: str | None = None,
-                          form: str | None = None, property_name: str | None = None,
-                          property_value: str | None = None) -> CommandResults:
+def xm_get_events_command(client: Client, request_id: Optional[str] = None, status: Optional[str] = None,
+                          priority: Optional[str] = None, from_time: Optional[str] = None,
+                          to_time: Optional[str] = None, workflow: Optional[str] = None,
+                          form: Optional[str] = None, property_name: Optional[str] = None,
+                          property_value: Optional[str] = None) -> CommandResults:
     """
     This function runs when the xm-get-events command is run.
 
@@ -581,7 +582,7 @@ def xm_get_events_command(client: Client, request_id: str | None = None, status:
         property_value=property_value
     )
 
-    reduced_out: dict[str, list[Any]]
+    reduced_out: Dict[str, List[Any]]
     if len(out) == 0:
         reduced_out = {"xMatters.GetEvent.Event": []}
         readable_output = "Could not find Events with given criteria in xMatters"
@@ -613,7 +614,7 @@ def xm_get_event_command(client: Client, event_id: str) -> CommandResults:
     """
     out = client.search_alert(event_id=event_id)
 
-    reduced_out: dict[str, Any]
+    reduced_out: Dict[str, Any]
     if out.get('code') == 404:
         reduced_out = {"xMatters.GetEvent.Event": {}}
         readable_output = f'Could not find Event "{event_id}" from xMatters'

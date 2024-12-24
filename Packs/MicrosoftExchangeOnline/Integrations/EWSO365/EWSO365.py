@@ -2470,17 +2470,16 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
 
                     if len(incidents) >= client.max_fetch:
                         break
-            except Exception as e:
-                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
-                    raise
-
-                # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
-                error_msg = (
-                    "Encountered email parsing issue while fetching. "
-                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
-                )
-                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
-                demisto.updateModuleHealth(error_msg, is_error=False)
+            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
+                if skip_unparsable_emails:
+                    error_msg = (
+                        "Encountered email parsing issue while fetching. "
+                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
+                    )
+                    demisto.debug(error_msg + f", Error: {str(e)}")
+                    demisto.updateModuleHealth(error_msg, is_error=False)
+                else:
+                    raise e
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 

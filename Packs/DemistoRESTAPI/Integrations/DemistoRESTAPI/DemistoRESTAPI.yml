@@ -136,7 +136,7 @@ script:
       - 'false'
     description: Upload packs to Demisto server from url or the marketplace.
 tests:
-- No tests (auto formatted)
+- DemistoUploadFileV2 Test
 marketplaces:
 - xsoar
 fromversion: 5.0.0

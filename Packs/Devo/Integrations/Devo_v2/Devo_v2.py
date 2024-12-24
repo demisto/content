@@ -175,7 +175,7 @@ def _to_unix(date, milliseconds=False):
 
     elif date == 'now':
         epoch = datetime.now().timestamp()
-    elif type(date) is str:
+    elif type(date) == str:
         epoch = pd.to_datetime(date).timestamp()
     elif isinstance(date, pd.Timestamp | datetime):
         if date.tzinfo is None:
@@ -301,7 +301,7 @@ def check_configuration():
 
 def check_type(input, tar_type):
     if (
-        tar_type is list
+        tar_type == list
         and isinstance(input, str)
         and input.startswith("[")
         and input.endswith("]")
@@ -355,8 +355,6 @@ def get_time_range(timestamp_from, timestamp_to):
     elif isinstance(timestamp_from, datetime):
         t_from = timestamp_from.timestamp()
         t_to = time.time() if timestamp_to is None else timestamp_to.timestamp()
-    else:
-        raise ValueError("To and From Dates should have values.")
     current_time: float = time.time()
     if t_from > current_time or t_to > current_time:
         raise ValueError("Date should not be greater than current time")
@@ -444,7 +442,7 @@ def fetch_incidents():
 
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
-        filter_string = ""
+
         if alert_filters["type"] == "AND":
             filter_string = " , ".join(
                 [
@@ -714,7 +712,6 @@ def get_alerts_command(offset, items):
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
-        filter_string = ""
         if alert_filters["type"] == "AND":
             filter_string = ", ".join(
                 [

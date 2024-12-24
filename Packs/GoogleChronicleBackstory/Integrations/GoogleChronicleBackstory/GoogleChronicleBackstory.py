@@ -325,18 +325,20 @@ def validate_response(client: Client, url, method='GET', body=None):
 
     if 500 <= raw_response.status_code <= 599:
         raise ValueError(
-            f'Internal server error occurred. Failed to execute request with 3 retries.\n'
-            f'Message: {parse_error_message(raw_response.text, client.region)}')
+            'Internal server error occurred. Failed to execute request with 3 retries.\nMessage: {}'.format(
+                parse_error_message(raw_response.text, client.region)))
     if raw_response.status_code == 429:
         raise ValueError(
-            f'API rate limit exceeded. Failed to execute request with 3 retries.\n'
-            f'Message: {parse_error_message(raw_response.text, client.region)}')
+            'API rate limit exceeded. Failed to execute request with 3 retries.\nMessage: {}'.format(
+                parse_error_message(raw_response.text, client.region)))
     if raw_response.status_code == 400 or raw_response.status_code == 404:
         raise ValueError(
-            f'Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}')
+            'Status code: {}\nError: {}'.format(raw_response.status_code,
+                                                parse_error_message(raw_response.text, client.region)))
     if raw_response.status_code != 200:
         raise ValueError(
-            f'Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}')
+            'Status code: {}\nError: {}'.format(raw_response.status_code,
+                                                parse_error_message(raw_response.text, client.region)))
     if not raw_response.text:
         raise ValueError('Technical Error while making API call to Chronicle. '
                          f'Empty response received with the status code: {raw_response.status_code}')
@@ -1215,7 +1217,8 @@ def get_gcb_alerts(client_obj, start_time, end_time, max_fetch, filter_severity)
 
     return events - list of dict representing events
     """
-    request_url = f'{BACKSTORY_API_V1_URL}/alert/listalerts?start_time={start_time}&end_time={end_time}&page_size={max_fetch}'
+    request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
+                                                                                      end_time, max_fetch)
     demisto.debug(f"[CHRONICLE] Request URL for fetching alerts: {request_url}")
 
     json_response = validate_response(client_obj, request_url)
@@ -1996,8 +1999,8 @@ def get_detections(client_obj, rule_or_version_id: str, page_size: str, detectio
     if detection_for_all_versions and rule_or_version_id:
         rule_or_version_id = f"{rule_or_version_id}@-"
 
-    request_url = f'{BACKSTORY_API_V2_URL}/detect/rules/{rule_or_version_id}/detections?pageSize={page_size}' \
-
+    request_url = '{}/detect/rules/{}/detections?pageSize={}' \
+        .format(BACKSTORY_API_V2_URL, rule_or_version_id, page_size)
 
     # Append parameters if specified
     if detection_start_time:
@@ -2055,8 +2058,8 @@ def get_curatedrule_detections(client_obj, curatedrule_id: str, page_size: str, 
     :return: ec, raw_resp: Context data and raw response for the fetched detections
     """
 
-    request_url = f'{BACKSTORY_API_V2_URL}/detect/curatedRules/{curatedrule_id}/detections?pageSize={page_size}' \
-
+    request_url = '{}/detect/curatedRules/{}/detections?pageSize={}' \
+        .format(BACKSTORY_API_V2_URL, curatedrule_id, page_size)
 
     # Append parameters if specified
     if detection_start_time:
@@ -2127,11 +2130,11 @@ def deduplicate_events_and_create_incidents(contexts: list, event_identifiers: l
             new_event_hashes.append(event_hash)
         except Exception as e:
             demisto.error("[CHRONICLE] Skipping insertion of current event since error occurred while calculating"
-                          f" Hash for the event {event}. Error: {str(e)}")
+                          " Hash for the event {}. Error: {}".format(event, str(e)))
             continue
         if event_identifiers and event_hash in event_identifiers:
             demisto.info("[CHRONICLE] Skipping insertion of current event since it already exists."
-                         f" Event: {event}")
+                         " Event: {}".format(event))
             continue
         if user_alert:
             event["IncidentType"] = "UserAlert"
@@ -2173,7 +2176,7 @@ def deduplicate_detections(detection_context: list[dict[str, Any]], detection_id
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info("[CHRONICLE] Skipping insertion of current detection since it already exists."
-                         f" Detection: {detection}")
+                         " Detection: {}".format(detection))
             continue
         unique_detections.append(detection)
     return new_detection_identifiers, unique_detections
@@ -2199,7 +2202,7 @@ def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]],
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info("[CHRONICLE] Skipping insertion of current detection since it already exists."
-                         f" Detection: {detection}")
+                         " Detection: {}".format(detection))
             continue
         unique_detections.append(detection)
     return new_detection_identifiers, unique_detections
@@ -2933,7 +2936,8 @@ def get_user_alerts(client_obj, start_time, end_time, max_fetch):
     :rtype: list
     :return: list of alerts
     """
-    request_url = f'{BACKSTORY_API_V1_URL}/alert/listalerts?start_time={start_time}&end_time={end_time}&page_size={max_fetch}'
+    request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
+                                                                                      end_time, max_fetch)
     demisto.debug(f"[CHRONICLE] Request URL for fetching user alerts: {request_url}")
 
     json_response = validate_response(client_obj, request_url)
@@ -3611,7 +3615,7 @@ def prepare_hr_for_gcb_list_retrohunts_commands(json_data):
                          removeNull=True)
     if next_page_token:
         hr += '\nMaximum number of retrohunts specified in page_size has been returned. To fetch the next set of' \
-              f' retrohunts, execute the command with the page token as {next_page_token}'
+              ' retrohunts, execute the command with the page token as {}'.format(next_page_token)
     return hr
 
 
@@ -3685,7 +3689,8 @@ def gcb_cancel_retrohunt(client_obj, rule_or_version_id, retrohunt_id):
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response of the request
     """
-    request_url = f'{BACKSTORY_API_V2_URL}/detect/rules/{rule_or_version_id}/retrohunts/{retrohunt_id}:cancelRetrohunt'
+    request_url = '{}/detect/rules/{}/retrohunts/{}:cancelRetrohunt'.format(BACKSTORY_API_V2_URL, rule_or_version_id,
+                                                                            retrohunt_id)
     json_data = validate_response(client_obj, request_url, method='POST')
     json_data = {
         'id': rule_or_version_id,
@@ -3841,7 +3846,7 @@ def prepare_hr_for_gcb_list_reference_list(json_data):
                          headers=['Name', 'Content Type', 'Creation Time', 'Description', 'Content'], removeNull=True)
     if page_token:
         hr += '\nMaximum number of reference lists specified in page_size has been returned. To fetch the next set of' \
-              f' lists, execute the command with the page token as {page_token}'
+              ' lists, execute the command with the page token as {}'.format(page_token)
     return hr
 
 
@@ -4039,8 +4044,8 @@ def gcb_list_asset_aliases(client_obj: Client, start_time: str, end_time: str, p
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for asset aliases.
     """
-    request_url = (f"{BACKSTORY_API_V1_URL}/alias/listassetaliases?asset.{asset_identifier_type}={asset_identifier}"
-                   f"&start_time={start_time}&end_time={end_time}&page_size={page_size}")
+    request_url = "{}/alias/listassetaliases?asset.{}={}&start_time={}&end_time={}&page_size={}".format(
+        BACKSTORY_API_V1_URL, asset_identifier_type, asset_identifier, start_time, end_time, page_size)
     json_data = validate_response(client_obj, request_url, method='GET')
 
     # context data for the command
@@ -4069,7 +4074,8 @@ def gcb_list_curated_rules(client_obj: Client, page_token: str, page_size: Optio
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for asset aliases.
     """
-    request_url = f"{BACKSTORY_API_V2_URL}/detect/curatedRules?page_size={page_size}"
+    request_url = "{}/detect/curatedRules?page_size={}".format(
+        BACKSTORY_API_V2_URL, page_size)
     if page_token:
         request_url += f"&page_token={page_token}"
     json_data = validate_response(client_obj, request_url, method='GET')
@@ -4111,8 +4117,8 @@ def gcb_list_user_aliases(client_obj: Client, start_time: str, end_time: str, pa
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for user aliases.
     """
-    request_url = (f"{BACKSTORY_API_V1_URL}/alias/listuseraliases?user.{user_identifier_type}={user_identifier}"
-                   f"&start_time={start_time}&end_time={end_time}&page_size={page_size}")
+    request_url = "{}/alias/listuseraliases?user.{}={}&start_time={}&end_time={}&page_size={}".format(
+        BACKSTORY_API_V1_URL, user_identifier_type, user_identifier, start_time, end_time, page_size)
     json_data = validate_response(client_obj, request_url, method='GET')
 
     # context data for the command
@@ -4170,7 +4176,8 @@ def test_function(client_obj, params: dict[str, Any]):
     :rtype: None
     """
     demisto.debug('Running Test having Proxy {}'.format(params.get('proxy')))
-    request_url = f'{BACKSTORY_API_V1_URL}/ioc/listiocs?start_time=2019-10-15T20:37:00Z&page_size=1'
+    request_url = '{}/ioc/listiocs?start_time=2019-10-15T20:37:00Z&page_size=1'.format(
+        BACKSTORY_API_V1_URL)
 
     validate_response(client_obj, request_url)
     demisto.results('ok')
@@ -4194,7 +4201,8 @@ def gcb_list_iocs_command(client_obj, args: dict[str, Any]):
     start_time, _, page_size, _ = get_default_command_args_value(args=args)
 
     # Make a request
-    request_url = f'{BACKSTORY_API_V1_URL}/ioc/listiocs?start_time={start_time}&page_size={page_size}'
+    request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(
+        BACKSTORY_API_V1_URL, start_time, page_size)
     json_data = validate_response(client_obj, request_url)
 
     # List of IoCs returned for further processing
@@ -4236,8 +4244,8 @@ def gcb_assets_command(client_obj, args: dict[str, str]):
 
     start_time, end_time, page_size, _ = get_default_command_args_value(args=args)
 
-    request_url = (f'{BACKSTORY_API_V1_URL}/artifact/listassets?artifact.{artifact_type}={urllib.parse.quote(artifact_value)}'
-                   f'&start_time={start_time}&end_time={end_time}&page_size={page_size}')
+    request_url = '{}/artifact/listassets?artifact.{}={}&start_time={}&end_time={}&page_size={}'.format(
+        BACKSTORY_API_V1_URL, artifact_type, urllib.parse.quote(artifact_value), start_time, end_time, page_size)
 
     response = validate_response(client_obj, request_url)
 
@@ -4274,7 +4282,8 @@ def gcb_ioc_details_command(client_obj, args: dict[str, str]):
     artifact_value = args.get('artifact_value', '')
     artifact_type = get_artifact_type(artifact_value)
 
-    request_url = f'{BACKSTORY_API_V1_URL}/artifact/listiocdetails?artifact.{artifact_type}={urllib.parse.quote(artifact_value)}'
+    request_url = '{}/artifact/listiocdetails?artifact.{}={}'.format(BACKSTORY_API_V1_URL, artifact_type,
+                                                                     urllib.parse.quote(artifact_value))
     response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
@@ -4327,7 +4336,8 @@ def ip_command(client_obj, ip_address: str):
     if not is_ip_valid(ip_address, True):
         raise ValueError(f'Invalid IP - {ip_address}')
 
-    request_url = f'{BACKSTORY_API_V1_URL}/artifact/listiocdetails?artifact.destination_ip_address={ip_address}'
+    request_url = '{}/artifact/listiocdetails?artifact.destination_ip_address={}'.format(
+        BACKSTORY_API_V1_URL, ip_address)
 
     response = validate_response(client_obj, request_url)
 
@@ -4384,7 +4394,8 @@ def domain_command(client_obj, domain_name: str):
     :return: command output
     :rtype: tuple
     """
-    request_url = f'{BACKSTORY_API_V1_URL}/artifact/listiocdetails?artifact.domain_name={urllib.parse.quote(domain_name)}'
+    request_url = '{}/artifact/listiocdetails?artifact.domain_name={}'.format(BACKSTORY_API_V1_URL,
+                                                                              urllib.parse.quote(domain_name))
     response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
@@ -4556,9 +4567,9 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
         reference_time = args.get('reference_time', start_time)
 
     # Make a request URL
-    request_url = (f'{BACKSTORY_API_V1_URL}/asset/listevents?asset.{asset_identifier_type}={asset_identifier}'
-                   f'&start_time={start_time}&end_time={end_time}&page_size={page_size}&reference_time={reference_time}')
-
+    request_url = '{}/asset/listevents?asset.{}={}&start_time={}&end_time={}&page_size={}&reference_time={}' \
+        .format(BACKSTORY_API_V1_URL, asset_identifier_type, asset_identifier, start_time, end_time, page_size,
+                reference_time)
     demisto.debug('Requested url : ' + request_url)
 
     # get list of events from Chronicle Backstory
@@ -4582,8 +4593,8 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
             hr += ' An error occurred while fetching the start time that could have been used to' \
                   ' fetch next set of events.'
         else:
-            hr += f' To fetch the next set of events, execute the command with the start time as {last_event_timestamp}.' \
-
+            hr += ' To fetch the next set of events, execute the command with the start time as {}.' \
+                .format(last_event_timestamp)
 
     parsed_ec = get_context_for_events(json_data.get('events', []))
 
@@ -4611,8 +4622,8 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
     start_time, end_time, limit, query = get_gcb_udm_search_command_args_value(args=args, date_range='3 days')
 
     # Make a request URL
-    request_url = (f'{BACKSTORY_API_V1_URL}/events:udmSearch?time_range.start_time={start_time}&time_range.end_time={end_time}'
-                   f'&limit={limit}&query={query}')
+    request_url = '{}/events:udmSearch?time_range.start_time={}&time_range.end_time={}&limit={}&query={}' \
+        .format(BACKSTORY_API_V1_URL, start_time, end_time, limit, query)
 
     # get list of events from Chronicle Backstory
     json_data = validate_response(client_obj, request_url)
@@ -4636,8 +4647,8 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
             hr += ' An error occurred while fetching the end time that could have been used to' \
                   ' fetch next set of events.'
         else:
-            hr += f' To fetch the next set of events, execute the command with the end time as {last_event_timestamp}.' \
-
+            hr += ' To fetch the next set of events, execute the command with the end time as {}.' \
+                .format(last_event_timestamp)
 
     parsed_ec = get_context_for_events(events)
 
@@ -4685,7 +4696,7 @@ def gcb_list_detections_command(client_obj, args: dict[str, str]):
     next_page_token = json_data.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of detections specified in page_size has been returned. To fetch the next set of' \
-              f' detections, execute the command with the page token as {next_page_token}.'
+              ' detections, execute the command with the page token as {}.'.format(next_page_token)
 
     return hr, ec, json_data
 
@@ -4725,7 +4736,7 @@ def gcb_list_curatedrule_detections_command(client_obj, args: dict[str, str]):
     next_page_token = json_data.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of detections specified in page_size has been returned. To fetch the next set of' \
-              f' detections, execute the command with the page token as {next_page_token}.'
+              ' detections, execute the command with the page token as {}.'.format(next_page_token)
 
     return hr, ec, json_data
 
@@ -4755,7 +4766,7 @@ def gcb_list_rules_command(client_obj, args: dict[str, str]):
     next_page_token = json_data.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of rules specified in page_size has been returned. To fetch the next set of' \
-              f' rules, execute the command with the page token as {next_page_token}.'
+              ' rules, execute the command with the page token as {}.'.format(next_page_token)
 
     return hr, ec, json_data
 
@@ -5291,7 +5302,7 @@ def prepare_hr_for_gcb_list_curated_rules_command(aliases_response: dict[str, An
     next_page_token = aliases_response.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of curated rules specified in page_size has been returned. To fetch the next set of' \
-              f' curated rules, execute the command with the page token as {next_page_token}.'
+              ' curated rules, execute the command with the page token as {}.'.format(next_page_token)
 
     return hr
 
@@ -5493,7 +5504,7 @@ def gcb_get_event_command(client_obj, args: dict[str, str]):
     event_id = validate_argument(args.get('event_id'), 'event_id')
     event_id = urllib.parse.quote(event_id)
 
-    request_url = f'{BACKSTORY_API_V1_URL}/event:get?name={event_id}'
+    request_url = '{}/event:get?name={}'.format(BACKSTORY_API_V1_URL, event_id)
 
     json_data = validate_response(client_obj, request_url)
 

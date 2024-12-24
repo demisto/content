@@ -581,7 +581,8 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
             else:
                 raise e
 
-    raise ValueError('Failed to obtain a valid API Key after 3 attempts')
+    else:
+        raise ValueError('Failed to obtain a valid API Key after 3 attempts')
 
 
 def main() -> None:

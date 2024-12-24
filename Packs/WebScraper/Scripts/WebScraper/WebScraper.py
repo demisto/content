@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *
 
-from typing import Any
+from typing import Dict, Any
 import traceback
 from bs4 import BeautifulSoup
 from operator import attrgetter
@@ -47,7 +47,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTION '''
 
 
-def webscraper_command(args: dict[str, Any]) -> CommandResults:
+def webscraper_command(args: Dict[str, Any]) -> CommandResults:
 
     page_html = args.get('page_html', None)
     page_url = args.get('page_url', None)
