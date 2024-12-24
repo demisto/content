@@ -4,6 +4,6 @@
 
 ## What does this pack do?
 
-* Fetch events about actions performed by 1Password users within a specific account, access and modifications to items in shared vaults, and user sign-in attempts. Events from Managed Service Provider (MSP) accounts include additional details about the users performing the actions.
+Fetch events about actions performed by 1Password users within a specific account, access and modifications to items in shared vaults, and user sign-in attempts. Events from Managed Service Provider (MSP) accounts include additional details about the users performing the actions.
 
 For more information on fetched events, refer to the 1Password Event Collector integration documentation.

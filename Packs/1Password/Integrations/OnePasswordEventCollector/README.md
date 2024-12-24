@@ -12,7 +12,7 @@ The integration can be configured to fetch three types of events from 1Password:
 
 - **Item usage actions** - Information about items in shared vaults that have been modified, accessed, or used. Events include the name and IP address of the user who accessed the item, when the item was accessed, and the vault where the item is stored.
   
-- **Sign in attempts** - Information about sign-in attempts. Events include the name and IP address of the user who attempted to sign in to the account, when the attempt was made, and, for failed attempts, the cause of the failure.
+- **Sign-in attempts** - Information about sign-in attempts. Events include the name and IP address of the user who attempted to sign in to the account, when the attempt was made, and, for failed attempts, the cause of the failure.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -25,11 +25,11 @@ The integration can be configured to fetch three types of events from 1Password:
 | First fetch time | First event timestamp to fetch. For example: "1 min ago", "2 weeks ago", "3 months ago". Default is "2 weeks ago". | False |
 | Maximum number of audit events per fetch |  | True |
 | Maximum number of item usage actions per fetch |  | True |
-| Maximum number of sign in attempts per fetch |  | True |
+| Maximum number of sign-in attempts per fetch |  | True |
 
 ## Limitations
 
-- It is recommended to configure the integration instance so that the maximum number of fetched events does not exceed **100,000 per minute per event type**. Otherwise, the 1Password Events API may raise rate limit errors (HTTP 429).
+It is recommended to configure the integration instance so that the maximum number of fetched events does not exceed **100,000 per minute per event type**. Otherwise, the 1Password Events API may raise rate limit errors (HTTP 429).
 
 ## Commands
 
@@ -52,7 +52,7 @@ Fetch events from 1Password.
 | event_type | 1Password event type. Possible values are: Audit events, Item usage actions, Sign in attempts. | Required |
 | limit | The maximum number of events to fetch for the given event type. Default is 1000. | Optional |
 | from_date | The date from which to get events. If not specified, events from the last two weeks will be fetched. | Optional |
-| should_push_events | Set this argument to True in order to push events to XSIAM, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
+| should_push_events | Set this argument to True in order to push events to Cortex XSIAM, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
 
 #### Command Example
 

@@ -18,14 +18,14 @@ The API server URL depends on the region (domain) where the account is hosted an
 
 Every call to the 1Password Events API must be authorized with a bearer token. To issue a new bearer token:
 
-1. Sign in to your 1Password account and click '**Integrations**' in the sidebar.
-2. Under the '**Directory**' tab, choose '**(•••) Other**' and enter a descriptive name for the integration, such as 'Cortex XSIAM'.
+1. Sign in to your 1Password account and click **Integrations** in the sidebar.
+2. Under the **Directory** tab, choose **(•••) Other** and enter a descriptive name for the integration, such as 'Cortex XSIAM'.
 3. Enter a name for the bearer token and choose when it will expire.
 4. Ensure the token has access to the event types:
    * Audit events
    * Item usage actions
    * Sign-in attempts
-5. Click '**Issue Token**' to generate a new bearer token.
+5. Click **Issue Token** to generate a new bearer token.
 6. Save the token in a secure location and use it in configuring this integration instance.
 
 ---
