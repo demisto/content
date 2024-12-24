@@ -1,18 +1,34 @@
 commonfields:
-  id: IPToHost
+  id: IPEnrichment
   version: -1
-name: IPToHost
+name: IPEnrichment
 script: ''
 type: python
 subtype: python3
-tags: []
-comment: Try to get the hostname correlated with the input IP.
+tags:
+- Core
+- ip
+comment: xxx
 system: true
 args:
 - name: ip
   required: true
   default: true
-  description: The IP to check
+  description: The IP to enrich.
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: 'If set to false, bring the data from TIM only.'
+  name: third_enrichment
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: 'If set to true, prints to the war room the outputs of all the scripts sub steps.'
+  name: verbose
+  predefined:
+  - 'true'
+  - 'false'
 outputs:
 - contextPath: Endpoint
   description: The endpoint object.
@@ -26,4 +42,3 @@ scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.11.10.113941
 tests:
-- IPToHost - Test
