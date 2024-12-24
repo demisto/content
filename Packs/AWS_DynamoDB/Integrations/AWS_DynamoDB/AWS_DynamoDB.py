@@ -80,6 +80,7 @@ def parse_tag_field(tags_str):
 def aws_session(service='dynamodb', region=None, roleArn=None, roleSessionName=None,
                 roleSessionDuration=None, rolePolicy=None):
     kwargs = {}
+    client = None
     if roleArn and roleSessionName is not None:
         kwargs.update({
             'RoleArn': roleArn,

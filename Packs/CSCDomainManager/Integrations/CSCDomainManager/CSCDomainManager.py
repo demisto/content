@@ -130,6 +130,7 @@ class Client(BaseClient):
 
 
 def parse_and_format_date(value: str) -> str:
+    formatted_date = value
     date = dateparser.parse(value)
     if date is None:  # not a date
         return_error(f'Failed to execute {demisto.command()} command. Invalid Date')

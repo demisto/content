@@ -563,7 +563,7 @@ class IronDefense:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def fetch_incidents_command():
+def fetch_incidents_command():  # pylint: disable=E0601
     # IronDome Notification related params
     dome_categories = PARAMS.get('domeCategories', None)
     dome_limit = int(PARAMS.get('domeLimit', 200))

@@ -34,6 +34,7 @@ def parse_job_status():
 
 
 if type(job_status) is not dict:
+    toreturn = CommandResults()
     return_error(job_status)
 elif job_status["completed"]:
     toreturn = CommandResults(outputs_prefix='WS-ActionStatus(val.job_uuid==obj.job_uuid)',
