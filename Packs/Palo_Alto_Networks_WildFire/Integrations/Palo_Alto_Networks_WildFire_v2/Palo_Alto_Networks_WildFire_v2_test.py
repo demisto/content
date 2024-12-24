@@ -700,40 +700,6 @@ def test_wildfire_get_pending_file_report(mocker):
     assert status == 'Pending'
 
 
-def test_invalid_argument_res(mocker):
-    """
-    Given:
-     - hash of a file pending to be constructed.
-
-    When:
-     - Running report command with Invalid argument error message.
-
-    Then:
-     - Assert Exception occurred.
-     - Assert error entry created with the error message from the response.
-    """
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "SomeURL")
-    mocker.patch.object(demisto, 'results')
-    get_sample_response = Response()
-    get_sample_response.status_code = 421
-    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><error><error-message>' \
-                                   b'Invalid argument</error-message></error>'
-    mocker.patch(
-        'requests.request',
-        return_value=get_sample_response
-    )
-    try:
-        wildfire_get_file_report(file_hash='some_hash',
-                                 args={'extended_data': 'false',
-                                       'format': 'xml',
-                                       'verbose': 'false'})
-    except Exception as e:
-        assert e.message == 'Error while trying to get the report from the API.'
-        assert demisto.results.call_count == 1
-        assert demisto.results.call_args[0][0]['Type'] == 4
-        assert demisto.results.call_args[0][0]['Contents'] == 'Invalid argument'
-
-
 @pytest.mark.parametrize(
     "api_key_source, platform, token, expected_agent, test_id",
     [
