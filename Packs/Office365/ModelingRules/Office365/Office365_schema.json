@@ -28,7 +28,7 @@
             "type": "string",
             "is_array": false
         },
-        "filename": {
+        "FileName": {
             "type": "string",
             "is_array": false
         },
@@ -40,11 +40,11 @@
             "type": "string",
             "is_array": false
         },
-        "policyaction": {
+        "PolicyAction": {
             "type": "string",
             "is_array": false
         },
-        "message": {
+        "Message": {
             "type": "string",
             "is_array": false
         },
@@ -56,7 +56,7 @@
             "type": "string",
             "is_array": false
         },
-        "actionid": {
+        "ActionId": {
             "type": "string",
             "is_array": false
         },
@@ -68,7 +68,7 @@
             "type": "string",
             "is_array": false
         },
-        "detectiontype": {
+        "DetectionType": {
             "type": "string",
             "is_array": false
         },
@@ -88,11 +88,11 @@
             "type": "string",
             "is_array": false
         },
-        "p2sender": {
+        "P2Sender": {
             "type": "string",
             "is_array": false
         },
-        "targetuserid": {
+        "TargetUserId": {
             "type": "string",
             "is_array": false
         },
@@ -100,11 +100,11 @@
             "type": "string",
             "is_array": false
         },
-        "recipients": {
+        "Recipients": {
             "type": "string",
             "is_array": false
         },
-        "username": {
+        "UserName": {
             "type": "string",
             "is_array": false
         },
@@ -116,7 +116,7 @@
             "type": "string",
             "is_array": false
         },
-        "userrole": {
+        "UserRole": {
             "type": "string",
             "is_array": false
         },
@@ -128,11 +128,11 @@
             "type": "string",
             "is_array": false
         },
-        "verdict": {
+        "Verdict": {
             "type": "string",
             "is_array": false
         },
-        "investigationtype": {
+        "InvestigationType": {
             "type": "string",
             "is_array": false
         },
@@ -144,7 +144,7 @@
             "type": "string",
             "is_array": false
         },
-        "messages": {
+        "Messages": {
             "type": "string",
             "is_array": false
         },
@@ -152,7 +152,7 @@
             "type": "string",
             "is_array": false
         },
-        "fields": {
+        "Fields": {
             "type": "string",
             "is_array": false
         },
@@ -160,11 +160,11 @@
             "type": "string",
             "is_array": false
         },
-        "details": {
+        "Details": {
             "type": "string",
             "is_array": false
         },
-        "detail": {
+        "Detail": {
             "type": "string",
             "is_array": false
         },
@@ -176,15 +176,15 @@
             "type": "string",
             "is_array": false
         },
-        "dataexporttype": {
+        "DataExportType": {
             "type": "string",
             "is_array": false
         },
-        "itemid": {
+        "ItemId": {
             "type": "string",
             "is_array": false
         },
-        "useragent": {
+        "UserAgent": {
             "type": "string",
             "is_array": false
         },
@@ -192,7 +192,7 @@
             "type": "string",
             "is_array": false
         },
-        "p1sender": {
+        "P1Sender": {
             "type": "string",
             "is_array": false
         },
@@ -200,11 +200,11 @@
             "type": "string",
             "is_array": false
         },
-        "messageid": {
+        "MessageId": {
             "type": "string",
             "is_array": false
         },
-        "internetmessageid": {
+        "InternetMessageId": {
             "type": "string",
             "is_array": false
         },
@@ -248,7 +248,7 @@
             "type": "string",
             "is_array": false
         },
-        "investigationname": {
+        "InvestigationName": {
             "type": "string",
             "is_array": false
         },
@@ -256,7 +256,7 @@
             "type": "string",
             "is_array": false
         },
-        "itemname": {
+        "ItemName": {
             "type": "string",
             "is_array": false
         },
@@ -264,7 +264,7 @@
             "type": "string",
             "is_array": false
         },
-        "targetyammeruserid": {
+        "TargetYammerUserId": {
             "type": "string",
             "is_array": false
         },
@@ -272,15 +272,15 @@
             "type": "string",
             "is_array": false
         },
-        "url": {
+        "Url": {
             "type": "string",
             "is_array": false
         },
-        "eventdeeplink": {
+        "EventDeepLink": {
             "type": "string",
             "is_array": false
         },
-        "deeplinkurl": {
+        "DeeplinkURL": {
             "type": "string",
             "is_array": false
         },
@@ -442,7 +442,7 @@
             "type": "string",
             "is_array": false
         },
-        "sender": {
+        "Sender": {
             "type": "string",
             "is_array": false
         },        
@@ -560,7 +560,7 @@
             "type": "string",
             "is_array": false
         },
-        "targetuserorgroupname": {
+        "TargetUserOrGroupName": {
             "type": "string",
             "is_array": false
         },
@@ -676,7 +676,7 @@
             "type": "string",
             "is_array": false
         },
-        "sender": {
+        "Sender": {
             "type": "string",
             "is_array": false
         },
@@ -700,7 +700,7 @@
             "type": "string",
             "is_array": false
         },
-        "attachments": {
+        "Attachments": {
             "type": "string",
             "is_array": false
         },
