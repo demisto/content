@@ -1227,7 +1227,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: Whether to actually download the installation package file.
+      description: Supported only for package_type x64 or x86. Whether to actually download the installation package file.
       defaultValue: "false"
     description: Gets the distribution URL for downloading the installation package.
     name: xdr-get-distribution-url

@@ -1834,3 +1834,28 @@ def test_get_distribution_url_command_with_download(mocker):
     assert command_result.outputs_prefix == "PaloAltoNetworksXDR.Distribution"
     assert command_result.outputs_key_field == "id"
     assert "Successfully downloaded the installation package file" in command_result.readable_output
+
+
+def test_get_distribution_url_command_without_download_not_supported_type():
+    """
+    Given:
+        - `download_package` argument set to True but package_type is not x64 or x86.
+    When:
+        - Calling `get_distribution_url_command` without downloading the package.
+    Then:
+        - Should raise a demisto error.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "sh",
+        "download_package": "true",
+        "integration_context_brand": "PaloAltoNetworksXDR"
+    }
+    with pytest.raises(DemistoException) as e:
+        get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "sh")
+    assert e.value.message == "`download_package` argument can be used only for package_type 'x64'or 'x86'."
