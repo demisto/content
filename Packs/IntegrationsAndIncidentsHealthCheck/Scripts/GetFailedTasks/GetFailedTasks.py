@@ -61,7 +61,18 @@ def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_a
 
     for task in tasks:
         error_entries = task.get("entries", [])
-        command_id = task.get("task", {}).get("scriptId", '').replace('|||', '')
+        command = task.get("task", {}).get("scriptId", '')
+
+        command_id = None
+        brand_name = None
+
+        if "|||" in command:
+            parts = command.split("|||")
+            command_id = parts[-1]
+            brand_name = parts[0] or None
+        else:
+            command_id = command
+
         entry = {
             "Incident ID": incident.get("id"),
             "Playbook Name": task.get("ancestors", [''])[0],
@@ -71,6 +82,7 @@ def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_a
             "Task ID": task.get("id"),
             "Incident Created Date": incident.get("created", ''),
             "Command Name": custom_scripts_map_id_and_name.get(command_id, command_id),
+            "Brand Name": brand_name,
             "Incident Owner": incident["owner"]
         }
         if task.get("task", {}).get("description"):
@@ -284,7 +296,7 @@ def main():
             readable_output=tableToMarkdown("GetFailedTasks:", incidents_output,
                                             ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
                                              "Playbook Name",
-                                             "Command Name", "Error Entry ID"]),
+                                             "Command Name", "Brand Name", "Error Entry ID"]),
             outputs={
                 "GetFailedTasks": incidents_output,
                 "NumberofFailedIncidents": total_failed_incidents,
