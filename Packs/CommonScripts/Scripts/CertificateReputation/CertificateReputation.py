@@ -291,7 +291,7 @@ def certificate_reputation_command(args: dict[str, Any]) -> dict[str, Any]:
     if update_indicator:
         # we use this because it seems that enrichIndicators is ignoring additional context
         # in the output
-        indicator_set_validation_checks(indicator_value, tags)
+        indicator_set_validation_checks(indicator_value, tags)  # pylint: disable=E0606
 
     readable_output = f"Score for {indicator_value} is {standard_context['DBotScore']['Score']}\n"
     readable_output += "## Notes\n"
