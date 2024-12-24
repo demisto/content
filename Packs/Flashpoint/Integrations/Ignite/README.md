@@ -2,7 +2,7 @@ Use the Flashpoint Ignite integration to reduce business risk. Ignite allows use
 This integration was integrated and tested with API v1 of Ignite.
 
 ### Auto Extract Indicator
-Both incident types **Ignite Alert** and **Flashpoint Compromised Credentials** support the auto extraction feature by default. This feature extracts indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer to [Indicator Extraction](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) for more details).
+Both incident types **Ignite Alert** and **Flashpoint Compromised Credentials** support the auto extraction feature by default. This feature extracts indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer to [Indicator extraction (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) or [Indicator extraction (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-extraction) or [Indicator extraction (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-extraction) for more details).
 
 If you are upgrading from a Flashpoint integration, please refer to the [Migration Guide](#migration-guide) for guidance.
 
@@ -180,6 +180,7 @@ Retrieves the compromised credentials based on the filter values provided in the
 | Ignite.CompromisedCredential._source.customer_id | String | Customer ID of the IoC. | 
 | Ignite.CompromisedCredential._source.domain | String | The domain object extracted off of the email address. | 
 | Ignite.CompromisedCredential._source.email | String | The email address for the compromised credential. | 
+| Ignite.CompromisedCredential._source.username | String | The username for the compromised credential. | 
 | Ignite.CompromisedCredential._source.extraction_id | String | Extraction ID of the IoC. | 
 | Ignite.CompromisedCredential._source.extraction_record_id | String | Extraction record ID of the IoC. | 
 | Ignite.CompromisedCredential._source.fpid | String | The Flashpoint ID of this credentials object. | 
@@ -280,9 +281,9 @@ Retrieves the compromised credentials based on the filter values provided in the
 >#### Total number of records found: 150
 >
 >### Compromised Credential(s)
->|FPID|Email|Breach Source|Breach Source Type|Password|Created Date (UTC)|First Observed Date (UTC)|
->|---|---|---|---|---|---|---|
->| sample_fpid | someone@example.com | Analyst Research | Credential Stealer | pass_123 | May 10, 2024  16:13 | May 10, 2024  16:13 |
+>|FPID|Email|Username|Breach Source|Breach Source Type|Password|Created Date (UTC)|First Observed Date (UTC)|
+>|---|---|---|---|---|---|---|---|
+>| sample_fpid | someone@example.com | someone@example.com | Analyst Research | Credential Stealer | pass_123 | May 10, 2024  16:13 | May 10, 2024  16:13 |
 
 
 ### flashpoint-ignite-event-list

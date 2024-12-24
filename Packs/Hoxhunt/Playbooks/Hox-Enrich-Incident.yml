@@ -1,0 +1,172 @@
+id: Hoxhunt - Enrich Incident
+version: -1
+fromversion: 6.10.0
+name: Hoxhunt - Enrich Incident
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fdbe2557-af8d-4311-83d0-9ae3ff95e910
+    type: start
+    task:
+      id: fdbe2557-af8d-4311-83d0-9ae3ff95e910
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f94136c5-20d1-4d61-83d0-73a6a3f54729
+    type: regular
+    task:
+      id: f94136c5-20d1-4d61-83d0-73a6a3f54729
+      version: -1
+      name: Take screenshot of the first threat in the incident
+      description: Converts the contents of a URL to an image file or a PDF file.
+      script: "|||rasterize"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      file_name:
+        simple: first_threat
+      full_screen:
+        simple: "True"
+      type:
+        simple: png
+      url:
+        simple: ${incident.hoxftbodylink}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: efb4d2e0-56b6-46c9-8a5d-c9f3706508cb
+    type: title
+    task:
+      id: efb4d2e0-56b6-46c9-8a5d-c9f3706508cb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6edb684b-f2f5-4077-860e-92f5f51ee55a
+    type: condition
+    task:
+      id: 6edb684b-f2f5-4077-860e-92f5f51ee55a
+      version: -1
+      name: Is Hoxhunt integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Hoxhunt v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_1_yes": 0.89,
+      "3_2_no": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 665,
+        "width": 680,
+        "x": 440,
+        "y": -30
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+
+description: Enriches the incidents pulled from Hoxhunt with additional information.
+tests:
+- No tests (auto formatted)
