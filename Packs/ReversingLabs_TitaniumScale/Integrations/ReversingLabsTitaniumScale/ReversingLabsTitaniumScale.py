@@ -24,6 +24,8 @@ HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("passwo
 
 
 def format_proxy(addr, username=None, password=None):
+    protocol = ""
+    proxy_name = ""
     if addr.startswith("http://"):
         protocol = addr[:7]
         proxy_name = addr[7:]
