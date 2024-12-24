@@ -503,12 +503,13 @@ async def fetch_events_command(client: Client):
     should_skip_decode_events = params.get("should_skip_decode_events", False)
     offset = None
     from_epoch = None
+    from_time = params.get('from_time', '5 minutes')
     while True:
         ctx = get_integration_context() or {}
         offset = offset or ctx.get("offset")
         if ctx.get("reset_offset", False):
             offset = None
-        from_epoch, _ = parse_date_range(date_range=params.get("from_time", "5 minutes"), date_format='%s')
+        from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
@@ -516,13 +517,10 @@ async def fetch_events_command(client: Client):
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
                 e = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
-                    "This occurred due to offset pointing to events older than 12 hours.\n" \
-                    "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
-                    "If you wish to fetch more up to date events, " \
-                    "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
+                    "This occurred due to offset pointing to events older than 12 hours which isn't supported by akamai.\n" \
+                    f"Restarting fetching events to start from {from_time} ago." \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
-                set_integration_context({"from_time": "11 hours"})
                 offset = None
             demisto.updateModuleHealth(e, is_error=True)
             demisto.info("Going to sleep for 60 seconds.")
