@@ -172,7 +172,7 @@ class TestEndpointCommandRunner:
         endpoint_args = {"arg1": "value1"}
         mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
 
-        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command',return_value=[])
+        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command', return_value=[])
         mock_get_commands_outputs = mocker.patch.object(command_runner, 'get_command_results', return_value=([], [], []))
         hr, endpoints = command_runner.run_command(command, endpoint_args)
         assert hr == []
@@ -180,7 +180,6 @@ class TestEndpointCommandRunner:
         # mock_prepare_args.assert_called_with(command, endpoint_args)
         mock_run_execute_command.assert_called()
         mock_get_commands_outputs.assert_called()
-
 
     def test_run_command_normal_outputs(self, mocker, setup):
         """
@@ -203,7 +202,7 @@ class TestEndpointCommandRunner:
         mock_get_commands_outputs = mocker.patch.object(
             command_runner,
             'get_command_results',
-            return_value=([{"output_key": {"key": "value"}}],[{"readable_output": "Readable output"}],[])
+            return_value=([{"output_key": {"key": "value"}}], [{"readable_output": "Readable output"}], [])
         )
 
         hr, endpoints = command_runner.run_command(command, endpoint_args)
@@ -227,11 +226,11 @@ class TestEndpointCommandRunner:
         command_runner, module_manager, command = setup
         endpoint_args = {"arg1": "value1"}
         mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
-        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command',return_value=['Error output'])
+        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command', return_value=['Error output'])
         mock_get_commands_outputs = mocker.patch.object(
             command_runner,
             'get_command_results',
-            return_value=([],[{"readable_output": "Readable output"}],["Error output"])
+            return_value=([], [{"readable_output": "Readable output"}], ["Error output"])
         )
 
         mock_get_commands_outputs.return_value = ([], [{"readable_output": "Readable output"}], ["Error output"])
@@ -327,7 +326,7 @@ def test_run_list_args_commands(mocker, setup_command_runner):
     agent_ids = ["id1", "id2"]
     agent_ips = ["192.168.1.1", "192.168.1.2"]
     agent_hostnames = ["host1", "host2"]
-    zipped_args = zip(agent_ids, agent_ips, agent_hostnames)
+    zip(agent_ids, agent_ips, agent_hostnames)
     endpoint_outputs_list = []
     verbose = True
 
@@ -645,6 +644,7 @@ def test_merge_with_hostname_conflict(setup_endpoints, mocker):
     assert 'Hostname' in result  # Hostname will not merge but error out
     assert result['Hostname'] == [{'Value': 'host1'}, {'Value': 'host1'}]
 
+
 def test_merge_empty_endpoints():
     """
     Given:
@@ -700,6 +700,7 @@ def test_get_raw_endpoints_single_entry(mocker):
 
     result = get_raw_endpoints(['Endpoint', 'Device'], raw_context)
     assert result == expected_output, f"Expected {expected_output}, got {result}"
+
 
 def test_get_raw_endpoints_multiple_entries(mocker):
     """
@@ -839,6 +840,7 @@ def test_merge_endpoint_outputs(mocker):
     mock_merge_endpoints.assert_any_call([{'a': 1}, {'c': 3}, {'e': 5}])
     mock_merge_endpoints.assert_any_call([{'b': 2}, {'d': 4}, {}])
 
+
 def test_endpoints_not_found_all_found():
     """
     Given:
@@ -856,6 +858,7 @@ def test_endpoints_not_found_all_found():
     result = create_endpoints_not_found_list(endpoints, zipped_args)
     assert result == []
 
+
 def test_endpoints_not_found_some_found():
     """
     Given:
@@ -871,6 +874,7 @@ def test_endpoints_not_found_some_found():
     zipped_args = [('id1', 'ip1', 'host1'), ('id2', 'ip2', 'host2')]
     result = create_endpoints_not_found_list(endpoints, zipped_args)
     assert result == [{'Key': 'id2, ip2, host2'}]
+
 
 def test_endpoints_not_found_nothing_found(mocker):
     """

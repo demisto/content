@@ -761,7 +761,8 @@ def create_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args
         zipped_args (list of tuple): List of tuples, each containing (agent_id, agent_ip, agent_hostname).
 
     Returns:
-        list of dict: List of dictionaries with 'Key' for agents not found, containing comma-separated agent_id, agent_ip, and agent_hostname.
+        list of dict: List of dictionaries with 'Key' for agents not found, containing comma-separated agent_id, agent_ip,
+        and agent_hostname.
     """
     endpoints_not_found = []
     hostnames = set()
@@ -848,14 +849,14 @@ def main():
         endpoints_not_found_list: list[dict] = []
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager)
-        zipped_args = list(zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue=''))
+        zipped_args: list[tuple] = list(zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue=''))
 
         endpoint_outputs_list, command_results_list = run_single_args_commands(
             zipped_args, single_args_commands, command_runner, verbose, endpoint_outputs_list
         )
 
         endpoint_outputs_list, command_results_list = run_list_args_commands(
-            list_args_commands, command_runner, agent_ids, agent_ips, agent_hostnames,endpoint_outputs_list, verbose
+            list_args_commands, command_runner, agent_ids, agent_ips, agent_hostnames, endpoint_outputs_list, verbose
         )
 
         if len(endpoint_outputs_list) < len(zipped_args):
