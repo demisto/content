@@ -131,6 +131,7 @@ class EndpointCommandRunner:
 
         endpoints = entry_context_to_endpoints(command, entry_context)
         if command.post_processing:
+            demisto.debug(f'command with post processing: {command.name}')
             endpoints = command.post_processing(endpoints, endpoint_args)
 
         return human_readable, endpoints
@@ -262,14 +263,15 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
             name="ad-get-computer",
             output_keys=["Endpoint"],
             args_mapping={"name": "agent_hostname"},
-            output_mapping={}
+            output_mapping={},
+            post_processing=active_directory_post
         ),
         Command(
             brand='McAfee ePO v2',
             name='epo-find-system',
             output_keys=["Endpoint"],
             args_mapping={'searchText': 'agent_hostname'},
-            output_mapping={}
+            output_mapping={},
         ),
         Command(
             brand='ExtraHop v2',
@@ -328,8 +330,7 @@ def run_single_args_commands(
         single_args_commands,
         command_runner,
         verbose,
-        endpoint_outputs_list,
-        endpoints_not_found_list
+        endpoint_outputs_list
 ):
     """
     Runs the single-argument commands and returns the command results, human-readable outputs, and a list of endpoints
@@ -340,7 +341,6 @@ def run_single_args_commands(
         command_runner (EndpointCommandRunner): The EndpointCommandRunner instance to use for running the commands.
         verbose (bool): A flag indicating whether to print verbose output.
         endpoint_outputs_list (List[Dict[str, Any]]): A list to store the output from the commands.
-        endpoints_not_found_list (List[Dict[str, Any]]): A list to store the endpoints that were not found.
     Returns:
         tuple[CommandResults, List[Command], List[Command]]:
         The endpoints that were successfully found, list of endpoints that were not found, and a list of command results.
@@ -364,11 +364,6 @@ def run_single_args_commands(
                 single_endpoint_outputs.append(endpoint_output)
             single_endpoint_readable_outputs.extend(readable_outputs)
 
-        if not single_endpoint_outputs:
-            keys = (agent_id, agent_ip, agent_hostname)
-            endpoints_not_found_list.append({
-                'Key': ', '.join([key for key in keys if key])
-            })
         if verbose:
             command_results_list.extend(single_endpoint_readable_outputs)
 
@@ -376,7 +371,7 @@ def run_single_args_commands(
         endpoint_outputs_list.extend(merged_endpoints)
 
     demisto.debug(f'ending single arg loop with {len(endpoint_outputs_list)} endpoints')
-    return endpoint_outputs_list, endpoints_not_found_list, command_results_list
+    return endpoint_outputs_list, command_results_list
 
 
 def run_list_args_commands(
@@ -385,9 +380,7 @@ def run_list_args_commands(
         agent_ids,
         agent_ips,
         agent_hostnames,
-        zipped_args,
         endpoint_outputs_list,
-        endpoints_not_found_list,
         verbose
 ):
     """
@@ -401,11 +394,10 @@ def run_list_args_commands(
         agent_hostnames (List[str]): A list of agent hostnames.
         zipped_args (Iterable[Tuple[Any, Any, Any]]): A list of tuples containing agent ID, agent IP, and agent hostname.
         endpoint_outputs_list (List[Dict[str, Any]]): A list to store the output from the commands.
-        endpoints_not_found_list (List[Dict[str, Any]]): A list to store the endpoints that were not found.
         verbose (bool): A flag indicating whether to print verbose output.
     Returns:
-        tuple[list[dict], list[dict], list[CommandResults]]:
-        The endpoints that were successfully found, list of endpoints that were not found, and a list of command results.
+        tuple[list[dict], list[CommandResults]]:
+        The endpoints that were successfully found and a list of command results.
     """
     multiple_endpoint_outputs = []
     multiple_endpoint_readable_outputs = []
@@ -422,37 +414,13 @@ def run_list_args_commands(
 
         if endpoint_output:
             multiple_endpoint_outputs.append(endpoint_output)
-        # else:
-        #     for agent_id, agent_ip, agent_hostname in zipped_args:
-        #         endpoints_not_found_list.append({
-        #             'Key': agent_id or agent_ip or agent_hostname,
-        #             'Source': command.brand
-        #         })
         if verbose:
             multiple_endpoint_readable_outputs.extend(readable_outputs)
 
     merged_endpoints = merge_endpoint_outputs(multiple_endpoint_outputs)
-    if len(merged_endpoints) < len(zipped_args):
-        hostnames = set()
-        ids = set()
-        ips = set()
-        for endpoint in merged_endpoints:
-            hostnames_list = [hostname['Value'] for hostname in to_list(endpoint.get('Hostname'))]
-            ids_list = [id['Value'] for id in to_list(endpoint.get('ID'))]
-            ips_list = [ip['Value'] for ip in to_list(endpoint.get('IPAddress'))]
-            hostnames.update(hostnames_list)
-            ids.update(ids_list)
-            ips.update(ips_list)
-        for agent_id, agent_ip, agent_hostname in zipped_args:
-            if agent_id not in ids and agent_ip not in ips and agent_hostname not in hostnames:
-                keys = (agent_id, agent_ip, agent_hostname)
-                endpoints_not_found_list.append({
-                    'Key': ', '.join([key for key in keys if key])
-                })
-
     endpoint_outputs_list.extend(merged_endpoints)
 
-    return endpoint_outputs_list, endpoints_not_found_list, multiple_endpoint_readable_outputs
+    return endpoint_outputs_list, multiple_endpoint_readable_outputs
 
 
 def safe_list_get(lst: list, idx: int, default: Any):
@@ -495,15 +463,16 @@ def create_endpoint(
         dict[str, Any]: A structured endpoint dictionary with values and their sources.
     """
 
+    demisto.debug(f'creating endpoint from {command_output}')
     if not command_output:
         return {}
 
     endpoint = {}
-
     for key, value in command_output.items():
         endpoint_key = mapped_key if (mapped_key := output_mapping.get(key)) else key
         endpoint[endpoint_key] = {'Value': value, 'Source': source}
 
+    demisto.debug(f'created {endpoint=}')
     return endpoint
 
 
@@ -783,6 +752,36 @@ def merge_endpoint_outputs(endpoint_outputs: list[list[dict[str, Any]]]) -> list
     return merged_endpoints
 
 
+def create_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args: list[tuple]) -> list[dict[str, str]]:
+    """
+    Identify endpoints not found in the provided endpoints.
+
+    Args:
+        endpoints (list of dict): List of endpoint dictionaries with 'Hostname', 'ID', and 'IPAddress' keys.
+        zipped_args (list of tuple): List of tuples, each containing (agent_id, agent_ip, agent_hostname).
+
+    Returns:
+        list of dict: List of dictionaries with 'Key' for agents not found, containing comma-separated agent_id, agent_ip, and agent_hostname.
+    """
+    endpoints_not_found = []
+    hostnames = set()
+    ids = set()
+    ips = set()
+    demisto.debug(f'{endpoints=}, {zipped_args=}')
+    for endpoint in endpoints:
+        hostnames_list = [hostname['Value'] for hostname in to_list(endpoint.get('Hostname'))]
+        ids_list = [id['Value'] for id in to_list(endpoint.get('ID'))]
+        ips_list = [ip['Value'] for ip in to_list(endpoint.get('IPAddress'))]
+        hostnames.update(hostnames_list)
+        ids.update(ids_list)
+        ips.update(ips_list)
+    for agent_id, agent_ip, agent_hostname in zipped_args:
+        if agent_id not in ids and agent_ip not in ips and agent_hostname not in hostnames:
+            keys = (agent_id, agent_ip, agent_hostname)
+            endpoints_not_found.append({'Key': ', '.join([key for key in keys if key])})
+    return endpoints_not_found
+
+
 def extra_hop_mapping(outputs: dict[str, Any]) -> dict[str, str]:
     output_mapping = {
         'Macaddr': 'MACAddress',
@@ -810,6 +809,23 @@ def cylance_filtering(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> 
     return filtered_endpoints
 
 
+def active_directory_post(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> list[dict[str, Any]]:
+    demisto.debug(f'active_directory_post: {endpoints=}')
+    fixed_endpoints = []
+    for endpoint in endpoints:
+        demisto.debug(f'active_directory_post: {endpoint=}')
+        endpoint_hostname = endpoint['Hostname']['Value']
+        if isinstance(endpoint_hostname, str):
+            fixed_endpoints.append(endpoint)
+        elif isinstance(endpoint_hostname, list) and len(endpoint_hostname) == 1:
+            endpoint['Hostname']['Value'] = endpoint_hostname[0]
+            fixed_endpoints.append(endpoint)
+        else:
+            raise ValueError('Invalid hostname')
+    demisto.debug(f'fixed_endpoints: {fixed_endpoints=}')
+    return fixed_endpoints
+
+
 """ MAIN FUNCTION """
 
 
@@ -832,23 +848,25 @@ def main():
         endpoints_not_found_list: list[dict] = []
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager)
-        zipped_args = zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue='')
+        zipped_args = list(zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue=''))
 
-        endpoint_outputs_list, endpoints_not_found_list, command_results_list = run_single_args_commands(
-            zipped_args, single_args_commands, command_runner, verbose, endpoint_outputs_list, endpoints_not_found_list
+        endpoint_outputs_list, command_results_list = run_single_args_commands(
+            zipped_args, single_args_commands, command_runner, verbose, endpoint_outputs_list
         )
 
-        endpoint_outputs_list, endpoints_not_found_list, command_results_list = run_list_args_commands(
-            list_args_commands, command_runner, agent_ids, agent_ips, agent_hostnames, zipped_args,
-            endpoint_outputs_list, endpoints_not_found_list, verbose
+        endpoint_outputs_list, command_results_list = run_list_args_commands(
+            list_args_commands, command_runner, agent_ids, agent_ips, agent_hostnames,endpoint_outputs_list, verbose
         )
+
+        if len(endpoint_outputs_list) < len(zipped_args):
+            endpoints_not_found_list.extend(create_endpoints_not_found_list(endpoint_outputs_list, zipped_args))
 
         if endpoints_not_found_list:
             command_results_list.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
                         name="Endpoint(s) not found",
-                        headers=["Key", "Source"],
+                        headers=["Key"],
                         t=endpoints_not_found_list,
                     )
                 )

@@ -272,7 +272,6 @@ def test_run_single_args_commands(mocker, setup_command_runner):
     ]
     verbose = True
     endpoint_outputs_list = []
-    endpoints_not_found_list = []
 
     # Mock the run_command method
     command_runner.run_command.side_effect = [
@@ -293,20 +292,14 @@ def test_run_single_args_commands(mocker, setup_command_runner):
         command_runner=command_runner,
         verbose=verbose,
         endpoint_outputs_list=endpoint_outputs_list,
-        endpoints_not_found_list=endpoints_not_found_list
     )
 
     # Assert results
     expected_endpoint_outputs_list = [{"key1": "value1"}, {"key2": "value2"}]
-    expected_endpoints_not_found_list = [
-        {'Key': 'agent1, 192.168.1.1, hostname1', 'Source': 'BrandB'},
-        {'Key': 'agent2, 192.168.1.2, hostname2', 'Source': 'BrandB'}
-    ]
     expected_command_results_list = ["Readable output 1", "Readable output 2", "Readable output 3", "Readable output 4"]
 
-    assert results == (expected_endpoint_outputs_list, expected_endpoints_not_found_list, expected_command_results_list)
+    assert results == (expected_endpoint_outputs_list, expected_command_results_list)
     assert endpoint_outputs_list == expected_endpoint_outputs_list
-    assert endpoints_not_found_list == expected_endpoints_not_found_list
 
     # Verify run_command calls
     assert command_runner.run_command.call_count == 4
@@ -336,7 +329,6 @@ def test_run_list_args_commands(mocker, setup_command_runner):
     agent_hostnames = ["host1", "host2"]
     zipped_args = zip(agent_ids, agent_ips, agent_hostnames)
     endpoint_outputs_list = []
-    endpoints_not_found_list = []
     verbose = True
 
     # Mock command runner behavior
@@ -348,24 +340,18 @@ def test_run_list_args_commands(mocker, setup_command_runner):
     mock_merge_endpoint_outputs = mocker.patch('GetEndpointData.merge_endpoint_outputs', return_value=[{"merged": "data"}])
 
     # Call the function
-    result_outputs, result_not_found, result_readable = run_list_args_commands(
+    result_outputs, result_readable = run_list_args_commands(
         list_args_commands,
         command_runner,
         agent_ids,
         agent_ips,
         agent_hostnames,
-        zipped_args,
         endpoint_outputs_list,
-        endpoints_not_found_list,
         verbose
     )
 
     # Assertions
     assert result_outputs == [{"merged": "data"}]
-    assert result_not_found == [
-        {"Key": "id1", "Source": "BrandB"},
-        {"Key": "id2", "Source": "BrandB"}
-    ]
     assert result_readable == ["Output1"]
 
     # Verify command_runner was called with correct arguments
@@ -852,3 +838,50 @@ def test_merge_endpoint_outputs(mocker):
     # Verify `merge_endpoints` was called with the right arguments
     mock_merge_endpoints.assert_any_call([{'a': 1}, {'c': 3}, {'e': 5}])
     mock_merge_endpoints.assert_any_call([{'b': 2}, {'d': 4}, {}])
+
+def test_endpoints_not_found_all_found():
+    """
+    Given:
+        All endpoints are found
+    When:
+        The create_endpoints_not_found_list function is called
+    Then:
+        It should return an empty list
+    """
+    endpoints = [
+        {'Hostname': [{'Value': 'host1'}], 'ID': [{'Value': 'id1'}], 'IPAddress': [{'Value': 'ip1'}]},
+        {'Hostname': [{'Value': 'host2'}], 'ID': [{'Value': 'id2'}], 'IPAddress': [{'Value': 'ip2'}]}
+    ]
+    zipped_args = [('id1', 'ip1', 'host1'), ('id2', 'ip2', 'host2')]
+    result = create_endpoints_not_found_list(endpoints, zipped_args)
+    assert result == []
+
+def test_endpoints_not_found_some_found():
+    """
+    Given:
+        Not all endpoints are found
+    When:
+        The create_endpoints_not_found_list function is called
+    Then:
+        It should return a list with the missing endpoints.
+    """
+    endpoints = [
+        {'Hostname': [{'Value': 'host1'}], 'ID': [{'Value': 'id1'}], 'IPAddress': [{'Value': 'ip1'}]}
+    ]
+    zipped_args = [('id1', 'ip1', 'host1'), ('id2', 'ip2', 'host2')]
+    result = create_endpoints_not_found_list(endpoints, zipped_args)
+    assert result == [{'Key': 'id2, ip2, host2'}]
+
+def test_endpoints_not_found_nothing_found(mocker):
+    """
+    Given:
+        No endpoints are found
+    When:
+        The create_endpoints_not_found_list function is called
+    Then:
+        It should return a list with the missing endpoints.
+    """
+    endpoints = []
+    zipped_args = [('id1', 'ip1', 'host1'), ('id2', 'ip2', 'host2')]
+    result = create_endpoints_not_found_list(endpoints, zipped_args)
+    assert result == [{'Key': 'id1, ip1, host1'}, {'Key': 'id2, ip2, host2'}]
