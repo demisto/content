@@ -1,0 +1,14 @@
+<response status="success">
+    <result>
+        <expire-at>2024/11/17 07:19:06</expire-at>
+        <remind-at>2024/11/16 07:19:06</remind-at>
+        <hours-to-expiry>287</hours-to-expiry>
+        <minutes-to-expiry>17265</minutes-to-expiry>
+        <seconds-to-expiry>1035946</seconds-to-expiry>
+        <hours-to-reminder>24</hours-to-reminder>
+        <minutes-to-reminder>1440</minutes-to-reminder>
+        <seconds-to-reminder>86400</seconds-to-reminder>
+        <on-hsm>no</on-hsm>
+        <auto-renew-mkey>0</auto-renew-mkey>
+    </result>
+</response>

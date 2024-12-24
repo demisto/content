@@ -1420,12 +1420,13 @@ Initiate a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | incident_id | Link the response action to triggered incident. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| commands | Comma-separated list of shell commands to execute. | Required | 
+| commands | Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&&`, `;` separators for controlling the flow of multiple commands). | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional |
+| command_type | Type of shell command. Possible values: "powershell", "null". | Optional |
 
 #### Context Output
 
@@ -2411,10 +2412,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
-| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>.             | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 10. | Optional | 
 
 #### Context Output
 
@@ -2465,10 +2466,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_id | The host name of a specific host. | Optional | 
-| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| host_id | The host name of a specific host.                                                                                                                         | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 10 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
 

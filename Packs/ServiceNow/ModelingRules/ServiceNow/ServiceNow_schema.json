@@ -32,6 +32,98 @@
       "user": {
         "type": "string",
         "is_array": false
+      },
+        "source_log_type": {
+        "type": "string",
+        "is_array": false
+      },
+        "type": {
+        "type": "string",
+        "is_array": false
+      },
+        "total_wait_time": {
+        "type": "string",
+        "is_array": false
+      },
+        "transaction_processing_time": {
+        "type": "string",
+        "is_array": false
+      },
+        "interaction_id": {
+        "type": "string",
+        "is_array": false
+      },
+        "transaction_number": {
+        "type": "string",
+        "is_array": false
+      },
+        "output_length": {
+        "type": "string",
+        "is_array": false
+      },
+        "db_category": {
+        "type": "string",
+        "is_array": false
+      },
+        "additional_info": {
+        "type": "string",
+        "is_array": false
+      },
+        "additional_debug_info": {
+        "type": "string",
+        "is_array": false
+      },
+        "remote_ip": {
+        "type": "string",
+        "is_array": false
+      },
+        "sys_created_by": {
+        "type": "string",
+        "is_array": false
+      },
+        "system_id": {
+        "type": "string",
+        "is_array": false
+      },
+        "user_agent": {
+        "type": "string",
+        "is_array": false
+      },
+        "url": {
+        "type": "string",
+        "is_array": false
+      },
+        "session": {
+        "type": "string",
+        "is_array": false
+      },
+        "protocol": {
+        "type": "string",
+        "is_array": false
+      },
+        "gzip": {
+        "type": "string",
+        "is_array": false
+      },
+        "origin_scope": {
+        "type": "string",
+        "is_array": false
+      },
+        "db_pool": {
+        "type": "string",
+        "is_array": false
+      },
+        "sql_time": {
+        "type": "string",
+        "is_array": false
+      },
+        "table": {
+        "type": "string",
+        "is_array": false
+      },
+        "app_scope": {
+        "type": "string",
+        "is_array": false
       }
     }
   }

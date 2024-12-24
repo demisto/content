@@ -21,6 +21,41 @@ test_client = CoreClient(
 
 Core_URL = 'https://api.xdrurl.com'
 
+POWERSHELL_COMMAND_CASES = [
+    pytest.param(
+        "Write-Output 'Hello, world, it`s me!'",
+        "powershell -Command 'Write-Output ''Hello, world, it`s me!'''",
+        id='Hello World message',
+    ),
+    pytest.param(
+        r"New-Item -Path 'C:\Users\User\example.txt' -ItemType 'File'",
+        "powershell -Command 'New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File'''",
+        id='New file in path with backslashes',
+    ),
+    pytest.param(
+        "$message = 'This is a test with special chars: `&^%$#@!'; Write-Output $message",
+        "powershell -Command '$message = ''This is a test with special chars: `&^%$#@!''; Write-Output $message'",
+        id='Special characters message',
+    ),
+    pytest.param(
+        (
+            "$users = @(JohnDoe) -split ';'; query user | Select-Object -Skip 1 | "
+            "ForEach-Object { $sessionInfo = $_ -split '\s+' | "
+            "Where-Object { $_ -ne '' -and $_ -notlike 'Disc' }; "
+            "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart('>'); "
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }"
+        ),
+        (
+            "powershell -Command '$users = @(JohnDoe) -split '';''; query user | Select-Object -Skip 1 | "
+            "ForEach-Object { $sessionInfo = $_ -split ''\\s+'' | "
+            "Where-Object { $_ -ne '''' -and $_ -notlike ''Disc'' }; "
+            "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart(''>''); "
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }'"
+        ),
+        id='End RDP session for users',
+    ),
+]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -983,7 +1018,7 @@ def test_handle_outgoing_issue_closure_close_reason(mocker):
     request_data_log = mocker.patch.object(demisto, 'debug')
     handle_outgoing_issue_closure(remote_args)
 
-    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in \
+    assert "handle_outgoing_issue_closure Closing Remote incident ID: None with status resolved_security_testing" in \
            request_data_log.call_args[  # noqa: E501
                0][0]
 
@@ -1992,6 +2027,26 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     response = get_script_execution_result_files_command(client, args)
     assert response['File'] == zip_filename
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
+
+
+@pytest.mark.parametrize('command_input, expected_command', POWERSHELL_COMMAND_CASES)
+def test_form_powershell_command(command_input: str, expected_command: str):
+    """
+    Given:
+        - An unescaped command containing characters like ', `, ", \
+
+    When:
+        - Calling the form_powershell_command function
+
+    Assert:
+        - Command starts with 'powershell -Command' and is properly escaped.
+    """
+    from CoreIRApiModule import form_powershell_command
+
+    command = form_powershell_command(command_input)
+
+    assert not command_input.startswith('powershell -Command ')
+    assert command == expected_command
 
 
 def test_run_script_execute_commands_command(requests_mock):
