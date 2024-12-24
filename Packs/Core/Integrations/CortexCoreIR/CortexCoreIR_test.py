@@ -349,7 +349,7 @@ def test_get_distribution_url_command_with_download(mocker):
     assert command_result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
     assert command_result.outputs_prefix == "CortexCoreIR.Distribution"
     assert command_result.outputs_key_field == "id"
-    assert "Successfully downloaded the installation package file" in command_result.readable_output
+    assert "Installation package downloaded successfully." in command_result.readable_output
 
 
 def test_get_distribution_url_command_without_download_not_supported_type():

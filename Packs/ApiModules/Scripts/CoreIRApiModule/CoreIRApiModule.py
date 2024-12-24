@@ -2856,7 +2856,7 @@ def download_installation_package(client, url: str, package_type: str, distribut
         },
         outputs_prefix=f'{brand}.Distribution',
         outputs_key_field='id',
-        readable_output="Successfully downloaded the installation package file"
+        readable_output="Installation package downloaded successfully."
     )
     return [file_result, result]
 
