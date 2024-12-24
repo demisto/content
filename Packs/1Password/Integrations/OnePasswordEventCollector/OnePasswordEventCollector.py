@@ -2,13 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
-import urllib3
 from http import HTTPStatus
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -173,9 +169,11 @@ def get_events_from_client(
             event_id = event['uuid']
 
             if event_id in ids_to_skip:
+                demisto.debug(f'Skipped duplicate event with ID: {event_id}')
                 continue
 
             if len(events) == max_events:
+                demisto.debug(f'Reached maximum number of events {max_events}. Last event ID: {event_id}')
                 break
 
             add_fields_to_event(event, event_type)
