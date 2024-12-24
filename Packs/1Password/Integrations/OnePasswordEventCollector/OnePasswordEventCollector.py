@@ -144,7 +144,11 @@ def get_events_from_client(
     max_events: int,
     ids_to_skip: set[str] | None = None
 ) -> list[dict]:
-    """Gets events of the specified type based on the 'from_date' filter and 'max_events' argument.
+    """Gets events of the specified type based on the `from_date` filter and `max_events` argument using cursor-based pagination.
+
+    The first API call in each fetch run uses a "Reset Cursor" (date filter). Subsequent API calls in the same fetch run use
+    "Pagination / Continuing Cursor". This ensures that even if we fetch part of the records on a given page and stop in the
+    middle because we reached `max_events`, we can continue exactly where we stopped in the next fetch run via the Reset Cursor.
 
     Args:
         client (Client): 1Password Events API client.
@@ -159,11 +163,12 @@ def get_events_from_client(
     events: list[dict] = []
     ids_to_skip = ids_to_skip or set()
 
-    # First call to the paginated API needs to to include a date filter
+    # Reset Cursor - First call to the paginated API needs to to include a date filter
     has_more_events = True
     client_kwargs: dict[str, Any] = {'event_type': event_type, 'from_date': from_date}
 
     while has_more_events:
+        response_duplicate_count = 0
         response = client.get_events(**client_kwargs)
         pagination_cursor = response['cursor']
 
@@ -171,6 +176,7 @@ def get_events_from_client(
             event_id = event['uuid']
 
             if event_id in ids_to_skip:
+                response_duplicate_count += 1
                 demisto.debug(f'Skipped duplicate event with ID: {event_id}')
                 continue
 
@@ -183,11 +189,11 @@ def get_events_from_client(
             ids_to_skip.add(event_id)
 
         demisto.debug(
-            f'Response has {len(response["items"])} events and pagination cursor: {pagination_cursor}.'
-            f'Used client arguments: {client_kwargs}.'
+            f'Response has {len(response["items"])} events (including {response_duplicate_count} skipped duplicates).'
+            f'Got pagination cursor: {pagination_cursor}. Used client arguments: {client_kwargs}.'
         )
 
-        # Followup API calls need to include pagination cursor (if any more events)
+        # Pagination / Continuing cursor - Followup API calls need to the unique page ID (if any more events)
         has_more_events = False if len(events) == max_events else response['has_more']
         client_kwargs = {'event_type': event_type, 'pagination_cursor': pagination_cursor}
 
