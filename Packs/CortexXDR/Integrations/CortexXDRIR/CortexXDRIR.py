@@ -6,7 +6,6 @@ import string
 from itertools import zip_longest
 from datetime import datetime, timedelta
 
-
 from CoreIRApiModule import *
 
 # Disable insecure warnings
