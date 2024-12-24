@@ -146,8 +146,8 @@ def test_client_get_events_valid_inputs(authenticated_client: Client, requests_m
     'event_type, error_message',
     [
         pytest.param(
-            'Random event',
-            'Invalid or unsupported 1Password event type: Random event.',
+            'unsupported event',
+            'Invalid or unsupported 1Password event type: unsupported event.',
             id='Invalid Event Type',
         ),
         pytest.param(
