@@ -1,3 +1,4 @@
+from typing import Literal
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
@@ -16,6 +17,8 @@ DEFAULT_MAX_FETCH_ALERT = 2500
 DEFAULT_MAX_FETCH_AUDIT_EVENTS = 5000
 PAGE_SIZE = 500
 DEFAULT_LIMIT = 10
+ENDPOINTS = {"alerts": "/v7/alerts", "events": "/v7/audit-user-events"}
+DATE_KEYS = {"alerts": "startDate", "events": "date"}
 
 
 """ CLIENT CLASS """
@@ -34,64 +37,30 @@ class Client(BaseClient):
     def __init__(self, base_url, headers, verify, proxy):
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
-def get_events_ALERTS(
+
+def fetch_paginated_events(
     client: Client,
-    endpoint_path: str,
+    fetch_type: Literal["alerts", "events"],
     fetch_limit: int,
     query_params: dict = {},
     next_page_url: str = "",
-    pagination_offset: int = 0
+    pagination_offset: int = 0,
 ):
-    fetched_events: list[dict] = []
-    has_next = True
-    previous_offset = pagination_offset
-    while has_next:
-        has_next = False
-        request_url = (
-            unquote(next_page_url)
-            if next_page_url
-            else f"{client._base_url}{endpoint_path}?{unquote(urlencode(query_params))}"
-        )
-        params = {} if next_page_url else query_params
-        response = client._http_request("GET", full_url=request_url, params=params)
-        if next_page_url := response.get("_links", {}).get("next", {}).get("href"):
-            has_next = True
-        current_batch_events = response.get("auditEvents") or response.get("alerts", [])
-        fetched_events.extend(current_batch_events[pagination_offset:])
-        pagination_offset = 0 if current_batch_events else pagination_offset
-        if len(fetched_events) >= fetch_limit:
-            fetched_events = fetched_events[:fetch_limit]
-            next_page_url = next_page_url or request_url
-            pagination_offset = len(fetched_events) % 500
-            return fetched_events, {
-                "last_fetch": fetched_events[0].get("startDate"),
-                "next_page": next_page_url,
-                "offset": pagination_offset if next_page_url != request_url else pagination_offset + previous_offset,
-            }
-    return fetched_events, {"last_fetch": fetched_events[0].get("startDate") if fetched_events else "",
-                "next_page": next_page_url or "",
-                "offset": 0
-                }
-
-
-def get_events_AUDIT_LOGS(
-    client: Client,
-    endpoint_path: str,
-    fetch_limit: int,
-    query_params: dict = {},
-    next_page_url: str = "",
-    pagination_offset: int = 0
-):
-    fetched_events: list[dict] = []
-    has_next = True
+    
     previous_offset = pagination_offset
     previous_page_url = next_page_url
+
+    is_events_type = fetch_type == "events"
+    date_key = DATE_KEYS.get(fetch_type)
+
+    fetched_events: list[dict] = []
+    has_next = True
     while has_next:
         has_next = False
         request_url = (
             unquote(next_page_url)
             if next_page_url
-            else f"{client._base_url}{endpoint_path}?{unquote(urlencode(query_params))}"
+            else f"{client._base_url}{ENDPOINTS.get(fetch_type)}?{unquote(urlencode(query_params))}"
         )
         params = {} if next_page_url else query_params
         response = client._http_request("GET", full_url=request_url, params=params)
@@ -102,55 +71,65 @@ def get_events_AUDIT_LOGS(
         pagination_offset = 0 if current_batch_events else pagination_offset
         if len(fetched_events) >= fetch_limit:
             fetched_events = fetched_events[:fetch_limit]
-            pagination_offset = min(abs(len(fetched_events) - fetch_limit - len(current_batch_events)), len(fetched_events))
+            pagination_offset = (
+                fetch_limit % len(current_batch_events) + previous_offset
+                if is_events_type
+                else len(fetched_events) % PAGE_SIZE
+            )
+            next_page_url = (
+                request_url if is_events_type or pagination_offset else next_page_url
+            )
+            is_paginated_fetch = is_fetch_paginated(
+                fetch_type, next_page_url, request_url, previous_page_url
+            )
             return fetched_events, {
-                "last_fetch": fetched_events[0].get("date"),
-                "next_page": request_url,
-                "offset": pagination_offset if request_url != previous_page_url else pagination_offset + previous_offset,
+                "last_fetch": fetched_events[0].get(date_key),
+                "next_page": next_page_url,
+                "offset": (
+                    pagination_offset
+                    if is_paginated_fetch
+                    else pagination_offset + previous_offset
+                ),
             }
-    return fetched_events, {"last_fetch": fetched_events[0].get("date") if fetched_events else query_params.get("last_fetch", ""),
-                "next_page": response.get("_links", {}).get("self", {}).get("href"),
-                "offset": 0
-                }
+    return fetched_events, { "last_fetch":fetched_events[0].get(date_key) if fetched_events else query_params.get("last_fetch"),
+        "next_page": ( response.get("_links", {}).get("self", {}).get("href") if is_events_type else "" ),
+        "offset": 0,
+    }
 
 
-def get_events_alert_type(client: Client, start_date: str, end_date: str, max_fetch: int, last_run: dict) -> tuple:
-    start_date, end_date = calculate_fetch_dates(start_date, "alerts", last_run, end_date)
+def get_events(
+    client: Client,
+    fetch_type: Literal["alerts", "events"],
+    start_date: str,
+    end_date: str,
+    max_fetch: int,
+    last_run: dict,
+) -> tuple:
+    start_date, end_date = calculate_fetch_dates(
+        start_date, last_run.get(fetch_type, {}), end_date
+    )
 
-    last_run_next_page = last_run.get("alerts", {}).get("next_page", "")
-    offset = last_run.get("alerts", {}).get("offset", 0)
-    params = {} if "nextTrigger" in last_run else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
+    last_run_next_page = last_run.get(fetch_type, {}).get("next_page", "")
+    offset = last_run.get(fetch_type, {}).get("offset", 0)
+    params = {} if last_run_next_page else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
 
-    events, next_run = get_events_ALERTS(
+    events, next_run = fetch_paginated_events(
         client=client,
-        endpoint_path="/v7/alerts",
+        fetch_type=fetch_type,
         fetch_limit=max_fetch,
         query_params=params,
         next_page_url=last_run_next_page,
-        pagination_offset=offset
+        pagination_offset=offset,
     )
-    deduplicate_events(events, start_date, "startDate")
-
     return events, next_run
 
 
-def get_audit_events_type(client: Client, start_date: str, end_date: str, max_fetch: int, last_run: dict) -> tuple:
-    start_date, end_date = calculate_fetch_dates(start_date, "events", last_run, end_date)
-
-    last_run_next_page = last_run.get("events", {}).get("next_page", "")
-    offset = last_run.get("events", {}).get("offset", 0)
-    params = {} if "nextTrigger" in last_run else {"startDate": start_date, "endDate": end_date}
-
-    events, next_run = get_events_AUDIT_LOGS(
-        client=client,
-        endpoint_path="/v7/audit-user-events",
-        fetch_limit=max_fetch,
-        query_params=params,
-        next_page_url=last_run_next_page,
-        pagination_offset=offset
-    )
-    deduplicate_events(events, start_date, "date")
-    return events, next_run
+def is_fetch_paginated(
+    fetch_type: str, next_page_url: str, request_url: str, previous_page_url: str
+) -> bool:
+    if fetch_type == "alerts":
+        return next_page_url != request_url
+    return request_url != previous_page_url
 
 
 def deduplicate_events(events, start_date, date_key):
@@ -165,7 +144,7 @@ def deduplicate_events(events, start_date, date_key):
 
 
 def calculate_fetch_dates(
-    start_date: str, last_run_key: str, last_run: dict, end_date: str = ""
+    start_date: str, last_run: dict, end_date: str = ""
 ) -> tuple[str, str]:
     """
     Calculates the start and end dates for fetching events.
@@ -190,7 +169,7 @@ def calculate_fetch_dates(
     # argument > last run > current time
     start_date = (
         start_date
-        or last_run.get(last_run_key, {}).get("last_fetch")
+        or last_run.get("last_fetch")
         or ((now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     )
     # argument > current time
@@ -257,11 +236,9 @@ def validate_start_and_end_dates(args):
     return start_date_str, end_date_str
 
 
-def get_events_command(
-    client: Client, args: dict
-) -> tuple[List[Dict], CommandResults]:
+def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
     start_date, end_date = validate_start_and_end_dates(args)
-    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     _, events = fetch_events(
         client=client,
         max_fetch_alerts=limit,
@@ -293,17 +270,16 @@ def fetch_events(
         list: List of events that will be created in XSIAM.
     """
     last_run = demisto.getLastRun()
-    alert_events, alert_next_run = get_events_alert_type(
-        client, start_date, end_date, max_fetch_alerts, last_run
+    alert_events, alert_next_run = get_events(
+        client, "alerts", start_date, end_date, max_fetch_alerts, last_run
     )
-    audit_events, audit_next_run = get_audit_events_type(
-        client, start_date, end_date, max_fetch_audits, last_run
+    audit_events, audit_next_run = get_events(
+        client, "events", start_date, end_date, max_fetch_audits, last_run
     )
 
     events = alert_events + audit_events
 
-    next_run = {"alerts": alert_next_run,
-                "events": audit_next_run}
+    next_run = {"alerts": alert_next_run, "events": audit_next_run}
     if any(d.get("offset") for d in (alert_next_run, audit_next_run)):
         next_run["nextTrigger"] = "0"
     demisto.debug(f"Setting next run {next_run}.")
@@ -342,8 +318,12 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", True)
 
     proxy = params.get("proxy", False)
-    max_alerts_per_fetch = arg_to_number(params.get("max_alerts_per_fetch", DEFAULT_MAX_FETCH_ALERT))
-    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch", DEFAULT_MAX_FETCH_AUDIT_EVENTS))
+    max_alerts_per_fetch = arg_to_number(
+        params.get("max_alerts_per_fetch", DEFAULT_MAX_FETCH_ALERT)
+    )
+    max_events_per_fetch = arg_to_number(
+        params.get("max_events_per_fetch", DEFAULT_MAX_FETCH_AUDIT_EVENTS)
+    )
 
     demisto.debug(f"Command being called is {command}")
     try:
