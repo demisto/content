@@ -398,5 +398,4 @@ repos:
       - --base-branch
       - origin/master
       - --print-github-annotation
-      - 'true'
     skip:nightly: true
