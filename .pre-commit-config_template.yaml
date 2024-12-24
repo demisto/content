@@ -34,11 +34,11 @@ repos:
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.272
+  rev: v0.8.4
   hooks:
   - id: ruff
     parallel: false
-    min_py_version: '3.7'
+    min_py_version: '3.9'
     args:
     - --fix
     args:nightly:

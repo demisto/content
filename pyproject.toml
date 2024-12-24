@@ -31,7 +31,7 @@ requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
-ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
+ruff = ">=0.0.291"
 
 [tool.poetry.group.typing.dependencies]
 types-tqdm = "^4.66.0.2"
@@ -54,7 +54,7 @@ types-PyYAML = "6.0.12.20240311"
 types-emoji = "2.1.0.3"
 
 [tool.ruff]
-select = [
+lint.select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
@@ -116,7 +116,6 @@ select = [
     "E742", # ambiguous-class-name
     "E743", # ambiguous-function-name
     "E902", # io-error
-    "E999", # syntax-error
 
     "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
@@ -183,8 +182,8 @@ select = [
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
 
-    "PGH001", # eval
-    "PGH002", # deprecated-log-warn
+    "S307", # eval
+    "G010", # deprecated-log-warn
 
     "PIE790", # unnecessary-pass
     "PIE794", # duplicate-class-field-definition
@@ -219,7 +218,7 @@ select = [
     "PLR0133", # comparison-of-constant
     "PLR0206", # property-with-parameters
     "PLR0402", # manual-from-import
-    "PLR1701", # repeated-isinstance-calls
+    "SIM101",  # repeated-isinstance-calls
     "PLR1711", # useless-return
     "PLR1722", # sys-exit-alias
 
@@ -335,7 +334,6 @@ select = [
     "UP024", # os-error-alias
     "UP025", # unicode-kind-prefix
     "UP026", # deprecated-mock-import
-    "UP027", # unpacked-list-comprehension
     "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
     "UP030", # format-literals
@@ -361,7 +359,7 @@ select = [
     "YTT302", # sys-version-cmp-str10
     "YTT303", # sys-version-slice
 ]
-ignore = [
+lint.ignore = [
     "E402", # module-import-not-at-top-of-file
 
     "F403", # undefined-local-with-import-star
@@ -371,7 +369,7 @@ ignore = [
 ]
 extend-exclude = ["CommonServerPython", "test_data", "conftest.py", "demistomock.py"]
 
-unfixable = [
+lint.unfixable = [
     "RUF001"  # ambiguous-unicode-character-string
 ]
 
@@ -383,7 +381,7 @@ src = [
     "Packs/ApiModules/Scripts/*",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "**/*_test.py" = []
 # Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
 "**/*ApiModule.py"  = [ "UP" ]
