@@ -1,0 +1,23 @@
+{
+    "name": "Feedly",
+    "description": "Import Articles from Feedly as incidents",
+    "support": "partner",
+    "currentVersion": "1.1.0",
+    "author": "Feedly",
+    "url": "https://feedly.com/i/landing/threatIntelligence",
+    "email": "support@feedly.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence Management",
+        "Free Feed"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}
