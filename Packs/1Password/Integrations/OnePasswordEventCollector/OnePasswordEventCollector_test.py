@@ -317,7 +317,7 @@ def test_get_events_command(authenticated_client: Client, mocker: MockerFixture)
     events, _ = get_events_command(authenticated_client, args)
     table_to_markdown_kwargs = table_to_markdown.call_args.kwargs
 
-    assert table_to_markdown_kwargs['name'] == f'Events of type: {event_type}'
+    assert table_to_markdown_kwargs['name'] == event_type.capitalize()
     assert table_to_markdown_kwargs['t'] == flattenTable(expected_events)
 
     assert events == expected_events

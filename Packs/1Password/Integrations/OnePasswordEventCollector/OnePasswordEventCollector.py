@@ -307,7 +307,7 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
 
     events = get_events_from_client(client, event_type=event_type, from_date=from_date, max_events=limit)
 
-    human_readable = tableToMarkdown(name=f'Events of type: {event_type}', t=flattenTable(events))
+    human_readable = tableToMarkdown(name=event_type.capitalize(), t=flattenTable(events))
 
     return events, CommandResults(readable_output=human_readable)
 
