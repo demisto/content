@@ -1167,8 +1167,15 @@ script:
     - description: The group ID to return. Can be retrieved by running the mimecast-find-groups command.
       name: group_id
       required: true
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return. Default value is 100.
       name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results.
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
+      name: all_results
     description: Returns the members list for the specified group.
     name: mimecast-get-group-members
     outputs:
@@ -3385,7 +3392,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.11.10.116949
 tests:
 - Mimecast test
 - Mimecast Test api 2.0
