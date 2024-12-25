@@ -170,13 +170,13 @@ configuration:
   advanced: true
   deprecated: true
   hidden: true
-- display: Do not use override_severity parameter
+- display: Do not use override severity parameter
   additionalinfo: Used in order to identify usage of the new configuration of severity param
   name: new_configuration
   section: Collect
   advanced: true
   hidden: true
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
