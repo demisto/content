@@ -466,9 +466,9 @@ def test_download_distribution(requests_mock):
         'package_type': 'x86',
         'download_package': 'true'
     }
-    result, res_file = get_distribution_url_command(client, args)
-    assert res_file['File'] == installer_file_name
-    assert result.readable_output == "Successfully downloaded the installation package file"
+    result = get_distribution_url_command(client, args)
+    assert result[0]['File'] == installer_file_name
+    assert result[1].readable_output == "Installation package downloaded successfully."
 
 
 def test_get_audit_management_logs(requests_mock):
