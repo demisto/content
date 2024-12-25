@@ -2,6 +2,7 @@ import feedparser
 
 from CommonServerPython import *
 from bs4 import BeautifulSoup
+import urllib.request
 
 HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
@@ -32,13 +33,25 @@ class Client(BaseClient):
         self.channel_link = None
 
     def request_feed_url(self):
-        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
-                                  full_url=self._base_url)
+        return self._http_request(self._base_url)
+
+    def _http_request(self, full_url):
+        req = urllib.request.Request(full_url)
+
+        if self._headers:
+            for header in self._headers.keys():
+                req.add_header(header, self._headers[header])
+
+        if self._verify:
+            return urllib.request.urlopen(req, timeout=self.read_timeout)
+        else:
+            gcontext = ssl.SSLContext()
+            return urllib.request.urlopen(req,context=gcontext, timeout=self.read_timeout)
 
     def parse_feed_data(self, feed_response):
         try:
             if feed_response:
-                self.feed_data = feedparser.parse(feed_response.text)
+                self.feed_data = feedparser.parse(feed_response.read().decode('utf-8'))
         except Exception as err:
             raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
@@ -114,14 +127,14 @@ class Client(BaseClient):
          extracted content is bigger than "content_max_size" we trim him"""
         demisto.debug(f"Getting url content for {link=}")
         try:
-            response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
+            response_url = self._http_request(link)
             demisto.debug(f"Got response {response_url=}")
         except DemistoException as e:
             demisto.debug(f"Failed to get content for {link=} - Skipping\nError:\n{e}")
             return ""
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
-        soup = BeautifulSoup(response_url.content, "html.parser")
+        soup = BeautifulSoup(response_url.read().decode('utf-8'), "html.parser")
         for tag in soup.find_all():
             if tag.name in HTML_TAGS:
                 for string in tag.stripped_strings:
