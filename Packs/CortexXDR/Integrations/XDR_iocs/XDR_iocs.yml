@@ -147,7 +147,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: When the `override severity` parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the original severity level of the indicator will be used.
+- additionalinfo: If left blank, the original severity level of the indicator will be used.
   display: Override severity value
   name: severity
   type: 15

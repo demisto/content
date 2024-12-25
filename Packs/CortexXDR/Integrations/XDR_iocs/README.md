@@ -42,8 +42,7 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 | Indicator Reputation | Indicator Reputation | False |
 | XSOAR Severity Field | The Cortex XSOAR indicator field used as severity | True |
 | XSOAR Comment Field Exporting To XDR | The Cortex XSOAR field where comments are stored. The default is comments. Expecting an XSOAR IOC format of a comment (nested dictionary). See Comments As Tags for more.| True |
-| Overriding severity value | When the **override severity** parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the original severity level of the indicator will be used | True | 
-| Override severity| When enabled, the severity value will be taken from the **Overriding severity value** parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken from the field specified in the **XSOAR Severity Field** parameter| False|
+| Overriding severity value | If left blank, the original severity level of the indicator will be used. | True | 
 | Comments as tags (CSV) | Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`. | True |
 | Bypass exclusion list | Bypass exclusion list | False |
   

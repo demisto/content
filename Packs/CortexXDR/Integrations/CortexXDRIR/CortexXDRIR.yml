@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex XDR - IR for golden standard
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Incidents Fetch Interval
@@ -212,8 +212,8 @@ configuration:
   type: 8
   section: Mirroring
 description: The integration enables direct execution of Cortex XDR actions within Cortex XSOAR.
-display: Cortex XDR - IR for golden standard
-name: Cortex XDR - IR for golden standard
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:

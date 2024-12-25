@@ -3,7 +3,7 @@ sectionorder:
 - Collect
 category: Endpoint
 commonfields:
-  id: Cortex XDR - XQL Query Engine for golden standard
+  id: Cortex XDR - XQL Query Engine
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -39,8 +39,8 @@ configuration:
   required: false
   additionalinfo: Use system proxy settings is enabled only when an Engine is selected
 description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
-display: Cortex XDR - XQL Query Engine Cortex XDR - XQL Query Engine
-name: Cortex XDR - XQL Query Engine Cortex XDR - XQL Query Engine
+display: Cortex XDR - XQL Query Engine
+name: Cortex XDR - XQL Query Engine
 script:
   commands:
   - arguments:
