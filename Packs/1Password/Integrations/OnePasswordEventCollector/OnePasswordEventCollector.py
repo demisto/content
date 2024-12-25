@@ -207,7 +207,7 @@ def push_events(events: list[dict], next_run: dict[str, Any] | None = None) -> N
         events (list): List of event dictionaries.
         next_run (dict | None): Optional next run dictionary of all event types. Defaults to None.
     """
-    demisto.debug(f'Sending {len(events)} to XSIAM')
+    demisto.debug(f'Starting to send {len(events)} events to XSIAM')
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
     if next_run:
