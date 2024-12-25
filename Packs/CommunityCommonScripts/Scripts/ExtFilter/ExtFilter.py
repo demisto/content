@@ -485,7 +485,7 @@ def extract_value(source: Any,
 def get_parent_child(root: dict,
                      path: str) -> tuple[tuple[None, None], tuple[None, None]] | tuple[tuple[dict, None],
                                                                                        tuple[Any, str]] | tuple[tuple[Any, str],
-tuple[Any, str]]:
+                                                                                                                tuple[Any, str]]:
     """ Get first and second level node
 
     :param root: The root node.
