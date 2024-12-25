@@ -952,9 +952,11 @@ def run_fetch_mechanism(client: Client, fetch_limit: int, next_page_token: str, 
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
-    end_date = ...
-    start_date = ...
-    fetch_limit = ...
+    end_date = args.get('end_date', datetime.utcnow())
+    start_date = args.get('start_date', end_date - timedelta(minutes=1))
+    if start_date > end_date:
+        raise ValueError("Start date is greater than the end date. Please provide valid dates.")
+    fetch_limit = args.get('limit', 50)
     events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
 
     return events, CommandResults(outputs=events, readable_output=tableToMarkdown('Events', t=events))
