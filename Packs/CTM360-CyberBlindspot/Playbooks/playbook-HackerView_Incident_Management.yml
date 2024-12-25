@@ -26,7 +26,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 920,
           "y": 50
         }
       }
@@ -63,39 +63,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1155
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 3e121dc3-595b-4a2e-b0b2-fab9ddf2abd0
-    type: title
-    task:
-      id: 3e121dc3-595b-4a2e-b0b2-fab9ddf2abd0
-      version: -1
-      name: Check Remote Status
-      description: Check remote incident status.
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1010
+          "x": 660,
+          "y": 900
         }
       }
     note: false
@@ -107,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 52edca00-4e6d-4739-86da-2a5401f3fd2d
+    taskid: 431ad55e-e7b6-4e10-85d1-9d73ae03646c
     type: condition
     task:
-      id: 52edca00-4e6d-4739-86da-2a5401f3fd2d
+      id: 431ad55e-e7b6-4e10-85d1-9d73ae03646c
       version: -1
       name: Is Incident Closed?
       description: Check whether or not the incident had been closed on the remote
@@ -122,7 +91,7 @@ tasks:
       '#default#':
       - "18"
       "yes":
-      - "15"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -135,12 +104,13 @@ tasks:
           right:
             value:
               simple: inactive
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1330
+          "x": 660,
+          "y": 1165
         }
       }
     note: false
@@ -174,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1680
+          "x": 90,
+          "y": 1415
         }
       }
     note: false
@@ -204,17 +174,17 @@ tasks:
     scriptarguments:
       comment:
         simple: Starting investigation
-      ticketStatus:
-        simple: investigating
       ticketId:
         simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: investigating
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1680
+          "x": 325,
+          "y": 1550
         }
       }
     note: false
@@ -241,70 +211,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1855
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 909f0e12-e8ac-4a24-8b29-03b28ea02bb8
-    type: title
-    task:
-      id: 909f0e12-e8ac-4a24-8b29-03b28ea02bb8
-      version: -1
-      name: Shortcut to Close Incident
-      description: Shortcut to the task of closing an incident.
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: aa183e73-05b0-42cc-b4d2-3d658b067c53
-    type: title
-    task:
-      id: aa183e73-05b0-42cc-b4d2-3d658b067c53
-      version: -1
-      name: Assign Analyst
-      description: Assign the incident to an analyst.
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 370
+          "x": 1145,
+          "y": 1940
         }
       }
     note: false
@@ -337,7 +245,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     scriptarguments:
       assignBy:
         simple: less-busy-user
@@ -346,8 +254,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 515
+          "x": 920,
+          "y": 370
         }
       }
     note: false
@@ -387,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 1505
+          "x": 1145,
+          "y": 1360
         }
       }
     note: false
@@ -438,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     scriptarguments:
       CVE:
         complex:
@@ -512,39 +420,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 920,
           "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: dfee7971-f37f-499c-b0ab-569f8d53418a
-    type: title
-    task:
-      id: dfee7971-f37f-499c-b0ab-569f8d53418a
-      version: -1
-      name: Check Mirroring
-      description: Check the mirroring direction.
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 690
         }
       }
     note: false
@@ -556,10 +433,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f137d1c7-9de8-4a94-9e38-308e4d10cc5a
+    taskid: 7ff87c07-2993-4cdd-84f0-6eecb4ffe9c7
     type: condition
     task:
-      id: f137d1c7-9de8-4a94-9e38-308e4d10cc5a
+      id: 7ff87c07-2993-4cdd-84f0-6eecb4ffe9c7
       version: -1
       name: Check if Incoming Mirroring is Enabled
       description: Check if incoming mirroring is enabled.
@@ -568,9 +445,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "23"
+      - "12"
       "yes":
-      - "2"
+      - "1"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -583,40 +460,13 @@ tasks:
           right:
             value:
               simple: In,Both
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 835
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 63cb6508-eefb-4ff1-b157-de4f070e9dca
-    type: title
-    task:
-      id: 63cb6508-eefb-4ff1-b157-de4f070e9dca
-      version: -1
-      name: End of Playbook
-      description: The end of the playbook.
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1010
+          "x": 920,
+          "y": 590
         }
       }
     note: false
@@ -639,20 +489,23 @@ tasks:
       type: regular
       iscommand: true
       brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       comment:
         simple: Applying mitigations
-      ticketStatus:
-        simple: in_progress
       ticketId:
         simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: in_progress
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1680
+          "x": 740,
+          "y": 1670
         }
       }
     note: false
@@ -675,19 +528,22 @@ tasks:
       type: regular
       iscommand: true
       brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       comment:
         simple: Mitigation is done
-      ticketStatus:
-        simple: fixed
       ticketId:
         simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: fixed
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1390,
           "y": 1680
         }
       }
@@ -711,20 +567,23 @@ tasks:
       type: regular
       iscommand: true
       brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       comment:
         simple: This is within the risk appetite/tolerance
-      ticketStatus:
-        simple: acceptable_risk
       ticketId:
         simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: acceptable_risk
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 1680
+          "x": 1800,
+          "y": 1600
         }
       }
     note: false
@@ -747,20 +606,23 @@ tasks:
       type: regular
       iscommand: true
       brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       comment:
         simple: This is a false positive
-      ticketStatus:
-        simple: false_positive
       ticketId:
         simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: false_positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 1680
+          "x": 2230,
+          "y": 1550
         }
       }
     note: false
@@ -773,13 +635,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "18_12_No Action": 0.32
+      "18_12_No Action": 0.19,
+      "18_25_Resolution in Progress": 0.64,
+      "18_26_Resolution Complete": 0.57,
+      "22_12_#default#": 0.12
     },
     "paper": {
       "dimensions": {
-        "height": 1870,
-        "width": 2530,
-        "x": 50,
+        "height": 1955,
+        "width": 2520,
+        "x": 90,
         "y": 50
       }
     }
