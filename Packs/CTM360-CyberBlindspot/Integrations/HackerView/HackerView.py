@@ -295,7 +295,6 @@ def deduplicate_and_create_incidents(
         log(DEBUG, "Creating unique incident")
         unique_mapped_incident = map_and_create_incident(incident)
         incidents.append(unique_mapped_incident)
-    log(DEBUG, f'{incidents=}')
     return new_incident_ids, incidents
 
 
@@ -324,7 +323,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
             **unmapped_incident
         }
     }
-    log(DEBUG, f'map_and_create======{unmapped_incident=}')
+
     if MIRROR_DIRECTION:
         mapped_incident['xsoar_mirroring'] = {
             'mirror_direction': MIRROR_DIRECTION,
@@ -367,7 +366,6 @@ def test_module(client: Client, params) -> str:
     message: str = ''
     args: dict[str, Any] = {}
     try:
-        log(DEBUG, f'{params=}')
         mirror_direction = params.get('mirror_direction', '')
         first_fetch = params.get('first_fetch', '')
         max_fetch = arg_to_number(params.get('max_fetch', ''))
@@ -703,8 +701,6 @@ def ctm360_hv_incident_list_command(client: Client, args: dict[str, Any]) -> Com
         )
     params = {to_snake_case(key): v for key, v in args.items()}
     params |= {'date_field': '@timestamp', 't': datetime.now().timestamp()}
-    log(DEBUG, f'{args=}')
-    log(DEBUG, f'{params=}')
     result = client.fetch_incidents(params)
     log(INFO, f'Received {len(result)} incidents')
     if len(result) > 0:
@@ -714,6 +710,12 @@ def ctm360_hv_incident_list_command(client: Client, args: dict[str, Any]) -> Com
         outputs_prefix='HackerView.IncidentList',
         outputs_key_field='id',
         outputs=result,
+        readable_output=tableToMarkdown(
+            "HackerView.IncidentList",
+            result,
+            headers=result[0].keys(),
+            is_auto_json_transform=True
+        ) if len(result) > 0 else "No incidents within these dates",
     )
 
 
@@ -729,8 +731,6 @@ def ctm360_hv_incident_details_command(client: Client, args: dict[str, Any]) -> 
     """
     params = {to_snake_case(key): v for key, v in args.items()}
     params['t'] = datetime.now().timestamp()
-    log(DEBUG, f'{args=}')
-    log(DEBUG, f'{params=}')
     result = client.fetch_incident(params)
     log(INFO, f'Received {result}')
 
@@ -738,6 +738,12 @@ def ctm360_hv_incident_details_command(client: Client, args: dict[str, Any]) -> 
         outputs_prefix='HackerView.RemoteIncident',
         outputs_key_field='id',
         outputs=result,
+        readable_output=tableToMarkdown(
+            "HackerView.RemoteIncident",
+            result,
+            headers=result.keys(),
+            is_auto_json_transform=True
+        ) if result.keys() else "No incident with that ID",
     )
 
 
@@ -755,8 +761,6 @@ def ctm360_hv_incident_status_change_command(
     """
     params = {to_snake_case(key): v for key, v in args.items()}
     params = {'issue_id': params.pop('ticket_id', ''), 'issue_status': params.pop('ticket_status', ''), **params}
-    log(DEBUG, f'{args=}')
-    log(DEBUG, f'{params=}')
     result = client.change_incident_status(params)
     msg = result.get('message', '')
     log(
@@ -789,7 +793,6 @@ def main() -> None:
 
         log(DEBUG, f'Command being called is {demisto_command}')
         log(DEBUG, f'Demisto Args are {demisto_args=}')
-        log(DEBUG, f'Demisto Args are {demisto_params=}')
 
         client = Client(
             base_url=HV_BASE_URL,
@@ -853,7 +856,7 @@ def main() -> None:
 
             log(DEBUG, 'Setting incidents and last run')
             log(DEBUG, f'{next_run=}')
-            log(DEBUG, f'{incidents=}')
+            log(DEBUG, f'Fetched {len(incidents)} incidents')
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif demisto_command == 'test-module':
