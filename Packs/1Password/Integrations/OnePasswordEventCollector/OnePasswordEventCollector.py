@@ -332,7 +332,7 @@ def main() -> None:  # pragma: no cover
     base_url: str = urljoin(params['url'], '/api/v2')
     token: str = params['credentials']['password']
     event_types: list[str] = argToList(params['event_types'])
-    first_fetch_date: datetime = dateparser.parse(params.get('first_fetch', '')) or DEFAULT_FETCH_FROM_DATE
+    first_fetch_date = dateparser.parse(params.get('first_fetch', ''), settings={'TIMEZONE': 'UTC'}) or DEFAULT_FETCH_FROM_DATE
 
     # optional
     verify_certificate: bool = not params.get('insecure', False)
@@ -351,7 +351,7 @@ def main() -> None:  # pragma: no cover
             result = test_module_command(client, event_types)
             return_results(result)
 
-        if command == 'one-password-get-events':
+        elif command == 'one-password-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
 
             events, results = get_events_command(client, args)

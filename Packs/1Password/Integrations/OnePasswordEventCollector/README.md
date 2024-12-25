@@ -14,6 +14,8 @@ The integration can be configured to fetch three types of events from 1Password:
   
 - **Sign-in attempts** - Information about sign-in attempts. Events include the name and IP address of the user who attempted to sign in to the account, when the attempt was made, and, for failed attempts, the cause of the failure.
 
+All event timestamps, along with date and time configuration parameters and command arguments, are in the Coordinated Universal Time (UTC) timezone.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The API server URL depends on the domain where the account is hosted. Refer to the integration Help section for more details. | True |
