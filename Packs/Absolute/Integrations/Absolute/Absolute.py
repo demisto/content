@@ -913,20 +913,18 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
 
     next_page = last_run.get('nextPage', '')
 
-    events, started_new_query, next_page = run_fetch_mechanism(client, fetch_limit, next_page, start_date, end_date)
+    events, next_page = run_fetch_mechanism(client, fetch_limit, next_page, start_date, end_date)
     if not events:
         # demisto.debug
         return [], {'next_page': None, 'end_date': last_end_date}
 
-    return events, {'next_page': next_page, 'end_date': end_date if started_new_query else last_end_date}
+    return events, {'next_page': next_page, 'end_date': end_date if next_page else last_end_date}
 
 
 def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_date: datetime, end_date: datetime):
     all_events = []
-    started_new_query = False
-    while len(all_events) < fetch_limit and (next_page or not started_new_query):
+    while len(all_events) < fetch_limit:
         page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
-        started_new_query = started_new_query or not next_page
 
         if next_page:
             response = client.fetch_events(page_size=page_size, next_page=next_page)
@@ -934,17 +932,19 @@ def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_
             response = client.fetch_events(page_size=page_size, start_date=start_date, end_date=end_date)
 
         events = response.get('data', [])
-        next_page = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
         all_events.extend(events)
+        next_page = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
+        if not next_page:
+            break
 
-    return all_events, started_new_query, next_page
+    return all_events, next_page
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     end_date = ...
     start_date = ...
     fetch_limit = ...
-    events, _, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
+    events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
 
     return events, CommandResults(outputs=events, readable_output=tableToMarkdown('Events', t=events))
 
