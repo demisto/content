@@ -1,11 +1,10 @@
 {
-    "id": "incident_userid",
+    "id": "incident_crowdstrikefalconallegedfiletype",
     "version": -1,
-    "modified": "2020-11-16T16:44:06.254816869Z",
-    "name": "User Id",
+    "modified": "2024-12-16T14:01:25.28823161Z",
+    "name": "CrowdStrike Falcon Alleged File Type",
     "ownerOnly": false,
-    "description": "User Id",
-    "cliName": "userid",
+    "cliName": "crowdstrikefalconallegedfiletype",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,18 +17,13 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "openEnded": false,
     "associatedTypes": [
-        "IAM - App Add",
-        "IAM - App Remove",
-        "IAM - Group Membership Update",
-        "CrowdStrike Falcon OFP Detection"
-    ],
-    "systemAssociatedTypes": [
         "CrowdStrike Falcon OFP Detection"
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
