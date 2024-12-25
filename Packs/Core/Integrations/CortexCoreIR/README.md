@@ -1465,21 +1465,23 @@ Gets the files retrieved from a specific endpoint during a script execution.
 | File.Extension | String | The extension of the file. | 
 
 ### core-run-script-execute-commands
+
 ***
 Initiate a new endpoint script execution of shell commands.
-
 
 #### Base Command
 
 `core-run-script-execute-commands`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | Link the response action to triggered incident. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| commands | Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&amp;&amp;`, `;` separators for controlling the flow of multiple commands). | Required | 
+| commands | Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. Set the `is_chained_command` argument to `true` when using `\|\|`, `&amp;&amp;`, `;` separators for controlling the flow of multiple commands. | Required | 
 | is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional | 
+| is_chained_command | Whether or not the command has chained commands. When true, the command overrides validation for `\|\|`, `&amp;&amp;`, `;` separators. | Optional | 
 | command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | action_id | For polling use. | Optional | 
@@ -3094,4 +3096,3 @@ Get asset information.
 xdm__asset__type__name | xdm__asset__strong_id |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
-
