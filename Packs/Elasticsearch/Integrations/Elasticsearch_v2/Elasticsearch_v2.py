@@ -70,6 +70,8 @@ MAP_LABELS = param.get('map_labels', True)
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
+HEALTH_CHECK_SUCCESS = "Testing was successful."
+
 
 def get_value_by_dot_notation(dictionary, key):
     """
@@ -576,8 +578,9 @@ def verify_es_server_version(res):
 
 
 def test_func(proxies):
-    test_connectivity_auth(proxies)
-    demisto.results('ok')
+    health_check_result = integration_health_check(proxies)
+    if health_check_result == HEALTH_CHECK_SUCCESS:
+        demisto.results('ok')
 
 
 def integration_health_check(proxies):
@@ -631,7 +634,7 @@ def integration_health_check(proxies):
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
-    return "Testing was successful."
+    return HEALTH_CHECK_SUCCESS
 
 
 def incident_label_maker(source):
