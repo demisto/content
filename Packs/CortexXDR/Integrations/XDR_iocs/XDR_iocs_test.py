@@ -9,6 +9,7 @@ from freezegun import freeze_time
 
 
 Client.severity = 'INFO'
+Client.use_old_override_severity_parameter = True
 client = Client({'url': 'https://example.com'})
 
 
@@ -789,6 +790,7 @@ def test_overriding_severity_xsoar():
     severity_value_backup = Client.severity
 
     # for testing
+    Client.use_old_override_severity_parameter = True
     Client.severity = 'LOW'
 
     # constants
@@ -823,6 +825,7 @@ def test_overriding_severity_xdr_to_demisto():
     # back up class attributes
     xsoar_severity_field_backup = Client.xsoar_severity_field
     severity_value_backup = Client.severity
+    Client.use_old_override_severity_parameter = True
 
     Client.severity = 'some hardcoded severity value'
     severity_field = 'custom_severity_field'

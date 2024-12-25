@@ -403,10 +403,13 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
 
         if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
-        if Client.use_old_override_severity_parameter: # For Backwards Compatibility
-            outgoing_severity_condition=(not Client.override_severity) and (custom_severity := custom_fields.get(Client.xsoar_severity_field)) # For Backwards Compatibility
+        if Client.use_old_override_severity_parameter:  # For Backwards Compatibility
+            outgoing_severity_condition = ((not Client.override_severity)   # For Backwards Compatibility
+
+                                           and (custom_severity := custom_fields.get(Client.xsoar_severity_field)))
         else:
-            outgoing_severity_condition=(not Client.severity) and (custom_severity := custom_fields.get(Client.xsoar_severity_field))
+            outgoing_severity_condition = (not Client.severity) and (
+                custom_severity := custom_fields.get(Client.xsoar_severity_field))
         if outgoing_severity_condition:
             # Override is True: use Client.severity
             # Override is False: use the value from the xsoar_severity_field, or Client.severity as default
@@ -664,7 +667,8 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
     if Client.use_old_override_severity_parameter:
-        severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']] # For Backwards Compatibility
+        # For Backwards Compatibility
+        severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
     else:
         severity = Client.severity or xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
     comments = _parse_xdr_comments(raw_comment=ioc.get('RULE_COMMENT', ''),
@@ -889,8 +893,8 @@ def main():  # pragma: no cover
                      "minutes could lead to internal error from xdr side.")
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
-    Client.use_old_override_severity_parameter = 'new_configuration' not in params # For Backwards Compatibility
-    Client.override_severity = argToBoolean(params.get('override_severity', True)) # For Backwards Compatibility
+    Client.use_old_override_severity_parameter = 'new_configuration' not in params  # For Backwards Compatibility
+    Client.override_severity = argToBoolean(params.get('override_severity', True))  # For Backwards Compatibility
     Client.tlp_color = params.get('tlp_color')
     Client.comments_as_tags = argToBoolean(params.get('comments_as_tags', False))
 
