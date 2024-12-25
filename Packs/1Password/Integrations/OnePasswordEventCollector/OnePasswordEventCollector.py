@@ -251,7 +251,7 @@ def fetch_events(
     )
 
     # API returns events sorted by timestamp in ascending order (oldest to newest), so last event has max timestamp
-    max_timestamp = event_type_events[-1]['timestamp'] if event_type_events else None
+    max_timestamp = event_type_events[-1]['timestamp'] if event_type_events else from_date
     next_run_skip_ids = [event['uuid'] for event in event_type_events if event['timestamp'] == max_timestamp]
     event_type_next_run = {'from_date': max_timestamp, 'ids': next_run_skip_ids}
 
