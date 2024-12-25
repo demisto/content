@@ -645,8 +645,8 @@ def get_message_for_body_type(body, body_type, html_body):
         Body: the body of the message.
     """
     attachments: list = []
-    if html_body:
-        html_body, attachments = handle_html(html_body)
+    # if html_body:
+    #     html_body, attachments = handle_html(html_body)
     if body_type is None:  # When called from a data collection task.
         return (HTMLBody(html_body) if html_body else Body(body)), attachments
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
@@ -654,27 +654,43 @@ def get_message_for_body_type(body, body_type, html_body):
     return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
-def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
+def send_email_reply_to_mailbox(account:Account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=None, from_mailbox=None):  # pragma: no cover
     if attachments is None:
         attachments = []
-    item_to_reply_to = account.inbox.get(id=in_reply_to)
+    item_to_reply_to: Message = account.inbox.get(id=in_reply_to)
     if isinstance(item_to_reply_to, ErrorItemNotFound):
         raise Exception(item_to_reply_to)
 
     subject = subject or item_to_reply_to.subject
-    # `reply-mail` command does not support body_type, so we will use the html_body if it exists.
     message_body = HTMLBody(html_body) if html_body else body
-    reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
-                                          bcc_recipients=bcc, author=from_mailbox)
-    reply = reply.save(account.drafts)
-    m = account.inbox.get(id=reply.id)
+
+    # Create the reply
+    reply = item_to_reply_to.create_reply(
+        subject='Re: ' + subject,
+        body=message_body,
+        to_recipients=to,
+        cc_recipients=cc,
+        bcc_recipients=bcc,
+        author=from_mailbox
+    )
+    bulk_created_results = reply.save(account.drafts)
+    msg = account.inbox.get(id=bulk_created_results.id)
+    # Add inline images and other attachments from the original email
+    for attachment in item_to_reply_to.attachments:
+        if isinstance(attachment, FileAttachment) and attachment.is_inline:
+            # Re-add inline attachments
+            msg.attach(attachment)
+
+    # Add any new attachments
 
     for attachment in attachments:
-        m.attach(attachment)
-    m.send()
+        msg.attach(attachment)
 
-    return m
+    # Send the email
+    msg.send()
+
+    return msg
 
 
 class GetSearchableMailboxes(EWSService):  # pragma: no cover
