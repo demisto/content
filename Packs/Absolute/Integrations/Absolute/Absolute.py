@@ -105,6 +105,7 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
 
 SEIM_EVENTS_PAGE_SIZE = 1000
 
+
 class Client(BaseClient):
     def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
                  x_abs_date: str):
@@ -335,6 +336,7 @@ class Client(BaseClient):
             params=None if next_page else {'pageSize': page_size, 'fromDateTimeUtc': start_date, 'toDateTimeUtc': end_date}
         )
 
+
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
 
@@ -469,7 +471,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
     outputs = parse_freeze_device_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
-                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()},)
+                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()}, )
 
     outputs.pop('FailedDeviceUIDs', '')
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
@@ -906,38 +908,47 @@ def get_device_location_command(args, client) -> CommandResults:
 ''' EVENT COLLECTOR '''
 
 
+# setup: page_size=1000, time_now: 10:00, limit=10,000
+# ---------------------
+# 0) if no events
+# 1) (events<1000): exist 800 events  -> 1 fetch
+# 2) (1000<events<limit): exist 1200 events -> 2 fetches
+# 3) (10,000<events): exist 10,200 events -> 10 fetches
+
+
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     last_end_date = last_run.get('end_date')
     end_date = datetime.utcnow()
-    start_date = last_end_date + timedelta(milliseconds=1) if last_end_date else end_date - timedelta(minutes=1)
+    start_date = last_end_date if last_end_date else end_date - timedelta(minutes=1)
 
-    next_page = last_run.get('nextPage', '')
+    next_page_token = last_run.get('next_page_token', '')
 
-    events, next_page = run_fetch_mechanism(client, fetch_limit, next_page, start_date, end_date)
+    events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
     if not events:
         # demisto.debug
-        return [], {'next_page': None, 'end_date': last_end_date}
+        return [], {'next_page_token': None, 'end_date': last_end_date}
 
-    return events, {'next_page': next_page, 'end_date': end_date if next_page else last_end_date}
+    return events, {'next_page_token': next_page_token, 'end_date': end_date if next_page_token else last_end_date}
 
 
-def run_fetch_mechanism(client: Client, fetch_limit: int, next_page: str, start_date: datetime, end_date: datetime):
+def run_fetch_mechanism(client: Client, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> \
+    tuple[List[Dict[str, Any]], str]:
     all_events = []
     while len(all_events) < fetch_limit:
         page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
 
-        if next_page:
-            response = client.fetch_events(page_size=page_size, next_page=next_page)
+        if next_page_token:
+            response = client.fetch_events(page_size=page_size, next_page=next_page_token)
         else:
             response = client.fetch_events(page_size=page_size, start_date=start_date, end_date=end_date)
 
         events = response.get('data', [])
         all_events.extend(events)
-        next_page = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
-        if not next_page:
+        next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
+        if not next_page_token:
             break
 
-    return all_events, next_page
+    return all_events, next_page_token
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
