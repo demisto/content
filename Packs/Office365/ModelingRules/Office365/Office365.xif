@@ -56,7 +56,7 @@ call o365_common_fields
 	xdm.event.outcome_reason = coalesce(Reason, translate_EnforcementMode, ResultStatus),
 	xdm.network.http.url = coalesce(EventDeepLink, DeeplinkURL),
 	xdm.network.rule = Name,
-	xdm.observer.action = coalesce(to_string(actions), Status, translate_EnforcementMode),
+	xdm.observer.action = coalesce(to_string(Actions), Status, translate_EnforcementMode),
 	xdm.observer.type = if(Workload != null, Workload, SourceWorkload = 0, "SharePoint Online", SourceWorkload = 1, "OneDrive for Business", SourceWorkload = 2, "Microsoft Teams", Source),
 	xdm.source.application.name = SourceApp,
 	xdm.source.host.device_id = EntityId,
