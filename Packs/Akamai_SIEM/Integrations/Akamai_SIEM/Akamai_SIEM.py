@@ -118,12 +118,13 @@ class Client(BaseClient):
             from_param = int(from_epoch)
             params["from"] = from_param
             demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
-        raw_response: str = self._http_request(
-            method='GET',
-            url_suffix=f'/{config_ids}',
-            params=params,
-            resp_type='text',
-        )
+        # raw_response: str = self._http_request(
+        #     method='GET',
+        #     url_suffix=f'/{config_ids}',
+        #     params=params,
+        #     resp_type='text',
+        # )
+        raw_response: str = await generate_events()
         demisto.info("Finished executing request to Akamai, processing")
         events: list[dict] = []
         for event in raw_response.split('\n'):
@@ -395,7 +396,7 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
-async def generate_events():
+async def generate_events() -> str:
     global EVENTS
     if not EVENTS:
         original_dict = {
@@ -461,8 +462,14 @@ async def generate_events():
         import copy
         for i in range(target_size):
             duplicated_dict = copy.deepcopy(original_dict)
-
-            EVENTS.append(duplicated_dict)
+            duplicated_dict["unique_id"] = i
+            EVENTS.append(json.dumps(duplicated_dict))
+            EVENTS.append(json.dumps({
+                "total": 300000,
+                "offset": "71cca;3phZmEdPj6YEqml0rvbdWDZGW3mCiJIwjyhkJfsLFM2gVYPgE8-N_0CiLI9gwH0_4OJ87xDQ3b-gIsx_kEBdf7aaC_AvDpG9fMxypeaCma10FKrY9VKE",
+                "limit": 300000
+            }))
+            EVENTS="\n".join(EVENTS)
     await asyncio.sleep(60)
     return EVENTS
 
@@ -586,9 +593,7 @@ async def fetch_events_command(client: Client):
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
-            # events, offset = await client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
-            offset = "bla"
-            events = await generate_events()
+            events, offset = await client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
