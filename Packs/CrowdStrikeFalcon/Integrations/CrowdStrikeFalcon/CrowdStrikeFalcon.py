@@ -1,4 +1,3 @@
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
@@ -27,6 +26,8 @@ IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
+OFP_DETECTION_TYPE = "OFP Detection"
+OFP_DETECTION = "OFP detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
@@ -327,10 +328,11 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 class IncidentType(Enum):
     INCIDENT = 'inc'
     LEGACY_ENDPOINT_DETECTION = 'ldt'
-    ENDPOINT_OR_IDP_OR_MOBILE_DETECTION = ':ind:'
+    ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ':ind:'  # OFP was joined here since it has ':ind:' too in its id
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
     ON_DEMAND = 'ods'
+    OFP = 'ofp'
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
@@ -783,7 +785,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         'occurred': detection.get(start_time_key),
         'rawJSON': json.dumps(detection)
     }
-    if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE):
+    if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE, OFP_DETECTION_TYPE):
         incident_context['name'] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context['last_updated'] = detection.get('updated_timestamp')
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
@@ -2457,7 +2459,7 @@ def get_remote_data_command(args: dict[str, Any]):
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
         # for endpoint (in the new version) ,idp and mobile detections
-        elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION:
+        elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION:
             mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
@@ -2493,8 +2495,8 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.INCIDENT
     if IncidentType.LEGACY_ENDPOINT_DETECTION.value in remote_incident_id:
         return IncidentType.LEGACY_ENDPOINT_DETECTION
-    if IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
-        return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION
+    if IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION.value in remote_incident_id:
+        return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION
     if IncidentType.ON_DEMAND.value in remote_incident_id:
         return IncidentType.ON_DEMAND
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
@@ -2569,6 +2571,10 @@ def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
     if 'epp' in mirrored_data['product']:
         updated_object = {'incident_type': ENDPOINT_DETECTION}
         detection_type = 'Detection'
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    if 'ofp' in mirrored_data['type']:
+        updated_object = {'incident_type': OFP_DETECTION}
+        detection_type = 'ofp'
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
     demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
@@ -2725,7 +2731,10 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ods'"
-
+        ).get('resources', [])
+    if OFP_DETECTION_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ofp'"
         ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
@@ -2764,7 +2773,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
-            elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION:
+            elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION:
                 result = update_remote_idp_or_mobile_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'IDP/Mobile Detection updated successfully. Result: {result}')
@@ -2938,6 +2947,7 @@ def fetch_incidents():
     ioa_incidents: list[dict[str, Any]] = []
     mobile_detections: list[dict[str, Any]] = []
     on_demand_detections: list[dict[str, Any]] = []
+    ofp_detections: list[dict[str, Any]] = []
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
@@ -2950,6 +2960,7 @@ def fetch_incidents():
     ioa_last_run: dict = {} if len(last_run) < 5 else last_run[4]
     current_fetch_info_mobile_detections: dict = {} if len(last_run) < 6 else last_run[5]
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
+    current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
     look_back = int(params.get('look_back') or 1)
@@ -3176,9 +3187,26 @@ def fetch_incidents():
             detection_name_prefix=ON_DEMAND_SCANS_DETECTION_TYPE,
             start_time_key='created_timestamp')
 
+    if OFP_DETECTION_TYPE in fetch_incidents_or_detections:
+        if LEGACY_VERSION:
+            raise DemistoException(f'{OFP_DETECTION_TYPE} is not supported in legacy version.')
+        demisto.debug(f'Fetching {OFP_DETECTION_TYPE} incidents')
+        demisto.debug(f'ofp_detection_last_run= {current_fetch_ofp_detection}')
+
+        ofp_detections, current_fetch_ofp_detection = fetch_detections_by_product_type(
+            current_fetch_ofp_detection,
+            look_back=look_back,
+            fetch_query=params.get('ofp_detection_fetch_query', ''),
+            detections_type=OFP_DETECTION,
+            product_type='ofp',
+            detection_name_prefix=OFP_DETECTION_TYPE,
+            start_time_key='created_timestamp')
+
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
-                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections])
-    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections
+                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections,
+                        current_fetch_ofp_detection])
+    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections\
+        + ofp_detections
 
 
 def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
@@ -3206,7 +3234,7 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
                                                                 date_format=DETECTION_DATE_FORMAT)
     fetch_limit = current_fetch_info.get('limit') or INCIDENTS_PER_FETCH
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
-    if product_type == 'ods':
+    if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
         filter = filter.replace('product:', 'type:')
 
     if fetch_query:
@@ -3230,7 +3258,8 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
                 detection['incident_type'] = detections_type
                 detection_to_context = detection_to_incident_context(detection, detection_name_prefix, start_time_key)
                 detections.append(detection_to_context)
-        detections = truncate_long_time_str(detections, 'occurred') if product_type == 'ods' else detections
+        detections = truncate_long_time_str(detections, 'occurred') if product_type in {
+            IncidentType.ON_DEMAND.value, IncidentType.OFP.value} else detections
         detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                               last_run=current_fetch_info,
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
