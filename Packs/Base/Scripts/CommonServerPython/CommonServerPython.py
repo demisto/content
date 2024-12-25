@@ -1497,7 +1497,7 @@ def datetime_to_string(datetime_obj):
         return datetime_obj.__str__()
 
 
-def remove_empty_elements(d, remove_none_only: bool = False):
+def remove_empty_elements(d, remove_none_only=False):
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary.
     :param d: Input dictionary.
