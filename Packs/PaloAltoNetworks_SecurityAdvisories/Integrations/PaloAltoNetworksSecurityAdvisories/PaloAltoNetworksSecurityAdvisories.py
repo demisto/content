@@ -189,9 +189,7 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
     if references := containers_cna.get("references"):
         fields['publications'] = [
             {
-                "link": x.get('url'),
-                "title": x.get('url'),  # todo: not in new version
-                "source": x.get('refsource', "")    # todo: not in new version
+                "link": x.get('url')
             } for x in references]
 
     # impact: dict = advisory_dict.get("impact", {})
