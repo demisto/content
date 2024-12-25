@@ -1516,9 +1516,9 @@ def remove_empty_elements(d, remove_none_only: bool = False):
     if not isinstance(d, (dict, list)):
         return d
     elif isinstance(d, list):
-        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+        return [v for v in (remove_empty_elements(v, remove_none_only) for v in d) if not empty(v)]
     else:
-        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
+        return {k: v for k, v in ((k, remove_empty_elements(v, remove_none_only)) for k, v in d.items()) if not empty(v)}
 
 
 class SmartGetDict(dict):
