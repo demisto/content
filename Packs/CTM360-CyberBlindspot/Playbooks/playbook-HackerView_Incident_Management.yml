@@ -81,7 +81,7 @@ tasks:
     task:
       id: 431ad55e-e7b6-4e10-85d1-9d73ae03646c
       version: -1
-      name: Is Incident Closed?
+      name: Is The Incident Closed?
       description: Check whether or not the incident had been closed on the remote
         server.
       type: condition
@@ -162,7 +162,7 @@ tasks:
     task:
       id: bbecc79d-d8ea-4513-8571-c102e9bdf3ea
       version: -1
-      name: Start Investgation
+      name: Start Investigation
       description: Change status of a HV incident and optionally add a comment.
       script: CTM360_HackerView|||ctm360-hv-incident-status-change
       type: regular
