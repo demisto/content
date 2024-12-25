@@ -3,7 +3,7 @@
     "description": "Deprecated. Palo Alto Networks IoT 3rd Party Integrations. Here is the document on how to get the latest Palo Alto Networks IoT 3rd Party Integrations Content Pack https://docs.paloaltonetworks.com/iot/iot-security-integration/get-started-with-iot-security-integrations/third-party-integrations-using-a-full-featured-xsoar-server",
     "support": "xsoar",
     "hidden": true,
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/network-security/iot-security",
     "email": "",
