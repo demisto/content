@@ -1118,6 +1118,7 @@ def test_remove_empty_elements():
     }
     assert expected_result == remove_empty_elements(test_dict)
 
+
 def test_remove_empty_elements_none_only():
     test_dict = {
         "foo": "bar",
@@ -1143,6 +1144,8 @@ def test_remove_empty_elements_none_only():
     }
     x = remove_empty_elements(test_dict, True)
     assert expected_result == x
+
+
 @pytest.mark.parametrize('header,raw_input,expected_output', [
     ('AWS DynamoDB DescribeBackup', {
         'BackupDescription': {
