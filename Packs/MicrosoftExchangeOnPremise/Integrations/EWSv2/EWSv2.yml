@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: EWS v2_dev
+  id: EWS v2
   version: -1
 configuration:
 - display: Email address
@@ -129,8 +129,8 @@ configuration:
   advanced: true
   required: false
 description: Exchange Web Services and Office 365 (mail).
-display: EWS v2_dev
-name: EWS v2_dev
+display: EWS v2
+name: EWS v2
 script:
   commands:
   - arguments:
