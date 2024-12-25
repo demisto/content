@@ -238,11 +238,9 @@ def fetch_indicators(client: Client, fetch_product_name="PAN-OS") -> list[dict]:
     :param fetch_product_name: The name of the product to fetch indicators for.
     """
     advisory_data = client.get_advisories(fetch_product_name, {}).get("data", {})
-    demisto.debug("finished api call")
     indicator_objects = []
     for advisory_dict in advisory_data:
         indicator_objects.append(advisory_to_indicator(advisory_dict))
-    demisto.debug("finished process")
     return indicator_objects
 
 
