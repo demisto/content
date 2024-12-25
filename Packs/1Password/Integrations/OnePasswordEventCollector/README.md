@@ -64,7 +64,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Events of type: sign in attempts
+>### Sign in attempts
 >
 >| account_uuid | category | client | country | location | session_uuid | target_user | timestamp | type | uuid |
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
