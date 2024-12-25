@@ -957,9 +957,12 @@ script:
     - name: to
       required: true
       description: A comma-separated list of email addresses for the 'to' field.
+      isArray: true
     - name: cc
+      isArray: true
       description: A comma-separated list of email addresses for the 'cc' field.
     - name: bcc
+      isArray: true
       description: A comma-separated list of email addresses for the 'bcc' field.
     - name: subject
       description: Subject for the email to be sent.
