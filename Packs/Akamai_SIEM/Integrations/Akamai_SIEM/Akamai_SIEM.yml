@@ -107,15 +107,13 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
-- display: Events Fetch Interval
-  name: eventFetchInterval
-  type: 19
+- display: Long running instance
+  name: longRunning
+  type: 8
   required: false
-  section: Collect
   hidden:
   - xsoar
-  defaultvalue: '1'
-  advanced: true
+  section: Collect
 - display: Skip events decoding
   name: should_skip_decode_events
   additionalinfo: Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate.
