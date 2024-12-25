@@ -189,7 +189,7 @@ def get_events_from_client(
             ids_to_skip.add(event_id)
 
         demisto.debug(
-            f'Response has {len(response["items"])} events (including {response_duplicate_count} skipped duplicates).'
+            f'Response has {len(response["items"])} events (including {response_duplicate_count} skipped duplicates). '
             f'Got pagination cursor: {pagination_cursor}. Used client arguments: {client_kwargs}.'
         )
 
@@ -250,13 +250,17 @@ def fetch_events(
         ids_to_skip=last_run_skip_ids,
     )
 
-    # API returns events sorted by timestamp in ascending order (oldest to newest), so last event has max timestamp
-    max_timestamp = event_type_events[-1]['timestamp'] if event_type_events else from_date
-    next_run_skip_ids = [event['uuid'] for event in event_type_events if event['timestamp'] == max_timestamp]
-    event_type_next_run = {'from_date': max_timestamp, 'ids': next_run_skip_ids}
+    if event_type_events:
+        # API returns events sorted by timestamp in ascending order (oldest to newest), so last event has max timestamp
+        max_timestamp = event_type_events[-1]['timestamp']
+        next_run_skip_ids = [event['uuid'] for event in event_type_events if event['timestamp'] == max_timestamp]
+        event_type_next_run = {'from_date': max_timestamp, 'ids': next_run_skip_ids}
+    else:
+        event_type_next_run = event_type_last_run
+        max_timestamp = None
 
     demisto.debug(
-        f'Fetched {len(event_type_events)} events of type: {event_type} out of a maximum of {event_type_max_results}.'
+        f'Fetched {len(event_type_events)} events of type: {event_type} out of a maximum of {event_type_max_results}. '
         f'Last event timestamp: {max_timestamp}'
     )
 
