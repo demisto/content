@@ -846,6 +846,19 @@ def rasterize_thread(browser, chrome_port, path: str,
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
+def kill_zombie_processes():
+    # Iterate over all running processes
+    for proc in psutil.process_iter(['pid', 'name', 'status']):
+        try:
+            # Check if the process is a zombie
+            if proc.info['status'] == psutil.STATUS_ZOMBIE:
+                print(f'found zombie process with pid {proc.pid}')
+                waitres = os.waitpid(int(proc.pid), os.WNOHANG)
+                demisto.info(f"waitpid result: {waitres}")
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            # Handle cases where process may have already terminated or access is denied
+            continue
+
 def perform_rasterize(path: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
@@ -868,6 +881,9 @@ def perform_rasterize(path: str | list[str],
     :param width: window width
     :param height: window height
     """
+
+
+    kill_zombie_processes()
 
     # convert the path param to list in case we have only one string
     paths = argToList(path)
@@ -1215,19 +1231,6 @@ def main():  # pragma: no cover
 
         else:
             return_error('Unrecognized command')
-
-
-    # Iterate over all running processes
-    for proc in psutil.process_iter(['pid', 'name', 'status']):
-        try:
-            # Check if the process is a zombie
-            if proc.info['status'] == psutil.STATUS_ZOMBIE:
-                print(f'found zombie process with pid {proc.pid}')
-                waitres = os.waitpid(int(proc.pid), os.WNOHANG)
-                demisto.info(f"waitpid result: {waitres}")
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            # Handle cases where process may have already terminated or access is denied
-            continue
             
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
