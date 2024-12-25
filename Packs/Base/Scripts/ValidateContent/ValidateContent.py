@@ -822,9 +822,5 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    import time
     log_demisto_sdk_version()
-    start_time = time.time()
     main()
-    end_time = time.time()
-    print(f'Validation took {end_time - start_time} seconds.')
