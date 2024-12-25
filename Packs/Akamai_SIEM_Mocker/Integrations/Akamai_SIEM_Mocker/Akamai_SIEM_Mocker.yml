@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Webhooks
+  id: Akamai
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -39,8 +39,8 @@ configuration:
   required: false
   additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: Webhooks
-name: Webhooks
+display: Akamai
+name: Akamai
 script:
   commands:
   - arguments:

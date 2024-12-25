@@ -449,6 +449,26 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
     return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
 
 
+def test_new_endpoint(client):
+    start = time.time()
+    print("init session")
+    url = "https://10.180.188.209/instance/execute/Akamai_instance_1/"
+    
+    headers = {
+    'Content-Type': 'application/json'
+    }
+    client = Client(base_url=url,
+                    verify=False,
+                    headers=headers,
+                    proxy=False)
+    print("Sending request.")
+    response = client._http_request(method="GET", timeout=50)
+    print("Finished sending request.")
+    # response = requests.request("GET", url, headers=headers)
+    end = time.time()
+    return f'Get {response.status_code=} in a {end-start} time.', {}, {}
+
+
 @logger
 def fetch_events_command(
     client: Client,
@@ -576,7 +596,8 @@ def main():  # pragma: no cover
     commands = {
         "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
-        f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command
+        f"{INTEGRATION_COMMAND_NAME}-reset-offset": test_new_endpoint
+        # f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
