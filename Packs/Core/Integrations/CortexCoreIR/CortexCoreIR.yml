@@ -1845,11 +1845,15 @@ script:
     - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `||`, `&&`, `;` separators for controlling the flow of multiple commands).
+    - description: Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. Set the `is_chained_command` argument to `true` when using `||`, `&&`, `;` separators for controlling the flow of multiple commands.
       name: commands
       required: true
     - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
       name: is_raw_command
+      type: Boolean
+      required: false
+    - description: Whether or not the command has chained commands. When true, the command overrides validation for `||`, `&&`, `;` separators.
+      name: is_chained_command
       type: Boolean
       required: false
     - description: Type of shell command.
