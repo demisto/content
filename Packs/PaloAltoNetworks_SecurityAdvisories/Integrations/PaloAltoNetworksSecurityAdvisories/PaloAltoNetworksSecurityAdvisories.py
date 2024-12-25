@@ -186,16 +186,14 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
 
         fields['tags'] = tags
 
-    if references := containers_cna.get("references"):
+    if references := containers_cna.get("references", {}):
         fields['publications'] = [
             {
                 "link": x.get('url')
             } for x in references]
 
-    # impact: dict = advisory_dict.get("impact", {})
     impacts: list = containers_cna.get('impacts', [{}])
-    # cvss: dict = impact.get("cvss", {})
-    cvss: dict = containers_cna.get('metrics', [{}])[0].get("cvssV4_0")
+    cvss: dict = containers_cna.get('metrics', [{}])[0].get("cvssV4_0", {})
     # score mirrored to both fields so that default cve layout displays with full data
     fields['cvss'] = cvss.get("baseScore", "")
     fields['cvssscore'] = cvss.get("baseScore", "")
@@ -240,10 +238,11 @@ def fetch_indicators(client: Client, fetch_product_name="PAN-OS") -> list[dict]:
     :param fetch_product_name: The name of the product to fetch indicators for.
     """
     advisory_data = client.get_advisories(fetch_product_name, {}).get("data", {})
+    demisto.debug("finished api call")
     indicator_objects = []
     for advisory_dict in advisory_data:
         indicator_objects.append(advisory_to_indicator(advisory_dict))
-
+    demisto.debug("finished process")
     return indicator_objects
 
 
