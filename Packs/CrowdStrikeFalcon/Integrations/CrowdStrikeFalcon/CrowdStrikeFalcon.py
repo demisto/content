@@ -2572,10 +2572,6 @@ def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
         updated_object = {'incident_type': ENDPOINT_DETECTION}
         detection_type = 'Detection'
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if 'ods' in mirrored_data['product']:
-        updated_object = {'incident_type': ON_DEMAND_SCANS_DETECTION}
-        detection_type = 'ods'
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     if 'ofp' in mirrored_data['type']:
         updated_object = {'incident_type': OFP_DETECTION}
         detection_type = 'ofp'
