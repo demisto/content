@@ -344,7 +344,7 @@ def test_get_distribution_url_command_with_download(mocker):
     )
     assert isinstance(result, list)
     assert len(result) == 2
-    command_result = result[0]
+    command_result = result[1]
     assert isinstance(command_result, CommandResults)
     assert command_result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
     assert command_result.outputs_prefix == "CortexCoreIR.Distribution"
