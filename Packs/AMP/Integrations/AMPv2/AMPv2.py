@@ -612,7 +612,7 @@ class Client(BaseClient):
                 "offset": offset,
             }
         )
-
+        demisto.debug(f"Sending request: {params}")
         return self._http_request(
             method="GET",
             url_suffix="/events",
@@ -1208,10 +1208,11 @@ def fetch_incidents(
     # being duplicates for the next fetch
     new_previous_ids = previous_ids.copy()
 
-    demisto.debug(f"Running fetch with previous: {','.join(previous_ids)}")
+    demisto.debug(f"Running fetch with previous ids: {','.join(previous_ids)}")
     
     # If a last fetch run doesn't exist, use the first fetch time.
     if last_fetch is None:
+        demisto.debug("First fetch, setting last run with first_fetch_time.")
         last_fetch = first_fetch_time
 
     last_fetch_timestamp = date_to_timestamp(last_fetch, ISO_8601_FORMAT)
@@ -1222,16 +1223,20 @@ def fetch_incidents(
     # A loop of fetching the events,
     # fetches all the events from the current time up
     # to the provided start_time or last_fetch
+    counter = 1
     while True:
-        demisto.debug("looping on page")
+        demisto.debug(f"looping on page #{counter}")
         response = client.event_list_request(start_date=last_fetch,
                                              event_types=event_types,
                                              limit=500,
                                              offset=offset)
+        
+        demisto.debug(f"Received {len(response["data"])}. Adding.")
+        
         items = items + response["data"]
-
+        
         # Check if there are more pages to fetch
-        if "next" not in response["metadata"]["links"]:
+        if "next" not in response.get("metadata", {}).get("links"):
             # Reverses the list of events so that the list is in ascending order
             # so that the earliest event will be the first in the list
             demisto.debug("found last page, returning results.")
@@ -1240,8 +1245,9 @@ def fetch_incidents(
         
         demisto.debug(f"setting offset to: {len(items)}")
         offset = len(items)
+        counter += 1
 
-    demisto.debug(f"Recieved total of {len(items)}. IDs: {",".join(str(item.get("id")) for item in items)}")
+    demisto.debug(f"Received total of {len(items)}. IDs: {",".join(str(item.get("id")) for item in items)}")
     incidents: list[dict[str, Any]] = []
     incident_name = 'Cisco AMP Event ID:"{event_id}"'
 
@@ -1270,7 +1276,7 @@ def fetch_incidents(
 
         # Skip if the incident ID has been fetched already.
         if (incident_id := item_id) in previous_ids:
-            demisto.debug(f"incident {item_id} filtered due to severity: {severity}")
+            demisto.debug(f"incident {item_id} filtered due to duplication: {severity}")
             continue
 
         incident_timestamp = item["timestamp"] * 1000
@@ -1289,8 +1295,8 @@ def fetch_incidents(
             }
         )
     
-        demisto.debug(f"incident {item_id} inserted to system.")
         incidents.append(incident)
+        demisto.debug(f"incident {item_id} inserted to system.")
 
         # Update the latest incident time that was fetched.
         # And accordingly initializing the list of `previous_ids`
@@ -3810,17 +3816,19 @@ def main() -> None:
                 raise ValueError("Failed to get first fetch time.")
 
             first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
-
+            last_run = demisto.getLastRun()
+            
+            demisto.debug(f"Starting fetch. {last_run=}")
             next_run, incidents = fetch_incidents(
                 client=client,
-                last_run=demisto.getLastRun(),
+                last_run=last_run,
                 first_fetch_time=first_fetch_time,
                 incident_severities=incident_severities,
                 max_incidents_to_fetch=max_incidents_to_fetch,
                 event_types=event_types,
                 include_null_severities=include_null_severities,
             )
-
+            demisto.debug("Fetch was finished. Updating server.")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
