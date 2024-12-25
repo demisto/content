@@ -81,7 +81,7 @@ class Client(BaseClient):
             body = {'cursor': pagination_cursor}
 
         elif from_date:
-            formatted_from_date: str = from_date.isoformat()
+            formatted_from_date: str = from_date.strftime(DATE_FORMAT)
             demisto.debug(f'Requesting events of type: {event_type} using from date: {formatted_from_date}')
             body = {'limit': results_per_page, 'start_time': formatted_from_date}
 
