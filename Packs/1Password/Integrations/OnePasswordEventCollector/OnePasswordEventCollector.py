@@ -189,7 +189,8 @@ def get_events_from_client(
             ids_to_skip.add(event_id)
 
         demisto.debug(
-            f'Response has {len(response["items"])} events (including {response_duplicate_count} skipped duplicates). '
+            f'Response has {len(response["items"])} events of type {event_type} '
+            f'(including {response_duplicate_count} skipped duplicates). '
             f'Got pagination cursor: {pagination_cursor}. Used client arguments: {client_kwargs}.'
         )
 
@@ -348,7 +349,7 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             verify=verify_certificate,
             headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
-            proxy=proxy
+            proxy=proxy,
         )
 
         if command == 'test-module':
