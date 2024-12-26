@@ -12,6 +12,7 @@ import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
 import asyncio
+from aiostream import stream
 
 # Local imports
 from CommonServerUserPython import *
@@ -502,30 +503,6 @@ def is_last_request_smaller_than_page_size(num_events_from_previous_request: int
     return num_events_from_previous_request < page_size * ALLOWED_PAGE_SIZE_DELTA_RATIO
 
 
-def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_took: float) -> tuple[bool, float]:
-    """
-    Checking whether there's enough time for another fetch request to the Akamai API before docker timeout.
-    The function calculates the time of the first request (including the send_events_to_xsiam_part).
-    And checks wether the remaining running time (plus a little delta) is less or equal the expected running time.
-    The remaining running time is docker timeout limit in seconds - the run time so far (now time - docker execution start time).
-
-    Args:
-        min_allowed_delta (int): The minimum allowed delta that should remain before going on another fetch interval.
-        max_time_took (float): The worst case execution (the first execution) to compare the rest of the executions to.
-    Returns:
-        bool: Return True if there's not enough time. Otherwise, return False.
-    """
-    timeout_time_nano_seconds = demisto.callingContext.get('context', {}).get('TimeoutDuration')
-    demisto.info(f"Got {timeout_time_nano_seconds} non seconds for the execution.")
-    timeout_time_seconds = timeout_time_nano_seconds / 1_000_000_000
-    now = datetime.now()
-    time_since_interval_beginning = (now - EXECUTION_START_TIME).total_seconds()
-    if not max_time_took:
-        max_time_took = time_since_interval_beginning
-    demisto.info(f"Checking if execution should break with {time_since_interval_beginning=}, {max_time_took=}.")
-    return (timeout_time_seconds - time_since_interval_beginning - min_allowed_delta) <= max_time_took, max_time_took
-
-
 async def update_total_events_fetched_and_offset(events_amount, offset):
     async with LOCKED_UPDATES_LOCK:
         global EVENTS_COUNT_CURRENT_INTERVAL
@@ -566,33 +543,19 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
-                    f"latest event time is: {events[-1]['_time']}")
-        tasks = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
-                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True)
-        demisto.info("Finished executing send_events_to_xsiam, waiting for tasks to end.")
-        await asyncio.gather(*tasks)
-        demisto.info("Finished gathering all tasks.")
-        asyncio.create_task(update_total_events_fetched_and_offset(len(events), offset))  # noqa: RUF006
-            
-@logger
-async def fetch_events_command(client: Client):
-    """Asynchronously gathers events from Akamai SIEM. Decode them, and send them to xsiam.
+    demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
+                f"latest event time is: {events[-1]['_time']}")
+    tasks = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
+                                    chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True)
+    demisto.info("Finished executing send_events_to_xsiam, waiting for tasks to end.")
+    await asyncio.gather(*tasks)
+    demisto.info("Finished gathering all tasks.")
+    asyncio.create_task(update_total_events_fetched_and_offset(len(events), offset))  # noqa: RUF006
 
-    Args:
-        client: Client object with request
 
-    """
-    params = demisto.params()
-    config_ids = params.get("configIds", "")
-    page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
-    should_skip_decode_events = params.get("should_skip_decode_events", False)
-    offset = None
-    from_epoch = None
-    from_time = params.get('fetchTime', '5 minutes')
+async def get_events_from_akamai(client, config_ids, from_time, page_size, offset):
     while True:
         ctx = get_integration_context() or {}
-        offset = offset or ctx.get("offset")
         if ctx.get("reset_offset", False):
             offset = None
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
@@ -615,12 +578,29 @@ async def fetch_events_command(client: Client):
             await asyncio.sleep(60)
             demisto.info("Done sleeping 60 seconds.")
         if events:
-            asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
+            yield events
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             demisto.info(f"got {len(events)} events which is {ALLOWED_PAGE_SIZE_DELTA_RATIO}{page_size=} rr lower," \
                             "going to sleep for 60 seconds.")
             await asyncio.sleep(60)
             demisto.info("Finished sleeping for 60 seconds.")
+@logger
+async def fetch_events_command(client: Client):
+    """Asynchronously gathers events from Akamai SIEM. Decode them, and send them to xsiam.
+
+    Args:
+        client: Client object with request
+
+    """
+    params = demisto.params()
+    config_ids = params.get("configIds", "")
+    page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
+    should_skip_decode_events = params.get("should_skip_decode_events", False)
+    ctx = get_integration_context() or {}
+    offset = ctx.get("offset")
+    from_time = params.get('fetchTime', '5 minutes')
+    for events in stream.chunks(get_events_from_akamai(client, config_ids, from_time, page_size, offset), 1):
+        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
 
 
 def decode_url(headers: str) -> dict:
