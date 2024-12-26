@@ -781,6 +781,7 @@ response_detection_new_version = {
     'process_id': None,
     'process_start_time': None,
     'product': "epp",
+    'type': "epp",
     'scenario': None,
     'seconds_to_resolved': None,
     'seconds_to_triaged': None,
