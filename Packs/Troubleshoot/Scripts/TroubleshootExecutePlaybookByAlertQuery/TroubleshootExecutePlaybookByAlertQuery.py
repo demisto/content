@@ -18,19 +18,19 @@ class ResultsSummary:
             "others": []
         }
 
-    def update_success(self, playbook_id: str, alert_ids: list):
+    def update_success(self, playbook_id: str, alert_id: str):
         """Update the 'success' dictionary with alert IDs for the given playbook ID."""
         if playbook_id in self.results_summary["success"]:
-            self.results_summary["success"][playbook_id].extend(alert_ids)
+            self.results_summary["success"][playbook_id].extend(alert_id)
         else:
-            self.results_summary["success"].update({playbook_id: alert_ids})
+            self.results_summary["success"].update({playbook_id: alert_id})
 
-    def update_failure_create(self, playbook_id: str, failed_ids: list):
+    def update_failure_create(self, playbook_id: str, failed_id: str):
         """Update the 'failure_create' dictionary with failed IDs for the given playbook ID."""
         if playbook_id in self.results_summary["failure_create"]:
-            self.results_summary["failure_create"][playbook_id].extend(failed_ids)
+            self.results_summary["failure_create"][playbook_id].extend(failed_id)
         else:
-            self.results_summary["failure_create"].update({playbook_id: failed_ids})
+            self.results_summary["failure_create"].update({playbook_id: failed_id})
 
     def update_failure_set(self, playbook_id: str, alert_ids: list):
         """Update the 'failure_set' dictionary with alert IDs for the given playbook ID."""
@@ -151,7 +151,7 @@ def get_playbook_id(playbook_id: str, playbook_name: str, playbooks_dict: dict) 
     raise DemistoException(f"Playbook '{playbook_name or playbook_id}' wasn't found. Please check the name and try again.")
 
 
-def handle_results(command_results: dict, playbook_id: str, alert_ids: list, results_summary: ResultsSummary):
+def handle_results(command_results: dict, playbook_id: str, alert_id: str, results_summary: ResultsSummary):
     """Extract and format the relevant info from the result dict.
 
     Args:
@@ -169,19 +169,22 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: list, res
         if "The request requires the right permissions" in command_results[0].get('Contents'):
             return_error("Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights.")
 
-        result_dict = command_results[0].get('Contents', {}).get('response', {})
-
-        if not result_dict:
-            results_summary.update_success(playbook_id, alert_ids)
+        result_dict = command_results[0].get('Contents', {})
+        if type(result_dict) == str:
+            results_summary.update_failure_create(playbook_id, alert_id)
             return None
+        
+        # result_dict = command_results[0].get('Contents', {}).get('response', {})
+        results_summary.update_success(playbook_id, alert_id)
+        # if not result_dict:
+        #     results_summary.update_success(playbook_id, alert_id)
+        #     return None
 
-        failed_ids = list(result_dict.keys())
-        succeeded_ids = list(set(alert_ids) - set(failed_ids))
+        # failed_ids = list(result_dict.keys())
+        # succeeded_ids = list(set(alert_ids) - set(failed_ids))
 
-        results_summary.update_failure_create(playbook_id, failed_ids)
-
-        if succeeded_ids:
-            results_summary.update_success(playbook_id, succeeded_ids)
+        # results_summary.update_failure_create(playbook_id, failed_ids)
+       
 
     except Exception as e:
         return f"Unexpected error occurred: {str(e)}. Response: {command_results[0]}"
@@ -217,12 +220,18 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
         return
 
     demisto.debug(f"Start setting playbook {playbook_id} on alerts {alert_ids}.")
-    command_results = demisto.executeCommand(
-        "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
-                          {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
+    for alert_id in alert_ids:
+        command_result = demisto.executeCommand(
+            "core-api-post", {"uri": f"/xsoar/inv-playbook/new/{playbook_id}/{alert_id}"})
+        # command_result.append(command_result[0].get('Contents', {}).get('response', {}))
+        demisto.debug(f"Results of setting playbook {playbook_id} on alert {alert_id}:\n{command_result}")
+        # handle_results(command_result, playbook_id, alert_id, results_summary)
+    # command_results = demisto.executeCommand(
+    #     "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
+    #                       {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
 
-    demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
-    handle_results(command_results, playbook_id, alert_ids, results_summary)
+    # demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
+    
 
 
 def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list, list, list]:
