@@ -265,7 +265,7 @@
             "is_array": false
         },
         "targetyammeruserid": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "ThreatsAndDetectionTech": {

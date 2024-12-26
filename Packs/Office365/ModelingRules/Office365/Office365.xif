@@ -76,7 +76,7 @@ call o365_common_fields
 	xdm.alert.name = investigationname,
 	xdm.source.application.name = SourceApp,
 	xdm.email.subject = coalesce(itemname, subject),
-	xdm.target.user.identifier = targetyammeruserid,
+	xdm.target.user.identifier = to_string(targetyammeruserid),
 	xdm.alert.original_threat_name = replex(ThreatsAndDetectionTech, "[\"\[\]]", ""),
 	xdm.target.url = url, 
 	xdm.network.http.url = coalesce(eventdeeplink, deeplinkurl),
