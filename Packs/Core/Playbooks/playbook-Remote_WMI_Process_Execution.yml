@@ -527,7 +527,7 @@ tasks:
     task:
       id: de7cb93b-9a47-4ed6-8182-17ae24e3e585
       version: -1
-      name: Terminate Causality (CGO)
+      name: Terminate Causality
       description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
