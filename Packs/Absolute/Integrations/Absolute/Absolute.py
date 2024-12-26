@@ -917,18 +917,24 @@ def get_device_location_command(args, client) -> CommandResults:
 
 
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    last_run_latest_events = last_run.get('latest_event_ids')
     last_end_date = last_run.get('end_date')
     end_date = datetime.utcnow()
     start_date = last_end_date if last_end_date else end_date - timedelta(minutes=1)
 
     next_page_token = last_run.get('next_page_token', '')
 
-    events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
-    if not events:
+    all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
+    if not all_events:
         # demisto.debug
         return [], {'next_page_token': None, 'end_date': last_end_date}
 
-    return events, {'next_page_token': next_page_token, 'end_date': end_date if next_page_token else last_end_date}
+    if last_run_latest_events:  # handle duplication
+        filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
+        all_events = filtered_events
+
+    events, latest_event_ids = add_time_field_to_events_and_get_latest_events(all_events)
+    return events, {'next_page_token': next_page_token, 'end_date': end_date, 'latest_event_ids': latest_event_ids}
 
 
 def run_fetch_mechanism(client: Client, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> \
@@ -949,6 +955,21 @@ def run_fetch_mechanism(client: Client, fetch_limit: int, next_page_token: str, 
             break
 
     return all_events, next_page_token
+
+
+def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]]) -> tuple[
+    List[Dict[str, Any]], List[str]]:
+    latest_event_time = events[-1].get('eventDateTimeUtc')
+    latest_event_ids = []
+    for event in reversed(events):
+        # adding time field
+        event_time = event.get('eventDateTimeUtc')
+        event['_TIME'] = event_time
+        # latest events batch
+        if event_time == latest_event_time:
+            latest_event_ids.append(event.get('id'))
+
+    return events, latest_event_ids
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
