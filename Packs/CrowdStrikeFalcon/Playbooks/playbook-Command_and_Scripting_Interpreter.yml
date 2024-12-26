@@ -11,7 +11,7 @@ description: |-
 
   **Analysis**
 
-  - Initiates the CommandLineAnalysiss tool which will determine if the command lines have any suspicious artifacts that might indicate malicious behavior.
+  - Initiates the CommandLineAnalysiss script which will determine if the command lines have any suspicious artifacts that might indicate malicious behavior.
   - Enriches any indicates found during the command lines analysis phase.
 
   **Investigative Actions:**
@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -1040
+          "y": -1210
         }
       }
     note: false
@@ -83,7 +83,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -705
+          "y": -875
         }
       }
     note: false
@@ -160,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 9e661cc1-2b64-490e-86b3-21eb7f296429
+    taskid: 0a6e2ec3-a44a-4ab1-888b-a707b43d1ea4
     type: condition
     task:
-      id: 9e661cc1-2b64-490e-86b3-21eb7f296429
+      id: 0a6e2ec3-a44a-4ab1-888b-a707b43d1ea4
       version: -1
       name: 'Found any malicious behavior? '
       description: Checks if malicious behavior was found.
@@ -187,6 +187,14 @@ tasks:
           right:
             value:
               simple: "26"
+        - operator: isEqualNumber
+          left:
+            value:
+              simple: Indicators.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -266,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -570
+          "y": -740
         }
       }
     note: false
@@ -457,7 +465,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 1850
+          "y": 1840
         }
       }
     note: false
@@ -518,10 +526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 40dd73b5-d156-4b22-84bd-b5b09f0cb144
+    taskid: 8e9a4bc2-866d-4f1a-8912-73eb7c89ebce
     type: condition
     task:
-      id: 40dd73b5-d156-4b22-84bd-b5b09f0cb144
+      id: 8e9a4bc2-866d-4f1a-8912-73eb7c89ebce
       version: -1
       name: Manual Response
       description: Manual Response - Analyst actions is required.
@@ -551,7 +559,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Dear analyst, we've identified suspicious behavior and the playbook could not handle this alert automatically. Therefore, please choose the right remediation action.
+        simple: Dear analyst, We've identified suspicious behavior, and the playbook could not automatically remediate this alert. Therefore, please choose the right remediation action.
       methods: []
       format: ""
       bcc:
@@ -722,20 +730,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 85443065-cdf3-4d67-81ba-0a218af503c2
+    taskid: 25609c65-0a99-4f98-8646-7ff23a8d08f0
     type: condition
     task:
-      id: 85443065-cdf3-4d67-81ba-0a218af503c2
+      id: 25609c65-0a99-4f98-8646-7ff23a8d08f0
       version: -1
-      name: No suspicious artifacts were found - How would you like to proceed?
+      name: No suspicious artifacts were found
       description: "Dear Analyst, \n\nWe've performed several operations and found no suspicious activity. \n\nThe Process Chain we've received is:\n${CrowdStrike.Detection.grandparentprocess=val.filename +' --> ' }${CrowdStrike.Detection.parentprocess=val.filename +' --> ' } \n${incident.filenames.[0]}\n\n\n**Please Choose how would you should this incident be classified:**\n#### Option 1: True Positive   \n-> This action will go ahead and try to terminate the process in case it is still running, If not, you will be promoted with an additional manual task to choose from  if you want to isolate the machine or kill the parent process in the alert\n\n--- \n\n\n#### Option 2: False Positive  \n-> The incident will be closed and classified as False Positive\n\n"
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      False Positive:
+      Close alert as False Positive:
       - "92"
-      True Positive:
+      Remediation - Process termination:
       - "49"
     separatecontext: false
     continueonerrortype: ""
@@ -765,8 +773,8 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - True Positive
-      - False Positive
+      - Remediation - Process termination
+      - Close alert as False Positive
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1033,10 +1041,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: ca2d86a4-42da-42a0-89ab-b39a99ca5853
+    taskid: b18f4530-5dc6-4b8f-84ec-e0ae92e56f6a
     type: regular
     task:
-      id: ca2d86a4-42da-42a0-89ab-b39a99ca5853
+      id: b18f4530-5dc6-4b8f-84ec-e0ae92e56f6a
       version: -1
       name: Updated the affected hosts by IOC field
       description: commands.local.cmd.set.incident
@@ -1110,7 +1118,7 @@ tasks:
       {
         "position": {
           "x": 1810,
-          "y": -890
+          "y": -1060
         }
       }
     note: false
@@ -1171,7 +1179,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -890
+          "y": -1060
         }
       }
     note: false
@@ -1232,7 +1240,7 @@ tasks:
       {
         "position": {
           "x": 1010,
-          "y": -890
+          "y": -1060
         }
       }
     note: false
@@ -1257,7 +1265,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "101"
+      - "109"
     scriptarguments:
       command_line:
         simple: ${inputs.CommandLines}
@@ -1268,7 +1276,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": -360
+          "y": -530
         }
       }
     note: false
@@ -1312,8 +1320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": -190
+          "x": 1180,
+          "y": -200
         }
       }
     note: false
@@ -1325,10 +1333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "102":
     id: "102"
-    taskid: 45585eb8-b5bf-4056-8efa-158221f79f0e
+    taskid: e00e1805-95c8-4563-89b1-0ee4de06c91d
     type: regular
     task:
-      id: 45585eb8-b5bf-4056-8efa-158221f79f0e
+      id: e00e1805-95c8-4563-89b1-0ee4de06c91d
       version: -1
       name: Create new incident for investigating the indicators
       description: commands.local.cmd.create.inc
@@ -1341,9 +1349,9 @@ tasks:
       - "106"
     scriptarguments:
       description:
-        simple: "We've identified the following hostnames being associated with malicious indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease check the investigation id: ${incident.id}"
+        simple: "We've identified the following hostnames being associated with malicious indicators. \nThe list of the endpoints:\n${incident.affectedhosts}\n\nThe list of malicious indicators associated with those endpoints from above:\n${Indicators(val.Score>2).Value}\n\nThe source investigation id: ${incident.id}"
       details:
-        simple: "We've identified the following hostnames being associated with malicious indicators. \nThe list of the endpoints:\n${Endpoint.ID}\n\nThe list of malicious indicators associated with those endpoint from above:\n${Indicators(val.Score>2).Value}\n\nPlease check the investigation id: ${incident.id}"
+        simple: "We've identified the following hostnames being associated with malicious indicators. \nThe list of the endpoints:\n${incident.affectedhosts}\n\nThe list of malicious indicators associated with those endpoints from above:\n${Indicators(val.Score>2).Value}\n\nThe source investigation id: ${incident.id}"
       name:
         simple: Malicious Indicators were found on the following hosts
       type:
@@ -1641,7 +1649,74 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 08733495-e3eb-46ed-8aff-807b65a0353a
+    type: condition
+    task:
+      id: 08733495-e3eb-46ed-8aff-807b65a0353a
+      version: -1
+      name: Are there any Indicators to enrich?
+      description: Check if are there any indicators extracted from the CommandLineAnalysis script.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "101"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CommandLineAnalysis.analysis.decoded
+                accessor: indicators
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: CommandLineAnalysis.analysis.original.indicators
+                      iscontext: true
+                - operator: uniq
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
+  {
+    "linkLabelsPosition": {
+      "105_17_#default#": 0.81,
+      "61_62_#default#": 0.52,
+      "76_78_Manual Remediation  ": 0.51,
+      "77_78_#error#": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4445,
+        "width": 1840,
+        "x": 350,
+        "y": -1210
+      }
+    }
+  }
   {
     "linkLabelsPosition": {
       "105_17_#default#": 0.81,

@@ -5,8 +5,8 @@ The playbook executes the following stages:
 
 **Analysis**
 
-- Initiates the CommandLineAnalysiss tool which will determine if the command lines have any suspicious artifacts that might indicate malicious behavior.
-- Enriches any indicates found during the command lines analysis phase.
+- Initiates the CommandLineAnalysiss script which will determine if the command lines have any suspicious artifacts that might indicate malicious behavior.
+- Enriches any indicators found during the command lines analysis phase.
 
 **Investigative Actions:**
 - In case malicious indicators were found, the playbook will initiate a check against CrowdStrike Falcon to identify if any other endpoint has been associated with the same indicators.  
