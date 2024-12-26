@@ -71,7 +71,7 @@ configuration:
   additionalinfo: |- 
    Will override the 'Query String' Lucene syntax string. Results will not be filtered.
 
-   The integration test button doesn't fully tests the fetch incidents validity. To verify that you instance is set up correctly for fetching incidents please run the '!es-integration-health-check' command.
+   The integration test button doesn't fully tests the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents please run the '!es-integration-health-check' command.
   section: Collect
   advanced: true
   required: false
