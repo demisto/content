@@ -239,11 +239,21 @@ def fetch_samples() -> None:
     demisto.incidents(sample_events)
 
 
+def test_module(params: dict):
+    """
+    Assigns a temporary port for longRunningPort and returns 'ok'.
+    """
+    if not params.get('longRunningPort'):
+        params['longRunningPort'] = '1111'
+    return_results('ok')
+    
+
 def main() -> None:
+    params = demisto.params()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         try:
-            port = int(demisto.params().get('longRunningPort'))
+            port = int(params.get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':
