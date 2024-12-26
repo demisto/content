@@ -9,9 +9,15 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "office",
+        "365"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
