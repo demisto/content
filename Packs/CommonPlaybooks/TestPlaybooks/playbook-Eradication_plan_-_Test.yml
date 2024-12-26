@@ -120,7 +120,7 @@ tasks:
       key:
         simple: Path
       value:
-        simple: C:\Windows\System32\powershell.exe
+        simple: C:\Windows\System32\wordpad.exe
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -406,7 +406,7 @@ tasks:
       - "9"
     scriptarguments:
       commands:
-        simple: powershell.exe
+        simple: write.exe
       endpoint_ids:
         complex:
           root: Core.Endpoint
