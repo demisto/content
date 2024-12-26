@@ -6,6 +6,7 @@ tags:
 - TA0009 - Collection
 - T1114 - Email Collection
 starttaskid: "0"
+issilent: true
 tasks:
   "0":
     id: "0"

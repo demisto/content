@@ -1,6 +1,7 @@
 id: A Successful login from TOR
 version: -1
 name: A Successful login from TOR
+issilent: true
 description: "This playbook is designed to handle the following alert:\n\n- A successful login from TOR\n\nThe playbook executes the following stages:\n\nTriage:\n\n- The playbook will fetch the user identity details.\n\nRemediation & Eradication:\n\n- The playbooks will suggest several actions for the analyst to take: disabling the user account using Active Directory or Azure Active Directory, expiring the user password using Active Directory, or blocking traffic from TOR exit nodes using PAN-OS and Palo Alto Networks' predefined EDL.\n\nThe analyst can select multiple actions, which will then be executed by the playbook based on the analyst's choices.\n\nRequirements: \nFor any response action, you will need one of the following integrations: Azure Active Directory Users / Active Directory Users."
 tags:
 - TA0001 - Initial Access
