@@ -917,17 +917,16 @@ def get_device_location_command(args, client) -> CommandResults:
 
 
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    next_page_token = last_run.get('next_page_token', '')
     last_run_latest_events = last_run.get('latest_event_ids')
     last_end_date = last_run.get('end_date')
     end_date = datetime.utcnow()
     start_date = last_end_date if last_end_date else end_date - timedelta(minutes=1)
 
-    next_page_token = last_run.get('next_page_token', '')
-
     all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
     if not all_events:
         # demisto.debug
-        return [], {'next_page_token': None, 'end_date': last_end_date}
+        return [], {'next_page_token': None, 'end_date': end_date, 'latest_event_ids': []}
 
     if last_run_latest_events:  # handle duplication
         filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
