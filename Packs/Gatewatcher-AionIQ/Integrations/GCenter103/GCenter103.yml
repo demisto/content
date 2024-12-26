@@ -93,3 +93,4 @@ script:
   isfetch: true
 fromversion: 6.5.0
 defaultclassifier: Gatewatcher Incidents Classifier
+defaultmapperin: Gatewatcher Mapper Incoming
