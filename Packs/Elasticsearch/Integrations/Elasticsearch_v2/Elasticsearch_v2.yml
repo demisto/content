@@ -53,7 +53,7 @@ configuration:
   additionalinfo: |- 
    The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
-   The integration test button doesn't fully tests the fetch incidents validity. To verify that you instance is set up correctly for fetching incidents please run the '!es-integration-health-check' command.
+   The integration test button doesn't fully tests the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents please run the '!es-integration-health-check' command.
   section: Collect
   required: false
 - display: Index time field (for sorting sort and limiting data)
