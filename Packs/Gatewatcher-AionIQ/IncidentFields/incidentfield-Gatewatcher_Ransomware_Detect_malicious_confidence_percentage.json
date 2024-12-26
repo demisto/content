@@ -2,7 +2,7 @@
     "id": "incident_gatewatcherransomwaremaliciousbehaviorconfidence",
     "version": -1,
     "modified": "2024-11-28T16:34:18.49510543+01:00",
-    "name": "Gatewatcher ransomware.malicious_behavior_confidence",
+    "name": "Gatewatcher Ransomware Detect malicious confidence percentage",
     "ownerOnly": false,
     "cliName": "gatewatcherransomwaremaliciousbehaviorconfidence",
     "type": "number",

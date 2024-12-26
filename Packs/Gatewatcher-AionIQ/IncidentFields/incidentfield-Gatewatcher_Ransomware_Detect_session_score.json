@@ -2,7 +2,7 @@
     "id": "incident_gatewatcherransomwaresessionscore",
     "version": -1,
     "modified": "2024-11-28T16:34:33.20446028+01:00",
-    "name": "Gatewatcher ransomware.session_score",
+    "name": "Gatewatcher Ransomware Detect session score",
     "ownerOnly": false,
     "cliName": "gatewatcherransomwaresessionscore",
     "type": "number",
