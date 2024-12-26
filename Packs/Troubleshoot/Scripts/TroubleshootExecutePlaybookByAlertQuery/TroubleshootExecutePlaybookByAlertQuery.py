@@ -19,18 +19,18 @@ class ResultsSummary:
         }
 
     def update_success(self, playbook_id: str, alert_id: str):
-        """Update the 'success' dictionary with alert IDs for the given playbook ID."""
+        """Update the 'success' dictionary with alert ID for the given playbook ID."""
         if playbook_id in self.results_summary["success"]:
-            self.results_summary["success"][playbook_id].extend(alert_id)
+            self.results_summary["success"][playbook_id].append(alert_id)
         else:
-            self.results_summary["success"].update({playbook_id: alert_id})
+            self.results_summary["success"].update({playbook_id: [alert_id]})
 
     def update_failure_create(self, playbook_id: str, failed_id: str):
-        """Update the 'failure_create' dictionary with failed IDs for the given playbook ID."""
+        """Update the 'failure_create' dictionary with failed ID for the given playbook ID."""
         if playbook_id in self.results_summary["failure_create"]:
-            self.results_summary["failure_create"][playbook_id].extend(failed_id)
+            self.results_summary["failure_create"][playbook_id].append(failed_id)
         else:
-            self.results_summary["failure_create"].update({playbook_id: failed_id})
+            self.results_summary["failure_create"].update({playbook_id: [failed_id]})
 
     def update_failure_set(self, playbook_id: str, alert_ids: list):
         """Update the 'failure_set' dictionary with alert IDs for the given playbook ID."""
@@ -62,7 +62,7 @@ class ResultsSummary:
                 playbook_info = get_playbook_info(playbook_failure_create, self.playbooks_dict)
                 final_message.append(
                     f"Playbook {playbook_info} could not be executed for alerts: "
-                    f"{sorted(alerts_fail)} due to failure in creating an investigation playbook.")
+                    f"{sorted(alerts_fail)}.")
 
         if self.results_summary["failure_set"]:
             for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():
@@ -157,7 +157,7 @@ def handle_results(command_results: dict, playbook_id: str, alert_id: str, resul
     Args:
         command_results (dict): The results from the API call.
         playbook_id (str): The playbook id for info.
-        alert_ids (list): A list of alert Ids for info.
+        alert_id (str): The alert Id for info.
 
     Returns:
         str: A summary of the operation status, indicating either success or the error log.
@@ -174,18 +174,8 @@ def handle_results(command_results: dict, playbook_id: str, alert_id: str, resul
             results_summary.update_failure_create(playbook_id, alert_id)
             return None
         
-        # result_dict = command_results[0].get('Contents', {}).get('response', {})
         results_summary.update_success(playbook_id, alert_id)
-        # if not result_dict:
-        #     results_summary.update_success(playbook_id, alert_id)
-        #     return None
-
-        # failed_ids = list(result_dict.keys())
-        # succeeded_ids = list(set(alert_ids) - set(failed_ids))
-
-        # results_summary.update_failure_create(playbook_id, failed_ids)
        
-
     except Exception as e:
         return f"Unexpected error occurred: {str(e)}. Response: {command_results[0]}"
 
@@ -223,15 +213,8 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
     for alert_id in alert_ids:
         command_result = demisto.executeCommand(
             "core-api-post", {"uri": f"/xsoar/inv-playbook/new/{playbook_id}/{alert_id}"})
-        # command_result.append(command_result[0].get('Contents', {}).get('response', {}))
         demisto.debug(f"Results of setting playbook {playbook_id} on alert {alert_id}:\n{command_result}")
-        # handle_results(command_result, playbook_id, alert_id, results_summary)
-    # command_results = demisto.executeCommand(
-    #     "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
-    #                       {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
-
-    # demisto.debug(f"Results of setting playbook {playbook_id} on alerts {alert_ids}:\n{command_results}")
-    
+        handle_results(command_result, playbook_id, alert_id, results_summary)
 
 
 def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list, list, list]:
