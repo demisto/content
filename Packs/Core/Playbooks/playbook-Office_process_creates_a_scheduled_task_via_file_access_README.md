@@ -7,22 +7,22 @@ During the analysis, the playbook will perform the following:
 
 - Checks the Office file path for any suspicious locations.
 - Checks the initiator process prevalence.
-- Check the initiator process reputation.
-- Extract the local path of the Office file and run script to calculate the Office file hash.
+- Checks the initiator process reputation.
+- Extracts the local path of the Office file and runs a script to calculate the Office file hash.
 - Checks if the hash of the Office file identified as malicious.
-- Checks if the initiator process is non prevalent with suspicious reputation or path.
+- Checks if the initiator process is non-prevalent with suspicious reputation or path.
 
 Investigation:
 During the alert investigation, the playbook will perform the following:
 
-- Searches for related XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE techniques to identify malicious activity: T1055 - Process Injection, T1566 - Phishing.
+- Searches for related Cortex XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE techniques to identify malicious activity: T1055 - Process Injection, T1566 - Phishing.
 
 Remediation:
 
 - Automatically disable the malicious scheduled task.
 - Automatically terminate the causality process.
 - Quarantine the Office file (requires analyst approval).
-- Automatically Close the alert.
+- Automatically close the alert.
 
 ## Dependencies
 

@@ -13,22 +13,22 @@ description: |-
 
   - Checks the Office file path for any suspicious locations.
   - Checks the initiator process prevalence.
-  - Check the initiator process reputation.
-  - Extract the local path of the Office file and run script to calculate the Office file hash.
+  - Checks the initiator process reputation.
+  - Extracts the local path of the Office file and runs a script to calculate the Office file hash.
   - Checks if the hash of the Office file identified as malicious.
-  - Checks if the initiator process is non prevalent with suspicious reputation or path.
+  - Checks if the initiator process is non-prevalent with suspicious reputation or path.
 
   Investigation:
   During the alert investigation, the playbook will perform the following:
 
-  - Searches for related XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE techniques to identify malicious activity: T1055 - Process Injection, T1566 - Phishing.
+  - Searches for related Cortex XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE techniques to identify malicious activity: T1055 - Process Injection, T1566 - Phishing.
 
   Remediation:
 
   - Automatically disable the malicious scheduled task.
   - Automatically terminate the causality process.
   - Quarantine the Office file (requires analyst approval).
-  - Automatically Close the alert.
+  - Automatically close the alert.
 tags:
 - TA0002 - Execution
 - T1053 - Scheduled Task/Job
@@ -576,7 +576,7 @@ tasks:
       id: 06f5b183-5ce4-4e90-8f21-35ef293ce760
       version: -1
       name: Notify to War Room - Scheduled Task Disabled
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported)
       scriptName: Print
       type: regular
       iscommand: false
@@ -769,7 +769,7 @@ tasks:
       id: ba60bd40-48ed-4fb3-8237-7c01baeaa308
       version: -1
       name: Extract the schedule task path
-      description: Extracts regex data from the provided text. The script support groups and looping.
+      description: Extracts regex data from the provided text. The script supports groups and looping.
       scriptName: MatchRegexV2
       type: regular
       iscommand: false
@@ -998,7 +998,7 @@ tasks:
       id: 06f81e84-ff8a-4271-8b33-740520540ce4
       version: -1
       name: Check the Office file path for any suspicious locations
-      description: Extracts regex data from the provided text. The script support groups and looping.
+      description: Extracts regex data from the provided text. The script supports groups and looping.
       scriptName: MatchRegexV2
       type: regular
       iscommand: false
@@ -1101,7 +1101,7 @@ tasks:
       id: 475f693e-0192-4d36-8ef0-ca609b63830a
       version: -1
       name: Extract the local path of the Office file
-      description: Extracts regex data from the provided text. The script support groups and looping.
+      description: Extracts regex data from the provided text. The script supports groups and looping.
       scriptName: MatchRegexV2
       type: regular
       iscommand: false
@@ -1186,8 +1186,8 @@ tasks:
     task:
       id: 9c4a2611-5ee3-4820-8b97-1e32f7125dc8
       version: -1
-      name: Analyst approval for quarantine the Office file
-      description: Analyst approval for quarantine the Office file.
+      name: Analyst approval to quarantine the Office file
+      description: Analyst approval to quarantine the Office file.
       type: condition
       iscommand: false
       brand: ""
@@ -1293,7 +1293,7 @@ tasks:
       id: 988ce44c-092e-4426-87a1-b20de786f26a
       version: -1
       name: File quarantine
-      description: 'Quarantines a file on selected endpoints. '
+      description: Quarantines a file on selected endpoints.
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
@@ -1410,7 +1410,7 @@ tasks:
       id: 9e626d73-5635-4c35-8467-c98288a627b8
       version: -1
       name: Execute shell command to get the office file hash
-      description: Calculate the Office file Hash by executing shell commands.
+      description: Calculate the Office file hash by executing shell commands.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
