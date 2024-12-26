@@ -120,7 +120,7 @@ tasks:
       key:
         simple: Path
       value:
-        simple: C:\Windows\System32\notepad.exe
+        simple: C:\Windows\System32\powershell.exe
     separatecontext: false
     continueonerrortype: ""
     view: |-
