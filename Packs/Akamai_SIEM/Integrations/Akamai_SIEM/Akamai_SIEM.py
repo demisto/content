@@ -452,18 +452,19 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
 def test_new_endpoint(client):
     start = time.time()
     print("init session")
-    url = "https://10.180.188.209/instance/execute/Akamai_instance_1/"
-    
+    import requests
+
+    url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1"
+
     headers = {
-    'Content-Type': 'application/json'
+    'Authorization': 'Basic YTph',
     }
-    client = Client(base_url=url,
-                    verify=False,
-                    headers=headers,
-                    proxy=False)
     print("Sending request.")
-    response = client._http_request(method="GET", timeout=50)
+
+    response = requests.request("GET", url, headers=headers)
+
     print("Finished sending request.")
+    print(response.text)
     # response = requests.request("GET", url, headers=headers)
     end = time.time()
     return f'Get {response.status_code=} in a {end-start} time.', {}, {}

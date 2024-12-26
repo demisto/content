@@ -188,9 +188,8 @@ def generate_events() -> str:
     },
     "version": "1.0"
     }
-        target_size = 300000
         import copy
-        for i in range(target_size):
+        for i in range(1):
             duplicated_dict = copy.deepcopy(original_dict)
             duplicated_dict["unique_id"] = i
             events.append(json.dumps(duplicated_dict))
@@ -203,7 +202,7 @@ def generate_events() -> str:
         demisto.info("[test] finished getting the events.")
     else:
         demisto.info("[test] Already have EVENTS object, will not create a new one.")
-        time.sleep(60)
+        # time.sleep(sleep_time)
     return EVENTS
 
 
@@ -219,7 +218,6 @@ async def handle_get_request():
         EVENTS = generate_events()
     return Response(status_code=status.HTTP_200_OK, content=json.dumps(EVENTS), media_type="application/json")
 
-    
 
 def setup_credentials():
     if credentials_param := demisto.params().get('credentials'):
