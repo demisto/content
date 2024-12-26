@@ -93,19 +93,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 77a7a580-b1b8-4f98-8132-4334be5971ee
+    taskid: b6c5e8f1-54fa-4924-8ad4-a65fdfb76818
     type: regular
     task:
-      id: 77a7a580-b1b8-4f98-8132-4334be5971ee
+      id: b6c5e8f1-54fa-4924-8ad4-a65fdfb76818
       version: -1
       name: Analyze command line
-      description: This script analyses a command line and provide a score based on the matched profiles.
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
       scriptName: CommandLineAnalysis
       type: regular
       iscommand: false
@@ -201,7 +209,8 @@ tasks:
           right:
             value:
               simple: mixed case powershell, reversed command, powershell suspicious patterns, credential dumping, double encoding, amsi techniques, malicious commands
-        - operator: greaterThanOrEqual
+          ignorecase: true
+        - operator: isEqualString
           left:
             value:
               complex:
@@ -220,7 +229,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "3"
         - operator: greaterThanOrEqual
           left:
             value:
@@ -832,10 +841,23 @@ tasks:
           right:
             value:
               simple: mixed case powershell, reversed command, powershell suspicious patterns, credential dumping, double encoding, amsi techniques, malicious commands
+          ignorecase: true
         - operator: greaterThanOrEqual
           left:
             value:
-              simple: DBotScore.Score
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                    ignorecase: true
+                accessor: Score
             iscontext: true
           right:
             value:
@@ -848,11 +870,33 @@ tasks:
           right:
             value:
               simple: "30"
-      - - operator: isNotEmpty
+      - - operator: containsString
           left:
             value:
-              simple: Endpoint.ID
+              simple: Core.Endpoint.endpoint_type
             iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
