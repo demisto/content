@@ -173,9 +173,9 @@ def handle_results(command_results: dict, playbook_id: str, alert_id: str, resul
         if type(result_dict) == str:
             results_summary.update_failure_create(playbook_id, alert_id)
             return None
-        
+
         results_summary.update_success(playbook_id, alert_id)
-       
+
     except Exception as e:
         return f"Unexpected error occurred: {str(e)}. Response: {command_results[0]}"
 
