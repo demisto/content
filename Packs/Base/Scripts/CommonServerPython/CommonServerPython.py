@@ -56,6 +56,7 @@ SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
+HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -10775,6 +10776,10 @@ def support_multithreading():  # pragma: no cover
     :return: No data returned
     :rtype: ``None``
     """
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
+    if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
+        return
+    HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
     global demisto
     prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
     demisto.lock = Lock()  # type: ignore[attr-defined]
