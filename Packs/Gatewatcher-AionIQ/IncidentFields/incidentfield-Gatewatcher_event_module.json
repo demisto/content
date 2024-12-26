@@ -2,7 +2,7 @@
     "id": "incident_gatewatchereventmodule",
     "version": -1,
     "modified": "2024-11-27T17:39:08.729687913+01:00",
-    "name": "Gatewatcher event.module",
+    "name": "Gatewatcher event module",
     "ownerOnly": false,
     "cliName": "gatewatchereventmodule",
     "type": "shortText",
