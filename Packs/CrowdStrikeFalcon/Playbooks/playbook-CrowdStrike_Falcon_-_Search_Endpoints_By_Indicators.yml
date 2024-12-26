@@ -4,7 +4,7 @@ contentitemexportablefields:
     - all
 id: CrowdStrike Falcon - Search Endpoints By Indicators
 inputSections:
-- description: Generic group for inputs
+- description: Generic group for inputs.
   inputs:
   - FileSha256
   - HostId
@@ -41,19 +41,19 @@ inputs:
   required: false
   value:
     simple: 8.8.8.8
-- description: The Domain Indicator to search for.
+- description: The domain indicator to search for.
   key: Domain
   playbookInputQuery:
   required: false
   value: {}
-- description: The IPv6 Indicator to search for.
+- description: The IPv6 indicator to search for.
   key: IPV6
   playbookInputQuery:
   required: false
   value: {}
 name: CrowdStrike Falcon - Search Endpoints By Indicators
 outputSections:
-- description: Generic group for outputs
+- description: Generic group for outputs.
   name: General (Outputs group)
   outputs:
   - Endpoint
@@ -736,7 +736,7 @@ tasks:
       description: Returns a list of device IDs that the indicator ran on.
       id: 5ab63abd-adf6-4b65-8324-31348720f4a2
       iscommand: true
-      name: Get device id list by IP
+      name: Get device ID list by IP
       script: '|||cs-falcon-device-ran-on'
       type: regular
       version: -1

@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* CrowdStrike Falcon - Search Endpoints By Hash
+CrowdStrike Falcon - Search Endpoints By Hash
 
 ### Integrations
 
@@ -15,7 +15,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 

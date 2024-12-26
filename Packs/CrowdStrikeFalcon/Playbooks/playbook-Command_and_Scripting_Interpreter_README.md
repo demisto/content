@@ -1,5 +1,5 @@
 This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.
-An attacker might abuse command and script interpreters to execute commands, scripts, or binaries
+An attacker might abuse command and script interpreters to execute commands, scripts, or binaries.
 
 The playbook executes the following stages:
 
@@ -15,7 +15,7 @@ The playbook executes the following stages:
 **Remediation:**
 
 - Terminate the process if the CrowdStike Falcon agent doesn't block it.
-- If the process failed or the parent process command line was suspicious as well, A manual action will be provided to the analyst to choose how to proceed further:
+- If the process failed or the parent process command line was suspicious as well, a manual action will be provided to the analyst to choose how to proceed further:
     - Terminate the parent process
     - Isolate the endpoint
 **Additional Phases:**
