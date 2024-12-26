@@ -842,7 +842,7 @@ tasks:
       id: ddc7820a-e843-4449-807f-e81131bd4fdf
       version: -1
       name: Terminate Causality (CGO)
-      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available for Cortex XSIAM 2.4 and above.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -1498,10 +1498,6 @@ tasks:
       name: Set Office file hash
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
