@@ -5,14 +5,14 @@ contentitemexportablefields:
 name: T1059 - Command and Scripting Interpreter
 description: |-
   This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.
-  An attacker might abuse command and script interpreters to execute commands, scripts, or binaries
+  An attacker might abuse command and script interpreters to execute commands, scripts, or binaries.
 
   The playbook executes the following stages:
 
   **Analysis**
 
   - Initiates the CommandLineAnalysiss script which will determine if the command lines have any suspicious artifacts that might indicate malicious behavior.
-  - Enriches any indicates found during the command lines analysis phase.
+  - Enriches any indicators found during the command lines analysis phase.
 
   **Investigative Actions:**
   - In case malicious indicators were found, the playbook will initiate a check against CrowdStrike Falcon to identify if any other endpoint has been associated with the same indicators.  
@@ -21,7 +21,7 @@ description: |-
   **Remediation:**
 
   - Terminate the process if the CrowdStike Falcon agent doesn't block it.
-  - If the process failed or the parent process command line was suspicious as well, A manual action will be provided to the analyst to choose how to proceed further:
+  - If the process failed or the parent process command line was suspicious as well, a manual action will be provided to the analyst to choose how to proceed further:
       - Terminate the parent process
       - Isolate the endpoint
   **Additional Phases:**
@@ -101,7 +101,7 @@ tasks:
       id: 893c7ef4-e2a2-48cf-83e6-0dde5035a0c7
       version: -1
       name: Close Alert - True Positive
-      description: Closes the alert in Cortex XSIAM
+      description: Closes the alert in Cortex XSIAM.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -532,7 +532,7 @@ tasks:
       id: 8e9a4bc2-866d-4f1a-8912-73eb7c89ebce
       version: -1
       name: Manual Response
-      description: Manual Response - Analyst actions is required.
+      description: Manual Response - Analyst action is required.
       type: condition
       iscommand: false
       brand: ""
@@ -668,7 +668,7 @@ tasks:
       id: 99231bed-c5f1-4160-8a69-d05d21436797
       version: -1
       name: Close Alert - False Positive
-      description: Closes the alert in Cortex XSIAM
+      description: Closes the alert in Cortex XSIAM.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -736,7 +736,7 @@ tasks:
       id: 25609c65-0a99-4f98-8646-7ff23a8d08f0
       version: -1
       name: No suspicious artifacts were found
-      description: "Dear Analyst, \n\nWe've performed several operations and found no suspicious activity. \n\nThe Process Chain we've received is:\n${CrowdStrike.Detection.grandparentprocess=val.filename +' --> ' }${CrowdStrike.Detection.parentprocess=val.filename +' --> ' } \n${incident.filenames.[0]}\n\n\n**Please Choose how would you should this incident be classified:**\n#### Option 1: True Positive   \n-> This action will go ahead and try to terminate the process in case it is still running, If not, you will be promoted with an additional manual task to choose from  if you want to isolate the machine or kill the parent process in the alert\n\n--- \n\n\n#### Option 2: False Positive  \n-> The incident will be closed and classified as False Positive\n\n"
+      description: "Dear Analyst, \n\nWe've performed several operations and found no suspicious activity. \n\nThe Process Chain we've received is:\n${CrowdStrike.Detection.grandparentprocess=val.filename +' --> ' }${CrowdStrike.Detection.parentprocess=val.filename +' --> ' } \n${incident.filenames.[0]}\n\n\n**Please choose how to classify this incident:**\n#### Option 1: True Positive   \n-> This action will go ahead and try to terminate the process in case it is still running, If not, you will be promoted with an additional manual task to choose from  if you want to isolate the machine or kill the parent process in the alert\n\n--- \n\n\n#### Option 2: False Positive  \n-> The incident will be closed and classified as False Positive\n\n"
       type: condition
       iscommand: false
       brand: ""
@@ -1258,7 +1258,7 @@ tasks:
       id: de0ed1c3-2220-410b-8677-4eeae424d06d
       version: -1
       name: CommandLine Analysis
-      description: This script analyses a command line and provide a score based on the matched profiles.
+      description: This script analyzes a command line and provide a score based on the matched profiles.
       scriptName: CommandLineAnalysis
       type: regular
       iscommand: false
@@ -1466,7 +1466,7 @@ tasks:
       id: 98bf182c-5c8f-4f0a-8ec7-dd6638a69def
       version: -1
       name: Is there a process to terminate?
-      description: Check if the parent process id is located in the context.
+      description: Check if the parent process ID is located in the context.
       type: condition
       iscommand: false
       brand: ""
@@ -1610,8 +1610,8 @@ tasks:
     task:
       id: 4876f1ac-57db-48f5-84b9-e8ebeb766802
       version: -1
-      name: Should open another incident to track findings?
-      description: Should open another incident to track findings?
+      name: Whether to open another incident to track findings?
+      description: Open another incident to track findings?
       type: condition
       iscommand: false
       brand: ""
