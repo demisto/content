@@ -2,7 +2,7 @@
     "id": "incident_gatewatchershellcodesubtype",
     "version": -1,
     "modified": "2024-11-28T15:52:03.465206506+01:00",
-    "name": "Gatewatcher shellcode.sub_type",
+    "name": "Gatewatcher Shellcode Detect type",
     "ownerOnly": false,
     "cliName": "gatewatchershellcodesubtype",
     "type": "shortText",
