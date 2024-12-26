@@ -397,6 +397,26 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
+def test_new_endpoint(client):
+    start = time.time()
+    print("init session")
+    import requests
+
+    url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1"
+
+    headers = {
+    'Authorization': 'Basic YTph',
+    }
+    print("Sending request.")
+
+    response = requests.request("GET", url, headers=headers)
+
+    print("Finished sending request.")
+    print(response.text)
+    # response = requests.request("GET", url, headers=headers)
+    end = time.time()
+    return f'Get {response.status_code=} in a {end-start} time.', {}, {}
+
 async def generate_events() -> str:
     global EVENTS
     if not EVENTS:
@@ -640,7 +660,8 @@ def main():  # pragma: no cover
     commands = {
         "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
-        f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command
+        # f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command,
+        f"{INTEGRATION_COMMAND_NAME}-reset-offset": test_new_endpoint
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
