@@ -746,32 +746,29 @@ def fetch_empty_selected_engines(client: GwClient,
 
         return incidents_a + incidents_m
 
-def fix_broken_list(params: dict[str, Any]) -> list[str]:
 
-    e_s: list[str] = []
-    broken_demisto_list = params['engine_selection']
-    bdl = broken_demisto_list
+def fix_broken_list(params: Dict[str, Any]) -> List[str]:
 
-    if "malcore" in str(bdl):
-        e_s.append("malcore")
-    if "shellcode_detect" in str(bdl):
-        e_s.append("shellcode_detect")
-    if "malicious_powershell_detect" in str(bdl):
-        e_s.append("malicious_powershell_detect")
-    if "sigflow_alert" in str(bdl):
-        e_s.append("sigflow_alert")
-    if "dga_detect" in str(bdl):
-        e_s.append("dga_detect")
-    if "active_cti" in str(bdl):
-        e_s.append("ioc")
-    if "retrohunt" in str(bdl):
-        e_s.append("retrohunt")
-    if "ransomware_detect" in str(bdl):
-        e_s.append("ransomware_detect")
-    if "beacon_detect" in str(bdl):
-        e_s.append("beacon_detect")
+    if 'engine_selection' not in params or not isinstance(params['engine_selection'], (str, list)):
+
+        raise ValueError("Invalid 'engine_selection' parameter")
+
+    bdl = params['engine_selection']
+    known_engines = {
+        "malcore", "shellcode_detect", "malicious_powershell_detect",
+        "sigflow_alert", "dga_detect", "active_cti", "retrohunt",
+        "ransomware_detect", "beacon_detect"
+    }
+    e_s = []
+
+    if isinstance(bdl, str):
+        e_s = [engine for engine in known_engines if engine in bdl]
+
+    elif isinstance(bdl, list):
+        e_s = [engine for engine in known_engines if engine in bdl]
 
     return e_s
+
 
 def fetch_incidents():
 
