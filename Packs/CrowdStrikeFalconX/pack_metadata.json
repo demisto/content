@@ -20,6 +20,7 @@
     "price": 0,
     "dependencies": {},
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
