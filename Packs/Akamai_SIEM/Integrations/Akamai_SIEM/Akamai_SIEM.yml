@@ -83,7 +83,6 @@ configuration:
   additionalinfo: The number of events to fetch per request to akamai Default is 200k, maximum is 600k as per Akamai documentation.
   hidden:
   - xsoar
-  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8

@@ -12401,12 +12401,21 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
         return chunk_size
 
+    async def send_events_async(data_chunk):
+        chunk_size = len(data_chunk)
+        data_chunk = '\n'.join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                    error_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        return chunk_size
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
         all_chunks = [chunk for chunk in data_chunks]
         demisto.info("Finished appending all data_chunks to a list.")
         support_multithreading()
-        tasks = [asyncio.create_task(send_events(chunk)) for chunk in all_chunks]
+        tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
 
         demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
         return tasks

@@ -399,6 +399,8 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
 async def generate_events() -> str:
     global EVENTS
     if not EVENTS:
+        events = []
+        demisto.info("[test] Getting new EVENTS.")
         original_dict = {
     "attackData": {
         "clientIP": "192.0.2.82",
@@ -463,14 +465,17 @@ async def generate_events() -> str:
         for i in range(target_size):
             duplicated_dict = copy.deepcopy(original_dict)
             duplicated_dict["unique_id"] = i
-            EVENTS.append(json.dumps(duplicated_dict))
-            EVENTS.append(json.dumps({
-                "total": 300000,
-                "offset": "71cca;3phZmEdPj6YEqml0rvbdWDZGW3mCiJIwjyhkJfsLFM2gVYPgE8-N_0CiLI9gwH0_4OJ87xDQ3b-gIsx_kEBdf7aaC_AvDpG9fMxypeaCma10FKrY9VKE",
-                "limit": 300000
-            }))
-            EVENTS="\n".join(EVENTS)
-    await asyncio.sleep(60)
+            events.append(json.dumps(duplicated_dict))
+        events.append(json.dumps({
+            "total": 300000,
+            "offset": "Hayun offset",
+            "limit": 300000
+        }))
+        EVENTS = "\n".join(events)
+        demisto.info("[test] finished getting the events.")
+    else:
+        demisto.info("[test] Already have EVENTS object, will not create a new one.")
+        await asyncio.sleep(60)
     return EVENTS
 
 
@@ -593,7 +598,9 @@ async def fetch_events_command(client: Client):
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
-            events, offset = await client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+            # get_events_task = asyncio.ensure_future(client.get_events_with_offset(config_ids, offset, page_size, from_epoch))
+            get_events_task = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+            events, offset = await get_events_task
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
@@ -674,6 +681,7 @@ def main():  # pragma: no cover
             global LOCKED_UPDATES_LOCK
             LOCKED_UPDATES_LOCK = asyncio.Lock()
             demisto.info("Starting long-running execution.")
+            support_multithreading()
             asyncio.run(fetch_events_command(client))
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
