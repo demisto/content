@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The former `indicator` commands are depricated and now have new logic to match OpenCTI's terminology.</li><li>The former `indicator` commands are now `observable` commands.</li></ul>Make sure to check and update any Playbooks or Scripts that use the changed commands."
+}
