@@ -2993,6 +2993,11 @@ def auth_type_switch_handling():
         demisto.debug(f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
         integration_context['current_auth_type'] = AUTH_TYPE
         set_integration_context(integration_context)
+        
+def insufficient_permissions_error_handler():
+    """
+    """
+    return ''
 
 
 def main():   # pragma: no cover
@@ -3052,7 +3057,12 @@ def main():   # pragma: no cover
             raise NotImplementedError(f"command {command} is not implemented.")
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        error_code = e.errno
+        error_message = str(e)
+        if error_code >= 400 and '' in error_message:
+            insufficient_permissions_error_message = insufficient_permissions_error_handler()
+            error_message = insufficient_permissions_error_message + error_message
+        return_error(f'Failed to execute {command} command.\nError:\n{error_message}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
