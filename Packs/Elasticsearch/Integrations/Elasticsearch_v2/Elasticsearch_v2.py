@@ -70,8 +70,6 @@ MAP_LABELS = param.get('map_labels', True)
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
-HEALTH_CHECK_SUCCESS = "Testing was successful."
-
 
 def get_value_by_dot_notation(dictionary, key):
     """
@@ -578,9 +576,19 @@ def verify_es_server_version(res):
 
 
 def test_func(proxies):
-    health_check_result = integration_health_check(proxies)
-    if health_check_result == HEALTH_CHECK_SUCCESS:
-        demisto.results('ok')
+    """
+      Tests API connectivity to the Elasticsearch server.
+      Tests the existence of all necessary fields for fetch.
+
+      Due to load considerations, the test module doesn't check the validity of the fetch-incident - to test that the fetch works
+      as excepted the user should run the es-integration-health-check command.
+
+    """
+    test_connectivity_auth(proxies)
+    if demisto.params().get('isFetch'):
+        # check the existence of all necessary fields for fetch
+        fetch_params_check()
+    demisto.results('ok')
 
 
 def integration_health_check(proxies):
@@ -634,7 +642,7 @@ def integration_health_check(proxies):
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
-    return HEALTH_CHECK_SUCCESS
+    return "Testing was successful."
 
 
 def incident_label_maker(source):
