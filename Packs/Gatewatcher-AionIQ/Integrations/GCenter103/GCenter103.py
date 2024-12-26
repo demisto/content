@@ -59,9 +59,12 @@ class GwRequests:
         self.ip = ip
         self.headers = headers
         self.check_cert = check_cert
+        
         if proxy:
-            self.PROXIES["http"] = os.getenv("http_proxy", "")
-            self.PROXIES["https"] = os.getenv("https_proxy", "")
+
+            d = handle_proxy(proxy_param_name='proxy')
+            self.PROXIES["http"] = d['http']
+            self.PROXIES["https"] = d['https']
 
     def _gen_request_kwargs(self,
                             endpoint: str,
