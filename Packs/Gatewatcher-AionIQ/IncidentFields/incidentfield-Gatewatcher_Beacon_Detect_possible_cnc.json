@@ -2,7 +2,7 @@
     "id": "incident_gatewatcherbeaconpossiblecnc",
     "version": -1,
     "modified": "2024-11-28T16:41:02.210218222+01:00",
-    "name": "Gatewatcher beacon.possible_cnc",
+    "name": "Gatewatcher Beacon Detect possible cnc",
     "ownerOnly": false,
     "cliName": "gatewatcherbeaconpossiblecnc",
     "type": "shortText",
