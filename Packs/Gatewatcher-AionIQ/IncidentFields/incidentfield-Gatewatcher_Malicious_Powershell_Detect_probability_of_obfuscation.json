@@ -2,7 +2,7 @@
     "id": "incident_gatewatchermaliciouspowershellprobaobfuscated",
     "version": -1,
     "modified": "2024-11-28T15:55:05.921788968+01:00",
-    "name": "Gatewatcher malicious_powershell.proba_obfuscated",
+    "name": "Gatewatcher Malicious Powershell Detect probability of obfuscation",
     "ownerOnly": false,
     "cliName": "gatewatchermaliciouspowershellprobaobfuscated",
     "type": "number",

@@ -2,7 +2,7 @@
     "id": "incident_gatewatchermaliciouspowershellscore",
     "version": -1,
     "modified": "2024-11-28T15:55:21.843158786+01:00",
-    "name": "Gatewatcher malicious_powershell.score",
+    "name": "Gatewatcher Malicious Powershell Detect characters score",
     "ownerOnly": false,
     "cliName": "gatewatchermaliciouspowershellscore",
     "type": "number",
