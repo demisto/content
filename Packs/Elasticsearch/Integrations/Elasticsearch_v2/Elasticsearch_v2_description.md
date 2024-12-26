@@ -54,4 +54,4 @@ The types of time-fields supported are:
 Notes:
 - Not all fields can be sorted in Elasticsearch. The fields are used to sort the results table.
   The supported result types are boolean, numeric, date, and keyword fields.
-- The integration test button doesn't fully tests the fetch incidents validity. To verify that you instance is set up correctly for fetching incidents please run the ***!es-integration-health-check*** command.
+- The integration test button doesn't fully tests the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents please run the ***!es-integration-health-check*** command.
