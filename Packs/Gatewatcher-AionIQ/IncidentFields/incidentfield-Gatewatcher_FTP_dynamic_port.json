@@ -2,7 +2,7 @@
     "id": "incident_gatewatcherftpdynamicport",
     "version": -1,
     "modified": "2024-12-03T18:04:46.22889086+01:00",
-    "name": "Gatewatcher ftp.dynamic_port",
+    "name": "Gatewatcher FTP dynamic port",
     "ownerOnly": false,
     "cliName": "gatewatcherftpdynamicport",
     "type": "number",
