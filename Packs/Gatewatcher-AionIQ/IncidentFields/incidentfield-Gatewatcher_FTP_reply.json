@@ -5,7 +5,7 @@
     "name": "Gatewatcher FTP reply",
     "ownerOnly": false,
     "cliName": "gatewatcherftpreply",
-    "type": "mutiSelect",
+    "type": "shortText",
     "closeForm": true,
     "editForm": true,
     "required": false,
