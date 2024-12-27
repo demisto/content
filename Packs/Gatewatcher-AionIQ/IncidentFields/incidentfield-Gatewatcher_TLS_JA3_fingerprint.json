@@ -2,7 +2,7 @@
     "id": "incident_gatewatchertlsja3",
     "version": -1,
     "modified": "2024-12-03T17:36:06.103456454+01:00",
-    "name": "Gatewatcher tls.ja3",
+    "name": "Gatewatcher TLS JA3 fingerprint",
     "ownerOnly": false,
     "cliName": "gatewatchertlsja3",
     "type": "shortText",
