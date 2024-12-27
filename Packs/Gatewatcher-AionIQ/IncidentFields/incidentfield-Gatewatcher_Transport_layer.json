@@ -2,7 +2,7 @@
     "id": "incident_gatewatchernetworktransport",
     "version": -1,
     "modified": "2024-11-28T15:42:00.430167172+01:00",
-    "name": "Gatewatcher network.transport",
+    "name": "Gatewatcher Transport layer",
     "ownerOnly": false,
     "cliName": "gatewatchernetworktransport",
     "type": "shortText",
