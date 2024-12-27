@@ -2,7 +2,7 @@
     "id": "incident_gatewatchernfsprocedure",
     "version": -1,
     "modified": "2024-12-03T17:58:12.557592802+01:00",
-    "name": "Gatewatcher nfs.procedure",
+    "name": "Gatewatcher NFS procedure",
     "ownerOnly": false,
     "cliName": "gatewatchernfsprocedure",
     "type": "shortText",

@@ -2,7 +2,7 @@
     "id": "incident_gatewatchernfsstatus",
     "version": -1,
     "modified": "2024-12-03T17:58:23.182343436+01:00",
-    "name": "Gatewatcher nfs.status",
+    "name": "Gatewatcher NFS status",
     "ownerOnly": false,
     "cliName": "gatewatchernfsstatus",
     "type": "shortText",

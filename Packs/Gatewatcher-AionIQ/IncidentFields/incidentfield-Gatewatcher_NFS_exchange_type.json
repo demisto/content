@@ -2,7 +2,7 @@
     "id": "incident_gatewatchernfstype",
     "version": -1,
     "modified": "2024-12-03T17:58:35.046880499+01:00",
-    "name": "Gatewatcher nfs.type",
+    "name": "Gatewatcher NFS exchange type",
     "ownerOnly": false,
     "cliName": "gatewatchernfstype",
     "type": "shortText",
