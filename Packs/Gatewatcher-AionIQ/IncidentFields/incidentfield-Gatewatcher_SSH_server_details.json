@@ -2,7 +2,7 @@
     "id": "incident_gatewatchersshserver",
     "version": -1,
     "modified": "2024-12-03T18:12:31.232873813+01:00",
-    "name": "Gatewatcher ssh.server",
+    "name": "Gatewatcher SSH server details",
     "ownerOnly": false,
     "cliName": "gatewatchersshserver",
     "type": "shortText",
