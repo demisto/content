@@ -2,7 +2,7 @@
     "id": "incident_gatewatchergcapinterface",
     "version": -1,
     "modified": "2024-11-27T17:39:09.069021085+01:00",
-    "name": "Gatewatcher GCap interface",
+    "name": "Gatewatcher GCap network interface",
     "ownerOnly": false,
     "cliName": "gatewatchergcapinterface",
     "type": "shortText",
