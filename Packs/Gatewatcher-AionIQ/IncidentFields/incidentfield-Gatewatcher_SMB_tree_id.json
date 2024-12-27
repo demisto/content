@@ -2,7 +2,7 @@
     "id": "incident_gatewatchersmbtreeid",
     "version": -1,
     "modified": "2024-12-03T17:53:24.356458694+01:00",
-    "name": "Gatewatcher smb.tree_id",
+    "name": "Gatewatcher SMB tree id",
     "ownerOnly": false,
     "cliName": "gatewatchersmbtreeid",
     "type": "number",
