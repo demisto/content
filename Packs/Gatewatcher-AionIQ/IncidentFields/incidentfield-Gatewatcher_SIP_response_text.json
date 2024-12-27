@@ -2,7 +2,7 @@
     "id": "incident_gatewatchersipresponseline",
     "version": -1,
     "modified": "2024-12-04T14:14:45.829974845+01:00",
-    "name": "Gatewatcher sip.response_line",
+    "name": "Gatewatcher SIP response text",
     "ownerOnly": false,
     "cliName": "gatewatchersipresponseline",
     "type": "shortText",
