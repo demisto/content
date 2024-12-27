@@ -2,7 +2,7 @@
     "id": "incident_gatewatchernbametadata",
     "version": -1,
     "modified": "2024-12-04T15:35:48.860757458+01:00",
-    "name": "Gatewatcher nba.metadata",
+    "name": "Gatewatcher Network Behavior Analytics metadata",
     "ownerOnly": false,
     "cliName": "gatewatchernbametadata",
     "type": "shortText",
