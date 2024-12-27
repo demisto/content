@@ -2,7 +2,7 @@
     "id": "incident_gatewatcherflowid",
     "version": -1,
     "modified": "2024-11-27T17:39:08.963500338+01:00",
-    "name": "Gatewatcher Flow ID",
+    "name": "Gatewatcher network flow id",
     "ownerOnly": false,
     "cliName": "gatewatcherflowid",
     "type": "number",
