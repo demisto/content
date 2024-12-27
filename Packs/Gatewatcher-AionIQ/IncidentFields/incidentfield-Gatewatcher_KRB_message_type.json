@@ -2,7 +2,7 @@
     "id": "incident_gatewatcherkrbmsgtype",
     "version": -1,
     "modified": "2024-12-03T18:16:27.952047026+01:00",
-    "name": "Gatewatcher krb.msg_type",
+    "name": "Gatewatcher KRB message type",
     "ownerOnly": false,
     "cliName": "gatewatcherkrbmsgtype",
     "type": "shortText",

@@ -2,7 +2,7 @@
     "id": "incident_gatewatcherkrbsname",
     "version": -1,
     "modified": "2024-12-03T18:16:54.665226378+01:00",
-    "name": "Gatewatcher krb.sname",
+    "name": "Gatewatcher KRB service name",
     "ownerOnly": false,
     "cliName": "gatewatcherkrbsname",
     "type": "shortText",
