@@ -2,7 +2,7 @@
     "id": "incident_gatewatchermqttconnack",
     "version": -1,
     "modified": "2024-12-04T14:25:54.324007775+01:00",
-    "name": "Gatewatcher mqtt.connack",
+    "name": "Gatewatcher MQTT CONNACK",
     "ownerOnly": false,
     "cliName": "gatewatchermqttconnack",
     "type": "shortText",
