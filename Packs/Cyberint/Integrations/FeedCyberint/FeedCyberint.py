@@ -1,20 +1,22 @@
 import http
 from json import JSONDecodeError
 
+import math
+
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
 import json
-from typing import Any, List, Dict
+from typing import Any
 
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%d"
-DEFAULT_INTERVAL = 240
-PAGE_SIZE = 20000
+DEFAULT_INTERVAL = 30  # 30 minutes
 EXECUTION_TIMEOUT_SECONDS = 1200  # 20 minutes
-MAX_LIMIT_SIZE = 500000
+MAX_LIMIT_SIZE_PER_EXEC = 100000
+PAGE_SIZE = 20000
 
 
 class Client(BaseClient):
@@ -40,10 +42,9 @@ class Client(BaseClient):
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-
     @logger
     def request_daily_feed(self, date_time: str = None, limit: int = 1000, execution_start_time: datetime = datetime.now(),
-                           test: bool = False) -> List[Dict[str, Any]]:
+                           test: bool = False) -> list[dict[str, Any]]:
         """
         Retrieves all entries from the feed with pagination support.
 
@@ -57,22 +58,25 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        offset = 0
+        init_offset = offset = demisto.getIntegrationContext().get('offset', 0)
+        date_time = date_time or datetime.now()
         has_more = True
 
+        demisto.debug(f'Fetching feed offset {offset}')
+
         while has_more:
-            if (offset >= MAX_LIMIT_SIZE):
+            if offset >= init_offset + MAX_LIMIT_SIZE_PER_EXEC:
+                demisto.setIntegrationContext({'offset': offset})
                 has_more = False
                 continue
 
             demisto.debug(f'Fetching feed offset {offset}')
 
             # if the execution exceeded the timeout we will break
-            if not test:
-                if is_execution_time_exceeded(start_time=execution_start_time):
-                    demisto.debug(f'Execution time exceeded: {EXECUTION_TIMEOUT_SECONDS} seconds from: {execution_start_time}')
-                    has_more = False
-                    continue
+            if not test and is_execution_time_exceeded(start_time=execution_start_time):
+                demisto.debug(f'Execution time exceeded: {EXECUTION_TIMEOUT_SECONDS} seconds from: {execution_start_time}')
+                has_more = False
+                continue
 
             start_time = time.time()
 
@@ -81,16 +85,17 @@ class Client(BaseClient):
 
             if not indicators:
                 # No more data or an error occurred
+                demisto.setIntegrationContext({'offset': 0})
                 has_more = False
             else:
                 result.extend(indicators)  # Append valid indicators to the result
 
                 end_time = time.time()
-                demisto.debug(f'Duration of offset processing {offset}: {end_time - start_time} seconds')
+                demisto.debug(f'Duration of offset processing {offset}: {math.ceil(end_time - start_time)} seconds')
                 # Update the offset for the next request
                 offset += limit
                 has_more = True
-                demisto.debug(f'has_more = {has_more}')
+                demisto.debug(f'Feed has more incidents for fetching: {has_more}')
 
             if test:  # if test module, end the loop
                 demisto.debug('Test execution')
@@ -99,8 +104,7 @@ class Client(BaseClient):
 
         return result
 
-
-    def process_feed_response(self, date_time: str, limit: int, offset: int) -> List[Dict[str, Any]]:
+    def process_feed_response(self, date_time: str, limit: int, offset: int) -> list[dict[str, Any]]:
         """
         Makes the API request to retrieve the indicators, handles JSON decoding, and processes the feed.
 
@@ -112,7 +116,7 @@ class Client(BaseClient):
         Returns:
             A list of indicator dictionaries, or an empty list if no valid indicators are found.
         """
-        result = []
+        result: List[Any] = []
         response = self.retrieve_indicators_from_api(date_time, limit, offset)
 
         try:
@@ -135,11 +139,10 @@ class Client(BaseClient):
 
         return result
 
-
     @logger
     def retrieve_indicators_from_api(self, date_time, limit, offset):
-        url_suffix = f"{date_time or get_today_time()}?limit={limit}&offset={offset}"
-        demisto.debug('URL to fetch indicators: {}'.format(url_suffix))
+        url_suffix = f"{date_time}?limit={limit}&offset={offset}"
+        demisto.debug(f'URL to fetch indicators: {url_suffix}')
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -164,9 +167,8 @@ def test_module(client: Client) -> str:
     try:
         client.request_daily_feed(limit=10, test=True)
     except DemistoException as exc:
-        if exc.res:
-            if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN:
-                return "Authorization Error: invalid `API Token`"
+        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN):
+            return "Authorization Error: invalid `API Token`"
 
         raise exc
 
@@ -203,7 +205,8 @@ def fetch_indicators(
     Returns:
         Indicators.
     """
-    iterator = client.request_daily_feed(date_time, limit = PAGE_SIZE, execution_start_time = execution_start_time)
+    demisto.debug("Fetching indicators")
+    iterator = client.request_daily_feed(date_time, limit=PAGE_SIZE, execution_start_time=execution_start_time)
     indicators = []
 
     for item in iterator:
@@ -261,8 +264,8 @@ def get_indicators_command(
     """
 
     date = args.get("date") or datetime.now().strftime("%Y-%m-%d")
-    limit = int(args.get("limit")) or 50
-    offset = int(args.get("offset")) or 0
+    limit = int(args.get("limit", 0))
+    offset = int(args.get("offset", 0))
 
     indicators = client.process_feed_response(date, limit, offset)
 
@@ -382,7 +385,7 @@ def main():
     proxy = params.get("proxy", False)
 
     command = demisto.command()
-    demisto.info(f"Command being called is {command}")
+    demisto.debug(f"Command being called is {command}")
 
     try:
         client = Client(
@@ -400,11 +403,11 @@ def main():
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
-            demisto.debug(f'Total {len(indicators)} indicators')
+            demisto.debug(f'Total {len(indicators)} indicators to be submitted')
             for iter_ in batch(indicators, batch_size=5000):
-                demisto.debug(f'About to push {len(iter_)} indicators to XSOAR')
+                demisto.debug(f'Submit {len(iter_)} indicators to XSOAR')
                 demisto.createIndicators(iter_)
-            demisto.debug(f'{command} operation completed')
+            demisto.debug('Fetch indicators operation completed')
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
