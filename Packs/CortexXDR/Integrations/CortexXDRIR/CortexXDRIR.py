@@ -189,6 +189,7 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
 
 def handle_excluded_data_param(excluded_alert_fields: list = []):
     remove_nulls_from_alerts = REMOVE_ALERTS_NULL_VALUES in excluded_alert_fields
+    demisto.debug(f"handle_excluded_data_param {remove_nulls_from_alerts=}, {excluded_alert_fields=}")
     formated_excluded_data = [field for field in excluded_alert_fields if field != REMOVE_ALERTS_NULL_VALUES]
     return formated_excluded_data, remove_nulls_from_alerts
 
@@ -358,7 +359,6 @@ class Client(CoreClient):
         if exclude_artifacts:
             for field in exclude_artifacts:
                 incident.pop(field, None)
-        demisto.debug(f"{incident.get('file_artifacts', 'aaaaa')=}")
         return incident
 
     def save_modified_incidents_to_integration_context(self):
@@ -1434,7 +1434,7 @@ def main():  # pragma: no cover
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts, remove_additional_data = handle_exclude_incident_fields(argToBoolean(params.get('exclude_fields', False)),
                                                                                argToList(params.get('excluded_incident_fields', [])))
-    excluded_alert_fields = argToList(params.get('excluded_alert_fields', 'null_values'))
+    excluded_alert_fields = argToList(params.get('excluded_alert_fields'))
     excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_param(excluded_alert_fields)
     demisto.debug(f"{excluded_alert_fields}, {remove_nulls_from_alerts}")
     xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
@@ -1718,7 +1718,7 @@ def main():  # pragma: no cover
             last_run_mirroring['mirroring_last_update'] = next_mirroring_time
             set_last_mirror_run(last_run_mirroring)
             demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
-            demisto.debug(f"updated ids are {modified_incidents.modified_incident_ids}")
+            demisto.debug(f"Updated ids are {modified_incidents.modified_incident_ids}")
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always

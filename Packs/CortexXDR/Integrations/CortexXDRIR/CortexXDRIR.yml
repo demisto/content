@@ -198,8 +198,8 @@ configuration:
   required: false
   type: 16
   section: Collect
-  defaultvalue: 'null_values'
   advanced: true
+  defaultvalue: 'null_values'
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false
