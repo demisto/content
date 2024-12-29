@@ -39,8 +39,7 @@ inputs:
   key: IP
   playbookInputQuery:
   required: false
-  value:
-    simple: 8.8.8.8
+  value: {}
 - description: The domain indicator to search for.
   key: Domain
   playbookInputQuery:
