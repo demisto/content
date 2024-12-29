@@ -1,0 +1,24 @@
+{
+    "description": "Classifies Hoxhunt incidents",
+    "feed": false,
+    "id": "Hoxhunt-classifier",
+    "keyTypeMap": {
+        "BUSINESS_EMAIL_COMPROMISE": "Hoxhunt BEC",
+        "CAMPAIGN": "Hoxhunt Campaign",
+        "USER_ACTED_ON_THREAT": "Hoxhunt User Acted"
+    },
+    "name": "Hoxhunt-classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "policyName",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
