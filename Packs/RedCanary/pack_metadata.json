@@ -2,7 +2,7 @@
     "name": "Red Canary",
     "description": "Red Canary collects endpoint data using Carbon Black Response and CrowdStrike Falcon.  The collected data is standardized into a common schema which allows teams to detect, analyze and respond to security incidents.",
     "support": "xsoar",
-    "currentVersion": "1.1.22",
+    "currentVersion": "1.1.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
