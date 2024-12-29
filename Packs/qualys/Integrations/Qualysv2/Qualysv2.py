@@ -30,14 +30,15 @@ HOST_DETECTIONS_NEXT_PAGE = 'host_detections_next_page'
 HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_run'
 HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
-HOST_LIMIT = 2000
+HOST_LIMIT = 1000
 ASSET_SIZE_LIMIT = 10 ** 6   # 1MB
 TEST_FROM_DATE = 'one day'
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 
+
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-
+EXECUTION_START_TIME = time.time()
 API_SUFFIX = "/api/2.0/fo/"
 TAG_API_SUFFIX = "/qps/rest/2.0/"
 
@@ -1684,7 +1685,7 @@ class Client(BaseClient):
             "truncation_limit": limit,
             "vm_scan_date_after": since_datetime,
         }
-        timeout = 120
+        timeout = (60, 150)  # (Connection Timeout, Read Timeout)
         if next_page:
             params["id_min"] = next_page
         try:
@@ -1697,6 +1698,7 @@ class Client(BaseClient):
                 error_handler=self.error_handler,
             )
         except requests.exceptions.ReadTimeout:
+            demisto.debug('get timeout on the request')
             set_new_limit = True
             response = ''
 
@@ -3238,7 +3240,7 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     # We start a counter mainly for fetch assets as it is might be long. It can be used in other commands as well
-    start_time = time.time()
+    # start_time = time.time()
 
     base_url = params.get('url')
     verify_certificate = not params.get("insecure", False)
@@ -3551,7 +3553,7 @@ def main():  # pragma: no cover
                 real_amount_of_assets = new_last_run.get("total_assets")
                 if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
                     new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
-                    last_run['nextTrigger'] = '0'
+                    new_last_run['nextTrigger'] = '0'
                 else:
                     demisto.debug(f'sending {len(assets)} assets to XSIAM. Total assets collected so far: '
                                   f'{real_amount_of_assets}')
