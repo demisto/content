@@ -401,6 +401,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
 
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
+    expected_modified_incident['additional_data'] = expected_modified_incident['alerts']
 
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
@@ -521,6 +522,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     del expected_modified_incident['creation_time']
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
+    expected_modified_incident['additional_data'] = expected_modified_incident['alerts']
 
     expected_closing_entry = {}
     if close_xsoar_incident:
@@ -592,6 +594,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     del expected_modified_incident['creation_time']
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
+    expected_modified_incident['additional_data'] = expected_modified_incident['alerts']
 
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
@@ -1782,6 +1785,9 @@ def test_fetch_incidents_dedup():
                 inc for inc in self._incidents
                 if inc['creation_time'] >= gte_creation_time_milliseconds
             ][:limit]
+        
+        def remove_additional_data(self):
+            return False
 
     mock_client = MockClient()
 
