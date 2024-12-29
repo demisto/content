@@ -970,8 +970,8 @@ def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]])
 
 
 def get_events(client: Client, args: dict) -> tuple[List[Dict[str, Any]], CommandResults]:
-    end_date = args.get('end_date', datetime.utcnow())
-    start_date = args.get('start_date', end_date - timedelta(minutes=1))
+    end_date = arg_to_datetime(args.get('end_date', datetime.utcnow()))
+    start_date = arg_to_datetime(args.get('start_date', end_date - timedelta(minutes=1)))
     fetch_limit = int(args.get('limit', 50))
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
