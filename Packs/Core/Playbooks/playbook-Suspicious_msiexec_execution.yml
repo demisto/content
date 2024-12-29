@@ -45,6 +45,7 @@ tasks:
       id: 3c69ed8d-e958-46f7-829f-6096e63aef35
       version: -1
       name: Check extracted remote URL's reputation
+      description: Check reputation of the remote url from which the MSI was downloaded and installed
       type: condition
       iscommand: false
       brand: ""
@@ -172,6 +173,7 @@ tasks:
       id: b8ef7bea-662b-45bc-82a0-12c830ba74d5
       version: -1
       name: 'Check if related alerts OR defense evasion techniques exist '
+      description: Check if there are any related alerts that indicate malicious msiexec activity or if the command line analysis indicates high risk.
       type: condition
       iscommand: false
       brand: ""
@@ -385,6 +387,7 @@ tasks:
       id: 648e4b76-4282-4370-800d-2d5963a0d98c
       version: -1
       name: Check if domain is prevalent AND CGO process is signed
+      description: This condition checks if the domain prevalence is not False (i.e., the domain is prevalent) and if the causality process is signed. If both conditions are met, the task is considered malicious.
       type: condition
       iscommand: false
       brand: ""
@@ -822,6 +825,7 @@ tasks:
       id: 01b81980-d2ea-4b32-89f1-5a94457e82be
       version: -1
       name: Check analyst answers
+      description: Check the analyst's answers to the early containment approval form and execute the appropriate actions based on the responses.
       type: condition
       iscommand: false
       brand: ""
@@ -1098,6 +1102,7 @@ tasks:
       id: 602e9b69-5f02-4728-8d9d-ca7e394d78f0
       version: -1
       name: Check If prevalence can be run on
+      description: Check if prevalence information is available for the detected indicators
       type: condition
       iscommand: false
       brand: ""
