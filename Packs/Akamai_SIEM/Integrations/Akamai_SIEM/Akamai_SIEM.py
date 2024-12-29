@@ -12,7 +12,7 @@ import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
 import asyncio
-from aiostream import stream
+import aiohttp
 
 # Local imports
 from CommonServerUserPython import *
@@ -397,25 +397,34 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
-def test_new_endpoint(client):
+async def test_new_endpoint(client):
     start = time.time()
-    print("init session")
-    import requests
+    demisto.info("init session")
 
     url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1"
 
     headers = {
     'Authorization': 'Basic YTph',
     }
-    print("Sending request.")
+    demisto.info("Sending request.")
+    async with aiohttp.ClientSession(headers=headers) as session:
+        async with session.get(url) as response:
+            try:
+                response.raise_for_status()  # Check for any HTTP errors
+                data = await response.text()
+                demisto.info("Finished sending request.")
+            except aiohttp.ClientError as e:
+                demisto.info(f"Error occurred: {e}")
+                data = None
 
-    response = requests.request("GET", url, headers=headers)
-
-    print("Finished sending request.")
-    print(response.text)
-    # response = requests.request("GET", url, headers=headers)
+    if data:
+        demisto.info(len(data.split("\n")))
+        # demisto.info(data.split("\n"))
+    else:
+        demisto.info("no data...")
     end = time.time()
-    return f'Get {response.status_code=} in a {end-start} time.', {}, {}
+    return f'finished in a {end-start} time.', {}, {}
+
 
 async def generate_events() -> str:
     global EVENTS
@@ -619,7 +628,7 @@ async def fetch_events_command(client: Client):
     ctx = get_integration_context() or {}
     offset = ctx.get("offset")
     from_time = params.get('fetchTime', '5 minutes')
-    for events in stream.chunks(get_events_from_akamai(client, config_ids, from_time, page_size, offset), 1):
+    async for events in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
         asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
 
 
@@ -685,7 +694,7 @@ def main():  # pragma: no cover
             support_multithreading()
             asyncio.run(fetch_events_command(client))
         else:
-            human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
+            human_readable, entry_context, raw_response = asyncio.run(commands[command](client, **demisto.args()))
             return_outputs(human_readable, entry_context, raw_response)
 
     except Exception as e:

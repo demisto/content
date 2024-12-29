@@ -216,7 +216,7 @@ async def handle_get_request():
     global EVENTS
     if not EVENTS:
         EVENTS = generate_events()
-    return Response(status_code=status.HTTP_200_OK, content=json.dumps(EVENTS), media_type="application/json")
+    return Response(status_code=status.HTTP_200_OK, content=EVENTS, media_type="application/json")
 
 
 def setup_credentials():
