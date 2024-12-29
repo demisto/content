@@ -576,7 +576,18 @@ def verify_es_server_version(res):
 
 
 def test_func(proxies):
+    """
+      Tests API connectivity to the Elasticsearch server.
+      Tests the existence of all necessary fields for fetch.
+
+      Due to load considerations, the test module doesn't check the validity of the fetch-incident - to test that the fetch works
+      as excepted the user should run the es-integration-health-check command.
+
+    """
     test_connectivity_auth(proxies)
+    if demisto.params().get('isFetch'):
+        # check the existence of all necessary fields for fetch
+        fetch_params_check()
     demisto.results('ok')
 
 
