@@ -138,7 +138,6 @@ class EWSClient:
         is_public_folder: bool = False,
         request_timeout: int = 120,
         mark_as_read: bool = False,
-        legacy_name: bool = False,
         incident_filter: IncidentFilter = IncidentFilter.RECEIVED_FILTER,
         azure_cloud: Optional[AzureCloud] = None,
         tenant_id: str = '',
@@ -163,7 +162,6 @@ class EWSClient:
         :param is_public_folder: Public Folder flag
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
         :param mark_as_read: Whether to mark fetched incidents as read
-        :param legacy_name: Whether to use the legacy naming convention for attachments
         :param incident_filter: The type of time filter to use for incidents (modified or received time)
         :param azure_cloud: (O365 only) The Azure cloud environment for authentication to O365 services
         :param tenant_id: (O365 only) Tenant id used for O365 authentication
@@ -191,7 +189,6 @@ class EWSClient:
         self.folder_name = folder
         self.is_public_folder = is_public_folder
         self.mark_as_read = mark_as_read
-        self.legacy_name = legacy_name
         self.incident_filter = incident_filter
         self.azure_cloud = azure_cloud
         self.tenant_id = tenant_id
@@ -204,7 +201,6 @@ class EWSClient:
         self.auto_discover = not ews_server
 
         self.config, self.credentials, self.server_build = self._configure_auth()
-        self._protocol = Protocol(config=self.config) if self.config else None
 
     def _configure_auth(self) -> tuple[Optional[Configuration], BaseCredentials, Optional[Build]]:
         """
@@ -338,7 +334,7 @@ class EWSClient:
 
         return ews_server, server_build
 
-    def get_protocol(self):
+    def get_protocol(self) -> Protocol:
         """
         Get the EWS protocol with the configured settings.
 
@@ -347,7 +343,7 @@ class EWSClient:
         if self.auto_discover:
             return self.get_account_autodiscover(self.account_email).protocol
 
-        return self._protocol
+        return Protocol(config=self.config)
 
     def get_account(self, target_mailbox: Optional[str] = None, time_zone=None) -> Account:
         """
@@ -554,9 +550,11 @@ class EWSClient:
         message.send_and_save()
 
     def reply_email(self, inReplyTo: str, to: list[str], body: str, subject: str, bcc: list[str], cc: list[str],
-                    htmlBody: Optional[str], attachments: list, from_mailbox: Optional[str] = None) -> Message:
+                    htmlBody: Optional[str], attachments: list, from_mailbox: Optional[str] = None,
+                    account: Optional[Account] = None) -> Message:
         """
-        Send a reply email using the EWS account associated with this client, based on the provided parameters.
+        Send a reply email using the EWS account associated with this client or the provided account,
+        based on the provided parameters.
 
         :param inReplyTo: ID of the email to reply to
         :param to: List of email addresses for the "To" field
@@ -570,7 +568,8 @@ class EWSClient:
 
         :return: The sent message
         """
-        account = self.get_account()
+        if not account:
+            account = self.get_account()
         item_to_reply_to = account.inbox.get(id=inReplyTo)  # pylint: disable=E1101
         if isinstance(item_to_reply_to, ErrorItemNotFound):
             raise Exception(item_to_reply_to)
