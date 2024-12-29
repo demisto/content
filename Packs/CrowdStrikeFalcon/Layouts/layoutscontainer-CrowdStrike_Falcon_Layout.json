@@ -299,7 +299,26 @@
 								}
 							},
 							"type": "multiSelect"
-						}
+						},
+                        [
+                            {
+                                "ignoreCase": false,
+                                "left": {
+                                    "isContext": true,
+                                    "value": {
+                                        "simple": "mitretechniqueid"
+                                    }
+                                },
+                                "operator": "containsString",
+                                "right": {
+                                    "isContext": false,
+                                    "value": {
+                                        "simple": "1059"
+                                    }
+                                },
+                                "type": "multiSelect"
+                            }
+                        ]
 					]
 				],
 				"hidden": false,
