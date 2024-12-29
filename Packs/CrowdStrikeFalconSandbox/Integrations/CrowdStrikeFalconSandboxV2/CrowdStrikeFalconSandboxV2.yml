@@ -2330,5 +2330,3 @@ script:
 tests:
 - CrowdstrikeFalconSandbox2 Test
 fromversion: 6.2.0
-marketplaces:
-- xsoar
