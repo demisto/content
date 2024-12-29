@@ -1,22 +1,18 @@
 Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
 This integration was integrated and tested with Amazon Web Information Services.
-## Configure Alexa Rank Indicator on Cortex XSOAR
+## Configure Alexa Rank Indicator in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Alexa Rank Indicator.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Sensitivity threshold for configuring which domains are suspicious versus trusted. |  | True |
-    | Alexa rank - top domains to be considered trusted. | These domains will be given a DbotScore of good. | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Sensitivity threshold for configuring which domains are suspicious versus trusted. |  | True |
+| Alexa rank - top domains to be considered trusted. | These domains will be given a DbotScore of good. | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### domain
 ***
@@ -79,4 +75,3 @@ Provides an Alexa ranking of the Domain in question.
 
 #### Human Readable Output
 ![image](../../doc_files/51466171-3b4ead80-1d72-11e9-9cff-14e997e9346a.png)
-

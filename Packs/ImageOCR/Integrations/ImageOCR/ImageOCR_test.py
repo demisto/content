@@ -52,6 +52,26 @@ def test_extract_text(image, expected_text, langs):
     assert expected_text in res
 
 
+def test_extract_text_verbose_params():
+    """
+    Given:
+     - An image with text
+
+    When:
+     - Running the extract_text command
+
+    Then:
+     - Validate the result with and without the verbose parameter.
+    """
+    path = 'test_data/bomb.jpg'
+    res_verbose = extract_text(path, verbose=True)
+    # Some of the verbose data.
+    assert "tesseract" in res_verbose
+    # Without verbose.
+    res_without_verbose = extract_text(path, verbose=False)
+    assert "tesseract" not in res_without_verbose
+
+
 def test_extract_text_command(mocker):
     """
     Given:

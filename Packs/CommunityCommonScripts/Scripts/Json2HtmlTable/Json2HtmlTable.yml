@@ -14,5 +14,5 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.105909
+dockerimage: demisto/py3-tools:1.0.0.114656
 fromversion: 5.5.0

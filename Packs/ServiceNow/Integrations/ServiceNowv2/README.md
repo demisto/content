@@ -45,12 +45,12 @@ These scripts are wrapped around the incident table, so to wrap them around anot
       In order to use *Mirrored XSOAR Ticket custom close resolution code* or *Mirrored XSOAR Ticket custom close state code* parameter, it must follow this format: "custom_state_code1=custom_label1,custom_state_code2=custom_label2,...",
       for example: “10=Design,11=Development,12=Testing”.
       Also, a matching user-defined list of customized incident close reasons must be configured as a "Server configuration" in Cortex XSOAR. (Meaning each Service Now custom state label will have a matching Cortex XSOAR custom close reason with the same name). ***Not following this format will result in a server error!***
-      For more information about Customize Incident Close Reasons, see [this link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons).
-      ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-xsoar.png)
+      For more information about Customize Incident Close Reasons, see [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons) or [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Customize-incident-close-reasons) or [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Customize-incident-close-reasons).
+      ![image](../../doc_files/closing-mirror-xsoar.png)
    6. To enable mirroring to close an incident in ServiceNow, under the **Mirrored ServiceNow Ticket closure method** dropdown, select the ticket closing method,
       or set the **Mirrored ServiceNow Ticket custom close state code** parameter, in order to override the default closure method with a custom state.
      
-        ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-snow.png)
+        ![image](../../doc_files/closing-mirror-snow.png)
 
 ## Instance Creation Flow
 This integration supports two types of authorization:
@@ -141,7 +141,7 @@ When mirroring incidents, you can make changes in ServiceNow that will be reflec
 You can also attach files from either of the systems which will then be available in the other system.  
 
 The following instructions include steps for configuring the integration and incoming and outgoing mappers. However, they do not cover every option available in the integration nor classification and mapping features. 
-For information about classification and mapping see [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).  
+For information about classification and mapping see [Classification and Mapping (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping) or [Classification and Mapping (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Classification-and-mapping) or [Classification and Mapping (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Classification-and-mapping).  
 
 **Note:**  
 - For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
@@ -182,7 +182,7 @@ When the trigger incident is ServiceNow, you use the **ServiceNow Classifier** a
 6. Under **Mapper (outgoing)**, for default mapping select ServiceNow - Outgoing Mapper. For
 custom mapping, follow the instructions in STEP 3 and then select the custom mapper name.
 
- ![image](https://raw.githubusercontent.com/demisto/content-docs/5781a9024dc9f7e6418c82d7b7318f07d49fc863/docs/doc_imgs/integrations/snowv2-configuration-settings.png)
+ ![image](../../doc_files/snowv2-configuration-settings.png)
 
 7. Enter the connection parameters.  
     - Confirm whether your organization uses basic authorization or OAuth authorization (most use basic) and enter the relevant authorization details.  
@@ -196,7 +196,7 @@ custom mapping, follow the instructions in STEP 3 and then select the custom map
 11. Enable the checkbox for **Use Display Value** if you want to fetch comments and work notes without using sys_journal_field table which required an elevated read only permission.
 12. If **Use Display Value** is enabled, **Instance Date Format** needs to be set to the date format that matches the date format used in ServiceNow by the user account used to configure the instance.
 
-![image](https://user-images.githubusercontent.com/74367144/212351268-12938ccc-87d6-4f36-9c9b-ef7fcd3135a0.png)
+![image](../../doc_files/212351268-12938ccc-87d6-4f36-9c9b-ef7fcd3135a0.png)
 
 13. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
 14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.  
@@ -204,7 +204,7 @@ These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR
 **Note:**  
 These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+![image](../../doc_files/mirror-tags.png)
 
 15. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
@@ -221,7 +221,7 @@ Any modifications require that the mappers be cloned before any changes can be a
 3. Under the **Incident Type** dropdown, select ServiceNow Create Ticket and Mirror.
 4. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
   
-     ![image](https://raw.githubusercontent.com/demisto/content-docs/ad6522b9c6822f5c4f9798c8aaa1a63c353ddbe3/docs/doc_imgs/snowv2-incoming-mapper.png) 
+     ![image](../../doc_files/snowv2-incoming-mapper.png) 
 
     - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the ticket. This should be the sys_id of the ServiceNow ticket. The value is mapped to incident.servicenowticketid.
     - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
@@ -249,7 +249,7 @@ match.
 6. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
 7. Save your changes.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
+![image](../../doc_files/outgoing-mapper.png)
 
 
 #### STEP 4 - Create an Incident in ServiceNow  
@@ -260,12 +260,12 @@ In the example below, we have written *A comment from Cortex XSOAR to ServiceNow
 1. Click Actions > Tags and add the comments tag.
 2. Add a file to the incident and mark it with the ForServiceNow tag.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)  
+![image](../../doc_files/mirror-files.png)  
 
 3. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.  
   You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
+![image](../../doc_files/ticket-example.png)
 
 
 ### Configure Incident Mirroring When the Trigger Incident is **Not** ServiceNow  
@@ -299,7 +299,7 @@ You can set up any source integration to create a ServiceNow ticket based on a f
 13. Enable the checkbox for **Use Display Value** if you want to fetch comments and work notes without using sys_journal_field table which required an elevated read only permission.
 14. If **Use Display Value** is enabled, **Instance Date Format** needs to be set to the date format that matches the date format used in ServiceNow by the user account used to configure the instance.
 
-![image](https://user-images.githubusercontent.com/74367144/212352242-329284d8-6936-4f6c-9a30-c741b7425ff8.png)
+![image](../../doc_files/212352242-329284d8-6936-4f6c-9a30-c741b7425ff8.png)
 
 15. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
 16. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.
@@ -307,7 +307,7 @@ These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR
 **Note:**  
 These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+![image](../../doc_files/mirror-tags.png)
 
 17. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
@@ -323,7 +323,7 @@ Any modifications require that the mappers be cloned before any changes can be a
 2. Under the **Incident Type** dropdown, select the relevant triggering incident type, for example Phishing.
 3. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
   
-     ![image](https://raw.githubusercontent.com/demisto/content-docs/ad6522b9c6822f5c4f9798c8aaa1a63c353ddbe3/docs/doc_imgs/snowv2-incoming-mapper.png) 
+     ![image](../../doc_files/snowv2-incoming-mapper.png) 
 
     - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the ticket. This should be the sys_id of the ServiceNow ticket. The value is mapped to incident.servicenowticketid.
     - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
@@ -351,7 +351,7 @@ match.
 5. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
 6. Save your changes.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
+![image](../../doc_files/outgoing-mapper.png)
 
 #### STEP 4 - Set up Your Source Integration  
 Set up your source integration so that after fetching a trigger incident a ServiceNow ticket is created and mirroring starts.  
@@ -362,11 +362,11 @@ Set up your source integration so that after fetching a trigger incident a Servi
 Example:
 The following shows the Create New Record playbook task, which creates a ServiceNow ticket.  
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/20d4fb13f3d1c822f3f3be479cc281c45dbc5667/docs/doc_imgs/integrations/snowv2-create-new-record.png)
+![image](../../doc_files/snowv2-create-new-record.png)
 
 The Create New Record task is followed by the Set Mirroring Fields task, which starts the mirroring capability.  
 
-![image](https://raw.githubusercontent.com/demisto/content-docs/996d0dbad4430d325e030d7a75251d8d38ca7778/docs/doc_imgs/integrations/snowv2-set-mirroring-fields.png)
+![image](../../doc_files/snowv2-set-mirroring-fields.png)
 
 The new ServiceNow ticket will be ingested in Cortex XSOAR in approximately one minute.
 
@@ -375,12 +375,12 @@ In the example below, we have written *A comment from Cortex XSOAR to ServiceNow
 1. Click Actions > Tags and add the comments tag.
 2. Add a file to the incident and mark it with the ForServiceNow tag.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)  
+![image](../../doc_files/mirror-files.png)  
 
 3. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.  
   You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
+![image](../../doc_files/ticket-example.png)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

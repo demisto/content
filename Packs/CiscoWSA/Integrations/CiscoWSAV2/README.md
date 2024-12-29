@@ -4,25 +4,21 @@ This integration was integrated and tested with version 14.0.3-014 of Cisco WSA 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-cisco-wsa-v2).
 
-## Configure Cisco WSA V2 on Cortex XSOAR
+## Configure Cisco WSA V2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco WSA V2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Username | True |
-    | Password | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Username | True |
+| Password | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cisco-wsa-access-policy-list
@@ -1553,5 +1549,4 @@ Retrieve URL categories of available categories to allow/block in access policie
 >|Custom|Predefined|
 >|---|---|
 >| test,<br/>Adult | Adult,<br/>Advertisements,<br/>Alcohol,<br/>Animals and Pets,<br/>Arts,<br/>Astrology,<br/>Auctions,<br/>Business and Industry,<br/>Cannabis,<br/>Chat and Instant Messaging,<br/>Cheating and Plagiarism,<br/>Child Abuse Content,<br/>Cloud and Data Centers,<br/>Computer Security,<br/>Computers and Internet,<br/>Conventions, Conferences and Trade Shows,<br/>Cryptocurrency,<br/>Cryptomining,<br/>DIY Projects,<br/>DNS-Tunneling,<br/>Dating,<br/>Digital Postcards,<br/>Dining and Drinking,<br/>DoH and DoT,<br/>Dynamic DNS Provider,<br/>Dynamic and Residential,<br/>Education,<br/>Entertainment,<br/>Extreme,<br/>Fashion,<br/>File Transfer Services,<br/>Filter Avoidance,<br/>Finance,<br/>Freeware and Shareware,<br/>Gambling,<br/>Games,<br/>Government and Law,<br/>Hacking,<br/>Hate Speech,<br/>Health and Medicine,<br/>Humor,<br/>Hunting,<br/>Illegal Activities,<br/>Illegal Downloads,<br/>Illegal Drugs,<br/>Infrastructure and Content Delivery Networks,<br/>Internet Telephony,<br/>Internet of Things,<br/>Job Search,<br/>Lingerie and Swimsuits,<br/>Lotteries,<br/>Military,<br/>Mobile Phones,<br/>Museums,<br/>Nature and Conservation,<br/>News,<br/>Non-governmental Organizations,<br/>Non-sexual Nudity,<br/>Not Actionable,<br/>Online Communities,<br/>Online Document Sharing and Collaboration,<br/>Online Meetings,<br/>Online Storage and Backup,<br/>Online Trading,<br/>Organizational Email,<br/>Paranormal,<br/>Parked Domains,<br/>Peer File Transfer,<br/>Personal Sites,<br/>Personal VPN,<br/>Photo Search and Images,<br/>Politics,<br/>Pornography,<br/>Private IP Addresses as Host,<br/>Professional Networking,<br/>Real Estate,<br/>Recipes and Food,<br/>Reference,<br/>Regional Restricted Sites (Germany),<br/>Regional Restricted Sites (Great Britain),<br/>Regional Restricted Sites (Italy),<br/>Regional Restricted Sites (Poland),<br/>Religion,<br/>SaaS and B2B,<br/>Safe for Kids,<br/>Science and Technology,<br/>Search Engines and Portals,<br/>Sex Education,<br/>Shopping,<br/>Social Networking,<br/>Social Science,<br/>Society and Culture,<br/>Software Updates,<br/>Sports and Recreation,<br/>Streaming Audio,<br/>Streaming Video,<br/>Terrorism and Violent Extremism,<br/>Tobacco,<br/>Transportation,<br/>Travel,<br/>URL Shorteners,<br/>Weapons,<br/>Web Cache and Archives,<br/>Web Hosting,<br/>Web Page Translation,<br/>Web-based Email |
-
 

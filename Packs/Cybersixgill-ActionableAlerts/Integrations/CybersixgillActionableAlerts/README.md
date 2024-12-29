@@ -8,9 +8,6 @@ Fetch Incidents & Events
 
 ## Configure Cybersixgill on XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cybersixgill.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,7 +16,6 @@ Fetch Incidents & Events
 | threat_level | Filter by alert threat level | False |
 | threat_type | Filter by alert threat type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Fetch incidents
 You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -49,7 +45,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cybersixgill-update-alert-status
 ***
@@ -73,4 +69,3 @@ updates the existing actionable alert status
 There is no context output for this command.
 ## Additional Information
 Contact us: support@cybersixgill.com
-
