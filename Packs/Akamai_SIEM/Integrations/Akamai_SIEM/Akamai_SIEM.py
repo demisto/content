@@ -469,6 +469,24 @@ async def update_module_health():
         EVENTS_COUNT_CURRENT_INTERVAL = 0
 
 
+@logger
+async def fetch_events_command(client: Client,
+                               from_time,
+                               page_size,
+                               config_ids,
+                               ctx,
+                               should_skip_decode_events):
+    """Asynchronously gathers events from Akamai SIEM. Decode them, and send them to xsiam.
+
+    Args:
+        client: Client object with request
+
+    """
+    offset = ctx.get("offset")
+    async for events in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
+        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
+
+
 async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset):
     demisto.info(f"got {len(events)} events, moving to processing events data.")
     if should_skip_decode_events:
@@ -533,22 +551,6 @@ async def get_events_from_akamai(client, config_ids, from_time, page_size, offse
                             "going to sleep for 60 seconds.")
             await asyncio.sleep(60)
             demisto.info("Finished sleeping for 60 seconds.")
-@logger
-async def fetch_events_command(client: Client,
-                               from_time,
-                               page_size,
-                               config_ids,
-                               ctx,
-                               should_skip_decode_events):
-    """Asynchronously gathers events from Akamai SIEM. Decode them, and send them to xsiam.
-
-    Args:
-        client: Client object with request
-
-    """
-    offset = ctx.get("offset")
-    async for events in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
-        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
 
 
 def decode_url(headers: str) -> dict:
@@ -607,21 +609,17 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "long-running-execution":
-            config_ids = params.get("configIds", "")
             page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
             should_skip_decode_events = params.get("should_skip_decode_events", False)
-            ctx = get_integration_context() or {}
-            
-            
             global LOCKED_UPDATES_LOCK
             LOCKED_UPDATES_LOCK = asyncio.Lock()
             demisto.info("Starting long-running execution.")
             support_multithreading()
             asyncio.run(fetch_events_command(client,
                                              from_time=params.get('fetchTime', '5 minutes'),
-                                             limit=page_size,
-                                             config_ids=config_ids,
-                                             ctx=ctx,
+                                             page_size=page_size,
+                                             config_ids=params.get("configIds", ""),
+                                             ctx=get_integration_context() or {},
                                              should_skip_decode_events=should_skip_decode_events))
         else:
             human_readable, entry_context, raw_response = asyncio.run(commands[command](client, **demisto.args()))
