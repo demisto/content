@@ -9,11 +9,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": ["Security", "IAM"],
     "useCases": [],
-    "keywords": [
-        "adfs"
-    ],
+    "keywords": ["adfs", "microsoft", "Active Directory", "Federation Services"],
     "dependencies": {
         "MicrosoftWindowsEvents": {
             "mandatory": true,
