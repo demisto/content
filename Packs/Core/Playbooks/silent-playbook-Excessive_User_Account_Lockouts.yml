@@ -1,6 +1,6 @@
-id: Excessive User Account Lockouts
+id: silent- Excessive User Account Lockouts
 version: -1
-name: Excessive User Account Lockouts
+name: silent- Excessive User Account Lockouts
 description: |-
   This playbook addresses the following alerts:
 
