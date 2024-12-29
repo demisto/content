@@ -103,6 +103,55 @@ class Client(BaseClient):
         return events, new_offset
 
 
+    async def get_events_with_offset_aiohttp(
+        self,
+        config_ids: str,
+        offset: str | None = '',
+        limit: int = 20,
+        from_epoch: str = ''
+    ) -> tuple[list[dict], str | None]:
+        params: dict[str, int | str] = {
+            'limit': limit
+        }
+        if offset:
+            demisto.info(f"received {offset=} will run an offset based request.")
+            params["offset"] = offset
+        else:
+            from_param = int(from_epoch)
+            params["from"] = from_param
+            demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
+        
+        
+        # new part
+        url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
+
+        headers = {
+        'Authorization': 'Basic YTph',
+        }
+        demisto.info("Init session and sending request.")
+        
+        async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
+                                                                                                params=params) as response:
+            try:
+                response.raise_for_status()  # Check for any HTTP errors
+                raw_response = await response.text()
+                demisto.info("Finished sending request.")
+            except aiohttp.ClientError as e:
+                demisto.info(f"Error occurred: {e}")
+                raw_response = ''
+        demisto.info("Finished executing request to Akamai, processing")
+        # End of new part.
+        
+        events: list[dict] = []
+        for event in raw_response.split('\n'):
+            try:
+                events.append(json.loads(event))
+            except Exception as e:
+                if event:  # The last element might be an empty dict.
+                    demisto.error(f"Could not decode the {event=}, reason: {e}")
+        offset = events.pop().get("offset")
+        return events, offset
+
 '''HELPER FUNCIONS'''
 
 
@@ -380,57 +429,6 @@ async def test_new_endpoint(client):
             raw_response = ''
     print(len(raw_response.split('\n')))
     return "", {}, {}
-
-
-
-async def get_events_with_offset_aiohttp(
-        self,
-        config_ids: str,
-        offset: str | None = '',
-        limit: int = 20,
-        from_epoch: str = ''
-    ) -> tuple[list[dict], str | None]:
-        params: dict[str, int | str] = {
-            'limit': limit
-        }
-        if offset:
-            demisto.info(f"received {offset=} will run an offset based request.")
-            params["offset"] = offset
-        else:
-            from_param = int(from_epoch)
-            params["from"] = from_param
-            demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
-        
-        
-        # new part
-        url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
-
-        headers = {
-        'Authorization': 'Basic YTph',
-        }
-        demisto.info("Init session and sending request.")
-        
-        async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
-                                                                                                params=params) as response:
-            try:
-                response.raise_for_status()  # Check for any HTTP errors
-                raw_response = await response.text()
-                demisto.info("Finished sending request.")
-            except aiohttp.ClientError as e:
-                demisto.info(f"Error occurred: {e}")
-                raw_response = ''
-        demisto.info("Finished executing request to Akamai, processing")
-        # End of new part.
-        
-        events: list[dict] = []
-        for event in raw_response.split('\n'):
-            try:
-                events.append(json.loads(event))
-            except Exception as e:
-                if event:  # The last element might be an empty dict.
-                    demisto.error(f"Could not decode the {event=}, reason: {e}")
-        offset = events.pop().get("offset")
-        return events, offset
 
 
 def reset_offset_command(client: Client):  # pragma: no cover
