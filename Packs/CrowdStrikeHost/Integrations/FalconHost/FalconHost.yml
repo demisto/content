@@ -651,3 +651,5 @@ script:
 deprecated: true
 tests:
 - No tests
+marketplaces:
+- xsoar
