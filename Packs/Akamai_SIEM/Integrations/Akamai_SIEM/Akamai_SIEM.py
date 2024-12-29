@@ -102,41 +102,6 @@ class Client(BaseClient):
             new_offset = str(from_epoch)
         return events, new_offset
 
-    async def get_events_with_offset(
-        self,
-        config_ids: str,
-        offset: str | None = '',
-        limit: int = 20,
-        from_epoch: str = ''
-    ) -> tuple[list[dict], str | None]:
-        params: dict[str, int | str] = {
-            'limit': limit
-        }
-        if offset:
-            demisto.info(f"received {offset=} will run an offset based request.")
-            params["offset"] = offset
-        else:
-            from_param = int(from_epoch)
-            params["from"] = from_param
-            demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
-        # raw_response: str = self._http_request(
-        #     method='GET',
-        #     url_suffix=f'/{config_ids}',
-        #     params=params,
-        #     resp_type='text',
-        # )
-        raw_response: str = await generate_events()
-        demisto.info("Finished executing request to Akamai, processing")
-        events: list[dict] = []
-        for event in raw_response.split('\n'):
-            try:
-                events.append(json.loads(event))
-            except Exception as e:
-                if event:  # The last element might be an empty dict.
-                    demisto.error(f"Could not decode the {event=}, reason: {e}")
-        offset = events.pop().get("offset")
-        return events, offset
-
 
 '''HELPER FUNCIONS'''
 
@@ -418,7 +383,7 @@ async def test_new_endpoint(client):
 
 
 
-async def get_events_with_offset(
+async def get_events_with_offset_aiohttp(
         self,
         config_ids: str,
         offset: str | None = '',
@@ -614,8 +579,7 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-    demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
-                f"latest event time is: {events[-1]['_time']}")
+    demisto.info(f"Sending {len(events)} events to xsiam with latest event time = {events[-1]['_time']}")
     tasks = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True)
     demisto.info("Finished executing send_events_to_xsiam, waiting for tasks to end.")
@@ -632,8 +596,7 @@ async def get_events_from_akamai(client, config_ids, from_time, page_size, offse
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
-            # get_events_task = asyncio.ensure_future(client.get_events_with_offset(config_ids, offset, page_size, from_epoch))
-            get_events_task = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
+            get_events_task = client.get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch)
             events, offset = await get_events_task
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
