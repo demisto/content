@@ -738,6 +738,66 @@ script:
     - contextPath: Absolute.LocationReport.LastUpdate
       description: The date and time (in Unix epoch) when the device last changed its location.
       type: Number
+  - arguments:
+      - name: should_push_events
+        description: Set this argument to True in order to create events, otherwise the command will only display them.
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "false"
+      - name: start_date
+        description: Filters the results to the records on or after the start date. The start date must be specified as datetime object.
+      - name: limit
+        description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
+    name: absolute-get-events
+    description: Retrieves a list of events from the Absolute instance.
+    outputs:
+      - contextPath: Absolute.Event.actorDisplayId
+        description: The unique ID associated with the actor
+        type: String
+      - contextPath: Absolute.Event.actorDisplayName
+        description: The display name of the actor
+        type: String
+      - contextPath: Absolute.Event.actorObjectType
+        description: The type of actor (the entity that caused the event to occur)
+        type: String
+      - contextPath: Absolute.Event.createdDateTimeUtc
+        description: The date and time (ISO 8601) the event was recorded in the database
+        type: Date
+      - contextPath: Absolute.Event.eventDateTimeUtc
+        description: The date and time (ISO 8601) the event occurred
+        type: Date
+      - contextPath: Absolute.Event.eventType
+        description: The type of event that occurred
+        type: String
+      - contextPath: Absolute.Event.id
+        description: The unique ID associated with the event
+        type: String
+      - contextPath: Absolute.Event.objectDisplayId
+        description: The unique ID associated with the object
+        type: String
+      - contextPath: Absolute.Event.objectDisplayName
+        description: The display name of the object
+        type: String
+      - contextPath: Absolute.Event.objectObjectType
+        description: The type of object (the main entity that the actor intended to affect by the event
+        type: String
+      - contextPath: Absolute.Event.objectProperties
+        description: The object properties that changed.
+        type: String
+      - contextPath: Absolute.Event.secondaryObjectDisplayId
+        description: The unique ID associated with the secondary object
+        type: String
+      - contextPath: Absolute.Event.secondaryObjectDisplayName
+        description: The display name of the secondary object
+        type: String
+      - contextPath: Absolute.Event.secondaryObjectType
+        description: The type of secondary object (the second entity that the actor intended to affect by the event)
+        type: String
+      - contextPath: Absolute.Event.verb
+        description: The event that occurred
+        type: String
   runonce: false
   script: '-'
   type: python
