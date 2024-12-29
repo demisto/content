@@ -330,6 +330,7 @@ class Client(BaseClient):
 
     def fetch_events(self, page_size: int, start_date: datetime = None, end_date: datetime = None, next_page: str = None) -> dict:
         # https://api.absolute.com/v3/reporting/siem-events
+        demisto.debug(f'Requesting events from API with params: {next_page=}, {start_date=}, {end_date=}')
         return self._http_request(
             method='GET',
             url_suffix=f'/reporting/siem-events',
@@ -908,22 +909,15 @@ def get_device_location_command(args, client) -> CommandResults:
 ''' EVENT COLLECTOR '''
 
 
-# setup: page_size=1000, time_now: 10:00, limit=10,000
-# ---------------------
-# 0) if no events
-# 1) (events<1000): exist 800 events  -> 1 fetch
-# 2) (1000<events<limit): exist 1200 events -> 2 fetches
-# 3) (10,000<events): exist 10,200 events -> 10 fetches
-
-
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     next_page_token = last_run.get('next_page_token', '')
-    last_run_latest_events = last_run.get('latest_event_ids')
+    last_run_latest_events = last_run.get('latest_events_id')
     last_end_date = last_run.get('end_date')
     end_date = datetime.utcnow()
     start_date = last_end_date if last_end_date else end_date - timedelta(minutes=1)
-
+    demisto.debug(f'Starting new fetch: {start_date=}, {end_date=}, {next_page_token=}')
     all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
+    demisto.debug(f'Overall, {len(all_events)} fetched.')
     if not all_events:
         # demisto.debug
         return [], {'next_page_token': None, 'end_date': end_date, 'latest_event_ids': []}
@@ -931,9 +925,11 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
     if last_run_latest_events:  # handle duplication
         filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
         all_events = filtered_events
+        demisto.debug(
+            f'Handle duplicate events: Found {len(all_events) - len(filtered_events)} duplicated events. exist {len(filtered_events)} new events')
 
-    events, latest_event_ids = add_time_field_to_events_and_get_latest_events(all_events)
-    return events, {'next_page_token': next_page_token, 'end_date': end_date, 'latest_event_ids': latest_event_ids}
+    events, latest_events_id = add_time_field_to_events_and_get_latest_events(all_events)
+    return events, {'next_page_token': next_page_token, 'end_date': end_date, 'latest_events_id': latest_events_id}
 
 
 def run_fetch_mechanism(client: Client, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> \
@@ -948,6 +944,7 @@ def run_fetch_mechanism(client: Client, fetch_limit: int, next_page_token: str, 
             response = client.fetch_events(page_size=page_size, start_date=start_date, end_date=end_date)
 
         events = response.get('data', [])
+        demisto.debug(f'Fetched {len(events)} events')
         all_events.extend(events)
         next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
         if not next_page_token:
@@ -958,17 +955,18 @@ def run_fetch_mechanism(client: Client, fetch_limit: int, next_page_token: str, 
 
 def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]]) -> tuple[
     List[Dict[str, Any]], List[str]]:
+    demisto.debug("Adding _TIME field to events and getting the latest events id")
     latest_event_time = events[-1].get('eventDateTimeUtc')
-    latest_event_ids = []
-    for event in reversed(events):
+    latest_events_id = []
+    for event in events:
         # adding time field
         event_time = event.get('eventDateTimeUtc')
         event['_TIME'] = event_time
         # latest events batch
         if event_time == latest_event_time:
-            latest_event_ids.append(event.get('id'))
+            latest_events_id.append(event.get('id'))
 
-    return events, latest_event_ids
+    return events, latest_events_id
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
@@ -1058,10 +1056,9 @@ def main() -> None:  # pragma: no cover
             max_events_per_fetch = int(arg_to_number(params.get('max_events_per_fetch', 10000)))
             events, last_run_object = fetch_events(client, max_events_per_fetch, demisto.getLastRun())
             if events:
-                pass
-                #     add_time_to_events(events)
-                #     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                #     demisto.setLastRun(last_run_object)
+                send_events_to_xsiam(events, vendor="Absolute", product="Secure Endpoint")
+                demisto.setLastRun(last_run_object)
+
         elif demisto.command() == 'absolute-device-get-events':
             events, command_result = get_events(client, args)
             return_results(command_result)
