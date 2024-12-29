@@ -461,16 +461,16 @@
                     "simple": "low_severity_alert_count"
                 },
                 "XDR MITRE Tactics": {
-					"complex": {
-						"accessor": "mitre_tactic_id_and_name",
-						"filters": [],
-						"root": "alerts",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
+                    "complex": {
+                        "accessor": "mitre_tactic_id_and_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
                 },
                 "XDR MITRE Techniques": {
 					"complex": {
@@ -1204,7 +1204,7 @@
                 },
                 "Agent Version": {
                     "complex": {
-						"accessor": "agent_version",
+                        "accessor": "agent_version",
                         "filters": [],
                         "root": "alerts",
                         "transformers": [
