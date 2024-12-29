@@ -29,7 +29,10 @@ description: |-
 
   * Provide guidance for manual process termination if the automated action fails.
 
-  * Isolate the endpoint to prevent further compromise if malicious activity is confirmed.
+  * Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
+tags:
+- 'T1021 - Remote Services '
+- TA0008 - Lateral Movement
 starttaskid: "0"
 tasks:
   "0":
@@ -460,7 +463,7 @@ tasks:
         * The command line analysis score is below 10 with a prevention rule found in the same incident, suggesting potential risk.
 
         **Unmatched Verdicts:**
-        * No matches for high-risk profiles.
+        * No matches for high-risk command line analysis profiles.
         * No malicious IP address detected.
         * The command line analysis score is below 30 without high-confidence indicators.
 
@@ -714,7 +717,7 @@ tasks:
         The detection meets high-confidence criteria for malicious activity based on the following conditions:
 
         **Matched Verdicts:**
-        * Matches for high-risk profiles: mixed_case_powershell, double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.
+        * Matches for high-risk command line analysis profiles: mixed_case_powershell, double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.
 
         * Malicious IP address detected.
         Score >= 30, indicating high confidence probability for malicious behavior.
@@ -954,7 +957,7 @@ tasks:
     task:
       id: 0c30d0e2-4703-413a-8bc0-2e5c223d443d
       version: -1
-      name: Get the alert data
+      name: Get the attacker's remote host IP address
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
