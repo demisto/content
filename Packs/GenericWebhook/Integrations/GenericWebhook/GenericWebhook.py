@@ -206,7 +206,7 @@ def generate_events() -> str:
     return EVENTS
 
 
-@app.get('/')
+@app.get('/50170')
 async def handle_get_request():
     """handle a regular get response.
     Args:
