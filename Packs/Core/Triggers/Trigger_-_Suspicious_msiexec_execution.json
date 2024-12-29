@@ -1,0 +1,47 @@
+{
+  "trigger_id": "7bf91ab431cc4c478c4c70099ae110ec",
+  "playbook_id": "Suspicious msiexec execution",
+  "suggestion_reason": "Recommended for 'Suspicious msiexec execution' and 'Possible LDAP enumeration by unsigned process' alerts",
+  "description": "This trigger is responsible for handling the 'Msiexec execution of an executable from an uncommon remote location with a specific port' and 'Msiexec execution of an executable from an uncommon remote location without properties' alerts via the 'Suspicious msiexec execution' playbook",
+  "trigger_name": "Suspicious msiexec execution",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+                "OR": [
+                  {
+                    "AND": [
+                      {
+                        "SEARCH_FIELD": "alert_name",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location without properties"
+                      },
+                      {
+                        "SEARCH_FIELD": "severity",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "SEV_030_MEDIUM"
+                      }
+                    ]
+                  },
+                  {
+                    "AND": [
+                      {
+                        "SEARCH_FIELD": "alert_name",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location with a specific port"
+                      },
+                      {
+                        "SEARCH_FIELD": "severity",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "SEV_040_HIGH"
+                      }
+                    ]
+                  }
+                ]
+              }
+        ]    
+    }
+  }
+}
+
