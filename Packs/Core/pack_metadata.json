@@ -2,11 +2,7 @@
     "name": "Core - Investigation and Response",
     "description": "Automates incident response",
     "support": "xsoar",
-<<<<<<< HEAD
-    "currentVersion": "3.2.35",
-=======
-    "currentVersion": "3.2.9",
->>>>>>> origin
+    "currentVersion": "3.2.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
