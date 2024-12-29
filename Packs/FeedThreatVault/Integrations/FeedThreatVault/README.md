@@ -28,4 +28,4 @@ If you encounter any issues:
 2. Check the integration's logs for any error messages.
 3. Ensure your network allows outbound connections to the PANW Threat Vault API endpoint.
 
-For more information on using this integration, please refer to the PANW Threat Vault documentation.
+For more information on using this integration, refer to the PANW Threat Vault documentation.
