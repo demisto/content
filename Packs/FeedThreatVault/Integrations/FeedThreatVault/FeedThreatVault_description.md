@@ -3,8 +3,6 @@
   2. Select **Assets** and then **API Key Management**.
   3. From the **Select an API key** dropdown list, select the API key based on the subscription type.
   4. Set your API key in the API key field of the integration configuration
-   
-See [this documentation](https://support.paloaltonetworks.com/Support) for information about the API key.
 
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/palo-alto-networks-threat-vault-v2)
