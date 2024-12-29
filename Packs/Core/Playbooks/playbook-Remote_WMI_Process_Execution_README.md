@@ -25,7 +25,7 @@ This playbook addresses the following alerts:
 
 * Provide guidance for manual process termination if the automated action fails.
 
-* Isolate the endpoint to prevent further compromise if malicious activity is confirmed.
+* Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
 
 ## Dependencies
 
@@ -37,9 +37,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CoreIOCs
 * CortexCoreIR
-* CortexCoreXQLQueryEngine
 
 ### Scripts
 
