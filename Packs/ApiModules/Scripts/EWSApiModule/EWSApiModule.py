@@ -523,11 +523,14 @@ class EWSClient:
             if path in folders_map:
                 return account.root._folders_map[path]
 
-        if (self.version == 'O365'):
-            root = account.public_folders_root if is_public else account.root
-            folder = root if path == 'AllItems' else root.tois
+        if is_public:
+            folder = account.public_folders_root
+        elif self.version == 'O365' and path == 'AllItems':
+            # AllItems is only available on Office365, directly under root
+            folder = account.root
         else:
-            folder = account.public_folders_root if is_public else account.root.tois
+            # Default, contains all of the standard folders (Inbox, Calendar, trash, etc.)
+            folder = account.root.tois
 
         path = path.replace('/', '\\')
         path_parts = path.split('\\')
