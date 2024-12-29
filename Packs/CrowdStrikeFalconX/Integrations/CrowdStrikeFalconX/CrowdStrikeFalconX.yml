@@ -66,7 +66,7 @@ script:
     - description: Content of the uploaded sample in binary format, This arg can also receive entry ID from war room.
       name: file
     - auto: PREDEFINED
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex's built-in polling to retrieve the result when it's ready.
       name: polling
       predefined:
       - 'true'
@@ -373,7 +373,7 @@ script:
     - description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
       name: system_date
     - auto: PREDEFINED
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
+      description: Whether to use Cortex's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
       name: polling
       predefined:
       - 'true'
@@ -1475,7 +1475,7 @@ script:
     - description: Sets a custom date for the sandbox environment in the format yyyy-MM-dd.
       name: system_date
     - auto: PREDEFINED
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
+      description: Whether to use Cortex's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
       name: polling
       predefined:
       - 'true'

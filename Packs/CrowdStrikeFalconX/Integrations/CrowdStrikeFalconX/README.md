@@ -43,7 +43,7 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | comment | A descriptive comment to identify the file for other users. | Optional | 
 | is_confidential | Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential. Possible values are: true, false. | Optional | 
 | file | Content of the uploaded sample in binary format, This arg can also receive entry ID from war room. | Optional | 
-| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready. Possible values are: true, false. | Optional | 
+| polling | Whether to use Cortex's built-in polling to retrieve the result when it's ready. Possible values are: true, false. | Optional | 
 | extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional | 
 | submit_file | Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no". Possible values are: no, yes. Default is no. | Optional | 
@@ -167,7 +167,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 | enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Possible values are: true, false. | Optional | 
 | submit_name | Name of the malware sample that’s used for file type detection. and analysis. | Optional | 
 | system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional | 
-| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional | 
+| polling | Whether to use Cortex's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional | 
 | extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional | 
 | ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional | 
@@ -1901,7 +1901,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false. Possible values are: false,  true. Default is false. | Optional | 
 | submit_name | Name of the malware sample that’s used for file type detection and analysis. | Optional | 
 | system_date | Sets a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional | 
-| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional | 
+| polling | Whether to use Cortex's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional | 
 | extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional | 
 | ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional | 
