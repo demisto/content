@@ -178,8 +178,6 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: str | lis
         return None
 
     try:
-        if "The request requires the right permissions" in command_results[0].get('Contents'):
-            return_error("Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights.")
         if isinstance(alert_ids, str):
             result_dict = command_results[0].get('Contents', {})
             if type(result_dict) == str:
@@ -189,6 +187,8 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: str | lis
             results_summary.update_success(playbook_id, alert_ids)
 
         elif isinstance(alert_ids, list):
+            if "The request requires the right permissions" in command_results[0].get('Contents'):
+                return_error("Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights.")
             result_dict = command_results[0].get('Contents', {}).get('response', {})
 
             if not result_dict:
