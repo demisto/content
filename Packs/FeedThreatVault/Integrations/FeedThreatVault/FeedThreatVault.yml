@@ -71,7 +71,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
   section: Collect
 - display: Source Reliability
   name: feedReliability
@@ -85,7 +85,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
+  additionalinfo: Reliability of the source providing the intelligence data.
   section: Collect
 - name: feedExpirationPolicy
   display: ''
@@ -150,13 +150,13 @@ script:
       defaultValue: latest
     outputs:
     - contextPath: ThreatVault.EDL.ipaddr
-      description: EDL Indicators.
+      description: EDL indicators.
       type: String
     - contextPath: ThreatVault.EDL.name
-      description: EDL Name.
+      description: EDL name.
       type: string
     - contextPath: ThreatVault.EDL.content_version
-      description: Content Version number.
+      description: Content version number.
       type: number
     - contextPath: ThreatVault.EDL.count
       description: Count of entries.
