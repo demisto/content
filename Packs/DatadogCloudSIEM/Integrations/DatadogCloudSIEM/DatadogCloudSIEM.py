@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import json
 from math import floor
 from typing import Any
@@ -1337,7 +1337,7 @@ def add_utc_offset(dt_str: str):
         str: A string representing the input datetime with a UTC offset, in ISO format (YYYY-MM-DDTHH:MM:SS[.ffffff]+00:00)
     """
     dt = datetime.fromisoformat(dt_str)
-    dt_with_offset = dt.replace(tzinfo=timezone.utc)
+    dt_with_offset = dt.replace(tzinfo=UTC)
     return dt_with_offset.isoformat()
 
 
