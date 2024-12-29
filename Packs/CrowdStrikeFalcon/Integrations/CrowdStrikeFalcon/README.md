@@ -20,14 +20,14 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 |Detections from On-Demand Scans fetch query| Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql.| False|
 | Fetch incidents |  | False |
 | Incident type |  | False |
-| Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
+| Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex\), Outgoing \(from Cortex to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex\). | False |
 | Trust any certificate (not secure) |  | False |
 | Use legacy API | Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.' | False |
 | Use system proxy settings |  | False |
-| Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
-| Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
+| Close Mirrored Cortex Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex incident. | False |
+| Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
 | Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
-| Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
+| Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex if closed. You can choose any combination. | False |
 | Incidents Fetch Interval |  | False |
 | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 
@@ -56,7 +56,7 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
+You can enable incident mirroring between Cortex incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Fetch types* integration parameter, select what types to mirror.
@@ -66,19 +66,19 @@ To set up the mirroring:
     | **Option** | **Description** |
     | --- | --- |
     | None | Turns off incident mirroring. |
-    | Incoming | Any changes in CrowdStrike Falcon events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in CrowdStrike Falcon events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and CrowdStrike Falcon events will be reflected in both directions. |
+    | Incoming | Any changes in CrowdStrike Falcon events (mirroring incoming fields) will be reflected in Cortex incidents. |
+    | Outgoing | Any changes in Cortex incidents will be reflected in CrowdStrike Falcon events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex incidents and CrowdStrike Falcon events will be reflected in both directions. |
 
-5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in CrowdStrike Falcon.
-6. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
+5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex incident when the corresponding event is closed in CrowdStrike Falcon.
+6. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex incident is closed.
 
-Newly fetched Cortex XSOAR incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+Newly fetched Cortex incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Notes**
 
-- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CrowdStrike Falcon.
-- When *mirroring in* incidents from CrowdStrike Falcon to Cortex XSOAR:
+- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex and CrowdStrike Falcon.
+- When *mirroring in* incidents from CrowdStrike Falcon to Cortex:
   - For the `tags` field, tags can only be added from the remote system.
   - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
   - In case the *look-back* parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
@@ -1433,7 +1433,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
                     "mac"
                 ],
                 "Severity": "informational",
-                "Source": "Cortex XSOAR",
+                "Source": "Cortex",
                 "Type": "ipv4",
                 "Value": "1.1.8.9"
             },
@@ -1450,7 +1450,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
                     "mac"
                 ],
                 "Severity": "informational",
-                "Source": "Cortex XSOAR",
+                "Source": "Cortex",
                 "Type": "ipv4",
                 "Value": "4.1.8.9"
             }
@@ -1465,8 +1465,8 @@ Returns a list of your uploaded IOCs that match the search criteria.
 
 >|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex |  |
 
 ### cs-falcon-get-custom-ioc
 
@@ -1524,7 +1524,7 @@ Gets the full definition of one or more indicators that you are watching.
                 "linux"
             ],
             "Severity": "informational",
-            "Source": "cortex xsoar",
+            "Source": "Cortex",
             "Tags": [
                 "test",
                 "test1"
@@ -1542,7 +1542,7 @@ Gets the full definition of one or more indicators that you are watching.
 
 >|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | Cortex | test,<br/>test1 |
 
 
 ### cs-falcon-upload-custom-ioc
@@ -3352,7 +3352,7 @@ Uploads a batch of indicators.
 
 #### Command Example
 
-```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex XSOAR", "applied_globally": true}]` ```
+```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex", "applied_globally": true}]` ```
 
 #### Context Example
 
@@ -3372,7 +3372,7 @@ Uploads a batch of indicators.
                 "mac"
             ],
             "Severity": "informational",
-            "Source": "Cortex XSOAR",
+            "Source": "Cortex",
             "Type": "ipv4",
             "Value": "1.1.8.9"
         }
@@ -3386,7 +3386,7 @@ Uploads a batch of indicators.
 
 >|Action|CreatedBy|CreatedTime|Description|Expiration|ID|ModifiedBy|ModifiedTime|Platforms|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| no_action | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
+>| no_action | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex | ipv4 | 1.1.8.9 |
 
 ### cs-falcon-rtr-kill-process
 

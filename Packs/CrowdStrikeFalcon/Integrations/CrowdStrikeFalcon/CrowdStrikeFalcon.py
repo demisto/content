@@ -18,7 +18,9 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-INTEGRATION_NAME = 'CrowdStrike Falcon'
+VENDOR = 'CrowdStrike'
+PRODUCT = 'Falcon'
+INTEGRATION_NAME = f'{VENDOR} {PRODUCT}'
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 ENDPOINT_DETECTION = 'detection'
@@ -7102,9 +7104,10 @@ def main():
         if command == 'test-module':
             result = module_test()
             return_results(result)
-        elif command == 'fetch-incidents':
+        elif command == 'fetch-incidents':  # XSOAR
             demisto.incidents(fetch_incidents())
-
+        elif command == 'fetch-events':  # XSIAM
+            send_events_to_xsiam(fetch_incidents(), vendor=VENDOR, product=PRODUCT)
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
