@@ -969,12 +969,13 @@ def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]])
     return events, latest_events_id
 
 
-def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
+def get_events(client: Client, args: dict) -> tuple[List[Dict[str, Any]], CommandResults]:
     end_date = args.get('end_date', datetime.utcnow())
     start_date = args.get('start_date', end_date - timedelta(minutes=1))
+    fetch_limit = int(args.get('limit', 50))
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
-    fetch_limit = args.get('limit', 50)
+
     events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
 
     return events, CommandResults(outputs=events, readable_output=tableToMarkdown('Events', t=events))
@@ -1060,9 +1061,12 @@ def main() -> None:  # pragma: no cover
                 demisto.setLastRun(last_run_object)
 
         elif demisto.command() == 'absolute-device-get-events':
+            demisto.debug(f'Fetching Absolute Device events with the following parameters: {args}')
+            should_push_events = argToBoolean(args.get('should_push_events', False))
             events, command_result = get_events(client, args)
             return_results(command_result)
-
+            if should_push_events:
+                send_events_to_xsiam(events, vendor="Absolute", product="Secure Endpoint")
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing {INTEGRATION} command.')
 
