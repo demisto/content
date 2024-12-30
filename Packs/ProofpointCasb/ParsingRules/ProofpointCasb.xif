@@ -1,3 +1,3 @@
-[INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_windows_raw", no_hit=drop]
+[INGEST:vendor="proofpoint", product="casb", target_dataset="proofpoint_casb_raw", no_hit=drop]
 config case_sensitive=false 
-| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ",event -> event.occurredAt)
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ",event -> event.occurredAt);
