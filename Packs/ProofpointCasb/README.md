@@ -20,7 +20,7 @@ This pack includes parsing and modeling rules for Proofpoint CASB logs sent via 
 
 **On Proofpoint CASB side:**
 
- [Link to Proofpoint webhook docs](https://docs.public.analyze.proofpoint.com/admin/notification_policies_webhooks.htm) <reference to docs>
+ [Link to Proofpoint webhook docs](https://docs.public.analyze.proofpoint.com/admin/notification_policies_webhooks.htm)
 
 <u>Guidelines:</u>
 1. Navigate to **Integrations** >  **Notification Policies** . Click **New Notification**.
