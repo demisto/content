@@ -4181,3 +4181,66 @@ Returns information about an endpoint.
 >|---|---|---|---|---|
 >| test MacBook Pro | 138 | F0:18:98:3F:DB:8E | Mac | JAMF v2 |
 
+
+### jamf-get-mobile-configuration-profiles-by-id
+
+***
+Returns the configuration profiles subset for a specific mobile device according to the given arguments.
+
+#### Base Command
+
+`jamf-get-mobile-configuration-profiles-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the mobile device. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| JAMF.Mobile.ProfileConfiguration.general.id | Number | The ID of the configuration profile. | 
+| JAMF.Mobile.ProfileConfiguration.general.name | String | The name of the configuration profile. | 
+| JAMF.Mobile.ProfileConfiguration.general.description | String | The mobile device configuration description. | 
+| JAMF.Mobile.ProfileConfiguration.general.level | String | Level of the configuration profile \(System or User\). | 
+| JAMF.Mobile.ProfileConfiguration.general.site | String | Site of the configuration profile. | 
+| JAMF.Mobile.ProfileConfiguration.general.category | String | Category of the configuration profile. | 
+| JAMF.Mobile.ProfileConfiguration.general.uuid | String | Unique identifier of the mobile profile configuration. | 
+| JAMF.Mobile.ProfileConfiguration.general.deployment_method | String | Install Automatically or Make Available in Self Service. | 
+| JAMF.Mobile.ProfileConfiguration.general.payloads | String | Payloads of the configuration profile for Mobile device. | 
+| JAMF.Mobile.ProfileConfiguration.scope | String | Scope object of the configuration profile. | 
+| JAMF.Mobile.ProfileConfiguration.self_service | String | Self-service object of the configuration profile. | 
+
+### jamf-get-computer-configuration-profiles-by-id
+
+***
+Returns the configuration profiles subset for a specific mobile device according to the given arguments.
+
+#### Base Command
+
+`jamf-get-computer-configuration-profiles-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the mobile device. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| JAMF.OSX.ProfileConfiguration.general.id | Number | The ID of the configuration profile. | 
+| JAMF.OSX.ProfileConfiguration.general.name | String | The name of the configuration profile. | 
+| JAMF.OSX.ProfileConfiguration.general.description | unknown | The mobile device configuration description. | 
+| JAMF.OSX.ProfileConfiguration.general.level | String | Level of the configuration profile \(System or User\). | 
+| JAMF.OSX.ProfileConfiguration.general.site | String | Site of the configuration profile. | 
+| JAMF.OSX.ProfileConfiguration.general.category | String | Category of the configuration profile. | 
+| JAMF.OSX.ProfileConfiguration.general.uuid | String | Unique identifier of the mobile profile configuration. | 
+| JAMF.OSX.ProfileConfiguration.general.distribution_method | String | Install Automatically or Make Available in Self Service. | 
+| JAMF.OSX.ProfileConfiguration.general.payloads | String | Payloads of the configuration profile for OSX device. | 
+| JAMF.OSX.ProfileConfiguration.scope | String | Scope object of the configuration profile. | 
+| JAMF.OSX.ProfileConfiguration.self_service | String | Self-service object of the configuration profile. | 
+
