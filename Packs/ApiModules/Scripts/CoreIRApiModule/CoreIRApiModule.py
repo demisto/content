@@ -32,7 +32,7 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_auto_resolve': 'Resolved'
 }
 
-XDR_OPEN_STATUS_TO_XSOAR = ['under_investigation', 'New']
+XDR_OPEN_STATUS_TO_XSOAR = ['under_investigation', 'new']
 
 ALERT_GENERAL_FIELDS = {
     'detection_modules',
