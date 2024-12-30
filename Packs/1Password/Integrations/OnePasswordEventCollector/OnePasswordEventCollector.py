@@ -344,7 +344,7 @@ def main() -> None:  # pragma: no cover
 
     # required
     base_url: str = urljoin(params['url'], '/api/v2')
-    token: str = params['credentials']['password']
+    token: str = params.get('credentials', {}).get('password', '')
     event_types: list[str] = argToList(params['event_types'])
 
     # optional
