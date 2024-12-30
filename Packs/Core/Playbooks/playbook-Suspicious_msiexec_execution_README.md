@@ -26,7 +26,7 @@ Containment:
  
 Requirements: 
  
-For any response action, you need one of the following integrations:
+For any response action, you need the following integration:
  
 PAN-OS
 
