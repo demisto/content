@@ -1087,7 +1087,8 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
         mock_update_record = mocker.patch("ArcherV2.update_record_command")
-        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'Archer': {'Record': {'Attachments': ['456', '789']}}}, '', ''))
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=(
+            {'Archer': {'Record': {'Attachments': ['456', '789']}}}, '', ''))
         args = {
             "applicationId": "app1",
             "contentId": "content1",
@@ -1149,7 +1150,8 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
         mock_update_record = mocker.patch("ArcherV2.update_record_command")
-        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'Archer': {'Record': {'ID': '123'}}}, '', 'error'))
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=(
+            {'Archer': {'Record': {'ID': '123'}}}, '', 'error'))
         mock_error = mocker.patch("ArcherV2.return_error")
         args = {
             "applicationId": "app1",
