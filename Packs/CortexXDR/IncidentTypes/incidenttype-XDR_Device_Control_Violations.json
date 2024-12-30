@@ -9,7 +9,6 @@
     "hoursR": 0,
     "id": "Cortex XDR Device Control Violations",
     "layout": "Cortex XDR Device Control Violations",
-    "description": "Incidents related to violations of device control policies.",
     "locked": false,
     "name": "Cortex XDR Device Control Violations",
     "playbookId": "Cortex XDR device control violations",

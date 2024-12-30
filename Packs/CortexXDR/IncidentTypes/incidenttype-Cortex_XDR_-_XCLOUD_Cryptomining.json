@@ -7,7 +7,6 @@
     "prevName": "Cortex XDR - XCLOUD Cryptomining",
     "color": "#98DCFF",
     "playbookId": "Cortex XDR - Cloud Cryptomining",
-    "description": "Cortex XDR incident containing a Cloud Cryptojacking related alert.",
     "hours": 0,
     "days": 0,
     "weeks": 0,

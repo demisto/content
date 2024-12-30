@@ -5,7 +5,6 @@
     "daysR": 0,
     "default": false,
     "disabled": false,
-    "description": "Endpoints which are no longer connected to the Cortex XDR.",
     "hours": 0,
     "hoursR": 0,
     "id": "Cortex XDR Disconnected endpoints",
