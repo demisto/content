@@ -466,7 +466,7 @@ def fetch_events_command(
     """
     total_events_count = 0
     offset = ctx.get("offset")
-    from_epoch, _ = parse_date_range(date_range=ctx.get("from_time", fetch_time), date_format='%s')
+    from_epoch, _ = parse_date_range(fetch_time, date_format='%s')
     auto_trigger_next_run = False
     worst_case_time: float = 0
     execution_counter = 0
@@ -497,7 +497,6 @@ def fetch_events_command(
                     "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
                     'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
                     f'original error: [{e}]'
-                set_integration_context({"from_time": "11 hours"})
                 raise DemistoException(err_msg)
             else:
                 raise DemistoException(e)
@@ -527,8 +526,8 @@ def fetch_events_command(
                     config_id = event.get('attackData', {}).get('configId', "")
                     policy_id = event.get('attackData', {}).get('policyId', "")
                     demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-            total_events_count += len(events)
-            execution_counter += 1
+        total_events_count += len(events)
+        execution_counter += 1
         yield events, offset, total_events_count, auto_trigger_next_run
     yield [], offset, total_events_count, auto_trigger_next_run
 
@@ -600,7 +599,7 @@ def main():  # pragma: no cover
             for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
             fetch_events_command(
                 client,
-                "5 minutes",
+                params.get("fetchTime", "5 minutes"),
                 fetch_limit=limit,
                 config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},

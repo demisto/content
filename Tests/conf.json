@@ -5876,6 +5876,10 @@
         {
             "integrations": "DSPM",
             "playbookID": "DSPM Test"
+        },
+        {
+            "integrations": "Symantec Email Security Cloud",
+            "playbookID": "SymantecEmailSecurity_TestPlaybook"
         }
     ],
     "skipped_tests": {
@@ -5982,7 +5986,7 @@
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "Zscaler Test": "Issue 40157, API subscription currently Expired",
         "Cisco Firepower - Test": "Issue 32412",
-        "cisco-ise-test-playbook": "Issue 44351",
+        "cisco-ise-test-playbook": "CRTX-146167",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
         "playbook-EWS_O365_Extension_test": "Issue 25605, Issue 39008",
@@ -6073,6 +6077,7 @@
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
+        "RedCanary": "No instance",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
@@ -6167,6 +6172,7 @@
         "Workday": "No instance - License expired Issue: 29595 - CIAC-1508",
         "FireEyeFeed": "No instance - License expired Issue: 31838",
         "Akamai WAF": "No instance - Issue 32318 - CIAC-1407",
+        "Akamai WAF SIEM": "No instance",
         "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299 - CIAC-1323",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
@@ -6204,7 +6210,8 @@
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
-        "DSPM": "No instance"
+        "DSPM": "No instance",
+        "Symantec Email Security Cloud": "No instance"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",

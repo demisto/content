@@ -1,5 +1,5 @@
 import pytest
-from AWSSNSListener import handle_notification, is_valid_sns_message, is_valid_integration_credentials
+from AWSSNSListener import handle_notification, is_valid_integration_credentials, SNSCertificateManager
 from unittest.mock import patch
 import requests
 
@@ -47,6 +47,7 @@ def test_handle_notification_valid():
 @patch("AWSSNSListener.X509")
 @patch("M2Crypto.EVP.PKey")
 def test_is_valid_sns_message(mock_client, mock_x509, mock_PKey):
+    sNSCertificateManager = SNSCertificateManager()
     mock_resp = requests.models.Response()
     mock_resp.status_code = 200
     response_content = '''-----BEGIN VALID CERTIFICATE-----
@@ -56,7 +57,7 @@ def test_is_valid_sns_message(mock_client, mock_x509, mock_PKey):
     mock_PKey.verify_final.return_value = 1
     mock_x509.get_pubkey.return_value = mock_PKey
     mock_x509.load_cert_string.return_value = mock_x509
-    is_valid = is_valid_sns_message(VALID_PAYLOAD)
+    is_valid = sNSCertificateManager.is_valid_sns_message(VALID_PAYLOAD)
     assert is_valid
 
 
@@ -64,6 +65,7 @@ def test_is_valid_sns_message(mock_client, mock_x509, mock_PKey):
 @patch("AWSSNSListener.X509")
 @patch("M2Crypto.EVP.PKey")
 def test_not_valid_sns_message(mock_client, mock_x509, mock_PKey, capfd):
+    sNSCertificateManager = SNSCertificateManager()
     mock_resp = requests.models.Response()
     mock_resp.status_code = 200
     response_content = '''-----BEGIN INVALID CERTIFICATE-----
@@ -74,7 +76,7 @@ def test_not_valid_sns_message(mock_client, mock_x509, mock_PKey, capfd):
     mock_x509.get_pubkey.return_value = mock_PKey
     mock_x509.load_cert_string.return_value = mock_x509
     with capfd.disabled():
-        is_valid = is_valid_sns_message(VALID_PAYLOAD)
+        is_valid = sNSCertificateManager.is_valid_sns_message(VALID_PAYLOAD)
         assert is_valid is False
 
 
