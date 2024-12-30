@@ -25,21 +25,21 @@ configuration:
   section: Connect
   advanced: true
 - name: max_fetch_account_audit_logs
-  defaultvalue: 1000
+  defaultvalue: 5000
   section: Collect
   display: Maximum number of account audit logs per fetch
   advanced: true
   required: false
   type: 0
 - name: max_fetch_user_audit_logs
-  defaultvalue: 1000
+  defaultvalue: 5000
   section: Collect
   display: Maximum number of user audit logs per fetch
   advanced: true
   required: false
   type: 0
 - name: max_fetch_access_authentication_logs
-  defaultvalue: 1000
+  defaultvalue: 5000
   section: Collect
   display: Maximum number of access authentication logs per fetch
   advanced: true
@@ -81,39 +81,30 @@ name: Cloudflare Zero Trust
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'false'
+    - description: The number of events to return per type.
+      name: limit
+      defaultValue: 10  
+    - name: should_push_events
       description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
-      name: should_push_events
+      defaultValue: 'false'
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
+    - description: The start date from which to filter events.
+      name: start_date
+    - description: Event types to fetch. You can choose more than one, separated by commas, possible values are `account_audit_logs`, `user_audit_logs`, and `access_authentication_logs`.
+      name: event_types_to_fetch
+      defaultValue: account_audit_logs,user_audit_logs
+      auto: PREDEFINED
       predefined:
-      - ACTIVE
-      - CLOSED
+      - account_audit_logs
+      - user_audit_logs
+      - access_authentication_logs
       required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
-      name: limit
-      required: true
-      secret: false
-    - default: false
-      description: Date from which to get events.
-      name: from_date
-      required: false
-    deprecated: false
-    description: Gets events from Hello World.
-    execution: false
-    name: hello-world-get-events
+      isArray:
+    description: Gets events from Cloudflare Zero Trust.
+    name: cloudflare-zero-trust-get-events
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false

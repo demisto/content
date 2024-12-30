@@ -26,21 +26,40 @@ ACCESS_AUTHENTICATION_TYPE = "access_authentication_logs"
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    def __init__(self, base_url: str, verify: bool, proxy: bool, headers: Dict[str, str], account_id: str):
+        """
+        Initializes the Client with API details.
 
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
-    """
-
-    def __init__(self, base_url, verify, proxy, headers, account_id):
+        Args:
+            base_url (str): The base URL of the API.
+            verify (bool): Whether to verify SSL certificates.
+            proxy (bool): Whether to use a proxy.
+            headers (Dict[str, str]): The HTTP headers for authentication and other configurations.
+            account_id (str): The Cloudflare account ID to be used for account-specific API requests.
+        """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.account_id = account_id
         self.headers = headers
 
-    def get_events(self, start_date, page_size, page, event_type):
+    def get_events(self, start_date: str, page_size: int, page: int, event_type: str) -> Dict[str, Any]:
+        """
+        Fetches events from the API for the specified event type.
+
+        Args:
+            start_date (str): The start date for fetching events, in ISO 8601 format.
+            page_size (int): The maximum number of events to fetch per page.
+            page (int): The page number to fetch.
+            event_type (str): The type of events to fetch. Supported types include:
+                              - ACCOUNT_AUDIT_TYPE
+                              - USER_AUDIT_TYPE
+                              - ACCESS_AUTHENTICATION_TYPE
+
+        Returns:
+            Dict[str, Any]: The API response containing the fetched events.
+
+        Raises:
+            ValueError: If the event_type is invalid or unsupported.
+        """
         endpoint_urls = {
             ACCOUNT_AUDIT_TYPE: f"/client/v4/accounts/{self.account_id}/audit_logs",
             USER_AUDIT_TYPE: "/client/v4/user/audit_logs",
@@ -63,18 +82,16 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
+    Tests API connectivity and authentication.
+
+    When 'ok' is returned, it indicates that the integration is working as expected and the connection to the
+    service is successful. If something goes wrong, the function raises exceptions with meaningful error messages.
 
     Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
+        client (Client): The Cloudflare Zero Trust client to use for testing connectivity.
 
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: 'ok' if the test passed, otherwise raises an exception.
     """
     try:
         fetch_events(
@@ -88,16 +105,39 @@ def test_module(client: Client) -> str:
 
     except Exception as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            return "Authorization Error: Ensure the API token or key is set correctly and has the required permissions."
         else:
             raise e
 
     return 'ok'
 
 
-def get_events(client: Client, last_run, max_fetch, max_page_size, event_type):
-    events: List[Dict[str, Any]] = []
-    start_date = calculate_fetch_dates(last_run)
+def get_events(
+    client: Client,
+    last_run: dict[str, Any],
+    max_fetch: int,
+    max_page_size: int,
+    event_type: str,
+    start_fetch_date: str = "",
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """
+    Fetches events for a specific event type and returns the fetched events and updated last run details.
+
+    Args:
+        client (Client): The API client instance.
+        last_run (dict): A dictionary containing the last fetch timestamp and event IDs to avoid duplicates.
+        max_fetch (int): The maximum number of events to fetch.
+        max_page_size (int): The maximum number of events to fetch per page.
+        event_type (str): The type of events to fetch.
+        start_fetch_date (str, optional): The starting date for fetching events. Defaults to "".
+
+    Returns:
+        tuple: A tuple containing:
+            - list[dict[str, Any]]: The list of fetched events.
+            - dict[str, Any]: The updated last run data with new timestamps and event IDs.
+    """
+    events: list[dict[str, Any]] = []
+    start_date = calculate_fetch_dates(last_run, start_fetch_date)
 
     previous_event_ids = last_run.get("events_ids", [])
     events_to_fetch = max_fetch + len(previous_event_ids)
@@ -116,6 +156,9 @@ def get_events(client: Client, last_run, max_fetch, max_page_size, event_type):
     unique_events = handle_duplicates(events, previous_event_ids)
     events = unique_events[:max_fetch]
 
+    for event in events:
+        event["SOURCE_LOG_TYPE"] = event_type
+
     if events:
         start_date, previous_event_ids = prepare_next_run(events)
 
@@ -123,8 +166,30 @@ def get_events(client: Client, last_run, max_fetch, max_page_size, event_type):
     return events, new_last_run
 
 
-def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_account_audit: int, max_fetch_user_audit,
-                 max_fetch_authentication, event_types_to_fetch):
+def fetch_events(
+    client: Client,
+    last_run: dict[str, Any],
+    max_fetch_account_audit: int,
+    max_fetch_user_audit: int,
+    max_fetch_authentication: int,
+    event_types_to_fetch: list[str],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """
+    Fetches events for multiple event types and aggregates them.
+
+    Args:
+        client (Client): The API client instance.
+        last_run (dict[str, Any]): A dictionary containing the last run data for all event types.
+        max_fetch_account_audit (int): Maximum number of account audit events to fetch.
+        max_fetch_user_audit (int): Maximum number of user audit events to fetch.
+        max_fetch_authentication (int): Maximum number of authentication events to fetch.
+        event_types_to_fetch (list[str]): List of event types to fetch.
+
+    Returns:
+        tuple: A tuple containing:
+            - dict[str, Any]: The updated last run data for all event types.
+            - list[dict[str, Any]]: The aggregated list of fetched events.
+    """
     events = []
     next_run = {}
 
@@ -157,44 +222,83 @@ def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_account_aud
     return next_run, events
 
 
-# def fetch_events_command(client, limit, start_date, end_date' event_to_fetch):
-#     for event in events_to_fetch:
-#         res = get_events(
-#             client=client,
-#             last_run={},
-#             max_fetch=limit,
-#             event_type=
-#         )
-
-
-def calculate_fetch_dates(next_run):
+def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[str, Any]], list[CommandResults]]:
     """
-    Calculates the start and end dates for fetching events.
-
-    This function takes the start date and end date provided as arguments.
-    If these are not provided, it uses the last run information to calculate the start and end dates.
-    If the last run information is also not available,
-     it uses the current time as the end date and the time one minute before the current time as the start date.
+    Fetches events for specified event types and prepares results for display.
 
     Args:
-        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
-        last_run_key (str): The key to retrieve the last fetch date from the last run dictionary.
-        last_run (dict): A dictionary containing information about the last run.
-        end_date (str, optional): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format. Defaults to "".
+        client (Client): The API client instance.
+        args (dict[str, Any]): Command arguments containing:
+            - limit (int): The maximum number of events to fetch per event type.
+            - event_types_to_fetch (list[str]): The list of event types to fetch.
+            - start_date (str): The start date for fetching events.
 
     Returns:
-        tuple: A tuple containing two elements:
-            - The start date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
-            - The end date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+        tuple: A tuple containing:
+            - list[dict[str, Any]]: A list of all fetched events across event types.
+            - list[CommandResults]: A list of CommandResults for displaying fetched events.
+    """
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    event_types = argToList(args.get("event_types_to_fetch", []))
+    start_date = args.get("start_date", "")
+
+    all_fetched_events: list[dict[str, Any]] = []
+    command_results: list[CommandResults] = []
+
+    for event_type in event_types:
+        events, _ = get_events(
+            client=client,
+            last_run={},
+            max_fetch=limit,
+            max_page_size=100,
+            event_type=event_type,
+            start_fetch_date=start_date
+        )
+        all_fetched_events.extend(events)
+
+        if events:
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown(f"Cloudflare Zero Trust {event_type} Events", events),
+                raw_response=events
+            ))
+
+    if not all_fetched_events:
+        command_results.append(CommandResults(readable_output="No events found."))
+
+    return all_fetched_events, command_results
+
+
+def calculate_fetch_dates(next_run: dict[str, Any], start_date: str) -> str:
+    """
+    Calculates the start date for fetching events. If no start date is provided, it uses the last fetched date or,
+    if that is also unavailable, the current time minus 1 minute.
+
+    Args:
+        next_run (dict[str, Any]): A dictionary containing the last run timestamp.
+        start_date (str): The provided start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+
+    Returns:
+        str: The calculated start date in '%Y-%m-%dT%H:%M:%SZ' format.
     """
     now_utc_time = get_current_time()
-    # start_date = next_run.get('last_fetch') or "2024-09-16T10:08:58Z"
-    start_date = next_run.get('last_fetch') or (
+    # start_date = next_run.get('last_fetch') or "2024-12-01T10:08:58Z"
+    start_date = start_date or next_run.get('last_fetch') or (
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     return start_date
 
 
-def prepare_next_run(events):
+def prepare_next_run(events: list[dict[str, Any]]) -> tuple[str, list[str]]:
+    """
+    Prepares the next run data by extracting the latest timestamp and event IDs.
+
+    Args:
+        events (list[dict[str, Any]]): A list of fetched events.
+
+    Returns:
+        tuple: A tuple containing:
+            - str: The latest timestamp (up to seconds) of the fetched events.
+            - list[str]: A list of IDs for the events with the latest timestamp.
+    """
     latest_time = events[-1].get('when') or events[-1].get('created_at', "")
     latest_time_rounded_seconds = latest_time[:19]  # Extract up to seconds (e.g., 2024-12-22T15:28:00)
 
@@ -206,17 +310,26 @@ def prepare_next_run(events):
     return latest_time_rounded_seconds, latest_ids
 
 
-def handle_duplicates(events, previous_event_ids):
+def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str]) -> list[dict[str, Any]]:
+    """
+    Filters out events that have already been fetched.
+
+    Args:
+        events (list[dict[str, Any]]): The list of events to process.
+        previous_event_ids (list[str]): A list of IDs of previously fetched events.
+
+    Returns:
+        list[dict[str, Any]]: A list of events excluding duplicates.
+    """
     return [event for event in events if event.get('id') not in previous_event_ids]
 
 
-def add_time_to_events(events: List[Dict] | None):
+def add_time_to_events(events: list[dict[str, Any]] | None):
     """
-    Adds the _time key to the events.
+    Adds the '_time' key to events based on their creation or occurrence timestamp.
+
     Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
+        events (list[dict[str, Any]] | None): A list of events.
     """
     if events:
         for event in events:
@@ -233,6 +346,7 @@ def main() -> None:  # pragma: no cover
     """
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args()
     max_fetch_account_audit = arg_to_number(params.get('max_fetch_account_audit_logs') or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT)
     max_fetch_user_audit = arg_to_number(params.get('max_fetch_user_audit_logs') or DEFAULT_MAX_FETCH_USER_AUDIT)
     max_fetch_authentication = arg_to_number(params.get('max_fetch_access_authentication_logs')
@@ -259,13 +373,12 @@ def main() -> None:  # pragma: no cover
             result = test_module(client)
             return_results(result)
 
-        # elif command == 'cloudflare-zero-trust-get-events':
-        #     should_push_events = argToBoolean(args.pop('should_push_events'))
-        #     events, results = get_events(client, demisto.args())
-        #     return_results(results)
-        #     if should_push_events:
-        #         add_time_to_events(events)
-        #         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        elif command == 'cloudflare-zero-trust-get-events':
+            events, results = get_events_command(client=client, args=args)
+            return_results(results)
+            if events and argToBoolean(args.get("should_push_events")):
+                add_time_to_events(events)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
