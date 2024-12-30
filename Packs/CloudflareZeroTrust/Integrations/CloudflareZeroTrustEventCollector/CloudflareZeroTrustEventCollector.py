@@ -60,6 +60,9 @@ class Client(BaseClient):
         Raises:
             ValueError: If the event_type is invalid or unsupported.
         """
+        demisto.debug(
+            f"Fetching events with start_date={start_date}, page_size={page_size}, page={page}, event_type={event_type}")
+
         endpoint_urls = {
             ACCOUNT_AUDIT_TYPE: f"/client/v4/accounts/{self.account_id}/audit_logs",
             USER_AUDIT_TYPE: "/client/v4/user/audit_logs",
@@ -104,10 +107,7 @@ def test_module(client: Client) -> str:
         )
 
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return "Authorization Error: Ensure the API token or key is set correctly and has the required permissions."
-        else:
-            raise e
+        raise e
 
     return 'ok'
 
@@ -136,18 +136,19 @@ def get_events(
             - list[dict[str, Any]]: The list of fetched events.
             - dict[str, Any]: The updated last run data with new timestamps and event IDs.
     """
-    events: list[dict[str, Any]] = []
-    start_date = calculate_fetch_dates(last_run, start_fetch_date)
+    demisto.debug(f"Starting get_events for event_type={event_type} with last_run={last_run}")
 
+    start_date = calculate_fetch_dates(last_run, start_fetch_date)
     previous_event_ids = last_run.get("events_ids", [])
     events_to_fetch = max_fetch + len(previous_event_ids)
-
     page_size = min(events_to_fetch, max_page_size)
-    page = 1
 
+    page = 1
+    events: list[dict[str, Any]] = []
     while len(events) < events_to_fetch:
         response = client.get_events(start_date, page_size, page, event_type)
         result = response.get("result", [])
+        demisto.debug(f"Fetched {len(result)} events on page {page}")
         events.extend(result)
         if len(result) < page_size:
             break
@@ -155,6 +156,7 @@ def get_events(
 
     unique_events = handle_duplicates(events, previous_event_ids)
     events = unique_events[:max_fetch]
+    demisto.debug(f"Unique events after deduplication: {len(unique_events)}")
 
     for event in events:
         event["SOURCE_LOG_TYPE"] = event_type
@@ -163,6 +165,7 @@ def get_events(
         start_date, previous_event_ids = prepare_next_run(events)
 
     new_last_run = {"last_fetch": start_date, "events_ids": previous_event_ids}
+    demisto.debug(f"New last_run: {new_last_run}")
     return events, new_last_run
 
 
@@ -300,14 +303,17 @@ def prepare_next_run(events: list[dict[str, Any]]) -> tuple[str, list[str]]:
             - list[str]: A list of IDs for the events with the latest timestamp.
     """
     latest_time = events[-1].get('when') or events[-1].get('created_at', "")
-    latest_time_rounded_seconds = latest_time[:19]  # Extract up to seconds (e.g., 2024-12-22T15:28:00)
+    latest_time_obj = datetime.fromisoformat(latest_time.rstrip("Z"))
+    latest_time_truncated = latest_time_obj.replace(microsecond=0).isoformat() + "Z"
 
     latest_ids = [
         event['id']
         for event in events
-        if (event.get('when') or event.get('created_at', ""))[:19] == latest_time_rounded_seconds
+        if (datetime.fromisoformat((event.get('when') or event.get('created_at', "")).rstrip("Z"))
+            .replace(microsecond=0).isoformat() + "Z") == latest_time_truncated
     ]
-    return latest_time_rounded_seconds, latest_ids
+
+    return latest_time_truncated, latest_ids
 
 
 def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str]) -> list[dict[str, Any]]:
@@ -321,7 +327,9 @@ def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str
     Returns:
         list[dict[str, Any]]: A list of events excluding duplicates.
     """
-    return [event for event in events if event.get('id') not in previous_event_ids]
+    unique_events = [event for event in events if event.get("id") not in previous_event_ids]
+    demisto.debug(f"Deduplicated events: {len(unique_events)} (removed {len(events) - len(unique_events)} duplicates)")
+    return unique_events
 
 
 def add_time_to_events(events: list[dict[str, Any]] | None):
@@ -357,7 +365,6 @@ def main() -> None:  # pragma: no cover
     credentials = params.get("credentials", {})
     try:
         headers = {
-            'Authorization': f"Bearer {params.get('api_token', {}).get('password')}",
             'X-Auth-Email': credentials.get('identifier'),
             'X-Auth-Key': credentials.get('password'),
         }
@@ -365,7 +372,7 @@ def main() -> None:  # pragma: no cover
             base_url=params.get('url', 'https://api.cloudflare.com/'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            account_id=params.get('account_id'),
+            account_id=params.get('account_id', ""),
             headers=headers
         )
 

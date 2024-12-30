@@ -45,14 +45,6 @@ configuration:
   advanced: true
   required: false
   type: 0
-- display: ""
-  additionalinfo: Bearer auth token.
-  displaypassword: API token
-  name: api_token
-  type: 9
-  required: true
-  hiddenusername: true
-  section: Connect
 - display: API email
   section: Connect
   displaypassword: Global API key
