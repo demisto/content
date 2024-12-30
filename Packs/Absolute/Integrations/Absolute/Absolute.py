@@ -1014,7 +1014,7 @@ def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str
     return all_events, next_page_token
 
 
-def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]]) -> tuple[
+def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]], should_get_latest_events: bool = True) -> tuple[
     List[Dict[str, Any]], List[str]]:
     demisto.debug("Adding _TIME field to events and getting the latest events id")
     latest_event_time = events[-1].get('eventDateTimeUtc')
@@ -1024,7 +1024,7 @@ def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]])
         event_time = event.get('eventDateTimeUtc')
         event['_TIME'] = event_time
         # latest events batch
-        if event_time == latest_event_time:
+        if should_get_latest_events and event_time == latest_event_time:
             latest_events_id.append(event.get('id'))
 
     return events, latest_events_id
@@ -1032,14 +1032,14 @@ def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]])
 
 def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
     end_date = arg_to_datetime(args.get('end_date', "now"))
-    start_date = arg_to_datetime(args.get('start_date', "two month ago"))  # TODO: change to one minute ago
+    start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
     fetch_limit = int(args.get('limit', 50))
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
 
     events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
-    return events, CommandResults(outputs=events, readable_output=tableToMarkdown('Events', t=events),
-                                  outputs_prefix="Absolute.Event.")
+    events, _ = add_time_field_to_events_and_get_latest_events(events, should_get_latest_events=False)
+    return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
 
 
 ''' MAIN FUNCTION '''
