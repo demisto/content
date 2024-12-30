@@ -192,7 +192,6 @@ configuration:
   section: Collect
   defaultvalue: 'false'
   advanced: true
-  deprecated: true
   hidden: true
 - additionalinfo: "Whether to fetch only the essential Incident's fields - in order to minimize the incident's information. Possible values: network_artifacts, file_artifacts and additional_data (if the incident type is XDR incident Lite)"
   display: Minimize Incident Information
