@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1cbd7014-1fdd-47c9-8cc8-af13e9412821
+    taskid: b6e92da3-1700-46d9-86b9-5afb44ee9f00
     type: start
     task:
-      id: 1cbd7014-1fdd-47c9-8cc8-af13e9412821
+      id: b6e92da3-1700-46d9-86b9-5afb44ee9f00
       version: -1
       name: ""
       iscommand: false
@@ -25,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 450,
+          "y": -760
         }
       }
     note: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f1605369-5b82-43fe-8a5f-46d101a9bb58
+    taskid: 83977c56-6701-4b37-8842-49b85b72eed1
     type: title
     task:
-      id: f1605369-5b82-43fe-8a5f-46d101a9bb58
+      id: 83977c56-6701-4b37-8842-49b85b72eed1
       version: -1
       name: Test without inputs
       type: title
@@ -56,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 450,
+          "y": -795
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: bbb2260b-2aef-4fdc-8ab6-d611f09f65f1
+    taskid: 54357bf5-0911-47ed-88e5-c75eb76aa6ca
     type: title
     task:
-      id: bbb2260b-2aef-4fdc-8ab6-d611f09f65f1
+      id: 54357bf5-0911-47ed-88e5-c75eb76aa6ca
       version: -1
       name: Test with inputs
       type: title
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 450,
+          "y": -320
         }
       }
     note: false
@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 43d17be8-462f-4ded-80b7-45be4422c238
+    taskid: 1ccb44da-d4e4-4242-8de4-089517d7724b
     type: regular
     task:
-      id: 43d17be8-462f-4ded-80b7-45be4422c238
+      id: 1ccb44da-d4e4-4242-8de4-089517d7724b
       version: -1
       name: Set Path
       description: Set a value in context under the key you entered.
@@ -126,8 +126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2875
+          "x": 450,
+          "y": 1660
         }
       }
     note: false
@@ -139,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: e0caff76-b039-45ee-86a2-fec52d883c74
+    taskid: 9fa8f623-1b36-4610-893a-a6463414a5dc
     type: condition
     task:
-      id: e0caff76-b039-45ee-86a2-fec52d883c74
+      id: 9fa8f623-1b36-4610-893a-a6463414a5dc
       version: -1
       name: Verify eradication action succeed
       type: condition
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3225
+          "x": 450,
+          "y": 2020
         }
       }
     note: false
@@ -182,10 +182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 454cb190-ee4e-4089-8663-a12944d48177
+    taskid: 5507444c-048d-4259-8aa1-85661696a565
     type: regular
     task:
-      id: 454cb190-ee4e-4089-8663-a12944d48177
+      id: 5507444c-048d-4259-8aa1-85661696a565
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -204,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3400
+          "x": 750,
+          "y": 2210
         }
       }
     note: false
@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 233c480d-bff5-4ac3-8da5-7cd0e2500207
+    taskid: 93c4740c-74b3-42e2-8e37-3d8630728eeb
     type: playbook
     task:
-      id: 233c480d-bff5-4ac3-8da5-7cd0e2500207
+      id: 93c4740c-74b3-42e2-8e37-3d8630728eeb
       version: -1
       name: Eradication Plan
       playbookName: Eradication Plan
@@ -236,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 515
+          "x": 450,
+          "y": -500
         }
       }
     note: false
@@ -249,10 +249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 1816acb6-ebc5-4692-86c4-5ab1a8db428d
+    taskid: 8ec5d52c-fe98-4a9c-88bf-2278d03e0e1d
     type: playbook
     task:
-      id: 1816acb6-ebc5-4692-86c4-5ab1a8db428d
+      id: 8ec5d52c-fe98-4a9c-88bf-2278d03e0e1d
       version: -1
       name: Eradication Plan
       description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
@@ -293,8 +293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3050
+          "x": 450,
+          "y": 1830
         }
       }
     note: false
@@ -306,10 +306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: c48fc110-9d84-4464-8a5d-4e48934497fa
+    taskid: 9eb18de0-45b2-4baa-842a-1cca96cced50
     type: regular
     task:
-      id: c48fc110-9d84-4464-8a5d-4e48934497fa
+      id: 9eb18de0-45b2-4baa-842a-1cca96cced50
       version: -1
       name: Delete all context
       description: |-
@@ -335,8 +335,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 340
+          "x": 450,
+          "y": -665
         }
       }
     note: false
@@ -348,10 +348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: bfcb161a-1d21-42db-85cb-7b056d533cd4
+    taskid: f5325ab9-2821-45ac-85eb-47cf05efb2b1
     type: regular
     task:
-      id: bfcb161a-1d21-42db-85cb-7b056d533cd4
+      id: f5325ab9-2821-45ac-85eb-47cf05efb2b1
       version: -1
       name: Delete all context
       description: |-
@@ -377,8 +377,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 835
+          "x": 450,
+          "y": -185
         }
       }
     note: false
@@ -390,10 +390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: f4b2aba6-1fd4-4e28-881b-d1af800f247a
+    taskid: 1b0c28c8-4c99-4b12-8d8b-5fd34c5b2959
     type: regular
     task:
-      id: f4b2aba6-1fd4-4e28-881b-d1af800f247a
+      id: 1b0c28c8-4c99-4b12-8d8b-5fd34c5b2959
       version: -1
       name: run process
       description: Initiate a new endpoint script execution of shell commands.
@@ -403,7 +403,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     scriptarguments:
       commands:
         simple: ping 127.0.0.1 -t
@@ -419,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2700
+          "x": 40,
+          "y": 1660
         }
       }
     note: false
@@ -432,10 +432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: b42adb6d-b154-4347-808a-ed8c471edb00
+    taskid: 7e91d536-1d90-463b-8807-2176d3204244
     type: regular
     task:
-      id: b42adb6d-b154-4347-808a-ed8c471edb00
+      id: 7e91d536-1d90-463b-8807-2176d3204244
       version: -1
       name: Set alert agentid
       description: commands.local.cmd.set.incident
@@ -456,8 +456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1535
+          "x": 450,
+          "y": 500
         }
       }
     note: false
@@ -469,10 +469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 3e0c17d5-faab-4b97-8190-0b1ec90c30a4
+    taskid: 9f1a846a-1e81-4d52-8481-22e63157545b
     type: regular
     task:
-      id: 3e0c17d5-faab-4b97-8190-0b1ec90c30a4
+      id: 9f1a846a-1e81-4d52-8481-22e63157545b
       version: -1
       name: Get Endpoints
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
@@ -493,8 +493,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1010
+          "x": 450,
+          "y": -20
         }
       }
     note: false
@@ -506,10 +506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: dba39163-6f3c-4f44-8459-06900ae98e82
+    taskid: 677b1863-fd26-4c1a-8eea-ea5d16611fdd
     type: condition
     task:
-      id: dba39163-6f3c-4f44-8459-06900ae98e82
+      id: 677b1863-fd26-4c1a-8eea-ea5d16611fdd
       version: -1
       name: Is the EndpointID defined?
       description: Checks if the EndpointID is defined.
@@ -546,8 +546,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1185
+          "x": 450,
+          "y": 160
         }
       }
     note: false
@@ -559,10 +559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 89d378bb-00ee-4a16-8a58-93547e030ffa
+    taskid: bfb38afa-bea0-45d1-82b3-c01f728ec342
     type: regular
     task:
-      id: 89d378bb-00ee-4a16-8a58-93547e030ffa
+      id: bfb38afa-bea0-45d1-82b3-c01f728ec342
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -581,8 +581,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1360
+          "x": 710,
+          "y": 330
         }
       }
     note: false
@@ -594,10 +594,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 257b315f-5ce0-4e83-8092-7b7d56d9b1a7
+    taskid: 3b6a7886-b697-4f15-804f-343a4aedf507
     type: title
     task:
-      id: 257b315f-5ce0-4e83-8092-7b7d56d9b1a7
+      id: 3b6a7886-b697-4f15-804f-343a4aedf507
       version: -1
       name: Test process termination
       type: title
@@ -606,14 +606,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
+      - "7"
       - "19"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2555
+          "x": 450,
+          "y": 1500
         }
       }
     note: false
@@ -625,10 +626,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 48c1ff40-1aa5-4ead-850b-628fcc186166
+    taskid: 6c4e2c6b-55f1-4020-8d85-edf1dfe73ab3
     type: regular
     task:
-      id: 48c1ff40-1aa5-4ead-850b-628fcc186166
+      id: 6c4e2c6b-55f1-4020-8d85-edf1dfe73ab3
       version: -1
       name: Create file
       description: Initiate a new endpoint script execution of shell commands.
@@ -655,8 +656,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2030
+          "x": 450,
+          "y": 980
         }
       }
     note: false
@@ -668,10 +669,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 5bf380dc-d58f-498c-8ed2-14889717c638
+    taskid: 10dc7a4f-8892-416a-8e08-958f24e3800e
     type: regular
     task:
-      id: 5bf380dc-d58f-498c-8ed2-14889717c638
+      id: 10dc7a4f-8892-416a-8e08-958f24e3800e
       version: -1
       name: Set Path
       description: Set a value in context under the key you entered.
@@ -694,8 +695,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2205
+          "x": 450,
+          "y": 1160
         }
       }
     note: false
@@ -707,10 +708,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 635624c8-a59a-4020-8103-b1c5fdb23e7e
+    taskid: fec9fab5-fc7c-4602-817b-b946b20d59ef
     type: playbook
     task:
-      id: 635624c8-a59a-4020-8103-b1c5fdb23e7e
+      id: fec9fab5-fc7c-4602-817b-b946b20d59ef
       version: -1
       name: Eradication Plan
       description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
@@ -751,8 +752,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2380
+          "x": 450,
+          "y": 1330
         }
       }
     note: false
@@ -764,10 +765,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 86bb59ca-4cb2-47a0-8754-096b6784606a
+    taskid: 82332d15-458b-466f-8cfc-7e275d3c38ba
     type: title
     task:
-      id: 86bb59ca-4cb2-47a0-8754-096b6784606a
+      id: 82332d15-458b-466f-8cfc-7e275d3c38ba
       version: -1
       name: Done
       type: title
@@ -779,8 +780,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3575
+          "x": 450,
+          "y": 2380
         }
       }
     note: false
@@ -792,10 +793,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 5634d6c7-ab2d-4cc3-8d35-1b7021ad6382
+    taskid: 6831c572-4a9c-4571-8970-f078517affc6
     type: title
     task:
-      id: 5634d6c7-ab2d-4cc3-8d35-1b7021ad6382
+      id: 6831c572-4a9c-4571-8970-f078517affc6
       version: -1
       name: Test file deletion
       type: title
@@ -810,8 +811,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1710
+          "x": 450,
+          "y": 670
         }
       }
     note: false
@@ -823,10 +824,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: b5ace638-41c4-48a9-84ad-6366e309a996
+    taskid: eb6c588c-9131-415a-86e3-59fb81f882df
     type: regular
     task:
-      id: b5ace638-41c4-48a9-84ad-6366e309a996
+      id: eb6c588c-9131-415a-86e3-59fb81f882df
       version: -1
       name: Auto file deletion
       description: Initiates a new endpoint script execution to delete the specified file.
@@ -850,8 +851,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1855
+          "x": 450,
+          "y": 810
         }
       }
     note: false
@@ -866,10 +867,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3590,
-        "width": 492.5,
-        "x": 50,
-        "y": 50
+        "height": 3385,
+        "width": 1090,
+        "x": 40,
+        "y": -940
       }
     }
   }
