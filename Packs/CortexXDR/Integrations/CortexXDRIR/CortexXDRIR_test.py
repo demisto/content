@@ -1,6 +1,6 @@
 import copy
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from freezegun import freeze_time
@@ -1965,3 +1965,92 @@ def test_mirror_in_wrong_last_update(mocker):
         )
 
     assert e.value.message == "Failed to parse last_update='abcdefg' got last_update_utc=None"
+
+def test_get_remote_data_command_exclude_fields(mocker):
+    """
+    Given:
+        -  an XDR client
+        - arguments (id and lastUpdate time set to a lower than incident modification time)
+        - a raw incident (get-extra-data results)
+    When
+        - running get_remote_data_command
+    Then
+        - the mirrored_object in the GetRemoteDataResponse is the same as the modified raw incident
+        - the entries in the GetRemoteDataResponse in empty
+    """
+    from CortexXDRIR import get_remote_data_command, Client
+    mocker.stopall()
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v2', verify=False, timeout=120, proxy=False)
+    args = {
+        'id': 1,
+        'lastUpdate': 0
+    }
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
+    mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
+    mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
+    client._http_request = MagicMock()
+
+    # Test case 2: With exclude_artifacts
+    exclude_artifacts = ["field1", "field2"]
+    get_remote_data_command(client, args, exclude_artifacts=exclude_artifacts)
+    client._http_request.assert_called_with(
+        method='POST',
+        url_suffix='/incidents/get_multiple_incidents_extra_data/',
+        json_data={'request_data': {
+            'incident_id_list': ["test_incident"],
+            'search_to': 100,
+            'sort': {'field': 'creation_time', 'keyword': 'asc'},
+            'fields_to_exclude': exclude_artifacts
+        }},
+        headers=client.headers,
+        timeout=client.timeout
+    )
+
+    # Test case 3: With excluded_alert_fields
+    excluded_alert_fields = ["fieldA", "fieldB"]
+    get_remote_data_command(client, args, excluded_alert_fields=excluded_alert_fields)
+    client._http_request.assert_called_with(
+        method='POST',
+        url_suffix='/incidents/get_multiple_incidents_extra_data/',
+        json_data={'request_data': {
+            'incident_id_list': ["test_incident"],
+            'search_to': 100,
+            'sort': {'field': 'creation_time', 'keyword': 'asc'},
+            'alert_fields_to_exclude': excluded_alert_fields
+        }},
+        headers=client.headers,
+        timeout=client.timeout
+    )
+
+    # Test case 4: With remove_nulls_from_alerts
+    get_remote_data_command(client, args, remove_nulls_from_alerts=True)
+    client._http_request.assert_called_with(
+        method='POST',
+        url_suffix='/incidents/get_multiple_incidents_extra_data/',
+        json_data={'request_data': {
+            'incident_id_list': ["test_incident"],
+            'search_to': 100,
+            'sort': {'field': 'creation_time', 'keyword': 'asc'},
+            'drop_nulls': True
+        }},
+        headers=client.headers,
+        timeout=client.timeout
+    )
+
+    # Test case 5: With remove_nulls_from_alerts, excluded_alert_fields, exclude_artifacts
+    response = get_remote_data_command(client, args, remove_nulls_from_alerts=True,
+                                       excluded_alert_fields=["fieldA", "fieldB"],
+                                       exclude_artifacts=["fieldC", "fieldD"])
+    client._http_request.assert_called_with(
+        client, {
+            "incident_id": "test_incident",
+            "alerts_limit": 1000,
+            "return_only_updated_incident": False,
+            "last_update": "2024-12-28T00:00:00Z",
+            "drop_nulls": True
+        }
+    )
