@@ -69,8 +69,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_event_from_dict(event_type: str, mapping: Mapping[str, Any]) -> Any:
-    """_summary_
+def get_from_dict_for_event_type(event_type: str, mapping: Mapping[str, Any]) -> Any:
+    """Gets the value from the specified mapping dictionary based on the event type (key).
 
     Args:
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
@@ -98,7 +98,7 @@ def get_limit_param_for_event_type(params: dict[str, str], event_type: str) -> i
     Returns:
         int | None: The maximum number of events per fetch, if specified.
     """
-    param_name = get_event_from_dict(event_type, mapping=EVENT_TYPE_LIMIT_PARAM)
+    param_name = get_from_dict_for_event_type(event_type, mapping=EVENT_TYPE_LIMIT_PARAM)
     return arg_to_number(params.get(param_name))
 
 
@@ -107,6 +107,19 @@ def create_get_events_request_body(
     results_per_page: int = DEFAULT_RESULTS_PER_PAGE,
     pagination_cursor: str | None = None,
 ) -> dict[str, Any]:
+    """Creates the request body for the `Client.get_events` method.
+
+    Args:
+        event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
+        from_date (datetime | None): Optional datetime from which to get events.
+        results_per_page (int): The maximum number of records in response (Recommended to use default value).
+
+    Raises:
+        ValueError: If missing cursor and from date.
+
+    Returns:
+        dict[str, Any]: The request body.
+    """
     if pagination_cursor:
         return {'cursor': pagination_cursor}
 
@@ -156,7 +169,7 @@ def get_events_from_client(
     Returns:
         list[dict]: List of events.
     """
-    event_feature = get_event_from_dict(event_type, mapping=EVENT_TYPE_FEATURE)
+    event_feature = get_from_dict_for_event_type(event_type, mapping=EVENT_TYPE_FEATURE)
 
     events: list[dict] = []
     ids_to_skip = ids_to_skip or set()
@@ -166,7 +179,8 @@ def get_events_from_client(
     request_body = create_get_events_request_body(from_date=from_date)
 
     while has_more_events:
-        response_duplicate_count = 0
+        response_events: list[dict] = []
+        response_skipped_ids: set[str] = set()
         response = client.get_events(event_feature, body=request_body)
         pagination_cursor = response['cursor']
 
@@ -174,7 +188,7 @@ def get_events_from_client(
             event_id = event['uuid']
 
             if event_id in ids_to_skip:
-                response_duplicate_count += 1
+                response_skipped_ids.add(event_id)
                 demisto.debug(f'Skipped duplicate event with ID: {event_id}')
                 continue
 
@@ -183,14 +197,15 @@ def get_events_from_client(
                 break
 
             add_fields_to_event(event, event_type)
-            events.append(event)
+            response_events.append(event)
             ids_to_skip.add(event_id)
 
         demisto.debug(
-            f'Response has {len(response["items"])} events of type {event_type} '
-            f'(including {response_duplicate_count} skipped duplicates). '
+            f'Response has {len(response["items"])} events of type {event_type}. Saved {len(response_events)} events. '
+            f'Skipped {len(response_skipped_ids)} duplicates: ({", ".join(response_skipped_ids)}). '
             f'Got pagination cursor: {pagination_cursor}. Used request body: {request_body}.'
         )
+        events.extend(response_events)
 
         # Pagination / Continuing cursor - Followup API calls need to the unique page ID (if any more events)
         has_more_events = False if len(events) == max_events else response['has_more']
@@ -364,7 +379,7 @@ def main() -> None:  # pragma: no cover
             next_run: dict[str, Any] = {}
 
             for event_type in event_types:
-                event_type_key = get_event_from_dict(event_type, mapping=EVENT_TYPE_FEATURE)
+                event_type_key = get_from_dict_for_event_type(event_type, mapping=EVENT_TYPE_FEATURE)
 
                 event_type_last_run: dict = last_run.get(event_type_key, {})
                 event_type_max_results: int | None = get_limit_param_for_event_type(params, event_type)

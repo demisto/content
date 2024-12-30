@@ -99,6 +99,62 @@ def test_add_fields_event():
     assert raw_event['event_type'] == event_type
 
 
+def test_create_get_events_request_body_invalid_inputs():
+    """
+    Given:
+        - Missing pagination cursor and from date.
+
+    When:
+        - Calling create_get_events_request_body.
+
+    Assert:
+        - Ensure a ValueError is raised with the appropriate error message.
+    """
+    from OnePasswordEventCollector import create_get_events_request_body
+
+    with pytest.raises(ValueError, match="Either a 'pagination_cursor' or a 'from_date' need to be specified."):
+        create_get_events_request_body()
+
+
+@pytest.mark.parametrize(
+    'from_date, pagination_cursor, expected_request_body',
+    [
+        pytest.param(
+            datetime(2024, 12, 2, 11, 50),
+            None,
+            {'limit': 1000, 'start_time': '2024-12-02T11:50:00Z'},
+            id='Reset cursor (date filter)',
+        ),
+        pytest.param(
+            None,
+            'PAGE123',
+            {'cursor': 'PAGE123'},
+            id='Pagination cursor',
+        )
+    ]
+)
+def test_create_get_events_request_body_valid_inputs(
+    from_date: datetime | None,
+    pagination_cursor: str | None,
+    expected_request_body: dict,
+):
+    """
+    Given:
+        - A from date or a pagination cursor.
+
+    When:
+        - Calling create_get_events_request_body.
+
+    Assert:
+        - Ensure the request body is as expected.
+    """
+    from OnePasswordEventCollector import create_get_events_request_body
+
+    request_body = create_get_events_request_body(from_date=from_date, pagination_cursor=pagination_cursor)
+
+    assert request_body == expected_request_body
+
+
 def test_client_get_events(authenticated_client: Client, mocker: MockerFixture):
     """
     Given:
