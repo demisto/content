@@ -1016,6 +1016,7 @@ tasks:
       id: c5470fce-c24b-4768-844b-ce10abd9c6ba
       version: -1
       name: Check if the endpoint is workstation or a server
+      description: Checks whether the endpoint is a workstation or a server.
       type: condition
       iscommand: false
       brand: ""
@@ -1124,6 +1125,6 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.8.0
+fromversion: 8.0.0
 marketplaces:
 - marketplacev2
