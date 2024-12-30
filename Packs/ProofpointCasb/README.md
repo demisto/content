@@ -1,7 +1,7 @@
-# Proofpoint CASB <Product>
+# Proofpoint CASB
 This pack includes parsing and modeling rules for Proofpoint CASB logs sent via HTTP Event Collector.
 
-### Collect Events from Proofpoint CASB <product> (XSIAM)
+### Collect Events from Proofpoint CASB (XSIAM)
 
 **On XSIAM side:**
 
@@ -18,7 +18,7 @@ This pack includes parsing and modeling rules for Proofpoint CASB logs sent via 
 6. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 7. Click the 3 dots sign next to the newly created instance and copy the **API Url**, it will also be used later.
 
-**On Proofpoint CASB side <product>:**
+**On Proofpoint CASB side:**
 
  [Link to Proofpoint webhook docs](https://docs.public.analyze.proofpoint.com/admin/notification_policies_webhooks.htm) <reference to docs>
 
