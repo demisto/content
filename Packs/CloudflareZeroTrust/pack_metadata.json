@@ -7,11 +7,17 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cloudflare",
+        "Zero Trust"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
