@@ -1,7 +1,7 @@
 [MODEL: dataset = cloudflare_zerotrust_raw]
 /* Access authentication logs
    https://developers.cloudflare.com/api/operations/access-authentication-logs-get-access-authentication-logs */
-filter created_at != null 
+filter SOURCE_LOG_TYPE = "access_authentication_logs" 
 | alter 
     user_ipv4 = if(ip_address ~= "(?:\d{1,3}\.){3}\d{1,3}", ip_address),
     user_ipv6 = if(ip_address ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", ip_address)
@@ -9,7 +9,7 @@ filter created_at != null
     xdm.auth.auth_method = connection, // The IdP method used to authenticate.
     xdm.event.id = ray_id, // The unique identifier for the request to Cloudflare
     xdm.event.original_event_type = action, // The event that occurred, such as a login attempt.
-    xdm.event.type = "Access", 
+    xdm.event.type = SOURCE_LOG_TYPE,
     xdm.event.outcome = if(to_boolean(allowed), XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED), // The result of the authentication event.
     xdm.source.host.ipv4_public_addresses = if(user_ipv4 != null and not incidr(user_ipv4, "10.0.0.0/8") and not incidr(user_ipv4, "172.16.0.0/12") and not incidr(user_ipv4, "192.168.0.0/16") and not incidr(user_ipv4, "127.0.0.0/8") and not incidr(user_ipv4, "169.254.0.0/16") and not incidr(user_ipv4, "100.64.0.0/10"), arraycreate(user_ipv4)),
     xdm.source.ipv4 = user_ipv4, // The IPv4 address of the authenticating user.
@@ -21,7 +21,7 @@ filter created_at != null
 /* User & Account Audit logs
    https://developers.cloudflare.com/api/operations/audit-logs-get-user-audit-logs 
    https://developers.cloudflare.com/api/operations/audit-logs-get-account-audit-logs */
-filter when != null 
+filter SOURCE_LOG_TYPE in ("account_audit_logs", "user_audit_logs")
 | alter 
     action_type = action -> type, // A short string that describes the action that was performed.
     action_result = action -> result, // A boolean that indicates if the action attempted was successful.
@@ -40,7 +40,7 @@ filter when != null
     xdm.event.operation = action_type, // A short string that describes the action that was performed.
     xdm.event.original_event_type = action -> type, // A short string that describes the action that was performed.
     xdm.event.outcome = if(to_boolean(action_result), XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED), // A boolean that indicates if the action attempted was successful.
-    xdm.event.type = "Audit",
+    xdm.event.type = SOURCE_LOG_TYPE,
     xdm.observer.type = if(interface != "", interface), // The source of the event.
     xdm.source.host.ipv4_public_addresses = if(actor_ipv4 != null and not incidr(actor_ipv4, "10.0.0.0/8") and not incidr(actor_ipv4, "172.16.0.0/12") and not incidr(actor_ipv4, "192.168.0.0/16") and not incidr(actor_ipv4, "127.0.0.0/8") and not incidr(actor_ipv4, "169.254.0.0/16") and not incidr(actor_ipv4, "100.64.0.0/10"), arraycreate(actor_ipv4)),
     xdm.source.ipv4 = actor_ipv4,
