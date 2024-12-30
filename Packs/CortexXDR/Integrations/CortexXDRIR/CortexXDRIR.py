@@ -1151,7 +1151,7 @@ def update_related_alerts(client: Client, args: dict):
         return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 
-def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool,
+def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: list,
                     last_run: dict, max_fetch: int = 10, statuses: list = [],
                     starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
                     excluded_alert_fields: List = [], remove_nulls_from_alerts: bool = True):
@@ -1432,8 +1432,10 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    exclude_artifacts, remove_additional_data = handle_exclude_incident_fields(argToBoolean(params.get('exclude_fields', False)),
-                                                                               argToList(params.get('excluded_incident_fields', [])))
+    exclude_artifacts, remove_additional_data = (
+        handle_exclude_incident_fields(
+            argToBoolean(params.get('exclude_fields', False)),
+            argToList(params.get('excluded_incident_fields', []))))
     excluded_alert_fields = argToList(params.get('excluded_alert_fields'))
     excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_param(excluded_alert_fields)
     demisto.debug(f"{excluded_alert_fields}, {remove_nulls_from_alerts}")
