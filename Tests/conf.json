@@ -97,10 +97,7 @@
         },
         {
             "playbookID": "Eradication plan - Test",
-            "timeout": 600,
-            "integrations": [
-                "Cortex Core - IR"
-            ]
+            "timeout": 600
         },
         {
             "playbookID": "Containment Plan - Test",
