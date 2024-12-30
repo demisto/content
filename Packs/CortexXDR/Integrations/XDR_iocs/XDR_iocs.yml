@@ -168,7 +168,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-  deprecated: true
   hidden: true
 - display: Do not use override severity parameter
   additionalinfo: Used in order to identify usage of the new configuration of severity param
