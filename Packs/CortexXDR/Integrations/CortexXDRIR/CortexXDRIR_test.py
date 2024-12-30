@@ -1961,7 +1961,7 @@ def test_mirror_in_wrong_last_update(mocker):
     assert e.value.message == "Failed to parse last_update='abcdefg' got last_update_utc=None"
 
 
-def test_handle_incoming_incident(capfd, mocker, custom_mapping):
+def test_handle_incoming_incident(capfd, mocker):
     """
     Given:
         - incident data of resolved incident
@@ -1972,6 +1972,8 @@ def test_handle_incoming_incident(capfd, mocker, custom_mapping):
     """
     from CortexXDRIR import handle_incoming_incident
     from CommonServerPython import EntryType, EntryFormat
+    custom_mapping = ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
+                              "True Positive=Resolved,Security Testing=Other,Other=Other")
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
 
