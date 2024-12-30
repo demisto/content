@@ -1,4 +1,4 @@
-# Proofpoint CASB <Product Name>
+# Proofpoint CASB <Product>
 This pack includes parsing and modeling rules for Proofpoint CASB logs sent via HTTP Event Collector.
 
 ### Collect Events from Proofpoint CASB <product> (XSIAM)
@@ -10,11 +10,11 @@ This pack includes parsing and modeling rules for Proofpoint CASB logs sent via 
 3. Click **Custom - HTTP based Collector**.
 4. Click **Connect**.
 5. Set the following values:
-   - Name as Proofpoint CASB``
-   - Compression as uncompressed``
-   - Log Format as JSON``
-   - Vendor as proofpoint``
-   - Product as casb``
+   - Name as `Proofpoint CASB`
+   - Compression as `uncompressed`
+   - Log Format as `JSON`
+   - Vendor as `proofpoint`
+   - Product as `casb`
 6. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 7. Click the 3 dots sign next to the newly created instance and copy the **API Url**, it will also be used later.
 
