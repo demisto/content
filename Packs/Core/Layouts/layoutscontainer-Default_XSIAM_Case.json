@@ -1,0 +1,44 @@
+{
+    "description": "Default layout",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "overview",
+                "name": "Overview",
+                "type": "overview"
+            },
+            {
+                "id": "assets_and_artifacts",
+                "name": "Key Assets \u0026 Artifacts",
+                "type": "assets_and_artifacts"
+            },
+            {
+                "id": "alerts_and_insights",
+                "name": "Alerts \u0026 Insights",
+                "type": "alerts_and_insights"
+            },
+            {
+                "id": "timeline",
+                "name": "Timeline",
+                "type": "timeline"
+            },
+            {
+                "id": "war_room",
+                "name": "Incident War Room",
+                "type": "war_room"
+            },
+            {
+                "id": "executions",
+                "name": "Executions",
+                "type": "executions"
+            }
+        ]
+    },
+    "group": "case",
+    "id": "Default XSIAM incident layout",
+    "name": "Default XSIAM incident layout",
+    "system": true,
+    "version": -1,
+    "fromVersion": "8.7.0",
+    "marketplaces":  ["marketplacev2"]
+}

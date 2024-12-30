@@ -80,3 +80,5 @@ ignore=GR107
 [file:playbook-CVE-2021-22893_-_Pulse_Connect_Secure_RCE.yml]
 ignore=GR107
 
+[file:1_6_39.md]
+ignore=RN113,RN114

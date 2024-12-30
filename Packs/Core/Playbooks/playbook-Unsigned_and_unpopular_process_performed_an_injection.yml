@@ -1,0 +1,880 @@
+id: Unsigned and unpopular process performed an injection
+version: -1
+name: Unsigned and unpopular process performed an injection
+description: |-
+  This playbook addresses the following alerts:
+
+  - Unsigned and unpopular process performed injection into a commonly abused process
+  - Unsigned and unpopular process performed process hollowing injection
+  - Unsigned and unpopular process performed queue APC injection
+  - Unsigned and unpopular process performed injection into a sensitive process
+  - Unsigned and unpopular process performed injection into svchost.exe
+
+
+  Playbook Stages:
+
+  Triage:
+
+  - Retrieve all alerts associated with the case for initial analysis.
+
+  Early Containment:
+
+  - Identify whether an agent prevention rule was triggered for the same process ID. If so, there is high confidence that the alert is malicious.
+    - **If triggered in prevent mode**: This indicates a high-confidence verdict and the playbook proceeds with endpoint isolation.
+    - **If triggered in report mode**: This also indicates a high-confidence verdict. The playbook will notify the customer, advise an update to **prevent mode** for better protection in the future, and proceed with the investigation.
+    - **If no rule is triggered**: The playbook will continue with additional checks to ensure thorough assessment.
+
+  Investigation:
+
+  - Check for commonly triggered alerts that often precede process injection:
+    - If found, initiate containment.
+    - If not found, proceed with additional checks.
+  - Analyze if any alerts align with MITRE ATT&CK tactics **TA0004 (Privilege Escalation)** and **TA0005 (Defense Evasion)**:
+    - If matching tactics are found, initiate containment.
+    - If not, proceed with further investigation.
+  - Determine if the causality (parent) process is signed:
+    - If signed by a trusted authority, close the alert.
+    - If unsigned, escalate for manual approval for containment.
+
+  Containment:
+
+  - For alerts validated as threats, execute the following actions:
+    - Terminate the causality process (CGO) if deemed malicious.
+    - Isolate the endpoint in high-risk scenarios to prevent further compromise.
+
+  Requirements:
+
+  For response actions, you need the following integrations:
+
+  - Cortex Core - Investigation and Response.
+tags:
+- T1055 - Process Injection
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 59a33321-30c5-4810-8ed1-754dd374851e
+    type: start
+    task:
+      id: 59a33321-30c5-4810-8ed1-754dd374851e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9f8b5e4e-ec32-44ae-85ed-1211ce9107e8
+    type: title
+    task:
+      id: 9f8b5e4e-ec32-44ae-85ed-1211ce9107e8
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 28112aa4-5c02-4bd9-8a2a-6f10174c7771
+    type: regular
+    task:
+      id: 28112aa4-5c02-4bd9-8a2a-6f10174c7771
+      version: -1
+      name: Search for alerts that blocked the causality
+      description: This task searches for Cortex XSIAM alerts related to the current incident.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 698f092a-758e-4028-84b8-25bbb7d4c626
+    type: condition
+    task:
+      id: 698f092a-758e-4028-84b8-25bbb7d4c626
+      version: -1
+      name: Was the causality blocked by another alert?
+      description: Check the incident's alerts for an alert that blocked the causality using the agent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      Blocked:
+      - "12"
+      Reported:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: Blocked
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.cid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cid
+                      iscontext: true
+                    ignorecase: true
+                accessor: action
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    - label: Reported
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.cid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cid
+                      iscontext: true
+                    ignorecase: true
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: Reported
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7c09ff5c-2f1e-4c55-85f1-557891e3e8f7
+    type: condition
+    task:
+      id: 7c09ff5c-2f1e-4c55-85f1-557891e3e8f7
+      version: -1
+      name: Check if the causality process is signed
+      description: Check if the causality process image is signed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      Signed:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: Signed
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.cgosignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3e3d733d-1317-44cf-8178-e0015cc3b874
+    type: condition
+    task:
+      id: 3e3d733d-1317-44cf-8178-e0015cc3b874
+      version: -1
+      name: Were known preceding alerts detected?
+      description: Search for commonly triggered alert names preceding the injection alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Behavioral Alerts:
+      - "10"
+      MITRE Tactic:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: Behavioral Alerts
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Powershell Activity
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Unsigned process injecting into a Windows system binary with no command line
+          ignorecase: true
+    - label: MITRE Tactic
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.mitreattcktactic
+            iscontext: true
+          right:
+            value:
+              simple: TA0004 - Privilege Escalation
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.mitreattcktactic
+            iscontext: true
+          right:
+            value:
+              simple: TA0005 - Defense Evasion
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 81db7e8a-cc03-44e9-86a5-70d784b286ee
+    type: regular
+    task:
+      id: 81db7e8a-cc03-44e9-86a5-70d784b286ee
+      version: -1
+      name: Close the Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a True Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Unsigned and unpopular process performed an injection" as True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3214ade0-7bba-484f-8945-3bc4367178a9
+    type: title
+    task:
+      id: 3214ade0-7bba-484f-8945-3bc4367178a9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 358ad811-3ae6-4e1d-826e-ba15c09f050c
+    type: title
+    task:
+      id: 358ad811-3ae6-4e1d-826e-ba15c09f050c
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a4e84519-ae9c-4cde-86db-4210bd57a617
+    type: condition
+    task:
+      id: a4e84519-ae9c-4cde-86db-4210bd57a617
+      version: -1
+      name: Approve the endpoint isolation
+      description: |-
+        Endpoint Isolation is recommended since the following verdicts have been confirmed:
+
+         - In addition to the analytics rule, an agent rule has blocked the same causality process.
+
+        OR
+
+         - The case includes additional rules protecting from PowerShell protection module or the 'Unsigned process injecting into a Windows system binary with no command line'.
+
+        OR
+
+         - The case includes at least two additional rules tagged as 'TA0004 - Privilege Escalation' and 'TA0005 - Defense Evasion'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Isolate:
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 324312f8-a792-4ff6-8046-848f554bdf15
+    type: regular
+    task:
+      id: 324312f8-a792-4ff6-8046-848f554bdf15
+      version: -1
+      name: Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 5e10c74a-e684-4d52-8131-45f0d93e265e
+    type: condition
+    task:
+      id: 5e10c74a-e684-4d52-8131-45f0d93e265e
+      version: -1
+      name: Should terminate the causality (CGO)?
+      description: |-
+        Our only verdict is an unsigned causality process, we need the analyst's approval to continue the containment phase.
+
+        Unmatched verdicts:
+        - No BTP rule found for the same causality ID
+        - No known preceding alerts found in the same case
+
+        Matched verdicts:
+        - The causality process is not signed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "Yes":
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 000b6c70-38b6-404f-86db-45f3d9426d26
+    type: regular
+    task:
+      id: 000b6c70-38b6-404f-86db-45f3d9426d26
+      version: -1
+      name: Suggest activate prevention mode for Process Injection module
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      value:
+        simple: |-
+          We have successfully identified a potential security threat involving process injection on your system. While the detection rule  correctly flagged the suspicious activity, it was operating in **report** mode at the time. This means that although we detected the activity, no automatic preventive action was taken to block the threat.
+
+          If this rule had been set to **prevent** mode, the malicious action could have been stopped immediately, reducing the risk of compromise. We strongly recommend switching the rule to prevent mode to proactively block such threats in the future.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f3da08e0-1190-40a3-82de-72068e560176
+    type: regular
+    task:
+      id: f3da08e0-1190-40a3-82de-72068e560176
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "19"
+      '#none#':
+      - "12"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2c05918a-ebe2-4d61-8d7a-2e9f237ebf15
+    type: regular
+    task:
+      id: 2c05918a-ebe2-4d61-8d7a-2e9f237ebf15
+      version: -1
+      name: Terminate Process Manually
+      description: |-
+        Dear Analyst,
+
+        During the containment phase, the playbook couldn’t terminate the process: ${alert.cgoname}
+
+        Please terminate the process manually if possible.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 00471e39-8234-45c7-8764-b5c711e53ab7
+    type: regular
+    task:
+      id: 00471e39-8234-45c7-8764-b5c711e53ab7
+      version: -1
+      name: Close the Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a False Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Unsigned and unpopular process performed an injection" as False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: da0b7884-3a34-4348-8e2a-11c868bb4bbb
+    type: condition
+    task:
+      id: da0b7884-3a34-4348-8e2a-11c868bb4bbb
+      version: -1
+      name: Weak verdict - Check if only final check is satisfied
+      description: If only the last check is matched, the verdict is marked as 'weak' to indicate reduced confidence.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      Weak:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: Weak
+      condition:
+      - - operator: notStartWith
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Powershell Activity
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Unsigned process injecting into a Windows system binary with no command line
+          ignorecase: true
+      - - operator: notIn
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.cid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cid
+                      iscontext: true
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: Reported, BLOCKED
+          ignorecase: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.mitreattcktactic
+            iscontext: true
+          right:
+            value:
+              simple: TA0004 - Privilege Escalation
+          ignorecase: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.mitreattcktactic
+            iscontext: true
+          right:
+            value:
+              simple: TA0005 - Defense Evasion
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_Isolate": 0.42,
+      "12_8_#default#": 0.44,
+      "14_10_Yes": 0.37,
+      "14_20_#default#": 0.23,
+      "18_19_#error#": 0.65,
+      "21_12_#default#": 0.3,
+      "21_8_Weak": 0.32,
+      "4_12_Blocked": 0.1,
+      "4_15_Reported": 0.66,
+      "4_7_#default#": 0.81,
+      "5_14_#default#": 0.38,
+      "5_20_Signed": 0.12,
+      "7_10_Behavioral Alerts": 0.39,
+      "7_14_MITRE Tactic": 0.64,
+      "7_5_#default#": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2555,
+        "width": 1660,
+        "x": -300,
+        "y": 260
+      }
+    }
+  }
+inputs: []
+outputs: []
+marketplaces: ["marketplacev2"]
+tests:
+- No tests (auto formatted)
+fromversion: 8.0.0

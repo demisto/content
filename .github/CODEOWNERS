@@ -26,6 +26,7 @@
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
+/Packs/rasterize/Integrations/rasterize/* @ilaredo
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
@@ -60,9 +61,6 @@ validation_config.toml @YuvHayun
 /Packs/CortexXDR/Integrations/ @maimorag
 /Packs/Core/Integrations/ @maimorag
 /Packs/ApiModules/Scripts/CoreIRApiModule/* @maimorag
-
-# Dependencies
-poetry.lock @dorschw
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori

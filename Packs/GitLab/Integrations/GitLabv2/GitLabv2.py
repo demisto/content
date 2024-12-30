@@ -1080,8 +1080,8 @@ def commit_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
         response_title = 'List Commits'
         page_number = arg_to_number(args.get('page')) or 1
         limit = arg_to_number(args.get('limit')) or 50
-        params = assign_params(ref_name=args.get('ref_name'), created_before=return_date_arg_as_iso(args.get('created_before')),
-                               created_after=return_date_arg_as_iso(args.get('created_after')), path=args.get('path'),
+        params = assign_params(ref_name=args.get('ref_name'), until=return_date_arg_as_iso(args.get('created_before')),
+                               since=return_date_arg_as_iso(args.get('created_after')), path=args.get('path'),
                                with_stats=args.get('with_stats'), first_parent=args.get('first_parent'),
                                order=args.get('order'), all_=args.get('all'))
         response = response_according_pagination(client.commit_list_request, limit, page_number, params, None)

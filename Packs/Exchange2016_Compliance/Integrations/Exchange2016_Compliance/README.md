@@ -26,7 +26,7 @@
 <li>Make sure you have Python 2.7 installed on the Engine machine.</li>
 <li>Add the necessary Python lbs to the Engine machine.<br> <a href="https://github.com/demisto/content/blob/master/Packs/Exchange2016_Compliance/Integrations/Exchange2016_Compliance/doc_files/requirements.txt">https://github.com/demisto/content/blob/master/Packs/Exchange2016_Compliance/Integrations/Exchange2016_Compliance/doc_files/requirements.txt</a><br> Run the pip install --no-cache-dir -r requirements.txt command.</li>
 <li>Make sure the integration runs without docker image.</li>
-<li>For more information regarding Installing and Deploying Cortex XSOAR Engines, see the <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Install-a-Cortex-XSOAR-Engine">Cortex XSOAR Engines Documentation</a>.</li>
+<li>For more information regarding Installing and Deploying Cortex XSOAR Engines, see the <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Install-a-Cortex-XSOAR-Engine">Engines Documentation (Cortex XSOAR 6.13)</a> or <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Install-an-engine">Engines Documentation (Cortex XSOAR 8 Cloud)</a> or <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Install-an-engine">Engines Documentation (Cortex XSOAR 8.7 On-prem)</a>.</li>
 </ul>
 </div>
 <div class="cl-preview-section">

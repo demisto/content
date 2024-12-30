@@ -10,7 +10,7 @@ tags:
 - cyren
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.11.9.103066
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.0.0
 args:
 - description: The indicator that holds the relationships. As JSON representation.

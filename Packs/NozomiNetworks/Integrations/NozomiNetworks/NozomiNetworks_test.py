@@ -1,5 +1,14 @@
 import pytest
 from NozomiNetworks import *
+import demistomock as demisto
+from unittest.mock import patch
+
+# Mock the `callingContext` before invoking your client or code that needs it
+demisto.callingContext = {
+    'context': {
+        'IntegrationBrand': 'NozomiNetworks'
+    }
+}
 
 NOZOMIGUARDIAN_URL = 'https://test.com'
 
@@ -30,25 +39,56 @@ def test_start_time_if_last_run_0_return_default():
     assert len(time) == 13
 
 
-@pytest.mark.parametrize('obj, expected', [(None, ''), ('', ''), ("1540390400000", " | where time > 1540390400000"), ])
+@pytest.mark.parametrize(
+    'obj, expected',
+    [
+        (None, ''),
+        ('', ''),
+        ("1540390400000", " | where record_created_at > 1540390400000"),
+    ]
+)
 def test_time_filter(obj, expected):
     assert better_than_time_filter(obj) == expected
 
 
-@pytest.mark.parametrize('obj, expected', [(None, ''), ('', ''), ("1540390400000", " | where time == 1540390400000"), ])
+@pytest.mark.parametrize(
+    'obj, expected',
+    [
+        (None, ''),
+        ('', ''),
+        ("1540390400000", " | where record_created_at == 1540390400000"),
+    ]
+)
 def test_equal_time_filter_with_ts(obj, expected):
     assert equal_than_time_filter(obj) == expected
 
 
 def test_parse_incidents():
-    i = parse_incident(
-        {'id': '1af93f46-65c1-4f52-a46a-2a181597fb0c', 'type_id': 'NET:RST-FROM-SLAVE',
-         'name': 'Link RST sent by Slave',
-         'description': 'The slave 10.197.23.139 sent a RST of the connection to the master.', 'severity': 10,
-         'mac_src': '00:02:3e:99:c9:5d', 'mac_dst': '00:c0:c9:30:04:f1', 'ip_src': '10.197.23.182',
-         'ip_dst': '10.197.23.139', 'risk': '4.5', 'protocol': 'iec104', 'src_roles': 'master', 'dst_roles': 'slave',
-         'time': 1392048082242, 'ack': False, 'port_src': 1097, 'port_dst': 2404, 'status': 'open', 'threat_name': '',
-         'type_name': 'Link RST sent by Slave', 'zone_src': 'RemoteRTU', 'zone_dst': 'RemoteRTU'})
+    i = parse_incident({
+        'id': '1af93f46-65c1-4f52-a46a-2a181597fb0c',
+        'type_id': 'NET:RST-FROM-SLAVE',
+        'name': 'Link RST sent by Slave',
+        'description': 'The slave 10.197.23.139 sent a RST of the connection to the master.',
+        'severity': 10,
+        'mac_src': '00:02:3e:99:c9:5d',
+        'mac_dst': '00:c0:c9:30:04:f1',
+        'ip_src': '10.197.23.182',
+        'ip_dst': '10.197.23.139',
+        'risk': '4.5',
+        'protocol': 'iec104',
+        'src_roles': 'master',
+        'dst_roles': 'slave',
+        'record_created_at': 1392048082242,
+        'ack': False,
+        'port_src': 1097,
+        'port_dst': 2404,
+        'status': 'open',
+        'threat_name': '',
+        'type_name': 'Link RST sent by Slave',
+        'zone_src': 'RemoteRTU',
+        'zone_dst': 'RemoteRTU'
+    })
+
     del i['occurred']
 
     assert i == {
@@ -59,7 +99,7 @@ def test_parse_incidents():
                    '"description": "The slave 10.197.23.139 sent a RST of the connection to the master.", '
                    '"severity": 10, "mac_src": "00:02:3e:99:c9:5d", "mac_dst": "00:c0:c9:30:04:f1", '
                    '"ip_src": "10.197.23.182", "ip_dst": "10.197.23.139", "risk": "4.5", "protocol": "iec104", '
-                   '"src_roles": "master", "dst_roles": "slave", "time": 1392048082242, "ack": false, '
+                   '"src_roles": "master", "dst_roles": "slave", "record_created_at": 1392048082242, "ack": false, '
                    '"port_src": 1097, "port_dst": 2404, "status": "open", "threat_name": "", '
                    '"type_name": "Link RST sent by Slave", "zone_src": "RemoteRTU", "zone_dst": "RemoteRTU"}'
     }
@@ -98,8 +138,8 @@ def test_incidents_filtered(requests_mock):
         True,
         __get_client(
             [{'json': __load_test_data('./test_data/incidents_better_than_time.json'),
-              'path': '/api/open/query/do?query=alerts | sort time asc | sort id asc '
-              '| where time > 1392048082000 | where risk >= 4 | head 20'}],
+              'path': '/api/open/query/do?query=alerts | sort record_created_at asc | sort id asc '
+              '| where record_created_at > 1392048082000 | where risk >= 4 | head 20'}],
             requests_mock))
 
     assert lid is not None
@@ -271,6 +311,29 @@ def test_query_count_alerts(requests_mock):
     assert result['outputs'] == [{'count': 126}]
     assert result['outputs_prefix'] == 'Nozomi.Query.Result'
     assert result['outputs_key_field'] == ''
+
+
+@patch('NozomiNetworks.handle_proxy')
+def test_get_proxies_with_proxy_enabled(mock_handle_proxy):
+    mock_handle_proxy.return_value = {'http': 'http://proxy.com'}
+
+    client = Client(base_url="https://test.com", proxy=True)
+    proxies = client.get_proxies()
+
+    assert proxies == {'http': 'http://proxy.com'}
+    mock_handle_proxy.assert_called_once()
+
+
+def test_get_proxies_without_proxy():
+    client = Client(base_url="https://test.com", proxy=False)
+    proxies = client.get_proxies()
+    assert proxies == {}
+
+
+def test_get_proxies_with_none_proxy():
+    client = Client(base_url="https://test.com", proxy=None)
+    proxies = client.get_proxies()
+    assert proxies == {}
 
 
 def __get_client(dummy_responses, requests_mock):

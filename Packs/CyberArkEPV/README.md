@@ -1,5 +1,5 @@
 
-# CyberArk Enterprise Password Vault
+# CyberArk PAM Self-Hosted
 
 <~XSIAM>
 
@@ -7,32 +7,17 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
-This section describes the steps required to configure Syslog forwarding of vault audit logs, such as user activity and safe activity events, from CyberArk EPV to Cortex XSIAM.
+This section describes the steps required to configure Syslog forwarding of vault audit logs, such as user activity and safe activity events, from CyberArk PAM Self-Hosted Vault to Cortex XSIAM.
 
 ### General Overview
 The CyberArk vault event logs are generated in [XML](https://en.wikipedia.org/wiki/XML) format. 
 In order to forward the logs via Syslog to Cortex XSIAM, 
-the XML event records must be converted to suitable [CEF](https://www.microfocus.com/documentation/arcsight/arcsight-smartconnectors-8.3/cef-implementation-standard/Content/CEF/Chapter%201%20What%20is%20CEF.htm) messages. This transformation from XML event records to CEF messages is done though a suitable [XSL](https://en.wikipedia.org/wiki/XSL) translator file. This XSL file should then be referenced from the Vault server *DBParm.ini* configuration file, along with other syslog settings, as described in the [configuration steps](#configuration-steps) below. 
+the XML event records must be converted to suitable [CEF](https://www.microfocus.com/documentation/arcsight/arcsight-smartconnectors-8.3/cef-implementation-standard/Content/CEF/Chapter%201%20What%20is%20CEF.htm) messages. 
 
-### Configuration Steps
+### Set up the XSL Translator
+This transformation from XML event records to CEF messages is done though a suitable [XSL](https://en.wikipedia.org/wiki/XSL) translator file. 
+An example of an XSL file can be found [here](https://raw.githubusercontent.com/demisto/content/fcf4535d373df78bded4b1bedacdd505d25cc095/Packs/CyberArkEPV/doc_files/XSIAM.xsl). This file can be used directly within the target vault.
 
-#### Set up the XSL Translator
-1. Navigate to the *Syslog* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Syslog*). This folder contains predefined XSL samples. 
-2. Make a copy of the *Arcsight.sample.xsl* sample file, and rename it with a meaningful name, for example: *XSIAM.xsl*.
-3. To include the events' timestamps in the events that will be sent to Cortex XSIAM, open the copied XSL file for editing, and above the mapping section for *cn1Label* and *cn1* fields, add the following section, which maps the *IsoTimestamp* XML field into the CEF message *cs6* field and the constant string "IsoTimestamp" to the *cs6Label* field: 
-      ```XML        
-            <!-- Start of IsoTimestamp mapping section -->
-            cs6Label=IsoTimestamp 
-            cs6=<xsl:call-template name="string-replace">
-                <xsl:with-param name="from" select="'='" />
-                <xsl:with-param name="to" select="'\='" />
-                <xsl:with-param name="string" select="IsoTimestamp" />
-            </xsl:call-template>
-            <!-- End of IsoTimestamp mapping section -->
-      ```
-      See the following screenshot for an example of the updated XSL file: 
-    ![xsl_with_timestamp_mapping](https://raw.githubusercontent.com/demisto/content/fcf4535d373df78bded4b1bedacdd505d25cc095/Packs/CyberArkEPV/doc_files/config_isotimestamp_mapping.png)
-4. Save the changes.
 #### Set up the Syslog Configuration
 1. Navigate to the *Conf* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Conf*).
 2. Copy the *\[SYSLOG\]* section from the *DBParm.sample.ini* sample file, and paste it at the bottom of the *DBParm.ini* file. 
@@ -40,10 +25,10 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
    | Parameter                       | Description    
    | :---                            | :---                    
    | `SyslogServerIP`                | IP address of the Cortex XSIAM Broker VM Syslog Server.  
-   | `SyslogServerPort`              | Target port that the Cortex XSIAM Broker VM Syslog Server is listening on for receiving Syslog messages from Cyber-Ark.  
+   | `SyslogServerPort`              | Target port that the Cortex XSIAM Broker VM Syslog Server is listening on for receiving Syslog messages from CyberArk.  
    | `SyslogServerProtocol`          | The protocol that will be used to forward the Syslog messages to Cortex XSIAM: *UDP* (the default setting), *TCP* or *TLS* (Note: for *TLS*, additional settings are required for configuring certificates, see [*Configure encrypted and non-encrypted protocols*](https://docs.cyberark.com/PAS/Latest/en/Content/PASIMP/Integrating-with-SIEM-Applications.htm#Configureencryptedandnonencryptedprotocols)).
    | `SyslogMessageCodeFilter`       | Range or list of requested message codes that should be sent to  Cortex XSIAM through the syslog protocol. See [*Vault Audit Action Codes*](https://docs.cyberark.com/PAS/Latest/en/Content/PASREF/Vault%20Audit%20Action%20Codes.htm) for the complete list of vault events message codes. By default, all message codes are sent for user and safe activities. For including all Vault events, define the following range: *0-999*. 
-   | `SyslogTranslatorFile`   | Specify the relative path in the Cyber-Ark Vault server installation folder (*PrivateArk\Server*) to the relevant XLS translator file  (see [*Set up the XSL Translator*](#Set-up-the-XSL-Translator) section above). For example: *Syslog\XSIAM.xsl*.
+   | `SyslogTranslatorFile`   | Specify the relative path in the CyberArk Vault server installation folder (*PrivateArk\Server*) to the relevant XLS translator file  (see [*Set up the XSL Translator*](#Set-up-the-XSL-Translator) section above). For example: *Syslog\XSIAM.xsl*.
    | `UseLegacySyslogFormat`   | Controls whether the syslog messages should be sent in the old legacy syslog format (*Yes*), or in the newer modern [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424) format (*No*). For Cortex XSIAM set this parameter with the default value of *No*. 
    |`SendMonitoringMessage`| Controls whether the Syslog messages that are sent to Cortex XSIAM should include periodic server* system monitoring* events as well (in addition to *audit events*). For Cortex XSIAM set this parameter with the default value of *no*.
 

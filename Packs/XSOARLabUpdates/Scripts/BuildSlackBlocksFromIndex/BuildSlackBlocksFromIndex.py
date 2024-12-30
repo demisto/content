@@ -8,7 +8,6 @@ from dateparser import parse
 from tempfile import mkdtemp
 from zipfile import ZipFile
 from datetime import datetime
-from typing import List, Union
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MP_LINK = "https://xsoar.pan.dev/marketplace"
@@ -31,7 +30,7 @@ class IndexPack:
         self.created: str = self.metadata.get('created', '')
         self.created_datetime: datetime = datetime.strptime(self.created, DATE_FORMAT).replace(tzinfo=pytz.UTC)
         self.price: int = self.metadata.get('price', 0)
-        self._is_private_pack: bool = True if self.metadata.get('partnerId') else False
+        self._is_private_pack: bool = bool(self.metadata.get('partnerId'))
         self.support: str = self.metadata.get('support', 'xsoar')
         self.author: str = self.metadata.get('author', 'Cortex XSOAR')
         self.description: str = self.get_description()
@@ -106,8 +105,8 @@ class Index:
         self.extract_destination_path: str = mkdtemp()
         self.index_folder_path: str = os.path.join(self.extract_destination_path, 'index')
         self.extract()
-        self.packs: List[IndexPack] = self.get_packs()
-        self.new_packs: List[IndexPack] = []
+        self.packs: list[IndexPack] = self.get_packs()
+        self.new_packs: list[IndexPack] = []
 
     def extract(self):
         """ Extract the index from the zip file """
@@ -126,7 +125,7 @@ class Index:
             demisto.error(error_msg)
             raise Exception(error_msg)
 
-    def get_packs(self) -> List[IndexPack]:
+    def get_packs(self) -> list[IndexPack]:
         """ Build IndexPack object for each pack in the index """
         packs = []
 
@@ -137,7 +136,7 @@ class Index:
 
         return packs
 
-    def get_new_packs_from_last_run(self, last_run_str: str) -> List[IndexPack]:
+    def get_new_packs_from_last_run(self, last_run_str: str) -> list[IndexPack]:
         """ Creates a list of all packs that were released after the given time.
 
         Args:
@@ -159,7 +158,7 @@ class Index:
 
         return self.new_packs
 
-    def get_latest_new_pack_created_time(self) -> Union[None, str]:
+    def get_latest_new_pack_created_time(self) -> None | str:
         """ The new pack with the latest created time is the last new pack that the script has detected,
         therefore, the next run should start from its created time.
 
@@ -181,12 +180,12 @@ class Index:
 class SlackBlocks:
     """ A class that builds the Slack Blocks object """
 
-    def __init__(self, packs: List[IndexPack]):
-        self.packs: List[IndexPack] = sorted(
+    def __init__(self, packs: list[IndexPack]):
+        self.packs: list[IndexPack] = sorted(
             packs, key=lambda p: SUPPORT.index(p.support) if p.support in SUPPORT else 3
         )
-        self._preview_packs: List[IndexPack] = self.packs[:NUM_FULL_PREVIEW]
-        self._list_packs: List[IndexPack] = self.packs[NUM_FULL_PREVIEW:]
+        self._preview_packs: list[IndexPack] = self.packs[:NUM_FULL_PREVIEW]
+        self._list_packs: list[IndexPack] = self.packs[NUM_FULL_PREVIEW:]
 
     def build(self) -> str:
         if self.packs:
@@ -309,7 +308,7 @@ class SlackBlocks:
 def load_json(file_path: str) -> dict:
     try:
         if file_path and os.path.exists(file_path):
-            with open(file_path, 'r') as json_file:
+            with open(file_path) as json_file:
                 result = json.load(json_file)
         else:
             result = {}
@@ -384,8 +383,8 @@ def main():
         last_run: str = args['last_run_str']
 
         index: Index = Index(index_file_entry_id)
-        new_packs: List[IndexPack] = index.get_new_packs_from_last_run(last_run)
-        latest_new_pack_created_time: Union[None, str] = index.get_latest_new_pack_created_time()
+        new_packs: list[IndexPack] = index.get_new_packs_from_last_run(last_run)
+        latest_new_pack_created_time: None | str = index.get_latest_new_pack_created_time()
         updated_last_run: str = latest_new_pack_created_time or datetime.utcnow().strftime(DATE_FORMAT)
 
         blocks: str = SlackBlocks(new_packs).build()

@@ -185,11 +185,15 @@ configuration:
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
   type: 0
+  hidden:
+  - marketplacev2
   required: false
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
   display: Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)
   name: server_custom_close_code
   type: 0
+  hidden:
+  - marketplacev2
   required: false
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: 'None'
@@ -200,6 +204,8 @@ configuration:
   - None
   - closed
   - resolved
+  hidden:
+  - marketplacev2
   required: false
 - display: Mirrored ServiceNow Ticket custom close state code
   name: close_custom_state
@@ -220,6 +226,8 @@ configuration:
   display: Mirror Existing Notes For New Fetched Incidents
   name: mirror_notes_for_new_incidents
   type: 8
+  hidden:
+  - marketplacev2
   required: false
 - defaultvalue: 'false'
   display: 'Use system proxy settings'
@@ -1630,7 +1638,13 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.11.9.103066
+  - arguments:
+    - description: sys_id of the ticket containing the attachment.
+      name: sys_id
+      required: true
+    description: Retrieves attachments from a ticket.
+    name: servicenow-get-ticket-attachments
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   ismappable: true
   isremotesyncin: true

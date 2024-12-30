@@ -109,7 +109,7 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.73837
+  dockerimage: demisto/bigquery:1.0.0.117465
   subtype: python3
   isfetch: true
 fromversion: 5.0.0

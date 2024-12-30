@@ -893,7 +893,7 @@ def logout_command():
         )
     try:
         DEFAULT_HEADERS["cookie"] = session_id
-        raw_res = logout().json()
+        raw_res = logout()
     except AuthorizationError:
         return CommandResults(
             readable_output="API session is not authenticated. No action was performed."
@@ -905,7 +905,7 @@ def logout_command():
 
 
 def activate_command():
-    raw_res = activate_changes().json()
+    raw_res = activate_changes()
     return CommandResults(
         readable_output="Changes have been activated successfully.",
         raw_response=raw_res,

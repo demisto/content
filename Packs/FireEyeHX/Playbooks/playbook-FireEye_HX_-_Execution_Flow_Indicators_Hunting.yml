@@ -119,7 +119,7 @@ tasks:
       - "156"
     scriptarguments:
       brandname:
-        simple: FireEye Endpoint Security (HX) v2
+        simple: FireEyeHX v2
     results:
     - brandInstances
     separatecontext: false
@@ -230,12 +230,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -385,12 +385,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -481,12 +481,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -581,7 +581,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -632,7 +634,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -650,12 +654,12 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process ID
+                  simple: FireEyeHX.Search.results.data.Process ID
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process Name
+                  simple: FireEyeHX.Search.results.data.Process Name
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -686,7 +690,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -741,7 +747,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -761,12 +769,12 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process ID
+                  simple: FireEyeHX.Search.results.data.Process ID
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Process Name
+                  simple: FireEyeHX.Search.results.data.Process Name
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -849,12 +857,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -994,7 +1002,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1173,12 +1183,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -1211,7 +1221,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false

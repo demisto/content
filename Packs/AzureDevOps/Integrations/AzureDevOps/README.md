@@ -1,31 +1,27 @@
 # Azure DevOps
 Manage Git repositories in Azure DevOps Services. Integration capabilities include retrieving, creating, and updating pull requests. Run pipelines and retrieve git information.
 
-## Configure AzureDevOps on Cortex XSOAR
+## Configure AzureDevOps in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AzureDevOps.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Client ID | App Registration Client ID | True |
-    | Organization | Organization name | True |
-    | Maximum incidents for one fetch. | Default is 50. Maximum is 200. | False |
-    | Pull-request project name | The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality. | False |
-    | Pull-request repository name | The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Outgoing mirroring |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\), Device Code Flow or Client Credentials Flow. | False |
-    | Tenant ID | For user-auth mode or client credentials.| False |
-    | Client Secret | For user-auth mode or client credentials. | False |
-    | Application redirect URI | For user-auth mode or client credentials. | False |
-    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Client ID | App Registration Client ID | True |
+| Organization | Organization name | True |
+| Maximum incidents for one fetch. | Default is 50. Maximum is 200. | False |
+| Pull-request project name | The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality. | False |
+| Pull-request repository name | The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Outgoing mirroring |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\), Device Code Flow or Client Credentials Flow. | False |
+| Tenant ID | For user-auth mode or client credentials.| False |
+| Client Secret | For user-auth mode or client credentials. | False |
+| Application redirect URI | For user-auth mode or client credentials. | False |
+| Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
 
 
 In order to connect to the Azure DevOps using the Self-Deployed Azure App, use one of the following methods:
@@ -103,7 +99,7 @@ If you are using Device Code Flow or Authorization Code Flow, for testing your a
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-devops-auth-test
 ***

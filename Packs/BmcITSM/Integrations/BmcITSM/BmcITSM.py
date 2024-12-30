@@ -1004,7 +1004,7 @@ class Client(BaseClient):
             "TaskType": task_type,
             "Priority": priority,
             "RootRequestName": root_request_name,
-            "Support Company": assigned_support_company,
+            "Assignee Company": assigned_support_company,
             "Assignee Organization": assigned_support_organization,
             "Assignee Group": assigned_support_group_name,
             "Company": company,

@@ -1027,7 +1027,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Reputation",
+						"name": "Verdict",
 						"static": false,
 						"type": "reputationSources",
 						"w": 1,

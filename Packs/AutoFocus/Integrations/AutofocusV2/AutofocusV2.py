@@ -15,8 +15,7 @@ API_KEY = AutoFocusKeyRetriever(PARAMS.get('credentials', {}).get('password') or
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
-# Should we use SSL
-USE_SSL = not PARAMS.get('insecure', False)
+
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
 VENDOR_NAME = 'AutoFocus V2'
@@ -280,8 +279,8 @@ API_POINTS_TABLE = CommandResults(
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, verify: bool = True):
-        super().__init__(base_url=url, verify=verify)
+    def __init__(self, url: str, verify: bool = True, proxy: bool = False):
+        super().__init__(base_url=url, verify=verify, proxy=proxy)
 
     def parse_response(self, resp: requests.Response, err_operation: str | None) -> dict:
         try:
@@ -1263,7 +1262,8 @@ def convert_url_to_ascii_character(url_name):
         # converts non-ASCII chars to IDNA notation
         return str(non_ascii.group(0)).encode('idna').decode("utf-8")
 
-    return re.sub('([^a-zA-Z\W]+)', convert_non_ascii_chars, url_name)
+    # Regex to catch all non ascii chars (from 0 to 127 in hexadecimal).
+    return re.sub(r'[^\x00-\x7F]+', convert_non_ascii_chars, url_name)
 
 
 ''' COMMANDS'''
@@ -1657,9 +1657,9 @@ def search_domain_command(client, domain, reliability, create_relationships):
     return command_results
 
 
-def search_url_command(client, url, reliability, create_relationships):
+def search_url_command(client, url, reliability, create_relationships, separator=','):
     indicator_type = 'URL'
-    url_list = argToList(url)
+    url_list = argToList(url, separator)
 
     command_results = []
     relationships = []
@@ -1971,14 +1971,14 @@ def main():
     demisto.debug(f'Command being called is {command}')
     reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
     create_relationships = PARAMS.get('create_relationships', True)
+    proxy = PARAMS.get('proxy', False)
+    USE_SSL = not PARAMS.get('insecure', False)     # Should we use SSL
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
-    client = Client(url=BASE_URL, verify=USE_SSL)
-    # Remove proxy if not set to true in params
-    handle_proxy()
+    client = Client(url=BASE_URL, verify=USE_SSL, proxy=proxy)
     args = demisto.args() | {
         'reliability': reliability,
         'create_relationships': create_relationships,

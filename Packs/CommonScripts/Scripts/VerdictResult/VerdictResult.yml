@@ -2,7 +2,7 @@ comment: This widget displays the incident verdict or the alert verdict based on
 commonfields:
   id: VerdictResult
   version: -1
-dockerimage: demisto/python3:3.10.14.95956
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 engineinfo: {}
 name: VerdictResult

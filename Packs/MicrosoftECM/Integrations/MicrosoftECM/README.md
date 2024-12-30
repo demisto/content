@@ -5,7 +5,7 @@ The configuration manager provides the overall Configuration Management (CM) inf
 This integration was integrated and tested with version 1906 of Microsoft Endpoint Configuration Manager.
 ## Prerequisites
 - This integration requires root access in order to execute commands. 
-If you configured the server to run Docker images with a non-root internal user make sure to exclude the *demisto/powershell-ubuntu* Docker image as documented [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users)
+If you configured the server to run Docker images with a non-root internal user make sure to exclude the *demisto/powershell-ubuntu* Docker image as documented For Cortex XSOAR 6 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide).
 - Installation and configuration for Windows Remote Management to support a PowerShell session is a prerequisite in order to support this integration. For more information, refer to the following Microsoft [article](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management).
 - PowerShell Remote sessions are created over port 5985 (Microsoft Web service management/WinRm). This port needs to be opened from XSOAR to the hosts on the local and network firewalls. 
 - Authentication is NTLM-based. 
@@ -17,11 +17,8 @@ If you configured the server to run Docker images with a non-root internal user 
 - To use the ***ms-ecm-script-approve*** command, your account must have Approve permissions for SMS Scripts.
 - To use the ***ms-ecm-script-invoke*** command, your account must have Run Script permissions for Collections.
 - To use the ***ms-ecm-service-stop***, ***ms-ecm-service-start***, and ***ms-ecm-service-restart*** commands, your account must have permissions to use **all** scripts commands
-## Configure Microsoft Endpoint Configuration Manager on Cortex XSOAR
+## Configure Microsoft Endpoint Configuration Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Endpoint Configuration Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -29,9 +26,8 @@ If you configured the server to run Docker images with a non-root internal user 
 | credentials | Username. \(i.e, DOMAIN\\username\)  | True |
 | SiteCode | ECM Site Code. | True |
 
-4. Click **Test** to validate the ComputerName, credentials, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-ecm-user-last-log-on
 ***
@@ -1573,4 +1569,3 @@ Gets the relationships between a device and its primary users.
 >| --- | --- | --- | --- | --- | ---
 >| True | EC2AMAZ\-2AKQ815 | 16777220 | 2020\-09\-07T14:52:57Z | demisto\\sccmadmin | 25165825
 >| True | EC2AMAZ\-2AKQ815 | 16777220 | 2020\-11\-05T17:44:33Z | demisto\\administrator | 25165830
-

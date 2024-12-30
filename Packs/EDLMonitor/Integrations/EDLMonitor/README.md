@@ -1,25 +1,21 @@
 This integration can monitor EDLs by emailing the content of an EDL as a zipped file to a specified user at an interval (when run with a job), and/or simply monitor the EDL for availability and email the user if the EDL is not available in other playbooks
 
-## Configure EDL Monitor on Cortex XSOAR
+## Configure EDL Monitor in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EDL Monitor.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Timeout: | Timeout \(in seconds\) for how long to wait for EDL response before detecting as down \(default 2 minutes\) | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Email server: |  | False |
-    | Email username |  | False |
-    | Email password |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Timeout: | Timeout \(in seconds\) for how long to wait for EDL response before detecting as down \(default 2 minutes\) | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Email server: |  | False |
+| Email username |  | False |
+| Email password |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### get-edl-contents

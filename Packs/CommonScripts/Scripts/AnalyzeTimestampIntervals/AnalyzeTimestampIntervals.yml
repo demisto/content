@@ -46,7 +46,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.11.9.107902
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
