@@ -1,5 +1,10 @@
 import shutil
+import socket
+import traceback
+import types
+from datetime import datetime, timedelta
 
+import requests
 from git import Actor
 from ruamel.yaml import YAML
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -16,7 +21,9 @@ from contextlib import contextmanager
 import zipfile
 import git
 import io
-
+import os
+import re
+import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -224,7 +231,7 @@ def _create_pack_base_files(self):
 
 
 def content_item_to_package_format(
-        self, content_item_dir: str, del_unified: bool = True, source_mapping: Optional[Dict] = None,  # noqa: F841
+        self, content_item_dir: str, del_unified: bool = True, source_mapping: dict | None = None,  # noqa: F841
 ) -> None:
     from demisto_sdk.commands.init.contribution_converter import AUTOMATION, INTEGRATION, SCRIPT, get_child_files
 
@@ -701,7 +708,7 @@ def get_file_name_and_contents(
     return None
 
 
-def setup_content_dir(file_name: str, file_contents: Union[bytes, str], entry_id: str, verify_ssl=False) -> str:
+def setup_content_dir(file_name: str, file_contents: bytes | str, entry_id: str, verify_ssl=False) -> str:
     """ Sets up the content directory to validate the content items in it. """
 
     # Set up the content directory path globally, required for demisto-sdk logic.
