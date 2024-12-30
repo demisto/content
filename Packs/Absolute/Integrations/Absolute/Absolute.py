@@ -388,87 +388,9 @@ class ClientV3(BaseClient):
     def fetch_events(self, query_string: str) -> dict:
         signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
         response = self.perform_request(signed)
-        r_content_json_str = response.content.decode('utf8').replace("'", '"')
-        events = json.loads(r_content_json_str)
-        demisto.debug(f'Events that fetched(1): {events=}')
+        response_content_json_str = response.content.decode('utf8').replace("'", '"')
+        events = json.loads(response_content_json_str)
         return events
-
-    # def prepare_request(self, method: str, url_suffix: str, query_string: str) -> bytes:
-    #     request = {
-    #         "method": method,
-    #         "contentType": "application/json",
-    #         "uri": url_suffix,
-    #         "queryString": query_string,
-    #         "payload": {}
-    #     }
-    #
-    #     request_payload_data = {
-    #         "data": request["payload"]
-    #     }
-    #
-    #     headers = {
-    #         "alg": "HS256",
-    #         "kid": self._token_id,
-    #         "method": request["method"],
-    #         "content-type": request["contentType"],
-    #         "uri": request["uri"],
-    #         "query-string": request["queryString"],
-    #         "issuedAt": round(time.time() * 1000)
-    #     }
-    #
-    #     return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
-    #
-    # def perform_request(self, signed: bytes) -> Response:
-    #     request_url = "https://api.absolute.com/jws/validate"
-    #     return requests.post(request_url, signed, {"content-type": "text/plain"}, verify=False)
-    #
-    # def fetch_events(self, query_string: str) -> dict:
-    #     signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
-    #     response = self.perform_request(signed)
-    #     r_content_json_str = response.content.decode('utf8').replace("'", '"')
-    #     events = json.loads(r_content_json_str)
-    #     demisto.debug(f'events that fetched(1): {events=}')
-    #     return events
-
-
-    # def fetch_events(self, page_size: int, start_date: datetime = None, end_date: datetime = None, next_page: str = None) -> dict:
-    #     # https://api.absolute.com/v3/reporting/siem-events
-    #     demisto.debug(f'Requesting events from API with params: {next_page=}, {start_date=}, {end_date=}')
-    #     # return self._http_request(
-    #     #     method='GET',
-    #     #     url_suffix="/v3/reporting/siem-events?pageSize=50&fromDateTimeUtc=2024-12-10T10:15:30.000Z&toDateTimeUtc=2024-12-29T16:15:30.000Z",
-    #     #     # params=None if next_page else {'pageSize': page_size, 'fromDateTimeUtc': start_date, 'toDateTimeUtc': end_date}
-    #     # )
-    #     request = {
-    #         "method": "GET",  # API settings
-    #         "contentType": "application/json",  # API settings
-    #         "uri": "/v3/reporting/siem-events",  # API settings
-    #         # The queryString is URL encoded
-    #         "queryString": "pageSize=1000&fromDateTimeUtc=2024-12-27T10:15:30.000Z&toDateTimeUtc=2024-12-28T11:15:30.000Z",
-    #         # API settings
-    #         # For GET requests, the payload is empty
-    #         "payload": {}  # API settings
-    #     }
-    #     request_payload_data = {
-    #         "data": request["payload"]
-    #     }
-    #     headers = {
-    #         "alg": "HS256",
-    #         "kid": self._token_id,
-    #         "method": request["method"],
-    #         "content-type": request["contentType"],
-    #         "uri": request["uri"],
-    #         "query-string": request["queryString"],
-    #         "issuedAt": round(time.time() * 1000)
-    #     }
-    #     jws = JsonWebSignature()
-    #     signed = jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
-    #     request_url = "https://api.absolute.com/jws/validate"
-    #     r = requests.post(request_url, signed, {"content-type": "text/plain"}, verify=False)
-    #     r_content_json_str = r.content.decode('utf8').replace("'", '"')
-    #     events = json.loads(r_content_json_str)
-    #     demisto.debug(f'events that fetched(1): {events=}')
-    #     return events
 
 
 def sign(key, msg):
@@ -1061,16 +983,14 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     start_date = last_end_date if last_end_date else end_date - timedelta(minutes=1)
     demisto.debug(f'Starting new fetch: {start_date=}, {end_date=}, {next_page_token=}')
     all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
-    demisto.debug(f'Overall, {len(all_events)} fetched.')
     if not all_events:
-        # demisto.debug
         return [], {'next_page_token': None, 'end_date': end_date, 'latest_event_ids': []}
 
     if last_run_latest_events:  # handle duplication
         filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
         all_events = filtered_events
         demisto.debug(
-            f'Handle duplicate events: Found {len(all_events) - len(filtered_events)} duplicated events. exist {len(filtered_events)} new events')
+            f'Handle duplicate events: Found {len(all_events) - len(filtered_events)} duplicated events. Exist {len(filtered_events)} new events')
 
     events, latest_events_id = add_time_field_to_events_and_get_latest_events(all_events)
     return events, {'next_page_token': next_page_token, 'end_date': end_date, 'latest_events_id': latest_events_id}
@@ -1084,14 +1004,13 @@ def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str
         query_string = prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date, end_date=end_date,
                                                              next_page=next_page_token)
         response = client.fetch_events(query_string=query_string)
-
         events = response.get('data', [])
-        demisto.debug(f'Fetched {len(events)} events')
         all_events.extend(events)
         next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
         if not next_page_token:
             break
 
+    demisto.debug(f'Fetched {len(all_events)} events')
     return all_events, next_page_token
 
 
@@ -1119,9 +1038,8 @@ def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
 
     events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
-    demisto.debug(f'itamar events: {events=}')
-    demisto.debug(f'itamar type {type(events)}')
-    return events, CommandResults(outputs=events, readable_output=tableToMarkdown('Events', t=events), outputs_prefix="Absolute.Event.")
+    return events, CommandResults(outputs=events, readable_output=tableToMarkdown('Events', t=events),
+                                  outputs_prefix="Absolute.Event.")
 
 
 ''' MAIN FUNCTION '''
