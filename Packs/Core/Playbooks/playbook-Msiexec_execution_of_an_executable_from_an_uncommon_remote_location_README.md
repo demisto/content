@@ -28,7 +28,7 @@ Requirements:
  
 For any response action, you need the following integration:
  
-PAN-OS
+- PAN-OS
 
 ## Dependencies
 
@@ -36,11 +36,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-PAN-OS - Block URL - Custom URL Category
+* PAN-OS - Block URL - Custom URL Category
 
 ### Integrations
 
-CortexCoreIR
+* CortexCoreIR
 
 ### Scripts
 
@@ -70,4 +70,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious msiexec execution](../doc_files/Suspicious_msiexec_execution.png)
+![Msiexec execution of an executable from an uncommon remote location](../doc_files/Msiexec_execution_of_an_executable_from_an_uncommon_remote_location.png)
