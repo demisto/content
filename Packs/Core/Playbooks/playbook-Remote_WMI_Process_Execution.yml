@@ -466,7 +466,7 @@ tasks:
         The detection does not meet the thresholds for a definitive malicious verdict. It falls into a suspicious category based on the following conditions:
 
         **Matched Verdicts:**
-        * The command line analysis score between 10 and 30 with medium confidence hints a suspicious activity.
+        * The command line analysis score between 10 and 30 with medium confidence suggests a suspicious activity.
         * The command line analysis score is below 10 with a prevention rule found in the same incident, suggesting potential risk.
 
         **Unmatched Verdicts:**
