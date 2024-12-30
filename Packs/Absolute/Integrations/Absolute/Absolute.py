@@ -300,6 +300,7 @@ class Client(BaseClient):
         """
         demisto.debug(f'current request is: method={method}, url suffix={url_suffix}, body={body}')
         full_url = urljoin(self._base_url, url_suffix)
+
         if success_status_code is None:
             success_status_code = [200]
 
@@ -527,7 +528,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
     outputs = parse_freeze_device_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
-                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()}, )
+                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()},)
 
     outputs.pop('FailedDeviceUIDs', '')
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
