@@ -9,12 +9,19 @@ This integration was integrated and tested with V2 endpoints of the 1Password Ev
 The integration can be configured to fetch three types of events from 1Password:
 
 - **Audit events** - Information about actions performed by team members within a 1Password account. Events include when an action was performed and by whom, along with details about the type and object of the action and any other information about the activity.
-
 - **Item usage actions** - Information about items in shared vaults that have been modified, accessed, or used. Events include the name and IP address of the user who accessed the item, when the item was accessed, and the vault where the item is stored.
-  
 - **Sign-in attempts** - Information about sign-in attempts. Events include the name and IP address of the user who attempted to sign in to the account, when the attempt was made, and, for failed attempts, the cause of the failure.
 
 All event timestamps, along with date and time configuration parameters and command arguments, are in the Coordinated Universal Time (UTC) timezone.
+
+Every call to the 1Password Events API must be authorized with a bearer token. To issue a new bearer token:
+
+1. Sign in to your 1Password account and click **Integrations** in the sidebar.
+2. Under the **Directory** tab, choose **(•••) Other** and enter a descriptive name for the integration, such as 'Cortex XSIAM'.
+3. Enter a name for the bearer token and choose when it will expire.
+4. Ensure the token has access to the event types listed above.
+5. Click **Issue Token** to generate a new bearer token.
+6. Save the token in a secure location and use it in configuring this integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -24,7 +31,6 @@ All event timestamps, along with date and time configuration parameters and comm
 | Use system proxy settings |  | False |
 | Fetch Events | Whether to fetch events from 1Password. | False |
 | Types of events to fetch | Types of events to fetch from 1Password. Possible values are: Audit events, Item usage actions, Sign in attempts. | True |
-| First fetch time | First event timestamp to fetch. For example: "1 min ago", "2 weeks ago", "3 months ago". Default is "2 weeks ago". | False |
 | Maximum number of audit events per fetch |  | True |
 | Maximum number of item usage actions per fetch |  | True |
 | Maximum number of sign-in attempts per fetch |  | True |
@@ -53,7 +59,7 @@ Fetch events from 1Password.
 | --- | --- | --- |
 | event_type | 1Password event type. Possible values are: Audit events, Item usage actions, Sign in attempts. | Required |
 | limit | The maximum number of events to fetch for the given event type. Default is 1000. | Optional |
-| from_date | The date from which to get events. If not specified, events from the last two weeks will be fetched. | Optional |
+| from_date | The date from which to get events. If not specified, events from the last minute will be fetched. | Optional |
 | should_push_events | Set this argument to True in order to push events to Cortex XSIAM, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
 
 #### Command Example

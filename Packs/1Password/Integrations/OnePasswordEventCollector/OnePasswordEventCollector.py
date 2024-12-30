@@ -5,6 +5,7 @@ from CommonServerUserPython import *  # noqa
 from http import HTTPStatus
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta, UTC
+from collections.abc import Mapping
 
 
 ''' CONSTANTS '''
@@ -20,14 +21,23 @@ DEFAULT_RESULTS_PER_PAGE = 1000
 
 DEFAULT_MAX_EVENTS_PER_FETCH = 1000
 
-DEFAULT_FETCH_FROM_DATE = datetime.now(tz=UTC) - timedelta(weeks=2)  # 2 weeks ago in UTC timezone
+DEFAULT_FETCH_FROM_DATE = datetime.now(tz=UTC) - timedelta(minutes=1)  # 1 minute ago in UTC timezone
 
-EVENT_TYPE_MAPPING = CaseInsensitiveDict(
+EVENT_TYPE_FEATURE = CaseInsensitiveDict(
     {
         # Display name: API Feature and endpoint name
         'Item usage actions': 'itemusages',
         'Audit events': 'auditevents',
         'Sign in attempts': 'signinattempts',
+    }
+)
+
+EVENT_TYPE_LIMIT_PARAM = CaseInsensitiveDict(
+    {
+        # Display name: Max events per fetch (limit) param name
+        'Item usage actions': 'item_usage_actions_limit',
+        'Audit events': 'audit_events_limit',
+        'Sign in attempts': 'sign_in_attempts_limit',
     }
 )
 
@@ -38,32 +48,12 @@ EVENT_TYPE_MAPPING = CaseInsensitiveDict(
 class Client(BaseClient):
     """Client class to interact with the 1Password Events API"""
 
-    def introspect(self) -> dict:
-        """Performs an introspect API call to check authentication status and the features (scopes) that the token can access,
-        including one or more of: 'auditevents', 'itemusage', and 'signinattempts'.
-
-        Raises:
-            DemistoException: If API responds with an HTTP error status code.
-
-        Returns:
-            dict: The response JSON from the 'Auth introspect' endpoint.
-        """
-        return self._http_request(method='GET', url_suffix='/auth/introspect', raise_on_status=True)
-
-    def get_events(
-        self,
-        event_type: str,
-        from_date: datetime | None = None,
-        results_per_page: int = DEFAULT_RESULTS_PER_PAGE,
-        pagination_cursor: str | None = None,
-    ):
+    def get_events(self, event_feature: str, body: dict[str, Any]) -> dict[str, Any]:
         """Gets events from 1Password based on the specified event type
 
         Args:
-            event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
-            from_date (datetime | None): Optional datetime from which to get events.
-            results_per_page (int): The maximum number of records in response (Recommended to use default value).
-            pagination_cursor (str | None): Pagination Cursor from previous API response.
+            feature (str): 1Password event feature (e.g. 'itemusages', 'signinattempts').
+            body (dict): The request body containing either a Reset Cursor (date filter) or a Pagination Cursor.
 
         Raises:
             ValueError: If unknown event type or missing cursor and start time.
@@ -72,29 +62,33 @@ class Client(BaseClient):
         Returns:
             dict: The response JSON from the event endpoint.
         """
-        if not (feature := EVENT_TYPE_MAPPING.get(event_type)):
-            raise ValueError(f'Invalid or unsupported 1Password event type: {event_type}.')
-
-        body: dict[str, Any]
-        if pagination_cursor:
-            demisto.debug(f'Requesting events of type: {event_type} using pagination cursor: {pagination_cursor}')
-            body = {'cursor': pagination_cursor}
-
-        elif from_date:
-            formatted_from_date: str = from_date.strftime(DATE_FORMAT)
-            demisto.debug(f'Requesting events of type: {event_type} using from date: {formatted_from_date}')
-            body = {'limit': results_per_page, 'start_time': formatted_from_date}
-
-        else:
-            raise ValueError("Either a 'pagination_cursor' or a 'from_date' need to be specified.")
-
-        return self._http_request(method='POST', url_suffix=f'/{feature}', json_data=body, raise_on_status=True)
+        demisto.debug(f'Requesting events of feature: {event_feature} using request body: {body}')
+        return self._http_request(method='POST', url_suffix=f'/{event_feature}', json_data=body, raise_on_status=True)
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def get_limit_param(params: dict[str, str], event_type: str) -> int:
+def get_event_from_dict(event_type: str, mapping: Mapping[str, Any]) -> Any:
+    """_summary_
+
+    Args:
+        event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
+        mapping (Mapping): A key-value mapping (either a `dict` object or a `CaseInsensitiveDict`).
+
+    Raises:
+        ValueError: If unknown event type.
+
+    Returns:
+        Any: Value from the mapping dictionary.
+    """
+    if not (value := mapping.get(event_type)):
+        raise ValueError(f'Invalid or unsupported {VENDOR} event type: {event_type}.')
+
+    return value
+
+
+def get_limit_param_for_event_type(params: dict[str, str], event_type: str) -> int | None:
     """Gets the limit parameter for a given event type. The limit represents the maximum number of events per fetch.
 
     Args:
@@ -102,27 +96,25 @@ def get_limit_param(params: dict[str, str], event_type: str) -> int:
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
 
     Returns:
-        int: The maximum number of events per fetch.
+        int | None: The maximum number of events per fetch, if specified.
     """
-    param_name = event_type.lower().replace(' ', '_') + '_limit'
-    return arg_to_number(params.get(param_name)) or DEFAULT_MAX_EVENTS_PER_FETCH
+    param_name = get_event_from_dict(event_type, mapping=EVENT_TYPE_LIMIT_PARAM)
+    return arg_to_number(params.get(param_name))
 
 
-def get_unauthorized_event_types(auth_introspection_response: dict[str, Any], event_types: list[str]) -> list[str]:
-    """Checks if the bearer token has no access to any of the configured event types.
+def create_get_events_request_body(
+    from_date: datetime | None = None,
+    results_per_page: int = DEFAULT_RESULTS_PER_PAGE,
+    pagination_cursor: str | None = None,
+) -> dict[str, Any]:
+    if pagination_cursor:
+        return {'cursor': pagination_cursor}
 
-    Args:
-        auth_introspection_response (dict): Response JSON from Client.introspect call.
-        event_types (list): List of event types from the integration configuration params.
+    if from_date:
+        formatted_from_date: str = from_date.strftime(DATE_FORMAT)
+        return {'limit': results_per_page, 'start_time': formatted_from_date}
 
-    Returns:
-        list[str]: List of unauthorized event types that the token does not have access to.
-    """
-    authorized_features = auth_introspection_response['features']
-    return [
-        event_type for event_type in event_types
-        if EVENT_TYPE_MAPPING.get(event_type) not in authorized_features
-    ]
+    raise ValueError("Either a 'pagination_cursor' or a 'from_date' need to be specified.")
 
 
 def add_fields_to_event(event: dict[str, Any], event_type: str):
@@ -141,7 +133,7 @@ def get_events_from_client(
     client: Client,
     event_type: str,
     from_date: datetime,
-    max_events: int,
+    max_events: int | None = None,
     ids_to_skip: set[str] | None = None
 ) -> list[dict]:
     """Gets events of the specified type based on the `from_date` filter and `max_events` argument using cursor-based pagination.
@@ -154,22 +146,28 @@ def get_events_from_client(
         client (Client): 1Password Events API client.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
         from_date (datetime): Datetime from which to get events.
-        max_events (int): The maximum number of events to fetch.
+        max_events (int | None): Optional maximum number of events to fetch - uses API default (100) if not specified.
         ids_to_skip (set | None): Optional set of already-fetched event UUIDs that should be skipped.
+
+    Raises:
+        ValueError: If invalid event type or request body.
+        DemistoException: If API request failed.
 
     Returns:
         list[dict]: List of events.
     """
+    event_feature = get_event_from_dict(event_type, mapping=EVENT_TYPE_FEATURE)
+
     events: list[dict] = []
     ids_to_skip = ids_to_skip or set()
 
     # Reset Cursor - First call to the paginated API needs to to include a date filter
     has_more_events = True
-    client_kwargs: dict[str, Any] = {'event_type': event_type, 'from_date': from_date}
+    request_body = create_get_events_request_body(from_date=from_date)
 
     while has_more_events:
         response_duplicate_count = 0
-        response = client.get_events(**client_kwargs)
+        response = client.get_events(event_feature, body=request_body)
         pagination_cursor = response['cursor']
 
         for event in response['items']:
@@ -191,12 +189,12 @@ def get_events_from_client(
         demisto.debug(
             f'Response has {len(response["items"])} events of type {event_type} '
             f'(including {response_duplicate_count} skipped duplicates). '
-            f'Got pagination cursor: {pagination_cursor}. Used client arguments: {client_kwargs}.'
+            f'Got pagination cursor: {pagination_cursor}. Used request body: {request_body}.'
         )
 
         # Pagination / Continuing cursor - Followup API calls need to the unique page ID (if any more events)
         has_more_events = False if len(events) == max_events else response['has_more']
-        client_kwargs = {'event_type': event_type, 'pagination_cursor': pagination_cursor}
+        request_body = create_get_events_request_body(pagination_cursor=pagination_cursor)
 
     return events
 
@@ -222,24 +220,22 @@ def push_events(events: list[dict], next_run: dict[str, Any] | None = None) -> N
 def fetch_events(
     client: Client,
     event_type: str,
-    first_fetch_date: datetime,
     event_type_last_run: dict[str, Any],
-    event_type_max_results: int
+    event_type_max_results: int | None,
 ) -> tuple[dict, list]:
     """Fetches new events via 1Password Events API client based on a specified event type.
 
     Args:
         client (Client): 1Password Events API client.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
-        first_fetch_date (datetime): Datetime from which to get events.
         event_type_last_run (dict): Dictionary of the event type last run (if exists) with optional 'from_date' and 'ids' list.
-        event_type_max_results (int): The maximum number of events of the specified event type to fetch.
+        event_type_max_results (int | None): Maximum number of events to fetch - uses API default (100) if not specified.
 
     Returns:
         tuple[dict, list]: Dictionary of the next run of the event type with 'from_date' and 'ids' list, list of fetched events.
     """
     last_run_skip_ids = set(event_type_last_run.get('ids') or [])
-    from_date = arg_to_datetime(event_type_last_run.get('from_date')) or first_fetch_date
+    from_date = arg_to_datetime(event_type_last_run.get('from_date')) or DEFAULT_FETCH_FROM_DATE
 
     demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.isoformat()}')
 
@@ -283,25 +279,23 @@ def test_module_command(client: Client, event_types: list[str]) -> str:
         DemistoException: If API call responds with an unhandled HTTP error status code or token does not have access to the
         configured event types.
     """
-    try:
-        response = client.introspect()
+    for event_type in event_types:
+        try:
+            get_events_from_client(client, event_type=event_type, from_date=DEFAULT_FETCH_FROM_DATE, max_events=1)
 
-        if unauthorized_event_types := get_unauthorized_event_types(response, event_types):
-            return f'The API token does not have access to the event types: {", ".join(unauthorized_event_types)}'
+        except DemistoException as e:
+            error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
 
-        return 'ok'
+            if error_status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
+                return 'Authorization Error: Make sure the API server URL and token are correctly set'
 
-    except DemistoException as e:
-        error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
+            if error_status_code == HTTPStatus.NOT_FOUND:
+                return 'Endpoint Not Found: Make sure the API server URL is correctly set'
 
-        if error_status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
-            return 'Authorization Error: Make sure the API server URL and token are correctly set'
+            # Some other unknown / unexpected error
+            raise
 
-        if error_status_code == HTTPStatus.NOT_FOUND:
-            return 'Endpoint Not Found: Make sure the API server URL is correctly set'
-
-        # Some other unknown / unexpected error
-        raise
+    return 'ok'
 
 
 def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict], CommandResults]:
@@ -315,7 +309,7 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
         tuple[list[dict], CommandResults]: List of events and CommandResults with human readable output.
     """
     event_type = args['event_type']
-    limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_EVENTS_PER_FETCH
+    limit = arg_to_number(args.get('limit'))
     from_date = arg_to_datetime(args.get('from_date')) or DEFAULT_FETCH_FROM_DATE
 
     events = get_events_from_client(client, event_type=event_type, from_date=from_date, max_events=limit)
@@ -337,7 +331,6 @@ def main() -> None:  # pragma: no cover
     base_url: str = urljoin(params['url'], '/api/v2')
     token: str = params['credentials']['password']
     event_types: list[str] = argToList(params['event_types'])
-    first_fetch_date = dateparser.parse(params.get('first_fetch', ''), settings={'TIMEZONE': 'UTC'}) or DEFAULT_FETCH_FROM_DATE
 
     # optional
     verify_certificate: bool = not params.get('insecure', False)
@@ -371,15 +364,14 @@ def main() -> None:  # pragma: no cover
             next_run: dict[str, Any] = {}
 
             for event_type in event_types:
-                event_type_key = EVENT_TYPE_MAPPING[event_type]
+                event_type_key = get_event_from_dict(event_type, mapping=EVENT_TYPE_FEATURE)
 
                 event_type_last_run: dict = last_run.get(event_type_key, {})
-                event_type_max_results: int = get_limit_param(params, event_type)
+                event_type_max_results: int | None = get_limit_param_for_event_type(params, event_type)
 
                 event_type_next_run, event_type_events = fetch_events(
                     client=client,
                     event_type=event_type,
-                    first_fetch_date=first_fetch_date,
                     event_type_last_run=event_type_last_run,
                     event_type_max_results=event_type_max_results,
                 )

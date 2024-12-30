@@ -1,9 +1,10 @@
 import json
 from datetime import datetime
 
+
 import pytest
 from pytest_mock import MockerFixture
-from requests_mock import Mocker as RequestsMock
+import dateparser
 
 from OnePasswordEventCollector import Client
 
@@ -42,18 +43,18 @@ def mock_client_get_events(event_type: str, from_date: datetime | None = None, *
     return response
 
 
-def test_get_limit_param():
+def test_get_limit_param_for_event_type():
     """
     Given:
         - Integration instance Configuration params containing 'limit' values.
 
     When:
-        - Calling get_limit_param.
+        - Calling get_limit_param_for_event_type.
 
     Assert:
         - Ensure the 'limit' value of the specified event type is as expected.
     """
-    from OnePasswordEventCollector import get_limit_param
+    from OnePasswordEventCollector import get_limit_param_for_event_type
 
     expected_audit_events_limit = '500'
     expected_sign_in_attempts_limit = '4000'
@@ -62,30 +63,11 @@ def test_get_limit_param():
         'sign_in_attempts_limit': expected_sign_in_attempts_limit,
     }
 
-    audit_events_limit = get_limit_param(params, event_type='audit events')
-    sign_in_attempts_limit = get_limit_param(params, event_type='sign in attempts')
+    audit_events_limit = get_limit_param_for_event_type(params, event_type='audit events')
+    sign_in_attempts_limit = get_limit_param_for_event_type(params, event_type='sign in attempts')
 
     assert audit_events_limit == int(expected_audit_events_limit)
     assert sign_in_attempts_limit == int(expected_sign_in_attempts_limit)
-
-
-def test_get_unauthorized_event_types():
-    """
-    Given:
-        - JSON response from 'Auth introspect' endpoint and a list of configured event types.
-
-    When:
-        - Calling get_unauthorized_event_types.
-
-    Assert:
-        - Ensure correct list of unauthorized event types.
-    """
-    from OnePasswordEventCollector import get_unauthorized_event_types
-
-    event_types = ['audit events', 'item usage actions', 'sign in attempts']
-    mock_response = util_load_json('test_data/introspection_response.json')
-    unauthorized_event_types = get_unauthorized_event_types(mock_response, event_types)
-    assert unauthorized_event_types == []
 
 
 def test_add_fields_event():
@@ -117,7 +99,7 @@ def test_add_fields_event():
     assert raw_event['event_type'] == event_type
 
 
-def test_client_get_events_valid_inputs(authenticated_client: Client, requests_mock: RequestsMock):
+def test_client_get_events(authenticated_client: Client, mocker: MockerFixture):
     """
     Given:
         - A OnePasswordEventCollector.Client instance with valid inputs to the get_events method.
@@ -128,78 +110,20 @@ def test_client_get_events_valid_inputs(authenticated_client: Client, requests_m
     Assert:
         - Ensure no exception is raised and the raw API response is as expected.
     """
-    from OnePasswordEventCollector import urljoin
 
-    event_type = 'Sign in attempts'
-    from_date = datetime(2024, 12, 2, 11, 50)
+    event_feature = 'signinattempts'
+    request_body = {'cursor': '12345'}
 
-    event_url = urljoin(BASE_URL, '/signinattempts')
-    mock_response = util_load_json('test_data/signinattempts_response.json')
-    requests_mock.post(event_url, json=mock_response)
+    client_http_request = mocker.patch.object(authenticated_client, '_http_request')
 
-    response = authenticated_client.get_events(event_type=event_type, from_date=from_date)
+    authenticated_client.get_events(event_feature, request_body)
 
-    assert response == mock_response
+    client_http_request_kwargs = client_http_request.call_args.kwargs
 
-
-@pytest.mark.parametrize(
-    'event_type, error_message',
-    [
-        pytest.param(
-            'unsupported event',
-            'Invalid or unsupported 1Password event type: unsupported event.',
-            id='Invalid Event Type',
-        ),
-        pytest.param(
-            'audit events',
-            "Either a 'pagination_cursor' or a 'from_date' need to be specified.",
-            id='Valid event type but missing other params',
-        )
-    ]
-)
-def test_client_get_events_invalid_inputs(authenticated_client: Client, event_type: str, error_message: str):
-    """
-    Given:
-        - Case 1: A OnePasswordEventCollector.Client instance with an invalid event type.
-        - Case 2: A OnePasswordEventCollector.Client instance with an valid event type (but missing other params).
-
-    When:
-        - Calling Client.get_events.
-
-    Assert:
-        - Ensure a ValueError is raised with the appropriate error message.
-    """
-    with pytest.raises(ValueError, match=error_message):
-        authenticated_client.get_events(event_type)
-
-
-def test_get_events_from_client(authenticated_client: Client, mocker: MockerFixture):
-    """
-    Given:
-        - A 1Password event type, from date, and the maximum number of events.
-
-    When:
-        - Calling get_events_from_client (which calls Client.get_events).
-
-    Assert:
-        - Ensure Client.get_events is called twice (because first response['has_more'] is True).
-        - Ensure the number of events does not exceed the specified maximum and the events are as expected.
-    """
-    from OnePasswordEventCollector import get_events_from_client
-
-    event_type = 'audit events'
-    from_date = datetime(2024, 12, 2, 11, 50)
-    max_events = 20
-
-    client_get_events = mocker.patch.object(authenticated_client, 'get_events', side_effect=mock_client_get_events)
-
-    events = get_events_from_client(authenticated_client, event_type=event_type, from_date=from_date, max_events=max_events)
-
-    expected_events = util_load_json('test_data/auditevents_expected_events.json')
-
-    assert client_get_events.call_count == 2
-    assert len(events) <= max_events  # Sanity check
-    assert events == expected_events
+    assert client_http_request_kwargs['method'] == 'POST'
+    assert client_http_request_kwargs['url_suffix'] == '/signinattempts'
+    assert client_http_request_kwargs['json_data'] == request_body
+    assert client_http_request_kwargs['raise_on_status'] is True
 
 
 def test_push_events(mocker: MockerFixture):
@@ -249,18 +173,17 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
 
     # Inputs
     event_type = 'audit events'
-    first_fetch_date = datetime(2024, 12, 2, 11, 55)
+    from_date = '2024-12-02T11:54:11.244797072Z'
 
     # Expected outputs
-    expected_type_last_run = {'from_date': '2024-12-02T11:55:21.297797084Z', 'ids': ['NTKKXWCQJDPCEVSYGCBC4SDR64']}
+    expected_type_next_run = {'from_date': '2024-12-02T11:55:21.297797084Z', 'ids': ['NTKKXWCQJDPCEVSYGCBC4SDR64']}
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
     get_events_from_client = mocker.patch('OnePasswordEventCollector.get_events_from_client', return_value=expected_events)
-    type_last_run, events = fetch_events(
+    type_next_run, events = fetch_events(
         authenticated_client,
         event_type=event_type,
-        first_fetch_date=first_fetch_date,
-        event_type_last_run={},
+        event_type_last_run={'from_date': '2024-12-02T11:54:11.244797072Z', 'ids': []},
         event_type_max_results=1000,
     )
 
@@ -268,10 +191,10 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
 
     # Assert correct inputs
     assert get_events_from_client_kwargs['event_type'] == event_type
-    assert get_events_from_client_kwargs['from_date'] == first_fetch_date
+    assert get_events_from_client_kwargs['from_date'] == dateparser.parse(from_date)
 
     # Assert correct outputs
-    assert type_last_run == expected_type_last_run
+    assert type_next_run == expected_type_next_run
     assert events == expected_events
 
 
