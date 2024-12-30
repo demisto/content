@@ -22,7 +22,7 @@ Investigation:
 Containment:
  
 - Kill causality process
-- Block maliciou URL
+- Block malicious URL
  
 Requirements: 
  
