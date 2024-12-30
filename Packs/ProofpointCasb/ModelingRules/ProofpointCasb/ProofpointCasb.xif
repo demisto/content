@@ -33,7 +33,3 @@
         xdm.observer.name = event -> feed.data.source.kind,
         xdm.network.application_protocol = event -> remote.protocol,
         xdm.target.url = event -> resources[0].url;
-
-
-
-ֿ\"remoteֿֿֿֿֿ\":{\"host\": {\"ip\": {\"isp\":{\"name\":\"bezeq\"},\"domain\": \"test\",\"address\": \"0.0.0.0\"}},\"geo\":{\"address\": {\"area1\": {\"name\": \"test1\"},\"country\": {\"name\": \"testcountry\",\"code\": \"123\"},\"area2\": {\"name\": \"tel aviv\"},\"postal\": \"1234\"}},\"client\": {\"geo\": {\"address\": {\"area1\": {\"name\": \"test\"},\"country\": {\"name\": \"\",\"code\": \"\"},\"area2\": {\"nameֿֿֿֿ\":\"\"},\"postal\": \"\"}},\"agent\": {\"name\": \"Unknown\",\"description\": \"agent\"},\"device\": {\"os\": {\"kind\": \"windows\"},\"kind\": \"device:unknown\"},\"ip\": \"1.2.3.4\"},\"protocol\": \"https\"}
