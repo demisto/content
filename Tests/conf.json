@@ -26,8 +26,8 @@
             "playbookID": "Test-GitLab-v2"
         },
         {
-            "integrations": "Bitbucket",
-            "playbookID": "Test_Bitbucket"
+            "integrations": "MITRE ATT&CK v2",
+            "playbookID": "FeedMitreAttackv2_test"
         },
         {
             "integrations": "CrowdStrike Falcon Intel v2",
