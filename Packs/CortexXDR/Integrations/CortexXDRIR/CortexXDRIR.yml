@@ -190,7 +190,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-  defaultvalue: 'true'
+  defaultvalue: 'false'
   advanced: true
   deprecated: true
   hidden: true

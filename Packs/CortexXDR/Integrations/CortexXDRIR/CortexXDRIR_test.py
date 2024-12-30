@@ -1785,7 +1785,7 @@ def test_fetch_incidents_dedup():
                 inc for inc in self._incidents
                 if inc['creation_time'] >= gte_creation_time_milliseconds
             ][:limit]
-        
+
         def remove_additional_data(self):
             return False
 
@@ -1966,15 +1966,18 @@ def test_mirror_in_wrong_last_update(mocker):
 
     assert e.value.message == "Failed to parse last_update='abcdefg' got last_update_utc=None"
 
+
 def test_get_remote_data_command_exclude_fields(mocker):
     """
     Given:
         - An XDR client with base URL, headers, and mock HTTP requests
         - Arguments (`id` set to 1 and `lastUpdate` set to 0, which is lower than incident modification time)
     When:
-        - Running `get_remote_data_command` with different combinations of `exclude_artifacts`, `excluded_alert_fields`, and `remove_nulls_from_alerts` arguments
+        - Running `get_remote_data_command` with different combinations of `exclude_artifacts`,
+        `excluded_alert_fields`, and `remove_nulls_from_alerts` arguments
     Then:
-        - The correct `POST` request is made to the `/incidents/get_multiple_incidents_extra_data/` endpoint with the appropriate parameters
+        - The correct `POST` request is made to the `/incidents/get_multiple_incidents_extra_data/`
+        endpoint with the appropriate parameters
         - The request data contains correct filters, exclusions, and sorting options based on the provided arguments
     """
     from CortexXDRIR import get_remote_data_command, Client
@@ -1999,10 +2002,10 @@ def test_get_remote_data_command_exclude_fields(mocker):
         method='POST',
         url_suffix='/incidents/get_multiple_incidents_extra_data/',
         json_data={'request_data':
-            {'search_to': 100, 'sort':
-                {'field': 'creation_time', 'keyword': 'asc'},
-                'fields_to_exclude': ['network_artifacts', 'file_artifacts'],
-                'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                       'fields_to_exclude': ['network_artifacts', 'file_artifacts'],
+                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
         headers=client.headers,
         timeout=120
     )
@@ -2014,10 +2017,10 @@ def test_get_remote_data_command_exclude_fields(mocker):
         method='POST',
         url_suffix='/incidents/get_multiple_incidents_extra_data/',
         json_data={'request_data':
-            {'search_to': 100, 'sort':
-                {'field': 'creation_time', 'keyword': 'asc'},
-                'alert_fields_to_exclude': ['fieldA', 'fieldB'],
-                'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                       'alert_fields_to_exclude': ['fieldA', 'fieldB'],
+                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
         headers=client.headers,
         timeout=120
     )
@@ -2028,31 +2031,32 @@ def test_get_remote_data_command_exclude_fields(mocker):
         method='POST',
         url_suffix='/incidents/get_multiple_incidents_extra_data/',
         json_data={'request_data':
-            {'search_to': 100, 'sort':
-                {'field': 'creation_time', 'keyword': 'asc'},
-                'drop_nulls': True,
-                'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                       'drop_nulls': True,
+                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
         headers=client.headers,
         timeout=120
     )
 
     # Test case 5: With remove_nulls_from_alerts, excluded_alert_fields, exclude_artifacts
-    response = get_remote_data_command(client, args, remove_nulls_from_alerts=True,
-                                       excluded_alert_fields=excluded_alert_fields,
-                                       exclude_artifacts=exclude_artifacts)
+    get_remote_data_command(client, args, remove_nulls_from_alerts=True,
+                            excluded_alert_fields=excluded_alert_fields,
+                            exclude_artifacts=exclude_artifacts)
     client._http_request.assert_called_with(
         method='POST',
         url_suffix='/incidents/get_multiple_incidents_extra_data/',
         json_data={'request_data':
-            {'search_to': 100, 'sort':
-                {'field': 'creation_time', 'keyword': 'asc'},
-                'alert_fields_to_exclude': ['fieldA', 'fieldB'],
-                'drop_nulls': True,
-                'fields_to_exclude': ['network_artifacts', 'file_artifacts'],
-                'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+                   {'search_to': 100, 'sort':
+                    {'field': 'creation_time', 'keyword': 'asc'},
+                       'alert_fields_to_exclude': ['fieldA', 'fieldB'],
+                       'drop_nulls': True,
+                       'fields_to_exclude': ['network_artifacts', 'file_artifacts'],
+                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
         headers=client.headers,
         timeout=120
     )
+
 
 @pytest.fixture
 def mock_client():
@@ -2061,21 +2065,21 @@ def mock_client():
     mock.get_multiple_incidents_extra_data = MagicMock()
     return mock
 
+
 def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock_client):
     """
     Given:
         - An XDR client.
-        - Parameters for fetching incidents including `exclude_artifacts`, `excluded_alert_fields`, 
+        - Parameters for fetching incidents including `exclude_artifacts`, `excluded_alert_fields`,
           and `remove_nulls_from_alerts`.
     When:
         - Running `fetch_incidents` to fetch multiple incidents with provided parameters.
     Then:
         - The correct call is made to `get_multiple_incidents_extra_data` with expected arguments.
-        - The call parameters correctly reflect the input values, such as filters, exclusions, 
+        - The call parameters correctly reflect the input values, such as filters, exclusions,
           and sorting options.
     """
     from CortexXDRIR import fetch_incidents
-    from CortexXDRIR import Client
     # Prepare test inputs
     first_fetch_time = "2023-01-01T00:00:00Z"
     integration_instance = "test_integration"
@@ -2105,18 +2109,19 @@ def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock
         excluded_alert_fields=excluded_alert_fields,
         remove_nulls_from_alerts=remove_nulls_from_alerts
     )
-    
+
+
 def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
     """
     Given:
         - An XDR client.
-        - Parameters for fetching incidents including `exclude_artifacts`, `excluded_alert_fields`, 
+        - Parameters for fetching incidents including `exclude_artifacts`, `excluded_alert_fields`,
           and `remove_nulls_from_alerts`.
     When:
         - Running `fetch_incidents` to fetch multiple incidents with provided parameters.
     Then:
         - The correct call is made to `get_multiple_incidents_extra_data` with expected arguments.
-        - The call parameters correctly reflect the input values, such as filters, exclusions, 
+        - The call parameters correctly reflect the input values, such as filters, exclusions,
           and sorting options.
     """
     from CortexXDRIR import Client, fetch_incidents
@@ -2136,16 +2141,16 @@ def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
     excluded_alert_fields = ['fieldA', 'fieldB']
     remove_nulls_from_alerts = True
     max_fetch = 10
-    
+
     raw_incident = load_test_data('./test_data/get_multiple_incidents_extra_data.json').get('reply', {}).get('incidents')[0]
     raw_incident['incident']['alert_count'] = 10000
     raw_incident['incident']['incident_id'] = 11
 
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=[raw_incident])
-    mock_get_incident_extra_data=mocker.patch.object(Client, 'get_incident_extra_data', return_value=raw_incident)
+    mock_get_incident_extra_data = mocker.patch.object(Client, 'get_incident_extra_data', return_value=raw_incident)
     fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts, last_run,
-                max_fetch, statuses, starred, starred_incidents_fetch_window,
-                excluded_alert_fields, remove_nulls_from_alerts)
+                    max_fetch, statuses, starred, starred_incidents_fetch_window,
+                    excluded_alert_fields, remove_nulls_from_alerts)
     # Assume the alert count is above ALERTS_LIMIT_PER_INCIDENTS
     mock_get_incident_extra_data.assert_called_with(
         incident_id=11,
@@ -2153,3 +2158,48 @@ def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
         excluded_alert_fields=excluded_alert_fields,
         remove_nulls_from_alerts=remove_nulls_from_alerts
     )
+
+
+def test_handle_excluded_data_param_old_param():
+    """
+    Given:
+        - The `excluded_data_from_alerts` parameter with various combinations of fields to exclude.
+    When:
+        - Calling the `handle_excluded_data_from_alerts_param` function.
+    Then:
+        - Ensure that the function correctly separates `null_values` from the rest of the exclusions.
+        - Verify that the returned tuple matches the expected exclusions list and boolean value for `null_values`.
+    """
+    from CortexXDRIR import handle_excluded_data_from_alerts_param
+    excluded_data_from_alerts = ['a', 'b']
+    assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (['a', 'b'], False)
+    excluded_data_from_alerts = ['null_values', 'b']
+    assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (['b'], True)
+
+
+def test_handle_exclude_incident_fields():
+    """
+    Given:
+        - Different combinations of exclude incident fields data:
+            1. using new param with value ['additional_data', 'network_artifacts']
+            2. using old param
+            3. both old and new param are False/Empty
+    When:
+        - Calling the `handle_exclude_incident_fields` function.
+    Then:
+        - Ensure that the function correctly adjusts the excluded fields and boolean additional
+        data flag based on the inputs.
+    """
+    from CortexXDRIR import handle_exclude_incident_fields
+    exclude_incident_fields_bool = False
+    exclude_incident_fields_list = ['additional_data', 'network_artifacts']
+    assert handle_exclude_incident_fields(exclude_incident_fields_bool,
+                                          exclude_incident_fields_list) == (['network_artifacts'], True)
+    exclude_incident_fields_bool = True
+    exclude_incident_fields_list = []
+    assert handle_exclude_incident_fields(exclude_incident_fields_bool, exclude_incident_fields_list) == (
+        ['network_artifacts', 'file_artifacts'], False
+    )
+    exclude_incident_fields_bool = False
+    exclude_incident_fields_list = []
+    assert handle_exclude_incident_fields(exclude_incident_fields_bool, exclude_incident_fields_list) == ([], False)

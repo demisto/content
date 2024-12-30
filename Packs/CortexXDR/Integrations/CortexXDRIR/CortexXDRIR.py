@@ -187,9 +187,18 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
                                          if direction == XSOAR_TO_XDR else xsoar_statuses))
 
 
-def handle_excluded_data_param(excluded_alert_fields: list = []):
+def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> Tuple[list, bool]:
+    """handles the excluded_alert_fields parameter
+
+    Args:
+        excluded_alert_fields (list, optional): the fields from alerts to exclude. Defaults to [].
+
+    Returns:
+        (list, bool): (Which fields of alerts should be excluded from the response,
+        and whether null values should be excluded from the response)
+    """
     remove_nulls_from_alerts = REMOVE_ALERTS_NULL_VALUES in excluded_alert_fields
-    demisto.debug(f"handle_excluded_data_param {remove_nulls_from_alerts=}, {excluded_alert_fields=}")
+    demisto.debug(f"handle_excluded_data_from_alerts_param {remove_nulls_from_alerts=}, {excluded_alert_fields=}")
     formated_excluded_data = [field for field in excluded_alert_fields if field != REMOVE_ALERTS_NULL_VALUES]
     return formated_excluded_data, remove_nulls_from_alerts
 
@@ -1186,7 +1195,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             # There might be a case where deduped incident doesn't come back and we are returning more than the limit.
             statuses=statuses, limit=max_fetch + len(dedup_incidents), starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
-            exclude_artifacts=exclude_artifacts,excluded_alert_fields=excluded_alert_fields,
+            exclude_artifacts=exclude_artifacts, excluded_alert_fields=excluded_alert_fields,
             remove_nulls_from_alerts=remove_nulls_from_alerts
         )
 
@@ -1395,12 +1404,14 @@ def handle_exclude_incident_fields(bool_exclude_field_value: bool, list_exclude_
 
     Args:
         bool_exclude_field_value (bool): there are two scenarios for this variable-
-                                            1. param- bool param in order for backwards compatibility
+                                            1. param (the old param version of type 8)-
+                                                bool param in order it to be backwards compatible
                                             2. argument - bool arg
-        list_exclude_field_value (list): exclude_field is a list variable (new type)
+        list_exclude_field_value (list): exclude_field is a list variable (new param version of type 16)
 
     Returns:
-        list: the exclude_fields to append to the xdr api request
+        list, bool: the exclude_fields to append to the xdr api request, whether ro remove the additional data field
+        (if appear in the incident type)
     """
     demisto.debug(f"handle_exclude_incident_fields: {bool_exclude_field_value=}, {list_exclude_field_value=}")
     remove_additional_data = False
@@ -1437,7 +1448,7 @@ def main():  # pragma: no cover
             argToBoolean(params.get('exclude_fields', False)),
             argToList(params.get('excluded_incident_fields', []))))
     excluded_alert_fields = argToList(params.get('excluded_alert_fields'))
-    excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_param(excluded_alert_fields)
+    excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_from_alerts_param(excluded_alert_fields)
     demisto.debug(f"{excluded_alert_fields}, {remove_nulls_from_alerts}")
     xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
     try:
