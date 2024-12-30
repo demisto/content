@@ -1,4 +1,5 @@
-description: Initiates a new endpoint script execution action using a provided script
+deprecated: true
+description: Deprecated. Use the `xdr-script-run` command instead. Initiates a new endpoint script execution action using a provided script
   unique id from Cortex XDR script library.
 id: Cortex XDR - Run script
 inputs:

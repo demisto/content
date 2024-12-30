@@ -5876,6 +5876,10 @@
         {
             "integrations": "DSPM",
             "playbookID": "DSPM Test"
+        },
+        {
+            "integrations": "Symantec Email Security Cloud",
+            "playbookID": "SymantecEmailSecurity_TestPlaybook"
         }
     ],
     "skipped_tests": {
@@ -6073,6 +6077,7 @@
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
+        "RedCanary": "No instance",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
@@ -6205,7 +6210,8 @@
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
-        "DSPM": "No instance"
+        "DSPM": "No instance",
+        "Symantec Email Security Cloud": "No instance"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
