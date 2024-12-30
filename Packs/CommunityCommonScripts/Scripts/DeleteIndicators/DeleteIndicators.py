@@ -12,12 +12,12 @@ def main():
         reason = args.get('exclusion_reason', '')
 
         # Ensure only one argument is supplied for the list of indicators to delete
-args = [query, indicator_vals, indicator_ids]
-if sum(bool(arg) for arg in args) != 1:
-    return_error(
-        "Invalid input: Exactly ONE of the following arguments must be provided: "
-        "'indicator_query', 'indicator_values', or 'indicator_ids'."
-    )
+        args = [query, indicator_vals, indicator_ids]
+        if sum(bool(arg) for arg in args) != 1:
+            return_error(
+                "Invalid input: Exactly ONE of the following arguments must be provided: "
+                "'indicator_query', 'indicator_values', or 'indicator_ids'."
+            )
 
         if query:
             search_query = query
