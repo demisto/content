@@ -3,7 +3,7 @@
   "playbook_id": "Msiexec_execution_of_an_executable_from_an_uncommon_remote_location",
   "suggestion_reason": "Recommended for 'Msiexec execution of an executable from an uncommon remote location without properties' and 'Msiexec execution of an executable from an uncommon remote location with a specific port' alerts",
   "description": "This trigger is responsible for handling the 'Msiexec execution of an executable from an uncommon remote location with a specific port' and 'Msiexec execution of an executable from an uncommon remote location without properties' alerts via the 'Msiexec_execution_of_an_executable_from_an_uncommon_remote_location' playbook",
-  "trigger_name": "Suspicious msiexec execution",
+  "trigger_name": "Msiexec execution of an executable from an uncommon remote location",
   "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
