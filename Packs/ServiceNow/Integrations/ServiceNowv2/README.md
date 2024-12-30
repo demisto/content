@@ -45,7 +45,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
       In order to use *Mirrored XSOAR Ticket custom close resolution code* or *Mirrored XSOAR Ticket custom close state code* parameter, it must follow this format: "custom_state_code1=custom_label1,custom_state_code2=custom_label2,...",
       for example: “10=Design,11=Development,12=Testing”.
       Also, a matching user-defined list of customized incident close reasons must be configured as a "Server configuration" in Cortex XSOAR. (Meaning each Service Now custom state label will have a matching Cortex XSOAR custom close reason with the same name). ***Not following this format will result in a server error!***
-      For more information about Customize Incident Close Reasons, see [this link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons).
+      For more information about Customize Incident Close Reasons, see [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons) or [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Customize-incident-close-reasons) or [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Customize-incident-close-reasons).
       ![image](../../doc_files/closing-mirror-xsoar.png)
    6. To enable mirroring to close an incident in ServiceNow, under the **Mirrored ServiceNow Ticket closure method** dropdown, select the ticket closing method,
       or set the **Mirrored ServiceNow Ticket custom close state code** parameter, in order to override the default closure method with a custom state.
@@ -141,7 +141,7 @@ When mirroring incidents, you can make changes in ServiceNow that will be reflec
 You can also attach files from either of the systems which will then be available in the other system.  
 
 The following instructions include steps for configuring the integration and incoming and outgoing mappers. However, they do not cover every option available in the integration nor classification and mapping features. 
-For information about classification and mapping see [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).  
+For information about classification and mapping see [Classification and Mapping (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping) or [Classification and Mapping (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Classification-and-mapping) or [Classification and Mapping (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Classification-and-mapping).  
 
 **Note:**  
 - For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 

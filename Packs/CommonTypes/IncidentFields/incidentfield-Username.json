@@ -13,7 +13,8 @@
 		"IAM - Sync User",
 		"IAM - Rehire User",
 		"Carbon Black EDR",
-		"Azure Active Directory Identity and Access"
+		"Azure Active Directory Identity and Access",
+        "CrowdStrike Falcon OFP Detection"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -50,7 +51,8 @@
 		"User Profile",
 		"IAM - Sync User",
 		"IAM - Rehire User",
-		"Exabeam Notable User"
+		"Exabeam Notable User",
+        "CrowdStrike Falcon OFP Detection"
 	],
 	"threshold": 72,
 	"type": "shortText",
