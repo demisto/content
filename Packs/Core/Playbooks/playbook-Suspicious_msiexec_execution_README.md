@@ -28,7 +28,7 @@ Requirements:
  
 For any response action, you need one of the following integrations:
  
-- PAN-OS.
+PAN-OS
 
 ## Dependencies
 
