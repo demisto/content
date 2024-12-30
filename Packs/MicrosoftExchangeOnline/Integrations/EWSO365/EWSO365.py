@@ -493,20 +493,19 @@ def email_ec(item):
     :return: entry context dict
     """
     return {
-        "CC": None
-        if not item.cc_recipients
-        else [mailbox.email_address for mailbox in item.cc_recipients],
+        "CC": None if not item.cc_recipients else
+        [mailbox.email_address for mailbox in item.cc_recipients],
         "BCC": None
-        if not item.bcc_recipients
-        else [mailbox.email_address for mailbox in item.bcc_recipients],
-        "To": None
-        if not item.to_recipients
-        else [mailbox.email_address for mailbox in item.to_recipients],
+        if not item.bcc_recipients else
+        [mailbox.email_address for mailbox in item.bcc_recipients],
+        "To": None if not item.to_recipients else
+        [mailbox.email_address for mailbox in item.to_recipients],
         "From": item.author.email_address,
         "Subject": item.subject,
         "Text": item.text_body,
         "HTML": item.body,
-        "HeadersMap": {header.name: header.value for header in item.headers},
+        "HeadersMap": None if not item.headers else
+        {header.name: header.value for header in item.headers},
     }
 
 
