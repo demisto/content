@@ -1973,7 +1973,7 @@ def test_handle_incoming_incident(capfd, mocker):
     from CortexXDRIR import handle_incoming_incident
     from CommonServerPython import EntryType, EntryFormat
     custom_mapping = ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
-                              "True Positive=Resolved,Security Testing=Other,Other=Other")
+                      "True Positive=Resolved,Security Testing=Other,Other=Other")
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
 
