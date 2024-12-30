@@ -269,13 +269,13 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        
+
         For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
-        
+
         For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
-        
+
         For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
-        
+
         For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SearchAlertsV2
       type: regular
@@ -635,7 +635,7 @@ tasks:
       {
         "position": {
           "x": 180,
-          "y": 2780
+          "y": 2930
         }
       }
     note: false
@@ -663,7 +663,7 @@ tasks:
       {
         "position": {
           "x": 180,
-          "y": 2950
+          "y": 3100
         }
       }
     note: false
@@ -700,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 2770
+          "y": 2930
         }
       }
     note: false
@@ -748,7 +748,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2420
+          "y": 2560
         }
       }
     note: false
@@ -812,7 +812,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2605
+          "y": 2755
         }
       }
     note: false
@@ -838,7 +838,7 @@ tasks:
       '#default#':
       - "14"
       "Yes":
-      - "17"
+      - "23"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -871,7 +871,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "3"
         - operator: greaterThanOrEqual
           left:
             value:
@@ -880,24 +880,6 @@ tasks:
           right:
             value:
               simple: "30"
-      - - operator: containsString
-          left:
-            value:
-              simple: Core.Endpoint.endpoint_type
-            iscontext: true
-          right:
-            value:
-              simple: WORKSTATION
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Core.Endpoint.endpoint_status
-            iscontext: true
-          right:
-            value:
-              simple: CONNECTED
-          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -1026,15 +1008,102 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c5470fce-c24b-4768-844b-ce10abd9c6ba
+    type: condition
+    task:
+      id: c5470fce-c24b-4768-844b-ce10abd9c6ba
+      version: -1
+      name: Check if the endpoint is workstation or a server
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      WORKSTATION:
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: WORKSTATION
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: dc9a785d-392b-4233-89ad-b308d3412477
+    type: regular
+    task:
+      id: dc9a785d-392b-4233-89ad-b308d3412477
+      version: -1
+      name: Manual remediation actions for a server or a disconnected endpoint
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook didn't isolate the following host: ${Endpoint.Hostname} \n\nThis is due to one of the following reasons:\n- The device disconnected.\n- The device has been identified as a server.\n\nPlease take manual action to contain the attack and prevent the attacker from executing lateral movement before closing this alert."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "10_11_Approved": 0.38,
       "10_16_#default#": 0.1,
       "12_13_#error#": 0.51,
-      "17_14_#default#": 0.26,
+      "17_14_#default#": 0.43,
+      "17_18_Isolate": 0.4,
       "19_14_#default#": 0.21,
-      "19_17_Yes": 0.37,
+      "19_23_Yes": 0.37,
+      "23_17_WORKSTATION": 0.46,
+      "23_24_#default#": 0.62,
       "5_11_Malicious": 0.46,
       "5_8_#default#": 0.42,
       "8_11_Malicious": 0.22,
@@ -1044,7 +1113,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 3335,
         "width": 1340,
         "x": 180,
         "y": -170
