@@ -1161,7 +1161,7 @@ tasks:
       id: a2fecd08-a416-4a40-8c81-b968ef614ae5
       version: -1
       name: Check IP prevalence
-      description: Get the prevalence of an ip, identified by ip_address.
+      description: Get the prevalence of an IP, identified by ip_address.
       script: '|||core-get-IP-analytics-prevalence'
       type: regular
       iscommand: true
