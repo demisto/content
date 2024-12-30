@@ -412,7 +412,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries.get('Contents') == {'dbotIncidentReopen': True}
+    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
 
 
 def test_get_remote_data_command_with_rate_limit_exception(mocker):
@@ -603,7 +603,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries.get('Contents') == {'dbotIncidentReopen': True}
+    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
 
 
 @pytest.mark.parametrize('last_update',
