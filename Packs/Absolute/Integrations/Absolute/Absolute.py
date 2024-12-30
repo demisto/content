@@ -105,7 +105,7 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
 ]
 
 SEIM_EVENTS_PAGE_SIZE = 1000
-
+CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
 
 class Client(BaseClient):
     def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
@@ -380,9 +380,8 @@ class ClientV3(BaseClient):
         return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
 
     def perform_request(self, signed: bytes) -> Response:
-        request_url = "https://api.absolute.com/jws/validate"
         try:
-            return requests.post(request_url, signed, headers={"content-type": "text/plain"}, verify=False)
+            return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
         except Exception as e:
             demisto.error(f'Failed to perform request: {e}')
 
