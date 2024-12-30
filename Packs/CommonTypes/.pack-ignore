@@ -419,4 +419,4 @@ ignore=GR107
 ignore=RN115
 
 [file:layoutscontainer-Tactic.json]
-ignore=BA101,LO107
+ignore=LO107
