@@ -406,7 +406,7 @@ tasks:
       - "9"
     scriptarguments:
       commands:
-        simple: ping 127.0.0.1 -t
+        simple: ping 127.0.0.1 -n 600
       endpoint_ids:
         complex:
           root: Core.Endpoint
