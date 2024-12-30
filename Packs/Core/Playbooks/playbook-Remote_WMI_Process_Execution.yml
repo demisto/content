@@ -265,11 +265,18 @@ tasks:
       version: -1
       name: Retrieve all incident alerts
       description: |-
-        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+        Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+        
+        For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+        
+        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+        
+        For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -531,7 +538,7 @@ tasks:
       id: de7cb93b-9a47-4ed6-8182-17ae24e3e585
       version: -1
       name: Terminate Causality
-      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -923,7 +930,7 @@ tasks:
       id: b93c8d2f-f8f3-41a0-8d5e-3505f27a0ce5
       version: -1
       name: Search for the attacker's agent ID
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of the endpoint from the start of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
