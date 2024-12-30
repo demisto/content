@@ -1110,6 +1110,36 @@ class TestArcherV2:
         })
         mock_get_record.assert_called_once_with("app1", "content1", 0)
 
+    def test_upload_and_associate_command_single_file(self, mocker):
+        """
+        Given: A single file to upload and associate
+        When: The upload_and_associate_command is called
+        Then: The file is uploaded and associated with the record
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'Archer': {'Record': {'ID': '123'}}}, '', ''))
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 1
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1",
+            "fieldsToValues": '{"field1": ["123"]}'
+        })
+
     def test_upload_and_associate_command_record_has_no_attachments(self, mocker):
         """
         Given: A record without existing attachments and multiple files to upload
@@ -1174,34 +1204,6 @@ class TestArcherV2:
         })
         mock_get_record.assert_called_once_with("app1", "content1", 0)
         mock_error.assert_called_once_with('error')
-
-    def test_upload_and_associate_command_single_file(self, mocker):
-        """
-        Given: A single file to upload and associate
-        When: The upload_and_associate_command is called
-        Then: The file is uploaded and associated with the record
-        """
-        client = Client(BASE_URL, '', '', '', '', 400)
-        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
-        mock_update_record = mocker.patch("ArcherV2.update_record_command")
-        args = {
-            "applicationId": "app1",
-            "contentId": "content1",
-            "associatedField": "field1",
-            "entryId": "entry1"
-        }
-
-        upload_and_associate_command(client, args)
-
-        assert mock_upload_file.call_count == 1
-        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
-        mock_update_record.assert_called_once_with(client, {
-            "applicationId": "app1",
-            "contentId": "content1",
-            "associatedField": "field1",
-            "entryId": "entry1",
-            "fieldsToValues": '{"field1": ["123"]}'
-        })
 
     def test_upload_and_associate_command_without_association(self, mocker):
         """
