@@ -86,7 +86,7 @@ call o365_common_fields
 	xdm.target.resource.name = if(FormName != null, FormName, ObjectId ~= "\S+", rtrim(ltrim(ObjectId, "<"), ">")),
 	xdm.target.resource.type = ItemType,
 	xdm.target.url = Url,
-	xdm.target.user.identifier = TargetYammerUserId,
+	xdm.target.user.identifier = to_string(TargetYammerUserId),
 	xdm.target.user.upn = members_upn;
 
 
