@@ -1010,13 +1010,13 @@ def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str
         if not next_page_token:
             break
 
-    demisto.debug(f'Fetched {len(all_events)} events')
+    demisto.debug(f'run_fetch_mechanism: Fetched {len(all_events)} events')
     return all_events, next_page_token
 
 
 def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]], should_get_latest_events: bool = True) -> tuple[
     List[Dict[str, Any]], List[str]]:
-    demisto.debug("Adding _TIME field to events and getting the latest events id")
+    demisto.debug("Adding _TIME field to events and optionally getting the latest events id")
     latest_event_time = events[-1].get('eventDateTimeUtc')
     latest_events_id = []
     for event in events:
