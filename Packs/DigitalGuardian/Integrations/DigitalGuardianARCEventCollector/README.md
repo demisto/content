@@ -1,11 +1,13 @@
-This is the Digital Guardian ARC event collector integration for XSIAM.
+This is the Digital Guardian ARC event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 3.10.0 of DigitalGuardianARCEventCollector
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Known Limitations
 
-A maximum of 10,000 events can be retrieved per fetch for each Digital Guardian export profile. To optimize throughput, it is recommended to distribute alerts and events across multiple export profiles and configure the export profile in the Digital Guardian ARC platform to include only relevant alarm and event types.
+* A maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To optimize throughput, it is recommended to distribute alerts and events across multiple export profiles and configure the export profile in the Digital Guardian ARC platform to include only relevant alarm and event types.
+
+* Events are fetched starting from the **Last Exported Record** timestamp of the export profile. When first configuring the event collector, it is highly recommended to adjust the value of this field in the selected export profile(s) to a recent timestamp for optimal fetch performance.
 
 ## Configure Digital Guardian ARC Event Collector in Cortex
 
@@ -42,6 +44,18 @@ Gets events from the configured Digital Guardian ARC export profile.
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum results to return per export profile. Default is 1000. | Optional | 
 
+#### Command Example
+
+```!digital-guardian-get-events limit=2 should_push_events=False```
+
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+
+>### Events for Profile defaultExportProfile
+>
+>| COL_A | COL_B |
+>| --- | --- |
+>| ... | ... |
