@@ -1,0 +1,53 @@
+args:
+- description: "Specify the risk level values. Supports comma separated values.\n\nSupported values are: High, Medium, Low, No Risk."
+  name: risk_levels
+  auto: PREDEFINED
+  predefined:
+  - High
+  - Medium
+  - Low
+  - No Risk
+  isArray: true
+- description: "Specify the anomaly severity values. Supports comma separated values.\n\nSupported values are: Critical, Warning, Informational."
+  name: anomaly_severities
+  auto: PREDEFINED
+  predefined:
+  - Critical
+  - Warning
+  - Informational
+  isArray: true
+- description: "Specify the malicious threat hunt values. Supports comma separated values.\n\nSupported values are: Matches Found, No Matches Found."
+  name: threat_hunt_malicious
+  auto: PREDEFINED
+  predefined:
+  - Matches Found
+  - No Matches Found
+  isArray: true
+- description: "Specify the malicious threat monitoring values. Supports comma separated values.\n\nSupported values are: Matches Found, No Matches Found."
+  name: threat_monitoring_malicious
+  auto: PREDEFINED
+  predefined:
+  - Matches Found
+  - No Matches Found
+  isArray: true
+- description: "Specify the level in number by which to increase the XSOAR incident severity. Only applicable if match found for the malicious threat hunt or for the malicious threat monitoring of workload.\n\nNote: The value can range from 1 to 4.\n\nExample: If the current XSOAR incident severity is 1 (Low) and the script is set to increase the severity by 2, the XSOAR incident severity will be set to 3 (high)."
+  name: increase_severity_by
+  defaultValue: "1"
+comment: 'Script used to set the XSOAR incident severity using the workload data provided from the argument.'
+commonfields:
+  id: RubrikSetIncidentSeverityUsingWorkLoadRiskLevel
+  version: -1
+enabled: false
+name: RubrikSetIncidentSeverityUsingWorkLoadRiskLevel
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.116949
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
