@@ -952,9 +952,15 @@ def parse_geo_location_outputs(response):
     return parsed_response
 
 
-def prepare_query_string_for_fetch_events(page_size: int, start_date: datetime = None, end_date: datetime = None,
+def prepare_query_string_for_fetch_events(page_size: int = None, start_date: datetime = None, end_date: datetime = None,
                                           next_page: str = None) -> str:
-    pass
+    query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+    if page_size:
+        query += f'&pageSize={page_size}'
+    if next_page:
+        query += f'&nextPage={next_page}'
+    demisto.debug(f'Query string for fetching events: {query}')
+    return query
 
 
 def get_device_application_list_command(args, client) -> CommandResults:
@@ -1075,13 +1081,9 @@ def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str
     all_events = []
     while len(all_events) < fetch_limit:
         page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
-        query_string = prepare_query_string_for_fetch_events()
-        #if next_page_token:
-        # response = client.api_request_absolute('GET', '/v3/reporting/siem-events', query_string="pageSize=50&fromDateTimeUtc=2024-12-10T10:15:30.000Z&toDateTimeUtc=2024-12-29T16:15:30.000Z")
+        query_string = prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date, end_date=end_date,
+                                                             next_page=next_page_token)
         response = client.fetch_events(query_string=query_string)
-        # else:
-        #     response = client.fetch_events('GET', '/v3/reporting/siem-events', query_string="pageSize=1000&fromDateTimeUtc=2024-12-27T10:15:30.000Z&toDateTimeUtc=2024-12-28T11:15:30.000Z")
-            # response = client.fetch_events(page_size=page_size, start_date=start_date, end_date=end_date)
 
         events = response.get('data', [])
         demisto.debug(f'Fetched {len(events)} events')
@@ -1110,8 +1112,8 @@ def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]])
 
 
 def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
-    end_date = arg_to_datetime(args.get('end_date', datetime.utcnow()))
-    start_date = arg_to_datetime(args.get('start_date', datetime.utcnow() - timedelta(minutes=1)))
+    end_date = arg_to_datetime(args.get('end_date', "now"))
+    start_date = arg_to_datetime(args.get('start_date', "two month ago"))  # TODO: change to one minute ago
     fetch_limit = int(args.get('limit', 50))
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
