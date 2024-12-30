@@ -81,7 +81,7 @@ class ResultsSummary:
                 playbook_info = get_playbook_info(playbook_failure_set, self.playbooks_dict)
                 final_message.append(
                     f"Playbook {playbook_info} "
-                    f"was not found for alerts {sorted(alerts_fail_set)}.")
+                    f"was not found for alerts: {sorted(alerts_fail_set)}.")
 
         if reopened_alerts := self.results_summary["reopened"]:
             final_message.append(f"Alerts {sorted(reopened_alerts)} have been reopened.")
@@ -189,10 +189,12 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: str | lis
         elif isinstance(alert_ids, list):
             if "The request requires the right permissions" in command_results[0].get('Contents'):
                 return_error("Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights.")
+            
             result_dict = command_results[0].get('Contents', {}).get('response', {})
 
             if not result_dict:
                 results_summary.update_success(playbook_id, alert_ids)
+                return None
 
             failed_ids = list(result_dict.keys())
             succeeded_ids = list(set(alert_ids) - set(failed_ids))
@@ -365,7 +367,7 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
             missing_playbook_alerts.append(inc["id"])
 
     if missing_playbook_alerts:
-        results_summary.append_to_others(f"Could not find an attached playbook for alerts {missing_playbook_alerts}.")
+        results_summary.append_to_others(f"Could not find an attached playbook for alerts: {missing_playbook_alerts}.")
 
     for playbook_id, playbook_incidents in playbook_map.items():
         loop_on_alerts(playbook_incidents, playbook_id, limit, reopen_closed_inv,
@@ -375,7 +377,7 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
 def main():
     try:
         args = demisto.args()
-        original_query = args.get("query", "runStatus:\"Pending\"")
+        original_query = args.get("query", "runStatus:Pending")
         if not argToBoolean(args.get("reopen_closed_inv")):
             updated_query = f"-status:closed AND {original_query}"
             args.update({"query": updated_query})

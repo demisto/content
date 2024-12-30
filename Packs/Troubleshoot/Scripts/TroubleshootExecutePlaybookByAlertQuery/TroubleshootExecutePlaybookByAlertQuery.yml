@@ -1,7 +1,7 @@
 args:
 - name: query
-  description: A query string to filter alerts. For example, to fetch pending alerts, use "runStatus:\"Pending\"".
-  defaultValue: "runStatus:\"Pending\""
+  description: A query string to filter alerts. For example, to fetch pending alerts, use "runStatus:Pending".
+  defaultValue: "runStatus:Pending"
 - name: playbook_id
   description: The ID of the playbook to apply to the fetched alerts.
 - name: playbook_name
@@ -53,9 +53,9 @@ comment: |-
   For more information, see the section about permissions here:
   https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
-  id: TroubleshootExecutePlaybookByAlertQuery
+  id: TroubleshootExecutePlaybookByAlertQuery-test
   version: -1
-name: TroubleshootExecutePlaybookByAlertQuery
+name: TroubleshootExecutePlaybookByAlertQuery-test
 dependson:
   must:
   - core-api-get

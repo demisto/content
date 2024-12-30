@@ -530,7 +530,7 @@ def test_split_by_playbooks_success(mocker):
         results_summary_instance,
         False
     )
-    assert "Could not find an attached playbook for alerts ['alert4']." in results_summary_instance.results_summary["others"]
+    assert "Could not find an attached playbook for alerts: ['alert4']." in results_summary_instance.results_summary["others"]
 
 
 def test_split_by_playbooks_missing_playbook(mocker):
@@ -580,7 +580,7 @@ def test_split_by_playbooks_missing_playbook(mocker):
         False
     )
 
-    assert "Could not find an attached playbook for alerts ['alert2', 'alert4']." in \
+    assert "Could not find an attached playbook for alerts: ['alert2', 'alert4']." in \
         results_summary_instance.results_summary["others"]
 
 
@@ -611,7 +611,7 @@ def test_split_by_playbooks_all_missing_playbooks(mocker):
 
     assert mock_loop_on_alerts.call_count == 0
 
-    assert "Could not find an attached playbook for alerts ['alert1', 'alert2', 'alert3']." in \
+    assert "Could not find an attached playbook for alerts: ['alert1', 'alert2', 'alert3']." in \
         results_summary_instance.results_summary["others"]
 
 
@@ -774,7 +774,7 @@ def test_generate_summary():
         "Playbook Test Playbook 1 with ID 123 was set successfully for alerts: ['alert1', 'alert2'].\n"
         "Playbook Test Playbook 2 with ID 456 was set successfully for alerts: ['alert3'].\n"
         "Playbook with ID 789 could not be executed for alerts: ['alert4'].\n"
-        "Playbook with ID 999 was not found for alerts ['alert5', 'alert6'].\n"
+        "Playbook with ID 999 was not found for alerts: ['alert5', 'alert6'].\n"
         "Alerts ['alert7', 'alert8'] have been reopened.\n"
         "Some other information here."
     )
