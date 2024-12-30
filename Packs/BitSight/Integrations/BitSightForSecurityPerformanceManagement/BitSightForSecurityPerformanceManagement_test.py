@@ -1,4 +1,5 @@
 """Test File for BitSightForSecurityPerformanceManagement Integration."""
+from unittest.mock import patch
 import demistomock as demisto
 from CommonServerPython import BaseClient, DemistoException
 import BitSightForSecurityPerformanceManagement as bitsight
@@ -14,7 +15,7 @@ RISK_VECTOR_INPUT = "SSL Certificates"
 
 def util_load_json(path):
     """Load file in JSON format."""
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -166,7 +167,7 @@ def test_fetch_incidents_success_with_last_run(mocker):
                                                 params=inp_args)
 
     assert res['response']['count'] + 2 == last_run['offset']
-    assert '2022-03-27' == last_run['first_fetch']
+    assert last_run['first_fetch'] == '2022-03-27'
     assert events == res["incidents"]
 
 
@@ -182,5 +183,20 @@ def test_fetch_incidents_when_empty_response(mocker):
                                                 last_run={"first_fetch": "2022-03-27", "offset": 3},
                                                 params=inp_args)
 
-    assert 3 == last_run['offset']
-    assert '2022-03-27' == last_run['first_fetch']
+    assert last_run['offset'] == 3
+    assert last_run['first_fetch'] == '2022-03-27'
+
+
+@patch('BitSightForSecurityPerformanceManagement.return_results')  # noqa: F821
+def test_test_module(mock_return, mocker):
+    """Tests success for test_module."""
+    # Positive Scenario
+    res = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/companies_guid_get_response.json"))
+    mocker.patch.object(BaseClient, '_http_request', return_value=res["raw_response"])
+    mocker.patch.object(demisto, 'params', return_value={'apikey': '123'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+
+    bitsight.main()
+
+    assert mock_return.call_args.args[0] == 'ok'
