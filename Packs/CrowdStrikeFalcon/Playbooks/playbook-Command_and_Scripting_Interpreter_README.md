@@ -17,7 +17,8 @@ The playbook executes the following stages:
 - Terminate the process if the CrowdStike Falcon agent doesn't block it.
 - If the process failed or the parent process command line was suspicious as well, a manual action will be provided to the analyst to choose how to proceed further:
     - Terminate the parent process
-    - Isolate the endpoint
+    - Isolate the endpoint  
+    
 **Closure Steps:**
 
 - Handle malicious alerts by closing the alert as True Positive.
@@ -59,7 +60,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | CommandLines | The command line analysis that was found in the alert. By default, we will analyze the command line and its parent command line. | incident.commandline | Optional |
-| CreateNewIncidnetForIndicators | If the playbook identifies malicious indicators associated with other hosts, a new incident will be generated with relevant information for the analysts. | True | Optional |
+| CreateNewIncidentForIndicators | If the playbook identifies malicious indicators associated with other hosts, a new incident will be generated with relevant information for the analysts. | True | Optional |
 
 ## Playbook Outputs
 

@@ -23,7 +23,8 @@ description: |-
   - Terminate the process if the CrowdStike Falcon agent doesn't block it.
   - If the process failed or the parent process command line was suspicious as well, a manual action will be provided to the analyst to choose how to proceed further:
       - Terminate the parent process
-      - Isolate the endpoint
+      - Isolate the endpoint  
+  
   **Closure Steps:**
 
   - Handle malicious alerts by closing the alert as True Positive.
@@ -1633,7 +1634,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.CreateNewIncidnetForIndicators
+              simple: inputs.CreateNewIncidentForIndicators
             iscontext: true
           right:
             value:
@@ -1760,7 +1761,7 @@ inputs:
   required: false
   description: The command line analysis that was found in the alert. By default, we will analyze the command line and its parent command line.
   playbookInputQuery:
-- key: CreateNewIncidnetForIndicators
+- key: CreateNewIncidentForIndicators
   value:
     simple: "True"
   required: false
@@ -1769,7 +1770,7 @@ inputs:
 inputSections:
 - inputs:
   - CommandLines
-  - CreateNewIncidnetForIndicators
+  - CreateNewIncidentForIndicators
   name: General
   description: ""
 outputSections:
