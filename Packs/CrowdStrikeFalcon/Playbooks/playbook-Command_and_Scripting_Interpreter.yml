@@ -1046,7 +1046,7 @@ tasks:
     task:
       id: b18f4530-5dc6-4b8f-84ec-e0ae92e56f6a
       version: -1
-      name: Updated the affected hosts by IOC field
+      name: Update the affected hosts by IOC field
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -1521,7 +1521,7 @@ tasks:
     task:
       id: 89483a13-735f-4ba3-8472-68463c4b597a
       version: -1
-      name: Linked current incident to the new one
+      name: Link current incident to the new one
       description: commands.local.cmd.linkIncidents
       script: Builtin|||linkIncidents
       type: regular
