@@ -1,6 +1,7 @@
 import pytest
 from NozomiNetworks import *
-import demistomock as demisto  # Assuming you're using demistomock
+import demistomock as demisto
+from unittest.mock import patch
 
 # Mock the `callingContext` before invoking your client or code that needs it
 demisto.callingContext = {
@@ -310,6 +311,29 @@ def test_query_count_alerts(requests_mock):
     assert result['outputs'] == [{'count': 126}]
     assert result['outputs_prefix'] == 'Nozomi.Query.Result'
     assert result['outputs_key_field'] == ''
+
+
+@patch('NozomiNetworks.handle_proxy')
+def test_get_proxies_with_proxy_enabled(mock_handle_proxy):
+    mock_handle_proxy.return_value = {'http': 'http://proxy.com'}
+
+    client = Client(base_url="https://test.com", proxy=True)
+    proxies = client.get_proxies()
+
+    assert proxies == {'http': 'http://proxy.com'}
+    mock_handle_proxy.assert_called_once()
+
+
+def test_get_proxies_without_proxy():
+    client = Client(base_url="https://test.com", proxy=False)
+    proxies = client.get_proxies()
+    assert proxies == {}
+
+
+def test_get_proxies_with_none_proxy():
+    client = Client(base_url="https://test.com", proxy=None)
+    proxies = client.get_proxies()
+    assert proxies == {}
 
 
 def __get_client(dummy_responses, requests_mock):

@@ -64,7 +64,7 @@ configuration:
   options:
   - Microsoft Exchange
   - Gmail
-  additionalinfo: Get incidents from the selected SaaS
+  additionalinfo: Get incidents from the selected SaaS.
 - display: State
   name: event_state
   type: 16
@@ -75,7 +75,7 @@ configuration:
   - Detected
   - Exception
   - Dismissed
-  additionalinfo: Get incidents with only the selected states
+  additionalinfo: Get incidents with only the selected states.
 - display: Severity
   name: event_severity
   type: 16
@@ -86,7 +86,7 @@ configuration:
   - Medium
   - Low
   - Very Low
-  additionalinfo: Get incidents with only the selected severities
+  additionalinfo: Get incidents with only the selected severities.
 - display: Threat Type
   name: threat_type
   type: 16
@@ -103,34 +103,46 @@ configuration:
   - Spam
   - Malicious URL
   - Malicious URL Click
-  additionalinfo: Get incidents with only the selected types
+  additionalinfo: Get incidents with only the selected types.
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "10"
   type: 0
   required: false
   section: Collect
-  additionalinfo: The maximum number of incidents to fetch per fetch. The default is 10.
-- section: Collect
+  additionalinfo: The maximum number of incidents to retrieve per fetch.
+- section: Restore requests
   display: Collect restore requests
   name: collect_restore_requests
   type: 8
   required: false
   additionalinfo: Collect restore requests as incidents.
-- section: Connect
-  advanced: true
-  display: Trust any certificate (not secure)
+- section: Restore requests
+  display: Include denied requests
+  name: include_denied_requests
+  type: 8
+  required: false
+  additionalinfo: Denied restore requests will be in the results (they are not by default).
+- display: Include accepted requests
+  name: include_accepted_requests
+  type: 8
+  required: false
+  section: Restore requests
+  additionalinfo: Accepted restore requests will be in the results (they are not by default).
+- display: Trust any certificate (not secure)
+  additionalinfo: Trust server certificate.
   name: insecure
   type: 8
   required: false
-  additionalinfo: Trust server certificate.
-- display: Use system proxy settings
+  section: Connect
+  advanced: true
+- section: Connect
+  additionalinfo: Use system proxy settings.
+  advanced: true
+  display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Connect
-  additionalinfo: Use system proxy settings.
-  advanced: true
 - display: Incidents Fetch Interval
   additionalinfo: The interval in minutes to fetch incidents. The default is 1 minute.
   name: incidentFetchInterval

@@ -6,29 +6,18 @@ import json
 import os
 import requests
 import urllib3
+import incydr
 import py42.sdk
 import py42.settings
-from datetime import datetime
+from datetime import datetime, UTC
 from uuid import UUID
-from py42.sdk.queries.fileevents.file_event_query import FileEventQuery as FileEventQueryV1
 from py42.sdk.queries.fileevents.v2.file_event_query import FileEventQuery as FileEventQueryV2
-from py42.sdk.queries.fileevents.filters import (
-    MD5,
-    SHA256,
-    OSHostname,
-    DeviceUsername,
-    ExposureType,
-    FileCategory,
-)
+
 from py42.sdk.queries.fileevents.v2 import filters as v2_filters
 from py42.sdk.queries.fileevents.util import FileEventFilterStringField
 from py42.sdk.queries.alerts.alert_query import AlertQuery
-from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
-from py42.exceptions import Py42NotFoundError, Py42HTTPError
-
-
-class EventId(FileEventFilterStringField):
-    _term = "eventId"
+from py42.exceptions import Py42HTTPError
+from requests.exceptions import HTTPError
 
 
 class EventIdV2(FileEventFilterStringField):
@@ -80,12 +69,11 @@ CODE42_EVENT_CONTEXT_FIELD_MAPPER = {
 
 CODE42_ALERT_CONTEXT_FIELD_MAPPER = {
     "actor": "Username",
-    "createdAt": "Occurred",
-    "description": "Description",
-    "id": "ID",
-    "name": "Name",
+    "beginTimeIso": "Occurred",
+    "rule_names": "Description",
+    "sessionId": "ID",
+    "exfiltrationSummary": "Name",
     "state": "State",
-    "type": "Type",
     "riskSeverity": "Severity",
 }
 
@@ -108,7 +96,15 @@ SECURITY_EVENT_HEADERS = [
     "DeviceUsername",
 ]
 
-SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description", "State", "ID"]
+SECURITY_ALERT_HEADERS = ["Occurred", "Username", "Name", "Description", "State", "ID"]
+
+SESSION_SEVERITY_LIST = [
+    "NO RISK",
+    "LOW",
+    "MODERATE",
+    "HIGH",
+    "CRITICAL"
+]
 
 
 def _format_list(_list):
@@ -173,38 +169,15 @@ def deduplicate_v2_file_events(events: List[dict]):
     return unique
 
 
-def deduplicate_v1_file_events(events: List[dict]):
-    """Takes a list of v1 file events and returns a new list removing any duplicate events."""
-    unique = []
-    id_set = set()
-    for event in events:
-        _id = event["eventid"]
-        if _id not in id_set:
-            id_set.add(_id)
-            unique.append(event)
-    return unique
-
-
 def _get_severity_filter_value(severity_arg):
-    """Converts single str to upper case. If given list of strs, converts all to upper case."""
+    """Converts string to the appropriate severity enum number, or list of strings to a list of the appropriate numbers."""
     if severity_arg:
         return (
-            [severity_arg.upper()]
+            SESSION_SEVERITY_LIST.index(severity_arg.upper())
             if isinstance(severity_arg, str)
-            else [x.upper() for x in severity_arg]
+            else [SESSION_SEVERITY_LIST.index(x.upper()) for x in severity_arg]
         )
     return None
-
-
-def _create_alert_query(event_severity_filter, start_time):
-    """Creates an alert query for the given severity (or severities) and start time."""
-    alert_filters = AlertQueryFilters()
-    severity = event_severity_filter
-    alert_filters.append_result(_get_severity_filter_value(severity), Severity.is_in)
-    alert_filters.append(AlertState.eq(AlertState.OPEN))
-    alert_filters.append_result(start_time, DateObserved.on_or_after)
-    alert_query = alert_filters.to_all_query()
-    return alert_query
 
 
 class Code42Client(BaseClient):
@@ -213,11 +186,13 @@ class Code42Client(BaseClient):
     Should do requests and return data
     """
 
-    def __init__(self, sdk, base_url, auth, verify=True, proxy=False):
+    def __init__(self, sdk, base_url, auth, api_url, verify=True, proxy=False, incydr_sdk=None):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._base_url = base_url
         self._auth = auth
         self._sdk = sdk
+        self._incydr_sdk = incydr_sdk
+        self._api_url = api_url
 
         if not proxy:
             for var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
@@ -242,23 +217,42 @@ class Code42Client(BaseClient):
             self._sdk = py42.sdk.SDKClient.from_jwt_provider(self._base_url, api_client_provider)
         return self._sdk
 
+    @property
+    def incydr_sdk(self):
+        if self._incydr_sdk is None:
+            self._incydr_sdk = incydr.Client(
+                url=f"https://{self._api_url}",
+                api_client_id=self._auth[0],
+                api_client_secret=self._auth[1]
+            )
+            self._incydr_sdk.settings.user_agent_prefix = "Cortex XSOAR"
+        return self._incydr_sdk
+
     # Alert methods
 
     def fetch_alerts(self, start_time, event_severity_filter):
-        query = _create_alert_query(event_severity_filter, start_time)
-        res = self.sdk.alerts.search(query)
-        return res.data.get("alerts")
+        all_sessions = self.incydr_sdk.sessions.v1.iter_all(
+            start_time=start_time,
+            severities=_get_severity_filter_value(event_severity_filter)
+        )
+        res = []
+        for page in all_sessions:
+            res.append(self._process_alert(page))
+        return res
 
     def get_alert_details(self, alert_id):
         try:
-            py42_res = self.sdk.alerts.get_details(alert_id)
-            res = py42_res.data.get("alerts")
-            return res[0]
-        except Py42NotFoundError:
-            raise Code42AlertNotFoundError(alert_id)
+            res = self.incydr_sdk.sessions.v1.get_session_details(alert_id)
+            return self._process_alert(res)
+        except HTTPError as e:
+            if e.response.status_code == 404:
+                raise Code42AlertNotFoundError(alert_id)
 
-    def resolve_alert(self, id):
-        self.sdk.alerts.resolve(id)
+    def get_alert_file_events(self, alert_id):
+        return self.incydr_sdk.sessions.v1.get_session_events(alert_id)
+
+    def update_session_state(self, id, state):
+        self.incydr_sdk.sessions.v1.update_state_by_id(id, state)
         return id
 
     def get_user(self, username):
@@ -267,6 +261,9 @@ class Code42Client(BaseClient):
         if not res:
             raise Code42UserNotFoundError(username)
         return res[0]
+
+    def get_actor(self, username):
+        return self.incydr_sdk.actors.v1.get_actor_by_name(username, prefer_parent=True)
 
     def create_user(self, org_name, username, email):
         org_uid = self._get_org_id(org_name)
@@ -369,6 +366,25 @@ class Code42Client(BaseClient):
                 return member["legalHoldMembershipUid"]
         return None
 
+    def _process_alert(self, alert):
+        # some important alert information is not returned directly by the API and must be inferred or queried.
+        # This helper method does this for incoming sessions.
+        alert.riskSeverity = SESSION_SEVERITY_LIST[max(alert.scores, key=lambda x: x.severity).severity]
+        alert.state = max(alert.states, key=lambda x: x.source_timestamp).state
+        alert.actor = self.incydr_sdk.actors.v1.get_actor_by_id(alert.actor_id).name
+        rule_name_list = []
+        # It is possible for a session to trigger an alert rule that no longer exists.
+        # We need to handle the 404 case.
+        for rule in alert.triggered_alerts:
+            try:
+                rule_name_list.append(self.incydr_sdk.alert_rules.v2.get_rule(rule.rule_id).name)
+            except HTTPError:
+                pass
+        alert.rule_names = ", ".join(rule_name_list)
+        alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).replace(tzinfo=UTC).isoformat()
+        alert.alertUrl = f"{self._base_url}/app/#/alerts/review-alerts/{alert.session_id}"
+        return alert
+
 
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
@@ -403,13 +419,6 @@ class Code42UnsupportedHashError(Exception):
     def __init__(self):
         super().__init__(
             "Unsupported hash. Must be SHA256 or MD5."
-        )
-
-
-class Code42UnsupportedV2ParameterError(Exception):
-    def __init__(self, param: str):
-        super().__init__(
-            f"Unsupported parameter: {param} when 'v2_events' is enabled on Code42 integration."
         )
 
 
@@ -463,21 +472,6 @@ class Code42SearchFilters:
         self.append(_filter)
 
 
-class FileEventQueryFilters(Code42SearchFilters):
-    """Class for simplifying building up a file event search query"""
-
-    def __init__(self, pg_size=None):
-        self._pg_size = pg_size
-        super().__init__()
-
-    def to_all_query(self):
-        """Convert list of search criteria to *args"""
-        query = FileEventQueryV1.all(*self._filters)
-        if self._pg_size:
-            query.page_size = self._pg_size
-        return query
-
-
 class AlertQueryFilters(Code42SearchFilters):
     """Class for simplifying building up an alert search query"""
 
@@ -486,30 +480,6 @@ class AlertQueryFilters(Code42SearchFilters):
         query.page_size = 500
         query.sort_direction = "asc"
         return query
-
-
-@logger
-def build_query_payload(args):
-    """Build a query payload combining passed args"""
-
-    pg_size = args.get("results")
-    _hash = args.get("hash")
-    hostname = args.get("hostname")
-    username = args.get("username")
-    exposure = args.get("exposure")
-
-    if not _hash and not hostname and not username and not exposure:
-        raise Code42MissingSearchArgumentsError
-
-    search_args = FileEventQueryFilters(pg_size)
-    search_args.append_result(_hash, _create_hash_filter)
-    search_args.append_result(hostname, OSHostname.eq)
-    search_args.append_result(username, DeviceUsername.eq)
-    search_args.append_result(exposure, _create_exposure_filter)
-
-    query = search_args.to_all_query()
-    LOG(f"File Event Query: {str(query)}")
-    return query
 
 
 @logger
@@ -546,42 +516,6 @@ def _hash_is_sha256(hash_arg):
 
 def _hash_is_md5(hash_arg):
     return hash_arg and len(hash_arg) == 32
-
-
-def _create_hash_filter(hash_arg):
-    if _hash_is_md5(hash_arg):
-        return MD5.eq(hash_arg)
-    elif _hash_is_sha256(hash_arg):
-        return SHA256.eq(hash_arg)
-    return None
-
-
-def _create_exposure_filter(exposure_arg):
-    # Because the CLI can't accept lists, convert the args to a list if the type is string.
-    exposure_arg = argToList(exposure_arg)
-    if "All" in exposure_arg:
-        return ExposureType.exists()
-    return ExposureType.is_in(exposure_arg)
-
-
-def get_file_category_value(key):
-    # Meant to handle all possible cases
-    key = key.lower().replace("-", "").replace("_", "")
-    category_map = {
-        "sourcecode": FileCategory.SOURCE_CODE,
-        "audio": FileCategory.AUDIO,
-        "executable": FileCategory.EXECUTABLE,
-        "document": FileCategory.DOCUMENT,
-        "image": FileCategory.IMAGE,
-        "pdf": FileCategory.PDF,
-        "presentation": FileCategory.PRESENTATION,
-        "script": FileCategory.SCRIPT,
-        "spreadsheet": FileCategory.SPREADSHEET,
-        "video": FileCategory.VIDEO,
-        "virtualdiskimage": FileCategory.VIRTUAL_DISK_IMAGE,
-        "archive": FileCategory.ZIP,
-    }
-    return category_map.get(key, "UNCATEGORIZED")
 
 
 @logger
@@ -627,7 +561,7 @@ def alert_get_command(client, args):
             raw_response={},
         )
 
-    code42_context = map_to_code42_alert_context(alert)
+    code42_context = map_to_code42_alert_context(alert.dict())
     code42_securityalert_context.append(code42_context)
     readable_outputs = tableToMarkdown(
         "Code42 Security Alert Results",
@@ -639,14 +573,14 @@ def alert_get_command(client, args):
         outputs_key_field="ID",
         outputs=code42_securityalert_context,
         readable_output=readable_outputs,
-        raw_response=alert,
+        raw_response=alert.dict(),
     )
 
 
 @logger
-def alert_resolve_command(client, args):
+def alert_update_state_command(client, args):
     code42_securityalert_context = []
-    alert_id = client.resolve_alert(args.get("id"))
+    alert_id = client.update_session_state(args.get("id"), args.get("state"))
     if not alert_id:
         return CommandResults(
             readable_output="No results found",
@@ -658,10 +592,10 @@ def alert_resolve_command(client, args):
 
     # Retrieve new alert details
     alert_details = client.get_alert_details(alert_id)
-    code42_context = map_to_code42_alert_context(alert_details)
+    code42_context = map_to_code42_alert_context(alert_details.dict())
     code42_securityalert_context.append(code42_context)
     readable_outputs = tableToMarkdown(
-        "Code42 Security Alert Resolved",
+        "Code42 Security Alert Updated",
         code42_securityalert_context,
         headers=SECURITY_ALERT_HEADERS,
     )
@@ -670,146 +604,15 @@ def alert_resolve_command(client, args):
         outputs_key_field="ID",
         outputs=code42_securityalert_context,
         readable_output=readable_outputs,
-        raw_response=alert_details,
+        raw_response=alert_details.dict(),
     )
 
 
 @logger
-def departingemployee_add_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.DepartingEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-watchlists-add-user command.",
-    )
-
-
-@logger
-def departingemployee_remove_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.DepartingEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-watchlists-remove-user command.",
-    )
-
-
-@logger
-def departingemployee_get_all_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.DepartingEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-watchlists-list-included-users command.",
-    )
-
-
-@logger
-def departingemployee_get_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.DepartingEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-user-get-risk-profile command.",
-    )
-
-
-@logger
-def highriskemployee_get_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.HighRiskEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-user-get-risk-profile command.",
-    )
-
-
-@logger
-def highriskemployee_add_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.HighRiskEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-watchlists-add-user command.",
-    )
-
-
-@logger
-def highriskemployee_remove_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.HighRiskEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-watchlists-remove-user command.",
-    )
-
-
-@logger
-def highriskemployee_get_all_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.HighRiskEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. Please use the code42-watchlists-list-included-users command.",
-    )
-
-
-@logger
-def highriskemployee_add_risk_tags_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.HighRiskEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. The risk tags are now represented as separate watchlist types "
-                        + "and there is no replacement for this command.",
-    )
-
-
-@logger
-def highriskemployee_remove_risk_tags_command(client, args):
-    return CommandResults(
-        outputs_prefix="Code42.HighRiskEmployee",
-        outputs_key_field="UserID",
-        readable_output="Deprecated. The risk tags are now represented as separate watchlist types "
-                        + "and there is no replacement for this command.",
-    )
-
-
-@logger
-def securitydata_search_command(client, args):
-    code42_security_data_context = []
-    _json = args.get("json")
-    file_context = []
-
-    # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
-    if _json is not None:
-        file_events = client.search_file_events(_json)
-    else:
-        # Build payload
-        payload = build_query_payload(args)
-        file_events = client.search_file_events(payload)
-    if file_events:
-        for file_event in file_events:
-            code42_context_event = map_to_code42_event_context(file_event)
-            code42_security_data_context.append(code42_context_event)
-            file_context_event = map_to_file_context(file_event)
-            file_context.append(file_context_event)
-        readable_outputs = tableToMarkdown(
-            "Code42 Security Data Results",
-            code42_security_data_context,
-            headers=SECURITY_EVENT_HEADERS,
-        )
-        code42_results = CommandResults(
-            outputs_prefix="Code42.SecurityData",
-            outputs_key_field="EventID",
-            outputs=code42_security_data_context,
-            readable_output=readable_outputs,
-            raw_response=file_events,
-        )
-        file_results = CommandResults(
-            outputs_prefix="File", outputs_key_field=None, outputs=file_context
-        )
-        return code42_results, file_results
-
-    else:
-        return CommandResults(
-            readable_output="No results found",
-            outputs={"Results": []},
-            outputs_key_field="EventID",
-            outputs_prefix="Code42.SecurityData",
-            raw_response={},
-        )
+def alert_resolve_command(client, args):
+    args.update({"state": "CLOSED_TP"})
+    results = alert_update_state_command(client, args)
+    return results
 
 
 @logger
@@ -1060,21 +863,29 @@ def update_user_risk_profile(client, args):
     end_date = args.get("end_date")
     notes = args.get("notes")
 
-    user = client.get_user(username)
-    user_id = user["userUid"]
+    actor = client.get_actor(username)
+    actor_id = actor.actor_id
 
-    resp = client.sdk.userriskprofile.update(
-        user_id,
+    resp = client.incydr_sdk.actors.v1.update_actor(
+        actor_id,
         start_date=start_date,
         end_date=end_date,
         notes=notes
     )
+    if (
+        (resp.start_date == start_date if start_date else True)
+        and (resp.end_date == end_date if end_date else True)
+        and (resp.notes == notes if notes else True)
+    ):
+        success = True
+    else:
+        success = False
     outputs = {
-        "Username": username,
-        "Success": resp.status_code == 200,
-        "EndDate": resp.data.get("endDate"),
-        "StartDate": resp.data.get("startDate"),
-        "Notes": resp.data.get("notes"),
+        "Username": resp.name,
+        "Success": success,
+        "EndDate": resp.end_date,
+        "StartDate": resp.start_date,
+        "Notes": resp.notes,
     }
     readable_outputs = tableToMarkdown("Code42 User Risk Profile Updated", outputs)
     return CommandResults(
@@ -1088,12 +899,12 @@ def update_user_risk_profile(client, args):
 @logger
 def get_user_risk_profile(client, args):
     username = args.get("username")
-    resp = client.sdk.userriskprofile.get_by_username(username)
+    actor = client.get_actor(username)
     outputs = {
-        "Username": username,
-        "EndDate": resp.data.get("endDate"),
-        "StartDate": resp.data.get("startDate"),
-        "Notes": resp.data.get("notes"),
+        "Username": actor.name,
+        "EndDate": actor.end_date,
+        "StartDate": actor.start_date,
+        "Notes": actor.notes,
     }
     return CommandResults(
         outputs_prefix="Code42.UserRiskProfiles",
@@ -1123,7 +934,7 @@ def remove_user_from_watchlist_command(client, args):
 @logger
 def file_events_to_table_command(client, args):
     incident = demisto.incident()
-    file_event_version = incident["CustomFields"].get("code42fileeventsversion", "1")
+    incident["CustomFields"].get("code42fileeventsversion", "1")
     path = args.get("include")
     events = []
     if path in ("incident", "all"):
@@ -1132,10 +943,9 @@ def file_events_to_table_command(client, args):
         context = demisto.context()
         if "Code42" in context and "FileEvents" in context["Code42"]:
             events.extend(context["Code42"]["FileEvents"])
-    if file_event_version == "2":
-        events = deduplicate_v2_file_events(events)
-    else:
-        events = deduplicate_v1_file_events(events)
+
+    events = deduplicate_v2_file_events(events)
+
     table = format_file_events(events)
     return CommandResults(readable_output=table)
 
@@ -1152,7 +962,6 @@ class Code42SecurityIncidentFetcher:
         event_severity_filter,
         fetch_limit,
         include_files,
-        v2_events,
         integration_context=None,
     ):
         self._client = client
@@ -1161,7 +970,6 @@ class Code42SecurityIncidentFetcher:
         self._event_severity_filter = event_severity_filter
         self._fetch_limit = fetch_limit
         self._include_files = include_files
-        self._v2_events = v2_events
         self._integration_context = integration_context
 
     @logger
@@ -1172,7 +980,7 @@ class Code42SecurityIncidentFetcher:
         start_query_time = self._get_start_query_time()
         alerts = self._fetch_alerts(start_query_time)
         incidents = [self._create_incident_from_alert(a) for a in alerts]
-        save_time = datetime.utcnow().timestamp()
+        save_time = datetime.now(UTC).timestamp()
         next_run = {"last_fetch": save_time}
         return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
@@ -1199,7 +1007,7 @@ class Code42SecurityIncidentFetcher:
             )
             start_query_time /= 1000
 
-        return start_query_time
+        return start_query_time * 1000
 
     def _try_get_last_fetch_time(self):
         return self._last_run.get("last_fetch")
@@ -1208,49 +1016,26 @@ class Code42SecurityIncidentFetcher:
         return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
 
     def _create_incident_from_alert(self, alert):
-        response = self._client.sdk.alerts.get_aggregate_data(alert.get("id"))
-        details = response.data.get("alert")
-        details["alertId"] = alert.get("id")
-        self._format_summary(details)
-        incident = {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
+        details = alert.dict()
         if self._include_files:
             details = self._relate_files_to_alert(details)
+        incident = {
+            "name": "Code42 - {}".format(details.get("exfiltrationSummary")),
+            "occurred": alert.beginTimeIso
+        }
         incident["rawJSON"] = json.dumps(details)
         return incident
 
     def _relate_files_to_alert(self, alert_details):
-        observations = alert_details.get("observations")
-        if not observations:
-            alert_details["fileevents"] = []
-            return alert_details
-        event_ids = []
-        for o in observations:
-            data = json.loads(o["data"])
-            files = data.get("files")
-            if files:
-                for file in files:
-                    event_ids.append(file["eventId"])
-        if not event_ids:
-            alert_details["fileevents"] = []
-            return alert_details
-        if self._v2_events:
-            alert_details["fileevents_version"] = 2
-            query = FileEventQueryV2(EventIdV2.is_in(event_ids))
-        else:
-            alert_details["fileevents_version"] = 1
-            query = FileEventQueryV1(EventId.is_in(event_ids))
-        events = self._client.search_file_events(query)
-        alert_details["fileevents"] = list(events)
+        observations = self._client.get_alert_file_events(alert_details["sessionId"])
+        alert_details["exfiltrationSummary"] = "{} {}".format(
+            observations.total_count,
+            alert_details["exfiltrationSummary"]
+        )
+        # it is necessary to dump to/load from json here because otherwise we will get "datetime" string representations
+        # instead of isoformat timestamps.
+        alert_details["fileevents"] = [json.loads(e.json()) for e in observations.file_events]
         return alert_details
-
-    def _format_summary(self, alert_details):
-        summary = alert_details["riskSeveritySummary"]
-        string_list = []
-        for s in summary:
-            string_list.append(f"{s['numEvents']} {s['severity']} events:")
-            for indicator in s["summarizedRiskIndicators"]:
-                string_list.append(f"\t- {indicator['numEvents']} {indicator['name']}")
-        alert_details["risksummary"] = "\n".join(string_list)
 
 
 def fetch_incidents(
@@ -1260,7 +1045,6 @@ def fetch_incidents(
     event_severity_filter,
     fetch_limit,
     include_files,
-    v2_events,
     integration_context=None,
 ):
     fetcher = Code42SecurityIncidentFetcher(
@@ -1270,7 +1054,6 @@ def fetch_incidents(
         event_severity_filter,
         fetch_limit,
         include_files,
-        v2_events,
         integration_context,
     )
     return fetcher.fetch()
@@ -1283,6 +1066,7 @@ def test_module(client):
     try:
         # Will fail if unauthorized
         client.sdk.usercontext.get_current_tenant_id()
+        client.incydr_sdk.actors.v1.get_page(page_size=1)
         return "ok"
     except Exception:
         return (
@@ -1302,7 +1086,6 @@ def handle_fetch_command(client):
         event_severity_filter=demisto.params().get("alert_severity"),
         fetch_limit=int(demisto.params().get("fetch_limit")),
         include_files=demisto.params().get("include_files"),
-        v2_events=demisto.params().get("v2_events"),
         integration_context=integration_context,
     )
     demisto.setLastRun(next_run)
@@ -1315,7 +1098,7 @@ def handle_fetch_command(client):
 def run_command(command):
     try:
         results = command()
-        if not isinstance(results, tuple | list):
+        if not (isinstance(results, list | tuple)):
             results = [results]
         for result in results:
             return_results(result)
@@ -1330,11 +1113,13 @@ def create_client():
         raise Exception(f"Got invalid API Client ID: {api_client_id}")
     password = demisto.params().get("credentials").get("password")
     base_url = demisto.params().get("console_url")
+    api_url = demisto.params().get("api_url")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
     return Code42Client(
         base_url=base_url,
         sdk=None,
+        api_url=api_url,
         auth=(api_client_id, password),
         verify=verify_certificate,
         proxy=proxy,
@@ -1342,54 +1127,38 @@ def create_client():
 
 
 def main():
-    try:
-        client = create_client()
-        command_key = demisto.command()
-        # switch case
-        commands = {
-            "code42-alert-get": alert_get_command,
-            "code42-alert-resolve": alert_resolve_command,
-            "code42-securitydata-search": securitydata_search_command,
-            "code42-file-events-search": file_events_search_command,
-            "code42-file-events-table": file_events_to_table_command,
-            "code42-departingemployee-add": departingemployee_add_command,
-            "code42-departingemployee-remove": departingemployee_remove_command,
-            "code42-departingemployee-get-all": departingemployee_get_all_command,
-            "code42-departingemployee-get": departingemployee_get_command,
-            "code42-highriskemployee-add": highriskemployee_add_command,
-            "code42-highriskemployee-remove": highriskemployee_remove_command,
-            "code42-highriskemployee-get-all": highriskemployee_get_all_command,
-            "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
-            "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
-            "code42-highriskemployee-get": highriskemployee_get_command,
-            "code42-user-create": user_create_command,
-            "code42-user-block": user_block_command,
-            "code42-user-unblock": user_unblock_command,
-            "code42-user-deactivate": user_deactivate_command,
-            "code42-user-reactivate": user_reactivate_command,
-            "code42-user-get-risk-profile": get_user_risk_profile,
-            "code42-user-update-risk-profile": update_user_risk_profile,
-            "code42-legalhold-add-user": legal_hold_add_user_command,
-            "code42-legalhold-remove-user": legal_hold_remove_user_command,
-            "code42-download-file": download_file_command,
-            "code42-watchlists-list": list_watchlists_command,
-            "code42-watchlists-list-included-users": list_watchlists_included_users,
-            "code42-watchlists-add-user": add_user_to_watchlist_command,
-            "code42-watchlists-remove-user": remove_user_from_watchlist_command,
-        }
-        LOG(f"Command being called is {command_key}.")
-        if command_key == "test-module":
-            result = test_module(client)
-            demisto.results(result)
-        elif command_key == "fetch-incidents":
-            handle_fetch_command(client)
-        elif command_key in commands:
-            run_command(lambda: commands[command_key](client, demisto.args()))
-        else:
-            raise NotImplementedError(f'{command_key} command is not implemented.')
-
-    except Exception as e:
-        return_error(str(e))
+    client = create_client()
+    command_key = demisto.command()
+    # switch case
+    commands = {
+        "code42-alert-get": alert_get_command,
+        "code42-alert-resolve": alert_resolve_command,
+        "code42-alert-update": alert_update_state_command,
+        "code42-file-events-search": file_events_search_command,
+        "code42-file-events-table": file_events_to_table_command,
+        "code42-user-create": user_create_command,
+        "code42-user-block": user_block_command,
+        "code42-user-unblock": user_unblock_command,
+        "code42-user-deactivate": user_deactivate_command,
+        "code42-user-reactivate": user_reactivate_command,
+        "code42-user-get-risk-profile": get_user_risk_profile,
+        "code42-user-update-risk-profile": update_user_risk_profile,
+        "code42-legalhold-add-user": legal_hold_add_user_command,
+        "code42-legalhold-remove-user": legal_hold_remove_user_command,
+        "code42-download-file": download_file_command,
+        "code42-watchlists-list": list_watchlists_command,
+        "code42-watchlists-list-included-users": list_watchlists_included_users,
+        "code42-watchlists-add-user": add_user_to_watchlist_command,
+        "code42-watchlists-remove-user": remove_user_from_watchlist_command,
+    }
+    LOG(f"Command being called is {command_key}.")
+    if command_key == "test-module":
+        result = test_module(client)
+        demisto.results(result)
+    elif command_key == "fetch-incidents":
+        handle_fetch_command(client)
+    elif command_key in commands:
+        run_command(lambda: commands[command_key](client, demisto.args()))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
