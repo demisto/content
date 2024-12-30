@@ -45,7 +45,7 @@ tasks:
       id: 3c69ed8d-e958-46f7-829f-6096e63aef35
       version: -1
       name: Check extracted remote URL's reputation
-      description: Check reputation of the remote url from which the MSI was downloaded and installed
+      description: Check reputation of the remote URL from which the MSI was downloaded and installed.
       type: condition
       iscommand: false
       brand: ""
