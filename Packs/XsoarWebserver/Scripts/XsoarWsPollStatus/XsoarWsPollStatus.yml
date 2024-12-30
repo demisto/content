@@ -14,7 +14,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.7.117934
 enabled: true
 name: xsoar-ws-poll-status
 outputs:
