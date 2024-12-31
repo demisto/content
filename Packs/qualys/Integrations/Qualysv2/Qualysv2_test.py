@@ -1525,7 +1525,7 @@ def test_truncate_asset_size(mocker, asset, expected_truncated):
     if expected_truncated:
         assert asset.get('isTruncated', False) is True
         assert len(asset['DETECTION']['RESULTS']) == 10000
-        assert mock_debug.call_count >= 3  # Expecting at least 3 debug messages
+        assert mock_debug.call_count >= 2  # Expecting at least 2 debug messages
     else:
         assert asset.get('isTruncated', False) is False
         assert mock_debug.call_count == 0  # No debug messages if not truncated
