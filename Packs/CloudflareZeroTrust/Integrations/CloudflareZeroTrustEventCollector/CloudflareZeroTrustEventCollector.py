@@ -18,9 +18,9 @@ DEFAULT_MAX_FETCH_ACCOUNT_AUDIT = 5000
 DEFAULT_MAX_FETCH_USER_AUDIT = 5000
 DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION = 5000
 
-ACCOUNT_AUDIT_TYPE = "account_audit_logs"
-USER_AUDIT_TYPE = "user_audit_logs"
-ACCESS_AUTHENTICATION_TYPE = "access_authentication_logs"
+ACCOUNT_AUDIT_TYPE = "Account Audit Logs"
+USER_AUDIT_TYPE = "User Audit Logs"
+ACCESS_AUTHENTICATION_TYPE = "Access Authentication Logs"
 
 ''' CLIENT CLASS '''
 
@@ -103,7 +103,7 @@ def test_module(client: Client) -> str:
             max_fetch_account_audit=1,
             max_fetch_user_audit=1,
             max_fetch_authentication=1,
-            event_types_to_fetch=['account_audit_logs']
+            event_types_to_fetch=[ACCOUNT_AUDIT_TYPE, USER_AUDIT_TYPE]
         )
 
     except Exception as e:

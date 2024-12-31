@@ -59,13 +59,13 @@ configuration:
 - display: Event types to fetch
   name: event_types_to_fetch
   type: 16
-  defaultvalue: account_audit_logs, user_audit_logs, access_authentication_logs
+  defaultvalue: Account Audit Logs, User Audit Logs, Access Authentication Logs
   section: Collect
   advanced: true
   options:
-  - account_audit_logs
-  - user_audit_logs
-  - access_authentication_logs
+  - Account Audit Logs
+  - User Audit Logs
+  - Access Authentication Logs
   required: true
 description: Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and since 2010, a content distribution network to provide content across its network of servers.
 display: Cloudflare Zero Trust
@@ -85,16 +85,16 @@ script:
       - 'false'
     - description: The start date from which to filter events.
       name: start_date
-    - description: Event types to fetch. You can choose more than one, separated by commas, possible values are `account_audit_logs`, `user_audit_logs`, and `access_authentication_logs`.
+    - description: Event types to fetch. You can choose more than one, separated by commas, possible values are `Account Audit Logs`, `User Audit Logs`, and `Access Authentication Logs`.
       name: event_types_to_fetch
-      defaultValue: account_audit_logs,user_audit_logs
+      defaultValue: Account Audit Logs,User Audit Logs
       auto: PREDEFINED
       predefined:
-      - account_audit_logs
-      - user_audit_logs
-      - access_authentication_logs
+      - Account Audit Logs
+      - User Audit Logs
+      - Access Authentication Logs
       required: false
-      isArray:
+      isArray: true
     description: Gets events from Cloudflare Zero Trust.
     name: cloudflare-zero-trust-get-events
   dockerimage: demisto/python3:3.11.10.115186
