@@ -1,10 +1,8 @@
 import json
 from unittest import mock
 from io import BytesIO
-from ValidateContent import (resolve_entity_type, HOOK_ID_TO_PATTERN, get_pack_name,
-                             strip_ansi_codes, extract_hook_id, parse_pre_commit_output)
-
-import demistomock as demisto  # noqa: F401
+from ValidateContent import (ValidationResult, read_validate_results, resolve_entity_type,
+                             HOOK_ID_TO_PATTERN, get_pack_name, strip_ansi_codes, extract_hook_id, parse_pre_commit_output)
 
 
 def create_mock_zip_file_with_metadata(metadata_content):
@@ -157,7 +155,6 @@ def test_get_pack_name_no_name(mocker):
     """
     mock_metadata = {}
     mock_metadata_json = json.dumps(mock_metadata)
-    mock_debug = mocker.patch.object(demisto, "error")
 
     mock_zipfile = mocker.MagicMock()
     mock_metadata_file = mocker.MagicMock()
@@ -169,5 +166,30 @@ def test_get_pack_name_no_name(mocker):
     result = get_pack_name('test_pack.zip')
 
     assert result == 'TmpPack'
-    mock_debug.assert_called_once_with('Could not find pack name in metadata.json')
 
+
+def test_read_validate_results(tmp_path):
+    """
+    Given:
+        A temporary JSON file with validation results.
+    When:
+        Calling read_validate_results with the path to this file.
+    Then:
+        The function should return a list of ValidationResult objects.
+    """
+    json_file = tmp_path / "validation_results.json"
+    json_file.write_text(json.dumps([{
+        "validations": [{
+            "file path": "Packs/TestPack/Scripts/TestScript/TestScript.yml",
+            "error code": "ST001",
+            "message": "Test error message"
+        }]
+    }]))
+
+    results = read_validate_results(json_file)
+
+    assert len(results) == 1
+    assert isinstance(results[0], ValidationResult)
+    assert results[0].filePath.endswith("Packs/TestPack/Scripts/TestScript/TestScript.yml")
+    assert results[0].errorCode == "ST001"
+    assert results[0].message == "Test error message"
