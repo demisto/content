@@ -356,7 +356,7 @@ def get_time_range(timestamp_from, timestamp_to):
         t_from = timestamp_from.timestamp()
         t_to = time.time() if timestamp_to is None else timestamp_to.timestamp()
     else:
-        raise ValueError("To and From Dates should have values.")
+        raise ValueError(f"To and From Dates should have values. {timestamp_from=} {timestamp_to=}")
     current_time: float = time.time()
     if t_from > current_time or t_to > current_time:
         raise ValueError("Date should not be greater than current time")
