@@ -2266,8 +2266,9 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: This command will soon be deprecated; run xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+    description: Deprecated. Run xdr-script-run instead.
     name: xdr-run-script
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
       description: ID of the action initiated.
@@ -3429,7 +3430,7 @@ script:
       name: user_id
     - description: Limit the number of users that will appear in the list. (Use limit when no specific host is requested.)
       name: limit
-      defaultValue: '50'
+      defaultValue: '10'
     name: xdr-list-risky-users
     description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -3462,7 +3463,7 @@ script:
       name: host_id
     - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.)
       name: limit
-      defaultValue: '50'
+      defaultValue: '10'
     name: xdr-list-risky-hosts
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:

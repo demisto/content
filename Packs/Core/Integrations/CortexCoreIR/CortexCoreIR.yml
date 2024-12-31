@@ -2881,7 +2881,7 @@ script:
       name: user_id
     - description: Limit the number of users that will appear in the list. (limit should be used when no specific host is requested).
       name: limit
-      defaultValue: 50
+      defaultValue: 10
     name: core-list-risky-users
     description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -2914,7 +2914,7 @@ script:
       name: host_id
     - description: Limit the number of hosts that will appear in the list. (Use limit when no specific host is requested).
       name: limit
-      defaultValue: 50
+      defaultValue: 10
     name: core-list-risky-hosts
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -3067,7 +3067,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-process
-    description: Terminate a process by its instance ID. Available only for XSIAM 2.4.
+    description: Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
     - contextPath: Core.TerminateProcess.action_id
@@ -3099,7 +3099,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality
-    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
     - contextPath: Core.TerminateCausality.action_id
