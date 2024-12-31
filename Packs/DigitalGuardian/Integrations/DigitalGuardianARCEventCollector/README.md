@@ -46,7 +46,7 @@ Gets events from the configured Digital Guardian ARC export profile.
 
 #### Command Example
 
-```!digital-guardian-get-events limit=2 should_push_events=False```
+```!digital-guardian-get-events limit=2 should_push_events=false```
 
 #### Context Output
 
