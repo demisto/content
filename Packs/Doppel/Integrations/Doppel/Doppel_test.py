@@ -19,7 +19,7 @@ def util_load_json(path):
 
 @pytest.mark.parametrize("command, args, api_path, api_response",
                          [
-                             ("get-alert",
+                             ("doppel-get-alert",
                               {"id": "TST-31222"},
                               "https://api.doppel.com/v1/alert?id=TST-31222",
                               util_load_json('test_data/get-alert-success-200.json'))
@@ -46,12 +46,12 @@ def test_command_success(mocker, requests_mock, command, args, api_path, api_res
 
 @pytest.mark.parametrize("command, args, api_path, status_code, api_response",
                          [
-                             ("get-alert",
+                             ("doppel-get-alert",
                               {"entity": "123"},
                               "https://api.doppel.com/v1/alert?entity=123",
                               400,
                               util_load_json('test_data/get-alert-failure-400-invalid-entity.json')),
-                             ("get-alert",
+                             ("doppel-get-alert",
                               {"id": "1234"},
                               "https://api.doppel.com/v1/alert?id=1234",
                               400,
@@ -81,12 +81,12 @@ def test_command_failure(mocker, requests_mock, command, args, api_path, status_
     
 @pytest.mark.parametrize("command, args, api_path, status_code, exception_message",
                          [
-                             ("get-alert",
+                             ("doppel-get-alert",
                               {"id": "TST-31",
                                "entity": "http://dummyrul.com"},
                               "https://api.doppel.com/v1/alert?id=TST-31&entity=http://dummyrul.com",
                               400,
-                              "Failed to execute get-alert command.\nError:\nBoth id and entity is specified. We need exactly single input for this command")
+                              "Failed to execute doppel-get-alert command.\nError:\nBoth id and entity is specified. We need exactly single input for this command")
                          ]
                          )
 def test_command_exception(mocker, requests_mock, command, args, api_path, status_code, exception_message):
