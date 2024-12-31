@@ -1,0 +1,16 @@
+{
+    "total": "<total no. of items matching search criteria>",
+    "start": "<start index of items>",
+    "end": "<end index of items>",
+    "items": [
+        {
+            "id": "<id of the item>",
+            "value": "<An email address or a domain name>",
+            "description": "<description of the item>",
+            "type": "email or domain",
+            "date_created": "<Date at which the item was created>",
+            "date_amended": "<Date at which the item was amended>"
+        }
+    ],
+    "status": "SUCCESS"
+}
