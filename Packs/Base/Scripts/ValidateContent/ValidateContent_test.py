@@ -167,7 +167,10 @@ def test_get_pack_name_no_name(mocker):
     result = get_pack_name('test_pack.zip')
     assert result == 'TmpPack'
     mock_error.assert_called_with('Could not find pack name in metadata.json')
+<<<<<<< HEAD
 
+=======
+>>>>>>> cee1c8e242 (fix unit tests)
 
 
 def test_read_validate_results(tmp_path):
