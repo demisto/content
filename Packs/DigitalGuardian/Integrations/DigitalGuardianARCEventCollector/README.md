@@ -18,7 +18,7 @@ This is the default integration for this content pack when configured by the Dat
 | Gateway Base URL (e.g. https://some_url.com) |  | True |
 | Client ID |  | True |
 | Client Secret | Client Secret | True |
-| Export Profiles | Internal document names or GUIDs of the Digital Guardian ARC export profiles (only defaultExportProfile and demisto are officially supported). Default is defaultExportProfile. | True |
+| Export Profiles | Internal document names or GUIDs of the Digital Guardian ARC export profiles. Custom export profiles are not officially supported. Default is defaultExportProfile. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -31,7 +31,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### digital-guardian-get-events
 
 ***
-Gets events from the configured Digital Guardian ARC export profile.
+Gets events from the configured Digital Guardian ARC export profiles. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events.
 
 #### Base Command
 

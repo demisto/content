@@ -22,7 +22,7 @@ configuration:
   displaypassword: Client Secret
   required: true
 - display: Export Profiles
-  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles (only defaultExportProfile and demisto are officially supported).
+  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles. Custom export profiles are not officially supported.
   name: export_profile
   required: true
   type: 16  # Multi Select
@@ -67,7 +67,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets events from the configured Digital Guardian ARC export profile.
+    description: Gets events from the configured Digital Guardian ARC export profiles. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events.
     execution: false
     name: digital-guardian-get-events
   dockerimage: demisto/python3:3.11.10.116949
