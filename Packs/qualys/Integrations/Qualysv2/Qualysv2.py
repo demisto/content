@@ -2814,30 +2814,6 @@ def add_fields_to_events(events, time_field_path, event_type_field):
 def truncate_asset_size(asset):
     host_id = asset.get('ID') or 'NO_ID'
     detection_id = asset.get('DETECTION', {}).get('UNIQUE_VULN_ID', 'No detection')
-
-    asset_size = get_size_of_object(asset)
-    if asset_size > ASSET_SIZE_LIMIT:
-        demisto.debug(f'{asset_size=}>{ASSET_SIZE_LIMIT=}')
-        detection_str = f' detection ID: {detection_id}' if detection_id else ''
-        demisto.debug(f'Asset ID: {host_id}{detection_str} has size of {asset_size}.')
-        results_characters_lim = 10000
-
-        if results := asset.get('DETECTION', {}).get('RESULTS'):
-            asset['DETECTION']['RESULTS'] = results[:results_characters_lim]
-            asset['isTruncated'] = True
-            demisto.debug(f'Truncated Asset ID: {host_id}{detection_str} to {results_characters_lim}')
-            demisto.debug(json.dumps(asset))
-
-        # For extra debugging in case other/additional keys has oversize data
-        for key, val in asset.items():
-            if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
-                demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
-                              f'{str(val)[:10000]}...')
-
-
-def truncate_asset_size_2(asset):
-    host_id = asset.get('ID') or 'NO_ID'
-    detection_id = asset.get('DETECTION', {}).get('UNIQUE_VULN_ID', 'No detection')
     detection_str = f' detection ID: {detection_id}' if detection_id else ''
 
     results_characters_lim = 10000
@@ -2850,10 +2826,10 @@ def truncate_asset_size_2(asset):
             demisto.debug(json.dumps(asset))
 
         # For extra debugging in case other/additional keys has oversize data
-        # for key, val in asset.items():
-        #     if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
-        #         demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
-        #                       f'{str(val)[:10000]}...')
+        for key, val in asset.items():
+            if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
+                demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
+                              f'{str(val)[:10000]}...')
 
 
 def get_detections_from_hosts(hosts):
@@ -2900,7 +2876,7 @@ def get_detections_from_hosts(hosts):
             del new_detection['DETECTION_LIST']
             new_detection['DETECTION'] = detection
             fetched_assets.append(new_detection)
-            truncate_asset_size_2(new_detection)
+            truncate_asset_size(new_detection)
 
     demisto.debug(f'Extracted {len(fetched_assets)} assets from hosts')
     return fetched_assets, False
@@ -3024,7 +3000,6 @@ def fetch_assets(client, assets_last_run):
 
 def check_fetch_duration_time_exceeded(start_time):
     elapsed_time = time.time() - start_time
-    # demisto.debug(f'Execution elapsed time: {elapsed_time=}')
     if elapsed_time > FETCH_ASSETS_COMMAND_TIME_OUT:
         demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
                       'because there is not enough time left, and we will lower the limit for the next time')
@@ -3238,9 +3213,6 @@ def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-
-    # We start a counter mainly for fetch assets as it is might be long. It can be used in other commands as well
-    # start_time = time.time()
 
     base_url = params.get('url')
     verify_certificate = not params.get("insecure", False)
@@ -3549,7 +3521,7 @@ def main():  # pragma: no cover
 
                 demisto.debug(f'Starting fetch for assets, {EXECUTION_START_TIME=}')
                 assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client=client,
-                                                                                              assets_last_run=last_run)
+                                                                                                        assets_last_run=last_run)
                 real_amount_of_assets = new_last_run.get("total_assets")
                 if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
                     new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
