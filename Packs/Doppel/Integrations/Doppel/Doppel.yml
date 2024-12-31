@@ -128,6 +128,8 @@ script:
       - down
       - parked
       type: textArea
+    - name: comment
+      type: textArea
     description: Updates an alert in the Doppel platform.
     name: doppel-update-alert
     outputs:

@@ -80,6 +80,7 @@ class Client(BaseClient):
                 entity_state: str,
                 alert_id: Optional[str] = None,
                 entity: Optional[str] = None,
+                comment: Optional[str] = None,
             ) -> Dict[str, Any]:
         """
         Updates an existing alert using either the alert ID or the entity.
@@ -98,7 +99,7 @@ class Client(BaseClient):
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
         params = {"id": alert_id} if alert_id else {"entity": entity}
-        payload = {"queue_state": queue_state, "entity_state": entity_state}
+        payload = {"queue_state": queue_state, "entity_state": entity_state, "comment" :comment}
 
         response_content = self._http_request(
             method="PUT",  # Changed to PUT as per reference
@@ -295,13 +296,14 @@ def doppel_update_alert_command(client: Client, args: Dict[str, Any]) -> Command
     entity = args.get('entity')
     queue_state = args.get('queue_state')
     entity_state = args.get('entity_state')
+    comment = args.get('comment')
 
     if alert_id and entity:
         raise ValueError("Only one of 'alert_id' or 'entity' can be specified.")
     if not queue_state or not entity_state:
         raise ValueError("Both 'queue_state' and 'entity_state' must be specified.")
 
-    result = client.update_alert(queue_state=queue_state, entity_state=entity_state, alert_id=alert_id, entity=entity)
+    result = client.update_alert(queue_state=queue_state, entity_state=entity_state, alert_id=alert_id, entity=entity , comment=comment)
 
     return CommandResults(
         outputs_prefix='Doppel.UpdatedAlert',
