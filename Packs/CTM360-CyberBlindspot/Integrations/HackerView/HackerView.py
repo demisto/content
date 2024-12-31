@@ -261,7 +261,6 @@ def convert_time_string(
         return ''
 
 
-@logger
 def deduplicate_and_create_incidents(
         fetched_incidents: list,
         last_run_incident_identifiers: list[str]) -> tuple[list, list]:
