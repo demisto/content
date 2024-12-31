@@ -1,9 +1,4 @@
-
-#### Playbooks
-
-##### New: Msiexec execution of an executable from an uncommon remote location
-
-- New: This playbook addresses the following alerts:
+This playbook addresses the following alerts:
  
 - Msiexec execution of an executable from an uncommon remote location with a specific port
 - Msiexec execution of an executable from an uncommon remote location without properties
@@ -43,13 +38,48 @@ Containment:
  
 Requirements: 
  
-For any response action, you need one of the following integrations:
+For any response action, you need the following integration:
  
-- PAN-OS.<~XSIAM> (Available from Cortex XSIAM 2.4).</~XSIAM>
+- PAN-OS
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: Msiexec execution of an executable from an uncommon remote location
+### Sub-playbooks
 
-- New: This trigger is responsible for handling the 'Msiexec execution of an executable from an uncommon remote location with a specific port' and 'Msiexec execution of an executable from an uncommon remote location without properties' alerts via the 'Msiexec execution of an executable from an uncommon remote location' playbook<~XSIAM> (Available from Cortex XSIAM 2.4).</~XSIAM>
+* PAN-OS - Block URL - Custom URL Category
+
+### Integrations
+
+* CortexCoreIR
+
+### Scripts
+
+* CommandLineAnalysis
+* SearchIncidentsV2
+
+### Commands
+
+* closeInvestigation
+* core-get-IP-analytics-prevalence
+* core-get-domain-analytics-prevalence
+* core-isolate-endpoint
+* core-terminate-causality
+* wildfire-get-verdict
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Msiexec execution of an executable from an uncommon remote location](../doc_files/Msiexec_execution_of_an_executable_from_an_uncommon_remote_location.png)

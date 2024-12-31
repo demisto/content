@@ -1,0 +1,29 @@
+{
+  "trigger_id": "c3f1be30a61c743ffb869c7dbb0c51f9",
+  "playbook_id": "Msiexec execution of an executable from an uncommon remote location",
+  "suggestion_reason": "Recommended for 'Msiexec execution of an executable from an uncommon remote location without properties' and 'Msiexec execution of an executable from an uncommon remote location with a specific port' alerts",
+  "description": "This trigger is responsible for handling the 'Msiexec execution of an executable from an uncommon remote location with a specific port' and 'Msiexec execution of an executable from an uncommon remote location without properties' alerts via the 'Msiexec_execution_of_an_executable_from_an_uncommon_remote_location' playbook",
+  "trigger_name": "Msiexec execution of an executable from an uncommon remote location",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location with a specific port"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location without properties"
+                }
+                ]
+            }
+        ]
+    }
+  }
+}
+
