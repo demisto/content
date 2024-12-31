@@ -530,7 +530,7 @@ def get_events_command(
                 "page": datadog_page,
             }
             event_list_response: EventListResponse = api_instance.list_events(
-                **{key: value for key, value in body_dict.items() if value is not None} # type: ignore[arg-type]
+                **{key: value for key, value in body_dict.items() if value is not None}  # type: ignore[arg-type]
             )
             results = event_list_response.get("events", [])
             resp = get_paginated_results(results, offset, limit)
