@@ -733,7 +733,7 @@ tasks:
 
         **Action Required:**
 
-        * Isolate the remote host
+        * Isolate the remote host: ${Endpoint.Hostname}
       type: condition
       iscommand: false
       brand: ""

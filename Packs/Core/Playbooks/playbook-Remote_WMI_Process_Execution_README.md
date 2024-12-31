@@ -42,7 +42,7 @@ CortexCoreIR
 ### Scripts
 
 * CommandLineAnalysis
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 
