@@ -719,7 +719,7 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.33.0"
+version = "1.33.2"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
@@ -800,7 +800,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "CIAC-11100-playbook-run-in-build"
-resolved_reference = "8804d2720b24c3c39eec1bd09f9603b459703ce1"
+resolved_reference = "7ded6692127961a014ab05f4dd7579ff8f3ceaf3"
 
 [[package]]
 name = "deprecated"
