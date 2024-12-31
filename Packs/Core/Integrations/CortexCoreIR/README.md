@@ -2815,7 +2815,7 @@ Initiates a new endpoint script execution action using a script from the script 
 ### core-terminate-process
 
 ***
-Terminate a process by its instance ID.
+Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
 
 #### Base Command
 
@@ -2841,7 +2841,7 @@ Terminate a process by its instance ID.
 ### core-terminate-causality
 
 ***
-Stops a process by its causality ID.
+Stops a process by its causality ID. Available only for XSIAM 2.4 and above.
 
 ##### Command Example
 
