@@ -1345,7 +1345,7 @@ def test_get_script_code_command(requests_mock):
     assert raw_response == get_script_code_command_reply.get("reply")
 
 
-def test_action_status_get_command(requests_mock):
+def test_action_status_get_command(mocker):
     """
         Given:
             - An action_id
@@ -1373,9 +1373,7 @@ def test_action_status_get_command(requests_mock):
         })
     action_status_get_command_expected_result = result
 
-    requests_mock.post(f'{Core_URL}/public_api/v1/actions/get_action_status/',
-                       json=action_status_get_command_command_reply)
-
+    mocker.patch.object(CoreClient, '_http_request', return_value=action_status_get_command_command_reply)
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
