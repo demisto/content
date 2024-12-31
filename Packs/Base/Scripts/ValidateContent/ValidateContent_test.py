@@ -162,10 +162,12 @@ def test_get_pack_name_no_name(mocker):
     mock_zipfile.__enter__.return_value.open.return_value.__enter__.return_value = mock_metadata_file
 
     mocker.patch('zipfile.ZipFile', return_value=mock_zipfile)
+    mock_error = mocker.patch('demisto.error')
 
     result = get_pack_name('test_pack.zip')
-
     assert result == 'TmpPack'
+    mock_error.assert_called_with('Could not find pack name in metadata.json')
+
 
 
 def test_read_validate_results(tmp_path):
