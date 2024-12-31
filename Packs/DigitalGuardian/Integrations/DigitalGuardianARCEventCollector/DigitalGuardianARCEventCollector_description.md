@@ -32,6 +32,6 @@ To view, create, or edit export profiles, in the Digital Guardian platform tenan
 
     _Failure to update this setting to a current timestamp during the initial configuration of the integration instance may result in unnecessary system overhead and the accumulation of outdated events until the event collector eventually begins fetching recent events._
 
-    To update **Last Exported Record** field, select the relevant export profile and edit its settings. Ensure all changes are saved.
+    To update the **Last Exported Record** field, select the relevant export profile and edit its settings. Ensure all changes are saved.
 
 ![Digital Guardian export profile edit](../../doc_files/edit_export_profile.png)
