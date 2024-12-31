@@ -1,7 +1,7 @@
 id: Msiexec execution of an executable from an uncommon remote location
 version: -1
 name: Msiexec execution of an executable from an uncommon remote location
-description: "This playbook addresses the following alerts:\n \n- Msiexec execution of an executable from an uncommon remote location with a specific port\n- Msiexec execution of an executable from an uncommon remote location without properties\n \nPlaybook Stages:\n  \nAnalysis: \n \n- Check extracted domain's reputation\n- Check extracted domain's prevalence\n \n \nInvestigation:\n \n- Check for suspicious related alerts: \n    - Local Analysis Malware\n    - Mitre Techniques:\n        - T1140 - Deobfuscate/Decode Files or Information\n        - T1059 - Command and Scripting Interpreter \n\nContainment:\n \n- Kill causality process\n- Block malicious URL\n \nRequirements: \n \nFor any response action, you need the following integration:\n \n- PAN-OS."
+description: "This playbook addresses the following alerts:\n \n- Msiexec execution of an executable from an uncommon remote location with a specific port\n- Msiexec execution of an executable from an uncommon remote location without properties\n \nPlaybook Stages:\n  \nAnalysis: \n \n- Check extracted URL reputation:\n  - Determine if the MSI package was installed from a malicious source\n  - If the URL is found to be malicious, the playbook will proceed directly to remediation steps\n \nInvestigation:\n\n- Check extracted domain's prevalence and causality process signature status:\n  - Evaluate the prevalence of the domain from which the MSI package was downloaded\n  - Verify if the causality process (CGO) is signed or unsigned\n  - If the domain is found malicious and the causality process is unsigned, the playbook will proceed directly to remediation steps\n\n- Check for the following related alerts: \n  - Local Analysis Malware\n  - Mitre Techniques:\n    - T1140 - Deobfuscate/Decode Files or Information\n    - T1059 - Command and Scripting Interpreter \n\n- Analyze CGO command line for defense evasion techniques:\n  - Evaluate the command line for suspicious patterns which indicates attempts to bypass security controls\n\n- If the command line contains suspicious patterns or related alerts are found, the playbook will proceed directly to remediation steps\n\nContainment:\n \n- Terminate causality process\n- Block maliciou URL (Manual approval)\n  - Implement URL blocking using PAN-OS through Custom URL Categories\n- Isolate endpoint (Manual approval)\n \nRequirements: \n \nFor any response action, you need the following integration:\n \n- PAN-OS."
 tags:
 - TA0005 - Defense Evasion
 - T1218 - System Binary Proxy Execution
@@ -1271,3 +1271,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
+marketplaces:
+- marketplacev2

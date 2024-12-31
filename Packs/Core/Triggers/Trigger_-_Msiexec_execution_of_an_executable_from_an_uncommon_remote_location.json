@@ -9,38 +9,20 @@
     "filter": {
         "AND": [
             {
-                "OR": [
-                  {
-                    "AND": [
-                      {
-                        "SEARCH_FIELD": "alert_name",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location without properties"
-                      },
-                      {
-                        "SEARCH_FIELD": "severity",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "SEV_030_MEDIUM"
-                      }
-                    ]
-                  },
-                  {
-                    "AND": [
-                      {
-                        "SEARCH_FIELD": "alert_name",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location with a specific port"
-                      },
-                      {
-                        "SEARCH_FIELD": "severity",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "SEV_040_HIGH"
-                      }
-                    ]
-                  }
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location with a specific port"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Msiexec execution of an executable from an uncommon remote location without properties"
+                }
                 ]
-              }
-        ]    
+            }
+        ]
     }
   }
 }
