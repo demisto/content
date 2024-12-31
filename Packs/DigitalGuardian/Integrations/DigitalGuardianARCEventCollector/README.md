@@ -5,9 +5,9 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Known Limitations
 
-* A maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To optimize throughput, it is recommended to distribute alerts and events across multiple export profiles and configure the export profile in the Digital Guardian ARC platform to include only relevant alarm and event types.
+- A maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To optimize throughput, it is recommended to distribute alerts and events across multiple export profiles and configure the export profile in the Digital Guardian ARC platform to include only relevant alarm and event types.
 
-* Events are fetched starting from the **Last Exported Record** timestamp of the export profile. When first configuring the event collector, it is highly recommended to adjust the value of this field in the selected export profile(s) to a recent timestamp for optimal fetch performance.
+- Events are fetched starting from the **Last Exported Record** timestamp of the export profile. When first configuring the event collector, it is highly recommended to adjust the value of this field in the selected export profile(s) to a recent timestamp to prevent the fetching of outdated events.
 
 ## Configure Digital Guardian ARC Event Collector in Cortex
 
