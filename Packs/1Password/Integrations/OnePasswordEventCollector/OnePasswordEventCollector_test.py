@@ -177,7 +177,7 @@ def test_client_get_events(authenticated_client: Client, mocker: MockerFixture):
     client_http_request_kwargs = client_http_request.call_args.kwargs
 
     assert client_http_request_kwargs['method'] == 'POST'
-    assert client_http_request_kwargs['url_suffix'] == '/signinattempts'
+    assert client_http_request_kwargs['url_suffix'] == '/api/v2/signinattempts'
     assert client_http_request_kwargs['json_data'] == request_body
     assert client_http_request_kwargs['raise_on_status'] is True
 

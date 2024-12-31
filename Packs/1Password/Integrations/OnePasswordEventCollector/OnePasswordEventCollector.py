@@ -63,7 +63,7 @@ class Client(BaseClient):
             dict: The response JSON from the event endpoint.
         """
         demisto.debug(f'Requesting events of feature: {event_feature} using request body: {body}')
-        return self._http_request(method='POST', url_suffix=f'/{event_feature}', json_data=body, raise_on_status=True)
+        return self._http_request(method='POST', url_suffix=f'/api/v2/{event_feature}', json_data=body, raise_on_status=True)
 
 
 ''' HELPER FUNCTIONS '''
@@ -343,7 +343,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     # required
-    base_url: str = urljoin(params['url'], '/api/v2')
+    base_url: str = params['url']
     token: str = params.get('credentials', {}).get('password', '')
     event_types: list[str] = argToList(params['event_types'])
 
