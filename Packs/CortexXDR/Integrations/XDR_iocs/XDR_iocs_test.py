@@ -1346,3 +1346,208 @@ def test_parse_xsoar_field_name_and_link_exceptions(xsoar_comment_field: list[st
     with pytest.raises(DemistoException) as de:
         XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
         assert de.message == informative_message
+
+
+@patch('XDR_iocs.Client.severity', "HIGH")
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', False)
+@patch('XDR_iocs.Client.override_severity', False)
+@patch('XDR_iocs.Client.xsoar_severity_field', 'severity_field')
+def test_no_override_with_default_severity():
+    """
+    Given:
+        - A default severity level is set to HIGH in the Client configuration.
+        - No custom severity field is provided in the IOC.
+    When:
+        - calling demisto_ioc_to_xdr.
+    Then:
+        - Verify the severity remains HIGH.
+    """
+    ioc = {
+        'value': 'test_indicator',
+        'indicator_type': 'IP',
+        'CustomFields': {}
+    }
+
+    result = demisto_ioc_to_xdr(ioc)
+    assert result['severity'] == 'HIGH'
+
+@patch('XDR_iocs.Client.severity', "HIGH")
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', False)
+@patch('XDR_iocs.Client.override_severity', True)
+@patch('XDR_iocs.Client.xsoar_severity_field', 'severity_field')
+def test_no_override_with_custom_field_severity():
+    """
+    Given:
+        - A default severity level is set to HIGH in the Client configuration.
+        - A custom severity field with LOW value is provided in the IOC.
+    When:
+        - calling demisto_ioc_to_xdr.
+    Then:
+        - Verify the severity remains HIGH, ignoring the custom field.
+    """
+    ioc = {
+        'value': 'test_indicator',
+        'indicator_type': 'IP',
+        'CustomFields': {
+            'severity_field': 'LOW'
+        }
+    }
+
+    result = demisto_ioc_to_xdr(ioc)
+    assert result['severity'] == 'HIGH'
+
+@patch('XDR_iocs.Client.severity', "HIGH")
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
+@patch('XDR_iocs.Client.override_severity', False)
+@patch('XDR_iocs.Client.xsoar_severity_field', 'severity_field')
+def test_old_override_with_custom_field_severity():
+    """
+    Given:
+        - A default severity level is set to HIGH in the Client configuration.
+        - A custom severity field with MEDIUM value is provided in the IOC.
+        - The old override severity parameter is enabled.
+    When:
+        - calling demisto_ioc_to_xdr.
+    Then:
+        - Verify the severity is set to the custom field value MEDIUM.
+    """
+    ioc = {
+        'value': 'test_indicator',
+        'indicator_type': 'IP',
+        'CustomFields': {
+            'severity_field': 'MEDIUM'
+        }
+    }
+
+    result = demisto_ioc_to_xdr(ioc)
+    assert result['severity'] == 'MEDIUM'
+
+@patch('XDR_iocs.Client.severity', "HIGH")
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
+@patch('XDR_iocs.Client.override_severity', True)
+@patch('XDR_iocs.Client.xsoar_severity_field', 'severity_field')
+def test_old_override_without_custom_field_severity():
+    """
+    Given:
+        - A default severity level is set to HIGH in the Client configuration.
+        - No custom severity field is provided in the IOC.
+        - The old override severity parameter is enabled.
+    When:
+        - calling demisto_ioc_to_xdr.
+    Then:
+        - Verify the severity remains HIGH.
+    """
+    ioc = {
+        'value': 'test_indicator',
+        'indicator_type': 'IP',
+        'CustomFields': {}
+    }
+
+    result = demisto_ioc_to_xdr(ioc)
+    assert result['severity'] == 'HIGH'
+
+
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', False)
+@patch('XDR_iocs.Client.severity', "HIGH")
+@patch('XDR_iocs.Client.xsoar_comments_field', 'comments')
+@patch('XDR_iocs.Client.tag', 'tag_value')
+@patch('XDR_iocs.get_indicator_xdr_score', return_value=1)
+def test_no_override_with_default_severity(mock_get_score):
+    """
+    Given:
+        - Default severity is set to HIGH in the Client configuration.
+        - The old override severity parameter is disabled.
+        - IOC does not contain a custom severity field.
+    When:
+        - Converting an XDR IOC to Demisto format.
+    Then:
+        - Verify that the severity remains HIGH.
+    """
+    ioc = {
+        'RULE_INDICATOR': 'test_indicator',
+        'RULE_SEVERITY': 'HIGH',
+        'IOC_TYPE': 'IP',
+        'RULE_STATUS': 'ENABLED',
+        'RULE_EXPIRATION_TIME': 1700000000
+    }
+
+    result = xdr_ioc_to_demisto(ioc)
+    assert result['fields']['sourceoriginalseverity'] == 'HIGH'
+
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', False)
+@patch('XDR_iocs.Client.severity', "HIGH")
+@patch('XDR_iocs.Client.xsoar_comments_field', 'comments')
+@patch('XDR_iocs.get_indicator_xdr_score', return_value=1)
+def test_no_override_with_custom_severity_field(mock_get_score):
+    """
+    Given:
+        - Default severity is set to HIGH in the Client configuration.
+        - The old override severity parameter is disabled.
+        - IOC contains a RULE_SEVERITY field with MEDIUM value.
+    When:
+        - Converting an XDR IOC to Demisto format.
+    Then:
+        - Verify that the severity is set to HIGH (default), ignoring the custom field.
+    """
+    ioc = {
+        'RULE_INDICATOR': 'test_indicator',
+        'RULE_SEVERITY': 'MEDIUM',
+        'IOC_TYPE': 'IP',
+        'RULE_STATUS': 'ENABLED',
+        'RULE_EXPIRATION_TIME': 1700000000
+    }
+
+    result = xdr_ioc_to_demisto(ioc)
+    assert result['fields']['sourceoriginalseverity'] == 'HIGH'
+
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
+@patch('XDR_iocs.Client.override_severity', False)
+@patch('XDR_iocs.Client.xsoar_comments_field', 'comments')
+@patch('XDR_iocs.get_indicator_xdr_score', return_value=1)
+def test_old_override_with_custom_severity_field(mock_get_score):
+    """
+    Given:
+        - The old override severity parameter is enabled.
+        - The override severity is set to False.
+        - IOC contains a RULE_SEVERITY field with LOW value.
+    When:
+        - Converting an XDR IOC to Demisto format.
+    Then:
+        - Verify that the severity is set to LOW.
+    """
+    ioc = {
+        'RULE_INDICATOR': 'test_indicator',
+        'RULE_SEVERITY': 'SEV_020_LOW',
+        'IOC_TYPE': 'IP',
+        'RULE_STATUS': 'ENABLED',
+        'RULE_EXPIRATION_TIME': 1700000000
+    }
+
+    result = xdr_ioc_to_demisto(ioc)
+    assert result['fields']['sourceoriginalseverity'] == 'LOW'
+
+@patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
+@patch('XDR_iocs.Client.override_severity', True)
+@patch('XDR_iocs.Client.severity', "CRITICAL")
+@patch('XDR_iocs.Client.xsoar_comments_field', 'comments')
+@patch('XDR_iocs.get_indicator_xdr_score', return_value=1)
+def test_old_override_without_custom_severity_field(mock_get_score):
+    """
+    Given:
+        - The old override severity parameter is enabled.
+        - The override severity is set to True.
+        - IOC does not contain a RULE_SEVERITY field.
+    When:
+        - Converting an XDR IOC to Demisto format.
+    Then:
+        - Verify that the severity is set to CRITICAL.
+    """
+    ioc = {
+        'RULE_INDICATOR': 'test_indicator',
+        'IOC_TYPE': 'IP',
+        'RULE_STATUS': 'ENABLED',
+        'RULE_EXPIRATION_TIME': 1700000000
+    }
+
+    result = xdr_ioc_to_demisto(ioc)
+    assert result['fields']['sourceoriginalseverity'] == 'CRITICAL'

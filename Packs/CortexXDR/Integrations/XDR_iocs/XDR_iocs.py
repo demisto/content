@@ -405,7 +405,6 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
             xdr_ioc['status'] = 'DISABLED'
         if Client.use_old_override_severity_parameter:  # For Backwards Compatibility
             outgoing_severity_condition = ((not Client.override_severity)   # For Backwards Compatibility
-
                                            and (custom_severity := custom_fields.get(Client.xsoar_severity_field)))
         else:
             outgoing_severity_condition = (not Client.severity) and (
