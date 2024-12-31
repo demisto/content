@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: NewIntegration
+  id: NewIntegr
   version: -1
 configuration:
 - defaultvalue: https://www.example.com
@@ -65,9 +65,9 @@ configuration:
   name: incidentType
   type: 13
   required: false
-description: NewIntegration alerting service.
-display: NewIntegration
-name: NewIntegration
+description: NewIntegr alerting service.
+display: NewIntegr
+name: NewIntegr
 script:
   commands:
   - arguments:
@@ -654,7 +654,7 @@ script:
     - contextPath: Grafana.Organization.address
       description: Organization address.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.7.117934
   isfetch: true
   runonce: false
   script: '-'
