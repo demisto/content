@@ -1,23 +1,29 @@
 Create indicator at OpenCTI.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * OpenCTI
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * opencti-indicator-create
 * opencti-label-create
 * opencti-external-reference-create
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -33,13 +39,14 @@ This playbook does not use any scripts.
 | value | Indicator value. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | OpenCTI.Indicator.id | New indicator id. | string |
-| OpenCTI.Indicator.data | New indicator data. | unknown |
 
 ## Playbook Image
+
 ---
 ![OpenCTI Create Indicator](../doc_files/OpenCTI_-_Create_Indicator.png)

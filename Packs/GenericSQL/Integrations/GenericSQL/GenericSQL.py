@@ -162,6 +162,8 @@ class Client:
         if self.ssl_connect:
             if self.dialect == POSTGRES_SQL:
                 ssl_connection = {'sslmode': 'require'}
+            elif self.dialect == TRINO:
+                ssl_connection = {'http_scheme': 'https'}
             else:
                 ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
 
