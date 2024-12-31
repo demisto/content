@@ -8,8 +8,8 @@ This integration was integrated and tested with V2 endpoints of the 1Password Ev
 
 The integration can be configured to fetch three types of events from 1Password:
 
-- **Audit events** - Information about actions performed by team members within a 1Password account. Events include when an action was performed and by whom, along with details about the type and object of the action and any other information about the activity.
-- **Item usage actions** - Information about items in shared vaults that have been modified, accessed, or used. Events include the name and IP address of the user who accessed the item, when the item was accessed, and the vault where the item is stored.
+- **Audit events** - Information about actions performed by team members within a 1Password account. Events include details on a preformed action such as execution time and executing user, action type and any additional information about the activity.
+- **Item usage actions** - Information about items in shared vaults that have been modified, accessed, or used. Events include the accessing user's name and IP address, time of access, and the vault where the item is stored.
 - **Sign-in attempts** - Information about sign-in attempts. Events include the name and IP address of the user who attempted to sign in to the account, when the attempt was made, and, for failed attempts, the cause of the failure.
 
 All event timestamps, along with date and time configuration parameters and command arguments, are in the Coordinated Universal Time (UTC) timezone.
@@ -22,6 +22,11 @@ Every call to the 1Password Events API must be authorized with a bearer token. T
 4. Ensure the token has access to the event types listed above.
 5. Click **Issue Token** to generate a new bearer token.
 6. Save the token in a secure location and use it in configuring this integration instance.
+7. The token can be verified by performing a `GET` request to the 1Password Events API introspection endpoint:
+
+```shell
+curl --location '{server-url}/api/v2/auth/introspect' --header 'Authorization: Bearer {api-token}'
+```
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -47,7 +52,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### one-password-get-events
 
 ***
-Fetch events from 1Password.
+Fetch events from 1Password. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events.
 
 #### Base Command
 
