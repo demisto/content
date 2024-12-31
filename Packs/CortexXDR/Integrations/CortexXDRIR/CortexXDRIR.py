@@ -847,7 +847,7 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
 
 def close_incident_in_xsoar(incident_data):
     xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
-    closing_entry = {
+    closing_entry: dict = {
         "Type": EntryType.NOTE,
         "Contents": {
             "dbotIncidentClose": True,
