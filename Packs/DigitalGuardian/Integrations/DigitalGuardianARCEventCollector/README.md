@@ -18,7 +18,7 @@ This is the default integration for this content pack when configured by the Dat
 | Gateway Base URL (e.g. https://some_url.com) |  | True |
 | Client ID |  | True |
 | Client Secret | Client Secret | True |
-| Export Profiles | Internal document names or GUIDs of the Digital Guardian ARC export profiles. Default is defaultExportProfile. | True |
+| Export Profiles | Internal document names or GUIDs of the Digital Guardian ARC export profiles (only defaultExportProfile and demisto are officially supported). Default is defaultExportProfile. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -56,6 +56,7 @@ There is no context output for this command.
 
 >### Events for Profile defaultExportProfile
 >
->| COL_A | COL_B |
->| --- | --- |
->| ... | ... |
+>|dg_agent_version|dg_display|dg_file_size|dg_first|dg_guid|dg_hc|dg_machine_name|dg_machine_type|dg_mid|dg_parent_name|dg_processed_time|dg_src_dir|dg_src_file_ext|dg_src_file_name|dg_time|dg_utype|dg_wdb|dg_wrv|pi_nda|uad_sfc|
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| 7.9.4.0026 | Discovery Event | 51 B | True | 4a2c2692-044c-4f53-ac9b-f0fbd3b0ef3b | Yes | examplecompany\srt-test-dp1 | Windows | ffcd1683-7f92-1fd2-fb23-c16ff063bfb4 | (unknown) | 2024-12-11 04:37:16 PM | c:\windows\servicing\lcu\ouppolicy_resources\ | adml | autoplay.adml | 2024-12-11 04:37:16 PM | Discovery Event | No | No | No | Yes |
+>| 7.9.4.0026 | Discovery Event | 27.5 KB | True | d343c704-7b1f-43c3-b558-178d7780fcd3 | Yes | examplecompany\srt-test-dp1 | Windows | ffcd1683-7f92-1fd2-fb23-c16ff063bfb4 | (unknown) | 2024-12-11 04:37:16 PM | c:\windows\servicing\lcu\package_for_rollupfix\ | dll | settingshandlers_user.dll | 2024-12-11 04:37:16 PM | Discovery Event | No | No | No | Yes |

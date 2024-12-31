@@ -22,13 +22,14 @@ configuration:
   displaypassword: Client Secret
   required: true
 - display: Export Profiles
-  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles.
+  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles (only defaultExportProfile and demisto are officially supported).
   name: export_profile
   required: true
   type: 16  # Multi Select
   defaultvalue: defaultExportProfile
   options:
     - defaultExportProfile
+    - demisto
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure

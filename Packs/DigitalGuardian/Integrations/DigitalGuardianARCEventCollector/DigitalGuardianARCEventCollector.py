@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Digital Guardian'
 PRODUCT = 'ARC'
+SUPPORTED_EXPORT_PROFILES = ('defaultExportProfile', 'demisto')
 
 ''' CLIENT CLASS '''
 
@@ -267,6 +268,13 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
 
     demisto.debug(f'{base_url=}')
+
+    custom_export_profiles = [
+        export_profile for export_profile in export_profiles
+        if export_profile not in SUPPORTED_EXPORT_PROFILES
+    ]
+    if custom_export_profiles:
+        demisto.debug(f'Detected custom (unsupported) export profiles: {", ".join(custom_export_profiles)}.')
 
     demisto.debug(f'Command being called is {command}')
     try:
