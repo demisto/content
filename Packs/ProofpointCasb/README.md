@@ -1,5 +1,8 @@
-# Proofpoint CASB
+### Proofpoint CASB
 This pack includes parsing and modeling rules for Proofpoint CASB logs sent via HTTP Event Collector.
+
+### Supported Timestamp Formats:
+Timestamp is extracted from the occurredAt field with the following format - yyyy-mm-ddTHH:MM:SS.SSSZ
 
 ### Collect Events from Proofpoint CASB (XSIAM)
 
