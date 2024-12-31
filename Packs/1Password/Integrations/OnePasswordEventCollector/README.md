@@ -36,9 +36,9 @@ curl --location '{server-url}/api/v2/auth/introspect' --header 'Authorization: B
 | Use system proxy settings |  | False |
 | Fetch Events | Whether to fetch events from 1Password. | False |
 | Types of events to fetch | Types of events to fetch from 1Password. Possible values are: Audit events, Item usage actions, Sign in attempts. | True |
-| Maximum number of audit events per fetch |  | True |
-| Maximum number of item usage actions per fetch |  | True |
-| Maximum number of sign-in attempts per fetch |  | True |
+| Maximum number of audit events per fetch | If not specified, API default (100) will be used. | False |
+| Maximum number of item usage actions per fetch | If not specified, API default (100) will be used. | False |
+| Maximum number of sign-in attempts per fetch | If not specified, API default (100) will be used. | False |
 
 ## Limitations
 

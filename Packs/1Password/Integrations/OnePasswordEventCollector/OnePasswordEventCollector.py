@@ -5,7 +5,6 @@ from CommonServerUserPython import *  # noqa
 from http import HTTPStatus
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta, UTC
-from collections.abc import Mapping
 
 
 ''' CONSTANTS '''
@@ -19,7 +18,7 @@ PRODUCT = '1Password'
 # < 1000 increases the number of requests and may eventually trigger HTTP 429 [Rate Limit]
 DEFAULT_RESULTS_PER_PAGE = 1000
 
-DEFAULT_MAX_EVENTS_PER_FETCH = 1000
+DEFAULT_MAX_EVENTS_PER_FETCH = 100  # Consistent with API default
 
 DEFAULT_FETCH_FROM_DATE = datetime.now(tz=UTC) - timedelta(minutes=1)  # 1 minute ago in UTC timezone
 
@@ -56,7 +55,6 @@ class Client(BaseClient):
             body (dict): The request body containing either a Reset Cursor (date filter) or a Pagination Cursor.
 
         Raises:
-            ValueError: If unknown event type or missing cursor and start time.
             DemistoException: If API responds with an HTTP error status code.
 
         Returns:
@@ -69,26 +67,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_from_dict_for_event_type(event_type: str, mapping: Mapping[str, Any]) -> Any:
-    """Gets the value from the specified mapping dictionary based on the event type (key).
-
-    Args:
-        event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
-        mapping (Mapping): A key-value mapping (either a `dict` object or a `CaseInsensitiveDict`).
-
-    Raises:
-        ValueError: If unknown event type.
-
-    Returns:
-        Any: Value from the mapping dictionary.
-    """
-    if not (value := mapping.get(event_type)):
-        raise ValueError(f'Invalid or unsupported {VENDOR} event type: {event_type}.')
-
-    return value
-
-
-def get_limit_param_for_event_type(params: dict[str, str], event_type: str) -> int | None:
+def get_limit_param_for_event_type(params: dict[str, str], event_type: str) -> int:
     """Gets the limit parameter for a given event type. The limit represents the maximum number of events per fetch.
 
     Args:
@@ -96,10 +75,12 @@ def get_limit_param_for_event_type(params: dict[str, str], event_type: str) -> i
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
 
     Returns:
-        int | None: The maximum number of events per fetch, if specified.
+        int: The maximum number of events per fetch.
     """
-    param_name = get_from_dict_for_event_type(event_type, mapping=EVENT_TYPE_LIMIT_PARAM)
-    return arg_to_number(params.get(param_name))
+    param_name = EVENT_TYPE_LIMIT_PARAM[event_type]
+    limit = arg_to_number(params.get(param_name)) or DEFAULT_MAX_EVENTS_PER_FETCH
+    demisto.debug(f'Maximum number of events per fetch for {event_type} is set to {limit}.')
+    return limit
 
 
 def create_get_events_request_body(
@@ -146,8 +127,8 @@ def get_events_from_client(
     client: Client,
     event_type: str,
     from_date: datetime,
-    max_events: int | None = None,
-    ids_to_skip: set[str] | None = None
+    max_events: int,
+    already_fetched_ids_to_skip: set[str] | None = None
 ) -> list[dict]:
     """Gets events of the specified type based on the `from_date` filter and `max_events` argument using cursor-based pagination.
 
@@ -159,8 +140,8 @@ def get_events_from_client(
         client (Client): 1Password Events API client.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
         from_date (datetime): Datetime from which to get events.
-        max_events (int | None): Optional maximum number of events to fetch - uses API default (100) if not specified.
-        ids_to_skip (set | None): Optional set of already-fetched event UUIDs that should be skipped.
+        max_events (int): Maximum number of events to fetch.
+        already_fetched_ids_to_skip (set | None): Optional set of already-fetched event UUIDs that should be skipped.
 
     Raises:
         ValueError: If invalid event type or request body.
@@ -169,10 +150,12 @@ def get_events_from_client(
     Returns:
         list[dict]: List of events.
     """
-    event_feature = get_from_dict_for_event_type(event_type, mapping=EVENT_TYPE_FEATURE)
+    event_feature = EVENT_TYPE_FEATURE.get(event_type)
+    if not event_feature:
+        raise ValueError(f'Invalid or unsupported {VENDOR} event type: {event_type}.')
 
     events: list[dict] = []
-    ids_to_skip = ids_to_skip or set()
+    already_fetched_ids_to_skip = already_fetched_ids_to_skip or set()
 
     # Reset Cursor - First call to the paginated API needs to to include a date filter
     has_more_events = True
@@ -187,7 +170,7 @@ def get_events_from_client(
         for event in response['items']:
             event_id = event['uuid']
 
-            if event_id in ids_to_skip:
+            if event_id in already_fetched_ids_to_skip:
                 response_skipped_ids.add(event_id)
                 demisto.debug(f'Skipped duplicate event with ID: {event_id}')
                 continue
@@ -198,7 +181,7 @@ def get_events_from_client(
 
             add_fields_to_event(event, event_type)
             response_events.append(event)
-            ids_to_skip.add(event_id)
+            already_fetched_ids_to_skip.add(event_id)
 
         demisto.debug(
             f'Response has {len(response["items"])} events of type {event_type}. Saved {len(response_events)} events. '
@@ -236,7 +219,7 @@ def fetch_events(
     client: Client,
     event_type: str,
     event_type_last_run: dict[str, Any],
-    event_type_max_results: int | None,
+    event_type_max_results: int,
 ) -> tuple[dict, list]:
     """Fetches new events via 1Password Events API client based on a specified event type.
 
@@ -244,7 +227,7 @@ def fetch_events(
         client (Client): 1Password Events API client.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
         event_type_last_run (dict): Dictionary of the event type last run (if exists) with optional 'from_date' and 'ids' list.
-        event_type_max_results (int | None): Maximum number of events to fetch - uses API default (100) if not specified.
+        event_type_max_results (int): Maximum number of events of the event type to fetch.
 
     Returns:
         tuple[dict, list]: Dictionary of the next run of the event type with 'from_date' and 'ids' list, list of fetched events.
@@ -259,7 +242,7 @@ def fetch_events(
         event_type=event_type,
         from_date=from_date,
         max_events=event_type_max_results,
-        ids_to_skip=last_run_skip_ids,
+        already_fetched_ids_to_skip=last_run_skip_ids,
     )
 
     if event_type_events:
@@ -324,7 +307,7 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
         tuple[list[dict], CommandResults]: List of events and CommandResults with human readable output.
     """
     event_type = args['event_type']
-    limit = arg_to_number(args.get('limit'))
+    limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_EVENTS_PER_FETCH
     from_date = arg_to_datetime(args.get('from_date')) or DEFAULT_FETCH_FROM_DATE
 
     events = get_events_from_client(client, event_type=event_type, from_date=from_date, max_events=limit)
@@ -379,10 +362,10 @@ def main() -> None:  # pragma: no cover
             next_run: dict[str, Any] = {}
 
             for event_type in event_types:
-                event_type_key = get_from_dict_for_event_type(event_type, mapping=EVENT_TYPE_FEATURE)
+                event_type_key = EVENT_TYPE_FEATURE[event_type]
 
                 event_type_last_run: dict = last_run.get(event_type_key, {})
-                event_type_max_results: int | None = get_limit_param_for_event_type(params, event_type)
+                event_type_max_results: int = get_limit_param_for_event_type(params, event_type)
 
                 event_type_next_run, event_type_events = fetch_events(
                     client=client,
