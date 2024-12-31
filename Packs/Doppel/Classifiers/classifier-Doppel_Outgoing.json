@@ -1,0 +1,49 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "602a520c-d5d3-45c8-8cd8-5fbbaa6e93ed",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": {
+		"Doppel Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"queue_state": {
+					"simple": "queuestate"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Queue State": {
+					"simple": "labels.queue_state"
+				}
+			}
+		}
+	},
+	"name": "Doppel Outgoing",
+	"nameRaw": "Doppel Outgoing",
+	"packID": "c3beb3d4-5d11-46e9-85ec-87a0586dd624",
+	"packName": "Fields",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
+}
