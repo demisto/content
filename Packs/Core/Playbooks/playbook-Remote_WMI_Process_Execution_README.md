@@ -1,10 +1,4 @@
-
-
-#### Playbooks
-
-##### New: Remote WMI Process Execution
-
-- New: This playbook addresses the following alerts:
+This playbook addresses the following alerts:
 
 * Remote WMI process execution
 * Suspicious remote WMI process execution
@@ -33,8 +27,44 @@
 
 * Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
 
-#### Triggers Recommendations
+## Dependencies
 
-##### New: Remote WMI Process Execution
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-- New: This trigger is responsible for handling Remote WMI Process Execution alerts
+### Sub-playbooks
+
+This playbook does not use any sub-playbooks.
+
+### Integrations
+
+CortexCoreIR
+
+### Scripts
+
+* CommandLineAnalysis
+* SearchIncidentsV2
+
+### Commands
+
+* closeInvestigation
+* core-get-cloud-original-alerts
+* core-get-endpoints
+* core-isolate-endpoint
+* core-terminate-causality
+* ip
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Remote WMI Process Execution](../doc_files/Remote_WMI_Process_Execution.png)
