@@ -1,5 +1,3 @@
-## Cortex XDR by Palo Alto Networks
-
 Gain efficient threat detection, analysis, and response with the Cortex XDR content pack, seamlessly integrated into your security workflow.
 
 ### What does this pack do?

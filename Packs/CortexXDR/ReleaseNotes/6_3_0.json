@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Deleted the **Override severity** parameter. Use *Override severity value* instead, by default it is set to none meaning not overriding the original severity. If you use an already existing instance the value will be set to the same value as the original instance value."
+}
