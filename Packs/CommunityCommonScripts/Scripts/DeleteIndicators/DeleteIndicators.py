@@ -22,9 +22,9 @@ def main():
         if query:
             search_query = query
         elif indicator_vals:
-            search_query = f"value:({re.sub(',', ' ', indicator_vals)})"
+            search_query = f"value:({' '.join(indicator_vals)})"
         elif indicator_ids:
-            search_query = f"id:({re.sub(',', ' ', indicator_ids)})"
+            search_query = f"id:({' '.join(indicator_ids)})"
 
         res = execute_command("deleteIndicators", {
             "query": search_query,
