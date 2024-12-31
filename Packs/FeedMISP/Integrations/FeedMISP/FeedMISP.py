@@ -2,10 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
 
-
 # disable insecure warnings
 urllib3.disable_warnings()
-
 
 INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
@@ -216,7 +214,7 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str | None = None
+def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: Optional[int] = None
                       ) -> Dict[str, Any]:
     """
     Creates a dictionary in the format required by MISP to be used as a query.
@@ -237,11 +235,11 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
         'page': page
     }
     if from_timestamp:
-        params['attribute_timestamp'] = from_timestamp
+        params['attribute_timestamp'] = str(from_timestamp)
     return params
 
 
-def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: str | None = None) -> Dict[str, Any]:
+def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Optional[int] | None = None) -> Dict[str, Any]:
     """
     Parsing the query string created by the user by adding necessary argument and removing unnecessary arguments
     Args:
@@ -258,7 +256,7 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: st
         if params.get("timestamp"):
             params['attribute_timestamp'] = params.pop("timestamp")
         if from_timestamp:
-            params['attribute_timestamp'] = from_timestamp
+            params['attribute_timestamp'] = str(from_timestamp)
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \nError massage: {err}')
@@ -383,7 +381,7 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
         galaxy_indicator_type = galaxy_indicator['type']
 
         indicator_to_galaxy_relation = INDICATOR_TO_GALAXY_RELATION_DICT[galaxy_indicator_type][indicator_obj_type]
-        galaxy_to_indicator_relation = EntityRelationship.Relationships.\
+        galaxy_to_indicator_relation = EntityRelationship.Relationships. \
             RELATIONSHIPS_NAMES[indicator_to_galaxy_relation]
 
         indicator_relation = EntityRelationship(
@@ -514,6 +512,24 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     )
 
 
+def update_candidate(last_run: dict, last_run_timestamp: Optional[int], latest_indicator_timestamp: Optional[int],
+                     latest_indicator_value: str):
+    """
+    Update the candidate timestamp and value based on the latest and last run values.
+
+    Args:
+        last_run: a dictionary containing the last run information, including the timestamp, page, and indicator value.
+        last_run_timestamp: the timestamp of the last run.
+        latest_indicator_timestamp: the timestamp of the latest indicator.
+        latest_indicator_value: the value of the latest indicator.
+    """
+    candidate_timestamp = last_run.get('candidate_timestamp') or last_run_timestamp
+    if (not candidate_timestamp
+            or (latest_indicator_timestamp and latest_indicator_timestamp > candidate_timestamp)):
+        last_run['candidate_timestamp'] = latest_indicator_timestamp
+        last_run['candidate_value'] = latest_indicator_value
+
+
 def fetch_attributes_command(client: Client, params: Dict[str, str]):
     """
     Fetching indicators from the feed to the Indicators tab.
@@ -529,31 +545,55 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     fetch_limit = client.max_indicator_to_fetch
-
+    last_run = demisto.getLastRun()
+    total_fetched_indicators = 0
     query = params.get('query', None)
-    last_run = demisto.getLastRun().get('timestamp') or ""
-    params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run) if query else\
-        build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT, page=1, from_timestamp=last_run)
+    last_run_timestamp = arg_to_number(last_run.get('last_indicator_timestamp'))
+    last_run_page = last_run.get('page') or 1
+    last_run_value = last_run.get('last_indicator_value') or ""
+    params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp) if query else \
+        build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT,
+                          page=last_run_page, from_timestamp=last_run_timestamp)
+
     search_query_per_page = client.search_query(params_dict)
     demisto.debug(f'params_dict: {params_dict}')
+
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
+        search_query_per_page.get("response", {}).get("Attribute", []).sort(key=lambda x: x['timestamp'], reverse=False)
         indicators = build_indicators(client, search_query_per_page, attribute_types,
                                       tlp_color, params.get('url'), reputation, feed_tags)
+
+        total_fetched_indicators += len(indicators)
+        latest_indicator = search_query_per_page['response']['Attribute']
+        latest_indicator_timestamp = arg_to_number(latest_indicator[-1]['timestamp'])
+        latest_indicator_value = latest_indicator[-1]['value']
+
+        if last_run_timestamp == latest_indicator_timestamp and latest_indicator_value == last_run_value:
+            # No new indicators since last run, no need to fetch again
+            demisto.debug("No new indicators found since last run")
+            return
+
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
-        last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
+        update_candidate(last_run, last_run_timestamp,
+                         latest_indicator_timestamp, latest_indicator_value)
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
-        if fetch_limit and fetch_limit <= len(indicators):
-            demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {len(indicators)}")
-            break
+        if fetch_limit and fetch_limit <= total_fetched_indicators:
+            demisto.setLastRun(last_run | {"page": params_dict["page"]})
+            demisto.debug(
+                f"Reached the limit of indicators to fetch."
+                f" The number of indicators fetched is: {total_fetched_indicators}")
+            return
+
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun({'timestamp': last_run})
+    demisto.setLastRun({'last_indicator_timestamp': last_run.get("candidate_timestamp"),
+                        'last_indicator_value': last_run.get("candidate_value")})
 
 
 def main():  # pragma: no cover

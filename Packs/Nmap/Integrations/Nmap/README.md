@@ -1,16 +1,12 @@
 Run nmap scans with the given parameters.
-This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the integration Docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html. Some scan options require **root** access for using raw packet scanning techniques. See [here](https://nmap.org/book/man-port-scanning-techniques.html) for detailed scanning techniques. If you've configured the server to run Docker images with a non-root internal user and you want to use raw packet scanning (for example via the *-sS* option for SYN/ACK scan), make sure to exclude the *demisto/nmap* Docker image as documented [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users).
+This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the integration Docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html. Some scan options require **root** access for using raw packet scanning techniques. See [here](https://nmap.org/book/man-port-scanning-techniques.html) for detailed scanning techniques. If you've configured the server to run Docker images with a non-root internal user and you want to use raw packet scanning (for example via the *-sS* option for SYN/ACK scan), make sure to exclude the *demisto/nmap* Docker image as documented For Cortex XSOAR 6 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide).
 
-## Configure nmap on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for *nmap*.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure nmap in Cortex
 
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nmap-scan
 ***

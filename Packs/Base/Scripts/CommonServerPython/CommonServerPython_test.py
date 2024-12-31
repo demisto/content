@@ -18,7 +18,7 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+from CommonServerPython import (find_and_remove_sensitive_text, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
                                 flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
                                 remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
                                 get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
@@ -31,7 +31,8 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
+                                get_engine_base_url, is_integration_instance_running_on_engine
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -3821,6 +3822,26 @@ def test_b64_encode(_input, expected_output):
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
 
 
+B64_STR = 'This is a test!'
+DECODED_B64 = b'N\x18\xac\x8a\xc6\xadz\xcb'
+CASE_NO_PADDING = (B64_STR, DECODED_B64)
+CASE_LESS_PADDING = (B64_STR + '=', DECODED_B64)
+CASE_WITH_PADDING = (B64_STR + '==', DECODED_B64)
+CASE_TOO_MUCH_PADDING = (B64_STR + '===', DECODED_B64)
+
+
+@pytest.mark.parametrize('str_to_decode, expected_encoded',
+                         (CASE_NO_PADDING, CASE_WITH_PADDING, CASE_LESS_PADDING, CASE_TOO_MUCH_PADDING))
+def test_b64_decode(str_to_decode, expected_encoded):
+    """
+    Given: A base 64 encoded str that represents an image, with different paddings.
+    When: Decoding it to an image file.
+    Then: The str is decoded to binary.
+    """
+    encoded = b64_decode(str_to_decode)
+    assert encoded == expected_encoded
+
+
 def test_traceback_in_return_error_debug_mode_on(mocker):
     mocker.patch.object(demisto, 'command', return_value="test-command")
     mocker.spy(demisto, 'results')
@@ -6308,7 +6329,8 @@ class TestCommonTypes:
             user_id='test_user_id',
             manager_email='test_manager_email@test.com',
             manager_display_name='test_manager_display_name',
-            risk_level='test_risk_level'
+            risk_level='test_risk_level',
+            **{'some_undefinedKey': 'value'}
         )
 
         results = CommandResults(
@@ -6351,7 +6373,8 @@ class TestCommonTypes:
                          'Email': 'test_manager_email@test.com',
                          'DisplayName': 'test_manager_display_name'
                      },
-                     'RiskLevel': 'test_risk_level'
+                     'RiskLevel': 'test_risk_level',
+                     'some_undefinedKey': 'value'
                      }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
@@ -9912,3 +9935,132 @@ def test_get_server_config_fail(mocker):
     mocked_error = mocker.patch.object(demisto, 'error')
     assert get_server_config() == {}
     assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'
+
+
+@pytest.mark.parametrize('instance_name, expected_result',
+                         [('instance_name1', 'engine_id'),
+                          ('instance_name2', '')
+                          ], ids=[
+                              "Test-instanec-with-xsoar-engine-configures",
+                              "Test-instanec-without-xsoar-engine-configures"
+                         ])
+def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
+    """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
+
+        Given:  
+                1. A name of an instance that has an engine configured (and relevant mocked responses).
+                2. A name of an instance that doesn't have an engine configured (and relevant mocked responses).
+
+        When:  
+            - Running the 'is_integration_instance_running_on_engine' funcution. 
+
+        Then:
+            - Verify that: 
+                1. The result is the engine's id. 
+                2. The result is an empty string.
+    """
+    mock_response = {
+        'body': """{"instances": [
+            {"id": "1111", "name": "instance_name1", "engine": "engine_id"},
+            {"id": "2222", "name": "instance_name2", "engine": ""}
+        ]}""",
+    }
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    mocker.patch.object(demisto, 'integrationInstance', return_value=instance_name)
+    res = is_integration_instance_running_on_engine()
+    assert res == expected_result
+
+
+def test_get_engine_base_url(mocker):
+    """ Tests the 'get_engine_base_url' function's logic. 
+
+        Given:  
+            - Mocked response of the internalHttpRequest call for the '/engines' endpoint, including 2 engines.
+            - An id of an engine. 
+
+        When:  
+            - Running the 'is_integration_instance_running_on_engine' funcution. 
+
+        Then:
+            - Verify that base url of the given engine id was returened.
+
+    """
+    mock_response = {
+        'body': """{"engines": [
+            {"id": "1111", "baseUrl": "11.111.111.33:443"},
+            {"id": "2222", "baseUrl": "11.111.111.44:443"}
+        ]}""",
+    }
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    res = get_engine_base_url('1111')
+    assert res == '11.111.111.33:443'
+
+
+@pytest.mark.parametrize('input_text, pattern, expected_output, call_count', [
+    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234',
+                 r'(token:\s*)(\S+)', '1234', 1, id='Match token value'),
+    pytest.param('invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', r'(invalid_grant: java.security.SignatureException: Invalid signature for token: 1234)',
+                 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234', 1, id='Match entire string')
+])
+def test_find_and_remove_sensitive_text__found_onc(input_text, pattern, expected_output, call_count, mocker):
+    """
+    Given:
+    - Input text that includes sensitive information.
+
+    When:
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for sensitive information.
+
+    Then:
+    - Verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
+    - Verify that the function is called the correct number of times.
+
+    """
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
+    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+    find_and_remove_sensitive_text(input_text, pattern)
+
+    assert mock_remove_from_logs.call_count == call_count
+    assert mock_remove_from_logs.call_args[0][0] == expected_output
+
+
+@pytest.mark.parametrize('pattern, expected_output, call_count', [
+    pytest.param(r'n', ['n', 'n', 'n', 'n', 'n', 'n', 'n'], 7, id='Match character "n"'),
+    pytest.param(r'(?i)invalid', ['invalid', 'Invalid'], 2, id='Match word "invalid" case insensitive')
+])
+def test_find_and_remove_sensitive_text__found_multiple(pattern, expected_output, call_count, mocker):
+    """
+    Given:
+    - Input text that includes sensitive information.
+
+    When:
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information.
+
+    Then:
+        verify that the function responsible for removing sensitive information from the logs is called with the sensitive data as an argument.
+        verify that the function is called the correct number of times.
+    """
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for token: 1234'
+    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+    find_and_remove_sensitive_text(input_text, pattern)
+    assert mock_remove_from_logs.call_count == call_count
+    for x in range(call_count):
+        assert mock_remove_from_logs.call_args_list[x][0][0] == expected_output[x]
+
+
+def test_find_and_remove_sensitive_text__not_found(mocker):
+    """
+    Given:
+    - Input text that does not contain any sensitive information (e.g., no word following "token:").
+
+    When:
+    - Invoking the `find_and_remove_sensitive_text` method with a regex pattern to search for a sensitive information (the word following "token:").
+
+    Then:
+    - Ensure that the function does not remove anything from the logs.
+    """
+
+    input_text = 'invalid_grant: java.security.SignatureException: Invalid signature for text: 1234'
+    mock_remove_from_logs = mocker.patch('CommonServerPython.add_sensitive_log_strs', return_value=None)
+    find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
+
+    mock_remove_from_logs.assert_not_called()

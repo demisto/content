@@ -67,7 +67,7 @@ configuration:
   name: feedFetchInterval
   type: 19
   required: false
-- defaultvalue: '1000'
+- defaultvalue: '100'
   display: The maximum number of indicators to fetch.
   name: maxIndicators
   type: 0
@@ -108,7 +108,7 @@ script:
       name: limit
     description: Fetching Sixgill DVE Feed indicators.
     name: cybersixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.108071
+  dockerimage: demisto/sixgill:1.0.0.117239
   feed: true
   runonce: false
   script: '-'

@@ -1,25 +1,21 @@
 AWS Network Firewall is a stateful, managed, network firewall and intrusion detection and prevention service for Amazon Virtual Private Cloud (Amazon VPC). With Network Firewall, you can filter traffic at the perimeter of your VPC. This includes filtering traffic going to and coming from an internet gateway, NAT gateway, or over VPN or AWS Direct Connect. Network Firewall uses rules that are compatible with Suricata, a free, open source intrusion detection system (IDS) engine.
 
-## Configure AWS Network Firewall on Cortex XSOAR
+## Configure AWS Network Firewall in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS Network Firewall.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | roleArn | Role Arn | False |
-    | roleSessionName | Role Session Name | False |
-    | defaultRegion | AWS Default Region | False |
-    | sessionDuration | Role Session Duration | False |
-    | access_key | Access Key | False |
-    | secret_key | Secret Key | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| roleArn | Role Arn | False |
+| roleSessionName | Role Session Name | False |
+| defaultRegion | AWS Default Region | False |
+| sessionDuration | Role Session Duration | False |
+| access_key | Access Key | False |
+| secret_key | Secret Key | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-network-firewall-associate-firewall-policy
 ***
@@ -2037,4 +2033,3 @@ Update the firewall subnet change  protection
 >|FirewallArn|FirewallName|SubnetChangeProtection|UpdateToken|
 >|---|---|---|---|
 >| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | myfirewall2 | false | 57b15519-a812-4758-9b23-30301ef3705a |
-
