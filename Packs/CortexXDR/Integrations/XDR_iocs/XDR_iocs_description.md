@@ -14,7 +14,7 @@ To enable secure communication with Cortex XDR, you need to generate an API Key 
 
 ##### Note 1:
 
-When configuring a role for the API Key's permission you can create a custom role or use a built-in role. The highest privileged built-in role is the Instance Admin. If you wish to use a built-in role with less permission but maximum command capabilities, use the Privileged Responder role.
+When configuring a role for the API Key's permission you can create a custom role or use a built-in role. The highest privileged built-in role is the Instance Admin. To use a built-in role with less permission but maximum command capabilities, use the Privileged Responder role.
 
 ##### Note 2:
 

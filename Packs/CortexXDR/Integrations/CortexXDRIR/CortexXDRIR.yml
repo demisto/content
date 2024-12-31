@@ -27,7 +27,7 @@ configuration:
 - name: url
   type: 0
   display: Server URL
-  additionalinfo: Copy the API URL from Cortex XDR
+  additionalinfo: Copy the API URL from Cortex XDR.
   section: Connect
   required: true
 - displaypassword: API Key ID
@@ -62,7 +62,7 @@ configuration:
   section: Mirroring
   required: false
   advanced: true
-  additionalinfo: Use this parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents
+  additionalinfo: Use this parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents.
 - additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
   defaultvalue: 'true'
   display: Close Mirrored Cortex XSOAR Incident
@@ -188,7 +188,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  additionalinfo: Use system proxy settings is enabled only when an Engine is selected
+  additionalinfo: Use system proxy settings is enabled only when an engine is selected.
 - additionalinfo: Whether the Cortex XDR tenant is prevented only.
   display: Prevent Only Mode
   name: prevent_only
@@ -196,7 +196,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information
+- additionalinfo: Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information.
   display: Minimize Incident Information
   name: exclude_fields
   required: false
@@ -207,7 +207,7 @@ configuration:
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false
-  additionalinfo: Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR
+  additionalinfo: Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR.
   advanced: true
   type: 8
   section: Mirroring

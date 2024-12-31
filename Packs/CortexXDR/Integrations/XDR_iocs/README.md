@@ -20,31 +20,31 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
-| Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL| True |  
-| API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column | True |  
-| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key | True |
-| Source Reliability | Source Reliability | True |
-| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
-| Indicator Expiration Method | According to which method the indicators from this feed will be expired | False |
-| Run on | Select an engine to run on | False |
-| Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified | False |
-| Use system proxy settings | Use system proxy settings is enabled only when an Engine is selected | False |
-| Extensive logging | For debugging purposes. Do not use this option unless advised otherwise. Using this parameter may result in increased processing time| False |
-| Log Level | Debug/Verbose logging can affect the performance of the integration. Recommended usage is to turn it on only during troubleshooting, and turn it off in production. This setting only affects the integration log. The server log is not affected | False |
+| Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL. | True |  
+| API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column. | True |  
+| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**, set **Security Level** to **Standard**, select an appropriate **Role**, and copy the Generated Key. | True |
+| Source Reliability | Source Reliability. | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp. | False |
+| Indicator Expiration Method | According to which method the indicators from this feed will be expired. | False |
+| Run on | Select an engine to run on. | False |
+| Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified. | False |
+| Use system proxy settings | Use system proxy settings is enabled only when an engine is selected. | False |
+| Extensive logging | For debugging purposes. Do not use this option unless advised otherwise. Using this parameter may result in increased processing time. | False |
+| Log Level | Debug/Verbose logging can affect the performance of the integration. Recommended usage is to turn it on only during troubleshooting, and turn it off in production. This setting only affects the integration log. The server log is not affected. | False |
 | Do not use in CLI by default ||False|
-| Fetches indicators | Whether to fetch indicators from Cortex XDR | false |
-| Classifier | Determines the type of indicators that is created originated from this integration instance | False|
-| Mapper (incoming) | Determines how indicators fields from Cortex XDR are mapped to Cortex XSOAR indicator's fields | False|
-| Feed Fetch Interval | Feed Fetch Interval (make sure to set it to at least 15 minutes) | False |
-| Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR | True |
-| Tags | Supports CSV values | False|
-| Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators | False |
-| Indicator Reputation | Indicator Reputation | False |
-| XSOAR Severity Field | The Cortex XSOAR indicator field used as severity | True |
+| Fetches indicators | Whether to fetch indicators from Cortex XDR. | false |
+| Classifier | Determines the type of indicators that is created originated from this integration instance. | False|
+| Mapper (incoming) | Determines how indicators fields from Cortex XDR are mapped to Cortex XSOAR indicator's fields. | False|
+| Feed Fetch Interval | Feed Fetch Interval (make sure to set it to at least 15 minutes). | False |
+| Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR. | True |
+| Tags | Supports CSV values. | False|
+| Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators. | False |
+| Indicator Reputation | Indicator Reputation. | False |
+| XSOAR Severity Field | The Cortex XSOAR indicator field used as severity. | True |
 | XSOAR Comment Field Exporting To XDR | The Cortex XSOAR field where comments are stored. The default is comments. Expecting an XSOAR IOC format of a comment (nested dictionary). See Comments As Tags for more.| True |
 | Overriding severity value | If left blank, the original severity level of the indicator will be used. | True | 
 | Comments as tags (CSV) | Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`. | True |
-| Bypass exclusion list | Bypass exclusion list | False |
+| Bypass exclusion list | Bypass exclusion list. | False |
   
 ## Commands  
 
@@ -157,7 +157,7 @@ There is no context output for this command.
 >indicators 22.22.22.22 disabled.  
 ### xdr-iocs-set-sync-time
 ***
-Deprecated. Set sync time manually (Do not use this command unless you unredstandard the consequences).
+Deprecated. Set sync time manually (Do not use this command unless you understand the consequences).
 
 
 #### Base Command
@@ -208,13 +208,13 @@ There is no context output for this command.
 
 ### Outgoing IOCs
 
-1. **Performance Issues**:
+- **Performance Issues**:
     - Reduce the frequency of indicators fetch to manage system load (recommended above 20 minutes).
     - Review Cortex XDR API rate limit logs to ensure compliance with API thresholds.
-2. **Missing IOCs**:
+- **Missing IOCs**:
     - Please make sure all IOC are in a supported format both in Cortex XSOAR and Cortex XDR.
     - If using the **xdr-iocs-push** command, please go over the warnings in the war room.
-3. **Indicator Severity**:
+- **Indicator Severity**:
     - In order to override severity, please enable the ***Override severity*** parameter and also choose a severity under ***Overriding severity value***.
-4. **Severity update from Cortex XSOAR to Cortex XDR**:
-    - Due to XSOAR system limitations, once the severity is manually changed within XSOAR, it is excluded from being updated by the fetching process.
+- **Severity update from Cortex XSOAR to Cortex XDR**:
+    - Due to Cortex XSOAR system limitations, once the severity is manually changed within Cortex XSOAR, it is excluded from being updated by the fetching process.

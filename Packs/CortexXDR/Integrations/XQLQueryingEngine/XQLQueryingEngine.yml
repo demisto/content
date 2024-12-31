@@ -37,7 +37,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  additionalinfo: Use system proxy settings is enabled only when an Engine is selected
+  additionalinfo: Use system proxy settings is enabled only when an engine is selected
 description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
 display: Cortex XDR - XQL Query Engine
 name: Cortex XDR - XQL Query Engine

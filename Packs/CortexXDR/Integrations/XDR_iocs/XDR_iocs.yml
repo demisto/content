@@ -86,7 +86,7 @@ configuration:
   required: false
   advanced: true
   section: Connect
-  additionalinfo: Use system proxy settings is enabled only when an Engine is selected
+  additionalinfo: Use system proxy settings is enabled only when an engine is selected
 - display: 'Source Reliability'
   name: feedReliability
   options:
@@ -170,7 +170,7 @@ configuration:
   advanced: true
   hidden: true
 - display: Do not use override severity parameter
-  additionalinfo: Used in order to identify usage of the new configuration of severity param
+  additionalinfo: Used in order to identify usage of the new configuration of the severity parameter.
   name: new_configuration
   section: Collect
   advanced: true
@@ -185,7 +185,7 @@ configuration:
   section: Collect
   advanced: true
 - defaultvalue: 'false'
-  additionalinfo: Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different then the default `comments`.
+  additionalinfo: Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`.
   display: Comments as tags (CSV)
   name: comments_as_tags
   type: 8
