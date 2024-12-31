@@ -123,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 245
+          "x": 500,
+          "y": 240
         }
       }
     note: false
@@ -207,7 +207,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 500,
           "y": 1240
         }
       }
@@ -329,7 +329,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 500,
           "y": 660
         }
       }
@@ -434,7 +434,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 500,
           "y": 430
         }
       }
@@ -531,7 +531,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 500,
           "y": 860
         }
       }
@@ -642,7 +642,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 500,
           "y": 1030
         }
       }
@@ -655,12 +655,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 6d81614b-8e09-44c7-8a10-4f9e1bd02f8d
+    taskid: 088f28c7-deb0-40fb-85d6-ba08c6f203e8
     type: title
     task:
-      id: 6d81614b-8e09-44c7-8a10-4f9e1bd02f8d
+      id: 088f28c7-deb0-40fb-85d6-ba08c6f203e8
       version: -1
-      name: Early Containment
+      name: Remediation
       type: title
       iscommand: false
       brand: ""
@@ -726,10 +726,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 7cd09d57-8e0e-4070-8873-f5f6c8c9be3c
+    taskid: d0198671-058b-412b-8123-b001002e70a0
     type: collection
     task:
-      id: 7cd09d57-8e0e-4070-8873-f5f6c8c9be3c
+      id: d0198671-058b-412b-8123-b001002e70a0
       version: -1
       name: Approve the endpoint isolation & Block URL
       description: |-
@@ -805,11 +805,13 @@ tasks:
         placeholder: ""
         tooltip: This will block URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories. The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
         readonly: false
-      title: EarlyContainmentApproval
+      title: RemediationtApproval
       description: |-
-        Endpoint Isolation is recommended since the following verdicts have been confirmed:
+        Endpoint Isolation is recommended since one of the following verdicts have been confirmed:
 
-         - MSI package was installed from a malicious remote URL
+         - MSI package was installed from a  remote URL with malicious reputation
+        - The causality process is unsigned and not prevalent
+        - The causality process commandline contained suspicious behavior or other related alerts were found
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -819,10 +821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 6f77c5c3-cc5d-4b6c-83cd-b4ffaa01fb63
+    taskid: 03e0a0dd-44c7-424b-8ef9-c5d0df157e4c
     type: condition
     task:
-      id: 6f77c5c3-cc5d-4b6c-83cd-b4ffaa01fb63
+      id: 03e0a0dd-44c7-424b-8ef9-c5d0df157e4c
       version: -1
       name: Check analyst answers
       description: Check the analyst's answers to the early containment approval form and execute the appropriate actions based on the responses.
@@ -845,7 +847,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: EarlyContainmentApproval.Answers.0
+              simple: RemediationApproval.Answers.0
             iscontext: true
           right:
             value:
@@ -854,7 +856,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: EarlyContainmentApproval.Answers.1
+              simple: RemediationApproval.Answers.1
             iscontext: true
           right:
             value:
@@ -865,7 +867,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: EarlyContainmentApproval.Answers.0
+              simple: RemediationApproval.Answers.0
             iscontext: true
           right:
             value:
@@ -876,12 +878,17 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: EarlyContainmentApproval.Answers.1
+              simple: RemediationApproval.Answers.1
             iscontext: true
           right:
             value:
               simple: "Yes"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1188,7 +1195,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
+          "x": 710,
           "y": 70
         }
       }
@@ -1213,7 +1220,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "3"
       "yes":
       - "25"
     separatecontext: false
@@ -1246,6 +1253,7 @@ view: |-
       "1_43_#default#": 0.64,
       "21_13_#default#": 0.54,
       "45_25_yes": 0.52,
+      "45_3_#default#": 0.34,
       "8_22_#default#": 0.51,
       "8_42_Malicious": 0.48
     },
