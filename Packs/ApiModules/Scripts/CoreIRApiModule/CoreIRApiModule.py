@@ -2841,10 +2841,8 @@ def download_installation_package(client, url: str, package_type: str, distribut
     )
     if package_type in ["x64", "x86"]:
         file_ext = "msi"
-    elif package_type in ["upgrade", "pkg"]:
-        file_ext = "zip"
     else:
-        file_ext = "tar.gz"
+        file_ext = "zip"
     file_result = fileResult(
         filename=f"xdr-agent-install-package.{file_ext}",
         data=dist_file_contents
