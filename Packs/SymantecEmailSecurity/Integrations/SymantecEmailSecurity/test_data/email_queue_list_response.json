@@ -1,0 +1,25 @@
+{
+    "TotalMessagesInbound": 0,
+    "TotalMessagesOutbound": 0,
+    "MeanTimeInQueueInbound": 0,
+    "MeanTimeInQueueOutbound": 0,
+    "LongestTimeInInbound": 0,
+    "LongestTimeInOutbound": 0,
+    "Domains": [
+        {
+            "Name": "lior.sb",
+            "ReceiveQueueCountInbound": 0,
+            "ReceiveQueueCountOutbound": 0,
+            "DeliveryQueueCountInbound": 0,
+            "DeliveryQueueCountOutbound": 0,
+            "LongestTimeInReceiveQueueInbound": 0,
+            "LongestTimeInReceiveQueueOutbound": 0,
+            "LongestTimeInDeliveryQueueInbound": 0,
+            "LongestTimeInDeliveryQueueOutbound": 0,
+            "MeanTimeInReceiveQueueInbound": 0,
+            "MeanTimeInReceiveQueueOutbound": 0,
+            "MeanTimeInDeliveryQueueInbound": 0,
+            "MeanTimeInDeliveryQueueOutbound": 0
+        }
+    ]
+}

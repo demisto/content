@@ -1,5 +1,21 @@
 {
     "msft_azure_raw": {
+        "activitystatusvalue": {
+            "type": "string",
+            "is_array": false
+        },
+        "activitysubstatusvalue": {
+            "type": "string",
+            "is_array": false
+        },
+        "ALERT_NAME": {
+            "type": "string",
+            "is_array": false
+        },
+        "caller": {
+            "type": "string",
+            "is_array": false
+        },
         "callerIpAddress": {
             "type": "string",
             "is_array": false
@@ -8,11 +24,27 @@
             "type": "string",
             "is_array": false
         },
+        "CategoryValue": {
+            "type": "string",
+            "is_array": false
+        },
         "correlationId": {
             "type": "string",
             "is_array": false
         },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
         "durationMs": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventDataId": {
+            "type": "string",
+            "is_array": false
+        },
+        "HTTPRequest": {
             "type": "string",
             "is_array": false
         },
@@ -24,6 +56,10 @@
             "type": "string",
             "is_array": false
         },
+        "level": {
+            "type": "string",
+            "is_array": false
+        },
         "location": {
             "type": "string",
             "is_array": false
@@ -32,11 +68,19 @@
             "type": "string",
             "is_array": false
         },
+        "operationnamevalue": {
+            "type": "string",
+            "is_array": false
+        },
         "properties": {
             "type": "string",
             "is_array": false
         },
         "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceprovidervalue": {
             "type": "string",
             "is_array": false
         },
@@ -49,6 +93,18 @@
             "is_array": false
         },
         "resultType": {
+            "type": "string",
+            "is_array": false
+        },
+        "ruleName": {
+            "type": "string",
+            "is_array": false
+        },
+        "SEVERITY": {
+            "type": "string",
+            "is_array": false
+        },
+        "SubscriptionId": {
             "type": "string",
             "is_array": false
         },
