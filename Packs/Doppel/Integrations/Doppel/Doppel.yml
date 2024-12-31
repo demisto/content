@@ -3,45 +3,157 @@ commonfields:
   id: Doppel
   version: -1
 configuration:
-- defaultvalue: https://<your-doppel-tenant>.com/
-  display: Doppel tenant URL
+- additionalinfo: The Doppel server URL that will be used for calling the APIs
+  defaultvalue: https://<your-doppel-tenant>.com/
+  display: Doppel Tenant URL
   name: url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection with Doppel
+- additionalinfo: The API Key to use for connection with Doppel
+  display: ""
+  displaypassword: API Key
+  hiddenusername: true
   name: credentials
   required: true
-  hiddenusername: true
   type: 9
-description: 'Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The XSOAR pack for Doppel provides mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.'
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: The interval specifies the cadence with which the Doppel alerts
+    be fetched
+  defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: true
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring),
+    Incoming (from Doppel to XSOAR), Outgoing (from XSOAR to Doppel), Incoming and
+    Outgoing (from/to Cortex and Doppel)'
+  defaultvalue: Incoming And Outgoing
+  display: Mirror Direction
+  name: mirror_direction
+  options:
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: For the first time fetch (or on reset of "Last Run" timestamp),
+    fetch alerts created in the mentioned historical days
+  defaultvalue: "1"
+  display: Historical Days
+  name: historical_days
+  required: false
+  type: 0
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 82a5f67a-7fbd-4e4b-8c20-1677bbb400ac
+    packName: Doppel
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
+  The XSOAR pack for Doppel mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
+detaileddescription: |-
+  ### Get Started
+
+  To use the app you need the following:
+
+  1. Doppel Tenant URL that you can use for calling the [Doppel APIs](https://doppel.readme.io/reference/create_alert). eg. *https://api.doppel.com/*
+  2. API Key for calling Doppel
+
+  Please reach out to Doppel to get access to above.
+
+  Once you have the URL and API Key, use the same for configuring the Doppel-XSOAR integration instance.
 display: Doppel
 name: Doppel
 script:
   commands:
-  - name: get-alert
-    description: 'Retrieves the alert details by ID or entity. Must include exactly one of either id or entity'
-    arguments:
-    - name: id
-      description: 'The ID of the alert to retrieve details for'
-      required: false
-    - name: entity
-      description: 'The alerted entity to retrieve details for'
-      required: false
+  - arguments:
+    - description: The ID of the alert to retrieve details for
+      name: id
+    - description: The alerted entity to retrieve details for
+      name: entity
+    description: Retrieves the alert details by ID or entity. Must include exactly
+      one of either id or entity.
+    name: doppel-get-alert
     outputs:
     - contextPath: Doppel.doppel_link
-      description: 'Link to the alert in the Doppel portal'
+      description: Link to the alert in the Doppel portal
       type: String
-
-  - name: get-alerts
-    description: Retrieves multiple alerts based on the query parameters provided.
-        It includes metadata and details about each alert.
-    arguments:
-    - name: search_key
-      description: Currently only supports search by url
+  - arguments:
+    - description: The entity for which the alert should be created.
+      name: entity
+      required: true
+    description: Creates an alert for a specified entity. This command requires the
+      entity to be provided in the arguments.
+    name: doppel-create-alert
+    outputs:
+    - contextPath: Doppel.CreatedAlert
+      description: The details of the created alert, including its unique ID and other
+        relevant metadata.
+      type: string
+  - arguments:
+    - description: The id of the alert to update
+      name: alert_id
+    - description: The entity of the alert to update
+      name: entity
+      type: unknown
+    - auto: PREDEFINED
+      description: Status of which queue the alert is in.
+      name: queue_state
+      predefined:
+      - doppel_review
+      - actioned
+      - needs_confirmation
+      - monitoring
+      - taken_down
+      - archived
       type: textArea
-    - name: queue_state
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: State of the alert.
+      name: entity_state
+      predefined:
+      - active
+      - down
+      - parked
+      type: textArea
+    description: Updates an alert in the Doppel platform.
+    name: doppel-update-alert
+    outputs:
+    - contextPath: Doppel.UpdatedAlert
+      description: Provides details of the updated alert after modifying its queue_state
+        and entity_state. The result confirms the success and updates made.
+      type: unknown
+  - arguments:
+    - description: The entity for which the abuse alert should be created.
+      name: entity
+      required: true
+    description: Create an alert for the provided value to abuse box. Will fail if
+      the alert value is invalid or is protected.
+    name: doppel-create-abuse-alert
+    outputs:
+    - contextPath: Doppel.AbuseAlert
+      description: The details of the created abuse alert, including its unique ID
+        and other relevant metadata.
+      type: string
+  - arguments:
+    - description: Currently only supports search by url
+      name: search_key
+      type: textArea
+    - auto: PREDEFINED
+      description: New queue status to update alert with (id required)
+      name: queue_state
       predefined:
       - actioned
       - needs_confirmation
@@ -49,9 +161,9 @@ script:
       - monitoring
       - taken_down
       - archived
-      description: New queue status to update alert with (id required)
-    - name: product
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Product category the report belongs to.
+      name: product
       predefined:
       - domains
       - social_media
@@ -60,106 +172,46 @@ script:
       - crypto
       - emails
       - paid_adds
-      description: Product category the report belongs to.
-    - name: created_before
-      description: Filter alerts created before this date. '2024-01-05T13:45:30' --
+    - description: Filter alerts created before this date. '2024-01-05T13:45:30' --
         Represents the 5th of January 2024, at 1:45:30 PM
+      name: created_before
       type: textArea
-    - name: created_after
-      description: Filter alerts created after this date. '2024-01-05T13:45:30' --
+    - description: Filter alerts created after this date. '2024-01-05T13:45:30' --
         Represents the 5th of January 2024, at 1:45:30 PM
+      name: created_after
       type: textArea
-    - name: sort_type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The field to sort the reports by. Defaults to date_sourced.
+      name: sort_type
       predefined:
       - date_sourced
       - date_last_actioned
-      description: The field to sort the reports by. Defaults to date_sourced.
       type: textArea
-    - name: sort_order
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The order to sort the reports by. Defaults to desc.
+      name: sort_order
       predefined:
       - asc
       - desc
-      description: The order to sort the reports by. Defaults to desc.
       type: textArea
-    - name: page
-      description: Page number for pagination; defaults to 0
+    - description: Page number for pagination; defaults to 0
+      name: page
       type: textArea
-    - name: tags
-      description: List of tags to filter alerts
+    - description: List of tags to filter alerts
       isArray: true
+      name: tags
       type: textArea
+    description: Retrieves a list of alerts. The result can be filtered by provided
+      parameters.
+    name: doppel-get-alerts
     outputs:
     - contextPath: Doppel.GetAlerts
-      
-
-  - name: create-alert
-    description: Creates an alert for a specified entity. This command requires the
-      entity to be provided in the arguments.
-    arguments:
-    - name: entity
-      required: true
-      description: The entity for which the alert should be created.
-    outputs:
-    - contextPath: Doppel.CreatedAlert
-      description: The details of the created alert, including its unique ID and other
-        relevant metadata.
-      type: string
-    
-  - name: create-abuse-alert
-    description: Create an alert for the provided value to abuse box. Will fail if
-      the alert value is invalid or is protected
-    arguments:
-    - name: entity
-      required: true
-      description: The entity for which the abuse alert should be created.
-    outputs:
-    - contextPath: Doppel.AbuseAlert
-      description: The details of the created abuse alert, including its unique ID
-        and other relevant metadata.
-      type: string
-  
-    
-
-  - name: update-alert
-    description: Updates a alert in the system with certain parameters.
-    arguments:
-    - name: alert_id
-      description: The id of the alert to update
-    - name: entity
-      description: The entity of the alert to update
+      description: Retrieves multiple alerts based on the query parameters provided.
+        It includes metadata and details about each alert.
       type: unknown
-    - name: queue_state
-      auto: PREDEFINED
-      predefined:
-      - doppel_review
-      - actioned
-      - needs_confirmation
-      - monitoring
-      - taken_down
-      - archived
-      description: Status of which queue the alert is in.
-      type: textArea
-    - name: entity_state
-      auto: PREDEFINED
-      predefined:
-      - active
-      - down
-      - parked
-      description: State of the alert.
-      type: textArea
-    outputs:
-    - contextPath: Doppel.UpdatedAlert
-      description: Provides details of the updated alert after modifying its queue_state
-        and entity_state. The result confirms the success and updates made.
-      type: unknown
-
+  dockerimage: demisto/python3:3.10.14.100715
+  isFetchSamples: true
+  isfetch: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
-  script: '-'
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.12.7.117934
-fromversion: 5.5.0
-tests:
-- No tests (auto formatted)
