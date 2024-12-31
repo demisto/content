@@ -657,8 +657,8 @@ def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
-    exclude_artifacts, _ = handle_exclude_incident_fields(argToBoolean(args.get('excluding_artifacts', 'False')),
-                                                          args.get('exclude_incidents_fields', []))
+    exclude_artifacts, _ = handle_exclude_incident_fields(args.get('exclude_incidents_fields', []),
+                                                          argToBoolean(args.get('excluding_artifacts', 'False')),)
     alert_fields_to_exclude = args.get('alert_fields_to_exclude', [])
     drop_nulls = args.get('drop_nulls', False)
     demisto.debug(f"{exclude_artifacts=} , {type(exclude_artifacts)}, {alert_fields_to_exclude=}, "
@@ -1399,18 +1399,15 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
                           )
 
 
-def handle_exclude_incident_fields(bool_exclude_field_value: bool, list_exclude_field_value: list) -> Tuple[list, bool]:
+def handle_exclude_incident_fields(list_exclude_field_value: list, bool_exclude_field_value: bool = False) -> Tuple[list, bool]:
     """handle the exclude_field param/argument
 
     Args:
-        bool_exclude_field_value (bool): there are two scenarios for this variable-
-                                            1. param (the old param version of type 8)-
-                                                bool param in order it to be backwards compatible
-                                            2. argument - bool arg
-        list_exclude_field_value (list): exclude_field is a list variable (new param version of type 16)
+        bool_exclude_field_value (bool): used for the argument inside get_incident_extra_data_command- bool arg
+        list_exclude_field_value (list): exclude_field is a list of variable (param of type 16)
 
     Returns:
-        list, bool: the exclude_fields to append to the xdr api request, whether ro remove the additional data field
+        list, bool: the exclude_fields to append to the xdr api request, whether to remove the additional data field
         (if appear in the incident type)
     """
     demisto.debug(f"handle_exclude_incident_fields: {bool_exclude_field_value=}, {list_exclude_field_value=}")
@@ -1444,9 +1441,7 @@ def main():  # pragma: no cover
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts, remove_additional_data = (
-        handle_exclude_incident_fields(
-            argToBoolean(params.get('exclude_fields', False)),
-            argToList(params.get('excluded_incident_fields', []))))
+        handle_exclude_incident_fields(list_exclude_field_value=argToList(params.get('excluded_incident_fields', []))))
     excluded_alert_fields = argToList(params.get('excluded_alert_fields'))
     excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_from_alerts_param(excluded_alert_fields)
     demisto.debug(f"{excluded_alert_fields}, {remove_nulls_from_alerts}")
