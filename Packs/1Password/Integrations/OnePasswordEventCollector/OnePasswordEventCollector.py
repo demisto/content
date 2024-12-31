@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 from http import HTTPStatus
+from operator import itemgetter
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta, UTC
 
@@ -232,31 +233,30 @@ def fetch_events(
     Returns:
         tuple[dict, list]: Dictionary of the next run of the event type with 'from_date' and 'ids' list, list of fetched events.
     """
-    last_run_skip_ids = set(event_type_last_run.get('ids') or [])
+    last_run_ids_to_skip = set(event_type_last_run.get('ids') or [])
     from_date = arg_to_datetime(event_type_last_run.get('from_date')) or DEFAULT_FETCH_FROM_DATE
 
-    demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.isoformat()}')
+    demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.strftime(DATE_FORMAT)}')
 
     event_type_events = get_events_from_client(
         client=client,
         event_type=event_type,
         from_date=from_date,
         max_events=event_type_max_results,
-        already_fetched_ids_to_skip=last_run_skip_ids,
+        already_fetched_ids_to_skip=last_run_ids_to_skip,
     )
 
     if event_type_events:
-        # API returns events sorted by timestamp in ascending order (oldest to newest), so last event has max timestamp
-        max_timestamp = event_type_events[-1]['timestamp']
-        next_run_skip_ids = [event['uuid'] for event in event_type_events if event['timestamp'] == max_timestamp]
-        event_type_next_run = {'from_date': max_timestamp, 'ids': next_run_skip_ids}
+        last_event_time = max(event_type_events, key=itemgetter('timestamp'))['timestamp']
+        next_run_ids_to_skip = {event['uuid'] for event in event_type_events if event['timestamp'] == last_event_time}
+        event_type_next_run = {'from_date': last_event_time, 'ids': list(next_run_ids_to_skip)}
     else:
-        event_type_next_run = event_type_last_run
-        max_timestamp = None
+        last_event_time = None
+        event_type_next_run = {'from_date': from_date.strftime(DATE_FORMAT), 'ids': list(last_run_ids_to_skip)}
 
     demisto.debug(
         f'Fetched {len(event_type_events)} events of type: {event_type} out of a maximum of {event_type_max_results}. '
-        f'Last event timestamp: {max_timestamp}'
+        f'Last event time: {last_event_time}.'
     )
 
     return event_type_next_run, event_type_events
