@@ -3,6 +3,7 @@ from unittest import mock
 from io import BytesIO
 from ValidateContent import (ValidationResult, read_validate_results, resolve_entity_type,
                              HOOK_ID_TO_PATTERN, get_pack_name, strip_ansi_codes, extract_hook_id, parse_pre_commit_output)
+import demistomock as demisto
 
 
 def create_mock_zip_file_with_metadata(metadata_content):
@@ -162,15 +163,11 @@ def test_get_pack_name_no_name(mocker):
     mock_zipfile.__enter__.return_value.open.return_value.__enter__.return_value = mock_metadata_file
 
     mocker.patch('zipfile.ZipFile', return_value=mock_zipfile)
-    mock_error = mocker.patch('demisto.error')
+    mock_error = mocker.patch.object(demisto, 'error')
 
     result = get_pack_name('test_pack.zip')
     assert result == 'TmpPack'
     mock_error.assert_called_with('Could not find pack name in metadata.json')
-<<<<<<< HEAD
-
-=======
->>>>>>> cee1c8e242 (fix unit tests)
 
 
 def test_read_validate_results(tmp_path):
