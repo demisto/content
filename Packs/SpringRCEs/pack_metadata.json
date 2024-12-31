@@ -2,7 +2,7 @@
     "name": "Spring Core and Cloud Function SpEL RCEs",
     "description": "This pack handles Spring Core and Cloud Function SpEL RCEs, a 0-days exploits in the popular Spring Framework.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

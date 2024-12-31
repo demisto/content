@@ -51,4 +51,7 @@ The types of time-fields supported are:
    - **Timestamp-Second** - A number referring to seconds since epoch (midnight, 1 January 1970). For example: '1572164838'.
    - **Timestamp-Milliseconds** - A number referring to milliseconds since epoch (midnight, 1 January 1970). For example: '1572164838123'.
 
-Note: Not all fields can be sorted in Elasticsearch. The fields are used to sort the results table.  The supported result types are boolean, numeric, date, and keyword fields.
+Notes:
+- Not all fields can be sorted in Elasticsearch. The fields are used to sort the results table.
+  The supported result types are boolean, numeric, date, and keyword fields.
+- The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the ***!es-integration-health-check*** command.
