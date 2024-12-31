@@ -457,7 +457,7 @@ def create_event_command(
         "source_type_name": args.get("source_type_name"),
     }
     body = EventCreateRequest(
-        **{key: value for key, value in event_body.items() if value is not None}
+        **{key: value for key, value in event_body.items() if value is not None}  # type: ignore[arg-type]
     )
 
     with ApiClient(configuration) as api_client:
@@ -530,7 +530,7 @@ def get_events_command(
                 "page": datadog_page,
             }
             event_list_response: EventListResponse = api_instance.list_events(
-                **{key: value for key, value in body_dict.items() if value is not None}
+                **{key: value for key, value in body_dict.items() if value is not None} # type: ignore[arg-type]
             )
             results = event_list_response.get("events", [])
             resp = get_paginated_results(results, offset, limit)
