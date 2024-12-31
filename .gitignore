@@ -105,3 +105,4 @@ Packs/**/ModelingRules/**/**/*_testdata.json
 .cache/
 .npm/
 pipeline_jobs_folder/
+a.py

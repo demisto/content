@@ -19,6 +19,7 @@ PAGE_SIZE = 500
 DEFAULT_LIMIT = 10
 ENDPOINTS = {"alerts": "/v7/alerts", "events": "/v7/audit-user-events"}
 DATE_KEYS = {"alerts": "startDate", "events": "date"}
+RESPONSE_KEY = {"alerts": "alerts", "events": "auditEvents"}
 
 
 """ CLIENT CLASS """
@@ -43,13 +44,15 @@ def fetch_paginated_events(
     fetch_type: Literal["alerts", "events"],
     fetch_limit: int,
     query_params: dict = {},
-    next_page_url: str = "",
-    pagination_offset: int = 0,
+    last_run: dict = {},
 ):
-    
-    previous_offset = pagination_offset
-    previous_page_url = next_page_url
 
+    previous_offset = last_run.get(fetch_type, {}).get("offset", 0)
+    previous_page_url = last_run.get(fetch_type, {}).get("next_page", "")
+    previous_last_date = last_run.get(fetch_type, {}).get("last_fetch", "")
+    
+    next_page_url = previous_page_url
+    pagination_offset = previous_offset
     is_events_type = fetch_type == "events"
     date_key = DATE_KEYS.get(fetch_type)
 
@@ -66,9 +69,10 @@ def fetch_paginated_events(
         response = client._http_request("GET", full_url=request_url, params=params)
         if next_page_url := response.get("_links", {}).get("next", {}).get("href"):
             has_next = True
-        current_batch_events = response.get("auditEvents") or response.get("alerts", [])
+        current_batch_events = response.get(RESPONSE_KEY.get(fetch_type), [])
+        deduplicate_events(current_batch_events, query_params.get("startDate"), date_key)
         fetched_events.extend(current_batch_events[pagination_offset:])
-        pagination_offset = 0 if current_batch_events else pagination_offset
+        pagination_offset = 0
         if len(fetched_events) >= fetch_limit:
             fetched_events = fetched_events[:fetch_limit]
             pagination_offset = (
@@ -83,7 +87,7 @@ def fetch_paginated_events(
                 fetch_type, next_page_url, request_url, previous_page_url
             )
             return fetched_events, {
-                "last_fetch": fetched_events[0].get(date_key),
+                "last_fetch": previous_last_date if previous_page_url else fetched_events[0].get(date_key),
                 "next_page": next_page_url,
                 "offset": (
                     pagination_offset
@@ -91,10 +95,16 @@ def fetch_paginated_events(
                     else pagination_offset + previous_offset
                 ),
             }
-    return fetched_events, { "last_fetch":fetched_events[0].get(date_key) if fetched_events else query_params.get("last_fetch"),
-        "next_page": ( response.get("_links", {}).get("self", {}).get("href") if is_events_type else "" ),
-        "offset": 0,
-    }
+    last_fetch = (
+        previous_last_date
+        if previous_page_url
+        else (
+            fetched_events[0].get(date_key)
+            if fetched_events
+            else query_params.get("last_fetch")
+        )
+    )
+    return fetched_events, { "last_fetch": last_fetch, "next_page": "", "offset": 0}
 
 
 def get_events(
@@ -108,18 +118,15 @@ def get_events(
     start_date, end_date = calculate_fetch_dates(
         start_date, last_run.get(fetch_type, {}), end_date
     )
-
-    last_run_next_page = last_run.get(fetch_type, {}).get("next_page", "")
-    offset = last_run.get(fetch_type, {}).get("offset", 0)
-    params = {} if last_run_next_page else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
+    is_pagination_fetch = last_run.get(fetch_type, {}).get("next_page", "")
+    params = {} if is_pagination_fetch else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
 
     events, next_run = fetch_paginated_events(
         client=client,
         fetch_type=fetch_type,
         fetch_limit=max_fetch,
         query_params=params,
-        next_page_url=last_run_next_page,
-        pagination_offset=offset,
+        last_run=last_run,
     )
     return events, next_run
 
@@ -127,12 +134,29 @@ def get_events(
 def is_fetch_paginated(
     fetch_type: str, next_page_url: str, request_url: str, previous_page_url: str
 ) -> bool:
+    """
+    Determines whether the fetch process is paginated between fetches.
+
+    For 'alerts', checks if the next page URL is different from the current request URL.
+    For other types (e.g., 'events'), checks if the current request URL differs from the previous page URL.
+
+    Args:
+        fetch_type (str): The type of fetch ('alerts' or 'events').
+        next_page_url (str): The URL of the next page, if available.
+        request_url (str): The URL of the current request.
+        previous_page_url (str): The URL of the previous request.
+
+    Returns:
+        bool: True if the fetch is paginated, False otherwise.
+    """
     if fetch_type == "alerts":
         return next_page_url != request_url
     return request_url != previous_page_url
 
 
 def deduplicate_events(events, start_date, date_key):
+    if not start_date:
+        return
     start_date = arg_to_datetime(start_date)
     events[:] = [
         event
@@ -239,15 +263,19 @@ def validate_start_and_end_dates(args):
 def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
     start_date, end_date = validate_start_and_end_dates(args)
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
-    _, events = fetch_events(
+    _, all_events = fetch_events(
         client=client,
         max_fetch_alerts=limit,
         max_fetch_audits=limit,
         start_date=start_date,
         end_date=end_date,
     )
-    hr = tableToMarkdown(name="Test Event", t=events)
-    return events, CommandResults(readable_output=hr)
+    alerts, events = [item for item in all_events if "alertId" in item], [item for item in all_events if "alertId" not in item]
+    
+    alerts_table = tableToMarkdown(name="Test Alerts", t=alerts, headers=["id", "alertType", "startDate", "endDate", "violationCount", "duration", "suppressed", "meta",])
+    event_table = tableToMarkdown("Test Events", events, ["accountGroupName", "aid", "date", "event", "ipAddress", "uid", "user"])
+
+    return events, CommandResults(readable_output=alerts_table + "\n" + event_table)
 
 
 def fetch_events(
@@ -280,7 +308,7 @@ def fetch_events(
     events = alert_events + audit_events
 
     next_run = {"alerts": alert_next_run, "events": audit_next_run}
-    if any(d.get("offset") for d in (alert_next_run, audit_next_run)):
+    if  any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
         next_run["nextTrigger"] = "0"
     demisto.debug(f"Setting next run {next_run}.")
     return next_run, events
