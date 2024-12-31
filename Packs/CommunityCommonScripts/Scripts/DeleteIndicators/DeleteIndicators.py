@@ -6,8 +6,8 @@ def main():
     try:
         args = demisto.args()
         query = args.get('indicator_query', None)
-        indicator_vals = args.get('indicator_values', None)
-        indicator_ids = args.get('indicator_ids', None)
+        indicator_vals = argToList(args.get('indicator_values', None))
+        indicator_ids = argToList(args.get('indicator_ids', None))
         do_not_whitelist = not argToBoolean(args.get('exclude', False))
         reason = args.get('exclusion_reason', '')
 
