@@ -1,9 +1,0 @@
-{
-    "uuid": "1234",
-    "issued_at": "2024-12-16T16:32:50-03:00",
-    "features": [
-        "auditevents",
-        "itemusages",
-        "signinattempts"
-    ]
-}
