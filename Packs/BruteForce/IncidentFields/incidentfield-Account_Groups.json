@@ -22,7 +22,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",
-    "required": false,
+    "required": true,
     "script": "",
     "selectValues": [],
     "sla": 0,
