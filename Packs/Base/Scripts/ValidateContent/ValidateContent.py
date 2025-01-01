@@ -17,7 +17,7 @@ from shutil import copy
 from pathlib import Path
 from pkg_resources import get_distribution
 from base64 import b64decode
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr
 import zipfile
 import git
 import io
@@ -28,13 +28,13 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+DEFAULT_CONFIG_CATEGORY = "xsoar_best_practices_path_based_validations"
 CONTENT_DIR_PATH = '/tmp/content'
 PACKS_DIR_NAME = 'Packs'
 CONTENT_REPO_URL = 'https://github.com/demisto/content.git'
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 PRE_COMMIT_TEMPLATE_PATH = os.path.join(CONTENT_DIR_PATH, '.pre-commit-config_template.yaml')
 BRANCH_MASTER = 'master'
-
 DEFAULT_ERROR_PATTERN = {
     'regex': re.compile(r'(\/[\w\/\.-]+):(\d+):(\d+): .* : (.*)'),
     'groups': ['file', 'line', 'column', 'details']
@@ -380,7 +380,7 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
     from demisto_sdk.commands.common.constants import ExecutionMode
 
     result_writer = ResultWriter(json_output_file)
-    config_reader = ConfigReader(category="xsoar_best_practices_path_based_validations")
+    config_reader = ConfigReader(category=DEFAULT_CONFIG_CATEGORY)
     initializer = Initializer(
         staged=False,
         committed_only=False,
@@ -389,7 +389,9 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
     )
     validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False)
     demisto.debug(f'run_validate validate_manager initialized. Running validations: {validate_manager.validators=}')
-    exit_code = validate_manager.run_validations()
+    err_file = io.StringIO()
+    with redirect_stderr(err_file):
+        exit_code: int = validate_manager.run_validations()
     demisto.debug(f'run_validate {exit_code=}')
     return exit_code
 
@@ -634,16 +636,19 @@ def validate_content(path_to_validate: str) -> tuple[list, list]:
     pre_commit_dir = output_base_dir / 'pre-commit-output/'
     os.makedirs(pre_commit_dir, exist_ok=True)
 
+    # One thread for `validate` execution & one for `pre_commit`.
     with ThreadPoolExecutor(max_workers=2) as executor:
         validate_future = executor.submit(run_validate, path_to_validate, str(validations_output_path))
+        demisto.info('Submitting `run_validate` future.')
         pre_commit_future = executor.submit(run_pre_commit, pre_commit_dir)
+        demisto.info('Submitting `pre_commit` future.')
 
         for future in as_completed([validate_future, pre_commit_future]):
             if future == validate_future:
-                validate_exit_code = future.result()
+                validate_exit_code = future.result(timeout=60)  # One minute timeout.
                 demisto.info(f'Finished running `demisto-sdk validate` with exit code {validate_exit_code}.')
             else:
-                pre_commit_exit_code = future.result()
+                pre_commit_exit_code = future.result(timeout=60)  # One minute timeout.
                 demisto.info(f'Finished running `demisto-sdk pre-commit` with exit code {pre_commit_exit_code}.')
 
     # If no errors were found.
