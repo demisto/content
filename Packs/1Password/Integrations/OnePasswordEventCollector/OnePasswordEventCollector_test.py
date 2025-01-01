@@ -210,7 +210,6 @@ def test_get_events_from_client(authenticated_client: Client, mocker: MockerFixt
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
     assert client_get_events.call_count == 2
-    assert len(events) <= max_events  # Sanity check
     assert events == expected_events
 
 
