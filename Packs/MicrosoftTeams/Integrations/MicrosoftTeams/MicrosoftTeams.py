@@ -108,6 +108,27 @@ MAX_SAMPLES = 10
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
 REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
+COMMANDS_REQUIRED_PERMISSIONS = {
+    'send-notification' : {'Application': ['Group.ReadWrite.All'], 'Delegated': []},
+    'mirror-investigation' : {'Application': ['Group.ReadWrite.All'], 'Delegated': []},
+    'close-channel': {'Application': ['Group.ReadWrite.All'], 'Delegated': []},
+    'microsoft-teams-ring-user': {'Application': ['Calls.Initiate.All', 'Calls.InitiateGroupCall.All'], 'Delegated': []},
+    'microsoft-teams-add-user-to-channel': {'Application': ['User.Read.All', 'ChannelMember.ReadWrite.All'], 'Delegated': []},
+    'add-user-to-channel': {'Application': ['User.Read.All', 'ChannelMember.ReadWrite.All'], 'Delegated': []},
+    'microsoft-teams-create-channel': {'Application': ['Group.ReadWrite.All', 'Channel.Create'], 'Delegated': []},
+    'create-channel': {'Application': ['Group.ReadWrite.All', 'Channel.Create'], 'Delegated': []},
+    'microsoft-teams-create-meeting': {'Application': ['OnlineMeetings.ReadWrite.All'], 'Delegated': ['OnlineMeetings.ReadWrite']},
+    'microsoft-teams-user-remove-from-channel': {'Application': ['ChannelMember.ReadWrite.All'], 'Delegated': []},
+    'microsoft-teams-channel-user-list': {'Application': ['ChannelMember.Read.All', 'ChannelMember.ReadWrite.All'], 'Delegated': []},
+    'microsoft-teams-chat-create': {'Application': ['Chat.Create', 'TeamsAppInstallation.ReadWriteSelfForChat.All', 'TeamsAppInstallation.ReadWriteForChat.All', 'AppCatalog.Read.All'], 'Delegated': ['Chat.Create', 'Chat.ReadWrite', 'TeamsAppInstallation.ReadWriteForChat', 'TeamsAppInstallation.ReadWriteSelfForChat']},
+    'microsoft-teams-message-send-to-chat': {'Application': ['TeamsAppInstallation.ReadWriteSelfForChat.All', 'TeamsAppInstallation.ReadWriteForChat.All','AppCatalog.Read.All'], 'Delegated': ['ChatMessage.Send', 'Chat.ReadWrite', 'TeamsAppInstallation.ReadWriteForChat', 'TeamsAppInstallation.ReadWriteSelfForChat']},
+    'microsoft-teams-chat-add-user': {'Application': [], 'Delegated': ['ChatMember.ReadWrite', 'Chat.ReadWrite']},
+    'microsoft-teams-chat-member-list': {'Application': [], 'Delegated': ['Chat.ReadWrite', 'ChatMember.ReadWrite']},
+    'microsoft-teams-chat-list': {'Application': [], 'Delegated': ['Chat.ReadWrite']},
+    'microsoft-teams-chat-message-list': {'Application': [], 'Delegated': ['Chat.ReadWrite']},
+    'microsoft-teams-chat-update': {'Application': [], 'Delegated': ['Chat.ReadWrite']}, 
+}
+
 # must be synced with ones in TeamsAsk
 MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
 
@@ -821,9 +842,9 @@ def http_request(
             params=params,
         )
 
-        if not response.ok:
-            error: str = error_parser(response, api)
-            raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
+        # if not response.ok:
+        #     error: str = error_parser(response, api)
+        #     raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
 
         if response.status_code in {202, 204}:
             # Delete channel or remove user from channel return 204 if successful
@@ -2782,6 +2803,26 @@ def long_running_loop():
             time.sleep(5)
 
 
+def get_token_permissions(access_token: str) -> list[str]:
+    """
+    Decodes the provided access token and retrieves a list of API permissions associated with the token.
+    
+    :param access_token: the access token to decode.
+    :return: A list of the token's API permission roles.
+    """
+    decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+    print(f'AUTH_TYPE is: {AUTH_TYPE}')
+    print(f'decoded_token is: {decoded_token}')
+
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        roles = decoded_token.get('roles', [])
+
+    else:  # Authorization code flow
+        roles = decoded_token.get('scp', '')
+        roles = roles.split()
+    
+    return roles
+
 def token_permissions_list_command():
     """
     Gets the Graph access token stored in the integration context and displays the token's API permissions in the war room.
@@ -2798,14 +2839,7 @@ def token_permissions_list_command():
 
     # Decode the token and extract the roles:
     if access_token:
-        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-
-        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
-            roles = decoded_token.get('roles', [])
-
-        else:  # Authorization code flow
-            roles = decoded_token.get('scp', '')
-            roles = roles.split()
+        roles = get_token_permissions(access_token)
 
         if roles:
             hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
@@ -2994,9 +3028,64 @@ def auth_type_switch_handling():
         integration_context['current_auth_type'] = AUTH_TYPE
         set_integration_context(integration_context)
         
-def insufficient_permissions_error_handler():
+def insufficient_permissions_error_handler(command: str):
     """
     """
+    error_message = f'To run the {command} command using the {AUTH_TYPE} Flow, the following API permissions are required:\n'
+    demisto.debug(f"Authentication type is: {AUTH_TYPE}")
+    missing_permissions = []
+    required_permissions_for_command = COMMANDS_REQUIRED_PERMISSIONS.get(command, {})
+    if not required_permissions_for_command:
+        return ''
+    required_application_permissions = required_permissions_for_command.get('Application', [])
+    required_delegated_permissions = required_permissions_for_command.get('Delegated', [])
+    # TODO: need to support the case of commands that has no required permissions 
+   
+    graph_access_token = get_graph_access_token()  # Gets the used token from the integration context
+    graph_token_api_permissions = get_token_permissions(graph_access_token)
+    graph_token_api_permissions = [permission for permission in graph_token_api_permissions if '.' in permission] # removes scopes such as 'profile', 'openid', and 'email'
+    graph_token_api_permissions = set(graph_token_api_permissions)
+    
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        for permission in required_application_permissions:
+            error_message += f'{permission} - Application\n'
+            if permission not in graph_token_api_permissions:
+                missing_permissions.append(f'{permission} - Application')
+        if missing_permissions:
+            error_message += 'According to our check, your graph access token is missing the following required permissions:\n'
+            for permission in missing_permissions:
+                error_message += f'{permission}\n'
+            error_message += "To solve the issue, add the missing permissions to your application in the Azure portal as follows: Click API permissions > Add a permission > Microsoft Graph > Application permissions, select the required missing permissions and click Grant admin consent for Demisto. Once done, run the '!microsoft-teams-auth-reset' command to reset your token.\nTo retrieves the API permissions associated with the used graph access token run the '!microsoft-teams-token-permissions-list' command."
+        else: # no missing permissions detected
+            error_message += "According to our check, your graph access token has all the required Application API permissions. The issue might be related to an API scope issue, or a change in the Microsoft Teams API."
+    
+    else: # Auth type is auth code flow
+        for permission in required_delegated_permissions:
+            error_message += f'{permission} - Delegated\n'
+            if permission not in graph_token_api_permissions:
+                missing_permissions.append(f'{permission} - Delegated')
+        if missing_permissions:
+            error_message += 'According to our check, your graph access token is missing the following required permissions:\n'
+            for permission in missing_permissions:
+                error_message += f'{permission}\n'
+            error_message += "To solve the issue, add the missing permissions to your application in the Azure portal as follows: Click API permissions > Add a permission > Microsoft Graph > Delegated permissions, select the required missing permissions and click Grant admin consent for Demisto. Once done, run the '!microsoft-teams-auth-reset' command to reset your token, and then regenerate the Authorization code parameter by running the '!microsoft-teams-generate-login-url' command and follow the instructions mentioned there.\nTo verify the authentication of your new token run the '!microsoft-teams-auth-test' command.\nTo retrieves the API permissions associated with the used graph access token run the '!microsoft-teams-token-permissions-list' command."
+        else: # no missing permissions detected
+            error_message += "According to our check, your graph access token has all the required Delegated API permissions. Ensure your application has all the required Application API permissions mentioned above. If yes, the issue might be related to an API scope issue, or a change in the Microsoft Teams API."
+            
+    return error_message
+        
+    
+            
+            
+            
+                
+            
+    
+    
+    
+    
+    
+    
     return ''
 
 
@@ -3057,11 +3146,11 @@ def main():   # pragma: no cover
             raise NotImplementedError(f"command {command} is not implemented.")
     # Log exceptions
     except Exception as e:
-        error_code = e.errno
         error_message = str(e)
-        if error_code >= 400 and '' in error_message:
-            insufficient_permissions_error_message = insufficient_permissions_error_handler()
-            error_message = insufficient_permissions_error_message + error_message
+        if ('Authorization_ReqeustDenied' or 'Insufficient privilege') in error_message:
+            insufficient_permissions_error_message = insufficient_permissions_error_handler(command)
+            if insufficient_permissions_error_message:
+                error_message = f'{insufficient_permissions_error_message}\nOriginal Error:\n{error_message}' 
         return_error(f'Failed to execute {command} command.\nError:\n{error_message}')
 
 
