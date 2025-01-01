@@ -1,6 +1,9 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
-  id: Generic_Rest_API_Collector
+  id: GenericEventCollector
   version: -1
 configuration:
   - section: Connect
@@ -164,8 +167,8 @@ configuration:
     type: 19
     required: false
 description: Collect logs from 3rd party vendors.
-display: Generic REST API Collector
-name: Generic_Rest_API_Collector
+display: Generic Event Collector
+name: GenericEventCollector
 script:
   commands:
     - arguments:
