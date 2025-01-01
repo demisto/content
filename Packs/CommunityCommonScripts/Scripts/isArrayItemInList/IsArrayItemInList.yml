@@ -11,6 +11,7 @@ comment: 'This automation is for comparing array(list) data of context to existi
   inputArray: the context array/list data
 
   listName: the XSOAR system list'
+
 commonfields:
   id: isArrayItemInList
   version: -1

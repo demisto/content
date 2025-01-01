@@ -226,7 +226,6 @@ repos:
     args:
     -  validate
     -  --skip-depth-one-folder
-    -  --skip-integration-script-file-name
     -  --skip-markdown
     -  --skip-suffix
 
