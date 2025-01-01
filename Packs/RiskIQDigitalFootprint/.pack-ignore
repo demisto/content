@@ -6,6 +6,3 @@ ignore=PB114,PB116
 
 [file:playbook-RiskIQAsset_Enrichment_-_RiskIQ_Digital_Footprint.yml]
 ignore=PB114
-
-[file:playbook-Vulnerability_Scan_-_RiskIQ_Digital_Footprint_-_Tenable.io.yml]
-ignore=RM116
