@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: ServiceNow Event Collector
+  id: ServiceNow Event Collector - Increased 3 min Timeout 
   version: -1
 sectionOrder:
 - Connect
@@ -77,8 +77,8 @@ configuration:
   section: Connect
   advanced: true
 description: Use this integration to fetch audit and syslog transactions logs from ServiceNow as Cortex XSIAM events.
-display: ServiceNow Event Collector
-name: ServiceNow Event Collector
+display: ServiceNow Event Collector - Increased 3 min Timeout 
+name: ServiceNow Event Collector - Increased 3 min Timeout 
 script:
   commands:
   - name: service-now-get-audit-logs
