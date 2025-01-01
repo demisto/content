@@ -1,5 +1,4 @@
 import shutil
-import socket
 import traceback
 import types
 from datetime import datetime, timedelta
@@ -760,10 +759,6 @@ def setup_envvars():
     os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
     os.environ['ARTIFACTS_FOLDER'] = '/tmp/artifacts'
     os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
-    os.environ['GIT_AUTHOR_NAME'] = 'root'
-    os.environ['GIT_AUTHOR_EMAIL'] = f'root@{socket.gethostname()}'
-    os.environ['GIT_COMMITTER_NAME'] = 'root'
-    os.environ['GIT_COMMITTER_EMAIL'] = f'root@{socket.gethostname()}'
     demisto.debug(f'setup_envvars: {os.environ}')
 
 
