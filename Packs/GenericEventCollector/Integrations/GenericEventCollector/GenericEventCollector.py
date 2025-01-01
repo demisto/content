@@ -31,81 +31,25 @@ class Client(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
+    For this HelloWorld implementation, no special attributes are defined
     """
 
-    def organize_events_to_xsiam_format(self, events):
-
-        raw_events = events
-        events_to_xsiam = []
-        events_list: Dict[Any, Any]
-
-        if isinstance(raw_events, dict):
-            for event in raw_events:
-                if isinstance(raw_events[event], list):
-                    full_event_list = raw_events[event]
-                    for full_event in full_event_list:
-                        events_list = {}
-                        for key, value in full_event.items():
-
-                            if isinstance(value, int | str):
-                                events_list[key] = value
-
-                            elif isinstance(value, dict):
-
-                                dict_values_to_extract_back_to_list = value
-                                new_value: Any = {key: value}
-                                events_list.update(new_value)
-
-                                for item in dict_values_to_extract_back_to_list:
-                                    key = item
-                                    value = dict_values_to_extract_back_to_list[item]
-                                    new_value = {key: value}
-                                    events_list.update(new_value)
-
-                        events_to_xsiam.append(events_list)
-
-        elif isinstance(raw_events, list):
-            full_event_list = raw_events
-            for event in full_event_list:
-                events_list = {}
-                for key, value in event.items():
-
-                    if isinstance(value, int | str):
-                        events_list[key] = value
-
-                    elif isinstance(value, dict):
-
-                        dict_values_to_extract_back_to_list = value
-                        events_list[key] = value
-
-                        for item in dict_values_to_extract_back_to_list:
-                            key = item
-                            value = dict_values_to_extract_back_to_list[item]
-                            new_value = {key: value}
-                            events_list.update(new_value)
-
-                events_to_xsiam.append(events_list)
-
-        return events_to_xsiam
-
-    def search_events(self, endpoint, method, request_data, request_json, query_params):
+    def search_events(self, endpoint: str, method: str, request_data: dict[Any, Any], request_json: dict[Any, Any],
+                      query_params: dict[Any, Any]) -> list[dict[str, Any]]:
         """
         Searches for events using the API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
 
         Args:
-            endpoint (str): API endpoint to send the request to.
-            method (str): HTTP method to use in the request.
-            request_data (dict): data to send in the body of the request.
-            request_json (dict): JSON data to send in the body of the request.
-            query_params (dict): query parameters to send in the request.
+            endpoint: API endpoint to send the request to.
+            method: HTTP method to use in the request.
+            request_data: data to send in the body of the request.
+            request_json: JSON data to send in the body of the request.
+            query_params: query parameters to send in the request.
         Returns:
             list: list of events as dicts.
         """
-
-        # if len(request_json) == 0:
-        return self._http_request(
+        return self._http_request(  # type: ignore
             method=method,
             url_suffix=endpoint,
             json_data=request_json,
@@ -127,6 +71,62 @@ class Client(BaseClient):
         #         data=request_data,
         #         params=query_params,
         #     )
+
+
+def organize_events_to_xsiam_format(events):
+
+    raw_events = events
+    events_to_xsiam = []
+    events_list: Dict[Any, Any]
+
+    if isinstance(raw_events, dict):
+        for event in raw_events:
+            if isinstance(raw_events[event], list):
+                full_event_list = raw_events[event]
+                for full_event in full_event_list:
+                    events_list = {}
+                    for key, value in full_event.items():
+
+                        if isinstance(value, int | str):
+                            events_list[key] = value
+
+                        elif isinstance(value, dict):
+
+                            dict_values_to_extract_back_to_list = value
+                            new_value: Any = {key: value}
+                            events_list.update(new_value)
+
+                            for item in dict_values_to_extract_back_to_list:
+                                key = item
+                                value = dict_values_to_extract_back_to_list[item]
+                                new_value = {key: value}
+                                events_list.update(new_value)
+
+                    events_to_xsiam.append(events_list)
+
+    elif isinstance(raw_events, list):
+        full_event_list = raw_events
+        for event in full_event_list:
+            events_list = {}
+            for key, value in event.items():
+
+                if isinstance(value, int | str):
+                    events_list[key] = value
+
+                elif isinstance(value, dict):
+
+                    dict_values_to_extract_back_to_list = value
+                    events_list[key] = value
+
+                    for item in dict_values_to_extract_back_to_list:
+                        key = item
+                        value = dict_values_to_extract_back_to_list[item]
+                        new_value = {key: value}
+                        events_list.update(new_value)
+
+            events_to_xsiam.append(events_list)
+
+    return events_to_xsiam
 
 
 def get_log_timestamp(log):
@@ -272,9 +272,9 @@ def is_pagination_needed(events, pagination_logic):
     return pagination_needed, next_page_value
 
 
-def fetch_events(client, last_run, first_fetch_time, endpoint, method, request_data, request_json, query_params,
+def fetch_events(client: Client, last_run, first_fetch_time, endpoint, method, request_data, request_json, query_params,
                  pagination_logic):
-    # region Get Last Time
+    # region Gets Last Time
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
@@ -296,11 +296,11 @@ def fetch_events(client, last_run, first_fetch_time, endpoint, method, request_d
     event_list: list[dict[str, Any]] = []
     # endregion
 
-    # region Get events & Search for pagination
+    # region Gets events & Searches for pagination
     events = client.search_events(endpoint=endpoint, method=method, request_data=request_data, request_json=request_json,
                                   query_params=query_params)
     pagination_needed, next_page_value = is_pagination_needed(events, pagination_logic)
-    raw_events_list = client.organize_events_to_xsiam_format(events)
+    raw_events_list = organize_events_to_xsiam_format(events)
     demisto.debug(f"{len(raw_events_list)} events fetched")
 
     while pagination_needed == 'True':
@@ -308,7 +308,7 @@ def fetch_events(client, last_run, first_fetch_time, endpoint, method, request_d
 
         events = client.search_events(endpoint=endpoint, method=method, request_data=request_data, request_json=request_json,
                                       query_params=query_params)
-        events_list = client.organize_events_to_xsiam_format(events)
+        events_list = organize_events_to_xsiam_format(events)
         raw_events_list.extend(events_list)
         demisto.debug(f"{len(raw_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(events, pagination_logic)
@@ -349,7 +349,7 @@ def fetch_events(client, last_run, first_fetch_time, endpoint, method, request_d
                 demisto.debug(f'Pulling event.. {event}')
                 event_list.append(event)
 
-            # Update last run and add event if the event is newer than last fetch
+            # Update last run and add event if the event is newer than the last fetch
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
 
@@ -393,7 +393,7 @@ def format_header(params):
     request_json = {}
     query_params = {}
 
-    request_data_fields_to_add = params.get('request_data')
+    request_data_fields_to_add: Any = params.get('request_data')
     request_data_fields_to_add = str(request_data_fields_to_add)
 
     request_json_fields_to_add = params.get('request_json')
@@ -504,7 +504,7 @@ def main() -> None:
     params = demisto.params()
     # FIXME! revert before merging: `command = demisto.command()`
 
-    # region Get the service API url endpoint and method.
+    # region Gets the service API url endpoint and method.
     base_url = params.get('base_url')
     endpoint = params.get('endpoint')
     http_method = params.get('http_method')
@@ -565,7 +565,7 @@ def main() -> None:
             # Fix The JSON Format to send to XSIAM dataset
             vendor = params.get('vendor').lower()
             product = params.get('product').lower()
-            events_to_xsiam = client.organize_events_to_xsiam_format(events)
+            events_to_xsiam = organize_events_to_xsiam_format(events)
             send_events_to_xsiam(events_to_xsiam, vendor=vendor, product=product)  # noqa
 
         return_results(result)
@@ -602,7 +602,7 @@ def main() -> None:
         vendor = params.get('vendor').lower()
         product = params.get('product').lower()
 
-        events_to_xsiam = client.organize_events_to_xsiam_format(events)
+        events_to_xsiam = organize_events_to_xsiam_format(events)
         send_events_to_xsiam(events_to_xsiam, vendor=vendor, product=product)  # noqa
 
 
