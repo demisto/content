@@ -852,11 +852,12 @@ def kill_zombie_processes():
         try:
             # Check if the process is a zombie
             if proc.info['status'] == psutil.STATUS_ZOMBIE:
-                print(f'found zombie process with pid {proc.pid}')
+                demisto.info(f'found zombie process with pid {proc.pid}')
                 waitres = os.waitpid(int(proc.pid), os.WNOHANG)
                 demisto.info(f"waitpid result: {waitres}")
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             # Handle cases where process may have already terminated or access is denied
+            demisto.info(f"failed to kill zombie with pid {proc.pid}")
             continue
 
 def perform_rasterize(path: str | list[str],
@@ -1231,7 +1232,7 @@ def main():  # pragma: no cover
 
         else:
             return_error('Unrecognized command')
-            
+
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
