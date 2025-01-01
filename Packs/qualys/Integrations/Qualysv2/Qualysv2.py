@@ -2939,7 +2939,7 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
 
         assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (
-                host_list_assets and not is_test) else []
+            host_list_assets and not is_test) else []
         demisto.debug(f'Parsed detections from hosts, created {len(assets)=} assets.')
 
         if not set_new_limit:
@@ -3532,7 +3532,7 @@ def main():  # pragma: no cover
                     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                                        snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
                                        should_update_health_module=False)
-                    
+
                 demisto.setAssetsLastRun(new_last_run)
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): real_amount_of_assets})
 
