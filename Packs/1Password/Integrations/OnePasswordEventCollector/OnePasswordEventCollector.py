@@ -247,8 +247,8 @@ def fetch_events(
     )
 
     if event_type_events:
-        last_event_time = max(event_type_events, key=itemgetter('timestamp'))['timestamp']
-        next_run_ids_to_skip = {event['uuid'] for event in event_type_events if event['timestamp'] == last_event_time}
+        last_event_time = max(event_type_events, key=itemgetter('_time'))['_time']  # '_time' has format consistent with filter
+        next_run_ids_to_skip = {event['uuid'] for event in event_type_events if event['_time'] == last_event_time}
         event_type_next_run = {'from_date': last_event_time, 'ids': list(next_run_ids_to_skip)}
     else:
         last_event_time = None
@@ -328,7 +328,7 @@ def main() -> None:  # pragma: no cover
     # required
     base_url: str = params['url']
     token: str = params.get('credentials', {}).get('password', '')
-    event_types: list[str] = argToList(params['event_types'])
+    event_types: list[str] = argToList(params['event_types'], transform=lambda event_type: event_type.strip())
 
     # optional
     verify_certificate: bool = not params.get('insecure', False)

@@ -231,7 +231,7 @@ def test_push_events(mocker: MockerFixture):
     demisto_set_last_run = mocker.patch('OnePasswordEventCollector.demisto.setLastRun')
 
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
-    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:21.297797084Z', 'ids': ['second (and last) event']}}
+    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:21Z', 'ids': ['second (and last) event']}}
     push_events(expected_events, next_run=next_run)
 
     send_events_to_xsiam_kwargs = send_events_to_xsiam.call_args.kwargs
@@ -261,17 +261,17 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
 
     # Inputs
     event_type = 'audit events'
-    from_date = '2024-12-02T11:54:11.244797072Z'
+    from_date = '2024-12-02T11:54:11Z'
 
     # Expected outputs
-    expected_type_next_run = {'from_date': '2024-12-02T11:55:20.710457472Z', 'ids': ['second (and last) event']}
+    expected_type_next_run = {'from_date': '2024-12-02T11:55:20Z', 'ids': ['second (and last) event']}
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
     get_events_from_client = mocker.patch('OnePasswordEventCollector.get_events_from_client', return_value=expected_events)
     type_next_run, events = fetch_events(
         authenticated_client,
         event_type=event_type,
-        event_type_last_run={'from_date': '2024-12-02T11:54:11.244797072Z', 'ids': []},
+        event_type_last_run={'from_date': from_date, 'ids': []},
         event_type_max_results=1000,
     )
 
@@ -329,7 +329,7 @@ def test_get_events_command(authenticated_client: Client, mocker: MockerFixture)
     mocker.patch('OnePasswordEventCollector.get_events_from_client', return_value=expected_events)
     table_to_markdown = mocker.patch('OnePasswordEventCollector.tableToMarkdown')
     event_type = 'audit events'
-    args = {'event_type': event_type, 'limit': '10', 'from_date': '2024-12-02T11:55:00.000000Z'}
+    args = {'event_type': event_type, 'limit': '10', 'from_date': '2024-12-02T11:55:00Z'}
 
     events, _ = get_events_command(authenticated_client, args)
     table_to_markdown_kwargs = table_to_markdown.call_args.kwargs
