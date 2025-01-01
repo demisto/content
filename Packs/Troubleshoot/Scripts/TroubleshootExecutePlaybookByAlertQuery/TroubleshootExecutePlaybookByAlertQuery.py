@@ -230,7 +230,8 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
     Args:
         playbook_id (str): The playbook id to set.
         alert_ids (list): A list of alert Ids. limited to 10 at a time.
-
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle. 
+                If true, bulk API calls are used; otherwise, an alternative API call is utilized.
     Returns:
         dict: The command results.
     """
@@ -294,6 +295,7 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         If True, closed alerts will be reopened.
         playbooks_dict (dict): A dictionary mapping playbook IDs to their corresponding playbook names.
         results_summary (ResultsSummary): An object for summarizing the results, including tracking reopened alerts.
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle. 
     """
     demisto.debug(f"Calling loop_on_alerts with {len(incidents)=}, {playbook_id=}.")
     alert_inv_status: dict[str, list] = {
@@ -347,7 +349,7 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
         reopen_closed_inv (bool): Flag indicating whether to reopen closed investigations for applicable incidents.
         playbooks_dict (dict): A dictionary mapping playbook IDs to their respective names, used for validation and logging.
         results_summary (ResultsSummary): An object for tracking the processing results, including alerts missing playbooks.
-
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle. 
     Raises:
         DemistoException: If a required attribute is missing in an incident or if processing fails.
     """
@@ -378,6 +380,7 @@ def main():
     try:
         args = demisto.args()
         original_query = args.get("query", "runStatus:Pending")
+        # Filters incidents to retrieve only open ones when the client chooses not to reopen closed investigations.
         if not argToBoolean(args.get("reopen_closed_inv")):
             updated_query = f"-status:closed AND {original_query}"
             args.update({"query": updated_query})
