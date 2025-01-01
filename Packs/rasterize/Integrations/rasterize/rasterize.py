@@ -860,6 +860,7 @@ def kill_zombie_processes():
             demisto.info(f"failed to kill zombie with pid {proc.pid}")
             continue
 
+
 def perform_rasterize(path: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
@@ -882,9 +883,6 @@ def perform_rasterize(path: str | list[str],
     :param width: window width
     :param height: window height
     """
-
-
-    kill_zombie_processes()
 
     # convert the path param to list in case we have only one string
     paths = argToList(path)
@@ -1235,6 +1233,8 @@ def main():  # pragma: no cover
 
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+    finally:
+        kill_zombie_processes()
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
