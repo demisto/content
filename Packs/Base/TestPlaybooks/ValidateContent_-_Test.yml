@@ -1,14 +1,15 @@
 id: ValidateContent - Test
-version: -1
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: ValidateContent - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 09f11b61-944c-4e2e-8ee7-3da2ea499bdf
+    taskid: 16dc9ced-6e57-47a8-83f3-4356a24d16df
     type: start
     task:
-      id: 09f11b61-944c-4e2e-8ee7-3da2ea499bdf
+      id: 16dc9ced-6e57-47a8-83f3-4356a24d16df
       version: -1
       name: ""
       iscommand: false
@@ -34,14 +35,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a61f949d-5383-4fdd-8eb7-08479b34ec3e
+    taskid: 4d7c45c2-bc55-4d21-88cd-4161a9788223
     type: regular
     task:
-      id: a61f949d-5383-4fdd-8eb7-08479b34ec3e
+      id: 4d7c45c2-bc55-4d21-88cd-4161a9788223
       version: -1
       name: Download automation with errors
-      description: Sends http request. Returns the response as json.
-      scriptName: http
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
       type: regular
       iscommand: false
       brand: ""
@@ -53,7 +54,7 @@ tasks:
         simple: script-errors.yml
       method:
         simple: GET
-      saveAsFile:
+      save_as_file:
         simple: "yes"
       url:
         simple: https://raw.githubusercontent.com/demisto/content/4bff829d93ffc7fd0b770be7a04a425fd05ec075/Packs/Base/Scripts/ValidateContent/test_data/automationwitherrors.yml
@@ -75,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 254c22b0-699f-45e2-8283-811d7e0e7539
+    taskid: 544c747f-bb1e-475f-866b-b55ef09706e2
     type: regular
     task:
-      id: 254c22b0-699f-45e2-8283-811d7e0e7539
+      id: 544c747f-bb1e-475f-866b-b55ef09706e2
       version: -1
       name: ValidateContent
       description: Runs validation and linting using the Demisto SDK on content items,
@@ -113,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d2fdda18-22fe-4398-8398-91cf524927f4
+    taskid: ac6785f8-6513-4448-8e8e-c8057fa81bd6
     type: title
     task:
-      id: d2fdda18-22fe-4398-8398-91cf524927f4
+      id: ac6785f8-6513-4448-8e8e-c8057fa81bd6
       version: -1
       name: Done
       type: title
@@ -139,7 +140,16 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 585,
+        "width": 380,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-fromversion: 5.5.0
-description: ''
