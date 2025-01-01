@@ -2,7 +2,7 @@ id: Uncommon remote scheduled task created
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Uncommon remote scheduled task created
+name: An Uncommon Scheduled Task was Created Remotely
 description: "This playbook handles \"Uncommon remote scheduled task created\" alerts.\n\nPlaybook Stages:\n\nAnalysis:\n\n- The playbook checks if the remote IP is external or has a bad reputation.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n\n- Searches for related XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.\n- Searches for related XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.\n- Searches for suspicious command-line parameters indicating a malicious scheduled task.\n\nRemediation:\n\n- Automatically disable the malicious scheduled task.\n- Block the malicious IP (requires analyst approval).\n- Automatically Close the alert.\n\nRequirements:\n\nFor response actions, the following integrations are required: \n\n- PAN-OS."
 tags:
 - TA0002 - Execution
