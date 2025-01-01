@@ -48,7 +48,7 @@ This automation script is used as part of the content validation that runs as pa
         },
         {
             "Name": "MyScript",
-            "Error": "The following commands contain duplicated arguments:Command gpt-send-message, contains multiple appearances of the following arguments message.Please make sure to remove the duplications.",
+            "Error": "The following commands contain duplicated arguments:Command example-my-command, contains multiple appearances of the following arguments message.Please make sure to remove the duplications.",
             "Error Code/Linter": "IN113"
         }
     ]
@@ -61,5 +61,5 @@ This automation script is used as part of the content validation that runs as pa
 
 | Name     | Error                                                                                                                                                                                         | Line | 	Error Code/Linter |
 |----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|--------------------|
-| MyScript | The following commands contain duplicated arguments: Command gpt-send-message, contains multiple appearances of the following arguments message. Please make sure to remove the duplications. |      | IN113              |
+| MyScript | The following commands contain duplicated arguments: Command example-my-command, contains multiple appearances of the following arguments message. Please make sure to remove the duplications. |      | IN113              |
 | MyScript | unterminated string literal (detected at line 166)  [syntax]                                                                                                                                  | 166  | mypy               |
