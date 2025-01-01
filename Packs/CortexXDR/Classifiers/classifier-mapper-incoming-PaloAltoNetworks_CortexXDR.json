@@ -8,7 +8,7 @@
     "fromVersion": "6.0.0",
     "mapping": {
         "Cortex XDR - Lite": {
-            "dontMapEventToLabels": true,
+            "dontMapEventToLabels": false,
             "internalMapping": {
                 "Additional Data": {
                     "complex": {

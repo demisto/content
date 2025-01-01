@@ -192,6 +192,15 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
+  hidden: true
+- additionalinfo: Whether to remove the Additional Data (additionaldata in the context). This Elimination is recommended.
+  display: Remove Additional Data
+  name: remove_additional_data
+  required: false
+  type: 8
+  section: Collect
+  defaultvalue: 'true'
+  advanced: true
 - additionalinfo: "Whether to fetch only the essential Alert's fields - in order to minimize the incident's information. Can either choose null_values to remove all null values or any required field."
   display: Minimize Alert Information
   name: excluded_alert_fields
