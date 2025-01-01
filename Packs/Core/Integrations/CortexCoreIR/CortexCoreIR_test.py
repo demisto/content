@@ -1,6 +1,9 @@
 import json
+from unittest.mock import MagicMock
 
 import pytest
+
+from CommonServerPython import CommandResults
 
 Core_URL = 'https://api.xdrurl.com'
 
@@ -276,3 +279,100 @@ def test_get_asset_details_command_success(mocker):
     assert result.outputs == {"id": "1234", "name": "Test Asset"}
     assert "Test Asset" in result.readable_output
     assert mock_get_asset_details.call_count == 1
+
+
+def test_get_distribution_url_command_without_download():
+    """
+    Given:
+        - `download_package` argument set to False.
+    When:
+        - Calling `get_distribution_url_command` without downloading the package.
+    Then:
+        - Should return a CommandResults object with the distribution URL and no file download.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "x64",
+        "download_package": "false",
+        "integration_context_brand": "CoreIR"
+    }
+
+    result = get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "x64")
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
+    assert result.outputs_prefix == "CoreIR.Distribution"
+    assert result.outputs_key_field == "id"
+    assert "[Distribution URL](https://example.com/distribution)" in result.readable_output
+
+
+def test_get_distribution_url_command_with_download(mocker):
+    """
+    Given:
+        - `download_package` set to True.
+    When:
+        - Calling `get_distribution_url_command` with downloading the package.
+    Then:
+        - Should return a list with CommandResults for the distribution URL and the downloaded file information.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+    client._http_request = MagicMock(return_value=b"mock_binary_data")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "x64",
+        "download_package": "true",
+        "integration_context_brand": "CortexCoreIR"
+    }
+    mocker.patch('CortexCoreIR.fileResult', return_value={
+        'Contents': '',
+        'ContentsFormat': 'text',
+        'Type': 3,
+        'File': 'xdr-agent-install-package.msi',
+        'FileID': '11111'
+    })
+    result = get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "x64")
+    client._http_request.assert_called_once_with(
+        method="GET", full_url="https://example.com/distribution", resp_type="content"
+    )
+    assert isinstance(result, list)
+    assert len(result) == 2
+    command_result = result[1]
+    assert isinstance(command_result, CommandResults)
+    assert command_result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
+    assert command_result.outputs_prefix == "CortexCoreIR.Distribution"
+    assert command_result.outputs_key_field == "id"
+    assert "Installation package downloaded successfully." in command_result.readable_output
+
+
+def test_get_distribution_url_command_without_download_not_supported_type():
+    """
+    Given:
+        - `download_package` argument set to True but package_type is not x64 or x86.
+    When:
+        - Calling `get_distribution_url_command` without downloading the package.
+    Then:
+        - Should raise a demisto error.
+    """
+    from CoreIRApiModule import get_distribution_url_command
+    from CommonServerPython import DemistoException
+    client = MagicMock()
+    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+
+    args = {
+        "distribution_id": "12345",
+        "package_type": "sh",
+        "download_package": "true",
+        "integration_context_brand": "PaloAltoNetworksXDR"
+    }
+    with pytest.raises(DemistoException) as e:
+        get_distribution_url_command(client, args)
+    client.get_distribution_url.assert_called_once_with("12345", "sh")
+    assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
