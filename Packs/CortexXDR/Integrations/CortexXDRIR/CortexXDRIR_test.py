@@ -2175,34 +2175,3 @@ def test_handle_excluded_data_param_old_param():
     assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (['a', 'b'], False)
     excluded_data_from_alerts = ['null_values', 'b']
     assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (['b'], True)
-
-
-def test_handle_exclude_incident_fields():
-    """
-    Given:
-        - Different combinations of exclude incident fields data:
-            1. using new param with value ['additional_data', 'network_artifacts']
-            2. using new param without a bool param
-            3. using only bool param
-            3. both list and bool param are False/Empty
-    When:
-        - Calling the `handle_exclude_incident_fields` function.
-    Then:
-        - Ensure that the function correctly adjusts the excluded fields and boolean additional
-        data flag based on the inputs.
-    """
-    from CortexXDRIR import handle_exclude_incident_fields
-    exclude_incident_fields_bool = False
-    exclude_incident_fields_list = ['additional_data', 'network_artifacts']
-    assert handle_exclude_incident_fields(exclude_incident_fields_list,
-                                          exclude_incident_fields_bool) == (['network_artifacts'], True)
-    exclude_incident_fields_list = ['network_artifacts']
-    assert handle_exclude_incident_fields(exclude_incident_fields_list) == (['network_artifacts'], False)
-    exclude_incident_fields_bool = True
-    exclude_incident_fields_list = []
-    assert handle_exclude_incident_fields(exclude_incident_fields_list, exclude_incident_fields_bool) == (
-        ['network_artifacts', 'file_artifacts'], False
-    )
-    exclude_incident_fields_bool = False
-    exclude_incident_fields_list = []
-    assert handle_exclude_incident_fields(exclude_incident_fields_list, exclude_incident_fields_bool) == ([], False)

@@ -657,8 +657,8 @@ def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
-    exclude_artifacts, _ = handle_exclude_incident_fields(args.get('exclude_incidents_fields', []),
-                                                          argToBoolean(args.get('excluding_artifacts', 'False')),)
+    arg_from_command = argToBoolean(args.get('excluding_artifacts', 'False'))
+    exclude_artifacts = FIELDS_TO_EXCLUDE if arg_from_command else args.get('exclude_incidents_fields', [])
     alert_fields_to_exclude = args.get('alert_fields_to_exclude', [])
     drop_nulls = args.get('drop_nulls', False)
     demisto.debug(f"{exclude_artifacts=} , {type(exclude_artifacts)}, {alert_fields_to_exclude=}, "
@@ -1399,30 +1399,30 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
                           )
 
 
-def handle_exclude_incident_fields(list_exclude_field_value: list, bool_exclude_field_value: bool = False) -> Tuple[list, bool]:
-    """handle the exclude_field param/argument
+# def handle_exclude_incident_fields(list_exclude_field_value: list, bool_exclude_field_value: bool = False) -> Tuple[list, bool]:
+#     """handle the exclude_field param/argument
 
-    Args:
-        bool_exclude_field_value (bool): used for the argument inside get_incident_extra_data_command- bool arg
-        list_exclude_field_value (list): exclude_field is a list of variable (param of type 16)
+#     Args:
+#         bool_exclude_field_value (bool): used for the argument inside get_incident_extra_data_command- bool arg
+#         list_exclude_field_value (list): exclude_field is a list of variable (param of type 16)
 
-    Returns:
-        list, bool: the exclude_fields to append to the xdr api request, whether to remove the additional data field
-        (if appear in the incident type)
-    """
-    demisto.debug(f"handle_exclude_incident_fields: {bool_exclude_field_value=}, {list_exclude_field_value=}")
-    remove_additional_data = False
-    if bool_exclude_field_value:  # For param backwards compatibility OR argument in a command
-        return FIELDS_TO_EXCLUDE, remove_additional_data
-    for field in list_exclude_field_value:
-        if field == 'additional_data':
-            remove_additional_data = True
-            list_exclude_field_value.remove('additional_data')
-        elif field not in POSSIBLE_EXCLUDE_INCIDENT_FIELDS:
-            raise DemistoException("`Minimize Incident Information` parameter can include the following"
-                                   " values only: network_artifacts, file_artifacts and additional_data."
-                                   f" Please remove {field}.")
-    return list_exclude_field_value, remove_additional_data
+#     Returns:
+#         list, bool: the exclude_fields to append to the xdr api request, whether to remove the additional data field
+#         (if appear in the incident type)
+#     """
+#     demisto.debug(f"handle_exclude_incident_fields: {bool_exclude_field_value=}, {list_exclude_field_value=}")
+#     remove_additional_data = False
+#     if bool_exclude_field_value:  # For param backwards compatibility OR argument in a command
+#         return FIELDS_TO_EXCLUDE, remove_additional_data
+#     for field in list_exclude_field_value:
+#         if field == 'additional_data':
+#             remove_additional_data = True
+#             list_exclude_field_value.remove('additional_data')
+#         elif field not in POSSIBLE_EXCLUDE_INCIDENT_FIELDS:
+#             raise DemistoException("`Minimize Incident Information` parameter can include the following"
+#                                    " values only: network_artifacts, file_artifacts and additional_data."
+#                                    f" Please remove {field}.")
+#     return list_exclude_field_value, remove_additional_data
 
 
 def main():  # pragma: no cover
@@ -1440,8 +1440,9 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    exclude_artifacts, remove_additional_data = (
-        handle_exclude_incident_fields(list_exclude_field_value=argToList(params.get('excluded_incident_fields', []))))
+    exclude_incident_fields = argToBoolean(params.get('exclude_fields', True))
+    remove_additional_data = True if exclude_incident_fields else False
+    exclude_artifacts = FIELDS_TO_EXCLUDE if exclude_incident_fields else []
     excluded_alert_fields = argToList(params.get('excluded_alert_fields'))
     excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_from_alerts_param(excluded_alert_fields)
     demisto.debug(f"{excluded_alert_fields}, {remove_nulls_from_alerts}")
