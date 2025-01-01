@@ -57,9 +57,13 @@ configuration:
   name: fetch_time
   type: 0
   defaultvalue: '3 days'
+  defaultvalue:marketplacev2: '1 min'
   section: Collect
   required: false
+  hidden: false
+  hidden:marketplacev2: true
 - display: Max incidents per fetch
+  display:marketplacev2: Max events per fetch
   name: incidents_per_fetch
   type: 0
   section: Collect
@@ -143,6 +147,8 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  hidden: false
+  hidden:marketplacev2: true
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
@@ -163,6 +169,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex.
+  hidden: false
+  hidden:marketplacev2: true
 - defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
@@ -171,6 +179,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the Cortex incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
+  hidden: false
+  hidden:marketplacev2: true
 - defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
@@ -190,6 +200,7 @@ configuration:
   - OFP Detection
 - additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
+  defaultvalue:marketplacev2: ''
   display: 'Reopen Statuses'
   name: reopen_statuses
   type: 16
@@ -203,13 +214,17 @@ configuration:
   - False positive
   - Reopened
   - Ignored
+  hidden: false
+  hidden:marketplacev2: true
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   type: 19
   section: Collect
   advanced: true
-  required: false
+  required: False
+  hidden: false
+  hidden:marketplacev2: true
 - additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
@@ -5062,13 +5077,21 @@ script:
       description: The IOA rule's version ID.
       type: String
   dockerimage: demisto/py3-tools:1.0.0.114656
-  isfetch: true
-  isfetch:marketplacev2: false
-  isfetchevents: true
-  isfetchevents:xsoar: false
+  isfetch: false
+  isfetch:xsoar: true
+  
+  isfetchevents: false
+  isfetchevents:marketplacev2: true
+
   ismappable: true
+  ismappable:marketplacev2: false
+
   isremotesyncin: true
+  isremotesyncin:marketplacev2: false
+
   isremotesyncout: true
+  isremotesyncout:marketplacev2: false
+
   script: '-'
   subtype: python3
   type: python
