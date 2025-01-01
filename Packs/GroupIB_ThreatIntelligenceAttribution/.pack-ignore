@@ -52,6 +52,3 @@ ignore=GR103
 ignore=GR103
 [file:incidentfield-GIB_Favicon.json]
 ignore=GR103
-
-[file:Incident_Postprocessing_-_Group-IB_Threat_Intelligence_&_Attribution.yml]
-ignore:RM116
