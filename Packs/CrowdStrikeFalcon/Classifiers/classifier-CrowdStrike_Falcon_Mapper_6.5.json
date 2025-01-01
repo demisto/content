@@ -496,6 +496,194 @@
                 }
             }
         },
+        "CrowdStrike Falcon OFP Detection": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+				"Agent ID": {
+					"simple": "agent_id"
+				},
+                "CrowdStrike Falcon Alleged File Type": {
+                    "simple": "alleged_filetype"
+                },
+                "CMD line": {
+                    "simple": "cmdline"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "occurred": {
+					"simple": "created_timestamp"
+				},
+                "External Confidence": {
+                    "simple": "confidence"
+                },
+                "CrowdStrike Falcon Crawled Timestamp": {
+                    "simple": "crawled_timestamp"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "CrowdStrike Falcon Data Domains": {
+                    "simple": "data_domains"
+                },
+				"OS Version": {
+					"simple": "os_version"
+				},
+                "Cloud Instance ID": {
+                    "simple": "device.instance_id"
+                },
+                "Device Name": {
+					"simple": "device.hostname"
+				},
+                "Agent Version": {
+                    "simple": "device.agent_version"
+                },
+                "CrowdStrike Falcon Bios Manufacturer": {
+                    "simple": "device.bios_manufacturer"
+                },
+                "CrowdStrike Falcon Bios Version": {
+                    "simple": "device.bios_version"
+                },
+                "Device Id": {
+                    "simple": "device.device_id"
+                },
+                "Device External IP": {
+                    "simple": "device.external_ip"
+                },
+                "First Seen": {
+                    "simple": "device.first_seen"
+                },
+                "Last Seen": {
+                    "simple": "device.last_seen"
+                },
+                "Device Local IP": {
+                    "simple": "device.local_ip"
+                },
+                "Device MAC Address": {
+                    "simple": "device.mac_address"
+                },
+                "Device OS Version": {
+                    "simple": "device.os_version"
+                },
+                "CrowdStrike Falcon Platform Name": {
+                    "simple": "device.platform_name"
+                },
+                "CrowdStrike Falcon Product Type Description": {
+                    "simple": "device.product_type_desc"
+                },
+                "Cloud Service": {
+                    "simple": "service_provider"
+                },
+                "Cloud Account ID": {
+                    "simple": "device.service_provider_account_id"
+                },
+                "CrowdStrike Falcon System Manufacturer": {
+                    "simple": "device.system_manufacturer"
+                },
+                "Display Name":{
+                    "simple": "display_name"
+                },
+                "File Name": {
+                    "simple": "filename"
+                },
+                "File Path": {
+                    "simple": "filepath"
+                },
+                "CrowdStrike Falcon Macros CMD line": {
+                    "simple": "macros.cmdline"
+                },
+                "CrowdStrike Falcon Macros Display Name": {
+                    "simple": "macros.display_name"
+                },
+                "CrowdStrike Falcon Macros IOC Description": {
+                    "simple": "macros.ioc_description"
+                },
+                "CrowdStrike Falcon Macros IOC Source": {
+                    "simple": "macros.ioc_source"
+                },
+                "CrowdStrike Falcon Macros IOC Type": {
+                    "simple": "macros.ioc_type"
+                },
+                "MD5": {
+                    "simple": "md5"
+                },
+                "Threat Name": {
+					"simple": "name"
+				},
+                "Behaviour Objective": {
+                    "simple": "objective"
+                },
+                "Parent CMD line": {
+                    "simple": "parent_details.cmdline"
+                },
+                "Parent Process File Path": {
+                    "simple": "parent_details.filepath"
+                },
+                "Parent Process MD5": {
+                    "simple": "parent_details.md5"
+                },
+                "Parent Process SHA256": {
+                    "simple": "parent_details.sha256"
+                },
+                "Parent Process IDs": {
+                    "simple": "parent_process_id"
+                },
+                "CrowdStrike Falcon Pattern ID":{
+                    "simple": "pattern_id"
+                },
+                "OS": {
+					"simple": "platform"
+				},
+                "Vendor Product": {
+                    "simple": "product"
+                },
+                "Behaviour Scenario": {
+                    "simple": "scenario"
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "Behaviour Tactic": {
+                    "simple": "tactic"
+                },
+                "Tactic ID": {
+                    "simple": "tactic_id"
+                },
+                "Technique": {
+                    "simple": "technique"
+                },
+                "Technique ID": {
+                    "simple": "technique_id"
+                },
+                "CrowdStrike Falcon Detection Type": {
+                    "simple": "type"
+                },
+                "Last Update Time": {
+                    "simple": "updated_timestamp"
+                },
+                "User Id": {
+                    "simple": "user_id"
+                },
+                "Username": {
+                    "simple": "user_name"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        },
         "CrowdStrike Falcon Detection": {
             "dontMapEventToLabels": true,
             "internalMapping": {
