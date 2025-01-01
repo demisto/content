@@ -5,7 +5,6 @@ import types
 from datetime import datetime, timedelta
 
 import requests
-from git import Actor
 from ruamel.yaml import YAML
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
@@ -681,10 +680,7 @@ def setup_content_repo(content_path: str):
     # Check if the repository has any commits, make an initial commit if needed.
     if not content_repo.head.is_valid():
         # Make an empty initial commit to create the master branch.
-        commit = content_repo.index.commit("Initial commit",
-                                           committer=Actor('root', f'root@{socket.gethostname()}'))
-        committer = commit.committer
-        demisto.debug(f'setup_content_repo {str(committer)=} | {committer.name=} | {committer.email=}')
+        content_repo.index.commit("Initial commit")
 
     # Set up the remote branch and fetch it.
     content_repo.create_remote('origin', CONTENT_REPO_URL)
@@ -764,6 +760,10 @@ def setup_envvars():
     os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
     os.environ['ARTIFACTS_FOLDER'] = '/tmp/artifacts'
     os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
+    os.environ['GIT_AUTHOR_NAME'] = 'root'
+    os.environ['GIT_AUTHOR_EMAIL'] = f'root@{socket.gethostname()}'
+    os.environ['GIT_COMMITTER_NAME'] = 'root'
+    os.environ['GIT_COMMITTER_EMAIL'] = f'root@{socket.gethostname()}'
     demisto.debug(f'setup_envvars: {os.environ}')
 
 
