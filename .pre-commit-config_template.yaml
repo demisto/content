@@ -225,7 +225,6 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-folder
     -  --skip-integration-script-file-name
     -  --skip-suffix
 
