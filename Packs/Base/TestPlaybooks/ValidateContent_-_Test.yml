@@ -1,6 +1,5 @@
 id: ValidateContent - Test
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: ValidateContent - Test
 starttaskid: "0"
 tasks:
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +30,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -54,10 +54,10 @@ tasks:
         simple: script-errors.yml
       method:
         simple: GET
-      save_as_file:
-        simple: "yes"
       url:
         simple: https://raw.githubusercontent.com/demisto/content/4bff829d93ffc7fd0b770be7a04a425fd05ec075/Packs/Base/Scripts/ValidateContent/test_data/automationwitherrors.yml
+      save_as_file:
+        simple: "yes"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -82,10 +82,7 @@ tasks:
       id: 544c747f-bb1e-475f-866b-b55ef09706e2
       version: -1
       name: ValidateContent
-      description: Runs validation and linting using the Demisto SDK on content items,
-        such as integrations, automations and content packs. This automation script
-        is used as part of the content validation that runs as part of the contribution
-        flow.
+      description: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
       scriptName: ValidateContent
       type: regular
       iscommand: false
@@ -123,6 +120,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -153,3 +151,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
+description: 'TPB for ValidateContent script.'
