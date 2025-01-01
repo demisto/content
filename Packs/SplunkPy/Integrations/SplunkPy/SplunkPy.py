@@ -60,6 +60,7 @@ ASSET_ENRICHMENT = 'Asset'
 IDENTITY_ENRICHMENT = 'Identity'
 SUBMITTED_NOTABLES = 'submitted_notables'
 EVENT_ID = 'event_id'
+RULE_ID = 'rule_id'
 JOB_CREATION_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 NOT_YET_SUBMITTED_NOTABLES = 'not_yet_submitted_notables'
 INFO_MIN_TIME = "info_min_time"
@@ -178,7 +179,42 @@ class UserMappingObject:
         )
 
 
+class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
+    """get-modified-remote-data response parser
+
+    :type modified_notables_data: ``list``
+    :param modified_notables_data: The Notables that were modified since the last check.
+
+    :type entries: ``list``
+    :param entries: The entries you want to add to the war room.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, modified_notables_data, entries):
+        self.modified_notables_data = modified_notables_data
+        self.entries = entries
+        extensive_log(f'mirror-in: updated notables: {self.modified_notables_data}')
+        extensive_log(f'mirror-in: updated entries: {self.entries}')
+
+    def to_entry(self):
+        """Extracts the response
+
+        :return: List of notables data + entries.
+        :rtype: ``list``
+        """
+        return [
+            {
+                'EntryContext': {'mirrorRemoteId': data[RULE_ID]},
+                'Contents': data,
+                'Type': EntryType.NOTE,
+                'ContentsFormat': EntryFormat.JSON}
+            for data in self.modified_notables_data
+        ] + self.entries
 # =========== Regular Fetch Mechanism ===========
+
+
 def splunk_time_to_datetime(incident_ocurred_time):
     incident_time_without_timezone = incident_ocurred_time.split('.')[0]
     return datetime.strptime(incident_time_without_timezone, SPLUNK_TIME_FORMAT)
@@ -1557,10 +1593,10 @@ def get_comments_data(service: client.Service, notable_id: str, comment_tag_from
     return notes
 
 
-def get_remote_data_command(service: client.Service, args: dict,
-                            close_incident: bool, close_end_statuses: bool, close_extra_labels: list[str], mapper,
-                            comment_tag_from_splunk: str):
-    """ get-remote-data command: Returns an updated notable and error entry (if needed)
+def get_modified_remote_data_command(service: client.Service, args: dict,
+                                     close_incident: bool, close_end_statuses: bool, close_extra_labels: list[str],
+                                     mapper: UserMappingObject, comment_tag_from_splunk: str):
+    """ Gets the list of the notables data that have change since a given time
 
     Args:
         service (splunklib.client.Service): Splunk service object
@@ -1569,99 +1605,89 @@ def get_remote_data_command(service: client.Service, args: dict,
             has been closed on Splunk's end.
         close_end_statuses (bool): Specifies whether "End Status" statuses on Splunk should be closed when mirroring.
         close_extra_labels (list[str]): A list of additional Splunk status labels to close during mirroring.
+        mapper (UserMappingObject): mapper to map the Splunk User name to the correct XSOAR user name.
+        comment_tag_from_splunk (str): the name of the tag that represented a comment which comes from Splunk.
 
     Returns:
-        GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
+        GetModifiedRemoteDataResponse: The response containing the list of notables changed
     """
+    modified_notables_map = {}
     entries = []
-    updated_notable = {}
-    remote_args = GetRemoteDataArgs(args)
+    remote_args = GetModifiedRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
-    notable_id = remote_args.remote_incident_id
-    search = '|`incident_review` ' \
-             '| eval last_modified_timestamp=_time ' \
-             f'| where rule_id="{notable_id}" ' \
-             f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
-             '| fields - time ' \
-             '| map search=" search `notable_by_id($rule_id$)`"' \
-             '| expandtoken'
-
-    demisto.debug(f'Performing get-remote-data command with query: {search}')
-
-    for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode=OUTPUT_MODE_JSON)):
+    incident_review_search = '|`incident_review` ' \
+        '| eval last_modified_timestamp=_time ' \
+        f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
+        '| fields - _time,time ' \
+        '| expandtoken'
+    demisto.debug(f'mirror-in: performing `incident_review` search with query: {incident_review_search}.')
+    for item in results.JSONResultsReader(service.jobs.oneshot(
+        query=incident_review_search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON
+    )):
         if handle_message(item):
             continue
         updated_notable = parse_notable(item, to_dict=True)
-    if updated_notable.get('owner'):
-        demisto.debug("owner field was found, changing according to mapping.")
-        updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
-            updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
-    if close_incident and updated_notable.get('status_label'):
-        status_label = updated_notable['status_label']
+        notable_id = updated_notable['rule_id']  # in the `incident_review` macro - the ID are in the rule_id key
+        modified_notables_map[notable_id] = updated_notable
+        if updated_notable.get('owner'):
+            demisto.debug("mirror-in: owner field was found, changing according to mapping.")
+            updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
+                updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
+        if close_incident:
+            if updated_notable.get('status_label'):
+                status_label = updated_notable['status_label']
 
-        if status_label == "Closed" or (status_label in close_extra_labels) \
-                or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
-            demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
+                if status_label == "Closed" or (status_label in close_extra_labels) \
+                        or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
+                    demisto.info(f'mirror-in: closing incident related to notable {notable_id} with status_label: {status_label}')
+                    entries.append({
+                        'EntryContext': {'mirrorRemoteId': notable_id},
+                        'Type': EntryType.NOTE,
+                        'Contents': {
+                            'dbotIncidentClose': True,
+                            'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
+                        },
+                        'ContentsFormat': EntryFormat.JSON
+                    })
+
+            else:
+                demisto.debug('"status_label" key could not be found on the returned data, '
+                              f'skipping closure mirror for notable {notable_id}.')
+        if (comment := updated_notable.get('comment')) and COMMENT_MIRRORED_FROM_XSOAR not in comment:
+            # comment, here in the `incident_review` macro results, hold the only the updated comments
+            # Creating a note
             entries.append({
+                'EntryContext': {'mirrorRemoteId': notable_id},
                 'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
-                },
-                'ContentsFormat': EntryFormat.JSON
+                'Contents': comment,
+                'ContentsFormat': EntryFormat.TEXT,
+                'Tags': [comment_tag_from_splunk],  # The list of tags to add to the entry
+                'Note': True,
             })
+            demisto.debug(f'New comment for {notable_id}: {comment}')
 
+    if modified_notables_map:
+        notable_ids_with_quotes = [f'"{notable_id}"' for notable_id in modified_notables_map]
+        notable_search = f'search `notable` | where {EVENT_ID} in ({",".join(notable_ids_with_quotes)}) | expandtoken'
+        kwargs = {'query': notable_search, 'earliest_time': '-3d', 'output_mode': OUTPUT_MODE_JSON}
+        demisto.debug(f'mirror-in: performing `notable` search with the kwargs: {kwargs}')
+        for item in results.JSONResultsReader(service.jobs.oneshot(**kwargs)):
+            if handle_message(item):
+                continue
+            updated_notable = parse_notable(item, to_dict=True)
+            notable_id = updated_notable[EVENT_ID]  # in the `notable` macro - the ID are in the event_id key
+            if modified_notables_map.get(notable_id):
+                modified_notables_map[notable_id] |= updated_notable
+                # comment in the `notable` macro, hold all the comments for an notable
+                if comment := updated_notable.get('comment'):
+                    comments = comment if isinstance(comment, list) else [comment]
+                    modified_notables_map[notable_id]['SplunkComments'] = [{'Comment': comment} for comment in comments]
+
+        demisto.debug(f'mirror-in: updated notable ids: {list(modified_notables_map.keys())}')
     else:
-        demisto.debug('"status_label" key could not be found on the returned data, '
-                      f'skipping closure mirror for notable {notable_id}.')
-    if updated_notable.get('comment'):
-        comment_entries = []
-        comments = argToList(updated_notable.get('comment'))
-        for comment in comments:
-            comment_entries.append({
-                'Comment': comment,
-            })
-        new_notes = get_comments_data(service, notable_id, comment_tag_from_splunk, last_update_splunk_timestamp)
-        demisto.debug(f"new_notes: {new_notes}")
-        entries.extend(new_notes)
-        if comment_entries:
-            updated_notable['SplunkComments'] = comment_entries
-    demisto.debug(f'Updated notable {notable_id}')
-    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
-
-
-def get_modified_remote_data_command(service: client.Service, args):
-    """ Gets the list of all notables ids that have change since a given time
-
-    Args:
-        service (splunklib.client.Service): Splunk service object
-        args (dict): The command argumens
-
-    Returns:
-        GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
-    """
-    modified_notable_ids: list = []
-    remote_args = GetModifiedRemoteDataArgs(args)
-    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
-    search = '|`incident_review` ' \
-             '| eval last_modified_timestamp=_time ' \
-             f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
-             '| fields rule_id ' \
-             '| dedup rule_id'
-    demisto.debug(f'Performing get-modified-remote-data command with query: {search}')
-
-    modified_notable_ids.extend(
-        item['rule_id']
-        for item in results.JSONResultsReader(
-            service.jobs.oneshot(
-                search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON
-            )
-        )
-        if not handle_message(item)
-    )
-    if len(modified_notable_ids) >= MIRROR_LIMIT:
-        demisto.info(f'Warning: More than {MIRROR_LIMIT} notables have been modified since the last update.')
-    return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
+        demisto.debug(f'mirror-in: no notables was changed since {last_update_splunk_timestamp}')
+    res = SplunkGetModifiedRemoteDataResponse(modified_notables_data=modified_notables_map.values(), entries=entries)
+    return_results(res)
 
 
 def update_remote_system_command(args, params, service: client.Service, auth_token, mapper, comment_tag_to_splunk):
@@ -3284,15 +3310,15 @@ def main():  # pragma: no cover
         else:
             return_results(get_mapping_fields_command(service, mapper, params, comment_tag_to_splunk, comment_tag_from_splunk))
     elif command == 'get-remote-data':
-        demisto.info('########### MIRROR IN #############')
-        get_remote_data_command(service=service, args=args,
-                                close_incident=params.get('close_incident'),
-                                close_end_statuses=params.get('close_end_status_statuses'),
-                                close_extra_labels=argToList(params.get('close_extra_labels', '')),
-                                mapper=mapper,
-                                comment_tag_from_splunk=comment_tag_from_splunk)
+        raise NotImplementedError(f'the {command} command is not not implemented, use get-modified-remote-data instead.')
     elif command == 'get-modified-remote-data':
-        get_modified_remote_data_command(service, args)
+        demisto.info('########### MIRROR IN #############')
+        get_modified_remote_data_command(service=service, args=args,
+                                         close_incident=params.get('close_incident'),
+                                         close_end_statuses=params.get('close_end_status_statuses'),
+                                         close_extra_labels=argToList(params.get('close_extra_labels', '')),
+                                         mapper=mapper,
+                                         comment_tag_from_splunk=comment_tag_from_splunk)
     elif command == 'update-remote-system':
         demisto.info('########### MIRROR OUT #############')
         return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))
