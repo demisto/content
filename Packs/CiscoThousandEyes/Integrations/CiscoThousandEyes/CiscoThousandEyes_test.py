@@ -172,7 +172,7 @@ def test_get_events_command(mocker):
         return {}
     
     last_run = {
-        "alerts": {"last_fetch": "2024-11-19T14:20:00Z"},
+        "alerts": {"last_fetch": "2024-11-18T14:20:00Z"},
         "events": {"last_fetch": "2024-11-28T08:59:17Z"},
     }
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)

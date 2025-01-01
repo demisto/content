@@ -1,5 +1,5 @@
 This is the Cisco ThousandEyes event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version xx of CiscoThousandEyes.
+This integration was integrated and tested with version 1.0.0 of CiscoThousandEyes.
 
 ## Configure CiscoThousandEyes in Cortex
 
@@ -13,6 +13,11 @@ This integration was integrated and tested with version xx of CiscoThousandEyes.
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
+
+## Note:
+>This API returns a list of activity log events **in the current account group**.
+If user has permission View activity log for all users in account group the logs returned include events across all the account groups they belong to.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -25,7 +30,7 @@ Gets events from Cisco ThousandEyes.
 
 #### Base Command
 
-`cisco-thousandeyes-get-events`
+`!cisco-thousandeyes-get-events`
 
 #### Input
 

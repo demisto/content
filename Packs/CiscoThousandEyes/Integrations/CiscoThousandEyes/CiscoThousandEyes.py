@@ -50,7 +50,7 @@ def fetch_paginated_events(
     previous_offset = last_run.get(fetch_type, {}).get("offset", 0)
     previous_page_url = last_run.get(fetch_type, {}).get("next_page", "")
     previous_last_date = last_run.get(fetch_type, {}).get("last_fetch", "")
-    
+
     next_page_url = previous_page_url
     pagination_offset = previous_offset
     is_events_type = fetch_type == "events"
@@ -70,7 +70,9 @@ def fetch_paginated_events(
         if next_page_url := response.get("_links", {}).get("next", {}).get("href"):
             has_next = True
         current_batch_events = response.get(RESPONSE_KEY.get(fetch_type), [])
-        deduplicate_events(current_batch_events, query_params.get("startDate"), date_key)
+        deduplicate_events(
+            current_batch_events, query_params.get("startDate"), date_key
+        )
         fetched_events.extend(current_batch_events[pagination_offset:])
         pagination_offset = 0
         if len(fetched_events) >= fetch_limit:
@@ -87,7 +89,11 @@ def fetch_paginated_events(
                 fetch_type, next_page_url, request_url, previous_page_url
             )
             return fetched_events, {
-                "last_fetch": previous_last_date if previous_page_url else fetched_events[0].get(date_key),
+                "last_fetch": (
+                    previous_last_date
+                    if previous_page_url
+                    else fetched_events[0].get(date_key)
+                ),
                 "next_page": next_page_url,
                 "offset": (
                     pagination_offset
@@ -104,7 +110,7 @@ def fetch_paginated_events(
             else query_params.get("last_fetch")
         )
     )
-    return fetched_events, { "last_fetch": last_fetch, "next_page": "", "offset": 0}
+    return fetched_events, {"last_fetch": last_fetch, "next_page": "", "offset": 0}
 
 
 def get_events(
@@ -119,7 +125,11 @@ def get_events(
         start_date, last_run.get(fetch_type, {}), end_date
     )
     is_pagination_fetch = last_run.get(fetch_type, {}).get("next_page", "")
-    params = {} if is_pagination_fetch else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
+    params = (
+        {}
+        if is_pagination_fetch
+        else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
+    )
 
     events, next_run = fetch_paginated_events(
         client=client,
@@ -270,12 +280,14 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
         start_date=start_date,
         end_date=end_date,
     )
-    alerts, events = [item for item in all_events if "alertId" in item], [item for item in all_events if "alertId" not in item]
-    
-    alerts_table = tableToMarkdown(name="Test Alerts", t=alerts, headers=["id", "alertType", "startDate", "endDate", "violationCount", "duration", "suppressed", "meta",])
+    alerts = [item for item in all_events if "id" in item]
+    events = [item for item in all_events if "id" not in item]
+
+    alerts_table = tableToMarkdown(name="Test Alerts", t=alerts, headers=["id", "alertType", "startDate", "endDate",
+                                                                          "violationCount", "duration", "suppressed", "meta"])
     event_table = tableToMarkdown("Test Events", events, ["accountGroupName", "aid", "date", "event", "ipAddress", "uid", "user"])
 
-    return events, CommandResults(readable_output=alerts_table + "\n" + event_table)
+    return all_events, CommandResults(readable_output=alerts_table + "\n" + event_table)
 
 
 def fetch_events(
@@ -308,7 +320,7 @@ def fetch_events(
     events = alert_events + audit_events
 
     next_run = {"alerts": alert_next_run, "events": audit_next_run}
-    if  any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
+    if any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
         next_run["nextTrigger"] = "0"
     demisto.debug(f"Setting next run {next_run}.")
     return next_run, events
@@ -346,11 +358,12 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", True)
 
     proxy = params.get("proxy", False)
-    max_alerts_per_fetch = arg_to_number(
-        params.get("max_alerts_per_fetch", DEFAULT_MAX_FETCH_ALERT)
+    max_alerts_per_fetch = (
+        arg_to_number(params.get("max_alerts_per_fetch")) or DEFAULT_MAX_FETCH_ALERT
     )
-    max_events_per_fetch = arg_to_number(
-        params.get("max_events_per_fetch", DEFAULT_MAX_FETCH_AUDIT_EVENTS)
+    max_events_per_fetch = (
+        arg_to_number(params.get("max_events_per_fetch"))
+        or DEFAULT_MAX_FETCH_AUDIT_EVENTS
     )
 
     demisto.debug(f"Command being called is {command}")

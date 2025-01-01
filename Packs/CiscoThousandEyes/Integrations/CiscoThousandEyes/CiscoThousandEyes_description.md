@@ -15,4 +15,5 @@ To issue or regenerate a user API token, you will need to receive and enter a mu
 Click [here](https://docs.thousandeyes.com/product-documentation/user-management/rbac#user-api-tokens) for User API Tokens documentation.
 
 ## Note:
->This API returns a list of activity log events **in the current account group**.
+>This API returns a list of activity log events **in the current account group**. 
+If user has permission View activity log for all users in account group the logs returned include events across all the account groups they belong to.
