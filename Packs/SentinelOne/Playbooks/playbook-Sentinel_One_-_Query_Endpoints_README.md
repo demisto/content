@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Sentinel One - Query Endpoints](../doc_files/playbook-Sentinel_One_-_Query_Endpoints.png)
+![Sentinel One - Query Endpoints](../doc_files/Sentinel_One_-_Query_Endpoints.png)
