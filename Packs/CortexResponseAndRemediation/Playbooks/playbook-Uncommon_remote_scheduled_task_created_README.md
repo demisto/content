@@ -1,4 +1,4 @@
-This playbook handles "An Uncommon Scheduled Task was Created Remotely" alerts.
+This playbook handles "Uncommon remote scheduled task created" alerts.
 
 Playbook Stages:
 
