@@ -8,11 +8,13 @@
     "email": "",
     "categories": [
         "Case Management",
-        "Palo Alto Networks Products",
         "Endpoint",
-        "Cloud"
+        "Cloud Security",
+        "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
