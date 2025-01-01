@@ -1698,7 +1698,7 @@ class Client(BaseClient):
                 error_handler=self.error_handler,
             )
         except requests.exceptions.ReadTimeout:
-            demisto.debug('get timeout on the request')
+            demisto.debug('A timeout occurred during the request')
             set_new_limit = True
             response = ''
 
