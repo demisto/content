@@ -20,36 +20,26 @@ class ResultsSummary:
 
     def update_success(self, playbook_id: str, alert_ids: str | list):
         """Update the 'success' dictionary with alert IDs for the given playbook ID."""
-        if isinstance(alert_ids, str):
-            if playbook_id in self.results_summary["success"]:
-                self.results_summary["success"][playbook_id].append(alert_ids)
-            else:
-                self.results_summary["success"].update({playbook_id: [alert_ids]})
+        alert_ids = [alert_ids] if isinstance(alert_ids, str) else alert_ids
+        if playbook_id in self.results_summary["success"]:
+            self.results_summary["success"][playbook_id].extend(alert_ids)
         else:
-            if playbook_id in self.results_summary["success"]:
-                self.results_summary["success"][playbook_id].extend(alert_ids)
-            else:
-                self.results_summary["success"].update({playbook_id: alert_ids})
+            self.results_summary["success"][playbook_id] = alert_ids
 
     def update_failure_create(self, playbook_id: str, failed_ids: str | list):
         """Update the 'failure_create' dictionary with failed IDs for the given playbook ID."""
-        if isinstance(failed_ids, str):
-            if playbook_id in self.results_summary["failure_create"]:
-                self.results_summary["failure_create"][playbook_id].append(failed_ids)
-            else:
-                self.results_summary["failure_create"].update({playbook_id: [failed_ids]})
+        failed_ids = [failed_ids] if isinstance(failed_ids, str) else failed_ids
+        if playbook_id in self.results_summary["failure_create"]:
+            self.results_summary["failure_create"][playbook_id].extend(failed_ids)
         else:
-            if playbook_id in self.results_summary["failure_create"]:
-                self.results_summary["failure_create"][playbook_id].extend(failed_ids)
-            else:
-                self.results_summary["failure_create"].update({playbook_id: failed_ids})
+            self.results_summary["failure_create"][playbook_id] = failed_ids
 
     def update_failure_set(self, playbook_id: str, alert_ids: list):
         """Update the 'failure_set' dictionary with alert IDs for the given playbook ID."""
         if playbook_id in self.results_summary["failure_set"]:
             self.results_summary["failure_set"][playbook_id].extend(alert_ids)
         else:
-            self.results_summary["failure_set"].update({playbook_id: alert_ids})
+            self.results_summary["failure_set"][playbook_id] = alert_ids
 
     def update_reopened(self, reopened_alerts: list):
         """Update the 'reopened' list with alerts from the provided alert_inv_status."""
@@ -87,6 +77,7 @@ class ResultsSummary:
             final_message.append(f"Alerts {sorted(reopened_alerts)} have been reopened.")
 
         final_message.extend(self.results_summary["others"])
+        demisto.debug('\n'.join(final_message))
         return '\n'.join(final_message)
 
 
@@ -164,15 +155,17 @@ def get_playbook_id(playbook_id: str, playbook_name: str, playbooks_dict: dict) 
 
 
 def handle_results(command_results: dict, playbook_id: str, alert_ids: str | list, results_summary: ResultsSummary):
-    """Extract and format the relevant info from the result dict.
+    """
+    Processes API call results and updates the results summary with success or failure details.
 
     Args:
-        command_results (dict): The results from the API call.
-        playbook_id (str): The playbook id for info.
-        alert_id (str | list): The alert Ids for info.
+        command_results (dict): The results from the API call, including contents and response details.
+        playbook_id (str): The identifier of the playbook associated with the operation.
+        alert_ids (str | list): The alert ID(s) being processed.
+        results_summary (ResultsSummary): An object for tracking success and failure summaries.
 
     Returns:
-        str: A summary of the operation status, indicating either success or the error log.
+        Returns an error message string if an exception occurs during processing.
     """
     if not command_results:
         return None
@@ -230,7 +223,7 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
     Args:
         playbook_id (str): The playbook id to set.
         alert_ids (list): A list of alert Ids. limited to 10 at a time.
-        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle. 
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle.
                 If true, bulk API calls are used; otherwise, an alternative API call is utilized.
     Returns:
         dict: The command results.
@@ -295,7 +288,7 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         If True, closed alerts will be reopened.
         playbooks_dict (dict): A dictionary mapping playbook IDs to their corresponding playbook names.
         results_summary (ResultsSummary): An object for summarizing the results, including tracking reopened alerts.
-        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle. 
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle.
     """
     demisto.debug(f"Calling loop_on_alerts with {len(incidents)=}, {playbook_id=}.")
     alert_inv_status: dict[str, list] = {
@@ -349,7 +342,7 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
         reopen_closed_inv (bool): Flag indicating whether to reopen closed investigations for applicable incidents.
         playbooks_dict (dict): A dictionary mapping playbook IDs to their respective names, used for validation and logging.
         results_summary (ResultsSummary): An object for tracking the processing results, including alerts missing playbooks.
-        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle. 
+        flag_pending_idle (bool): Indicates whether the playbook's status is pending or idle.
     Raises:
         DemistoException: If a required attribute is missing in an incident or if processing fails.
     """
@@ -404,6 +397,7 @@ def main():
 
         flag_pending_idle = False
         if "pending" in original_query or "idle" in original_query:
+            demisto.debug("The query includes runStatus of pending or idle. Setting flag_pending_idle true.")
             flag_pending_idle = True
 
         results_summary = ResultsSummary(playbooks_dict)
