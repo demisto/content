@@ -26,15 +26,6 @@ RESPONSE_KEY = {"alerts": "alerts", "events": "auditEvents"}
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
-    """
-
     def __init__(self, base_url, headers, verify, proxy):
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
@@ -50,11 +41,12 @@ def fetch_paginated_events(
     previous_offset = last_run.get(fetch_type, {}).get("offset", 0)
     previous_page_url = last_run.get(fetch_type, {}).get("next_page", "")
     previous_last_date = last_run.get(fetch_type, {}).get("last_fetch", "")
+    demisto.debug(f"start fetching {fetch_type} type. with last_run: {last_run.get(fetch_type, {})}")
 
     next_page_url = previous_page_url
     pagination_offset = previous_offset
     is_events_type = fetch_type == "events"
-    date_key = DATE_KEYS.get(fetch_type)
+    date_key = DATE_KEYS.get(fetch_type, "")
 
     fetched_events: list[dict] = []
     has_next = True
@@ -73,9 +65,11 @@ def fetch_paginated_events(
         deduplicate_events(
             current_batch_events, query_params.get("startDate"), date_key
         )
+        demisto.info(f"got {len(current_batch_events)} after deduplication")
         fetched_events.extend(current_batch_events[pagination_offset:])
         pagination_offset = 0
         if len(fetched_events) >= fetch_limit:
+            demisto.debug(f"We crossed the fetch limit. limit is: {fetch_limit}. received: {len(fetched_events)} events.")
             fetched_events = fetched_events[:fetch_limit]
             pagination_offset = (
                 fetch_limit % len(current_batch_events) + previous_offset
@@ -164,7 +158,22 @@ def is_fetch_paginated(
     return request_url != previous_page_url
 
 
-def deduplicate_events(events, start_date, date_key):
+def deduplicate_events(events: list, start_date: Any, date_key: str) -> None:
+    """
+    Filters and modifies the given list of events to only include events
+    that occurred after the specified start date.
+
+    Args:
+        events: A list of event dictionaries.
+            Each dictionary is expected to have the `date_key` containing the event date as a string.
+        start_date: The start date as a string in ISO 8601 format.
+            Events with dates earlier than this will be excluded. If None, the function does nothing.
+        date_key (str): The key in each event dictionary that contains the event's date.
+
+    Returns:
+        None: The function modifies the `events` list in place.
+    """
+    demisto.info(f"got {len(events)} before deduplication")
     if not start_date:
         return
     start_date = arg_to_datetime(start_date)
@@ -212,27 +221,12 @@ def calculate_fetch_dates(
 
 
 def test_module(client: Client) -> str:
-    """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
-
-    Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-    """
     try:
         fetch_events(client, max_fetch_audits=1, max_fetch_alerts=1)
     except Exception as e:
-        if "Forbidden" in str(e):
+        if "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"
-        else:
-            raise e
+        raise e
     return "ok"
 
 
@@ -298,16 +292,19 @@ def fetch_events(
     end_date: str = "",
 ) -> tuple[Dict, List[Dict]]:
     """
+    Fetches alert and audit events from the specified client within the provided date range.
+
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
+        client (Client): The client instance to interact with the data source.
+        max_fetch_alerts (int): Maximum number of alerts to fetch per request.
+        max_fetch_audits (int): Maximum number of audit events to fetch per request.
+        start_date (str, optional): The start date for fetching events in ISO 8601 format. Defaults to an empty string.
+        end_date (str, optional): The end date for fetching events in ISO 8601 format. Defaults to an empty string.
+
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        tuple[Dict, List[Dict]]:
+            - A dictionary containing the next run information, including timestamps and pagination data.
+            - A list of events (alerts and audits) to be ingested into XSIAM.
     """
     last_run = demisto.getLastRun()
     alert_events, alert_next_run = get_events(

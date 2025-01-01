@@ -6,6 +6,7 @@ def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
+
 def mock_client():
     """
     Create a mock client for testing.
@@ -34,7 +35,7 @@ def test_is_fetch_paginated():
     - Different scenarios for pagination during data fetch:
       1. Fetch type is 'alerts' or 'events'.
       2. Various combinations of next_page_url, request_url, and previous_page_url.
-    
+
     When:
     - Determining if the fetch operation should proceed to the next page.
 
@@ -81,7 +82,7 @@ def test_full_fetch_events(mocker):
     - Confirm the first event has the expected start date.
     """
     from CiscoThousandEyes import fetch_events
-    
+
     client = mock_client()
     last_run = {
         "alerts": {"last_fetch": "2024-11-19T14:20:00Z"},
@@ -116,7 +117,7 @@ def test_test_module_command(mocker):
     - Verify that the mocked HTTP request is called as expected.
     """
     from CiscoThousandEyes import test_module
-    
+
     client = mock_client()
     mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
     assert test_module(client=client) == 'ok'
@@ -155,7 +156,7 @@ def test_get_events_command(mocker):
             return util_load_json("test_data/alerts_list.json")
         elif "events" in full_url:
             call_count += 1
-            
+
             if call_count == 1:
                 return util_load_json("test_data/events_list.json")
             else:
@@ -170,7 +171,7 @@ def test_get_events_command(mocker):
                     },
                 }
         return {}
-    
+
     last_run = {
         "alerts": {"last_fetch": "2024-11-18T14:20:00Z"},
         "events": {"last_fetch": "2024-11-28T08:59:17Z"},
@@ -200,9 +201,9 @@ def test_get_events_command_with_limit(mocker):
     - Verify the function handles the limit argument appropriately and returns the expected events.
     """
     from CiscoThousandEyes import get_events_command
-    
+
     client = mock_client()
-    
+
     args = {
         "limit": "3",
         "should_push_events": "false",
@@ -290,8 +291,8 @@ def test_fetch_events_by_nextTrigger(mocker):
     assert next_run.get("alerts").get("offset") == 0
     assert "nextTrigger" not in next_run
     assert events[0].get('startDate') == "2024-11-20T14:20:00Z"
-    
-    
+
+
 def test_fetch_events_in_multiple_cycles(mocker):
     """
     Given:
@@ -351,7 +352,7 @@ def test_fetch_events_in_multiple_cycles(mocker):
     assert next_run.get("alerts").get("offset") == 3
     assert "nextTrigger" in next_run
     assert first_fetch_events[0].get('startDate') == "2024-12-22T07:29:00Z"
-    
+
     call_count = 0
     mocker.patch.object(demisto, "getLastRun", return_value=next_run)
     next_run, second_fetch_events = fetch_events(
@@ -360,7 +361,7 @@ def test_fetch_events_in_multiple_cycles(mocker):
         max_fetch_audits=10,
     )
     full_events = first_fetch_events + second_fetch_events
-    
+
     assert len(full_events) == 22
     assert next_run.get("alerts").get("offset") == 0
     assert next_run.get("events").get("offset") == 0
