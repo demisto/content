@@ -800,7 +800,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "CIAC-11100-playbook-run-in-build"
-resolved_reference = "7ded6692127961a014ab05f4dd7579ff8f3ceaf3"
+resolved_reference = "aa14934ba94a0432b64959fa7df56aebfe0ff8a9"
 
 [[package]]
 name = "deprecated"
@@ -3002,6 +3002,25 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
+name = "pyxdr"
+version = "1.0.0"
+description = "F.A.C.C.T. XDR REST API Python Bindings"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyxdr-1.0.0-py3-none-any.whl", hash = "sha256:6ead7378aef7dee2c9699721e28fbc374e3be98244071848f7575a809a418305"},
+    {file = "pyxdr-1.0.0.tar.gz", hash = "sha256:b4f230513dc1325ee1a301babcee9288f4bc589c12ab9031b5a95353436604b3"},
+]
+
+[package.dependencies]
+requests = "*"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
+
+[[package]]
 name = "pyyaml"
 version = "6.0.2"
 description = "YAML parser and emitter for Python"
@@ -4616,4 +4635,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.11"
-content-hash = "b83261e35512719383c04439d589fc0b85d7afedcbe0e087e4bd1f2a177ea264"
+content-hash = "c63858fd2ed866c82fd7a210ba684658f71b5529ef0aa12c08c907b4d6c9a0f6"
