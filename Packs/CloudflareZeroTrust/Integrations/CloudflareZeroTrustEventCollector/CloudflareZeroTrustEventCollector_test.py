@@ -1,88 +1,159 @@
-from HelloWorldEventCollector import Client, fetch_events, get_events
+import pytest
+import dateparser
+import datetime
+from unittest.mock import patch
+from freezegun import freeze_time
+from CloudflareZeroTrustEventCollector import (
+    Client,
+    fetch_events,
+    get_events_command,
+    test_module,
+    calculate_fetch_dates,
+    prepare_next_run,
+    handle_duplicates,
+    DATE_FORMAT,
+)
 
 
-def test_fetch_detection_events_command():
-    """
-    Given:
-    - fetch events command (fetches detections)
+MOCK_BASE_URL = "https://api.cloudflare.com"
+MOCK_ACCOUNT_ID = "mock_account_id"
+MOCK_HEADERS = {
+    'X-Auth-Email': "test@example.com",
+    'X-Auth-Key': "mock_api_key"
+}
 
-    When:
-    - Running fetch-events command
+MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00.000000Z"
 
-    Then:
-    - Ensure number of events fetched, and next run fields
-    """
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
+
+# Sample event data for testing
+SAMPLE_EVENTS = [
+    {"id": "4", "created_at": "2024-01-01T11:59:58Z"},
+    {"id": "3", "when": "2024-01-01T11:59:59Z"},
+    {"id": "2", "when": "2024-01-01T12:00:00Z"},
+    {"id": "1", "when": "2024-01-01T12:00:00Z"}
+]
+
+
+@pytest.fixture
+def mock_client() -> Client:
+    """Fixture to create a mock client for testing."""
+    return Client(
+        base_url=MOCK_BASE_URL,
+        verify=False,
         proxy=False,
+        headers=MOCK_HEADERS,
+        account_id=MOCK_ACCOUNT_ID
     )
-    last_run = {'prev_id': 1}
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_test_module(mock_client: Client, mocker):
+    """Test the test_module function."""
+    mocker.patch(
+        "CloudflareZeroTrustEventCollector.fetch_events",
+        return_value=({}, [])
+    )
+    result = test_module(mock_client)
+    assert result == "ok"
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_fetch_events(mock_client: Client, mocker):
+    """Test the fetch_events function."""
+    mocker.patch(
+        "CloudflareZeroTrustEventCollector.Client.get_events",
+        return_value={
+            "result": [{"id": "event1", "created_at": "2024-01-01T00:00:00Z"}]
+        }
+    )
+
+    last_run = {}
+    max_fetch_account_audit = 5
+    max_fetch_user_audit = 5
+    max_fetch_authentication = 5
+    event_types_to_fetch = ["Account Audit Logs", "User Audit Logs"]
+
     next_run, events = fetch_events(
-        client=client,
+        client=mock_client,
         last_run=last_run,
-        first_fetch_time=first_fetch_str,
-        alert_status="Status",
-        max_events_per_fetch=1,
+        max_fetch_account_audit=max_fetch_account_audit,
+        max_fetch_user_audit=max_fetch_user_audit,
+        max_fetch_authentication=max_fetch_authentication,
+        event_types_to_fetch=event_types_to_fetch
     )
 
-    assert len(events) == 1
-    assert next_run.get('prev_id') == 2
-    assert events[0].get('id') == 2
+    assert len(events) == 2  # one for each type, since the len(result) < page_size: break condition.
+    assert events[0]["id"] == "event1"
+    assert events[0].get("SOURCE_LOG_TYPE")
+    assert next_run["Account Audit Logs"]["last_fetch"] == "2024-01-01T00:00:00Z"
 
 
-def test_test_module_command():
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_get_events_command(mock_client: Client, mocker):
+    """Test the get_events_command function."""
+    mocker.patch(
+        "CloudflareZeroTrustEventCollector.Client.get_events",
+        return_value={
+            "result": [
+                {"id": "event1", "created_at": "2024-01-01T00:00:00Z"},
+                {"id": "event2", "created_at": "2024-01-01T00:00:01Z"}
+            ]
+        }
+    )
+
+    args = {
+        "limit": 2,
+        "event_types_to_fetch": ["Account Audit Logs"],
+        "start_date": "2024-01-01T00:00:00Z"
+    }
+
+    events, command_results = get_events_command(mock_client, args)
+
+    assert len(events) == 2
+    assert events[0]["id"] == "event1"
+    assert events[1]["id"] == "event2"
+    assert len(command_results) == 1
+    assert "Cloudflare Zero Trust Account Audit Logs Events" in command_results[0].readable_output
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_calculate_fetch_dates_with_last_run():
     """
-    Given:
-    - test module command (fetches detections)
-
-    When:
-    - Pressing test button
-
-    Then:
-    - Test module passed
+    Given: A mock JamfProtect client and last run key.
+    When: Running CalculateFetchDates with last run.
+    Then: Ensure the returned start date is the last fetch time, and the end date is the current time.
     """
-    from HelloWorldEventCollector import test_module
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    res = test_module(
-        client=client,
-        params={},
-        first_fetch_time=first_fetch_str,
-    )
+    last_fetch_time = (dateparser.parse(MOCK_TIME_UTC_NOW) - datetime.timedelta(minutes=1)).strftime(DATE_FORMAT)
+    next_run = {"last_fetch": last_fetch_time, "events_ids": "event1"}
+    start_date = calculate_fetch_dates(next_run=next_run)
 
-    assert res == 'ok'
+    assert start_date == last_fetch_time
 
 
-def test_get_events_command():
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_calculate_fetch_dates_without_arguments():
     """
-    Given:
-    - get_events command (fetches detections)
-
-    When:
-    - running get events command
-
-    Then:
-    - events and human readable as expected
+    Given: A mock JamfProtect client.
+    When: Running CalculateFetchDates with no arguments.
+    Then: Ensure the returned start date is 1 minute before the current time, and the end date is the current time.
     """
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    events, hr = get_events(
-        client=client,
-        alert_status="Some Status",
-        args={},
-    )
+    start_date = calculate_fetch_dates(next_run={})
+    assert start_date == (dateparser.parse(MOCK_TIME_UTC_NOW) - datetime.timedelta(minutes=1)).strftime(DATE_FORMAT)
 
-    assert events[0].get('id') == 1
-    assert 'Test Event' in hr.readable_output
+
+def test_prepare_next_run():
+    """Test the prepare_next_run function."""
+    latest_time, latest_ids = prepare_next_run(SAMPLE_EVENTS)
+
+    assert latest_time == "2024-01-01T12:00:00Z"
+    assert latest_ids == ["2", "1"]
+
+
+def test_handle_duplicates():
+    """Test the handle_duplicates function."""
+    previous_ids = ["1", "3"]
+    filtered_events = handle_duplicates(SAMPLE_EVENTS, previous_ids)
+
+    assert len(filtered_events) == 2  # IDs "2" and "4" remain
+    assert filtered_events[0]["id"] == "4"
+    assert filtered_events[1]["id"] == "2"

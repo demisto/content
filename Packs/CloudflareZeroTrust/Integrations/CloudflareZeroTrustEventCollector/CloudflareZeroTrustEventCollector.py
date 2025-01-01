@@ -271,7 +271,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[
     return all_fetched_events, command_results
 
 
-def calculate_fetch_dates(next_run: dict[str, Any], start_date: str) -> str:
+def calculate_fetch_dates(next_run: dict[str, Any], start_date: str = "") -> str:
     """
     Calculates the start date for fetching events. If no start date is provided, it uses the last fetched date or,
     if that is also unavailable, the current time minus 1 minute.
