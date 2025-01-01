@@ -1,4 +1,6 @@
 import json
+
+import pytest
 import demistomock as demisto
 
 
@@ -368,3 +370,62 @@ def test_fetch_events_in_multiple_cycles(mocker):
     assert "nextTrigger" not in next_run
     assert next_run.get("events").get("last_fetch") == "2024-12-22T07:40:10Z"
     assert next_run.get("alerts").get("last_fetch") == "2024-12-22T07:29:00Z"
+
+
+@pytest.mark.parametrize(
+    "events, start_date, date_key, expected_events",
+    [
+        pytest.param(
+            [
+                {"date": "2024-12-22T07:40:10Z", "event": "Event1"},
+                {"date": "2024-12-21T07:40:10Z", "event": "Event2"},
+                {"date": "2024-12-23T07:40:10Z", "event": "Event3"},
+            ],
+            "2024-12-22T00:00:00Z",
+            "date",
+            [
+                {"date": "2024-12-22T07:40:10Z", "event": "Event1"},
+                {"date": "2024-12-23T07:40:10Z", "event": "Event3"},
+            ],
+            id="normal-filtering",
+        ),
+        pytest.param(
+            [],
+            "2024-12-22T00:00:00Z",
+            "date",
+            [],
+            id="empty-list",
+        ),
+        pytest.param(
+            [
+                {"date": "2024-12-22T00:00:00Z", "event": "Event1"},
+                {"date": "2024-12-22T00:00:00Z", "event": "Event2"},
+            ],
+            "2024-12-22T00:00:00Z",
+            "date",
+            [],
+            id="no-events-meet-criteria",
+        ),
+        pytest.param(
+            [
+                {"date": "2024-12-23T07:40:10Z", "event": "Event1"},
+                {"date": "2024-12-24T07:40:10Z", "event": "Event2"},
+            ],
+            "2024-12-22T00:00:00Z",
+            "date",
+            [
+                {"date": "2024-12-23T07:40:10Z", "event": "Event1"},
+                {"date": "2024-12-24T07:40:10Z", "event": "Event2"},
+            ],
+            id="all-events-meet-criteria",
+        ),
+    ],
+)
+def test_deduplicate_events(events, start_date, date_key, expected_events):
+    """
+    Test deduplicate_events with various scenarios.
+    """
+    from CiscoThousandEyes import deduplicate_events
+
+    deduplicate_events(events, start_date, date_key)
+    assert events == expected_events
