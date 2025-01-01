@@ -1496,17 +1496,18 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
     attachment_ids: list = []
     for entry_id in entry_ids:
         attachment_ids.append(upload_file_command(client, {"entryId": entry_id}))
-
-    demisto.debug(f'{attachment_ids=}')
+    demisto.debug(f'All new uploaded {attachment_ids=}')
 
     if should_associate_to_record:
         # Check if there are already attachments associated with this record.
-        record, res, errors = client.get_record(app_id, content_id, 0)
-        demisto.debug(f'{record=} {res=} {errors=}')
+        record, _, errors = client.get_record(app_id, content_id, 0)
+        demisto.debug(f'{record=} {errors=}')
         if errors:
             return_error(errors)
-        attachment_ids.extend(demisto.get(record, "Archer.Record.Attachments", []))
-        demisto.debug(f'{attachment_ids=}')
+        record_attachments = record.get("Attachments", [])
+        demisto.debug(f'Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well')
+        attachment_ids.extend(record_attachments)
+        demisto.debug(f'All {attachment_ids=}')
         args["fieldsToValues"] = json.dumps({associate_field: attachment_ids})
         update_record_command(client, args)
 
