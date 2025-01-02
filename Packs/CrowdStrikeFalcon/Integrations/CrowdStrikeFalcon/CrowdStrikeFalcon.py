@@ -2941,7 +2941,15 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}, {}, {}]
 
 
-def fetch_incidents():
+def fetch_incidents() -> tuple[list[dict], list[dict]]:
+    """Fetches incidents from detections, incidents, and indicators in CrowdStrike Falcon.
+
+    Raises:
+        DemistoException: If using fetch types not supported by the legacy version (pre-Raptor release).
+
+    Returns:
+        tuple[list[dict], list[dict]]: Tuple of next run and fetched incidents.
+    """
     incidents: list = []
     detections: list = []
     idp_detections: list = []
@@ -2966,7 +2974,6 @@ def fetch_incidents():
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
     look_back = int(params.get('look_back') or 1)
-    fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
 
@@ -3204,11 +3211,18 @@ def fetch_incidents():
             detection_name_prefix=OFP_DETECTION_TYPE,
             start_time_key='created_timestamp')
 
-    demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
-                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections,
-                        current_fetch_ofp_detection])
-    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections\
-        + ofp_detections
+    next_run = [
+        current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
+        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections,
+        current_fetch_ofp_detection
+    ]
+
+    all_incidents: list = (
+        incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections
+        + on_demand_detections + ofp_detections
+    )
+
+    return next_run, all_incidents
 
 
 def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
@@ -4201,6 +4215,18 @@ def generate_endpoint_by_contex_standard(single_device, state_data):
         mac_address=single_device.get('mac_address'),
         vendor=INTEGRATION_NAME)
     return endpoint
+
+
+def get_events_command():
+    """Implements 'cs-falcon-get-events' command (which calls the `fetch_incidents` function).
+
+    Returns:
+        tuple[list[dict], CommandResults]: A tuple of events and CommandResults with human readable output.
+    """
+    _, events = fetch_incidents()
+
+    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} Events', t=events)
+    return events, CommandResults(readable_output=human_readable)
 
 
 def get_endpoint_command():
@@ -7104,10 +7130,28 @@ def main():
         if command == 'test-module':
             result = module_test()
             return_results(result)
+
         elif command == 'fetch-incidents':  # XSOAR
-            demisto.incidents(fetch_incidents())
+            next_run, incidents = fetch_incidents()
+            demisto.debug(f'Creating {len(incidents)} in XSOAR')
+            demisto.incidents(incidents)
+            demisto.debug(f'Setting next run to {next_run}')
+            demisto.setLastRun(next_run)
+
         elif command == 'fetch-events':  # XSIAM
-            send_events_to_xsiam(fetch_incidents(), vendor=VENDOR, product=PRODUCT)
+            next_run, events = fetch_incidents()
+            demisto.debug(f'Creating {len(events)} in XSIAM')
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.debug(f'Setting next run to {next_run}')
+            demisto.setLastRun(next_run)
+
+        elif command == 'cs-falcon-get-events':
+            events, results = get_events_command()
+            return_results(results)
+            if argToBoolean(args.get('should_push_events', False)):
+                demisto.debug(f'Creating {len(events)} in XSIAM')
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':

@@ -6536,6 +6536,40 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
 
+
+### cs-falcon-get-events
+
+***
+Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events.
+
+#### Base Command
+
+`cs-falcon-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-get-events should_push_events=false```
+
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon Events
+>
+>| COL_A | COL_B |
+>| --- | --- |
+>| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z |
+
+
 ## Troubleshooting
 
 - In the different fetch query configuration parameters such as "Endpoint Detections fetch query" and "Endpoint Incidents fetch query", to query for multiple values in the same field use the following format: `field:['value1','value2','value3']`. 
