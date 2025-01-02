@@ -8843,7 +8843,7 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey", "identifier", "accessToken"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "user", "password", "Key", "identifier", "credential"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
