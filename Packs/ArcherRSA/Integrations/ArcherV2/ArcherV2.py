@@ -1200,6 +1200,7 @@ def search_applications_command(client: Client, args: dict[str, str]):
     limit = args.get("limit")
     endpoint_url = f"{API_ENDPOINT}/core/system/application/"
 
+    res: dict | list[dict] = {}
     if app_id:
         endpoint_url = f"{API_ENDPOINT}/core/system/application/{app_id}"
         res = client.do_rest_request("GET", endpoint_url)
