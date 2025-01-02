@@ -1,0 +1,19 @@
+{
+    "trigger_id": "724030e7f5b76701564877846cd69eec",
+    "playbook_id": "silent-Possible External RDP Brute-Force test",
+    "suggestion_reason": "Recommended for External RDP Brute-Force alerts",
+    "description": "This trigger is responsible for handling External RDP Brute-Force alerts",
+    "trigger_name": "silent-Possible External RDP Brute-Force test",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "Possible external RDP Brute-Force"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}
