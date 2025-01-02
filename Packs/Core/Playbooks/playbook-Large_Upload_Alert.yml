@@ -479,7 +479,7 @@ tasks:
       InternalRange:
         simple: ${inputs.InternalIPRanges}
       ResolveIP:
-        simple: "True"
+        simple: "False"
       SHA256:
         complex:
           root: Core.OriginalAlert._all_events
