@@ -79,7 +79,7 @@ def get_ticket_data(client: Client):
         response = client.make_api_request(endpoint, method='GET')
         return response
     except Exception as e:
-        return f"Could not find ticket with system id {sys_id}"
+        return f"Could not find ticket with system id {sys_id}. Error: {str(e)}"
 
 
 def get_ticket(client: Client):
@@ -114,7 +114,7 @@ def get_ticket(client: Client):
 
         return results
     except Exception as e:
-        return f"Could not find ticket with system id {sys_id}"
+        return f"Could not find ticket with system id {sys_id}. Error: {str(e)}"
 
 
 def action_ticket(client, args):
@@ -172,7 +172,7 @@ def action_ticket(client, args):
         if response.get("status_code") == 200:
             return f"Ticket was {decision}"
     except Exception as e:
-        return f"Could not make POST API request"
+        return f"Could not make POST API request. Error: {str(e)}"
 
 
 def main():
