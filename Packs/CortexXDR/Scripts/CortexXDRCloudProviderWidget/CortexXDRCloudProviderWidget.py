@@ -29,7 +29,7 @@ def get_cloud_providers():
         raise DemistoException('xdralerts is not configured in the incident')
     if not isinstance(xdr_alerts, list):
         xdr_alerts = [xdr_alerts]
-    cloud_providers = {alert.get('cloudprovider') for alert in xdr_alerts}
+    cloud_providers = {(alert.get('cloudprovider') or alert.get('cloud_provider')) for alert in xdr_alerts}
     return cloud_providers
 
 
