@@ -1684,7 +1684,7 @@ class Client(BaseClient):
             "truncation_limit": limit,
             "vm_scan_date_after": since_datetime,
         }
-        timeout = 150
+        timeout = 120
         if next_page:
             params["id_min"] = next_page
         try:
@@ -2742,6 +2742,7 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
     Returns:
         List with data generated for the result given
     """
+    demisto.debug('Going to parse raw_response into the hosts list')
     formatted_response = parse_raw_response(raw_response)
     simple_response = get_simple_response_from_raw(formatted_response)
     if simple_response and simple_response.get("CODE"):
@@ -2753,6 +2754,8 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
                                       ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"], default_return_value='')
     if isinstance(response_requested_value, dict):
         response_requested_value = [response_requested_value]
+
+    demisto.debug(f'Extracted a list of {len(response_requested_value)} hosts, and next url - {response_next_url}')
 
     return response_requested_value, str(response_next_url)
 
@@ -2830,6 +2833,27 @@ def truncate_asset_size(asset):
                               f'{str(val)[:10000]}...')
 
 
+def truncate_asset_size_2(asset):
+    host_id = asset.get('ID') or 'NO_ID'
+    detection_id = asset.get('DETECTION', {}).get('UNIQUE_VULN_ID', 'No detection')
+    detection_str = f' detection ID: {detection_id}' if detection_id else ''
+
+    results_characters_lim = 10000
+    if results := asset.get('DETECTION', {}).get('RESULTS'):
+        results_size = get_size_of_object(results)
+        if results_size > ASSET_SIZE_LIMIT:
+            asset['DETECTION']['RESULTS'] = results[:results_characters_lim]
+            asset['isTruncated'] = True
+            demisto.debug(f'Truncated Asset ID: {host_id}{detection_str} to {results_characters_lim}')
+            demisto.debug(json.dumps(asset))
+
+        # For extra debugging in case other/additional keys has oversize data
+        # for key, val in asset.items():
+        #     if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
+        #         demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
+        #                       f'{str(val)[:10000]}...')
+
+
 def get_detections_from_hosts(hosts):
     """
     Parses detections from hosts.
@@ -2859,21 +2883,25 @@ def get_detections_from_hosts(hosts):
     :param hosts: list of hosts that contains detections.
     :return: parsed events.
     """
-    fetched_events = []
+    demisto.debug(f'Received {len(hosts)} hosts for extraction')
+    fetched_assets = []
     for host in hosts:
+        if check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
+            return [], True
         detections_list = host.get('DETECTION_LIST', {}).get('DETECTION') or [{}]
 
-        if not isinstance(detections_list, list):   # In case detections_list = {}
+        if not isinstance(detections_list, list):  # In case detections_list = {}
             detections_list = [detections_list]
 
         for detection in detections_list:
             new_detection = copy.deepcopy(host)
             del new_detection['DETECTION_LIST']
             new_detection['DETECTION'] = detection
-            fetched_events.append(new_detection)
-            truncate_asset_size(new_detection)
+            fetched_assets.append(new_detection)
+            truncate_asset_size_2(new_detection)
 
-    return fetched_events
+    demisto.debug(f'Extracted {len(fetched_assets)} assets from hosts')
+    return fetched_assets, False
 
 
 def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
@@ -2930,13 +2958,15 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
                                                                          next_page=next_page,
                                                                          limit=limit)
     if not set_new_limit:
-        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
+        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
 
-        next_page = get_next_page_from_url(next_url, 'id_min')
+        assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (
+                host_list_assets and not is_test) else []
+        demisto.debug(f'Parsed detections from hosts, created {len(assets)=} assets.')
 
-        assets = get_detections_from_hosts(host_list_assets) if host_list_assets and not is_test else []
-        demisto.debug(f'Parsed detections from hosts, got {len(assets)=} assets.')
-        add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+        if not set_new_limit:
+            add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+            next_page = get_next_page_from_url(next_url, 'id_min')
 
     return assets, next_page, set_new_limit
 
@@ -2991,7 +3021,9 @@ def fetch_assets(client, assets_last_run):
 
 
 def check_fetch_duration_time_exceeded(start_time):
-    if (time.time() - start_time) > FETCH_ASSETS_COMMAND_TIME_OUT:
+    elapsed_time = time.time() - start_time
+    # demisto.debug(f'Execution elapsed time: {elapsed_time=}')
+    if elapsed_time > FETCH_ASSETS_COMMAND_TIME_OUT:
         demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
                       'because there is not enough time left, and we will lower the limit for the next time')
         return True
@@ -3513,18 +3545,22 @@ def main():  # pragma: no cover
 
             if fetch_stage == 'assets':
 
-                demisto.debug(f'Starting fetch for assets, {start_time=}')
-                assets, new_last_run, total_assets, snapshot_id, set_new_limit = fetch_assets(client=client,
+                demisto.debug(f'Starting fetch for assets, {EXECUTION_START_TIME=}')
+                assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client=client,
                                                                                               assets_last_run=last_run)
-                if set_new_limit or check_fetch_duration_time_exceeded(start_time):
+                real_amount_of_assets = new_last_run.get("total_assets")
+                if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
                     new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
                     last_run['nextTrigger'] = '0'
                 else:
-                    demisto.debug(f'sending {len(assets)} assets to XSIAM. Total assets collected so far: {total_assets}')
+                    demisto.debug(f'sending {len(assets)} assets to XSIAM. Total assets collected so far: '
+                                  f'{real_amount_of_assets}')
                     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
-                                       snapshot_id=snapshot_id, items_count=str(total_assets), should_update_health_module=False)
+                                       snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
+                                       should_update_health_module=False)
+                    
                 demisto.setAssetsLastRun(new_last_run)
-                demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
+                demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): real_amount_of_assets})
 
             elif fetch_stage == 'vulnerabilities':
                 vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
