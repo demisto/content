@@ -17,6 +17,7 @@ ACCESS_AUTHENTICATION_PAGE_SIZE = 1000
 DEFAULT_MAX_FETCH_ACCOUNT_AUDIT = 5000
 DEFAULT_MAX_FETCH_USER_AUDIT = 5000
 DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION = 5000
+DEFAULT_COMMAND_LIMIT = 10
 
 ACCOUNT_AUDIT_TYPE = "Account Audit Logs"
 USER_AUDIT_TYPE = "User Audit Logs"
@@ -112,7 +113,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(
+def fetch_events_for_type(
     client: Client,
     last_run: dict[str, Any],
     max_fetch: int,
@@ -136,7 +137,7 @@ def get_events(
             - list[dict[str, Any]]: The list of fetched events.
             - dict[str, Any]: The updated last run data with new timestamps and event IDs.
     """
-    demisto.debug(f"Starting get_events for event_type={event_type} with last_run={last_run}")
+    demisto.debug(f"Fetching events for event_type={event_type} with last_run={last_run}")
 
     start_date = calculate_fetch_dates(last_run, start_fetch_date)
     previous_event_ids = last_run.get("events_ids", [])
@@ -144,7 +145,7 @@ def get_events(
     page_size = min(events_to_fetch, max_page_size)
 
     page = 1
-    events: list[dict[str, Any]] = []
+    events = []
     while len(events) < events_to_fetch:
         response = client.get_events(start_date, page_size, page, event_type)
         result = response.get("result", [])
@@ -154,19 +155,18 @@ def get_events(
             break
         page += 1
 
-    unique_events = handle_duplicates(events, previous_event_ids)
-    events = unique_events[:max_fetch]
+    unique_events = handle_duplicates(events, previous_event_ids)[:max_fetch]
     demisto.debug(f"Unique events after deduplication: {len(unique_events)}")
 
-    for event in events:
+    for event in unique_events:
         event["SOURCE_LOG_TYPE"] = event_type
 
-    if events:
-        start_date, previous_event_ids = prepare_next_run(events)
+    if unique_events:
+        start_date, previous_event_ids = prepare_next_run(unique_events)
 
     new_last_run = {"last_fetch": start_date, "events_ids": previous_event_ids}
     demisto.debug(f"New last_run: {new_last_run}")
-    return events, new_last_run
+    return unique_events, new_last_run
 
 
 def fetch_events(
@@ -218,7 +218,7 @@ def fetch_events(
     }
 
     for event_type in event_types_to_fetch:
-        fetched_events, updated_last_run = get_events(client=client, **event_type_params[event_type])
+        fetched_events, updated_last_run = fetch_events_for_type(client=client, **event_type_params[event_type])
         next_run[event_type] = updated_last_run
         events.extend(fetched_events)
 
@@ -241,15 +241,14 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[
             - list[dict[str, Any]]: A list of all fetched events across event types.
             - list[CommandResults]: A list of CommandResults for displaying fetched events.
     """
-    limit = arg_to_number(args.get("limit", 50)) or 50
-    event_types = argToList(args.get("event_types_to_fetch", []))
-    start_date = args.get("start_date", "")
+    event_types, start_date = validate_args(args)
+    limit = arg_to_number(args.get("limit", DEFAULT_COMMAND_LIMIT)) or DEFAULT_COMMAND_LIMIT
 
     all_fetched_events: list[dict[str, Any]] = []
     command_results: list[CommandResults] = []
 
     for event_type in event_types:
-        events, _ = get_events(
+        events, _ = fetch_events_for_type(
             client=client,
             last_run={},
             max_fetch=limit,
@@ -284,7 +283,6 @@ def calculate_fetch_dates(next_run: dict[str, Any], start_date: str = "") -> str
         str: The calculated start date in '%Y-%m-%dT%H:%M:%SZ' format.
     """
     now_utc_time = get_current_time()
-    # start_date = next_run.get('last_fetch') or "2024-12-01T10:08:58Z"
     start_date = start_date or next_run.get('last_fetch') or (
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     return start_date
@@ -343,6 +341,32 @@ def add_time_to_events(events: list[dict[str, Any]] | None):
         for event in events:
             create_time = arg_to_datetime(arg=event.get('when') or event.get('created_at'))
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+
+
+def validate_args(args: dict):
+    """
+    Validates the provided arguments for fetch events command.
+
+    Args:
+        args (dict): Arguments to validate.
+
+    Raises:
+        DemistoException: If an invalid event type or start date is provided.
+    """
+    start_date_str = ""
+    event_types = argToList(args.get("event_types_to_fetch", []))
+    valid_types = [ACCOUNT_AUDIT_TYPE, USER_AUDIT_TYPE, ACCESS_AUTHENTICATION_TYPE]
+
+    invalid_types = [event_type for event_type in event_types if event_type not in valid_types]
+    if invalid_types:
+        raise DemistoException(
+            f"Invalid event types provided: {', '.join(invalid_types)}. Valid options are: {', '.join(valid_types)}."
+        )
+
+    if start_date := arg_to_datetime(args.get("start_date", "")):
+        start_date_str = start_date.strftime(DATE_FORMAT)
+
+    return event_types, start_date_str
 
 
 ''' MAIN FUNCTION '''

@@ -102,8 +102,8 @@ def test_get_events_command(mock_client: Client, mocker):
     )
 
     args = {
-        "limit": 2,
-        "event_types_to_fetch": ["Account Audit Logs"],
+        "limit": "2",
+        "event_types_to_fetch": "Account Audit Logs",
         "start_date": "2024-01-01T00:00:00Z"
     }
 
