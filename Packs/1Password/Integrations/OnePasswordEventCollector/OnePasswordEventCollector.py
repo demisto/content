@@ -198,19 +198,27 @@ def get_events_from_client(
     return events
 
 
-def push_events(events: list[dict], next_run: dict[str, Any] | None = None) -> None:
-    """Sends events to XSIAM and optionally sets next run (if `next_run` is given).
+def push_events(events: list[dict]) -> None:
+    """Sends events to the relevant `VENDOR` and `PRODUCT` dataset in XSIAM.
 
     Args:
         events (list): List of event dictionaries.
-        next_run (dict | None): Optional next run dictionary of all event types. Defaults to None.
     """
-    demisto.debug(f'Starting to send {len(events)} events to XSIAM')
+    demisto.debug(f'Starting to send {len(events)} events to XSIAM.')
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
-    if next_run:
-        demisto.debug(f'Setting next run to {next_run}')
-        demisto.setLastRun(next_run)
+
+def set_next_run(next_run: dict[str, Any]) -> None:
+    """Sets next run for all event features. Should be called after events are successfully sent to XSIAM.
+
+    Args:
+        next_run (dict): Next run dictionary containing `from_date` in `DATE_FORMAT` and `ids` list per event feature.
+
+    Example:
+        >>> set_next_run({"auditevents": {"from_date": "2024-12-02T11:54:19Z", "ids": []}, "itemusages": ...})
+    """
+    demisto.debug(f'Setting next run to {next_run}.')
+    demisto.setLastRun(next_run)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -376,7 +384,8 @@ def main() -> None:  # pragma: no cover
                 all_events.extend(event_type_events)
                 next_run[event_type_key] = event_type_next_run
 
-            push_events(all_events, next_run=next_run)
+            push_events(all_events)
+            set_next_run(next_run)
 
         else:
             raise NotImplementedError(f'Unknown command {command!r}')

@@ -216,22 +216,20 @@ def test_get_events_from_client(authenticated_client: Client, mocker: MockerFixt
 def test_push_events(mocker: MockerFixture):
     """
     Given:
-        - A list of 1Password events of type 'audit events' and a next run dictionary.
+        - A list of 1Password events of type 'audit events'.
 
     When:
         - Calling push_events.
 
     Assert:
-        - Ensure send_events_to_xsiam and demisto.setLastRun are each called once with the correct inputs.
+        - Ensure send_events_to_xsiam is called once with the correct inputs.
     """
     from OnePasswordEventCollector import push_events, VENDOR as EXPECTED_VENDOR, PRODUCT as EXPECTED_PRODUCT
 
     send_events_to_xsiam = mocker.patch('OnePasswordEventCollector.send_events_to_xsiam')
-    demisto_set_last_run = mocker.patch('OnePasswordEventCollector.demisto.setLastRun')
 
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
-    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:21Z', 'ids': ['second (and last) event']}}
-    push_events(expected_events, next_run=next_run)
+    push_events(expected_events)
 
     send_events_to_xsiam_kwargs = send_events_to_xsiam.call_args.kwargs
 
@@ -239,6 +237,25 @@ def test_push_events(mocker: MockerFixture):
     assert send_events_to_xsiam_kwargs['events'] == expected_events
     assert send_events_to_xsiam_kwargs['vendor'] == EXPECTED_VENDOR
     assert send_events_to_xsiam_kwargs['product'] == EXPECTED_PRODUCT
+
+
+def test_set_next_run(mocker: MockerFixture):
+    """
+    Given:
+        - A next run dictionary for 1Password event feature 'auditevents'.
+
+    When:
+        - Calling set_next_run.
+
+    Assert:
+        - Ensure demisto.setLastRun is called once with the correct inputs.
+    """
+    from OnePasswordEventCollector import set_next_run
+
+    demisto_set_last_run = mocker.patch('OnePasswordEventCollector.demisto.setLastRun')
+
+    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:21Z', 'ids': ['second (and last) event']}}
+    set_next_run(next_run)
 
     assert demisto_set_last_run.call_count == 1
     assert demisto_set_last_run.call_args[0][0] == next_run
