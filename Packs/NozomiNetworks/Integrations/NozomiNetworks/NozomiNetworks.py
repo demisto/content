@@ -40,13 +40,11 @@ class Client:
             demisto.info(f"Sign-in failed: {str(e)}. Falling back to basic authentication.")
             self.use_basic_auth = True
 
-
     def build_proxies(self):
         if self.proxy:
             return handle_proxy()
         else:
             return {}
-
 
     def build_headers(self):
         if self.use_basic_auth:
@@ -322,7 +320,7 @@ def last_fetch_to_set(last_fetch, next_page, st):
     return last_fetch if next_page == 1 else st
 
 
-def build_next_page (current_page, incidents_count):
+def build_next_page(current_page, incidents_count):
     if current_page >= 100 or incidents_count < incident_per_run():
         if incidents_count == 0:
             # if demisto_incidents for this page is empty will be queried until returns at least one item

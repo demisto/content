@@ -155,10 +155,10 @@ def test_incidents_filtered(requests_mock):
             requests_mock))
 
     assert lr == 1392048082242
-    assert list(map(lambda i: {
+    assert [{
         'name': f"{i['name'].partition('_')[0]}",
         'severity': i['severity']
-    }, fi)) == [{'name': 'Link RST sent by Slave', 'severity': 2}, {'name': 'New Node', 'severity': 4}]
+    } for i in fi] == [{'name': 'Link RST sent by Slave', 'severity': 2}, {'name': 'New Node', 'severity': 4}]
 
 
 def test_nozomi_alerts_ids_from_demisto_incidents():
@@ -429,8 +429,14 @@ def test_fallback_to_basic_auth_real_logic(requests_mock, capfd):
 
         assert client.use_basic_auth
 
+
 def test_sign_in_successful(requests_mock):
-    requests_mock.post(f"{NOZOMIGUARDIAN_URL}/api/open/sign_in", json={}, status_code=200, headers={"Authorization": "Bearer mock_token"})
+    requests_mock.post(
+        f"{NOZOMIGUARDIAN_URL}/api/open/sign_in",
+        json={},
+        status_code=200,
+        headers={"Authorization": "Bearer mock_token"}
+    )
 
     client = Client(base_url=NOZOMIGUARDIAN_URL, auth_credentials=("mock_key", "mock_token"))
     client.sign_in()
@@ -469,10 +475,12 @@ def test_build_proxies_with_proxy_enabled(mock_handle_proxy):
     assert proxies == {'http': 'pippoebasta'}
     mock_handle_proxy.assert_called_once()
 
+
 def test_build_proxies_without_proxy():
     client = Client(base_url="https://test.com", proxy=False)
     proxies = client.build_proxies()
     assert proxies == {}
+
 
 def test_build_proxies_with_none_proxy():
     client = Client(base_url="https://test.com", proxy=None)
@@ -486,7 +494,7 @@ def test_build_proxies_with_none_proxy():
     (True, None, {"accept": "application/json"})
 ])
 def test_build_headers(use_basic_auth, bearer_token, expected_headers):
-    client = Client(bearer_token=bearer_token, use_basic_auth= use_basic_auth)
+    client = Client(bearer_token=bearer_token, use_basic_auth=use_basic_auth)
     assert client.build_headers() == expected_headers
 
 
