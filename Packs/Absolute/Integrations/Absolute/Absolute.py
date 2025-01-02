@@ -13,6 +13,8 @@ import hmac
 from datetime import timedelta
 from authlib.jose import JsonWebSignature
 from requests.models import Response
+
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -104,8 +106,9 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
     "geoData.location.lastUpdateDateTimeUtc",
 ]
 
-SEIM_EVENTS_PAGE_SIZE = 1000
+SEIM_EVENTS_PAGE_SIZE = 10  # TODO: return to 1000
 CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
+
 
 class Client(BaseClient):
     def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
@@ -527,7 +530,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
     outputs = parse_freeze_device_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
-                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()},)
+                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()}, )
 
     outputs.pop('FailedDeviceUIDs', '')
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
@@ -976,28 +979,33 @@ def get_device_location_command(args, client) -> CommandResults:
 
 
 def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    # last_run = {}  # TODO: for demo usage, remove that
     next_page_token = last_run.get('next_page_token', '')
     last_run_latest_events = last_run.get('latest_events_id')
     last_end_date = last_run.get('end_date')
     end_date = datetime.utcnow()
-    start_date = last_end_date if last_end_date else end_date - timedelta(minutes=1)
-    demisto.debug(f'Starting new fetch: {start_date=}, {end_date=}, {next_page_token=}')
+    start_date = datetime.strptime(last_end_date, "%Y-%m-%dT%H:%M:%SZ") if last_end_date else end_date - timedelta(
+        weeks=1)  # TODO: change to minutes=1
+    demisto.debug(f'Starting new fetch: {start_date=}, {end_date=}, {next_page_token=}, {last_run=} ')
     all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
+    demisto.debug(f'run_fetch_mechanism returned: {len(all_events)} events, {next_page_token=}')
     if not all_events:
-        return [], {'next_page_token': None, 'end_date': end_date, 'latest_event_ids': []}
+        return [], {'next_page_token': None, 'end_date': end_date.strftime("%Y-%m-%dT%H:%M:%SZ"), 'latest_events_id': []}
 
     if last_run_latest_events:  # handle duplication
+        demisto.debug(f'inside last_run_latest_events: {all_events=}, {next_page_token=}')
         filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
         all_events = filtered_events
         demisto.debug(
             f'Handle duplicate events: Found {len(all_events) - len(filtered_events)} duplicated events. Exist {len(filtered_events)} new events')
 
     events, latest_events_id = add_time_field_to_events_and_get_latest_events(all_events)
-    return events, {'next_page_token': next_page_token, 'end_date': end_date, 'latest_events_id': latest_events_id}
+    demisto.debug(f'latest_events_id: {latest_events_id}')
+    return events, {'next_page_token': next_page_token, 'end_date': end_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    'latest_events_id': latest_events_id}
 
 
-def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> \
-    tuple[List[Dict[str, Any]], str]:
+def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> tuple[List[Dict[str, Any]], str]:
     all_events = []
     while len(all_events) < fetch_limit:
         page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
@@ -1007,10 +1015,17 @@ def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str
         events = response.get('data', [])
         all_events.extend(events)
         next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
+        demisto.debug(f'inside fetch loop: fetched {len(events)} events, {page_size=}, {next_page_token=}')
         if not next_page_token:
             break
 
     demisto.debug(f'run_fetch_mechanism: Fetched {len(all_events)} events')
+
+    # TODO: remove this loop
+    all_events_ids = []
+    for event in all_events:
+        all_events_ids.append(event['id'])
+    demisto.debug(f'itamar all_events_ids = {all_events_ids}')
     return all_events, next_page_token
 
 
@@ -1032,7 +1047,7 @@ def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]],
 
 def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
     end_date = arg_to_datetime(args.get('end_date', "now"))
-    start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
+    start_date = arg_to_datetime(args.get('start_date', "5 years ago"))  # TODO: change to "one minute ago"
     fetch_limit = int(args.get('limit', 50))
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
@@ -1040,6 +1055,7 @@ def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
     events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
     events, _ = add_time_field_to_events_and_get_latest_events(events, should_get_latest_events=False)
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
+
 
 
 ''' MAIN FUNCTION '''
@@ -1126,17 +1142,22 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'fetch-events':
             max_events_per_fetch = int(arg_to_number(params.get('max_events_per_fetch', 10000)))
             events, last_run_object = fetch_events(client_v3, max_events_per_fetch, demisto.getLastRun())
+            demisto.debug(
+                 f'return from fetch {last_run_object.get("next_page_token")}, {last_run_object.get("end_date")}, {last_run_object.get("latest_events_id")}, {last_run_object=}, {type(last_run_object)=}')
             if events:
-                send_events_to_xsiam(events, vendor="Absolute", product="Secure Endpoint")
+                demisto.debug("itamar 1111")
+                send_events_to_xsiam(events=events, vendor="Absolute", product="Secure Endpoint")
+                demisto.debug("itamar 2222")
                 demisto.setLastRun(last_run_object)
+                demisto.debug("itamar 3333")
 
         elif demisto.command() == 'absolute-device-get-events':
             demisto.debug(f'Fetching Absolute Device events with the following parameters: {args}')
             should_push_events = argToBoolean(args.get('should_push_events', False))
             events, command_result = get_events(args=args, client=client_v3)
-            return_results(command_result)
             if should_push_events:
-                send_events_to_xsiam(events, vendor="Absolute", product="Secure Endpoint")
+                send_events_to_xsiam(events=events, vendor="Absolute", product="Secure Endpoint")
+
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing {INTEGRATION} command.')
 
