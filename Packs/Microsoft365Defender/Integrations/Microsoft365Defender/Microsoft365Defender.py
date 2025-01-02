@@ -834,11 +834,12 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
             comment_time = dateparser.parse(comment.get('createdTime', ''))
             assert comment_time is not None, f'could not parse {comment.get("createdTime")}'
             if new_incident or comment_time > last_update:
+                clean_comment = re.sub(r'<.*?>', '', comment.get('comment', ''))
                 entries.append(entry := {
                     'Type': EntryType.NOTE,
-                    'Contents': f"Created By: {comment.get('createdBy')}\n"
-                                f"Created On: {comment.get('createdTime')}\n"
-                                f"{comment.get('comment')}",
+                    'Contents': f"Created By: {comment.get('createdBy', '')}\n"
+                                f"Created On: {comment.get('createdTime', '')}\n"
+                                f"{clean_comment}",
                     'ContentsFormat': EntryFormat.TEXT,
                     'Tags': [comment_tag],
                     'Note': True,
