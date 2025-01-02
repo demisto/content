@@ -184,7 +184,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: "Whether to fetch only the essential Incident's fields - in order to minimize the incident's information (eliminates network_artifacts, file_artifacts, additional data (if the incident type is XDR incident Lite or Malware Investigation and Response)."
+- additionalinfo: "Whether to fetch only the essential incident fields in order to minimize the incidents' information (eliminates network_artifacts, file_artifacts, additional data if the incident type is XDR incident Lite or Malware Investigation and Response)."
   display: Minimize Incident Information
   name: exclude_fields
   required: false
@@ -193,7 +193,7 @@ configuration:
   defaultvalue: 'true'
   advanced: true
   hidden: true
-- additionalinfo: Whether to remove the Additional Data (additionaldata in the context). This Elimination is recommended.
+- additionalinfo: Whether to remove the additional data (additionaldata in the context). This elimination is recommended.
   display: Remove Additional Data
   name: remove_additional_data
   required: false
@@ -201,7 +201,7 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
-- additionalinfo: "Whether to fetch only the essential Alert's fields - in order to minimize the incident's information. Can either choose null_values to remove all null values or any required field."
+- additionalinfo: "Whether to fetch only the essential alert fields in order to minimize the incident's information. Can either choose null_values to remove all null values or any required field."
   display: Minimize Alert Information
   name: excluded_alert_fields
   required: false
