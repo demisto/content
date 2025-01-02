@@ -5838,7 +5838,7 @@
             "playbookID": "AWS SNS Listener - Test",
             "instance_names":[
                 "AWS-SNS-Listener",
-                "AWSSNS"
+                "AWS - SNS"
             ],
             "is_mockable": false
         },
