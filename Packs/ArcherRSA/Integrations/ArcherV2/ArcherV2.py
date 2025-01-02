@@ -1479,7 +1479,6 @@ def upload_file_command(client: Client, args: dict[str, str]) -> str:
 
 def upload_and_associate_command(client: Client, args: dict[str, str]):
     """Uploading an entry to archer. than, if needed, associate it to a record."""
-    demisto.debug(f'upload_and_associate_command {args=}')
     app_id = args.get("applicationId")
     content_id = args.get("contentId")
     associate_field = args.get("associatedField")
@@ -1501,7 +1500,6 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
     if should_associate_to_record:
         # Check if there are already attachments associated with this record.
         record, _, errors = client.get_record(app_id, content_id, 0)
-        demisto.debug(f'{record=} {errors=}')
         if errors:
             return_error(errors)
         record_attachments = record.get("Attachments", [])
