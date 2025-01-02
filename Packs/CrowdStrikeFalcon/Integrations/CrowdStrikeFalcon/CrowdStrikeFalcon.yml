@@ -140,7 +140,7 @@ configuration:
   type: 15
   section: Collect
   required: false
-  additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex), Outgoing (from Cortex to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex).'
+  additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
   defaultvalue: None
   options:
   - None
@@ -162,13 +162,13 @@ configuration:
   advanced: true
   required: false
 - defaultvalue: 'false'
-  display: 'Close Mirrored Cortex Incident'
+  display: 'Close Mirrored XSOAR Incident'
   name: close_incident
   type: 8
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex.
+  additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
   hidden: false
   hidden:marketplacev2: true
 - defaultvalue: 'false'
@@ -178,7 +178,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closing the Cortex incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
+  additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
   hidden: false
   hidden:marketplacev2: true
 - defaultvalue: 'Endpoint Detection'
@@ -198,7 +198,7 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
-- additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex if closed. You can choose any combination.
+- additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
   defaultvalue:marketplacev2: ''
   display: 'Reopen Statuses'
