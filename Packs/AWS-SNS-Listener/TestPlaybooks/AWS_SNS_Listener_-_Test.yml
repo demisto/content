@@ -1,15 +1,5 @@
 id: AWS SNS Listener - Test
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: AWS-SNS-Listener
-    packName: AWS-SNS-Listener
-    itemVersion: 1.0.7
-    fromServerVersion: 6.10.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
 name: AWS SNS Listener - Test
 starttaskid: "0"
 tasks:
@@ -23,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -360,6 +351,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -624,8 +616,7 @@ tasks:
       id: d7f488a8-c98b-4b82-86d8-a79965f294e0
       version: -1
       name: Get subscription by first topic
-      description: Returns a list of the subscriptions to a specific topic. Each call
-        returns a limited list of subscriptions, up to 100.
+      description: Returns a list of the subscriptions to a specific topic. Each call returns a limited list of subscriptions, up to 100.
       script: '|||aws-sns-list-subscriptions-by-topic'
       type: regular
       iscommand: true
@@ -661,7 +652,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -676,3 +666,8 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
+description: ''
