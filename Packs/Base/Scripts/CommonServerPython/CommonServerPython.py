@@ -34,6 +34,7 @@ from inspect import currentframe
 import demistomock as demisto
 import warnings
 
+
 def __line__():
     cf = currentframe()
     return cf.f_back.f_lineno  # type: ignore[union-attr]
