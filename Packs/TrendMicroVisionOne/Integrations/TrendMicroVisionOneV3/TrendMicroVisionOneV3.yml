@@ -1228,7 +1228,7 @@ script:
       required: true
     - description: Status to assign to the workbench alert. e.g. status="in_progress".
       name: status
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - open
@@ -1245,6 +1245,7 @@ script:
       - true_positive
       - false_positive
       - benign_true_positive
+      hidden: true
     - description: The findings of a case or investigation. e.g. inv_result="true_positive".
       name: inv_result
       required: false
@@ -1252,10 +1253,8 @@ script:
       predefined:
       - no_findings
       - noteworthy
-      - in_progress
       - true_positive
       - false_positive
-      - other_findings
       - benign_true_positive
     outputs:
     - contextPath: VisionOne.Update_Status.Workbench_Id
