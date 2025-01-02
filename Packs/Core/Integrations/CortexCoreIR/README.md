@@ -323,6 +323,7 @@ Gets the distribution URL for downloading the installation package.
 | --- | --- | --- |
 | distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints &gt; Agent Installation page. | Required | 
 | package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
+| download_package | Supported only for package_type x64 or x86. Whether to download the installation package file. | Optional | 
 
 
 #### Context Output
@@ -2420,10 +2421,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
-| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>.             | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 10. | Optional | 
 
 #### Context Output
 
@@ -2474,10 +2475,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_id | The host name of a specific host. | Optional | 
-| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| host_id | The host name of a specific host.                                                                                                                         | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 10 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
 
@@ -2824,7 +2825,7 @@ Initiates a new endpoint script execution action using a script from the script 
 ### core-terminate-process
 
 ***
-Terminate a process by its instance ID. Available only for XSIAM 2.4.
+Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
 
 #### Base Command
 
@@ -2864,7 +2865,8 @@ Terminate a process by its instance ID. Available only for XSIAM 2.4.
 ### core-terminate-causality
 
 ***
-Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+Stops a process by its causality ID. Available only for XSIAM 2.4 and above.
+
 ##### Command Example
 
 ```!core-terminate-process agent_id=1 instance_id=1 process_name=process incident_id=2```
