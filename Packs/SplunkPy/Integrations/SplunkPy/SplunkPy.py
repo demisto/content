@@ -1686,6 +1686,8 @@ def get_modified_remote_data_command(service: client.Service, args: dict,
         demisto.debug(f'mirror-in: updated notable ids: {list(modified_notables_map.keys())}')
     else:
         demisto.debug(f'mirror-in: no notables was changed since {last_update_splunk_timestamp}')
+    if len(modified_notables_map) >= MIRROR_LIMIT:
+        demisto.info(f'mirror-in: the number of mirrored notables reach the limit of: {MIRROR_LIMIT}')
     res = SplunkGetModifiedRemoteDataResponse(modified_notables_data=modified_notables_map.values(), entries=entries)
     return_results(res)
 
