@@ -1371,6 +1371,7 @@ def test_no_override_with_default_severity():
     result = demisto_ioc_to_xdr(ioc)
     assert result['severity'] == 'HIGH'
 
+
 @patch('XDR_iocs.Client.severity', "HIGH")
 @patch('XDR_iocs.Client.use_old_override_severity_parameter', False)
 @patch('XDR_iocs.Client.override_severity', True)
@@ -1395,6 +1396,7 @@ def test_no_override_with_custom_field_severity():
 
     result = demisto_ioc_to_xdr(ioc)
     assert result['severity'] == 'HIGH'
+
 
 @patch('XDR_iocs.Client.severity', "HIGH")
 @patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
@@ -1421,6 +1423,7 @@ def test_old_override_with_custom_field_severity():
 
     result = demisto_ioc_to_xdr(ioc)
     assert result['severity'] == 'MEDIUM'
+
 
 @patch('XDR_iocs.Client.severity', "HIGH")
 @patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
@@ -1452,7 +1455,7 @@ def test_old_override_without_custom_field_severity():
 @patch('XDR_iocs.Client.xsoar_comments_field', 'comments')
 @patch('XDR_iocs.Client.tag', 'tag_value')
 @patch('XDR_iocs.get_indicator_xdr_score', return_value=1)
-def test_no_override_with_default_severity(mock_get_score):
+def test_no_override_with_default_severity_to_demisto(mock_get_score):
     """
     Given:
         - Default severity is set to HIGH in the Client configuration.
@@ -1473,6 +1476,7 @@ def test_no_override_with_default_severity(mock_get_score):
 
     result = xdr_ioc_to_demisto(ioc)
     assert result['fields']['sourceoriginalseverity'] == 'HIGH'
+
 
 @patch('XDR_iocs.Client.use_old_override_severity_parameter', False)
 @patch('XDR_iocs.Client.severity', "HIGH")
@@ -1500,6 +1504,7 @@ def test_no_override_with_custom_severity_field(mock_get_score):
     result = xdr_ioc_to_demisto(ioc)
     assert result['fields']['sourceoriginalseverity'] == 'HIGH'
 
+
 @patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
 @patch('XDR_iocs.Client.override_severity', False)
 @patch('XDR_iocs.Client.xsoar_comments_field', 'comments')
@@ -1525,6 +1530,7 @@ def test_old_override_with_custom_severity_field(mock_get_score):
 
     result = xdr_ioc_to_demisto(ioc)
     assert result['fields']['sourceoriginalseverity'] == 'LOW'
+
 
 @patch('XDR_iocs.Client.use_old_override_severity_parameter', True)
 @patch('XDR_iocs.Client.override_severity', True)
