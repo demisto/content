@@ -1795,7 +1795,6 @@ def test_fetch_incidents_dedup():
         client=mock_client,
         first_fetch_time='3 days',
         integration_instance={},
-        exclude_artifacts=True,
         last_run=last_run,
         max_fetch=2,
     )
@@ -1810,7 +1809,6 @@ def test_fetch_incidents_dedup():
         client=mock_client,
         first_fetch_time='3 days',
         integration_instance={},
-        exclude_artifacts=True,
         last_run=last_run,
         max_fetch=2,
     )
@@ -1825,7 +1823,6 @@ def test_fetch_incidents_dedup():
         client=mock_client,
         first_fetch_time='3 days',
         integration_instance={},
-        exclude_artifacts=True,
         last_run=last_run,
         max_fetch=2,
     )
@@ -1843,7 +1840,6 @@ def test_fetch_incidents_dedup():
         client=mock_client,
         first_fetch_time='3 days',
         integration_instance={},
-        exclude_artifacts=True,
         last_run=last_run,
         max_fetch=2,
     )
@@ -2137,8 +2133,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
 
     # Test case 5: With remove_nulls_from_alerts, excluded_alert_fields, exclude_artifacts
     get_remote_data_command(client, args, remove_nulls_from_alerts=True,
-                            excluded_alert_fields=excluded_alert_fields,
-                            exclude_artifacts=exclude_artifacts)
+                            excluded_alert_fields=excluded_alert_fields)
     client._http_request.assert_called_with(
         method='POST',
         url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -2192,7 +2187,7 @@ def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock
     remove_nulls_from_alerts = True
     max_fetch = 10
 
-    fetch_incidents(mock_client, first_fetch_time, integration_instance, exclude_artifacts, last_run,
+    fetch_incidents(mock_client, first_fetch_time, integration_instance, last_run,
                     max_fetch, statuses, starred, starred_incidents_fetch_window,
                     excluded_alert_fields, remove_nulls_from_alerts)
     mock_client.get_multiple_incidents_extra_data.assert_called_with(
@@ -2244,7 +2239,7 @@ def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
 
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=[raw_incident])
     mock_get_incident_extra_data = mocker.patch.object(Client, 'get_incident_extra_data', return_value=raw_incident)
-    fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts, last_run,
+    fetch_incidents(client, first_fetch_time, integration_instance, last_run,
                     max_fetch, statuses, starred, starred_incidents_fetch_window,
                     excluded_alert_fields, remove_nulls_from_alerts)
     # Assume the alert count is above ALERTS_LIMIT_PER_INCIDENTS
