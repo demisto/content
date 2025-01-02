@@ -108,7 +108,8 @@ class Client(BaseClient):
         config_ids: str,
         offset: str | None = '',
         limit: int = 20,
-        from_epoch: str = ''
+        from_epoch: str = '',
+        counter: int = 0
     ) -> tuple[list[dict], str | None]:
         params: dict[str, int | str] = {
             'limit': limit
@@ -128,18 +129,17 @@ class Client(BaseClient):
         headers = {
         'Authorization': 'Basic YTph',
         }
-        demisto.info("Init session and sending request.")
+        demisto.info(f"Init session and sending request for the {counter} time.")
         
         async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
                                                                                                 params=params) as response:
             try:
                 response.raise_for_status()  # Check for any HTTP errors
                 raw_response = await response.text()
-                demisto.info("Finished sending request.")
             except aiohttp.ClientError as e:
                 demisto.info(f"Error occurred: {e}")
                 raw_response = ''
-        demisto.info("Finished executing request to Akamai, processing")
+        demisto.info(f"Finished executing request to Akamai for the {counter} time, processing")
         # End of new part.
         
         events: list[dict] = []
@@ -463,6 +463,7 @@ async def update_total_events_fetched_and_offset(events_amount, offset):
 
 async def update_module_health():
     async with LOCKED_UPDATES_LOCK:
+        demisto.info("Updating module health")
         global EVENTS_COUNT_CURRENT_INTERVAL
         if EVENTS_COUNT_CURRENT_INTERVAL:
             demisto.updateModuleHealth({'eventsPulled': (EVENTS_COUNT_CURRENT_INTERVAL)})
@@ -483,12 +484,12 @@ async def fetch_events_command(client: Client,
 
     """
     offset = ctx.get("offset")
-    async for events in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
-        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
+    async for events, counter in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
+        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter))  # noqa: RUF006
 
 
-async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset):
-    demisto.info(f"got {len(events)} events, moving to processing events data.")
+async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter):
+    demisto.info(f"got {len(events)} events, moving to processing events data for the {counter} time.")
     if should_skip_decode_events:
         demisto.info("Skipping decode events, adding _time fields to events.")
         for event in events:
@@ -512,24 +513,30 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-    demisto.info(f"Sending {len(events)} events to xsiam with latest event time = {events[-1]['_time']}")
+    demisto.info(f"Sending {len(events)} events to xsiam for the {counter} time with latest event time = {events[-1]['_time']}")
     tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True, url_key="host")
-    demisto.info("Finished executing send_events_to_xsiam, waiting for tasks to end.")
+    demisto.info(f"Finished executing send_events_to_xsiam for the {counter} time, waiting for tasks to end.")
     await asyncio.gather(*tasks)
-    demisto.info("Finished gathering all tasks.")
+    demisto.info(f"Finished gathering all tasks for the {counter} time.")
     asyncio.create_task(update_total_events_fetched_and_offset(len(events), offset))  # noqa: RUF006
 
 
 async def get_events_from_akamai(client: Client, config_ids, from_time, page_size, offset):
+    counter = 0
     while True:
+        demisto.info("Starting to update module health")
+        await update_module_health()
+        demisto.info("Finished updating module health")
         ctx = get_integration_context() or {}
         if ctx.get("reset_offset", False):
             offset = None
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
-            get_events_task = client.get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch)
+            get_events_task = client.get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter)
+            counter += 1
+            events, offset = None, None
             events, offset = await get_events_task
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
@@ -545,7 +552,7 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
             await asyncio.sleep(60)
             demisto.info("Done sleeping 60 seconds.")
         if events:
-            yield events
+            yield events, counter
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             demisto.info(f"got {len(events)} events which is less than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}," \
                             "going to sleep for 60 seconds.")
@@ -874,7 +881,6 @@ async def xsiam_api_call_async_with_retries(
     status_code = None
     attempt_num = 1
     response = None
-    demisto.info(f"sending events with {headers=}")
     while status_code != 200 and attempt_num < num_of_attempts + 1:
         demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
             data_type=data_type, attempt_num=attempt_num))
