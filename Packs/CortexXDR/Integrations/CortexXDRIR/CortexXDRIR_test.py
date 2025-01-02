@@ -2062,6 +2062,7 @@ def test_get_distribution_url_command_without_download_not_supported_type():
     client.get_distribution_url.assert_called_once_with("12345", "sh")
     assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
 
+
 def test_get_remote_data_command_exclude_fields(mocker):
     """
     Given:
