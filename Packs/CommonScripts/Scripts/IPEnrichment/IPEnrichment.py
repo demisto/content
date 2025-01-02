@@ -21,22 +21,6 @@ PRIVATE_SUBNETS = [
     '255.255.255.255/32'
 ]
 
-
-def get_tim_indicator_hr(indicator: dict) -> str:
-    # return specific information for found indicators
-    # todo - handle a case of an empty indicator
-    fields = ['id', 'indicator_type', 'value',
-              'score']  # todo: which fields to return? maybe another command should be used per Yarden
-
-    styled_indicator = {}
-    for field in fields:
-        styled_indicator[field] = indicator.get(field, indicator.get("CustomFields", {}).get(field, "n/a"))
-    styled_indicator["verdict"] = scoreToReputation(styled_indicator['score'])
-    headers = fields + ["verdict"]
-    hr = tableToMarkdown("IP Enrichment- indicator data from TIM", styled_indicator, headers)
-    return hr
-
-
 class Command:
     def __init__(
         self,
@@ -142,15 +126,6 @@ def get_command_results(command: Command, results: list[dict[str, Any]], args: d
             command_human_readable_outputs.append(entry.get("HumanReadable") or "")
     return command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs
 
-    # else:
-    #     command_context_outputs.append(entry.get("EntryContext", {}))
-    #     human_readable_outputs.append(entry.get("HumanReadable") or "")
-
-    # human_readable = "\n".join(human_readable_outputs)
-    # human_readable = [hr] if (hr := hr_to_command_results(command, args, human_readable)) else []
-    # return command_context_outputs, human_readable, command_error_outputs
-
-
 class IPCommandRunner:
     def __init__(self, verbose: bool) -> None:
         """
@@ -177,7 +152,10 @@ class IPCommandRunner:
         """Check if a brand is active and available."""
         return brand in self.enabled_brands
 
-    def run_command(self, command: Command, args: dict[str, list[str] | str]) -> tuple[list[CommandResults],list[dict[str, dict]]]:
+
+
+
+    def run_command(self, command: Command, args: dict[str, list[str] | str]):
         """
             Runs the given command with the provided arguments and returns the results.
             Args:
@@ -200,6 +178,7 @@ class IPCommandRunner:
             self.commands_results_list.extend(human_readable)
             self.commands_results_list.extend(command_error_outputs)
 
+        return command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs
 
 
 
@@ -212,6 +191,137 @@ def to_list(var):
         return []
     return [var] if not isinstance(var, list) else var
 
+######################## OUTPUT PROCESSING FUNCTIONS ########################
+
+def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
+    """
+    Retrieves the full output key from the raw context based on the given output key.
+
+    This function searches for the output key in the raw context. If an exact match is not found,
+    it looks for keys that start with the given output key followed by parentheses.
+
+    Args:
+        output_key (str): The base output key to search for.
+        raw_context (dict[str, Any]): The raw context dictionary to search in.
+
+    Returns:
+        str: The full output key if found, otherwise an empty string.
+
+    Note:
+        If the full output key is not found, a debug message is logged.
+    """
+
+    full_output_key = ""
+    if raw_context:
+        if output_key in raw_context:
+            full_output_key = output_key
+        else:
+            for key in raw_context:
+                if not key:
+                    continue
+                if key.startswith(f"{output_key}("):
+                    full_output_key = key
+                    break
+        if not full_output_key:
+            demisto.debug(
+                f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}"
+            )
+    return full_output_key
+
+def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
+    """
+    Extracts and processes the outputs from the raw context based on the given output key.
+
+    This function retrieves the context from the raw_context using the output_key.
+    If the context is a list, it takes the first element (if available).
+
+    Args:
+        output_key (str): The key to look up in the raw_context.
+        raw_context (dict[str, Any]): The raw context containing the outputs.
+
+    Returns:
+        dict[str, Any]: The processed context, or an empty dictionary if not found.
+    """
+    full_output_key = get_output_key(output_key, raw_context)
+    if not (raw_context and full_output_key):
+        return {}
+    context = raw_context.get(full_output_key, {})
+    return context
+def enrich_data_with_source(data: dict, source: str):
+    """
+    Enrich the provided data with source information.
+
+    This function recursively processes the input data, adding source information to each value
+    and handling nested structures.
+
+    Args:
+        data (dict): The input data to be enriched.
+        source (str): The source information to be added to each value.
+
+    Returns:
+        dict: The enriched data with source information added to each value.
+
+    Note:
+        - Empty elements are removed from the input data before processing.
+        - Single-element lists are unwrapped to their contained value.
+        - Nested dictionaries are processed recursively.
+    """
+    data = remove_empty_elements(data)
+    result = {}
+    for key, value in data.items():
+        if isinstance(value, list) and len(value) == 1:
+            value = value[0]
+        if isinstance(value, dict):
+            result[key] = enrich_data_with_source(value, source)
+        else:
+            result[key] = {"Value": value, "Source": source}
+    return result
+
+
+
+def merge_ips(ips: list[dict[str, str]]) -> dict[str, Any]:
+    """
+    Merge multiple ip dictionaries into a single ip.
+
+    This function merges a list of ip dictionaries into a single ip dictionary.
+    It handles nested dictionaries and special cases where a value is a dictionary with 'Value' and 'Source' keys.
+    The merged ip is then converted to a Common.IP object and its context is returned.
+
+    Args:
+        ips (list[dict[str, str]]): A list of ip dictionaries to merge.
+
+    Returns:
+        dict[str, Any]: A merged ip dictionary in the Common.IP context format.
+                        Returns an empty dictionary if the input list is empty.
+    """
+
+    def recursive_merge(target: dict, source: dict):
+        for key, value in source.items():
+            # Check if the value is a dictionary and has specific keys 'Value' and 'Source'
+            if isinstance(value, dict) and "Value" in value and "Source" in value:
+                if key not in target:
+                    target[key] = []
+                target[key].append(value)
+            elif isinstance(value, dict):
+                if key not in target:
+                    target[key] = {}
+                recursive_merge(target[key], value)
+            else:
+                target[key] = value
+
+    merged_ip: dict[str, Any] = {}
+    for ip in ips:
+        recursive_merge(merged_ip, ip)
+
+    return (
+        Common.IP(**merged_ip).to_context()[Common.IP.CONTEXT_PATH]
+        if merged_ip
+        else {}
+    )
+
+
+
+######### IP ENRICHMENT FUNCTIONS #########
 
 def get_private_ips() -> list[str]:
     """Retrieve the list of private IP subnets."""
@@ -259,8 +369,8 @@ def enrich_internal_ip_address(ip_command_runner, ips: list[str]) -> CommandResu
         output_keys=["Contents"],
         output_mapping=lambda x: x.get("Contents", [])
     )
-    ip_command_runner.run_command(get_endpoint_data_command, {"agent_ip": joined_ips})
-
+    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(get_endpoint_data_command, {"agent_ip": joined_ips})
+    get_outputs("Core.AnalyticsPrevalence.Ip", command_context_outputs[0])
 
 def check_reputation(ip_command_runner: IPCommandRunner, ips: str):
     """Check the reputation of an IP address."""
@@ -270,7 +380,10 @@ def check_reputation(ip_command_runner: IPCommandRunner, ips: str):
         output_keys=["Contents"],
         output_mapping=lambda x: x.get("Contents", [])
     )
-    ip_command_runner.run_command(ip_command, {"ip": ips})
+    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(ip_command, {"ip": ips})
+    command_context_outputs = command_context_outputs[0] if isinstance(command_context_outputs , list) else command_context_outputs
+    enriched_data = enrich_data_with_source(command_context_outputs, "Reputation")
+
 
 
 def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> dict:
@@ -284,7 +397,7 @@ def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> di
         output_keys=["Contents"],
         output_mapping=lambda x: x.get("Contents", [])
     )
-    ip_command_runner.run_command(prevalence_command, {"ip_address": ips})
+    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(prevalence_command, {"ip_address": ips})
 
 
 def get_indicator_tim_data(ip_command_runner: IPCommandRunner, ips: list[str]) -> tuple[dict[str, Any], CommandResults]:
@@ -297,8 +410,14 @@ def get_indicator_tim_data(ip_command_runner: IPCommandRunner, ips: list[str]) -
     )
     ips_value_query = " or ".join([f"value:{ip}" for ip in ips])
     query = f"(type:IPv6 or type:IPv6CIDR or type:IP) and ({ips_value_query})"
-    ip_command_runner.run_command(find_indicators_command, {
+    command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(find_indicators_command, {
         "query": query})  #RETURNS A LIST OF DICTIONARIES PER INDICATOR, TODO: IF MISSING? IF EMPTY EMPTY LIST IS RETUNRED. WHAT TO DO IF MULTIPLE RESULTS FOR ONE IP?
+    raw_content = command_contents[0] if isinstance(command_contents, list) else {}
+    enriched_data = enrich_data_with_source(raw_content, "TIM")
+
+
+
+
 
 
 def enrich_external_ip_address(ip_command_runner, ips: list[str]) -> CommandResults:
