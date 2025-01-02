@@ -1,5 +1,6 @@
 from enum import Enum
 import uuid
+from urllib.parse import urlparse
 
 from CommonServerPython import *  # noqa: F401
 
@@ -279,7 +280,7 @@ class EWSClient:
             self.ews_server, server_build = self.get_autodiscover_server_params(credentials)
             return None, credentials, server_build
 
-        if 'outlook.office365.com' in self.ews_server.lower():
+        if urlparse(self.ews_server.lower()).hostname == 'outlook.office365.com':
             if not self.auth_type:
                 self.auth_type = BASIC
             self.version = '2016'
