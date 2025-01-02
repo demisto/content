@@ -34,7 +34,6 @@ from inspect import currentframe
 import demistomock as demisto
 import warnings
 
-
 def __line__():
     cf = currentframe()
     return cf.f_back.f_lineno  # type: ignore[union-attr]
@@ -224,6 +223,11 @@ CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 PY_VER_MINOR = sys.version_info[1]
+
+# a temp fix for the new python docker 3.12
+if IS_PY3 and PY_VER_MINOR >= 12:
+    warnings.filterwarnings("ignore", category=SyntaxWarning)
+
 STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 
