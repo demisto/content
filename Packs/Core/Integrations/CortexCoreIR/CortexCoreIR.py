@@ -277,7 +277,7 @@ def main():  # pragma: no cover
                                                stop_polling=True))
 
         elif command == 'core-get-distribution-url':
-            return_outputs(*get_distribution_url_command(client, args))
+            return_results(get_distribution_url_command(client, args))
 
         elif command == 'core-get-create-distribution-status':
             return_outputs(*get_distribution_status_command(client, args))
