@@ -41,8 +41,9 @@ configuration:
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
-  section: Connect - Advanced
+  section: Collect
   required: false
+  advanced: true
 - display: Allow external users to create incidents via DM.
   name: allow_incidents
   type: 8
