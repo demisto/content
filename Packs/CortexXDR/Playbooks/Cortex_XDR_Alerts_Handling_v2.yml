@@ -1664,7 +1664,7 @@ tasks:
       SrcIPAddress:
         complex:
           root: incident.xdralerts
-          accessor: actionremoteip
+          accessor: action_remote_ip
           transformers:
           - operator: uniq
       alerts_ids:

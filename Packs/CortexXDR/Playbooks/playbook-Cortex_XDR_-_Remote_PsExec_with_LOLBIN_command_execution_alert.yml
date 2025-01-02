@@ -592,7 +592,7 @@ tasks:
                   simple: inputs.alerts_ids
                 iscontext: true
               ignorecase: true
-          accessor: causalityactorprocessimagemd5
+          accessor: causality_actor_process_image_md5
           transformers:
           - operator: uniq
       QRadarTimeFrame:
@@ -611,7 +611,7 @@ tasks:
                   simple: inputs.alerts_ids
                 iscontext: true
               ignorecase: true
-          accessor: causalityactorprocessimagesha1
+          accessor: causality_actor_process_image_sha1
           transformers:
           - operator: uniq
       SHA256:
@@ -628,7 +628,7 @@ tasks:
                   simple: inputs.alerts_ids
                 iscontext: true
               ignorecase: true
-          accessor: causalityactorprocessimagesha256
+          accessor: causality_actor_process_image_sha256
           transformers:
           - operator: uniq
       SplunkEarliestTime:
@@ -1117,7 +1117,7 @@ inputs:
   value:
     complex:
       root: incident.xdralerts
-      accessor: actionremoteip
+      accessor: action_remote_ip
       transformers:
       - operator: uniq
   required: false

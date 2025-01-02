@@ -150,9 +150,9 @@ tasks:
       query:
         simple: incident.closeReason:"False Positive"
       similarCategoricalField:
-        simple: incident.xdrfileartifacts.filesha256,incident.xdralerts.hostip
+        simple: incident.xdrfileartifacts.filesha256, incident.xdrfileartifacts.file_sha256,incident.xdralerts.hostip, incident.xdralerts.host_ip
       similarTextField:
-        simple: incident.xdralerts.osactorprocesscommandline,incident.xdralerts.actorprocesscommandline,incident.xdralerts.actionprocessimagecommandline,incident.xdralerts.causalityactorprocesscommandline,incident.xdralerts.host_name,incident.xdralerts.user_name
+        simple: incident.xdralerts.osactorprocesscommandline, incident.xdralerts.os_actor_process_command_line,incident.xdralerts.actorprocesscommandline, incident.xdralerts.actor_process_command_line, incident.xdralerts.actionprocessimagecommandline, incident.xdralerts.action_process_image_command_line,incident.xdralerts.causality_actor_process_command_line,incident.xdralerts.host_name,incident.xdralerts.user_name
     separatecontext: false
     continueonerrortype: ""
     view: |-
