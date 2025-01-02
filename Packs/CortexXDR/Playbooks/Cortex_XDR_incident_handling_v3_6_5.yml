@@ -1574,7 +1574,7 @@ tasks:
       grid_id:
         simple: xdrsimilarincidents
       keys:
-        simple: id,created,name,similarity incident,xdralerts.user_name,xdralerts.host_name,xdralerts.osactorprocesscommandline
+        simple: id,created,name,similarity incident,xdralerts.user_name,xdralerts.host_name,xdralerts.os_actor_process_command_line
     separatecontext: false
     view: |-
       {
