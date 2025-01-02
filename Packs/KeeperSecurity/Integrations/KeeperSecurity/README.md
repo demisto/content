@@ -38,7 +38,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Code was sent successfully to the user's email
+>Code was sent successfully to the user's email.
 
 ### keeper-security-register-complete
 
