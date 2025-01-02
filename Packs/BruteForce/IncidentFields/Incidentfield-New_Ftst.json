@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "New Tst"
+        "New Tst",
+        "Brute Force"
     ],
     "breachScript": "",
     "caseInsensitive": true,
