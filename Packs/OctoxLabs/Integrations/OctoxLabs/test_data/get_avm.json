@@ -1,0 +1,25 @@
+{
+  "count": 1,
+  "results": [
+    {
+      "Description": [
+        "Microsoft Edge (Chromium-based) Information Disclosure Vulnerability"
+      ],
+      "AssetCount": [
+        645
+      ],
+      "Cvss2Score": [
+        0
+      ],
+      "Id": [
+        "CVE-2024-21423"
+      ],
+      "ApplicationCount": [
+        1
+      ],
+      "Cvss3Score": [
+        0
+      ]
+    }
+  ]
+}
