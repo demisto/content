@@ -5833,12 +5833,12 @@
             "integrations":
             [
                 "AWS-SNS-Listener",
-                "AWSSNS"
+                "AWS - SNS"
             ],
             "playbookID": "AWS SNS Listener - Test",
             "instance_names":[
                 "AWS-SNS-Listener",
-                "AWS - SNS"
+                "AWSSNS"
             ],
             "is_mockable": false
         },
