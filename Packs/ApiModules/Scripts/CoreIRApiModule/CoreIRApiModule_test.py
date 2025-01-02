@@ -1360,10 +1360,7 @@ def test_action_status_get_command(mocker):
     action_status_get_command_command_reply = load_test_data('./test_data/action_status_get.json')
 
     data = action_status_get_command_command_reply.get('reply').get('data')
-    # todo:
-    #  add errorReasons part
-    #  add a case where it is empty
-    #  add a case where it doesn't exist (an older version)
+    error_reasons = action_status_get_command_command_reply.get('reply').get('errorReasons') or {}
     result = []
     for item in data:
         result.append({
@@ -1371,6 +1368,10 @@ def test_action_status_get_command(mocker):
             'endpoint_id': item,
             'status': data.get(item)
         })
+        if error_reason := error_reasons.get(item):
+            result[-1]['error_description'] = error_reason['errorDescription']
+            result[-1]['ErrorReasons'] = error_reason
+
     action_status_get_command_expected_result = result
 
     mocker.patch.object(CoreClient, '_http_request', return_value=action_status_get_command_command_reply)
@@ -1382,7 +1383,8 @@ def test_action_status_get_command(mocker):
     }
 
     res = action_status_get_command(client, args)
-    assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True)
+    assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                        headers=['action_id', 'endpoint_id', 'status', 'error_description'])
     assert res.outputs == action_status_get_command_expected_result
     assert res.raw_response == result
 
