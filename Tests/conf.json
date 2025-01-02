@@ -5830,7 +5830,11 @@
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
-            "integrations": "AWS-SNS-Listener",
+            "integrations":
+            [
+                "AWS-SNS-Listener",
+                "AWSSNS"
+            ],
             "playbookID": "AWS SNS Listener - Test",
             "instance_names": "AWS-SNS-Listener",
             "is_mockable": false
