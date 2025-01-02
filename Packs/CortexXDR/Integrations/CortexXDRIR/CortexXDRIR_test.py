@@ -2087,22 +2087,20 @@ def test_get_remote_data_command_exclude_fields(mocker):
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     client._http_request = MagicMock()
 
-    # Test case 2: With exclude_artifacts
-    exclude_artifacts = ['network_artifacts', 'file_artifacts']
-    get_remote_data_command(client, args, exclude_artifacts=exclude_artifacts)
+    # Test case 1: no excluded data
+    get_remote_data_command(client, args)
     client._http_request.assert_called_with(
         method='POST',
         url_suffix='/incidents/get_multiple_incidents_extra_data/',
         json_data={'request_data':
                    {'search_to': 100, 'sort':
                     {'field': 'creation_time', 'keyword': 'asc'},
-                       'fields_to_exclude': ['network_artifacts', 'file_artifacts'],
-                       'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
+                    'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
         headers=client.headers,
         timeout=120
     )
 
-    # Test case 3: With excluded_alert_fields
+    # Test case 2: With excluded_alert_fields
     excluded_alert_fields = ["fieldA", "fieldB"]
     get_remote_data_command(client, args, excluded_alert_fields=excluded_alert_fields)
     client._http_request.assert_called_with(
@@ -2117,7 +2115,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
         timeout=120
     )
 
-    # Test case 4: With remove_nulls_from_alerts
+    # Test case 3: With remove_nulls_from_alerts
     get_remote_data_command(client, args, remove_nulls_from_alerts=True)
     client._http_request.assert_called_with(
         method='POST',
@@ -2131,7 +2129,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
         timeout=120
     )
 
-    # Test case 5: With remove_nulls_from_alerts, excluded_alert_fields, exclude_artifacts
+    # Test case 5: With remove_nulls_from_alerts, excluded_alert_fields
     get_remote_data_command(client, args, remove_nulls_from_alerts=True,
                             excluded_alert_fields=excluded_alert_fields)
     client._http_request.assert_called_with(
@@ -2142,7 +2140,6 @@ def test_get_remote_data_command_exclude_fields(mocker):
                     {'field': 'creation_time', 'keyword': 'asc'},
                        'alert_fields_to_exclude': ['fieldA', 'fieldB'],
                        'drop_nulls': True,
-                       'fields_to_exclude': ['network_artifacts', 'file_artifacts'],
                        'filters': [{'field': 'incident_id_list', 'operator': 'in', 'value': ['1']}]}},
         headers=client.headers,
         timeout=120
@@ -2179,7 +2176,6 @@ def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock
         'incidents_from_previous_run': [],
         'dedup_incidents': []
     }
-    exclude_artifacts = ['network_artifacts', 'file_artifacts']
     statuses = ['open']
     starred = False
     starred_incidents_fetch_window = None
@@ -2196,7 +2192,6 @@ def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock
         limit=max_fetch + len(last_run['dedup_incidents']),
         starred=starred,
         starred_incidents_fetch_window=None,
-        exclude_artifacts=exclude_artifacts,
         excluded_alert_fields=excluded_alert_fields,
         remove_nulls_from_alerts=remove_nulls_from_alerts
     )
@@ -2225,7 +2220,6 @@ def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
         'incidents_from_previous_run': [],
         'dedup_incidents': []
     }
-    exclude_artifacts = ['network_artifacts', 'file_artifacts']
     statuses = ['open']
     starred = False
     starred_incidents_fetch_window = None
@@ -2245,7 +2239,6 @@ def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
     # Assume the alert count is above ALERTS_LIMIT_PER_INCIDENTS
     mock_get_incident_extra_data.assert_called_with(
         incident_id=11,
-        exclude_artifacts=exclude_artifacts,
         excluded_alert_fields=excluded_alert_fields,
         remove_nulls_from_alerts=remove_nulls_from_alerts
     )
