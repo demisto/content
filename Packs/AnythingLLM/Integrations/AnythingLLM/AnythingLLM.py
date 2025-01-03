@@ -425,14 +425,14 @@ class Client(BaseClient):
             try:
                 ws = self.workspace_get(workspace)
             except Exception:
-                raise Exception(f"workspace not found")
+                raise Exception("workspace not found")
 
             if action == "adds":
                 if embedding_exists(ws, document):
-                    raise Exception(f"already embedded")
+                    raise Exception("already embedded")
             elif action == "deletes":
                 if not embedding_exists(ws, document):
-                    raise Exception(f"not embedded")
+                    raise Exception("not embedded")
             else:
                 raise Exception(f"action [{action}] not 'adds' or 'deletes' ")
 
@@ -474,7 +474,8 @@ def workspace_slug(workspace: str, workspaces) -> str:
 
 def thread_slug(thread: str, threads: list) -> str:
     for t in threads:
-        # Thread data returned does not include the name, so for now, enforce unique thread names and always append "_slug" to the name
+        # Thread data returned does not include the name, so for now, 
+        # enforce unique thread names and always append "_slug" to the name
         # to create the slug
         if t['slug'] == thread + "_slug":
             return t['slug']
