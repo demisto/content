@@ -474,7 +474,7 @@ def workspace_slug(workspace: str, workspaces) -> str:
 
 def thread_slug(thread: str, threads: list) -> str:
     for t in threads:
-        # Thread data returned does not include the name, so for now, 
+        # Thread data returned does not include the name, so for now,
         # enforce unique thread names and always append "_slug" to the name
         # to create the slug
         if t['slug'] == thread + "_slug":
