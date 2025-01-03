@@ -6,7 +6,7 @@ def main():
     try:
         llmupload = demisto.incident()['CustomFields'].get("llmupload", "").strip()
         if llmupload == "":
-            raise Exception("No processed document found in [llmupload] incident field ready for upload")
+            raise Exception(f"No processed document found in [{llmupload}] incident field ready for upload")
 
         args = json.loads(llmupload)
         title = args.get("title", "")
