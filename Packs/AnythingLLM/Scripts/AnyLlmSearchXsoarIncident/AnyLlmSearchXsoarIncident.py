@@ -19,8 +19,8 @@ def GetJsonByDot(value: dict, field: str):
 
 def ConvertLabels(labels):
     value = {}
-    for l in labels:
-        value[l['type']] = l['value']
+    for lab in labels:
+        value[lab['type']] = lab['value']
     return value
 
 
