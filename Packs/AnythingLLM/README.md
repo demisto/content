@@ -92,6 +92,7 @@ The general use case development process is:
 * XSOAR Integration Help
 * XSOAR Script Help
 * XSOAR Help
+* XSOAR Natural Language Commands
 * Manual Procedure Guidance
 * Threat Blog Summaries
 * Advisory Summaries
