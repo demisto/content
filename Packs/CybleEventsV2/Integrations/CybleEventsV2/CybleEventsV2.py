@@ -487,11 +487,12 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
                     'rawJSON': json.dumps(event),
                     'alert_group_id': event.get('alert_group_id'),
                     'event_id': event.get('event_id'),
-                    'dbotMirrorId': str(event.get('event_id', 'TEST')),
-                    'dbotMirrorDirection': 'Both',
+                    'dbotMirrorId': str(event.get('event_id', 'INCI TEST')),
+                    'dbotMirrorDirection': 'Out',
                     'keyword': event.get('keyword'),
                     'created': event.get('created_at'),
                 }
+                demisto.debug(f"Incidents fetched into XSOAR: {inci}")
                 incidents.append(inci)
             next_run = {'event_pull_start_date': latest_created_time}
 
@@ -546,6 +547,7 @@ def update_remote_system(client, method, token, args, url):
             "alerts": [updated_event]
         }
         set_request(client, method, token, body, url)
+        return new_incident_id["id"]
 
 def get_modified_remote_data_command(client, url, token, args, incident_collections, incident_severity):
     """

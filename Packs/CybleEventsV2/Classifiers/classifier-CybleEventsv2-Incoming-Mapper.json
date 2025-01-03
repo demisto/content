@@ -68,6 +68,9 @@
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
                 },
+                "dbotMirrorId": {
+                    "simple": "event_id"
+                },
                 "name": {
                     "complex": {
                         "filters": [],
