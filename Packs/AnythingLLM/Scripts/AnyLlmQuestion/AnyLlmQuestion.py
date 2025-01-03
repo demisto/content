@@ -30,7 +30,7 @@ def main():
             thread_uuid = threads[workspace]
         now = datetime.now().strftime("%Y %B %d %I:%M%p")
         results = execute_command("anyllm-workspace-thread-chat",
-                                  {'message': f"{context}\n{question}", 'mode': mode, 'workspace': inci['llmworkspace'], 'thread': thread_uuid})
+            {'message': f"{context}\n{question}", 'mode': mode, 'workspace': inci['llmworkspace'], 'thread': thread_uuid})
         convo = f"{inci.get('llmconversation', '')} \n\n##### {now} [{mode}]: {question}\n\n{results['textResponse']}\n"
         convo += "\n**Embedded Chunks Used**\n"
 
