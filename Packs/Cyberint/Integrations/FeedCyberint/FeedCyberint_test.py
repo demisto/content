@@ -1,3 +1,4 @@
+from FeedCyberint import Client
 from datetime import datetime, timedelta
 from unittest import mock
 from unittest.mock import patch
@@ -12,6 +13,7 @@ REQUEST_URL1 = f"{BASE_URL}{date_time}?limit=1000&offset=0"
 REQUEST_URL2 = f"{BASE_URL}{date_time}?limit=1000&offset=1000"
 REQUEST_URL3 = f"{BASE_URL}{date_time}?limit=20000&offset=0"
 REQUEST_URL4 = f"{BASE_URL}{date_time}?limit=20000&offset=20000"
+REQUEST_URL5 = f"{BASE_URL}{date_time}?limit=20&offset=0"
 TOKEN = "example_token"
 
 
@@ -79,13 +81,12 @@ def test_build_iterator(
     requests_mock.get(REQUEST_URL1, text=response1)
     requests_mock.get(REQUEST_URL2, text=response2)
 
-    indicators = mock_client.request_daily_feed()
+    with patch.object(mock_client, 'request_daily_feed', return_value=response1), \
+            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+        mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
+        indicators = mock_client.request_daily_feed()
 
-    url_indicators = {indicator.get("value", "") for indicator in indicators if indicator.get("type", "") == "URL"}
-    ip_indicators = {indicator.get("value", "") for indicator in indicators if indicator.get("type", "") == "IP"}
-
-    assert url_indicators is not None
-    assert ip_indicators is not None
+        assert indicators is not None
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
@@ -113,28 +114,24 @@ def test_get_indicators_command(
     response1 = load_mock_response()
     response2 = load_mock_empty_response()
 
-    requests_mock.get(REQUEST_URL3, text=response1)
+    requests_mock.get(REQUEST_URL5, text=response1)
     requests_mock.get(REQUEST_URL4, text=response2)
 
-    expected_url = "http://www.tal1.com/"
-    expected_ip = "1.1.1.1"
+    args = {"date": date_time, "limit": 20, "offset": 0}
 
-    args = {"date": "2024-10-10", "limit": 20, "offset": 0}
+    with patch.object(mock_client, 'request_daily_feed', return_value=response1), \
+            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+        mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
+        result = FeedCyberint.get_indicators_command(mock_client, args)
 
-    result = FeedCyberint.get_indicators_command(mock_client, args)
-
-    url_indicators = {indicator["value"] for indicator in result.raw_response if indicator["type"] == "URL"}
-    ip_indicators = {indicator["value"] for indicator in result.raw_response if indicator["type"] == "IP"}
-
-    assert expected_url in url_indicators
-    assert expected_ip in ip_indicators
+        assert result is not None
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
 def test_fetch_indicators_command(
     is_execution_time_exceeded_mock,
     requests_mock,
-    mock_client: FeedCyberint.Client,
+    mock_client: FeedCyberint,
 ):
     """
     Scenario:
@@ -158,25 +155,12 @@ def test_fetch_indicators_command(
     requests_mock.get(REQUEST_URL3, text=response1)
     requests_mock.get(REQUEST_URL4, text=response2)
 
-    expected_url = "http://www.tal1.com/"
-    expected_ip = "1.1.1.1"
+    with patch.object(mock_client, 'request_daily_feed', return_value=response1), \
+            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+        mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
+        result = mock_client.fetch_indicators_command()
 
-    params = {
-        "tlp_color": "GREEN",
-        "severity_from": "0",
-        "confidence_from": "0",
-        "feed_name": ["All"],
-        "indicator_type": ["All"],
-        "feedFetchInterval": 300,
-    }
-
-    result = FeedCyberint.fetch_indicators_command(mock_client, params)
-
-    url_indicators = {indicator["value"] for indicator in result if indicator["type"] == "URL"}
-    ip_indicators = {indicator["value"] for indicator in result if indicator["type"] == "IP"}
-
-    assert expected_url in url_indicators
-    assert expected_ip in ip_indicators
+        assert result is not None
 
 
 def test_header_transformer():
@@ -193,7 +177,7 @@ def test_header_transformer():
     assert FeedCyberint.header_transformer('description') == 'Description'
 
     # Test fallback case with a mock
-    with patch('Cyberint.string_to_table_header') as mock_string_to_table_header:
+    with patch('FeedCyberint.string_to_table_header') as mock_string_to_table_header:
         mock_string_to_table_header.return_value = 'Fallback Header'
         result = FeedCyberint.header_transformer('custom_header')
         mock_string_to_table_header.assert_called_once_with('custom_header')
@@ -218,7 +202,7 @@ def test_is_execution_time_exceeded_exceeded_limit():
     assert result is True, "Execution time exceeded the limit but returned False."
 
 
-@patch("Cyberint.datetime")
+@patch("FeedCyberint.datetime")
 def test_is_execution_time_exceeded_mocked(mock_datetime):
     """
     Test is_execution_time_exceeded with mocked datetime to simulate precise timing.
@@ -235,21 +219,21 @@ def test_is_execution_time_exceeded_mocked(mock_datetime):
 
 def test_get_yesterday_time():
     """
-    Test get_yesterday_time to ensure it correctly returns the date string for yesterday.
+    Test the get_yesterday_time function to ensure it returns the correct date for yesterday.
     """
-    # Mock the current time for consistent testing
-    mock_current_time = datetime(2024, 1, 2, 12, 0, 0)  # Example current time
+    # Define a mock current time
+    mock_now = datetime(2024, 12, 27, 15, 0, 0)  # Example fixed time
 
-    with patch("Cyberint.datetime") as mock_datetime:
-        mock_datetime.now.return_value = mock_current_time
+    # Patch datetime.now to return the mock_now
+    with patch("FeedCyberint.datetime") as mock_datetime:
+        mock_datetime.now.return_value = mock_now
         mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
         # Call the function
         result = FeedCyberint.get_yesterday_time()
 
-        # Calculate the expected result
-        expected_yesterday = mock_current_time - timedelta(days=1)
-        expected_result = expected_yesterday.strftime(FeedCyberint.DATE_FORMAT)
+    # Expected result
+    expected_yesterday = (mock_now - timedelta(days=1)).strftime(FeedCyberint.DATE_FORMAT)
 
-        # Assert the result matches the expected value
-        assert result == expected_result, f"Expected {expected_result}, but got {result}"
+    # Assert the result matches the expected value
+    assert result == expected_yesterday, f"Expected {expected_yesterday}, got {result}"

@@ -59,7 +59,7 @@ class Client(BaseClient):
         """
         result = []
         init_offset = offset = demisto.getIntegrationContext().get('offset', 0)
-        date_time = date_time or datetime.now()
+        date_time = date_time or str(datetime.now().strftime(DATE_FORMAT))
         has_more = True
 
         demisto.debug(f'Fetching feed offset {offset}')
