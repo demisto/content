@@ -54,7 +54,7 @@ For testing and development, a system with 16GB RAM can run the Llama 3.2 11 Bil
 
 ## Use
 
-For the most accurated results, **query** mode is recommended for chats.  This preloads the chat context based on the initial query with similar results from documents embedded in a workspace and avoids most hallucinations. In a large document, **query** mode does not ensure a complete answer depending on the number of times the query topic is mentioned in the embedded documents and limits on the number of returned similar results and size of the context window in the selected LLM.  Text splitting and chunking can be adjusted from the defaults to better support a specific use case. Adjusting the **similarityThreshold** and **topN** settings in a workspace are often beneficial to optimize the workspace for a use case.
+For the most accurate results, **query** mode is recommended for chats.  This preloads the chat context based on the initial query with similar results from documents embedded in a workspace and avoids most hallucinations. In a large document, **query** mode does not ensure a complete answer depending on the number of times the query topic is mentioned in the embedded documents and limits on the number of returned similar results and size of the context window in the selected LLM.  Text splitting and chunking can be adjusted from the defaults to better support a specific use case. Adjusting the **similarityThreshold** and **topN** settings in a workspace are often beneficial to optimize the workspace for a use case.
 
 #### Update Workspace Settings
 
@@ -103,7 +103,7 @@ The general use case development process is:
 
 ### Workspaces
 
-The **Workspace and Document Management** tab of the incident layout enables management of workspaces and documents. The **Workspaces** section lists the available workspaces and allows configuration of their settings and selecting the current workspace by editing the table and using one of the **Action** options.   For the current workspace, the list of embedded documents in that workspace are displayed in the **Workspace Embedded Documents** section.  The **Action** options you can take there are to **Remove** the embedded document, **Pin** the embedded document to the workspace that makes all the embedded content available in the converstation context, and **Unpin** the embedded document from the workspace.  Care must be taken to not consume all the conversation context space by pinning a large document.
+The **Workspace and Document Management** tab of the incident layout enables management of workspaces and documents. The **Workspaces** section lists the available workspaces and allows configuration of their settings and selecting the current workspace by editing the table and using one of the **Action** options.   For the current workspace, the list of embedded documents in that workspace are displayed in the **Workspace Embedded Documents** section.  The **Action** options you can take there are to **Remove** the embedded document, **Pin** the embedded document to the workspace that makes all the embedded content available in the conversation context, and **Unpin** the embedded document from the workspace.  Care must be taken to not consume all the conversation context space by pinning a large document.
 
 ### Documents
 
@@ -115,18 +115,18 @@ When a document is embedded into a workspace, it is split into up to 1000 charac
 
 ### Document Management
 
-For documents specific to a investigation, they are added to the investigation's war room.  Documents that span use cases and individual investigations, to retain their searchability, a dedicated incident is created the the documents uploaded to that war room.  These incidents should be flagged for long term retention since their XSOAR file entry ID is associated to the investigation IDs.  As an example, Mitre ATT&CK documentation would be uploaded to an incident dedicated to retaining them as searchable documents across many investigations.
+For documents specific to an investigation, they are added to the investigation's war room.  Documents that span use cases and individual investigations, to retain their searchability, a dedicated incident is created the the documents uploaded to that war room.  These incidents should be flagged for long term retention since their XSOAR file entry ID is associated to the investigation IDs.  As an example, Mitre ATT&CK documentation would be uploaded to an incident dedicated to retaining them as searchable documents across many investigations.
 
 ## AI Playground
 
-The **AI Playground** tab is where prompts are developed against a workspace and its embedded documents and any additional text from LLM documents and XSOAR searches using the **Text Search...** buttons and adding useful search results to the conversation context with the **Add Search Results to Conversation** button. During adhoc investigative use, a conversation with investigative value is saved to the war room with the **Save Converstation to the War Room** button.  
+The **AI Playground** tab is where prompts are developed against a workspace and its embedded documents and any additional text from LLM documents and XSOAR searches using the **Text Search...** buttons and adding useful search results to the conversation context with the **Add Search Results to Conversation** button. During ad hoc investigative use, a conversation with investigative value is saved to the war room with the **Save Conversation to the War Room** button.  
 
 ## General Tips and Guidance
 
 * Clean uploaded documentation from extraneous text (ie: HTML and PDF formatting and page footers/headers) when embedding a document since data is returned in 1000 character chunks to ensure similarity data being searched for is retrieved. Extraneous text may cause the TopN chunks to be returned without the data needed
-* In a workspace, only embed the documents needed for the use case.  It may be advantageous to create a workspace for an investigation, dynamically embedd needed documents, then delete the workspace at incident closure
+* In a workspace, only embed the documents needed for the use case.  It may be advantageous to create a workspace for an investigation, dynamically embed needed documents, then delete the workspace at incident closure
 * Depending on the LLM model used, asking three precise questions about A, then B, then C, may give better results than one question about A and B and C. Once the three questions are asked and results in the conversation context, asking the final question about all three results may be more effective
-* Once a partial result is achieved and the full converstation context no longer needed for subsequent questions, start a new converstation thread with no context. Keeping the context small and focused increases accuracy of responses
+* Once a partial result is achieved and the full conversation context is no longer needed for subsequent questions, start a new conversation thread with no context. Keeping the context small and focused increases accuracy of responses
 * An incorrect response in the conversation context pollutes subsequent results. Testing and tuning your approach prevents this
 * Setting the workspace **Temperature** to the lowest value supported by your LLM model provides more deterministic results
 * If similarity search is not returning the correct results, review the number of chunks being returned. If too few chunks, increase the **Top N** setting or reduce the **Similarity** setting.  If too many chunks are returned without the correct data, increase the **Similarity** setting.  This is where clean data facilitates proper results
