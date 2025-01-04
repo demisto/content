@@ -61,3 +61,45 @@ The integration allows the use of basic authentication in the requests.
 To enable basic authentication, a user and password have to be supplied in the Credentials parameters in the integration configuration.
 
 The server will then authenticate the requests by the `Authorization` header, expecting basic authentication encrypted in base64 to match the given credentials.
+
+
+## STIX types for STIX indicator Domain Object
+
+Some tools require the indicators in STIX to be a STIX indicator type and not an SCO. If that is the case you can select which indicator types will be converted into SDOs using a STIX Pattern for the indicator value.
+
+For example, when `STIX types for STIX indicator Domain Object` is not selected for IPs the TAXII server will output the IP indicators as an SCO:
+```json
+{
+    "objects": [
+        {
+            "created": "2024-10-01T07:07:00.440957Z",
+            "id": "ipv4-addr--cd2ddd9b-6ae2-5d22-aec9-a9940505e5d5",
+            "modified": "2024-10-01T07:07:00.440958Z",
+            "spec_version": "2.1",
+            "type": "ipv4-addr",
+            "value": "192.168.1.1"
+        }
+    ]
+}
+```
+
+When `ipv4-addr` is selected in `STIX types for STIX indicator Domain Object` the server will output the indicator as a STIX Indicator SDO with the correct pattern:
+```json
+{
+    "objects": [
+        {
+            "created": "2024-10-01T07:07:00.440957Z",
+            "id": "indicator--8d891b3c-0916-582e-b324-7aa39661d128",
+            "labels": [
+                ""
+            ],
+            "modified": "2024-10-01T07:07:00.440958Z",
+            "pattern": "[ipv4-addr:value = '192.168.1.1']",
+            "pattern_type": "stix",
+            "spec_version": "2.1",
+            "type": "indicator",
+            "valid_from": "2024-10-01T07:07:00.440957Z"
+        }
+    ]
+}
+```

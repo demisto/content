@@ -1,7 +1,7 @@
 import json
 import unittest
-from unittest.mock import MagicMock, patch
 import uuid
+from unittest.mock import MagicMock, patch
 
 import pytest
 from EWSO365 import (
@@ -10,23 +10,24 @@ from EWSO365 import (
     ExpandGroup,
     GetSearchableMailboxes,
     add_additional_headers,
+    cast_mime_item_to_message,
     create_message,
+    decode_email_data,
     email,
     fetch_emails_as_incidents,
     fetch_last_emails,
     find_folders,
+    get_attachment_name,
     get_expanded_group,
     get_item_as_eml,
     get_searchable_mailboxes,
+    handle_attached_email_with_incorrect_from_header,
     handle_attached_email_with_incorrect_message_id,
     handle_html,
     handle_incorrect_message_id,
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
-    cast_mime_item_to_message,
-    decode_email_data,
-    get_attachment_name
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -85,6 +86,7 @@ class TestNormalCommands:
             self.account = self.MockAccount()
             self.protocol = ""
             self.mark_as_read = False
+            self.folder_name = ""
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
@@ -281,9 +283,53 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     client.get_folder_by_path = mock_get_folder_by_path
     client.folder_name = 'Inbox'
     last_run = mocker.patch.object(demisto, 'setLastRun')
-    fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER)
+    fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER, False)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
+
+@pytest.mark.parametrize(
+    "skip_unparsable_emails_param, exception_type, expected",
+    [
+        (True, IndexError("Unparsable email ignored"), "Unparsable email ignored"),
+        (True, UnicodeError("Unparsable email ignored"), "Unparsable email ignored"),
+        (True, Exception("Unparsable email not ignored"), "Unparsable email not ignored"),
+        (False, Exception("Unparsable email not ignored"), "Unparsable email not ignored"),
+        (False, IndexError("Unparsable email not ignored"), "Unparsable email not ignored"),
+    ],
+)
+def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_type, expected):
+    """Check the fetch command in skip_unparsable_emails parameter use-cases.
+    Given:
+        - An exception has occurred while processing an email message.
+    When:
+        - Running fetch command.
+    Then:
+        - If skip_unparsable_emails parameter is True, and the Exception is a specific type we allow to fail due to parsing error:
+            log the exception message and continue processing the next email (ignore unparsable email).
+        - If skip_unparsable_emails parameter is False, raise the exception (crash the fetch command).
+    """
+    import EWSO365
+
+    import demistomock as demisto
+
+    class MockEmailObject:
+        def __init__(self):
+            self.message_id = "Value"
+
+    last_run = {"lastRunTime": "2021-07-14T12:59:17Z", "folderName": "Inbox", "ids": ["message1"]}
+
+    client = TestNormalCommands.MockClient()
+    mocker.patch.object(
+        demisto, "getLastRun", return_value={"lastRunTime": "2021-07-14T12:59:17Z", "folderName": "Inbox", "ids": []}
+    )
+    mocker.patch.object(EWSO365, "parse_incident_from_item", side_effect=exception_type)
+    mocker.patch.object(EWSO365, "fetch_last_emails", return_value=[MockEmailObject()])
+    mocker.patch.object(EWSO365, "get_last_run", return_value=last_run)
+
+    with pytest.raises((Exception, UnicodeError, IndexError)) as e:
+        fetch_emails_as_incidents(client, last_run, "received-time", skip_unparsable_emails_param)
+        assert expected == str(e)
 
 
 def test_fetch_and_mark_as_read(mocker):
@@ -324,11 +370,11 @@ def test_fetch_and_mark_as_read(mocker):
     client.folder_name = 'Inbox'
     mark_item_as_read = mocker.patch('EWSO365.mark_item_as_read')
 
-    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER)
+    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
     assert mark_item_as_read.called is False
 
     client.mark_as_read = True
-    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER)
+    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
     assert mark_item_as_read.called is True
 
 
@@ -1000,3 +1046,19 @@ def test_get_attachment_name_legacy_name(monkeypatch, attachment_name, content_i
     monkeypatch.setattr('EWSO365.LEGACY_NAME', True)
     assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
                                is_inline=is_inline) == expected_result
+
+
+def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header():
+    """
+    Given:
+        An email message with a malformed From header.
+    When:
+        The handle_attached_email_with_incorrect_from_header function is called.
+    Then:
+        The From header is corrected and the email message object is updated.
+    """
+    message = email.message_from_bytes(b"From: =?UTF-8?Q?Task_One=0DTest?= <info@test.com>", policy=SMTP)
+
+    result = handle_attached_email_with_incorrect_from_header(message)
+
+    assert result['From'] == 'Task One Test <info@test.com>'

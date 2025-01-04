@@ -286,6 +286,7 @@ class Client(BaseClient):
                                     'sort': [{'direction': sort_direction, 'field': sort_field}],
                                     'timeRange': time_range,
                                     'withResourceJson': include_resource_json,
+                                    'heuristicSearch': 'true'
                                     })
 
         return self._http_request('POST', 'search/config', json_data=data)

@@ -41,20 +41,20 @@ configuration:
   additionalinfo: Token to verify the messages from Zoom.
 - display: Long running instance
   name: longRunning
-  section: Collect
+  section: Connect
   type: 8
+- display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: Required when choosing an external engine. You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - defaultvalue: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
   section: Collect
   additionalinfo: You most enable or run mirror-investigation.
-- display: Listen Port
-  name: longRunningPort
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1225,6 +1225,15 @@ script:
       name: channel_id
     description: Delete a mirrored Zoom channel.
     name: close-channel
+  - name: zoom-delete-user-token
+    description: Revoke a user's Zoom SSO session. Use the zoom-list-users command to get the user ID or user email.
+    execution: true
+    arguments:
+      - name: user_id
+        description: Email or unique identifier of the user.
+        required: true
+        type: string
+    outputs: [ ]
   - name: send-notification
     description: Send a message using a chatbot app.
     arguments:
@@ -1281,7 +1290,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:0.111.0.101615
+  dockerimage: demisto/fastapi:0.115.5.117397
   script: "-"
   subtype: python3
   type: python

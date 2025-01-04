@@ -56,6 +56,12 @@ configuration:
   - ES384
   - ES512
   defaultvalue: RS256
+- display: Key ID
+  name: key_id
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: Required and used if more than one key is used for signing JWT tokens.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1449,6 +1455,20 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Revokes the user's existing sessions and returns a temporary password, regardless of the temporary_password value. When true, you'll need to change the password in the next login.
+      name: revoke_session
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Prevents the password from being saved in the War Room.
+      name: hide_password
+      predefined:
+      - 'true'
+      - 'false'
     description: Expires a password for an existing Okta user.
     execution: true
     name: okta-expire-password
@@ -1486,7 +1506,7 @@ script:
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.106632
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: ""
   subtype: python3

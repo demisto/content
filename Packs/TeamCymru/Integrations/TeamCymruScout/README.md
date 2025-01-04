@@ -32,27 +32,23 @@ Note:
   - Click on the "Revoke" button next to an old key.
   - Click on the "Create Key" button to start generating a new key.
 
-## Configure Team Cymru Scout on Cortex XSOAR
+## Configure Team Cymru Scout in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Team Cymru Scout.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Authentication Type | The authentication type used for secure communication with the Team Cymru Scout platform. | True |
-    | API Key | The API key used for secure communication with the Team Cymru Scout platform. Required if "API Key" as Authentication Type is selected. | False |
-    | Username, Password | The username and password used for secure communication with the Team Cymru Scout platform. Required if "Basic Auth" as Authentication Type is selected. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Create relationships | Create relationships between indicators as part of enrichment. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Authentication Type | The authentication type used for secure communication with the Team Cymru Scout platform. | True |
+| API Key | The API key used for secure communication with the Team Cymru Scout platform. Required if "API Key" as Authentication Type is selected. | False |
+| Username, Password | The username and password used for secure communication with the Team Cymru Scout platform. Required if "Basic Auth" as Authentication Type is selected. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Create relationships | Create relationships between indicators as part of enrichment. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### scout-api-usage
@@ -1509,4 +1505,3 @@ Returns the summary information available for the given list of IP addresses.
 >|Used Queries|Remaining Queries|Query Limit|Foundation Used Queries|Foundation Remaining Queries|Foundation Query Limit|
 >|---|---|---|---|---|---|
 >| 160 | 49840 | 50000 | 3 | 0 | 0 |
-

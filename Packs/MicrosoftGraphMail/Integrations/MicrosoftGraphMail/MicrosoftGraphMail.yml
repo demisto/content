@@ -1,4 +1,4 @@
-category: Cloud Services
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -455,6 +455,8 @@ script:
       name: folder_id
     - description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       name: attachment_id
+    - description: Setting this argument to 'true' will return message attachments of type 'microsoft.graph.message' (also known as 'Outlook item' or '.eml') as downloadable files. Default value is 'false'. Default behavior is to return 'microsoft.graph.message' attachments inside a command result.
+      name: should_download_message_attachment
     - deprecated: true
       description: flag for rate limit retry.
       name: ran_once_flag
@@ -1147,7 +1149,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.98977
+  dockerimage: demisto/crypto:1.0.0.111961
   isfetch: true
   runonce: false
   script: '-'

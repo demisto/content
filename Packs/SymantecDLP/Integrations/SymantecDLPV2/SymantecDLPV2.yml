@@ -605,7 +605,7 @@ script:
     - contextPath: SymantecDLP.MessageBody
       description: Message body for the incident returned by the Enforce console.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.67728
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: ''
   subtype: python3

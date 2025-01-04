@@ -30,22 +30,19 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 * [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
 * [Module Documentation](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html)
 
-## Configure Ansible Linux on Cortex XSOAR
+## Configure Ansible Linux in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible Linux.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
-    | Password |  | True |
-    | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
-    | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
-    | Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
-    | Privilege Escalation Method | Which privilege escalation method should be used. | True |
-    | Privilege Escalation User | Set the user you become through privilege escalation | False |
-    | Privilege Escalation Password | Set the privilege escalation password. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
+| Password |  | True |
+| Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
+| Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
+| Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
+| Privilege Escalation Method | Which privilege escalation method should be used. | True |
+| Privilege Escalation User | Set the user you become through privilege escalation | False |
+| Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!linux-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
@@ -67,7 +64,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### linux-alternatives
 ***
@@ -8272,7 +8269,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 ### Troubleshooting
 The Ansible-Runner container is not suitable for running as a non-root user.
-Therefore, the Ansible integrations will fail if you follow the instructions in the Cortex XSOAR [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide). 
+Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 
 The `docker.run.internal.asuser` server configuration causes the software that is run inside of the Docker containers utilized by Cortex XSOAR to run as a non-root user account inside the container.
 
@@ -8282,4 +8279,4 @@ This is a limitation of the Ansible-Runner software itself https://github.com/an
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 
-See step 2 of this [guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users) for complete instructions.
+See step 2 of this [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide) for complete instructions.

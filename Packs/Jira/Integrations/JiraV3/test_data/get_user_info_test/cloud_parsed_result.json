@@ -1,0 +1,45 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "accountId": "123456:cd68d496-c059-4e88-9e29-12ef5c911bcf",
+        "accountType": "atlassian",
+        "active": true,
+        "applicationRoles": {
+            "items": [],
+            "size": 2
+        },
+        "avatarUrls": {
+            "16x16": "https://secure.gravatar.com/avatar/image.png",
+            "24x24": "https://secure.gravatar.com/avatar/image.png",
+            "32x32": "https://secure.gravatar.com/avatar/image.png",
+            "48x48": "https://secure.gravatar.com/avatar/image.png"
+        },
+        "displayName": "Example User",
+        "emailAddress": "user@example.com",
+        "expand": "groups,applicationRoles",
+        "groups": {
+            "items": [],
+            "size": 5
+        },
+        "locale": "en_US",
+        "self": "https://api.atlassian.com/ex/jira/2bbc6974-df19-4608-a10c-cc3bc207239d/rest/api/3/user?accountId=123456:cd68d496-c059-4e88-9e29-12ef5c911bcf",
+        "timeZone": "America/Detroit"
+    },
+    "HumanReadable": "### Results\n|AccountID|AccountType|Active|DisplayName|Email|Locale|Timezone|\n|---|---|---|---|---|---|---|\n| 123456:cd68d496-c059-4e88-9e29-12ef5c911bcf | atlassian | true | Example User | user@example.com | en_US | America/Detroit |\n",
+    "EntryContext": {
+        "Jira.Users(val.AccountID && val.AccountID == obj.AccountID)": {
+                "AccountID": "123456:cd68d496-c059-4e88-9e29-12ef5c911bcf",
+                "AccountType": "atlassian",
+                "Active": true,
+                "DisplayName": "Example User",
+                "Email": "user@example.com",
+                "Locale": "en_US",
+                "Timezone": "America/Detroit"
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

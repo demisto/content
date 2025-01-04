@@ -1,26 +1,22 @@
 Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 This integration was integrated and tested with version from March 2024 of PaloAltoNetworksAIOps.
 
-## Configure Palo Alto Networks AIOps on Cortex XSOAR
+## Configure Palo Alto Networks AIOps in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Palo Alto Networks AIOps.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Pan-OS/Panorama Server URL | True |
-    | Pan-OS/Panorama API Key | True |
-    | TSG ID | True |
-    | Client ID | True |
-    | Client Secret | True |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Pan-OS/Panorama Server URL | True |
+| Pan-OS/Panorama API Key | True |
+| TSG ID | True |
+| Client ID | True |
+| Client Secret | True |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aiops-bpa-report-generate

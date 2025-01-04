@@ -77,7 +77,6 @@ class Client(BaseClient):
         """
 
         for _ in range(MAX_RETRIES):
-
             try:
                 if method == 'POST' or method == 'PUT':
                     response = requests.request(method, url, headers=headers, json=payload)
@@ -88,10 +87,8 @@ class Client(BaseClient):
 
                 response_json = response.json()
                 return response_json['data']
-
             except Exception:
                 pass
-
         return None
 
 
@@ -127,14 +124,12 @@ def validate_input(args, is_iocs=False):
                 raise ValueError(f"End date must be a date before or equal to {datetime.today().strftime(date_format)}")
             if _start_date > _end_date:
                 raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
-
         else:
             date_format = "%Y-%m-%dT%H:%M:%S%z"
             _start_date = datetime.strptime(args.get('start_date'), date_format)
             _end_date = datetime.strptime(args.get('end_date'), date_format)
             if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
                 raise ValueError(f"The limit argument should contain a positive number, up to 1000, limit: {limit}")
-
             if _start_date > datetime.now(tz=UTC):
                 raise ValueError(
                     f"Start date must be a date before or equal to {datetime.now(tz=UTC).strftime(date_format)}")
@@ -143,7 +138,6 @@ def validate_input(args, is_iocs=False):
                     f"End date must be a date before or equal to {args.get('end_date')}")
             if _start_date > _end_date:
                 raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
-
         return
     except Exception as e:
         demisto.error(f"Exception with validating inputs [{e}]")
@@ -225,9 +219,8 @@ def format_incidents(alerts, hide_cvv_expiry):
     :return: incidents to feed into XSOAR
     """
     events: List[dict[str, Any]] = []
-    try:
-        for alert in alerts:
-
+    for alert in alerts:
+        try:
             if hide_cvv_expiry and alert['service'] == 'compromised_cards':
                 alert['data_message']['data']['bank']['card']['cvv'] = "xxx"
                 alert['data_message']['data']['bank']['card']['expiry'] = "xx/xx/xxxx"
@@ -238,22 +231,21 @@ def format_incidents(alerts, hide_cvv_expiry):
                     keyword = alert['metadata']['entity']['keyword']['tag_name']
 
             alert_details = {
-                "name": "Cyble Vision Alert on {}".format(alert['service']),
-                "event_type": "{}".format(alert['service']),
-                "severity": INCIDENT_SEVERITY.get(alert['severity'].lower()),
-                "alert_group_id": "{}".format(alert['alert_group_id']),
-                "event_id": "{}".format(alert['id']),
-                "data_message": json.dumps(alert['data_message']),
+                "name": "Cyble Vision Alert on {}".format(alert.get('service')),
+                "event_type": "{}".format(alert.get('service')),
+                "severity": INCIDENT_SEVERITY.get(alert.get('severity').lower()),
+                "alert_group_id": "{}".format(alert.get('alert_group_id')),
+                "event_id": "{}".format(alert.get('id')),
+                "data_message": json.dumps(alert.get('data_message')),
                 "keyword": "{}".format(keyword),
-                "created_at": "{}".format(alert['created_at']),
-                "status": "{}".format(alert['status']),
+                "created_at": "{}".format(alert.get('created_at')),
+                "status": "{}".format(alert.get('status')),
                 "mirrorInstance": demisto.integrationInstance()
             }
 
-            if alert['service'] == 'compromised_cards':
+            if alert.get('service') == 'compromised_cards':
 
                 card_details = alert['data_message']['data']['bank']['card']
-
                 alert_details.update({
                     "card_brand": card_details.get('brand'),
                     "card_no": card_details.get('card_no'),
@@ -262,11 +254,8 @@ def format_incidents(alerts, hide_cvv_expiry):
                     "card_level": card_details.get('level'),
                     "card_type": card_details.get('type')
                 })
-
-            elif alert['service'] == 'stealer_logs':
-
+            elif alert.get('service') == 'stealer_logs':
                 content = alert['data_message']['data'].get('content')
-
                 if content:
                     alert_details.update({
                         "application": content.get('Application'),
@@ -274,26 +263,22 @@ def format_incidents(alerts, hide_cvv_expiry):
                         "url": content.get('URL'),
                         "username": content.get('Username')
                     })
-
                 alert_details.update({
                     "filename": alert['data_message']['data']['filename']
                 })
 
             events.append(alert_details)
-
-        return events
-    except Exception as e:
-        demisto.debug(f'Unable to format incidents, error: {e}')
-        raise Exception(f"Error: [{e}] for response [{alerts}]")
+        except Exception as e:
+            demisto.debug(f'Unable to format incidents, error: {e}')
+            continue
+    return events
 
 
 def fetch_service_details(client, base_url, token):
     service_name_lists = fetch_subscribed_services(client, "GET", base_url, token)
-
     lst = []
     for service_name_list in service_name_lists:
         lst.append(service_name_list['name'])
-
     return lst
 
 
@@ -307,7 +292,6 @@ def fetch_subscribed_services(client, method, base_url, token):
         token: server access token
 
     Returns: subscribed service list
-
     """
     get_subscribed_service_url = base_url + str(ROUTES[COMMAND['cyble-vision-subscribed-services']])
     subscribed_services = set_request(client, method, token, {}, get_subscribed_service_url)
@@ -316,7 +300,6 @@ def fetch_subscribed_services(client, method, base_url, token):
     if subscribed_services:
         for subscribed_service in subscribed_services:
             service_name_list.append({"name": subscribed_service['name']})
-
     return service_name_list
 
 
@@ -330,7 +313,6 @@ def test_response(client, method, base_url, token):
         token: API access token
 
     Returns: test response
-
     """
     fetch = fetch_subscribed_services(client, method, base_url, token)
     if fetch:
@@ -360,65 +342,47 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
     """
 
     input_params = {}
-
     input_params['order_by'] = args.get('order_by', "asc")
     input_params['from_da'] = arg_to_number(args.get('from', 0))
     input_params['limit'] = MAX_ALERTS
-
     max_fetch = arg_to_number(demisto.params().get('max_fetch', 1))
 
     if skip:
         validate_input(args, False)
-
         input_params['start_date'] = args.get('start_date', '')
         input_params['end_date'] = args.get('end_date', '')
-
         if not args.get('end_date', ''):
             input_params['end_date'] = datetime.utcnow().astimezone().isoformat()
-
     else:
         initial_interval = demisto.params().get('first_fetch_timestamp', 1)
-
         if 'event_pull_start_date' not in last_run.keys():
             event_pull_start_date = datetime.utcnow() - timedelta(days=int(initial_interval))
             input_params['start_date'] = event_pull_start_date.astimezone().isoformat()
-
         else:
             input_params['start_date'] = last_run['event_pull_start_date']
-
         input_params['end_date'] = datetime.utcnow().astimezone().isoformat()
 
     latest_created_time = input_params['start_date']
-
     final_input_structure = alert_input_structure(input_params)
 
     if len(incident_collections) > 0 and "All collections" not in incident_collections:
-
         fetch_services = []
-
         if "Darkweb Marketplaces" in incident_collections:
             fetch_services.append("darkweb_marketplaces")
-
         if "Data Breaches" in incident_collections:
             fetch_services.append("darkweb_data_breaches")
-
         if "Compromised Endpoints" in incident_collections:
             fetch_services.append("stealer_logs")
-
         if "Compromised Cards" in incident_collections:
             fetch_services.append("compromised_cards")
-
         final_input_structure['where']['service'] = {
             "in": fetch_services
         }
 
     if len(incident_severity) > 0 and "All severities" not in incident_severity:
-
         fetch_severities = []
-
         for severity in incident_severity:
             fetch_severities.append(SEVERITIES.get(severity))
-
         final_input_structure['where']['severity'] = {
             "in": fetch_severities
         }
@@ -430,9 +394,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         return [], {'event_pull_start_date': latest_created_time}
 
     for alert in all_alerts:
-
         timestamp = alert['created_at']
-
         if timestamp in timestamp_count:
             timestamp_count[timestamp] += 1
         else:
@@ -443,11 +405,8 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
     last_timestamp = all_alerts[-1].get('created_at')
 
     alerts = []
-
     for alert in all_alerts:
-
         current_timestamp = alert.get('created_at')
-
         if current_timestamp == prev_timestamp:
             alerts.append(alert)
         else:
@@ -465,16 +424,13 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
     incidents = []
 
     if alerts:
-
         timestamp_str = alerts[-1].get('created_at')
         original_datetime = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
         updated_datetime = original_datetime + timedelta(microseconds=1000)
         latest_created_time = updated_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-
         events = format_incidents(alerts, hide_cvv_expiry)
 
         for event in events:
-
             inci = {
                 'name': event.get('name'),
                 'severity': event.get('severity'),
@@ -485,7 +441,6 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
                 'created': event.get('created_at')
             }
             incidents.append(inci)
-
         next_run = {'event_pull_start_date': latest_created_time}
 
         return incidents, next_run
@@ -507,18 +462,14 @@ def update_remote_system(client, method, token, args, url):
     """
 
     parsed_args = UpdateRemoteSystemArgs(args)
-
     if parsed_args.delta:
-
         severities = {
             "1": "LOW",
             "2": "MEDIUM",
             "3": "HIGH",
             "4": "CRITICAL"
         }
-
         data = parsed_args.data
-
         incident_id = data.get('id')
         status = data.get('status')
         assignee_id = data.get('assignee_id')
@@ -527,13 +478,10 @@ def update_remote_system(client, method, token, args, url):
         updated_event = {
             "id": incident_id
         }
-
         if status in INCIDENT_STATUS:
             updated_event["status"] = INCIDENT_STATUS.get(status)
-
         if assignee_id:
             updated_event["assignee_id"] = assignee_id
-
         if updated_severity:
             if updated_severity == "0.5" or updated_severity == "0":
                 updated_event["user_severity"] = None
@@ -543,7 +491,6 @@ def update_remote_system(client, method, token, args, url):
         body = {
             "alerts": [updated_event]
         }
-
         set_request(client, method, token, body, url)
 
 
@@ -565,18 +512,15 @@ def get_mapping_fields(client, token, url):
     input_params['limit'] = 500
 
     initial_interval = 1
-
     event_pull_start_date = datetime.utcnow() - timedelta(days=int(initial_interval))
 
     input_params['start_date'] = event_pull_start_date.astimezone().isoformat()
     input_params['end_date'] = datetime.utcnow().astimezone().isoformat()
-
     final_input_structure = alert_input_structure(input_params)
 
     alerts = set_request(client, 'POST', token, final_input_structure, url)
 
     fields = {}
-
     for alert in alerts:
         for key in alert:
             fields[key] = alert[key]

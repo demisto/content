@@ -142,7 +142,7 @@ class BoxEventsClient(IntegrationEventsClient):
             self.box_credentials.boxAppSettings.appAuth
         )
         assertion = jwt.encode(
-            payload=claims.dict(),
+            payload=claims.model_dump(mode='json'),  # type: ignore[attr-defined]
             key=decrypted_private_key,
             algorithm='RS512',
             headers={
@@ -226,7 +226,7 @@ def main(command: str, demisto_params: dict):
                                  api_url=demisto_params.get('url', 'https://api.box.com'))
         get_events = BoxEventsGetter(client, options)
         if command == 'test-module':
-            get_events.client.request.params.limit = 1
+            get_events.client.options.limit = 1
             get_events.run()
             demisto.results('ok')
             return

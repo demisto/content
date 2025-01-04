@@ -46,3 +46,21 @@ def test_main(mock_executeCommand, mock_return_error, mocker, siem_name, result,
     else:
         main()
         assert mock_executeCommand.call_args.args[1]["sigmaconvertedquery"] == result
+
+
+def test_main_transform_error(mocker):
+    mock_callingContext = {'args': {'indicator': {"value": "sigma",
+                                                  "CustomFields": {"sigmaruleraw": load_file("test_data/bad_xql_sigma_rule.yml",
+                                                                                             json_file=False)}},
+                                    'SIEM': 'xql'}}
+
+    mocker.patch.dict(demisto.callingContext, mock_callingContext)
+
+    mock_return_error = mocker.patch.object(SigmaButtonConvert, 'return_error')
+
+    main()
+
+    assert mock_return_error.called
+
+    error_message = mock_return_error.call_args[0][0]
+    assert "Failed to parse Sigma rule to xql language" in error_message

@@ -41,6 +41,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  defaultvalue: WHITE
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -170,7 +171,7 @@ script:
     - contextPath: MITREATTACK.value
       description: MITRE ATTACK Attack Pattern value.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.107875
+  dockerimage: demisto/taxii2:1.0.0.117543
   feed: true
   runonce: false
   script: '-'

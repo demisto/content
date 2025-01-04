@@ -756,7 +756,12 @@ tasks:
                       value:
                         simple: pptx
                     ignorecase: true
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -785,7 +790,12 @@ tasks:
                     right:
                       value:
                         simple: xlsm
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -793,7 +803,12 @@ tasks:
                     right:
                       value:
                         simple: docm
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -1007,7 +1022,12 @@ tasks:
               right:
                 value:
                   simple: xlsm
-          - - operator: isNotEqualString
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
               left:
                 value:
                   simple: inputs.File.Extension
@@ -1296,7 +1316,12 @@ tasks:
                       value:
                         simple: text/rtf
                     ignorecase: true
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -1314,6 +1339,32 @@ tasks:
                       value:
                         simple: CDFV2 Encrypted
                     ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docx
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: doc
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -1447,7 +1498,12 @@ tasks:
                 value:
                   simple: text/rtf
               ignorecase: true
-          - - operator: isNotEqualString
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
               left:
                 value:
                   simple: inputs.File.Extension
@@ -1456,6 +1512,32 @@ tasks:
                 value:
                   simple: xlsb
               ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: doc
           - - operator: notContainsGeneral
               left:
                 value:

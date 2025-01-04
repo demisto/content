@@ -1,11 +1,11 @@
 import copy
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
-    search_records_soap_request
+    search_records_soap_request, upload_and_associate_command
 
 BASE_URL = 'https://test.com/'
 
@@ -561,7 +561,7 @@ class TestArcherV2:
         record = copy.deepcopy(INCIDENT_RECORD)
         record['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident, incident_created_time = client.record_to_incident(record, 75, '305')
-        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=UTC)
         assert incident['name'] == 'RSA Archer Incident: 227602'
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
@@ -778,7 +778,7 @@ class TestArcherV2:
         incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident['record']['Date/Time Reported'] = "26/03/2018 10:03 AM"
         incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, '305')
-        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=UTC)
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
     def test_record_to_incident_american_time(self):
@@ -800,7 +800,7 @@ class TestArcherV2:
         incident, incident_created_time = client.record_to_incident(
             INCIDENT_RECORD, 75, '305'
         )
-        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=UTC)
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
     def test_fetch_time_change(self, mocker):
@@ -832,7 +832,7 @@ class TestArcherV2:
         mocker.patch.object(client, 'search_records', return_value=([record], {}))
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
         assert last_fetch < next_fetch
-        assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=timezone.utc)
+        assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=UTC)
         assert incidents[0]['occurred'] == date_time_reported
 
     def test_two_fetches(self, mocker):
@@ -867,11 +867,11 @@ class TestArcherV2:
         )
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
         assert last_fetch < next_fetch
-        assert next_fetch == datetime(2020, 3, 18, 10, 30, tzinfo=timezone.utc)
+        assert next_fetch == datetime(2020, 3, 18, 10, 30, tzinfo=UTC)
         assert incidents[0]['occurred'] == '2020-03-18T10:30:00.000Z'
         incidents, next_fetch = fetch_incidents(client, params, next_fetch, '305')
         assert last_fetch < next_fetch
-        assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=timezone.utc)
+        assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=UTC)
         assert incidents[0]['occurred'] == '2020-03-18T15:30:00.000Z'
 
     def test_fetch_got_old_incident(self, mocker):
@@ -958,12 +958,12 @@ class TestArcherV2:
         first_fetch = parser('2021-02-24T08:45:55Z')
         incidents, first_next_fetch = fetch_incidents(client, params, first_fetch, field_time_id)
         assert first_fetch < first_next_fetch
-        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=UTC)
         assert incidents[0]['occurred'] == '2021-02-25T08:45:55.977Z'
         # first_next_fetch_dt simulates the set to last_run done in fetch-incidents
         first_next_fetch_dt = parser(first_next_fetch.strftime(OCCURRED_FORMAT))
         incidents, second_next_fetch = fetch_incidents(client, params, first_next_fetch_dt, field_time_id)
-        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=UTC)
         assert not incidents
 
     def test_search_records_by_report_command(self, mocker):
@@ -1077,3 +1077,165 @@ class TestArcherV2:
         else:
             assert not new_token_mocker.called
         assert soap_mocker.call_count == len(http_call_attempt_results)
+
+    def test_upload_and_associate_command_record_has_attachments(self, mocker):
+        """
+        Given: A record with existing attachments and multiple files to upload
+        When: The upload_and_associate_command is called
+        Then: Files are uploaded, associated with the record, and existing attachments are preserved
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'Attachments': ['456', '789']}, '', ''))
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        assert mock_upload_file.call_args_list[1] == mocker.call(client, {"entryId": "entry2"})
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2",
+            "fieldsToValues": '{"field1": ["123", "123", "456", "789"]}'
+        })
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+
+    def test_upload_and_associate_command_single_file(self, mocker):
+        """
+        Given: A single file to upload and associate
+        When: The upload_and_associate_command is called
+        Then: The file is uploaded and associated with the record
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'ID': '123'}, '', ''))
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 1
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1",
+            "fieldsToValues": '{"field1": ["123"]}'
+        })
+
+    def test_upload_and_associate_command_record_has_no_attachments(self, mocker):
+        """
+        Given: A record without existing attachments and multiple files to upload
+        When: The upload_and_associate_command is called
+        Then: Files are uploaded and associated with the record
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'ID': '123'}, '', ''))
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        assert mock_upload_file.call_args_list[1] == mocker.call(client, {"entryId": "entry2"})
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2",
+            "fieldsToValues": '{"field1": ["123", "123"]}'
+        })
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+
+    def test_upload_and_associate_command_record_with_error(self, mocker):
+        """
+        Given: An error occurs during record retrieval
+        When: The upload_and_associate_command is called
+        Then: Files are uploaded, association is attempted, and an error is returned
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        mock_update_record = mocker.patch("ArcherV2.update_record_command")
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({'ID': '123'}, '', 'error'))
+        mock_error = mocker.patch("ArcherV2.return_error")
+        args = {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2"
+        }
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file.call_args_list[0] == mocker.call(client, {"entryId": "entry1"})
+        assert mock_upload_file.call_args_list[1] == mocker.call(client, {"entryId": "entry2"})
+        mock_update_record.assert_called_once_with(client, {
+            "applicationId": "app1",
+            "contentId": "content1",
+            "associatedField": "field1",
+            "entryId": "entry1, entry2",
+            "fieldsToValues": '{"field1": ["123", "123"]}'
+        })
+        mock_get_record.assert_called_once_with("app1", "content1", 0)
+        mock_error.assert_called_once_with('error')
+
+    def test_upload_and_associate_command_without_association(self, mocker):
+        """
+        Given: A file to upload without association to a record
+        When: The upload_and_associate_command is called
+        Then: The file is uploaded without being associated to any record
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value='123')
+        args = {"entryId": "entry1"}
+
+        upload_and_associate_command(client, args)
+
+        assert mock_upload_file.call_count == 1
+        mock_upload_file.assert_called_once_with(client, {
+            "entryId": "entry1",
+        })
+
+    def test_upload_and_associate_command_missing_args(self, mocker):
+        """
+        Given: Incomplete arguments for upload and associate command
+        When: The upload_and_associate_command is called
+        Then: An exception is raised indicating missing required arguments
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+
+        # Test error when only applicationId is provided
+        args = {"applicationId": "app1", "entryId": "entry1"}
+        with pytest.raises(DemistoException) as e:
+            upload_and_associate_command(client, args)
+        assert str(e.value) == 'Found arguments to associate an attachment to a record, but not all required arguments supplied'
+
+        # Test error when only contentId is provided
+        args = {"contentId": "content1", "entryId": "entry1"}
+        with pytest.raises(DemistoException) as e:
+            upload_and_associate_command(client, args)
+        assert str(e.value) == 'Found arguments to associate an attachment to a record, but not all required arguments supplied'

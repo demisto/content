@@ -1,28 +1,24 @@
 Palo Alto Networks Trend Micro Email Security Event Collector integration for XSIAM.
 
-## Configure Trend Micro Email Security Event Collector on Cortex XSIAM
+## Configure Trend Micro Email Security Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
-2. Search for Trend Micro Email Security Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Service URL |  | True |
-    | USER NAME |  | True |
-    | API Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Hide sensitive details from email |  | False |
-    | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is executed. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Service URL |  | True |
+| USER NAME |  | True |
+| API Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Hide sensitive details from email |  | False |
+| The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is executed. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 **Note**: There are three types of events that the integration fetches, When the max fetch parameter is set to 1000 then 1000 logs will be retrieved from each type so that a total of 3000 logs can be retrieved.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### trend-micro-get-events

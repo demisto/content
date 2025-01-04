@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "- The deprecated command `wab-get-metadata-of-one-or-multiple-sessions` has been removed.\n- The deprecated argument `application_put__meters` has been removed from the `wab-edit-application` command.\n- The deprecated output `WAB.profile_get.gui_features.dashboards` has been removed from the `wab-get-profile` and `wab-get-profiles` commands.\n- The deprecated output `WAB.application_get.tags.id` has been removed from the following commands: `wab-get-application`, `wab-get-applications`.\n- The deprecated output `WAB.device_get.tags.id` has been removed from the following commands: `wab-get-device`, `wab-get-devices`."
+}

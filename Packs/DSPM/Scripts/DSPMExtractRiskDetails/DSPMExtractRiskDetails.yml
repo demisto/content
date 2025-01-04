@@ -1,0 +1,28 @@
+commonfields:
+  id: DSPMExtractRiskDetails
+  version: -1
+name: DSPMExtractRiskDetails
+script: ''
+type: python
+tags: []
+comment: "This script extracts risk details from an incident object, processes asset tags, and sets the user's Slack email for future notifications.\nIt retrieves the incident details, including risk information, asset tags, and configuration details from the DSPM integration. If the asset owner's email is found, it is stored; otherwise, a default email is used. The extracted data is stored in the XSOAR context and displayed in a readable markdown format."
+enabled: true
+args:
+- name: incident_object
+  required: true
+  description: Incident data of a specific asset.
+- name: defaultSlackUser
+  description: Default slack user provided by user.
+  required: true
+outputs:
+- contextPath: incident_object
+  description: incident object.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

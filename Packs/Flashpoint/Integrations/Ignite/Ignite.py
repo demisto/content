@@ -142,7 +142,7 @@ ALERT_SOURCES_MAPPING = {
 ALERT_RESOURCE_URL = {
     'communities': '/search/context/communities/{}',
     'marketplaces': '/search/context/marketplaces/{}',
-    'media': '/search/results/media?include.media_id={}',
+    'media': '/search/results/media?include.date=all+time&include.media_id={}',
 }
 
 ALERT_STATUS_MAPPING = {
@@ -564,13 +564,15 @@ def remove_duplicate_records(records: List, fetch_type: str, next_run: dict) -> 
     return records
 
 
-def prepare_incidents_from_alerts_data(response: dict, last_run: dict, fetch_params: dict) -> Tuple[dict, list]:
+def prepare_incidents_from_alerts_data(
+        response: dict, last_run: dict, fetch_params: dict, platform_url: str) -> Tuple[dict, list]:
     """
     Prepare incidents from the alerts data.
 
     :param response: Response from the alerts API
     :param last_run: Dictionary to set in last run
     :param fetch_params: Dictionary of fetch parameters
+    :param platform_url: Platform URL
 
     :return: Tuple of dictionary of next run and list of fetched incidents
     """
@@ -589,6 +591,14 @@ def prepare_incidents_from_alerts_data(response: dict, last_run: dict, fetch_par
 
         tags = alert.get('tags', {})
         alert['tag_as_list'] = list(tags.keys())
+
+        origin = alert.get('reason', {}).get('origin')
+        source = alert.get('source')
+        resource_url = alert.get('resource', {}).get('url')
+        if not resource_url and origin == 'searches':
+            resource_url = get_resource_url(source, alert.get('resource', {}).get('id'), platform_url)
+
+        alert['resource'].update({'url': resource_url})
 
         incidents.append({
             'name': alert.get('reason', {}).get('name', '') + ' : ' + str(alert.get('id', '')),
@@ -616,6 +626,21 @@ def prepare_incidents_from_alerts_data(response: dict, last_run: dict, fetch_par
     return next_run, incidents
 
 
+def get_incident_name(hit_source: dict) -> str:
+    '''
+    Determines the incident name based on available fields in the hit source.
+    :param hit_source: The source data from the hit.
+    :return: The incident name.
+    '''
+    for field in ['username', 'email', 'fpid']:
+        value = hit_source.get(field)
+        if value:
+            demisto.debug(f'Setting incident name with {field}: {value}')
+            return value
+    demisto.debug('Setting incident name with default: Compromised Credential Alert')
+    return 'Compromised Credential Alert'
+
+
 def prepare_incidents_from_compromised_credentials_data(response: dict, next_run: dict,
                                                         start_time: str, is_test: bool) -> Tuple[dict, list]:
     """
@@ -641,13 +666,11 @@ def prepare_incidents_from_compromised_credentials_data(response: dict, next_run
     severity = demisto.params().get('severity', DEFAULT_SEVERITY)
 
     for hit in hits:
-        name = hit.get('_source', {}).get('email')
-        if not name:
-            name = hit.get('_source', {}).get('fpid', 'Compromised Credential Alert')
+        hit_source = hit.get('_source', {})
         incidents.append({
-            'name': name,
-            'severity': IncidentSeverity.__dict__.get(severity.upper()),
-            'occurred': hit.get('_source', {}).get('breach', {}).get('created_at', {}).get('date-time'),
+            'name': get_incident_name(hit_source),
+            'severity': getattr(IncidentSeverity, severity.upper(), None),  # safer access to enum
+            'occurred': hit_source.get('breach', {}).get('created_at', {}).get('date-time'),
             'rawJSON': json.dumps(hit)
         })
 
@@ -941,6 +964,7 @@ def prepare_hr_for_compromised_credentials(hits: list) -> str:
         data = {
             'FPID': source.get('fpid', ''),
             'Email': source.get('email', ''),
+            'Username': source.get('username', ''),
             'Breach Source': source.get('breach', {}).get('source'),
             'Breach Source Type': source.get('breach', {}).get('source_type'),
             'Password': source.get('password'),
@@ -949,9 +973,10 @@ def prepare_hr_for_compromised_credentials(hits: list) -> str:
         }
         hr.append(data)
 
-    return tableToMarkdown("Compromised Credential(s)", hr, ['FPID', 'Email', 'Breach Source', 'Breach Source Type',
-                                                             'Password', 'Created Date (UTC)',
-                                                             'First Observed Date (UTC)'], removeNull=True)
+    return tableToMarkdown("Compromised Credential(s)", hr,
+                           ['FPID', 'Email', 'Username', 'Breach Source', 'Breach Source Type',
+                            'Password', 'Created Date (UTC)', 'First Observed Date (UTC)'],
+                           removeNull=True)
 
 
 def parse_indicator_response(indicators):
@@ -1151,7 +1176,8 @@ def fetch_incidents(client: Client, last_run: dict, params: dict, is_test: bool 
     elif fetch_type == 'Alerts':
         if is_test:
             return {}, []
-        next_run, incidents = prepare_incidents_from_alerts_data(response, last_run, fetch_params['fetch_params'])
+        next_run, incidents = prepare_incidents_from_alerts_data(
+            response, last_run, fetch_params['fetch_params'], client.platform_url)
 
     demisto.info(f'Fetched {len(incidents)} incidents for {fetch_type}')
     return next_run, incidents

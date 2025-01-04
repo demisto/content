@@ -253,6 +253,7 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
                                                'sort': [{'direction': 'desc', 'field': 'insertTs'}],
                                                'timeRange': {'type': 'to_now', 'value': 'epoch'},
                                                'withResourceJson': 'true',
+                                               'heuristicSearch': 'true'
                                                })
 
 

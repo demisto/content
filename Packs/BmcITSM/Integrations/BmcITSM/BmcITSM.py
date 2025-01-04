@@ -1004,7 +1004,7 @@ class Client(BaseClient):
             "TaskType": task_type,
             "Priority": priority,
             "RootRequestName": root_request_name,
-            "Support Company": assigned_support_company,
+            "Assignee Company": assigned_support_company,
             "Assignee Organization": assigned_support_organization,
             "Assignee Group": assigned_support_group_name,
             "Company": company,
@@ -3476,7 +3476,7 @@ def gen_single_filters_statement(filter_key: str, values: list, oper_in_filter: 
 
     stmt = oper_between_filters.join(f"'{filter_key}' {oper_in_filter} \"{resource_id}\""
                                      for resource_id in (values))
-    return stmt
+    return f'({stmt})' if stmt else ''
 
 
 def wrap_filter_value(filter_value: str, operation: str) -> str:
@@ -3530,7 +3530,7 @@ def gen_fetch_incidents_query(
         str: query to fetch a certain ticket type.
     """
     create_time_prop = "Create Date" if ticket_type == "task" else "Submit Date"
-    time_filter = f"'{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\""
+    time_filter = f"('{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\")"
 
     status_statement = gen_single_filters_statement(TICKET_TYPE_TO_STATUS_KEY[ticket_type],
                                                     status_filter, "=", " OR ")

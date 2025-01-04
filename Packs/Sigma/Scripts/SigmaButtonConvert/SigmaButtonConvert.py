@@ -32,10 +32,16 @@ def main():
         rule_str = indicator["CustomFields"]["sigmaruleraw"]
         rule = SigmaRule.from_yaml(rule_str)
         query = siem.convert_rule(rule)[0]
-        execute_command("setIndicator", {"sigmaconvertedquery": f"{query}", "value": indicator["value"]})
+        execute_command("setIndicator", {"sigmaconvertedquery": f"{query}",
+                                         "querylanguage": f"{args['SIEM'].replace('_', ' ')}",
+                                         "value": indicator["value"]})
 
     except exceptions.SigmaTransformationError as e:
         query = f"ERROR:\n{e}"
+        execute_command("setIndicator", {"sigmaconvertedquery": f"{query}",
+                                         "querylanguage": f"{args['SIEM'].replace('_', ' ')}",
+                                         "value": indicator["value"]})
+        return_error(f"Failed to parse Sigma rule to {args['SIEM']} language")
 
     except KeyError:
         return_error(f"Unknown SIEM - \"{args['SIEM']}\"")

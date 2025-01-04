@@ -68,3 +68,4 @@ tags:
 - ml
 comment: Predict phishing incidents using the out-of-the-box pre-trained model.
 fromversion: 5.5.0
+autoUpdateDockerImage: false
