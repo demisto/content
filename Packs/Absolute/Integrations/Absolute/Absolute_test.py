@@ -7,7 +7,7 @@ import pytest
 from pytest import raises
 
 from CommonServerPython import DemistoException
-from Absolute import Client, DATE_FORMAT, INTEGRATION
+from Absolute import Client, DATE_FORMAT, INTEGRATION, ClientV3
 
 EXPECTED_CANONICAL_GET_REQ_NO_PAYLOAD_NO_QUERY = """GET
 /v2/reporting/devices
@@ -144,6 +144,15 @@ def create_client(base_url: str = 'https://api.absolute.com', token_id: str = 't
 @pytest.fixture
 def absolute_client():
     return create_client()
+
+
+@pytest.fixture
+def absolute_client_v3():
+    return ClientV3(proxy=False,
+                    verify=False,
+                    base_url='https://api.absolute.com',
+                    token_id='token',
+                    secret_key='secret')
 
 
 def util_load_json(path):
@@ -497,3 +506,110 @@ def test_get_device_location_command(mocker, absolute_client):
                         'LastUpdate': 1605747972853,
                         'LocationTechnology': 'gps',
                         'State': 'Israel'}]
+
+
+def test_fetch_events_no_events(mocker, absolute_client_v3):
+    from Absolute import fetch_events
+    mock_response = {'data': [], 'metadata': {}}
+    mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.add_time_field_to_events_and_get_latest_events', return_value=(mock_response.get('data'), []))
+    events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
+    assert events == mock_response.get('data')
+    assert last_run_object.get('start_date')
+    assert last_run_object.get('end_date')
+
+
+def test_fetch_events_first_fetch(mocker, absolute_client_v3):
+    from Absolute import fetch_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.add_time_field_to_events_and_get_latest_events', return_value=(mock_response.get('data'), []))
+    events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
+    assert events == mock_response.get('data')
+    assert last_run_object.get('start_date')
+    assert last_run_object.get('end_date')
+
+
+def test_fetch_events_with_last_run_object(mocker, absolute_client_v3):
+    pass
+
+
+def test_run_fetch_mechanism_one_fetch(mocker, absolute_client_v3):
+    from Absolute import run_fetch_mechanism
+    from datetime import timedelta
+    mock_response = util_load_json('test_data/siem_events.json')
+    mock_response['metadata']['pagination']['nextPage'] = ''
+    mocker.patch.object(absolute_client_v3, 'fetch_events', return_value=mock_response)
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(minutes=1)
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events')
+    all_events, next_page_token = run_fetch_mechanism(absolute_client_v3, 10000, '', start_date, end_date)
+    assert all_events == mock_response.get('data')
+    fetch_events_spy.assert_called_once()
+
+
+def test_run_fetch_mechanism_multiple_fetches(mocker, absolute_client_v3):
+    from Absolute import run_fetch_mechanism
+    from datetime import timedelta
+    import Absolute
+
+    Absolute.SEIM_EVENTS_PAGE_SIZE = 10
+    mock_response = util_load_json('test_data/siem_events.json')
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(minutes=1)
+
+    def fetch_events_side_effect(query_string):
+        if fetch_events_side_effect.call_count == 1:
+            fetch_events_side_effect.call_count += 1
+            return {
+                'data': mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE],
+                'metadata': {
+                    'pagination': {
+                        'nextPage': 'next_token'
+                    }
+                }
+            }
+        else:
+            return {
+                'data': mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE:],
+                'metadata': {
+                    'pagination': {}
+                }
+            }
+
+    fetch_events_side_effect.call_count = 1
+    mocker.patch.object(absolute_client_v3, 'fetch_events', side_effect=fetch_events_side_effect)
+    fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events')
+    all_events, next_page_token = run_fetch_mechanism(absolute_client_v3, 10000, '', start_date, end_date)
+
+    assert all_events == mock_response.get('data')
+    assert fetch_events_spy.call_count == 2
+    assert next_page_token == ''
+
+
+def test_run_fetch_mechanism_with_time_window(mocker, absolute_client_v3):
+    pass
+
+
+def test_run_fetch_mechanism_with_next_page_token(mocker, absolute_client_v3):
+    pass
+
+
+def test_deduplication(mocker, absolute_client_v3):
+    pass
+
+
+def test_add_time_field(mocker, absolute_client_v3):
+    pass
+
+
+def test_get_latest_events(mocker, absolute_client_v3):
+    pass
+
+
+def test_get_events_command(mocker, absolute_client_v3):
+    pass
+
+
+def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
+    pass
