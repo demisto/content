@@ -108,7 +108,9 @@ def websocket_connections(
     with ExitStack() as stack:  # Keep connection contexts for clean up
         connections = [EventConnection(
             event_type=event_type,
-            connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
+            connection=stack.enter_context(connect(url(type=event_type.value),
+                                                   additional_headers=extra_headers,
+                                                   max_size=None)),
             fetch_interval=fetch_interval,
         ) for event_type in EventType]
 
