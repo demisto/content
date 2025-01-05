@@ -5203,11 +5203,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "playbookID": "ValidateContent - Test",
-            "fromversion": "5.5.0",
-            "has_api": true
-        },
-        {
             "playbookID": "DeleteContext-auto-subplaybook-test",
             "fromversion": "5.0.0"
         },
