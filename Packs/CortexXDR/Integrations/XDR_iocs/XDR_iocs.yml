@@ -80,7 +80,7 @@ configuration:
   required: false
   section: Connect
   additionalinfo: When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified
-- display: Use System Proxy Settings
+- display: Use system proxy settings
   name: proxy
   type: 8
   required: false
