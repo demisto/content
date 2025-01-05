@@ -73,7 +73,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-- display: Trust Any Certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   type: 8
   advanced: true
