@@ -5204,7 +5204,8 @@
         },
         {
             "playbookID": "ValidateContent - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
