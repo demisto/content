@@ -587,24 +587,28 @@ def test_run_fetch_mechanism_multiple_fetches(mocker, absolute_client_v3):
     assert next_page_token == ''
 
 
-def test_run_fetch_mechanism_with_time_window(mocker, absolute_client_v3):
-    pass
-
-
-def test_run_fetch_mechanism_with_next_page_token(mocker, absolute_client_v3):
-    pass
-
-
 def test_deduplication(mocker, absolute_client_v3):
     pass
 
 
-def test_add_time_field(mocker, absolute_client_v3):
-    pass
+def test_add_time_field(absolute_client_v3):
+    from Absolute import add_time_field_to_events_and_get_latest_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    events = mock_response.get('data')
+    all_events, _ = add_time_field_to_events_and_get_latest_events(events=events)
+    for event in all_events:
+        assert event.get('_TIME')
 
 
-def test_get_latest_events(mocker, absolute_client_v3):
-    pass
+def test_get_latest_events(absolute_client_v3):
+    from Absolute import add_time_field_to_events_and_get_latest_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    events = mock_response.get('data')
+    _, latest_events_id = add_time_field_to_events_and_get_latest_events(events=events)
+    assert len(latest_events_id) == 2
+    assert len(set(latest_events_id)) == 2
+    assert latest_events_id == ['id14', 'id15']
+    assert events[13].get('eventDateTimeUtc') == events[14].get('eventDateTimeUtc')
 
 
 def test_get_events_command(mocker, absolute_client_v3):
@@ -612,4 +616,14 @@ def test_get_events_command(mocker, absolute_client_v3):
 
 
 def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
-    pass
+    from Absolute import prepare_query_string_for_fetch_events
+    from datetime import timedelta
+    mock_response = util_load_json('test_data/siem_events.json')
+    event = mock_response.get('data')[0]
+    start_date = datetime.strptime(event.get('createdDateTimeUtc'), "%Y-%m-%dT%H:%M:%S.%fZ")
+    end_date = start_date + timedelta(minutes=1)
+    page_size = 1000
+    next_page = 'next_token'
+    query = prepare_query_string_for_fetch_events(page_size, start_date, end_date, next_page)
+    expected_query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&pageSize={page_size}&nextPage={next_page}'
+    assert query == expected_query
