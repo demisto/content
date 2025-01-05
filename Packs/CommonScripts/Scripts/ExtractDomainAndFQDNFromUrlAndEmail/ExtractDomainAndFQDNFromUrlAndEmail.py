@@ -57,7 +57,7 @@ def get_fqdn(input_url: str) -> str | None:
         get_tld(input_url, fail_silently=True, as_object=True)
 
     if domain_info and domain_info.tld != 'onion':  # type: ignore[union-attr]
-    # Weve removed the filter for "zip" as it is now a valid gTLD by Google
+        # Weve removed the filter for "zip" as it is now a valid gTLD by Google
         if not isinstance(domain_info, Result):
             raise TypeError(f"Expected to get a Result object but got {type(domain_info)}")
 
