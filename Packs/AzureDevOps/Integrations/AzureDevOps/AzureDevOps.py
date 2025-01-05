@@ -1818,7 +1818,7 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
     response = client.pull_requests_list_request(project, repository, skip=0, limit=1)
     num_prs = response.get("count", 0)
     last_pr_id = response.get('value', [])[0].get('pullRequestId', 0) if len(response.get('value', [])) > 0 else None
-    if num_prs == 0 or last_pr_id <= last_id:
+    if num_prs == 0 or last_pr_id <= last_id:  # type: ignore[operator]
         demisto.debug(f'Number of PRs is: {num_prs}. Last fetched PR id: {last_pr_id}')
         return False
 
