@@ -206,7 +206,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
-        event_id = None # TODO we don't get an id from Retarus
+        event_id = event_id = event.get("rmxId", event.get("mimeId"))
         event_ts = event.get("ts")
         if not event_ts:
             # if timestamp is not in the response, use the current time
@@ -217,6 +217,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
             demisto.debug(f"Event {event_id} has an invalid timestamp, using current time")
             # if timestamp is not in correct format, use the current time
             date = datetime.utcnow()
+        event["id"] = event_id  # TODO not sure I am supposed to do it, maybe it's for @bavly
         event["_time"] = date
         event["event_type"] = event.get("type")
         events.append(event)
