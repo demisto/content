@@ -1,7 +1,7 @@
 ## TAXII2 Service Integration
 
 This integration provides TAXII2 Services for system indicators (Outbound feed).
-You can choose to use TAXII v2.0 or TAXII v2.1.
+You can choose to use TAXII v2.0 or TAXII v2.1. TAXII2 Service Integration is a long-running integration. For more information about long-running integrations, check out the <~XSIAM>[Forward requests to long-running integrations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) article.</~XSIAM> <~XSOAR_SAAS>Forward Requests to Long-Running Integrations article: [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations) or [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) documentation.</~XSOAR_SAAS>
 
 ## Configure Collections
 Each TAXII collection in the integration is represented by a Cortex XSOAR indicator query.
