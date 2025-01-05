@@ -110,7 +110,7 @@ class Client(BaseClient):
         limit: int = 20,
         from_epoch: str = '',
         counter: int = 0
-    ) -> tuple[list[dict], str | None]:
+    ) -> tuple[list[str], str | None]:
         params: dict[str, int | str] = {
             'limit': limit
         }
@@ -142,14 +142,8 @@ class Client(BaseClient):
         demisto.info(f"Finished executing request to Akamai for the {counter} time, processing")
         # End of new part.
         
-        events: list[dict] = []
-        for event in raw_response.split('\n'):
-            try:
-                events.append(json.loads(event))
-            except Exception as e:
-                if event:  # The last element might be an empty dict.
-                    demisto.error(f"Could not decode the {event=}, reason: {e}")
-        offset = events.pop().get("offset")
+        events: list[str] = raw_response.split('\n')
+        offset = (json.loads(events.pop())).get("offset")
         return events, offset
 
 
@@ -490,15 +484,16 @@ async def fetch_events_command(client: Client,
 
 async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter):
     demisto.info(f"got {len(events)} events, moving to processing events data for the {counter} time.")
+    decoded_events: list = []
     if should_skip_decode_events:
-        demisto.info("Skipping decode events, adding _time fields to events.")
-        # for event in events:
-        #     event["_time"] = event["httpMessage"]["start"]
+        demisto.info("Skipping decode events.")
+        demisto.info(f"got {events[0]}")
+        decoded_events = events
     else:
-        demisto.info("decoding and adding _time fields to events.")
+        demisto.info("decoding events.")
         for event in events:
             try:
-                event["_time"] = event["httpMessage"]["start"]
+                event = json.loads(event)
                 if "attackData" in event:
                     for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
                                             'ruleActions', 'ruleVersions']:
@@ -510,16 +505,16 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                     event['httpMessage']['responseHeaders'] = decode_url(
                         event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:
-                config_id = event.get('attackData', {}).get('configId', "")
-                policy_id = event.get('attackData', {}).get('policyId', "")
-                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-    demisto.info(f"Sending {len(events)} events to xsiam for the {counter} time with latest event time = {events[-1]['_time']}")
-    tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
+                demisto.debug(f"Couldn't decode {event=}, reason: {e}")
+            finally:
+                decoded_events.append(event)
+    demisto.info(f"Sending {len(decoded_events)} events to xsiam for the {counter} time.")
+    tasks = send_events_to_xsiam_akamai(decoded_events, VENDOR, PRODUCT, should_update_health_module=False,
                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True, url_key="host")
     demisto.info(f"Finished executing send_events_to_xsiam for the {counter} time, waiting for tasks to end.")
     await asyncio.gather(*tasks)
     demisto.info(f"Finished gathering all tasks for the {counter} time.")
-    asyncio.create_task(update_total_events_fetched_and_offset(len(events), offset))  # noqa: RUF006
+    asyncio.create_task(update_total_events_fetched_and_offset(len(decoded_events), offset))  # noqa: RUF006
 
 
 async def get_events_from_akamai(client: Client, config_ids, from_time, page_size, offset):
