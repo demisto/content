@@ -2240,7 +2240,7 @@ def panorama_edit_address_group_command(args: dict):
         if element_to_add:
             addresses = list(set(element_to_add + address_group_list))
         else:
-            addresses = [item for item in address_group_list if item not in element_to_remove]
+            addresses = [item for item in address_group_list if item not in element_to_remove]  # type: ignore[operator]
             if not addresses:
                 raise DemistoException(
                     f'cannot remove {address_group_list} addresses from address group {address_group_name}, '
@@ -2718,7 +2718,7 @@ def panorama_create_service_group_command(args: dict):
     services = argToList(args['services'])
     tags = argToList(args['tags']) if 'tags' in args else None
 
-    result = panorama_create_service_group(service_group_name, services, tags)
+    result = panorama_create_service_group(service_group_name, services, tags)  # type: ignore[arg-type]
 
     service_group_output = {
         'Name': service_group_name,
@@ -2839,12 +2839,12 @@ def panorama_edit_service_group_command(args: dict):
         if services_to_add:
             services = list(set(services_to_add + service_group_list))
         else:
-            services = [item for item in service_group_list if item not in services_to_remove]
+            services = [item for item in service_group_list if item not in services_to_remove]  # type: ignore[operator]
 
         if len(services) == 0:
             raise Exception('A Service group must have at least one service.')
 
-    result = panorama_edit_service_group(service_group_name, services, tag)
+    result = panorama_edit_service_group(service_group_name, services, tag)  # type: ignore[arg-type]
 
     service_group_output = {'Name': service_group_name}
     if DEVICE_GROUP:
