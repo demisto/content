@@ -791,6 +791,7 @@ def get_mapping_fields_command():
 def get_modified_remote_data_command(client, args):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+    last_update_without_ms = None
 
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
