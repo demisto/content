@@ -1,6 +1,6 @@
 # This file contains the ruff hook rules when pre-commit is run with the --all flag
 
-lint.select = [
+select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
