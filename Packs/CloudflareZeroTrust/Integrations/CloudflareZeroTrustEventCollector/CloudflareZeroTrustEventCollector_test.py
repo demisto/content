@@ -7,7 +7,6 @@ from CloudflareZeroTrustEventCollector import (
     Client,
     fetch_events,
     get_events_command,
-    test_module,
     calculate_fetch_dates,
     prepare_next_run,
     handle_duplicates,
@@ -49,6 +48,7 @@ def mock_client() -> Client:
 @freeze_time(MOCK_TIME_UTC_NOW)
 def test_test_module(mock_client: Client, mocker):
     """Test the test_module function."""
+    from CloudflareZeroTrustEventCollector import test_module
     mocker.patch(
         "CloudflareZeroTrustEventCollector.fetch_events",
         return_value=({}, [])
