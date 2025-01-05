@@ -1551,9 +1551,6 @@ def send_notification(client: HTTPClient, **args):
     ignore_add_url = argToBoolean(args.get('ignoreAddURL', False))
     mattermost_ask = argToBoolean(args.get('mattermost_ask', False))
     entitlement = ''
-    reply = ''
-    expiry = ''
-    default_response = ''
 
     if mattermost_ask:
         parsed_message = json.loads(args.get("message", ''))
