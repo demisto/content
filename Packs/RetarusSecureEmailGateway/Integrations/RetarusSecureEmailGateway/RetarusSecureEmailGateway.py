@@ -45,6 +45,7 @@ FETCH_INTERVAL_IN_SECONDS = 60
 FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 60
 DEFAULT_CHANNEL = "default"
+LOG_PREFIX = "Retarus"
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
@@ -94,9 +95,9 @@ def push_events(events: list[dict]):
     """
     Push events to XSIAM.
     """
-    demisto.debug(f"Pushing {len(events)} to XSIAM")
+    demisto.debug(f"{LOG_PREFIX} Pushing {len(events)} to XSIAM")
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-    demisto.debug(f"Pushed {len(events)} to XSIAM successfully")
+    demisto.debug(f"{LOG_PREFIX} Pushed {len(events)} to XSIAM successfully")
     
 
 @contextmanager
@@ -134,7 +135,7 @@ def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
     events = fetch_events(connection, fetch_interval)
     events.extend(integration_context.get("events", []))
     integration_context["events"] = events  # update events in context in case of a failure.
-    demisto.debug(f'Adding {len(events)} Events to XSIAM')
+    demisto.debug(f'{LOG_PREFIX} Adding {len(events)} Events to XSIAM')
     events_to_send.extend(events)
     
     # Send the events to the XSIAM, with events from the context
@@ -170,6 +171,7 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
         # (sentence taken from Retarus docs)
         # Setting up heartbeat daemon threads to send keep-alives if needed
         threading.Thread(target=connection.heartbeat, daemon=True).start()
+        demisto.debug(f"{LOG_PREFIX} Created connection and created heartbeat")
 
         while True:
             perform_long_running_loop(connection, fetch_interval)
@@ -199,7 +201,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
-    demisto.debug(f'Starting to fetch events at {fetch_start_time}')
+    demisto.debug(f'{LOG_PREFIX} Starting to fetch events at {fetch_start_time}')
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
             event = json.loads(connection.recv(timeout=recv_timeout))
@@ -210,11 +212,11 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         event_ts = event.get("ts")
         if not event_ts:
             # if timestamp is not in the response, use the current time
-            demisto.debug(f"Event {event_id} does not have a timestamp, using current time")
+            demisto.debug(f"{LOG_PREFIX} Event {event_id} does not have a timestamp, using current time")
             event_ts = datetime.utcnow().isoformat()
         date = dateparser.parse(event_ts)
         if not date:
-            demisto.debug(f"Event {event_id} has an invalid timestamp, using current time")
+            demisto.debug(f"{LOG_PREFIX} Event {event_id} has an invalid timestamp, using current time")
             # if timestamp is not in correct format, use the current time
             date = datetime.utcnow()
         event["id"] = event_id  # TODO not sure I am supposed to do it, maybe it's for @bavly
@@ -222,8 +224,8 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         event["event_type"] = event.get("type")
         events.append(event)
         event_ids.add(event_id)
-    demisto.debug(f"Fetched {len(events)} events")
-    demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
+    demisto.debug(f"{LOG_PREFIX} Fetched {len(events)} events")
+    demisto.debug(f"{LOG_PREFIX}vThe fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     return events
 
 ''' MAIN FUNCTION '''
@@ -240,6 +242,7 @@ def main():  # pragma: no cover
 
     try:
         if command == "long-running-execution":
+            demisto.error(f"{LOG_PREFIX} Entering long-rinning-execution command")
             return_results(long_running_execution_command(url, token_id, fetch_interval, channel, verify_ssl))
         elif command == "test-module":
             return_results(test_module(url, token_id))
