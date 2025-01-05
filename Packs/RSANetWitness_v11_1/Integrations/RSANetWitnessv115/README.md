@@ -2,7 +2,7 @@ RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility 
 
 This integration was integrated and tested with version 12.2 of RSANetWitness.
 
-The integration supports version 11.5 and higher.
+The integration supports version 12.X and higher.
 
 ## Changes compared to V11.1
 
