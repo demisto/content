@@ -10,13 +10,13 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
-| Endpoint Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| Endpoint Incidents fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| IDP Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| Mobile Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| IOM fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-| IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
-|Detections from On-Demand Scans fetch query| Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql.| False|
+| Endpoint Detections fetch query | Use the Falcon Query Language. For more information, refer to the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Endpoint Incidents fetch query | Use the Falcon Query Language. For more information, refer to the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IDP Detections fetch query | Use the Falcon Query Language. For more information, refer to the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Mobile Detections fetch query | Use the Falcon Query Language. For more information, refer to the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IOM fetch query | Use the Falcon Query Language. For more information, refer to the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+|Detections from On-Demand Scans fetch query| Use the Falcon Query Language. For more information, refer to the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).| False|
 | Trust any certificate (not secure) |  | False |
 | Use legacy API | Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.' | False |
 | Use system proxy settings |  | False |
@@ -82,7 +82,7 @@ To set up the mirroring:
     | None | Turns off incident mirroring. |
     | Incoming | Any changes in CrowdStrike Falcon events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in CrowdStrike Falcon events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex incidents and CrowdStrike Falcon events will be reflected in both directions. |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and CrowdStrike Falcon events will be reflected in both directions. |
 
 5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in CrowdStrike Falcon.
 6. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
@@ -4217,7 +4217,7 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see the [FQL Syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | Optional | 
 | value | The value by which the exclusions should be filtered. | Optional | 
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional | 
 | limit | The maximum number of records to return. [1-500]. Applies only if the ids argument is not supplied. | Optional | 
