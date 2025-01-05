@@ -7,30 +7,30 @@ DVE Score is also the most comprehensive CVE enrichment solution on the market: 
 ·    Gain visibility as well as the ability to prioritize and articulate the remediation process across the organization - straight from Cortex XSOAR
 
 To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact Cybersixgill at getstarted@cybersixgill.com.
-## Configure Sixgill_DVE_Feed on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sixgill_DVE_Feed.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Sixgill_DVE_Feed in Cortex
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Client Id | Sixgill API client ID. | True |
-    | Client Secret | Sixgill API client secret. | True |
-    | Trust any certificate (not secure) | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp  | False |
-    | Fetch indicators |  | False |
-    | Feed Fetch Interval |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    | Bypass exclusion list |  | False |
-    | Tags | Supports CSV values. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Client Id | Sixgill API client ID. | True |
+| Client Secret | Sixgill API client secret. | True |
+| Trust any certificate (not secure) | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at <https://us-cert.cisa.gov/tlp>  | False |
+| Fetch indicators |  | False |
+| Feed Fetch Interval |  | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+| Bypass exclusion list |  | False |
+| Tags | Supports CSV values. | False |
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cybersixgill-get-indicators
+
 ***
 Fetching Sixgill DVE Feed indicators
 
@@ -38,6 +38,7 @@ Fetching Sixgill DVE Feed indicators
 #### Base Command
 
 `cybersixgill-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,7 +51,7 @@ Fetching Sixgill DVE Feed indicators
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
-

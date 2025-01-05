@@ -2,39 +2,40 @@ Fetch alerts and events from SEKOIA.IO XDR.
 To use this integration, please create an API Key with the appropriate permissions.
 This integration was integrated and tested with version 1.0 of Sekoia XDR.
 
-## Configure Sekoia XDR on Cortex XSOAR
+## Configure Sekoia XDR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sekoia XDR.
-3. Click **Add instance** to create and configure a new integration instance.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API key |  | True |
+| API Key |  | True |
+| Server URL (i.e. <https://api.sekoia.io>) |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt;, e.g., -7d, -1h) |  | True |
+| Maximum incidents to fetch per interval. | By default the max_fetch is set to 10 | True |
+| Incidents Fetch Interval |  | False |
+| Alerts status. | Filter alerts to fetch by status. You can write and press enter to insert new types. | False |
+| Alerts types. | Filter alerts to fetch by types. You can write and press enter to insert new types. | False |
+| Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ). | Filter alerts by their urgency levels. Use the format "MINurgency, MAXurgency" | False |
+| Fetch mode | If there's no max_fetch it will fetch 10 incidents by default. | True |
+| Replace "dots" in event field names with another character. | Replacing dots in events will make names look pretty good for users | True |
+| Events fields to exclude from the events search result. | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
+| Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
+| Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
+| Incident Mirroring Direction. | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). | True |
+| Include events in the mirroring of the alerts. | When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia. | False |
+| Include kill chain information in the mirroring of the alerts. | When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia. | False |
+| Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident. | False |
+| Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. | False |
+| Close notes. | Change the closing notes that will be added to the tickets closed automatically by the automation. | True |
+| Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API key |  | True |
-    | API Key |  | True |
-    | Server URL (i.e. https://api.sekoia.io) |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt;, e.g., -7d, -1h) |  | True |
-    | Maximum incidents to fetch per interval. | By default the max_fetch is set to 10 | True |
-    | Incidents Fetch Interval |  | False |
-    | Alerts status. | Filter alerts to fetch by status. You can write and press enter to insert new types. | False |
-    | Alerts types. | Filter alerts to fetch by types. You can write and press enter to insert new types. | False |
-    | Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ). | Filter alerts by their urgency levels. Use the format "MINurgency, MAXurgency" | False |
-    | Fetch mode | If there's no max_fetch it will fetch 10 incidents by default. | True |
-    | Replace "dots" in event field names with another character. | Replacing dots in events will make names look pretty good for users | True |
-    | Events fields to exclude from the events search result. | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
-    | Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
-    | Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False | 
-    | Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
-
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### sekoia-xdr-list-alerts
@@ -524,6 +525,62 @@ Get an asset by its UUID from Sekoia XDR.
 | SekoiaXDR.Asset.name | unknown | The name of the asset. | 
 | SekoiaXDR.Asset.uuid | unknown | The UUID of the asset. | 
 
+### get-remote-data
+
+***
+This command gets new information about the incidents in the remote system and updates existing incidents in Cortex XSOAR.
+
+#### Base Command
+
+`get-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote alert ID. | Optional | 
+| lastUpdate | ISO format date with timezone, e.g., 2023-03-01T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-modified-remote-data
+
+***
+available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | ISO format date with timezone, e.g., 2023-03-01T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time. Default is 0. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-mapping-fields
+
+***
+This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
 
 ### sekoia-xdr-list-assets
 
@@ -753,12 +810,34 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | method | Method to use with the http request (GET,POST,etc). Default is GET. | Required | 
-| url_sufix | The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/. | Required | 
+| url_sufix | The URL suffix after <https://api.sekoia.io>, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/. | Required | 
 | parameters | Query parameters, i.e. limit -&gt; 10 , match['status_name'] -&gt; Ongoing. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Sekoia XDR corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Sekoia XDR events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Sekoia XDR events (outgoing mirrored fields). |
+    | Incoming and Outgoing | Changes made in Sekoia will be reflected in Cortex, and vice versa, ensuring status updates are synchronized between both systems. |
+
+3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Sekoia XDR.
+
+4. Optional: Check the Reopen Mirrored Cortex XSOAR Incidents integration parameter to reopen the Cortex XSOAR incident when the matching Sekoia XDR alert is reopened.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Sekoia XDR.
 
 ## Troubleshooting
 
@@ -768,12 +847,38 @@ To troubleshoot possible issues with the SEKOIA XDR integration, consider the fo
     - In your integration instance, enable the Debug option.
     - Navigate to `Settings > About > Troubleshooting > Download logs` to download the logs. Analyzing these logs can provide valuable insights into any issues.
 
+- **Mirror Values**: 
+  - To diagnose mirroring issues beyond what debug mode offers, you can inspect specific fields in the context data. Check if the following dbot fields are set:
+    - **dbotMirrorInstance**: Indicates the instance managing the mirroring.
+    - **dbotMirrorDirection**: Shows the direction of mirroring.
+    - **dbotMirrorId**: The unique identifier for the mirroring process.
+  - If these fields are not set, review the mappers to ensure that they are configured correctly.
+
+- **dbotMirrorLastSync Field**:
+  - The `dbotMirrorLastSync` field in the context data will update when the mirroring process updates an incident. 
+  - You can observe these updates in the **War Room** as well, which will provide a log of the mirroring activity.
+
+By following these troubleshooting steps, you can effectively diagnose and resolve issues within the SEKOIA XDR integration.
+
+## Best Practices
+
+To make the most out of your SEKOIA XDR integration, consider the following best practices:
+
+- **Mirroring Changes**: When mirroring is enabled, please allow at least 1 minute for changes to be reflected. The mirroring process runs every 1 minute, ensuring that data between SEKOIA and Cortex is kept in sync.
+
+- **Handling Reopened Incidents**: If you have enabled the reopening option, the Cortex incident will be reopened under two specific conditions:
+  - **Reopened Alert in SEKOIA**: If an alert is reopened in SEKOIA, the corresponding incident in Cortex will also be reopened. This ensures that the incident tracking is consistent across both platforms.
+  - **Reopened Incident in Cortex**: If you reopen an incident directly in Cortex, you need to be cautious. After reopening the incident in Cortex, you should promptly change the status of the SEKOIA alert. Failing to do so might lead to the incident being automatically closed by the mirroring process.
+
+By adhering to these best practices, you can ensure a smoother and more effective synchronization between SEKOIA and your incident management platform.
+
 ## Additional documentation
 
 The following documentation can be useful to understand the integration:
 
 | Information | Description |
 | --- | --- |
+| [Mirroring](https://xsoar.pan.dev/docs/integrations/mirroring_integration) | Adittional information for mirroring |
 | [Post process scripts](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.5/Cortex-XSOAR-Administrator-Guide/Post-Processing-for-Incidents) | Adittional information for post process scripts |
 | [Sekoia XDR documentation](https://docs.sekoia.io/xdr/) | Sekoia XDR Documentation |
 | [Rest API Documentation](https://docs.sekoia.io/xdr/develop/rest_api/alert/) | Sekoia XDR API Documentation |

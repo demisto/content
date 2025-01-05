@@ -1,28 +1,24 @@
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Netskope Event Collector on Cortex XSIAM
+## Configure Netskope Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Netskope Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API token |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Max events per fetch | The maximum amount of events to retrieve per each event type. For more information about event types see the help section. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API token |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Max events per fetch | The maximum amount of events to retrieve per each event type. For more information about event types see the help section. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetch Events Limitation
 
-The collector can handle 10K events per minute on average per each event type  
+The collector can handle up to 35K events per minute on average. 
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### netskope-get-events
@@ -280,4 +276,3 @@ There is no context output for this command.
 >| 9f806593aa4385e4fc14865c | 2022-06-28T16:59:15.000Z | nspolicy | API Connector | Microsoft Office 365 Sharepoint Online | CloudApp |
 >| efac69202c964c91fd59bcb9 | 2022-07-20T15:27:50.000Z | admin_audit_logs |  |  |  |
 >| e03cf756afc2a707666fcbc0 | 2022-07-13T19:54:57.000Z | network | Client | [CS SEG's] | PrivateApp |
-

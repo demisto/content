@@ -106,9 +106,40 @@ def is_valid_args(command: Command):
     return is_valid
 
 
+def enrich_data_with_source(data: dict, source: str):
+    """
+    Enrich the provided data with source information.
+
+    This function recursively processes the input data, adding source information to each value
+    and handling nested structures.
+
+    Args:
+        data (dict): The input data to be enriched.
+        source (str): The source information to be added to each value.
+
+    Returns:
+        dict: The enriched data with source information added to each value.
+
+    Note:
+        - Empty elements are removed from the input data before processing.
+        - Single-element lists are unwrapped to their contained value.
+        - Nested dictionaries are processed recursively.
+    """
+    data = remove_empty_elements(data)
+    result = {}
+    for key, value in data.items():
+        if isinstance(value, list) and len(value) == 1:
+            value = value[0]
+        if isinstance(value, dict):
+            result[key] = enrich_data_with_source(value, source)
+        else:
+            result[key] = {"Value": value, "Source": source}
+    return result
+
+
 def create_account(
+    source: str,
     id: Optional[str] = None,
-    source_id: Optional[str] = None,
     username: Optional[str] = None,
     display_name: Optional[str] = None,
     email_address: Optional[str] = None,
@@ -121,6 +152,7 @@ def create_account(
     manager_email: Optional[str] = None,
     manager_display_name: Optional[str] = None,
     risk_level: Optional[str] = None,
+    **kwargs,
 ) -> dict[str, Any]:
     """
     Create an account dictionary with the provided user information.
@@ -140,16 +172,13 @@ def create_account(
         manager_email (Optional[str]): The email address of the account holder's manager.
         manager_display_name (Optional[str]): The display name of the account holder's manager.
         risk_level (Optional[str]): The risk level associated with the account.
+        kwargs: Additional key-value pairs to include in the account dictionary.
 
     Returns:
         dict[str, Any]: A dictionary containing the non-empty account information.
     """
-    source_id = source_id if id else None
     account = {
-        "id": {
-            "Value": id,
-            "Source": source_id,
-        },
+        "id": id,
         "username": username,
         "display_name": display_name,
         "email_address": email_address,
@@ -162,12 +191,52 @@ def create_account(
         "manager_email": manager_email,
         "manager_display_name": manager_display_name,
         "risk_level": risk_level,
-    }
-    for key, value in account.items():
-        if isinstance(value, list) and len(value) == 1:
-            account[key] = value[0]
+    } | kwargs
 
-    return remove_empty_elements(account)
+    account = enrich_data_with_source(account, source)
+
+    return account
+
+
+def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
+    """
+    Merge multiple account dictionaries into a single account.
+
+    This function merges a list of account dictionaries into a single account dictionary.
+    It handles nested dictionaries and special cases where a value is a dictionary with 'Value' and 'Source' keys.
+    The merged account is then converted to a Common.Account object and its context is returned.
+
+    Args:
+        accounts (list[dict[str, str]]): A list of account dictionaries to merge.
+
+    Returns:
+        dict[str, Any]: A merged account dictionary in the Common.Account context format.
+                        Returns an empty dictionary if the input list is empty.
+    """
+
+    def recursive_merge(target: dict, source: dict):
+        for key, value in source.items():
+            # Check if the value is a dictionary and has specific keys 'Value' and 'Source'
+            if isinstance(value, dict) and "Value" in value and "Source" in value:
+                if key not in target:
+                    target[key] = []
+                target[key].append(value)
+            elif isinstance(value, dict):
+                if key not in target:
+                    target[key] = {}
+                recursive_merge(target[key], value)
+            else:
+                target[key] = value
+
+    merged_account: dict[str, Any] = {}
+    for account in accounts:
+        recursive_merge(merged_account, account)
+
+    return (
+        Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH]
+        if merged_account
+        else {}
+    )
 
 
 def prepare_human_readable(
@@ -187,7 +256,13 @@ def prepare_human_readable(
     """
     result = []
     if human_readable:
-        command = f'!{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
+        formatted_args = []
+        for arg, value in args.items():
+            if value:
+                if isinstance(value, dict):
+                    value = json.dumps(value).replace('"', '\\\\"')
+                formatted_args.append(f'{arg}="{value}"')
+        command = f"!{command_name} {' '.join(formatted_args)}"
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
             result.append(
@@ -294,42 +369,6 @@ def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
     return context
 
 
-def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
-    """
-    Merges multiple account dictionaries into a single Common.Account object.
-
-    This function takes a list of account dictionaries and combines them into a single
-    merged account. If there are conflicting values for the same key, it logs a debug
-    message and keeps the first encountered value.
-
-    Args:
-        accounts (list[dict[str, str]]): A list of account dictionaries to merge.
-
-    Returns:
-        dict[str, Any]: A dictionary representation of the merged Common.Account object,
-        or an empty dictionary if no accounts were provided.
-    """
-    merged_account: dict[str, Any] = {}
-    for account in accounts:
-        for key, value in account.items():
-            if key == "id":
-                if key not in merged_account:
-                    merged_account[key] = [value]
-                else:
-                    merged_account[key].append(value)
-            elif key not in merged_account:
-                merged_account[key] = value
-            elif merged_account[key] != value:
-                demisto.debug(
-                    f"Conflicting values for key '{key}': '{merged_account[key]}' vs '{value}'"
-                )
-    return (
-        Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH]
-        if merged_account
-        else {}
-    )
-
-
 def run_execute_command(
     command_name: str, args: dict[str, Any]
 ) -> tuple[list[dict], str, list[CommandResults]]:
@@ -384,12 +423,13 @@ def identityiq_search_identities(
     output_key = get_output_key("IdentityIQ.Identity", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
-        id=outputs.get("id"),
-        source_id=command.brand,
-        username=outputs.get("userName"),
-        display_name=outputs.get("name", {}).get("formatted"),
-        email_address=outputs.get("emails", {}).get("value"),
-        is_enabled=outputs.get("active"),
+        source=command.brand,
+        id=outputs.pop("id", None),
+        username=outputs.pop("userName", None),
+        display_name=outputs.pop("displayName", None),
+        email_address=outputs.get("emails", {}).pop("value", None),
+        is_enabled=outputs.pop("active", None),
+        **outputs,
     )
 
     return readable_outputs_list, account_output
@@ -410,13 +450,14 @@ def identitynow_get_accounts(
     output_key = get_output_key("IdentityNow.Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
 
-    is_disabled = outputs.get("disabled")
+    is_disabled = outputs.pop("disabled", None)
     is_enabled = (not is_disabled) if isinstance(is_disabled, bool) else None
     account_output = create_account(
-        id=outputs.get("id"),
-        source_id=command.brand,
-        username=outputs.get("name"),
+        source=command.brand,
+        id=outputs.pop("id", None),
+        username=outputs.pop("name", None),
         is_enabled=is_enabled,
+        **outputs,
     )
 
     return readable_outputs_list, account_output
@@ -435,19 +476,21 @@ def ad_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any],
     )
     output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
-
-    account_disable = outputs.get("userAccountControlFields", {}).get("ACCOUNTDISABLE")
+    account_disable = outputs.get("userAccountControlFields", {}).pop(
+        "ACCOUNTDISABLE", None
+    )
     is_enabled = (not account_disable) if isinstance(account_disable, bool) else None
+    manager_dn = (outputs.pop("manager", None) or [""])[0]
     account_output = create_account(
-        source_id=command.brand,
-        username=outputs.get("sAMAccountName"),
-        display_name=outputs.get("displayName"),
-        email_address=outputs.get("mail"),
-        groups=outputs.get("memberOf"),
+        source=command.brand,
+        username=outputs.pop("sAMAccountName", None),
+        display_name=outputs.pop("displayName", None),
+        email_address=outputs.pop("mail", None),
+        groups=outputs.pop("memberOf", None),
         is_enabled=is_enabled,
+        **outputs,
     )
 
-    manager_dn = (outputs.get("manager") or [""])[0]
     return readable_outputs_list, account_output, manager_dn
 
 
@@ -466,6 +509,7 @@ def ad_get_user_manager(
     output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
+        source=command.brand,
         manager_display_name=outputs.get("displayName"),
         manager_email=outputs.get("mail"),
     )
@@ -486,12 +530,13 @@ def pingone_get_user(command: Command) -> tuple[list[CommandResults], dict[str, 
     output_key = get_output_key("PingOne.Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
-        id=outputs.get("ID"),
-        source_id=command.brand,
-        username=outputs.get("Username"),
-        display_name=outputs.get("DisplayName"),
-        email_address=outputs.get("Email"),
-        is_enabled=outputs.get("Enabled"),
+        source=command.brand,
+        id=outputs.pop("ID", None),
+        username=outputs.pop("Username", None),
+        display_name=outputs.pop("DisplayName", None),
+        email_address=outputs.pop("Email", None),
+        is_enabled=outputs.pop("Enabled", None),
+        **outputs,
     )
 
     return readable_outputs_list, account_output
@@ -510,16 +555,17 @@ def okta_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any
     output_key = get_output_key("Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     is_enabled = (
-        (outputs.get("Status") != "DEPROVISIONED") if outputs.get("Status") else None
+        (outputs.pop("Status") != "DEPROVISIONED") if outputs.get("Status") else None
     )
     account_output = create_account(
-        id=outputs.get("ID"),
-        source_id=command.brand,
-        username=outputs.get("Username"),
-        display_name=outputs.get("DisplayName"),
-        email_address=outputs.get("Email"),
-        manager_display_name=outputs.get("Manager"),
+        source=command.brand,
+        id=outputs.pop("ID", None),
+        username=outputs.pop("Username", None),
+        display_name=outputs.pop("DisplayName", None),
+        email_address=outputs.pop("Email", None),
+        manager_display_name=outputs.pop("Manager", None),
         is_enabled=is_enabled,
+        **outputs,
     )
 
     return readable_outputs_list, account_output
@@ -538,9 +584,10 @@ def aws_iam_get_user(command: Command) -> tuple[list[CommandResults], dict[str, 
     output_key = get_output_key("AWS.IAM.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
-        id=outputs.get("UserId"),
-        source_id=command.brand,
-        username=outputs.get("UserName"),
+        source=command.brand,
+        id=outputs.pop("UserId", None),
+        username=outputs.pop("UserName", None),
+        **outputs,
     )
 
     return readable_outputs_list, account_output
@@ -559,15 +606,16 @@ def msgraph_user_get(command: Command) -> tuple[list[CommandResults], dict[str, 
     output_key = get_output_key("Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
-        id=outputs.get("ID"),
-        source_id=command.brand,
-        username=outputs.get("Username"),
-        display_name=outputs.get("DisplayName"),
-        email_address=outputs.get("Email", {}).get("Address"),
-        job_title=outputs.get("JobTitle"),
-        office=outputs.get("Office"),
-        telephone_number=outputs.get("TelephoneNumber"),
-        type=outputs.get("Type"),
+        source=command.brand,
+        id=outputs.pop("ID", None),
+        username=outputs.pop("Username", None),
+        display_name=outputs.pop("DisplayName", None),
+        email_address=outputs.pop("Email", {}).get("Address", None),
+        job_title=outputs.pop("JobTitle", None),
+        office=outputs.pop("Office", None),
+        telephone_number=outputs.pop("TelephoneNumber", None),
+        type=outputs.pop("Type", None),
+        **outputs,
     )
 
     return readable_outputs_list, account_output
@@ -588,6 +636,7 @@ def msgraph_user_get_manager(
     output_key = get_output_key("MSGraphUserManager", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
+        source=command.brand,
         manager_display_name=outputs.get("Manager", {}).get("DisplayName"),
         manager_email=outputs.get("Manager", {}).get("Mail"),
     )
@@ -598,6 +647,7 @@ def msgraph_user_get_manager(
 def xdr_list_risky_users(
     command: Command,
     user_name: str,
+    outputs_key_field: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
@@ -608,14 +658,16 @@ def xdr_list_risky_users(
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
-    output_key = get_output_key("PaloAltoNetworksXDR.RiskyUser", entry_context[0])
+    output_key = get_output_key(f"{outputs_key_field}.RiskyUser", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
 
+    username = user_name if outputs else None
     account_output = create_account(
-        id=outputs.get("id"),
-        source_id=command.brand,
-        risk_level=outputs.get("risk_level"),
-        username=user_name,
+        source=command.brand,
+        id=outputs.pop("id", None),
+        risk_level=outputs.pop("risk_level", None),
+        username=username,
+        **outputs,
     )
 
     return readable_outputs_list, account_output
@@ -650,11 +702,12 @@ def iam_get_user_command(
         if outputs.get("success"):
             account_outputs.append(
                 create_account(
-                    id=outputs.get("id"),
-                    source_id=outputs.get("brand"),
-                    username=outputs.get("username"),
-                    email_address=outputs.get("email"),
-                    is_enabled=outputs.get("active"),
+                    id=outputs.pop("id", None),
+                    source=outputs.pop("brand", None),
+                    username=outputs.pop("username", None),
+                    email_address=outputs.pop("email", None),
+                    is_enabled=outputs.pop("active", None),
+                    **outputs,
                 )
             )
     return readable_outputs_list, account_outputs
@@ -669,6 +722,7 @@ def main():
         users_ids = argToList(args.get("user_id", []))
         users_names = argToList(args.get("user_name", []))
         users_emails = argToList(args.get("user_email", []))
+        attributes = args.get("attributes")
         domain = args.get("domain", "")
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", []))
@@ -718,7 +772,7 @@ def main():
                 ad_get_user_command = Command(
                     brand="Active Directory Query v2",
                     name="ad-get-user",
-                    args={"username": user_name, "email": user_email},
+                    args={"username": user_name, "email": user_email, "attributes": attributes},
                 )
                 if modules.is_brand_available(ad_get_user_command) and is_valid_args(
                     ad_get_user_command
@@ -727,7 +781,6 @@ def main():
                         ad_get_user_command
                     )
                     single_user_readable_outputs.extend(readable_outputs)
-                    single_user_outputs.append(outputs)
                     if manager_dn:
                         ad_get_user_manager_command = Command(
                             brand="Active Directory Query v2",
@@ -738,7 +791,8 @@ def main():
                             ad_get_user_manager_command
                         )
                         single_user_readable_outputs.extend(readable_outputs)
-                        single_user_outputs.append(manager_outputs)
+                        outputs |= manager_outputs
+                    single_user_outputs.append(outputs)
                 pingone_get_user_command = Command(
                     brand="PingOne",
                     name="pingone-get-user",
@@ -826,7 +880,22 @@ def main():
                 xdr_list_risky_users_command
             ) and is_valid_args(xdr_list_risky_users_command):
                 readable_outputs, outputs = xdr_list_risky_users(
-                    xdr_list_risky_users_command, user_name
+                    xdr_list_risky_users_command,
+                    user_name,
+                    outputs_key_field="PaloAltoNetworksXDR",
+                )
+                single_user_readable_outputs.extend(readable_outputs)
+                single_user_outputs.append(outputs)
+            core_list_risky_users_command = Command(
+                brand="Cortex Core - IR",
+                name="core-list-risky-users",
+                args={"user_id": user_name},
+            )
+            if modules.is_brand_available(
+                core_list_risky_users_command
+            ) and is_valid_args(core_list_risky_users_command):
+                readable_outputs, outputs = xdr_list_risky_users(
+                    core_list_risky_users_command, user_name, outputs_key_field="Core"
                 )
                 single_user_readable_outputs.extend(readable_outputs)
                 single_user_outputs.append(outputs)

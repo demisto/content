@@ -2,25 +2,21 @@ Deprecated. Use the Generic Export Indicators Service integration instead. This 
 This integration requires root access in order to execute ssh commands. 
 If you've configured the server to run Docker images with a non-root internal user make sure to exclude the demisto/openssh Docker image as documented [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users).
 
-## Configure Palo Alto Networks PAN-OS EDL Management on Cortex XSOAR
+## Configure Palo Alto Networks PAN-OS EDL Management in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Palo Alto Networks PAN-OS EDL Management.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Hostname or IP of server | True |
-    | Server port | False |
-    | SSH credentials to server (username and certificate, see in the credential manager) | True |
-    | Password | True |
-    | SSH extra parameters (e.g., "-c ChaCha20") | False |
-    | SCP extra parameters (e.g., "-c ChaCha20 -l 8000") | False |
-    | Document root (e.g., var/www/html/files) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Hostname or IP of server | True |
+| Server port | False |
+| SSH credentials to server (username and certificate, see in the credential manager) | True |
+| Password | True |
+| SSH extra parameters (e.g., "-c ChaCha20") | False |
+| SCP extra parameters (e.g., "-c ChaCha20 -l 8000") | False |
+| Document root (e.g., var/www/html/files) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### pan-os-edl-get-external-file
 ***
@@ -449,4 +445,3 @@ There is no context output for this command.
 >|Data|
 >|---|
 >| jojo.com<br/>koko.com<br/>toto.com<br/>upload.wikimedia.org |
-

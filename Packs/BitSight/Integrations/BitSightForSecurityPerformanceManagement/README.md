@@ -1,30 +1,26 @@
 Use the "Bitsight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
 This integration was integrated and tested with version 01 of Bitsight for Security Performance Management
 
-## Configure Bitsight for Security Performance Management on Cortex XSOAR
+## Configure Bitsight for Security Performance Management in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Bitsight for Security Performance Management.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key |  | True |
-    | Company's GUID | Use "bitsight-companies-guid-get" command to retrieve the company's GUID. | False |
-    | First fetch time in days | Enter the number in days. When the fetch incident runs for first time, incidents will be fetched for a given number of days. | False |
-    | Max Fetch | Maximum number of incidents to fetch. The maximum value is 200. | False |
-    | Findings Minimum Severity | Minimum severity of the findings to fetch. | False |
-    | Findings Minimum Asset Category | Filter by the asset category \(critical, high, medium, low\). | False |
-    | Findings Grade | Filter the result by the value of grade. | False |
-    | Risk Vector ('All' has been selected by default) | This parameter supports comma separated list of values. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key |  | True |
+| Company's GUID | Use "bitsight-companies-guid-get" command to retrieve the company's GUID. | False |
+| First fetch time in days | Enter the number in days. When the fetch incident runs for first time, incidents will be fetched for a given number of days. | False |
+| Max Fetch | Maximum number of incidents to fetch. The maximum value is 200. | False |
+| Findings Minimum Severity | Minimum severity of the findings to fetch. | False |
+| Findings Minimum Asset Category | Filter by the asset category \(critical, high, medium, low\). | False |
+| Findings Grade | Filter the result by the value of grade. | False |
+| Risk Vector ('All' has been selected by default) | This parameter supports comma separated list of values. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bitsight-company-details-get
 ***
@@ -474,13 +470,14 @@ Bitsight command to get company details based on the provided GUID. The details 
 
 
 ### bitsight-company-findings-get
+
 ***
 Bitsight command to get company findings.
-
 
 #### Base Command
 
 `bitsight-company-findings-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -491,7 +488,7 @@ Bitsight command to get company findings.
 | severity | Minimum Severity of the findings. Possible values are: minor, moderate, material, severe. | Optional | 
 | grade | Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad and, neutral. | Optional | 
 | asset_category | Minimum Asset Category of the findings.<br/><br/>Example: If low is selected from the options then low, medium, high, and critical will be considered in retrieving results. Possible values are: low, medium, high, critical. | Optional | 
-| risk_vector_label | Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations and, Unsolicited Communications. | Optional | 
+| risk_vector_label | Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications, Web Application Security, DMARC. | Optional | 
 | limit | Set the maximum number of results to be retrieved. The maximum value is 1000.<br/><br/>Note: If a negative value is provided then the default value of 100 will be used. Default is 100. | Optional | 
 | offset | Set the starting point of the results to be returned. A 0 (zero) value starts the results from the first record in the result set. Default is 0. | Optional | 
 
@@ -787,4 +784,3 @@ There are no input arguments for this command.
 >|---|---|---|---|
 >| Saperix, Inc. | Saperix | 00000000-0000-0000-0000-000000000001 | 640 |
 >| Saperix Corporate | Saperix Corporate | 00000000-0000-0000-0000-000000000002 | 730 |
-

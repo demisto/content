@@ -1,10 +1,7 @@
 Use the Microsoft Azure AD Connect Health Feed integration to get indicators from the feed.
 This integration was integrated and tested with version 1 of Azure AD Connect Health Feed
-## Configure Azure AD Connect Health Feed on Cortex XSOAR
+## Configure Azure AD Connect Health Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure AD Connect Health Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -20,9 +17,8 @@ This integration was integrated and tested with version 1 of Azure AD Connect He
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-ad-health-get-indicators
 ***
