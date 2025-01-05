@@ -180,7 +180,7 @@ tasks:
     task:
       id: c994a7a0-4574-4c06-87eb-1361f5c229ee
       version: -1
-      name: Employee Offboarding - Retain & Delete
+      name: Employee Offboarding - Retain and Delete
       playbookName: Employee Offboarding - Retain and Delete
       type: playbook
       iscommand: false
