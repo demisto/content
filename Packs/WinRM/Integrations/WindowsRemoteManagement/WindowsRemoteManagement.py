@@ -3,12 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import winrm
-
+from winrm import Session
 
 ''' Helper functions '''
 
 
-class Client(object):
+class Client:
     def __init__(self, username, password, auth_type, realm, default_host, decode):
         self.username = username
         self.password = password
@@ -23,6 +23,7 @@ class Client(object):
         self.res = None
 
     def run(self):
+        s: Session
         if self.auth == "ntlm":
             s = winrm.Session(
                 target=self.hostname,
