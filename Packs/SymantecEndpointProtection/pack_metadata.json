@@ -10,7 +10,10 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
         "Symantec",
