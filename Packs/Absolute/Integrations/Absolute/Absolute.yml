@@ -747,9 +747,9 @@ script:
           - "false"
         defaultValue: "false"
       - name: start_date
-        description: Filters the results to the records on or after the start date. The start date must be specified as datetime object.
+        description: Filters the results to the records on or after the start date.
       - name: end_date
-        description: Filters the results to the records on or after the end date. The start date must be specified as datetime object.
+        description: Filters the results to the records until the end date.
       - name: limit
         description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
     name: absolute-device-get-events
