@@ -12,7 +12,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Domain (e.g., https://demisto.my.redcanary.co)</strong></li>
+<li><strong>Domain (e.g., https://xsoar.my.redcanary.co)</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
@@ -280,14 +280,14 @@
 <pre>{
     "Account": {
         "Username": "administrator", 
-        "Hostname": "demisto-host"
+        "Hostname": "xsoar-host"
     }, 
     "Endpoint": {
         "MACAddress": [
             "08:29:42:f0:b3:7c"
         ], 
         "OS": "Windows", 
-        "Hostname": "demisto-host", 
+        "Hostname": "xsoar-host", 
         "IsDecommissioned": true, 
         "IsIsolated": true, 
         "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
@@ -711,14 +711,14 @@
 <pre>{
     "Account": {
         "Username": "administrator", 
-        "Hostname": "demisto-host"
+        "Hostname": "xsoar-host"
     }, 
     "Endpoint": {
         "MACAddress": [
             "08:29:42:f0:b3:7c"
         ], 
         "OS": "Windows", 
-        "Hostname": "demisto-host", 
+        "Hostname": "xsoar-host", 
         "IsDecommissioned": true, 
         "IsIsolated": true, 
         "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
