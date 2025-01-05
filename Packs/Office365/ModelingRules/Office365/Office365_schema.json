@@ -273,7 +273,7 @@
             "is_array": false
         },
         "TargetYammerUserId": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "ThreatsAndDetectionTech": {

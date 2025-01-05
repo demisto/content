@@ -120,7 +120,7 @@ tasks:
       key:
         simple: Path
       value:
-        simple: C:\Windows\System32\notepad.exe
+        simple: C:\Windows\System32\PING.EXE
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -406,7 +406,7 @@ tasks:
       - "9"
     scriptarguments:
       commands:
-        simple: notepad.exe
+        simple: ping 127.0.0.1 -n 600
       endpoint_ids:
         complex:
           root: Core.Endpoint
