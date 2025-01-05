@@ -26,9 +26,9 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
 
-<~XSIAM>
-
 ### Troubleshooting
+
+<~XSIAM>
 
 - When encountering connectivity or authorization errors in Cortex XSIAM, it is necessary to include the IP addresses corresponding to the relevant region in the CrowdStrike Falcon allow list. These IP addresses can be found in the [documentation on enabling access to Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Resources-Required-to-Enable-Access) under the **Egress** section.
 
@@ -36,8 +36,6 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 </~XSIAM>
 
 <~XSOAR_SAAS>
-
-### Troubleshooting
 
 - When encountering connectivity or authorization errors in Cortex XSOAR 8, it is necessary to include the IP addresses corresponding to the relevant region in the CrowdStrike Falcon allow list. These IP addresses can be found in the [documentation on enabling access to Cortex XSOAR](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Enable-Access-to-Cortex-XSOAR) under the **Egress** section.
 
