@@ -1051,6 +1051,7 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | --- | --- | --- |
 | distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints &gt; Agent Installation page. | Required | 
 | package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
+| download_package | Supported only for package_type x64 or x86. Whether to download the installation package file. | Optional | 
 
 
 #### Context Output
@@ -3878,4 +3879,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Alerts with IDs 35326 have been updated successfully.
-
