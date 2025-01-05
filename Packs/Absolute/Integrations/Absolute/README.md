@@ -971,7 +971,7 @@ Retrieves a list of events from the Absolute device instance.
 | limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits.                                                 | Optional | 
 
 #### Command Example
-```!confluence-cloud-get-events start_date="one minute ago", end_date="now", limit=10```
+```!absolute-device-get-events start_date="one minute ago" end_date="now" limit=10```
 
 
 ### Creating a filtering and sorting query
