@@ -846,6 +846,24 @@ def rasterize_thread(browser, chrome_port, path: str,
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
+def kill_zombie_processes():
+    # Iterate over all running processes
+    try:
+        for proc in psutil.process_iter(['pid', 'name', 'status']):
+            try:
+                # Check if the process is a zombie
+                if proc.info['status'] == psutil.STATUS_ZOMBIE:
+                    demisto.info(f'found zombie process with pid {proc.pid}')
+                    waitres = os.waitpid(int(proc.pid), os.WNOHANG)
+                    demisto.info(f"waitpid result: {waitres}")
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                # Handle cases where process may have already terminated or access is denied
+                demisto.info(f"failed to kill zombie with pid {proc.pid}")
+                continue
+    except Exception as e:
+        demisto.debug(f'Failed to iterate over processes. Error: {e}')
+
+
 def perform_rasterize(path: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
@@ -1193,6 +1211,7 @@ def main():  # pragma: no cover
     demisto.debug(f"main, {demisto.command()=}")
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
     threading.excepthook = excepthook_recv_loop
+
     try:
         if demisto.command() == 'test-module':
             module_test()
@@ -1217,6 +1236,8 @@ def main():  # pragma: no cover
 
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+    finally:
+        kill_zombie_processes()
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
