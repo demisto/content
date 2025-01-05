@@ -1,8 +1,8 @@
-id: CrowdStrike - T1059 - Command and Scripting Interpreter
+id: CrowdStrike Falcon - T1059 - Command and Scripting Interpreter
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: CrowdStrike - T1059 - Command and Scripting Interpreter
+name: CrowdStrike Falcon - T1059 - Command and Scripting Interpreter
 description: |-
   This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.
   An attacker might abuse command and script interpreters to execute commands, scripts, or binaries.
