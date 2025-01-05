@@ -44,6 +44,7 @@ MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
     'InformationalExpectedActivity': 'Resolved',
 }
 
+
 MICROSOFT_INCIDENT_ID_KEY = 'incidentId'
 LAST_FETCHED_INCIDENT_IDS_INTEGRATION_CONTEXT_KEY = 'last_fetched_incident_ids'
 MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR = "Mirrored from Cortex XSOAR"
@@ -162,7 +163,7 @@ class Client:
         PATCH request to update single incident.
         Args:
             incident_id (int): incident's id
-            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or Redirected)
             assigned_to (str): Owner of the incident.
             classification (str): Specification of the alert. Possible values are: InformationalExpectedActivity, FalsePositive,
              TruePositive.
@@ -447,7 +448,7 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
               - id (int) - incident's id (required)
-              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or Redirected)
               - assigned_to (str) - Owner of the incident.
               - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
               - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,

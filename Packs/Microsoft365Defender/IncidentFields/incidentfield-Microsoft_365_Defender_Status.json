@@ -28,7 +28,7 @@
     "fromVersion": "5.5.0",
     "selectValues": [
         "Active",
-        "In Progress",
+        "InProgress",
         "Resolved",
         "Redirected"
     ]
