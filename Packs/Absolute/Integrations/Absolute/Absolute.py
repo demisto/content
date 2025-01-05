@@ -1031,13 +1031,13 @@ def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str
 
 def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]], should_get_latest_events: bool = True) -> tuple[
     List[Dict[str, Any]], List[str]]:
-    demisto.debug("Adding _TIME field to events and optionally getting the latest events id")
+    demisto.debug("Adding _time field to events and optionally getting the latest events id")
     latest_event_time = events[-1].get('eventDateTimeUtc')
     latest_events_id = []
     for event in events:
         # adding time field
         event_time = event.get('eventDateTimeUtc')
-        event['_TIME'] = event_time
+        event['_time'] = event_time
         # latest events batch
         if should_get_latest_events and event_time == latest_event_time:
             latest_events_id.append(event.get('id'))
@@ -1146,7 +1146,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(
                  f'return from fetch {last_run_object.get("next_page_token")}, {last_run_object.get("end_date")}, {last_run_object.get("latest_events_id")}, {last_run_object=}, {type(last_run_object)=}')
             if events:
-                demisto.debug(f"AAAAAA {events[0]['_TIME']}, {events[1]['_TIME']}, {events[2]['_TIME']}")
+                demisto.debug(f"AAAAAA {events[0]['_time']}, {events[1]['_time']}, {events[2]['_time']}")
                 send_events_to_xsiam(events=events, vendor="Absolute", product="Secure Endpoint")
                 demisto.debug("itamar 2222")
                 demisto.setLastRun(last_run_object)

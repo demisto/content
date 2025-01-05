@@ -509,6 +509,17 @@ def test_get_device_location_command(mocker, absolute_client):
 
 
 def test_fetch_events_no_events(mocker, absolute_client_v3):
+    """
+    Given:
+        - No events.
+
+    When:
+        - Running fetch_events.
+
+    Then:
+        - The events list should be empty.
+        - The last_run object should contain start_date and end_date.
+    """
     from Absolute import fetch_events
     mock_response = {'data': [], 'metadata': {}}
     mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
@@ -520,6 +531,17 @@ def test_fetch_events_no_events(mocker, absolute_client_v3):
 
 
 def test_fetch_events_first_fetch(mocker, absolute_client_v3):
+    """
+    Given:
+        - No previous events have been fetched.
+
+    When:
+        - Running the fetch_events function.
+
+    Then:
+        - The events list should contain the fetched events.
+        - The last_run object should contain start_date and end_date.
+    """
     from Absolute import fetch_events
     mock_response = util_load_json('test_data/siem_events.json')
     mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
@@ -530,11 +552,51 @@ def test_fetch_events_first_fetch(mocker, absolute_client_v3):
     assert last_run_object.get('end_date')
 
 
-def test_fetch_events_with_last_run_object(mocker, absolute_client_v3):
-    pass
+def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, absolute_client_v3):
+    """
+    Given:
+        - A last_run_object containing information about the previous fetch.
+        - The need to handle deduplication of fetched events.
+
+    When:
+        - Running the fetch_events function to fetch events in batches.
+
+    Then:
+        - The events list should contain all the fetched events, without duplicated events.
+        - The last_run_object should be updated based on the fetched events.
+    """
+    from Absolute import fetch_events
+    import Absolute
+    mock_response = util_load_json('test_data/siem_events.json')
+    Absolute.SEIM_EVENTS_PAGE_SIZE = 8
+
+    def run_fetch_mechanism_side_effect(client, fetch_limit, next_page_token, start_date, end_date):
+        if run_fetch_mechanism_side_effect.call_count == 1:
+            run_fetch_mechanism_side_effect.call_count += 1
+            return mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE], mock_response.get('metadata').get(
+                'pagination').get('nextPage')
+        else:
+            return mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:], ''
+
+    run_fetch_mechanism_side_effect.call_count = 1
+    mocker.patch.object(Absolute, 'run_fetch_mechanism', side_effect=run_fetch_mechanism_side_effect)
+    events_first_batch, last_run_object = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, {})
+    events_second_batch, _ = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, last_run_object)
+    all_events = events_first_batch + events_second_batch
+    assert all_events == mock_response.get('data')
 
 
 def test_run_fetch_mechanism_one_fetch(mocker, absolute_client_v3):
+    """
+    Given:
+        - The run_fetch_mechanism function is called with no previous last run.
+
+    When:
+        - The fetch_events function is run.
+
+    Then:
+        - The fetched events list should contain the expected events.
+    """
     from Absolute import run_fetch_mechanism
     from datetime import timedelta
     mock_response = util_load_json('test_data/siem_events.json')
@@ -549,6 +611,18 @@ def test_run_fetch_mechanism_one_fetch(mocker, absolute_client_v3):
 
 
 def test_run_fetch_mechanism_multiple_fetches(mocker, absolute_client_v3):
+    """
+    Given:
+        - The run_fetch_mechanism function is called with multiple fetches. It happens when the amount of events
+        is greater than the fetch limit.
+
+    When:
+        - The fetch_events function is called with different fetches.
+
+    Then:
+        - The fetched events list should contain the expected events.
+        - The fetch_events method should be called multiple times.
+    """
     from Absolute import run_fetch_mechanism
     from datetime import timedelta
     import Absolute
@@ -587,20 +661,39 @@ def test_run_fetch_mechanism_multiple_fetches(mocker, absolute_client_v3):
     assert next_page_token == ''
 
 
-def test_deduplication(mocker, absolute_client_v3):
-    pass
-
-
 def test_add_time_field(absolute_client_v3):
+    """
+    Given:
+        - The add_time_field_to_events_and_get_latest_events function is called.
+
+    When:
+        - The function is invoked with a list of events.
+
+    Then:
+        - All the events in the list should have a "_time" field.
+    """
     from Absolute import add_time_field_to_events_and_get_latest_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
     all_events, _ = add_time_field_to_events_and_get_latest_events(events=events)
     for event in all_events:
-        assert event.get('_TIME')
+        assert event.get('_time')
 
 
 def test_get_latest_events(absolute_client_v3):
+    """
+    Given:
+        - The add_time_field_to_events_and_get_latest_events function is called.
+
+    When:
+        - The function is invoked with a list of events.
+
+    Then:
+        - The function should return the latest events based on the 'eventDateTimeUtc' field.
+        - The latest_events_id list should contain the IDs of the latest events.
+        - The IDs in the latest_events_id list should be unique.
+        - The IDs in the latest_events_id list should match the expected IDs.
+    """
     from Absolute import add_time_field_to_events_and_get_latest_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
@@ -612,10 +705,58 @@ def test_get_latest_events(absolute_client_v3):
 
 
 def test_get_events_command(mocker, absolute_client_v3):
-    pass
+    """
+    Given:
+        - The get_events function is called.
+
+    When:
+        - The function is invoked with an empty input and an Absolute client instance.
+
+    Then:
+        - The function should retrieve events using run_fetch_mechanism and add_time_field_to_events_and_get_latest_events.
+        - The retrieved events should match the expected events from 'test_data/siem_events.json'.
+    """
+    from Absolute import get_events
+    mock_response = util_load_json('test_data/siem_events.json')
+    mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.add_time_field_to_events_and_get_latest_events', return_value=(mock_response.get('data'), ''))
+    events, _ = get_events({}, absolute_client_v3)
+    assert events == mock_response.get('data')
+
+
+def test_get_events_command_wrong_dates(mocker, absolute_client_v3):
+    """
+    Given:
+        - The get_events function is called with invalid dates.
+
+    When:
+        - The function is invoked with start_date being "now" and end_date being "one minute ago",
+        and an Absolute client instance.
+
+    Then:
+        - The function should raise a ValueError.
+    """
+    from Absolute import get_events
+    start_date = "now"
+    end_date = "one minute ago"
+    args = {'start_date': start_date, 'end_date': end_date}
+    try:
+        _, _ = get_events(args, absolute_client_v3)
+    except ValueError as e:
+        assert str(e) == "Start date is greater than the end date. Please provide valid dates."
 
 
 def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
+    """
+    Given:
+        - The prepare_query_string_for_fetch_events function is called.
+
+    When:
+        - The function is invoked with page_size, start_date, end_date, and next_page.
+
+    Then:
+        - The function should return a query string for fetching events.
+    """
     from Absolute import prepare_query_string_for_fetch_events
     from datetime import timedelta
     mock_response = util_load_json('test_data/siem_events.json')
