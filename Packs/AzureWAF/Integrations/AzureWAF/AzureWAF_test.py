@@ -431,7 +431,7 @@ def test_subscriptions_list_command(mocker):
         ]
     })
     commandResult = waf.subscriptions_list_command(client)
-    commandResult.readable_output == '''### Subscriptions: \n|displayName|state|subscriptionId|tenantId|\n|---|---|---|---|
+    assert commandResult.readable_output == '''### Subscriptions: \n|displayName|state|subscriptionId|tenantId|\n|---|---|---|---|
 | Pay-As-You-Go | Enabled | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n
 | Access to Azure Active Directory | Enabled | 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n'''
     assert m.call_args[1].get('method') == expected_results.get("method")
@@ -500,4 +500,4 @@ def test_resource_group_list_command(mocker):
     commandResult = waf.resource_group_list_command(client, **demisto_args)
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
-    commandResult.readable_output == expected_commandResult.readable_output
+    assert commandResult.readable_output == expected_commandResult.readable_output
