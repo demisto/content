@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "grandparentprocess",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_grandparentprocess",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Grand Parent Process",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

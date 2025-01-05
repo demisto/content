@@ -844,7 +844,7 @@ Uploads a file to Archer. You can associate the file to a record by providing al
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | The entry ID of the file in Cortex XSOAR context. | Required | 
+| entryId | A comma seperated list of entry IDs of the files in Cortex XSOAR context. | Required | 
 | contentId | The content record ID to update.| Optional | 
 | applicationId | ID of the application which we want to upload the file to. | Optional | 
 | associatedField | Archer field name to associate the file with. | Optional |
