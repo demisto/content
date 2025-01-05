@@ -9768,9 +9768,8 @@ def test_create_clickable_test_wrong_text_value():
     (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: client\\r\\n'",
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: <XX_REPLACED>\\r\\n'"
-    ),
-    ids=["Bearer", "Cookie", "Authorization", "Bearer", "No change", "Key", "credential", "client"]
-])
+    ),],
+    ids=["Bearer", "Cookie", "Authorization", "Bearer", "No change", "Key", "credential", "client"],)
 def test_censor_request_logs(request_log, expected_output):
     """
     Given:
