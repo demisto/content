@@ -9,9 +9,15 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "ThousandEyes",
+        "Thousand Eyes"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
