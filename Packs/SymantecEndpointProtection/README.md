@@ -28,8 +28,8 @@ You can configure the specific vendor and product for this instance.
    - product as product - ep
 
 ### Timestamp Ingestion
-Timestamp ingestion from raw logs is supported only for the format format: **MMM dd hh:mm:ss.nnn** (E.g; Dec 1 10:00:00).
+Timestamp ingestion from raw logs is supported only for the format: **MMM dd hh:mm:ss.nnn** (E.g. Dec 1 10:00:00).
 The default time zone for the timestamp extraction is in UTC (**+00:00**) time. 
-Any requirement for another time zone, demands altering the time zone used in the Parsing Rule by changing it in the User Defined section according to your needs.
+Any requirement for another time zone, demands altering the time zone used in the default Parsing Rule by changing it in the User Defined section according to your needs.
 
 </~XSIAM>
