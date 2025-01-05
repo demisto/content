@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 import json
 from math import floor
 from typing import Any
@@ -623,7 +623,7 @@ def get_host_tags_command(
     page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
     limit = arg_to_number(args.get("limit"), arg_name="limit")
     limit, offset = pagination(limit, page, page_size)
-    context_output: dict
+    context_output: dict = {}
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
         response = (
@@ -763,9 +763,8 @@ def active_metrics_list_command(
       outputs key field, and outputs data.
 
     """
-
+    from_timestamp: datetime | None = None
     from_arg: str | None = args.get("from")
-    from_timestamp: datetime | None
     if from_arg:
         from_timestamp = parse(
             from_arg, settings={"TIMEZONE": "UTC"}
@@ -781,7 +780,7 @@ def active_metrics_list_command(
     page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
     limit = arg_to_number(args.get("limit"), arg_name="limit")
     limit, offset = pagination(limit, page, page_size)
-    context_output: dict
+    context_output: dict = {}
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.list_active_metrics(
@@ -833,7 +832,7 @@ def metrics_search_command(
 
     """
     query = args.get("query")
-    context_output: dict
+    context_output: dict = {}
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.list_metrics(
