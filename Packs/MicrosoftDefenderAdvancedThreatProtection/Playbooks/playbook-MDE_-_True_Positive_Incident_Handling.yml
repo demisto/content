@@ -1,172 +1,29 @@
+id: MDE - True Positive Incident Handling
+version: -1
 contentitemexportablefields:
   contentitemfields: {}
+name: MDE - True Positive Incident Handling
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
-id: MDE - True Positive Incident Handling
-inputs:
-- description: 'The Cortex XSOAR investigation IDs to be closed. '
-  key: DupAlertIDsToBeClosed
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Add a comment to close an incident on the Microsoft Defender For Endpoint side.
-  key: Comment
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 'XSOAR Incident #${incident.id}'
-- description: |-
-    Provide a reason for closing the incident. Choose one of the following:
-    "NotAvailable"/"Apt,Malware"/"SecurityPersonnel"/"SecurityTesting"/"UnwantedSoftware"/"Other"
-  key: Reason
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Choose From - "Unknown" / "TruePositive" / "FalsePositive"
-  key: Classification
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: 'Specify the ticket description for this section. '
-  key: TicketDescription
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Specify the banning tag name for the found indicators.
-  key: BlockTag
-  playbookInputQuery:
-  required: false
-  value:
-    simple: BlockTag
-- description: If you are using Jira, specify the Jira Project Key here (can be retrieved from the Jira console).
-  key: TicketProjectName
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The name of the ticketing system to use, for example Jira or ServiceNow.
-  key: TicketingSystemToUse
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: |-
-    Whether host isolation is allowed.
-  key: AutoIsolation
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 'False'
-- description: |-
-    Whether duplicate incidents should be closed as well in the Microsoft Defender for Endpoint integration instance.
-    The playbook looks for the world "Close" in this input.
-  key: CloseDuplicate
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The ID of the host for running an isolation process.
-  key: HostID
-  playbookInputQuery:
-  required: false
-  value:
-    simple: ${incident.deviceid}
-- description: Enter the File SHA256 you want to block.
-  key: FileSha256
-  playbookInputQuery:
-  required: false
-  value:
-    simple: ${incident.filesha256}
-- description: Enter the File SHA1 you want to remove from your protected endpoints.
-  key: FileSha1
-  playbookInputQuery:
-  required: false
-  value:
-    simple: ${incident.filesha1}
-- key: ManuallyChooseIOCForHunting
-  value:
-    simple: "True"
-  required: false
-  description: |-
-    This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
-    If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
-  playbookInputQuery:
-- key: IP
-  value:
-    complex:
-      root: IP
-      filters:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.Address
-            iscontext: true
-      transformers:
-      - operator: uniq
-  required: false
-  description: IP value to be hunt on.
-  playbookInputQuery:
-- key: MD5
-  value:
-    complex:
-      root: File.MD5
-      filters:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.MD5
-            iscontext: true
-      transformers:
-      - operator: uniq
-  required: false
-  description: MD5 file value to be hunt upon.
-  playbookInputQuery:
-- key: URL_or_Domain
-  value:
-    complex:
-      root: Domain.Name
-      filters:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Domain.Name
-            iscontext: true
-      transformers:
-      - operator: append
-        args:
-          item:
-            value:
-              simple: URL.Data
-            iscontext: true
-      - operator: uniq
-  required: false
-  description: URL or domain to be hunt upon.
-  playbookInputQuery:
-name: MDE - True Positive Incident Handling
-outputs: []
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+  "0":
+    id: "0"
+    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
+    type: start
+    task:
+      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "106"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
-      iscommand: false
-      name: ''
-      version: -1
-      description: ''
-    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -174,27 +31,71 @@ tasks:
           "y": -180
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
+    type: collection
+    task:
+      id: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
+      version: -1
+      name: Confirm Indicators to block
+      description: Confirms the indicators to block.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
     continueonerrortype: ""
-  '27':
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
     form:
-      description: ''
-      expired: false
       questions:
-      - defaultrows: []
-        fieldassociated: ''
-        gridcolumns: []
-        id: '0'
-        label: ''
+      - id: "0"
+        label: ""
         labelarg:
           simple: Mark the indicators to block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
         options: []
         optionsarg:
         - simple: ${inputs.FileSha256}
-        placeholder: ''
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-        required: false
-        tooltip: ''
-        type: multiSelect
       - id: "1"
         label: ""
         labelarg:
@@ -211,82 +112,38 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      sender: ''
       title: Indicators to block
+      description: ""
+      sender: ""
+      expired: false
       totalanswers: 0
-    id: '27'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    message:
-      bcc:
-      body:
-      cc:
-      format: ''
-      methods: []
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
-    nexttasks:
-      '#none#':
-      - '72'
-    note: false
-    quietmode: 0
-    separatecontext: false
     skipunavailable: false
-    task:
-      brand: ''
-      description: Confirms the indicators to block.
-      id: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
-      iscommand: false
-      name: Confirm Indicators to block
-      type: collection
-      version: -1
-    taskid: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
-    timertriggers: []
-    type: collection
-    view: |-
-      {
-        "position": {
-          "x": -1480,
-          "y": 1510
-        }
-      }
-    continueonerrortype: ""
-  '29':
-    id: '29'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0bda6212-cc57-479f-8f57-7154e95f96cd
+    type: regular
+    task:
+      id: 0bda6212-cc57-479f-8f57-7154e95f96cd
+      version: -1
+      name: Tag Indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "86"
-    note: false
-    quietmode: 0
     scriptarguments:
       indicatorsValues:
         simple: ${Indicators to block.Answers.0}
       tags:
         simple: ${inputs.BlockTag}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.indicators
-      id: 0bda6212-cc57-479f-8f57-7154e95f96cd
-      iscommand: true
-      name: Tag Indicators
-      script: Builtin|||setIndicators
-      type: regular
-      version: -1
-    taskid: 0bda6212-cc57-479f-8f57-7154e95f96cd
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -294,20 +151,34 @@ tasks:
           "y": 1990
         }
       }
-    continueonerrortype: ""
-  '68':
-    id: '68'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
+    type: regular
+    task:
+      id: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
+      version: -1
+      name: Create IOC on Microsoft Defender For Endpoint
+      description: Creates a new indicator.
+      script: '|||microsoft-atp-sc-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "86"
-    note: false
-    quietmode: 0
     scriptarguments:
       action:
         simple: Allowed
+      generate_alert:
+        simple: ${Indicators to block.Answers.1}
       indicator_description:
         simple: 'Added by Cortex XSOAR - Incident #${incident.id}'
       indicator_title:
@@ -318,22 +189,8 @@ tasks:
         simple: ${Indicators to block.Answers.0}
       severity:
         simple: Informational
-      generate_alert:
-        simple: ${Indicators to block.Answers.1}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Creates a new indicator.
-      id: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
-      iscommand: true
-      name: Create IOC on Microsoft Defender For Endpoint
-      script: '|||microsoft-atp-sc-indicator-create'
-      type: regular
-      version: -1
-    taskid: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -341,43 +198,43 @@ tasks:
           "y": 1990
         }
       }
-    continueonerrortype: ""
-  '72':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Indicators to block.Answers.0
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: yes
-    id: '72'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 83e10ad8-4cae-4707-8814-e7848604d2b9
+    type: condition
+    task:
+      id: 83e10ad8-4cae-4707-8814-e7848604d2b9
+      version: -1
+      name: Was there any hash selected?
+      description: Was a hash selected?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "86"
-      yes:
-      - '68'
-      - '29'
-    note: false
-    quietmode: 0
+      "yes":
+      - "68"
+      - "29"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Was a hash selected?
-      id: 83e10ad8-4cae-4707-8814-e7848604d2b9
-      iscommand: false
-      name: Was there any hash selected?
-      type: condition
-      version: -1
-    taskid: 83e10ad8-4cae-4707-8814-e7848604d2b9
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicators to block.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -385,7 +242,13 @@ tasks:
           "y": 1660
         }
       }
-    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "74":
     id: "74"
     taskid: f2f50926-288f-41ad-8aa9-0d1536b4dd3b
@@ -399,9 +262,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -431,14 +292,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 645397ea-9836-4ae4-8ac3-c25e5fbd6d85
+    taskid: b9847a27-2080-4dbc-8e3c-494e7f5bb71f
     type: regular
     task:
-      id: 645397ea-9836-4ae4-8ac3-c25e5fbd6d85
+      id: b9847a27-2080-4dbc-8e3c-494e7f5bb71f
       version: -1
       name: Resolve MDE Alert
-      description: Update the properties of an alert entity.
-      script: '|||microsoft-atp-update-alert'
+      description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
+      script: '|||msg-update-alert'
       type: regular
       iscommand: true
       brand: ""
@@ -459,8 +320,6 @@ tasks:
                 iscontext: true
       classification:
         simple: ${inputs.Classification}
-      comment:
-        simple: ${inputs.Comment}
       determination:
         simple: ${inputs.Reason}
       status:
@@ -1026,7 +885,7 @@ tasks:
         This script wraps the generic create-record command in ServiceNow.
         You can add fields that you want to create the record with as script arguments or in the
         code.
-      script: ServiceNowCreateIncident
+      scriptName: ServiceNowCreateIncident
       type: regular
       iscommand: false
       brand: ""
@@ -1073,8 +932,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: ServiceNow v2
-    results:
-    - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1112,8 +969,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: jira-v2
-    results:
-    - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2031,7 +1886,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-version: -1
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -2044,10 +1899,146 @@ view: |-
       }
     }
   }
+inputs:
+- key: DupAlertIDsToBeClosed
+  value: {}
+  required: false
+  description: 'The Cortex XSOAR investigation IDs to be closed. '
+  playbookInputQuery:
+- key: Comment
+  value:
+    simple: 'XSOAR Incident #${incident.id}'
+  required: false
+  description: Add a comment to close an incident on the Microsoft Defender For Endpoint side.
+  playbookInputQuery:
+- key: Reason
+  value: {}
+  required: false
+  description: |-
+    Provide a reason for closing the incident. Choose one of the following:
+    "NotAvailable"/"Apt,Malware"/"SecurityPersonnel"/"SecurityTesting"/"UnwantedSoftware"/"Other"
+  playbookInputQuery:
+- key: Classification
+  value: {}
+  required: false
+  description: Choose From - "Unknown" / "TruePositive" / "FalsePositive"
+  playbookInputQuery:
+- key: TicketDescription
+  value: {}
+  required: false
+  description: 'Specify the ticket description for this section. '
+  playbookInputQuery:
+- key: BlockTag
+  value:
+    simple: BlockTag
+  required: false
+  description: Specify the banning tag name for the found indicators.
+  playbookInputQuery:
+- key: TicketProjectName
+  value: {}
+  required: false
+  description: If you are using Jira, specify the Jira Project Key here (can be retrieved from the Jira console).
+  playbookInputQuery:
+- key: TicketingSystemToUse
+  value: {}
+  required: false
+  description: The name of the ticketing system to use, for example Jira or ServiceNow.
+  playbookInputQuery:
+- key: AutoIsolation
+  value:
+    simple: "False"
+  required: false
+  description: Whether host isolation is allowed.
+  playbookInputQuery:
+- key: CloseDuplicate
+  value: {}
+  required: false
+  description: |-
+    Whether duplicate incidents should be closed as well in the Microsoft Defender for Endpoint integration instance.
+    The playbook looks for the world "Close" in this input.
+  playbookInputQuery:
+- key: HostID
+  value:
+    simple: ${incident.deviceid}
+  required: false
+  description: The ID of the host for running an isolation process.
+  playbookInputQuery:
+- key: FileSha256
+  value:
+    simple: ${incident.filesha256}
+  required: false
+  description: Enter the File SHA256 you want to block.
+  playbookInputQuery:
+- key: FileSha1
+  value:
+    simple: ${incident.filesha1}
+  required: false
+  description: Enter the File SHA1 you want to remove from your protected endpoints.
+  playbookInputQuery:
+- key: ManuallyChooseIOCForHunting
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
+    If false, it will hunt for all IOCs detected in the incident.
+    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: IP value to be hunt on.
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File.MD5
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: MD5 file value to be hunt upon.
+  playbookInputQuery:
+- key: URL_or_Domain
+  value:
+    complex:
+      root: Domain.Name
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - operator: uniq
+  required: false
+  description: URL or domain to be hunt upon.
+  playbookInputQuery:
+outputs: []
 tests:
 - Microsoft Defender Advanced Threat Protection - Test
 - Microsoft Defender - ATP - Indicators SC Test
 fromversion: 6.5.0
-system: true
 marketplaces:
 - xsoar
