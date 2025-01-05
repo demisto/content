@@ -1104,6 +1104,60 @@ class TestGetUserData:
         assert result[1] == expected_account
         assert result[2] == "CN=Manager,OU=Users,DC=example,DC=com"
 
+    def test_ad_get_user_attributes(self, mocker: MockerFixture):
+        """
+        Given:
+            A Command object for ad_get_user.
+        When:
+            The function is called with the Command object and attributes.
+        Then:
+            It returns the expected tuple of readable outputs, account output, and manager DN.
+        """
+        command = Command(
+            "Active Directory Query v2", "ad-get-user", {"username": "ad_user", "attributes": "whenCreated"}
+        )
+        mock_outputs = {
+            "sAMAccountName": "ad_user",
+            "displayName": "AD User",
+            "mail": "ad_user@example.com",
+            "memberOf": ["Group1"],
+            "userAccountControlFields": {"ACCOUNTDISABLE": False},
+            "manager": ["CN=Manager,OU=Users,DC=example,DC=com"],
+            "whenCreated": ["2024-11-05 09:11:18+00:00"]
+        }
+        expected_account = {
+            "username": {"Value": "ad_user", "Source": "Active Directory Query v2"},
+            "display_name": {"Value": "AD User", "Source": "Active Directory Query v2"},
+            "email_address": {
+                "Value": "ad_user@example.com",
+                "Source": "Active Directory Query v2",
+            },
+            "groups": {"Value": "Group1", "Source": "Active Directory Query v2"},
+            "is_enabled": {"Value": True, "Source": "Active Directory Query v2"},
+            "whenCreated": {'Source': 'Active Directory Query v2',
+                            'Value': '2024-11-05 09:11:18+00:00'}
+        }
+
+        mocker.patch(
+            "GetUserData.run_execute_command",
+            return_value=([mock_outputs], "Human readable output", []),
+        )
+        mocker.patch("GetUserData.get_output_key", return_value="ActiveDirectory.Users")
+        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
+        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+        result = ad_get_user(command)
+
+        assert isinstance(result, tuple)
+        assert len(result) == 3
+        assert isinstance(result[0], list)
+        assert isinstance(result[1], dict)
+        assert isinstance(result[2], str)
+        assert result[1] == expected_account
+        assert result[2] == "CN=Manager,OU=Users,DC=example,DC=com"
+        assert len(result[1])
+        assert "whenCreated" in result[1]
+
     def test_ad_get_user_manager(self, mocker: MockerFixture):
         """
         Given:
