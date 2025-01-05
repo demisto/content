@@ -6,12 +6,13 @@ filter to_string(event_id) in ("510", "1200", "1201", "1202", "1203", "1204", "1
     accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
     audit_type = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) , "<AuditType>([^<]+)"),0),
-    user_id = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<UserId\>([^\<]*)"),0),
+    UserId = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<UserId\>([^\<]*)"),0),
     mfa_method = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<MfaMethod\>([^\<]*)"),0),
     device_id = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<DeviceId\>([^\<]*)"),0),
     server  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<Server\>([^\<]*)"),0),
     auth_protocol  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<AuthProtocol\>([^\<]*)"),0),
-    ip_address  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<IpAddress\>([^\<]*)"),0),
+    IpAddress  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<IpAddress\>([^\<]*)"),0),
+    ForwardedIpAddress = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<ForwardedIpAddress\>([^\<]*)"),0),
     user_agent  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<UserAgentString\>([^\<]*)"),0)
 // json part
 | alter 
@@ -46,7 +47,8 @@ filter to_string(event_id) in ("510", "1200", "1201", "1202", "1203", "1204", "1
     raw_param_15 = if(raw_param_15 = "-", replace(raw_param_15,"-",""),raw_param_15)
 | alter 
     raw_data_json = raw_param_2 + raw_param_3 +raw_param_4 + raw_param_5 +raw_param_6 + raw_param_7 + raw_param_8 + raw_param_9 + raw_param_10 + raw_param_11 + raw_param_12 + raw_param_13 + raw_param_14 + raw_param_15,
-    ip_addresses_array = if(ip_address contains ",", split(ip_address, ","), null)
+    IpAddresses_array = if(IpAddress contains ",", split(IpAddress, ","), null),
+    ForwardedIpAddresses_array = if(ForwardedIpAddress contains ",", split(ForwardedIpAddress, ","), null)
 | alter 
     event_type_connection = json_extract_scalar(raw_data_json ,"$.Connection"),
     referer = json_extract_scalar(raw_data_json ,"$.Referer"),
@@ -54,8 +56,13 @@ filter to_string(event_id) in ("510", "1200", "1201", "1202", "1203", "1204", "1
     Host = json_extract_scalar(raw_data_json ,"$.Host"),
     Content_Type = json_extract_scalar(raw_data_json ,"$.Content-Type"),
     X_Frame_Options = json_extract_scalar(raw_data_json ,"$.X-Frame-Options"),
-    src_ipv4_addresses = arrayfilter(ip_addresses_array, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
-    src_ipv6_addresses = arrayfilter(ip_addresses_array, "@element" ~= "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})")
+    src_ipv4_addresses = if(ForwardedIpAddress != null, arrayfilter(ForwardedIpAddresses_array, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"), arrayfilter(IpAddresses_array, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}")),
+    src_ipv6_addresses = if(ForwardedIpAddress != null, arrayfilter(ForwardedIpAddresses_array, "@element" ~= "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), arrayfilter(IpAddresses_array, "@element" ~= "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})")),
+    intermediate_ipv4_addresses = if(ForwardedIpAddress != null and IpAddress != ForwardedIpAddress, arrayfilter(IpAddresses_array, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}")),
+    intermediate_ipv6_addresses = if(ForwardedIpAddress != null and IpAddress != ForwardedIpAddress, arrayfilter(IpAddresses_array, "@element" ~= "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})")),
+    UserId_username = if(UserId contains """\\""", arrayindex(regextract(UserId, "[^\\]+\\([^\\]+)"), 0), UserId contains "@", arrayindex(split(UserId, "@"), 0), null),
+    UserId_domain = if(UserId contains """\\""", arrayindex(regextract(UserId, "([^\\]+)\\[^\\]+"), 0), null),
+    UserId_upn = if(UserId contains "@", UserId, null)
 //
 | alter 
     xdm.alert.original_alert_id = activity_id,
@@ -63,26 +70,37 @@ filter to_string(event_id) in ("510", "1200", "1201", "1202", "1203", "1204", "1
     xdm.source.process.thread_id = to_integer(process_thread_id),
     xdm.source.process.pid = to_integer(process_pid),
     xdm.source.user.identifier = json_extract_scalar(user, "$.identifier"),
-    xdm.source.user.domain = json_extract_scalar(user, "$.domain"),
+    xdm.source.user.domain = if(json_extract_scalar(user, "$.domain") != null and json_extract_scalar(user, "$.domain") != "", json_extract_scalar(user, "$.domain"), UserId_domain != null and UserId_domain != "", UserId_domain, null),
     xdm.source.user.user_type = json_extract_scalar(user, "$.type"),
+    xdm.source.user_agent = coalesce(user_agent,user_agent2),
+    xdm.source.user.username = if(userName != null and userName != "", userName, accountName != null and accountName != "", accountName, UserId_username != null and UserId_username != "", UserId_username, null),
+    xdm.source.user.upn = UserId_upn,
     xdm.event.description = replex(message, "\-", ""),
     xdm.event.operation_sub_type = audit_type,
-    xdm.source.user.employee_id = user_id,
     xdm.auth.auth_method = mfa_method,
     xdm.source.host.device_id = device_id,
     xdm.target.url = server,
     xdm.network.application_protocol = auth_protocol,
-    xdm.source.ipv4 = if(ip_address ~= "^(?:\d{1,3}\.){3}\d{1,3}$", ip_address, arrayindex(src_ipv4_addresses, 0) != null, arrayindex(src_ipv4_addresses, 0), null),
-    xdm.source.ipv6 = if(ip_address ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", ip_address, arrayindex(src_ipv6_addresses, 0) != null, arrayindex(src_ipv6_addresses, 0), null),
+    // xdm Source IP
+    xdm.source.ipv4 = if(ForwardedIpAddress != null and ForwardedIpAddress ~= "^(?:\d{1,3}\.){3}\d{1,3}$", ForwardedIpAddress, ForwardedIpAddress = null and IpAddress ~= "^(?:\d{1,3}\.){3}\d{1,3}$", IpAddress, arrayindex(src_ipv4_addresses, 0) != null, arrayindex(src_ipv4_addresses, 0), null),
+    xdm.source.ipv6 = if(ForwardedIpAddress != null and ForwardedIpAddress ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", ForwardedIpAddress, ForwardedIpAddress = null and IpAddress ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", IpAddress, arrayindex(src_ipv6_addresses, 0) != null, arrayindex(src_ipv4_addresses, 0), null),
     xdm.source.host.ipv4_addresses = arrayfilter(src_ipv4_addresses, incidr("@element","10.0.0.0/8") or incidr("@element","127.0.0.0/8") or incidr("@element","169.254.0.0/16") or incidr("@element","172.16.0.0/12") or incidr("@element","192.168.0.0/16")),
-    xdm.source.host.ipv6_addresses = arrayfilter(src_ipv6_addresses, incidr6("@element","fc00::/7") or incidr6("@element","fd00::/7") or incidr6("@element","fe80::/64") or incidr6("@element","::/128") or incidr6("@element","::1/128")),
+    //xdm.source.host.ipv6_addresses = arrayfilter(src_ipv6_addresses, incidr6("@element","fc00::/7") or incidr6("@element","fd00::/7") or incidr6("@element","fe80::/64") or incidr6("@element","::/128") or incidr6("@element","::1/128")),
     xdm.source.host.ipv4_public_addresses = arrayfilter(src_ipv4_addresses, not incidr("@element","10.0.0.0/8") and not incidr("@element","127.0.0.0/8") and not incidr("@element","169.254.0.0/16") and not incidr("@element","172.16.0.0/12") and not incidr("@element","192.168.0.0/16")),
-    xdm.source.host.ipv6_public_addresses = arrayfilter(src_ipv6_addresses, not incidr6("@element","fc00::/7") and not incidr6("@element","fd00::/7") and not incidr6("@element","fe80::/64") and not incidr6("@element","::/128") and not incidr6("@element","::1/128")),
-    xdm.source.user_agent = coalesce(user_agent,user_agent2),
+    //xdm.source.host.ipv6_public_addresses = arrayfilter(src_ipv6_addresses, not incidr6("@element","fc00::/7") and not incidr6("@element","fd00::/7") and not incidr6("@element","fe80::/64") and not incidr6("@element","::/128") and not incidr6("@element","::1/128")),
+    xdm.source.host.ipv6_addresses = src_ipv6_addresses,
+    // xdm intermediate IP
+    xdm.intermediate.ipv4 = if(ForwardedIpAddress != null and IpAddress ~= "^(?:\d{1,3}\.){3}\d{1,3}$" and IpAddress != ForwardedIpAddress, IpAddress, arrayindex(intermediate_ipv4_addresses, 0) != null, arrayindex(intermediate_ipv4_addresses, 0), null),
+    xdm.intermediate.ipv6 = if(ForwardedIpAddress != null and IpAddress ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$" and IpAddress != ForwardedIpAddress, IpAddress, arrayindex(intermediate_ipv6_addresses, 0) != null, arrayindex(intermediate_ipv6_addresses, 0), null),
+    xdm.intermediate.host.ipv4_addresses = arrayfilter(intermediate_ipv4_addresses, incidr("@element","10.0.0.0/8") or incidr("@element","127.0.0.0/8") or incidr("@element","169.254.0.0/16") or incidr("@element","172.16.0.0/12") or incidr("@element","192.168.0.0/16")),
+    //xdm.intermediate.host.ipv6_public_addresses = arrayfilter(intermediate_ipv6_addresses, incidr6("@element","fc00::/7") or incidr6("@element","fd00::/7") or incidr6("@element","fe80::/64") or incidr6("@element","::/128") or incidr6("@element","::1/128")),
+    xdm.intermediate.host.ipv4_public_addresses = arrayfilter(intermediate_ipv4_addresses, not incidr("@element","10.0.0.0/8") and not incidr("@element","127.0.0.0/8") and not incidr("@element","169.254.0.0/16") and not incidr("@element","172.16.0.0/12") and not incidr("@element","192.168.0.0/16")),
+    //xdm.intermediate.host.ipv6_public_addresses = arrayfilter(intermediate_ipv6_addresses, not incidr6("@element","fc00::/7") and not incidr6("@element","fd00::/7") and not incidr6("@element","fe80::/64") and not incidr6("@element","::/128") and not incidr6("@element","::1/128")),
+    xdm.intermediate.host.ipv6_addresses = intermediate_ipv6_addresses,
+    //
     xdm.event.id = to_string(event_id),
     xdm.event.type = coalesce(event_type_connection, channel),
     xdm.session_context_id = to_string(record_id),
-    xdm.source.user.username = coalesce(userName ,accountName),
     xdm.source.host.hostname = coalesce(host_name,Host, computer_name),
     xdm.event.log_level = if(log_level ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level ~= "err", XDM_CONST.LOG_LEVEL_ERROR, log_level ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level="crit", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(opcode,log_level))),
     xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result)),

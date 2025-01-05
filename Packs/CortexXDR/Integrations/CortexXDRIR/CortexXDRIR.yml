@@ -1222,6 +1222,13 @@ script:
       - x86
       - x64
       required: true
+    - name: download_package
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Supported only for package_type x64 or x86. Whether to actually download the installation package file.
+      defaultValue: "false"
     description: Gets the distribution URL for downloading the installation package.
     name: xdr-get-distribution-url
     outputs:
@@ -2266,8 +2273,9 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: This command will soon be deprecated; run xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+    description: Deprecated. Run xdr-script-run instead.
     name: xdr-run-script
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
       description: ID of the action initiated.
