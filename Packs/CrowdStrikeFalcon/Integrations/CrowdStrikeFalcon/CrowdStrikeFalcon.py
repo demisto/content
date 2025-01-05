@@ -19,8 +19,8 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 VENDOR = 'CrowdStrike'
-PRODUCT = 'Falcon'
-INTEGRATION_NAME = f'{VENDOR} {PRODUCT}'
+PRODUCT = 'Falcon Alert'
+INTEGRATION_NAME = 'CrowdStrike Falcon'
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 ENDPOINT_DETECTION = 'detection'
