@@ -623,7 +623,7 @@ def get_host_tags_command(
     page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
     limit = arg_to_number(args.get("limit"), arg_name="limit")
     limit, offset = pagination(limit, page, page_size)
-    context_output: dict
+    context_output: dict = {}
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
         response = (
