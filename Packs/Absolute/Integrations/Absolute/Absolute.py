@@ -530,7 +530,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
     outputs = parse_freeze_device_response(res)
     human_readable = tableToMarkdown(f'{INTEGRATION} device freeze requests results', outputs,
                                      headers=['FailedDeviceUIDs', 'RequestUID', 'SucceededDeviceUIDs'], removeNull=True,
-                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()}, )
+                                     json_transform_mapping={'FailedDeviceUIDs': JsonTransformer()},)
 
     outputs.pop('FailedDeviceUIDs', '')
     return CommandResults(readable_output=human_readable, outputs=outputs, outputs_prefix="Absolute.FreezeRequest",
@@ -1056,7 +1056,6 @@ def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
     events, _ = add_time_field_to_events_and_get_latest_events(events, should_get_latest_events=False)
     demisto.debug("finished get-events")
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
-
 
 
 ''' MAIN FUNCTION '''
