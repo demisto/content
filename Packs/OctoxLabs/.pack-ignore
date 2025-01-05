@@ -6,3 +6,6 @@ ldap
 URLs
 DBot
 Boolean
+HTTPS
+AVM
+SSL

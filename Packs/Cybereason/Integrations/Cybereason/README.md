@@ -17,6 +17,32 @@ This integration was integrated and tested with version 21.2 of Cybereason
 | Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
 
 
+## Cybereason MalOp to XSOAR Incident Map
+
+This involves the mapping of response fields to XSOAR incidents, enhancing the ability to manage and track security incidents effectively.
+
+### Overview
+
+1. **Incident Mapping:** The integration maps specific response fields to corresponding incident fields within XSOAR, ensuring that all relevant information is captured accurately.
+2. **Custom Fields:** In addition to standard incident fields, custom fields have been introduced to accommodate unique data requirements specific to our workflow. These fields provide flexibility and enhance the granularity of the incident information.
+- `malopcreationtime`
+- `malopupdatetime`
+- `maloprootcauseelementname`
+- `maloprootcauseelementtype`
+- `malopseverity`
+- `malopdetectiontype`
+- `malopedr`
+- `malopurl`
+- `malopgroup`
+
+These custom fields provide flexibility and enhance the granularity of the incident information.
+
+### Usage
+
+1. **Configure Custom Fields:** Ensure that all custom fields are properly set up in XSOAR before running the fetch function.
+2. **Enable Fetch Incidents:**  Functionality responsible to fetch Malops.
+3. **Monitor Incidents:** Once the MalOps are converted, they will appear as incidents in XSOAR, allowing for effective incident management.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

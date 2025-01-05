@@ -1,0 +1,6 @@
+[INGEST:vendor="proofpoint", product="casb", target_dataset="proofpoint_casb_raw", no_hit=keep]
+config case_sensitive=false 
+| alter tmp_timestamp = event -> event.occurredAt
+| filter tmp_timestamp ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_timestamp)
+| fields -tmp_timestamp;
