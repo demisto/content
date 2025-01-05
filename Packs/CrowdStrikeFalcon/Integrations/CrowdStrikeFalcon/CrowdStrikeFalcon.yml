@@ -70,6 +70,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
+  defaultvalue:marketplacev2: '5000'
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0

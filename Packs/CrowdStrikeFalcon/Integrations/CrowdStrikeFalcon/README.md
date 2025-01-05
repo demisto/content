@@ -28,7 +28,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| Max incidents per fetch |  | False |
+| Max incidents per fetch | Default is 15. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
@@ -42,7 +42,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch events |  | False |
-| Max events per fetch |  | False |
+| Max events per fetch | Default is 5000. | False |
 | Events Fetch Interval |  | False |
 
 ### Required API client scope
