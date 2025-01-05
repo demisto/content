@@ -421,6 +421,4 @@ omit = ["*/test_data/*", "*_test.py", "demistomock.py", "conftest.py", "**/conft
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.pytest.ini_options]
-pyxdr = "^1.0"
 
