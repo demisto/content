@@ -775,7 +775,6 @@ PyPDF2 = "^1.28.6"
 pyspellchecker = "^0.6.3"
 pytest-freezegun = "^0.4.2"
 python-dotenv = "^0.20.0"
-pyxdr = "^1.0"
 requests = "^2.27.1"
 "ruamel.yaml" = "^0.17.21"
 setuptools = "^75.5.0"
@@ -801,7 +800,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "CIAC-11100-playbook-run-in-build"
-resolved_reference = "3e852c826f2f607c638e2e6c9aff085e48899e82"
+resolved_reference = "c8d9fb8a3321fe96bec5cba3396ce7d7030fc5ec"
 
 [[package]]
 name = "deprecated"
@@ -3003,25 +3002,6 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
-name = "pyxdr"
-version = "1.0.0"
-description = "F.A.C.C.T. XDR REST API Python Bindings"
-optional = false
-python-versions = "*"
-files = [
-    {file = "pyxdr-1.0.0-py3-none-any.whl", hash = "sha256:6ead7378aef7dee2c9699721e28fbc374e3be98244071848f7575a809a418305"},
-    {file = "pyxdr-1.0.0.tar.gz", hash = "sha256:b4f230513dc1325ee1a301babcee9288f4bc589c12ab9031b5a95353436604b3"},
-]
-
-[package.dependencies]
-requests = "*"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
-
-[[package]]
 name = "pyyaml"
 version = "6.0.2"
 description = "YAML parser and emitter for Python"
@@ -4636,4 +4616,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.11"
-content-hash = "9f28901f19eacc26ebda9b4cf0e0392a462c6ca5c1547b048c37ccaf6b433d40"
+content-hash = "b83261e35512719383c04439d589fc0b85d7afedcbe0e087e4bd1f2a177ea264"

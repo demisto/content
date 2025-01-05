@@ -32,7 +32,6 @@ pytest-mock = ">=3.7.0"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
 ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
-pyxdr = "^1.0"
 
 [tool.poetry.group.typing.dependencies]
 types-tqdm = "^4.66.0.2"
@@ -421,3 +420,7 @@ omit = ["*/test_data/*", "*_test.py", "demistomock.py", "conftest.py", "**/conft
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pyxdr = "^1.0"
+
