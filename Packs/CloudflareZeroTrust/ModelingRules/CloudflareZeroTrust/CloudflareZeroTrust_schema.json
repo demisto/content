@@ -28,10 +28,6 @@
             "type": "string",
             "is_array": false
         },
-        "created_at": {
-            "type": "datetime",
-            "is_array": false
-        },
         "id": {
             "type": "string",
             "is_array": false
@@ -78,10 +74,6 @@
         },
         "user_email": {
             "type": "string",
-            "is_array": false
-        },
-        "when": {
-            "type": "datetime",
             "is_array": false
         }
     }
