@@ -978,7 +978,7 @@ script:
     - contextPath: Covalence.Organization.org_name
       description: Org_name.
       type: String
-  dockerimage: demisto/xsoar-tools:1.0.0.99061
+  dockerimage: demisto/xsoar-tools:1.0.0.1902141
   isfetch: true
   script: '-'
   subtype: python3
