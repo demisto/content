@@ -3,7 +3,7 @@ version: -1
 name: Detonate URL - ThreatStream
 fromversion: 5.0.0
 description: |-
-  Detonates one or more URLs using the Anomali ThreatStream v2 sandbox integration.
+  Detonates one or more URLs using the Anomali ThreatStream v3 sandbox integration.
   Returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
 tasks:
@@ -227,8 +227,8 @@ tasks:
     task:
       id: 569601dc-c5d2-430b-8fe7-df84b0d9c3a9
       version: -1
-      name: Is Anomali ThreatStream v2 enabled?
-      description: Checks if there is an active instance of the Anomali ThreatStream v2 integration enabled.
+      name: Is Anomali ThreatStream v3 enabled?
+      description: Checks if there is an active instance of the Anomali ThreatStream v3 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -254,7 +254,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Anomali ThreatStream v2
+                        simple: Anomali ThreatStream v3
                 - - operator: isEqualString
                     left:
                       value:
