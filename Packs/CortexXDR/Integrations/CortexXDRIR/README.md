@@ -18,45 +18,41 @@ Key capabilities include retrieving incidents, isolating endpoints, executing re
 
 ---
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Palo Alto Networks Cortex XDR - Investigation and Response.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (copy URL from Cortex XDR) | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click **Copy API URL**. | True |
-    | API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column. | False |
-    | API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**`, set Security Level to Standard, select an appropriate Role, and copy the Generated Key. | False |
-    | Run on | Select an engine to run on. | False |
-    | HTTP Timeout | The timeout of the HTTP request sent to Cortex XDR API (in seconds). | False|
-    | Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified. | False |
-    | Use system proxy settings | Use system proxy is enabled only when an engine is selected. | False |
-    | Prevent Only Mode | Whether the Cortex XDR tenant is prevented only. | False |
-    | Log Level | Debug/Verbose logging can affect the performance of the integration. Recommended usage is to turn it on only during troubleshooting, and turn it off in production. This setting only affects the integration log. The server log is not affected. | False |
-    | Do not use in CLI by default | | False |
-    | Fetches incidents| Whether to fetch incidents from Cortex XDR. | False |
-    | Classifier| Determines the type of incident that is created for events ingested from this integration instance. | False|
-    | Incident type | Determines the Incident type that is created for events ingested from this integration instance. If a classifier is selected, it will take precedence.| False|
-    | Mapper (incoming)| Determines how incidents fields from Cortex XDR are mapped to Cortex XSOAR incident's fields. |False|
-    | Mapper (outgoing) | Determines how Cortex XSOAR incident's fields are mapped to the Cortex XDR incident's fields. | False|
-    | Incidents Fetch Interval | Scheduled time frame for fetching data from Cortex XDR. | False|
-    | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
-    | First fetch timestamp | The format should be: &lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days | False |
-    | Custom close-reason mapping **Cortex XSOAR** -> **Cortex XDR** | Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the **Mirroring Directions** section for possible close-reasons | False |
-    | Custom close-reason mapping **Cortex XDR** -> **Cortex XSOAR** | Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the **Mirroring Directions** section for possible close-reasons | False |
-    | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
-    | Starred incidents fetch window | Starred fetch window timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
-    | Only fetch starred incidents |  | False |
-    | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
-    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid). | False |
-    | Minimize Incident Information | Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information. | False |
-    | Incident Mirroring Direction | The direction of the mirroring. Possible values are None, Incoming, Outgoing, Both.| False |
-    | XDR mirroring delay in minutes | Use this parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents. | False |
-    | Close Mirrored Cortex XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
-    | Close Mirrored Cortex XDR Incident | When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. If not selected, but "Close all related alerts in XDR" is selected, the incident will automatically be closed in Cortex XDR. | False |
-    | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (copy URL from Cortex XDR) | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click **Copy API URL**. | True |
+| API Key ID | In Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys** and copy the Key ID from the ID column. | False |
+| API Key | In Cortex XDR, go to **Settings** > **Configurations** > **API Keys**, click **+ New Key**`, set Security Level to Standard, select an appropriate Role, and copy the Generated Key. | False |
+| Run on | Select an engine to run on. | False |
+| HTTP Timeout | The timeout of the HTTP request sent to Cortex XDR API (in seconds). | False|
+| Trust any certificate (not secure) | When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified. | False |
+| Use system proxy settings | Use system proxy is enabled only when an engine is selected. | False |
+| Prevent Only Mode | Whether the Cortex XDR tenant is prevented only. | False |
+| Log Level | Debug/Verbose logging can affect the performance of the integration. Recommended usage is to turn it on only during troubleshooting, and turn it off in production. This setting only affects the integration log. The server log is not affected. | False |
+| Do not use in CLI by default | | False |
+| Fetches incidents| Whether to fetch incidents from Cortex XDR. | False |
+| Classifier| Determines the type of incident that is created for events ingested from this integration instance. | False|
+| Incident type | Determines the Incident type that is created for events ingested from this integration instance. If a classifier is selected, it will take precedence.| False|
+| Mapper (incoming)| Determines how incidents fields from Cortex XDR are mapped to Cortex XSOAR incident's fields. |False|
+| Mapper (outgoing) | Determines how Cortex XSOAR incident's fields are mapped to the Cortex XDR incident's fields. | False|
+| Incidents Fetch Interval | Scheduled time frame for fetching data from Cortex XDR. | False|
+| Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
+| First fetch timestamp | The format should be: &lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days | False |
+| Custom close-reason mapping **Cortex XSOAR** -> **Cortex XDR** | Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the **Mirroring Directions** section for possible close-reasons | False |
+| Custom close-reason mapping **Cortex XDR** -> **Cortex XSOAR** | Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the **Mirroring Directions** section for possible close-reasons | False |
+| Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
+| Starred incidents fetch window | Starred fetch window timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
+| Only fetch starred incidents |  | False |
+| Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
+| Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid). | False |
+| Minimize Incident Information | Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information. | False |
+| Incident Mirroring Direction | The direction of the mirroring. Possible values are None, Incoming, Outgoing, Both.| False |
+| XDR mirroring delay in minutes | Use this parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents. | False |
+| Close Mirrored Cortex XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Cortex XDR Incident | When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. If not selected, but "Close all related alerts in XDR" is selected, the incident will automatically be closed in Cortex XDR. | False |
+| Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Playbook Highlight
 

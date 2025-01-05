@@ -6,12 +6,12 @@ commonfields:
   id: Cortex XDR - XQL Query Engine
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Server URL
+- display: Server URL
   name: url
   required: true
   type: 0
   section: Connect
+  additionalinfo: Copy the API URL from Cortex XDR.
 - displaypassword: API Key ID
   name: apikey_id
   type: 9
@@ -24,14 +24,14 @@ configuration:
   required: true
   hiddenusername: true
   section: Connect
-- display: Trust any certificate (not secure)
+- display: Trust Any Certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
   required: false
   additionalinfo: When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified
-- display: Use system proxy settings
+- display: Use System Proxy Settings
   name: proxy
   type: 8
   section: Connect

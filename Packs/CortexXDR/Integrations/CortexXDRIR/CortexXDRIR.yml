@@ -12,7 +12,7 @@ configuration:
   required: false
   section: Collect
   defaultvalue: '1'
-- display: Fetch incidents
+- display: Fetch Incidents
   name: isFetch
   defaultvalue: 'true'
   type: 8
@@ -154,7 +154,7 @@ configuration:
   required: false
   additionalinfo: Starred fetch window timestamp format <number> <time unit>, e.g., 12 hours, 7 days.
   advanced: true
-- display: Only fetch starred incidents
+- display: Only fetch Starred Incidents
   name: starred
   type: 8
   section: Collect
@@ -168,21 +168,21 @@ configuration:
   required: false
   additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. For more https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir
 - defaultvalue: 'false'
-  display: Remove legacy incident fields
+  display: Remove Legacy Incident Fields
   name: dont_format_sublists
   type: 8
   section: Collect
   advanced: true
   required: false
   additionalinfo: Removes duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid).
-- display: Trust any certificate (not secure)
+- display: Trust Any Certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
   required: false
   additionalinfo: When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified
-- display: Use system proxy settings
+- display: Use System Proxy Settings
   name: proxy
   type: 8
   section: Connect
@@ -204,7 +204,7 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
-- display: Close all related alerts in XDR
+- display: Close All Related Alerts In XDR
   name: close_alerts_in_xdr
   required: false
   additionalinfo: Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR.

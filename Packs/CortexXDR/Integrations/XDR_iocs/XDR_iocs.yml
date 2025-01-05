@@ -3,7 +3,7 @@ commonfields:
   id: Cortex XDR - IOC
   version: -1
 configuration:
-- display: Server URL (e.g. https://example.net)
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -30,7 +30,7 @@ configuration:
   type: 4
   hidden: true
   required: false
-- display: Fetch indicators
+- display: Fetch Indicators
   name: feed
   type: 8
   defaultvalue: 'true'
@@ -73,14 +73,14 @@ configuration:
   type: 8
   required: false
   section: Collect
-- display: Trust any certificate (not secure)
+- display: Trust Any Certificate (not secure)
   name: insecure
   type: 8
   advanced: true
   required: false
   section: Connect
   additionalinfo: When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified
-- display: Use system proxy settings
+- display: Use System Proxy Settings
   name: proxy
   type: 8
   required: false
@@ -161,7 +161,7 @@ configuration:
   section: Collect
   required: false
 - additionalinfo: When enabled, the severity value will be taken from the `Overriding severity value` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken from the field specified in the `XSOAR Severity Field` parameter.
-  display: Override severity
+  display: Override Severity
   name: override_severity
   type: 8
   defaultvalue: 'true'
@@ -178,7 +178,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  display: Bypass exclusion list
+  display: Bypass Exclusion List
   name: feedBypassExclusionList
   type: 8
   required: false
@@ -186,13 +186,13 @@ configuration:
   advanced: true
 - defaultvalue: 'false'
   additionalinfo: Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`.
-  display: Comments as tags (CSV)
+  display: Comments As Tags (CSV)
   name: comments_as_tags
   type: 8
   required: false
   section: Collect
   advanced: true
-- display: Extensive logging
+- display: Extensive Logging
   additionalinfo: For debugging purposes. Do not use this option unless advised otherwise. Using this parameter may result in increased processing time.
   name: extensive_logs
   type: 8
