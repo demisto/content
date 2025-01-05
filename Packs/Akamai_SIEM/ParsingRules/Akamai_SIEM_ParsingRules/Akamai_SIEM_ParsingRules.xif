@@ -1,3 +1,0 @@
-[INGEST:vendor="Akamai", product="WAF", target_dataset="akamai_waf_raw", no_hit=keep]
-// Support only 10 digit epoch date time format. For example: "1669420445".
-alter  _time = to_timestamp(to_integer(_raw_log -> httpMessage.start) ,"SECONDS");
