@@ -3,7 +3,7 @@
     "description": "Deprecated. Use CrowdStrike Falcon instead.",
     "support": "xsoar",
     "hidden": true,
-    "currentVersion": "1.1.8",
+    "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,7 +15,6 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }
