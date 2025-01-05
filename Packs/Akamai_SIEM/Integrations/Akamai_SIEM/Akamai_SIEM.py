@@ -492,8 +492,8 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
     demisto.info(f"got {len(events)} events, moving to processing events data for the {counter} time.")
     if should_skip_decode_events:
         demisto.info("Skipping decode events, adding _time fields to events.")
-        for event in events:
-            event["_time"] = event["httpMessage"]["start"]
+        # for event in events:
+        #     event["_time"] = event["httpMessage"]["start"]
     else:
         demisto.info("decoding and adding _time fields to events.")
         for event in events:
@@ -513,7 +513,7 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-    demisto.info(f"Sending {len(events)} events to xsiam for the {counter} time with latest event time = {events[-1]['_time']}")
+    demisto.info(f"Sending {len(events)} events to xsiam for the {counter} time.")
     tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True, url_key="host")
     demisto.info(f"Finished executing send_events_to_xsiam for the {counter} time, waiting for tasks to end.")
