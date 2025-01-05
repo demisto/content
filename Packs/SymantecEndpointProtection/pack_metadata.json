@@ -12,7 +12,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Symantec",
+        "Endpoint Protection",
+        "EP"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
