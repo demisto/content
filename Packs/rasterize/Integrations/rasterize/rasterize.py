@@ -861,7 +861,7 @@ def kill_zombie_processes():
                 demisto.info(f"failed to kill zombie with pid {proc.pid}")
                 continue
     except Exception as e:
-        demisto.debug(f'Failed to iterate over processes')
+        demisto.debug(f'Failed to iterate over processes. Error: {e}')
 
 
 def perform_rasterize(path: str | list[str],
