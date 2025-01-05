@@ -125,6 +125,7 @@ def timestamp_to_date(timestamp_string):
     Returns:
         (datetime).represented by the timestamp in the format '%Y-%m-%d %H:%M:%S.%f'
     """
+    timestamp_number: float
     # find timestamp in form of more than seconds since epoch: 1572164838000
     if TIME_METHOD == 'Timestamp-Milliseconds':
         timestamp_number = float(int(timestamp_string) / 1000)
