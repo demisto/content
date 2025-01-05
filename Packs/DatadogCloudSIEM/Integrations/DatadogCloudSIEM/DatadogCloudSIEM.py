@@ -765,7 +765,6 @@ def active_metrics_list_command(
     """
     from_timestamp: datetime | None = None
     from_arg: str | None = args.get("from")
-    from_timestamp: datetime | None
     if from_arg:
         from_timestamp = parse(
             from_arg, settings={"TIMEZONE": "UTC"}
