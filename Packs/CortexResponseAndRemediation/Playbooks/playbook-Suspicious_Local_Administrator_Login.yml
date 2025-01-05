@@ -193,6 +193,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -338,6 +339,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "11"
@@ -466,6 +468,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       Disable user:
       - "10"
