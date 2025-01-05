@@ -492,8 +492,8 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
     demisto.info(f"got {len(events)} events, moving to processing events data for the {counter} time.")
     if should_skip_decode_events:
         demisto.info("Skipping decode events, adding _time fields to events.")
-        for event in events:
-            event["_time"] = event["httpMessage"]["start"]
+        # for event in events:
+        #     event["_time"] = event["httpMessage"]["start"]
     else:
         demisto.info("decoding and adding _time fields to events.")
         for event in events:
