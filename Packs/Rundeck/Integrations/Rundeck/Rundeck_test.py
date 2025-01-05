@@ -22,7 +22,7 @@ from Rundeck import (
 
 
 from CommonServerPython import DemistoException
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import demistomock as demisto
 from dateparser import parse
 
@@ -692,8 +692,8 @@ def test_calc_run_at_time():
     Then:
         - ISO 8601 time
     """
-    cur_date = datetime.now().replace(tzinfo=timezone.utc)
-    result = parse(calc_run_at_time("1 second")).replace(tzinfo=timezone.utc)
+    cur_date = datetime.now().replace(tzinfo=UTC)
+    result = parse(calc_run_at_time("1 second")).replace(tzinfo=UTC)
     assert cur_date.year == result.year
     assert cur_date.month == result.month
     assert cur_date.day == result.day

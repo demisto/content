@@ -8,7 +8,7 @@ import json
 import requests
 import urllib3
 import re
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, UTC
 from typing import Any
 from requests.models import HTTPError
 
@@ -436,8 +436,8 @@ class Client(BaseClient):
             start = start.astimezone()
         if not check_datetime_aware(end):
             end = end.astimezone()
-        start = start.astimezone(timezone.utc)
-        end = end.astimezone(timezone.utc)
+        start = start.astimezone(UTC)
+        end = end.astimezone(UTC)
         start = start.isoformat(timespec="milliseconds").replace("+00:00", "Z")
         end = end.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
@@ -697,7 +697,7 @@ def fetch_incidents(client: Client):
     """
     offset = 0
     size = demisto.params().get("max_fetch")
-    end = datetime.now(timezone.utc)
+    end = datetime.now(UTC)
     days = int(demisto.params().get("first_fetch"))
 
     last_run = demisto.getLastRun()
