@@ -33,12 +33,6 @@ Every call to the 1Password Events API must be authorized with a bearer token. T
 curl --location '{server-url}/api/v2/auth/introspect' --header 'Authorization: Bearer {api-token}'
 ```
 
-#### First Fetch Time
-
-The first timestamp to start fetching events can be a relative interval, for example: "1 min ago", "2 weeks ago", "3 months ago".
-
-All event timestamps, along with date and time configuration parameters and command arguments, are in the Coordinated Universal Time (UTC) timezone.
-
 #### Maximum Number of Events per Fetch
 
 It is recommended to configure the integration instance so that the maximum number of fetched events does not exceed **100,000 per minute per event type**. Otherwise, the 1Password Events API may raise rate limit errors (HTTP 429).
