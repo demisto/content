@@ -388,7 +388,7 @@ def error_handler(res):
             extracted_error_message += f'\n{str(resources)}'
         else:
             for host_id, resource in resources.items():
-                errors = resource.get('errors', []) if isinstance(resource, dict) else ''
+                errors = resource.get('errors', []) if isinstance(resource, dict) else ''  # type: ignore[union-attr]
                 if errors:
                     error_message = errors[0].get('message')
                     extracted_error_message += f'\nHost ID {host_id} - {error_message}'
