@@ -65,11 +65,9 @@ In order to view sample events, enable events storage by selecting the checkbox 
 The last events (maximum of 20) are fetched every 1 minute. Allow the integration to run for at least 5 minutes before running the command.
 After you finish mapping, it is recommended to turn off the **Store sample events for mapping** to reduce performance overhead.
 
-<~XSOAR>
 For Cortex XSOAR version 6.0 and above, you will be able to fetch samples in the mapping wizard.
 
 For earlier versions, you should run the `crowdstrike-falcon-streaming-get-sample-events` command.
-</~XSOAR>
 
 The command output is as follows:
 ```json

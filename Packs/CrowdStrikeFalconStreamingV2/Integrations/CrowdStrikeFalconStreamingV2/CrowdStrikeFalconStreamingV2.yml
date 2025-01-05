@@ -100,3 +100,5 @@ tests:
 defaultmapperin: crowdstrike-streaming-api-mapper
 defaultclassifier: crowdstrike-streaming-api
 fromversion: 5.0.0
+marketplaces:
+  - xsoar
