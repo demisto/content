@@ -1,7 +1,6 @@
 import pytest
 import dateparser
 import datetime
-from unittest.mock import patch
 from freezegun import freeze_time
 from CloudflareZeroTrustEventCollector import (
     Client,

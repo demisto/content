@@ -145,7 +145,7 @@ def fetch_events_for_type(
     page_size = min(events_to_fetch, max_page_size)
 
     page = 1
-    events = []
+    events: list[dict[str, Any]] = []
     while len(events) < events_to_fetch:
         response = client.get_events(start_date, page_size, page, event_type)
         result = response.get("result", [])
@@ -283,6 +283,7 @@ def calculate_fetch_dates(next_run: dict[str, Any], start_date: str = "") -> str
         str: The calculated start date in '%Y-%m-%dT%H:%M:%SZ' format.
     """
     now_utc_time = get_current_time()
+    # start_date = next_run.get('last_fetch') or "2024-12-01T10:08:58Z"
     start_date = start_date or next_run.get('last_fetch') or (
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     return start_date
