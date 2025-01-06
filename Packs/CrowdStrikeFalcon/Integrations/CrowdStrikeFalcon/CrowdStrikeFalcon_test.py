@@ -4339,7 +4339,7 @@ def test_set_xsoar_entries__incident(mocker, updated_object, entry_content, clos
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = ['New', 'Reopened', 'In Progress']
-    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, "'Incident'", reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, "Incident", reopen_statuses)
     if entry_content:
         assert entry_content in entries[0].get('Contents')
     else:
