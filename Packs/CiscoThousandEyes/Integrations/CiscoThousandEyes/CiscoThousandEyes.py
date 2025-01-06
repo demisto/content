@@ -20,8 +20,6 @@ DEFAULT_LIMIT = 10
 ENDPOINTS = {"alerts": "/v7/alerts", "audit": "/v7/audit-user-events"}
 DATE_KEYS = {"alerts": "startDate", "audit": "date"}
 RESPONSE_MAPPING_KEY = {"alerts": "alerts", "audit": "auditEvents"}
-SOURCE_LOG_TYPE = {"alerts": "Alerts", "audit": "AuditEvents"}
-
 
 """ CLIENT CLASS """
 
@@ -92,7 +90,7 @@ def get_events(
         if len(fetched_events) >= fetch_limit:
             demisto.debug(f"We reached the fetch limit . limit is: {fetch_limit}. received: {len(fetched_events)} events.")
             fetched_events = fetched_events[:fetch_limit]
-            return fetched_events, prepare_next_run(fetch_type=fetch_type, fetch_limit=fetch_limit, 
+            return fetched_events, prepare_next_run(fetch_type=fetch_type, fetch_limit=fetch_limit,
                                                     current_batch_events=current_batch_events, fetched_events=fetched_events,
                                                     request_url=request_url, last_run=last_run)
     # Because the events are retrieved by date in descending order,
@@ -365,6 +363,7 @@ def fetch_events(
         )
 
     events = alert_events + audit_events
+    add_type_to_events(events)
 
     next_run = {"alerts": alert_next_run, "audit": audit_next_run}
     if any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
@@ -392,7 +391,7 @@ def add_time_to_events(events: List[Dict] | None):
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
-def add_type_to_events(events: List[Dict], fetch_type: str) -> None:
+def add_type_to_events(events: List[Dict]) -> None:
     """
     Adds a source log type to each event in the list based on the provided fetch type.
 
@@ -409,7 +408,7 @@ def add_type_to_events(events: List[Dict], fetch_type: str) -> None:
     """
     if events:
         for event in events:
-            event["SOURCE_LOG_TYPE"] = SOURCE_LOG_TYPE.get(fetch_type)
+            event["SOURCE_LOG_TYPE"] = "Alerts" if "id" in event else "AuditEvents"
 
 
 def main() -> None:  # pragma: no cover

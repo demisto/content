@@ -191,7 +191,7 @@ def test_get_events_command(mocker):
                     "endDate": "2024-12-30T08:56:46Z",
                     "_links": {
                         "self": {
-                            "href": "https://api.thousandeyes.com/v7/audit-user-events?aid=2078791&useAllPermittedAids=false&max=500&cursor=b2Zmc2V0PTU1MDE4Mzgw&startDate=2024-11-28T08:59:17Z&endDate=2024-12-30T08:56:46Z"
+                            "href": "https://example.com"
                         }
                     },
                 }
@@ -298,7 +298,7 @@ def test_fetch_events_by_nextTrigger(mocker):
                     "endDate": "2024-12-30T08:56:46Z",
                     "_links": {
                         "self": {
-                            "href": "https://api.thousandeyes.com/v7/audit-user-events?aid=2078791&useAllPermittedAids=false&max=500&cursor=b2Zmc2V0PTU1MDE4Mzgw&startDate=2024-11-28T08:59:17Z&endDate=2024-12-30T08:56:46Z"
+                            "href": "https://example.com"
                         }
                     },
                 }
