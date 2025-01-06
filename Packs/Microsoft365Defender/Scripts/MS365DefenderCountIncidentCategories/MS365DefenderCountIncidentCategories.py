@@ -4,8 +4,14 @@ from collections import Counter
 
 
 def count_dict(value):
+    """
+    Count the number of occurrences of each category in the given string.
+    :param value: The string containing the categories separated by commas.
+    :return: A list of dictionaries containing the category and the number of occurrences.
+    """
     if not isinstance(value, str):
         return value
+    demisto.debug(f'Counting categories in string: {value}')
     categories = value.split(',')
     return [{'category': key, 'count': value} for key, value in dict(Counter(categories)).items()]
 

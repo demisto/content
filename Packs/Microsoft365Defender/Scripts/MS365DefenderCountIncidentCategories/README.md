@@ -1,4 +1,4 @@
-count the categories of alerts in given incident
+count the categories of alerts in given incident.
 
 ## Script Data
 

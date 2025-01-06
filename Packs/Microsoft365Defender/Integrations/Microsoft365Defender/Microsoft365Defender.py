@@ -109,6 +109,7 @@ class Client:
             from_date (datetime): get incident with creation date more recent than from_date
             skip (int): how many entries to skip
             odata (dict): alternative method for listing incidents, accepts dictionary of URI parameters
+            last_update_time (str): get incident with last update time more recent than last_update_time.
 
         Returns (Dict): request results as dict:
                     { '@odata.context',
@@ -530,6 +531,7 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
 
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
+        mirroring_fields(dict): The required fields to add to an incident to enable mirroring.
         first_fetch_time(str): From when to fetch if first time, e.g. `3 days`.
         fetch_limit(int): The number of incidents in each fetch.
         timeout(int): The time limit in seconds for this function to run.
@@ -578,7 +580,6 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
                 incident.update(mirroring_fields)
-                demisto.debug(f"MIRRORING FIELDS: {str(incident)=}")
 
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
@@ -691,7 +692,7 @@ def fetch_modified_incident_ids(client: Client, last_update_time: str) -> List[s
                                          skip=offset)
         raw_incidents = response.get('value')
         demisto.debug(
-            f"Microsoft Defender 365 - fetch_modified_incident_ids - fetched {len(raw_incidents)} incidents: {raw_incidents}")
+            f"Microsoft Defender 365 - fetch_modified_incident_ids - fetched {len(raw_incidents)}")
         for incident in raw_incidents:
             incidents.append(str(incident.get(MICROSOFT_INCIDENT_ID_KEY)))
         # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
@@ -761,17 +762,17 @@ def get_modified_remote_data_command(client: Client, args: dict) -> GetModifiedR
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
 
 
-def fetch_modified_incident(client: Client, incident_id: str) -> dict:
+def fetch_modified_incident(client: Client, incident_id: int) -> dict:
     """
     Fetches the modified incident from Microsoft 365 Defender.
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
-        incident_id(str): The incident ID.
+        incident_id(int): The incident ID.
     Returns:
         dict: The modified incident.
     """
     demisto.debug("Microsoft Defender 365 - Starting fetch_modified_incident")
-    incident = client.get_incident(incident_id=arg_to_number(incident_id), timeout=50)
+    incident = client.get_incident(incident_id=incident_id, timeout=50)
     demisto.debug(f"Microsoft Defender 365 - Fetched incident {str(incident)}")
     if incident.get('@odata.context'):
         del incident['@odata.context']
@@ -783,11 +784,11 @@ def fetch_modified_incident(client: Client, incident_id: str) -> dict:
 def get_entries_for_comments(comments: List[dict[str, str]], last_update: datetime, comment_tag: str) -> List[
     dict]:
     """
-    Get the entries for the comments of the incident. Args: comments (List[dict]): The comments of the incident from Microsoft
-    365 Defender. last_update (datetime): The last run time of the mirroring - should bring in comments that were added
-    afterward to avoid entries duplicates.
-    comment_tag (str): The tag to add for the comments entries when mirroring in.
-    new_incident (bool): Whether the incident is new a- was just fetched therefore should bring in all the comments.
+    Get the entries for the comments of the incident.
+    Args:
+        comments (List[dict]): The comments of the incident from Microsoft 365 Defender.
+        last_update (datetime): The last run time of the mirroring - should bring in comments that were added afterward to avoid entries duplicates.
+        comment_tag (str): The tag to add for the comments entries when mirroring in.
 
     Returns:
         List[dict]: The entries for the comments.
@@ -856,7 +857,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
         f'Microsoft Defender 365 - Performing get-remote-data command with incident id: {remote_incident_id} and '
         f'last_update: {remote_args.last_update}')
     try:
-        mirrored_object = fetch_modified_incident(client, remote_args.remote_incident_id)
+        mirrored_object = fetch_modified_incident(client, remote_incident_id)
         demisto.debug(f"Microsoft Defender 365 - mirrored in object {str(mirrored_object)}")
         entries = get_incident_entries(mirrored_object, last_update, comment_tag, close_incident=close_incident)
         demisto.debug(f"Microsoft Defender 365 - mirrored in entries {str(entries)}")
@@ -1039,8 +1040,6 @@ def main() -> None:
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
     fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
 
-    demisto.info(str(params))
-
     mirroring_fields = {
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction', 'None')),
         'mirror_instance': demisto.integrationInstance(),
@@ -1051,7 +1050,8 @@ def main() -> None:
 
     command = demisto.command()
     args = demisto.args()
-    demisto.debug(str(args))
+
+    demisto.debug(f'{params=}, \n {args=}, \n{mirroring_fields}')
 
     try:
         if not managed_identities_client_id and not app_id:
