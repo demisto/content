@@ -33,33 +33,33 @@ def find_additional_ad_info(email: str, manager_attribute: str) -> dict:
         demisto.results(response)
         sys.exit(0)
 
-    if not (type(response) == list and type(response[0].get('Contents')) == list
-            and type(response[0]['Contents'][0]) == dict):
+    if not (type(response) is list and type(response[0].get('Contents')) is list
+            and type(response[0]['Contents'][0]) is dict):
         demisto.results('Unable to find manager email.')
         sys.exit(0)
 
     data = response[0]['Contents'][0]
 
-    if data.get('manager_attribute') and type(data['manager_attribute']) == list:
+    if data.get('manager_attribute') and type(data['manager_attribute']) is list:
         additional_info['manager_dn'] = data[manager_attribute][0]
 
     # This was added as the json structure returned from the AD search during testing
     # seems to be different from the original.
     elif data.get('attributes') and data['attributes'].get(manager_attribute) \
-            and type(data['attributes'][manager_attribute]) == list:
+            and type(data['attributes'][manager_attribute]) is list:
         additional_info['manager_dn'] = data['attributes'][manager_attribute][0]
 
     else:
         demisto.results('Unable to find manager email.')
         sys.exit(0)
 
-    if data.get('displayName') and type(data['displayName']) == list:
+    if data.get('displayName') and type(data['displayName']) is list:
         additional_info['employee_name'] = data['displayName'][0]
 
     # This was added as the json structure returned from the AD search during testing
     # seems to be different from the original.
     elif data.get('attributes') and data['attributes'].get('displayName') \
-            and type(data['attributes']['displayName']) == list:
+            and type(data['attributes']['displayName']) is list:
         additional_info['employee_name'] = data['attributes']['displayName'][0]
 
     filter_str = fr'(&(objectClass=User)(distinguishedName={additional_info["manager_dn"]}))'
@@ -69,27 +69,27 @@ def find_additional_ad_info(email: str, manager_attribute: str) -> dict:
         demisto.results(response)
         sys.exit(0)
 
-    if type(response) == list and type(response[0].get('Contents')) == list and \
-            type(response[0]['Contents'][0]) == dict:
+    if type(response) is list and type(response[0].get('Contents')) is list and \
+            type(response[0]['Contents'][0]) is dict:
 
         data = response[0]['Contents'][0]
 
-        if data.get('mail') and type(data['mail']) == list:
+        if data.get('mail') and type(data['mail']) is list:
             additional_info['manager_email'] = data['mail'][0]
 
         # This was added as the json structure returned from the AD search during testing
         # seems to be different from the original.
         elif data.get('attributes') and data['attributes'].get('mail') \
-                and type(data['attributes']['mail']) == list:
+                and type(data['attributes']['mail']) is list:
             additional_info['manager_email'] = data['attributes']['mail'][0]
 
-        if data.get('displayName') and type(data['displayName']) == list:
+        if data.get('displayName') and type(data['displayName']) is list:
             additional_info['manager_name'] = data['displayName'][0]
 
         # This was added as the json structure returned from the AD search during testing
         # seems to be different from the original.
         elif data.get('attributes') and data['attributes'].get('displayName') \
-                and type(data['attributes']['displayName']) == list:
+                and type(data['attributes']['displayName']) is list:
             additional_info['manager_name'] = data['attributes']['displayName'][0]
 
     return additional_info
