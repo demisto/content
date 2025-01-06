@@ -223,7 +223,7 @@ configuration:
   type: 19
   section: Collect
   advanced: true
-  required: False
+  required: false
   hidden: false
   hidden:marketplacev2: true
 - additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
