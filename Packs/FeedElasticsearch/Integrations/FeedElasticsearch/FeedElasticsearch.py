@@ -41,13 +41,13 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-    from elasticsearch import Elasticsearch
-    from elasticsearch.helpers import scan
+    from elasticsearch import Elasticsearch  # type: ignore[assignment]
+    from elasticsearch.helpers import scan  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
-    from elasticsearch7.helpers import scan
+    from elasticsearch7.helpers import scan  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -95,7 +95,7 @@ class ElasticsearchClient:
 
         else:  # Elasticsearch v7 and below or OpenSearch
             if self._api_key:
-                es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection,
+                es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection,  # pylint: disable=E0606
                                    verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
             else:
                 es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
@@ -263,7 +263,7 @@ def get_generic_indicators_elastic_v7(es, search, src_val, src_type, default_typ
     """
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     ioc_lst: list = []
-    scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)
+    scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)  # pylint: disable=E0606
     for hit in scan_res:
         hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
         ioc_lst.extend(hit_lst)
