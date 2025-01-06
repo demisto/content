@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Saas Security - Take Action on the incident](https://raw.githubusercontent.com/demisto/content/26042a9bc42a1d8b8267ac794e0692de938f2a62/Packs/PrismaSaasSecurity/doc_files/Take_Action_on_the_Incident_Playbook.png)
+![Saas Security - Take Action on the incident](../doc_files/Saas_Security_-_Take_Action_on_the_Incident.png)

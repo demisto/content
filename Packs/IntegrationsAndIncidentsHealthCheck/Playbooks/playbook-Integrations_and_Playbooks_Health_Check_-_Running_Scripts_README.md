@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Integrations and Playbooks Health Check - Running Scripts](https://raw.githubusercontent.com/demisto/content/63a3dc4dadf030473dc093d855c25fc3b3f57ded/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup_-_Running_Scripts.png)
+![Integrations and Playbooks Health Check - Running Scripts](../doc_files/Integrations_and_Playbooks_Health_Check_-_Running_Scripts.png)

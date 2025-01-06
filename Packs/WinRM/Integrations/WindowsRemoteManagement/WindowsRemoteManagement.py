@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import winrm
-
+from winrm import Session
 
 ''' Helper functions '''
 
@@ -23,6 +23,7 @@ class Client:
         self.res = None
 
     def run(self):
+        s: Session
         if self.auth == "ntlm":
             s = winrm.Session(
                 target=self.hostname,
@@ -39,10 +40,10 @@ class Client:
             )
 
         if self.runType == 'Process':
-            self.res = s.run_cmd(self.command, self.arguments)
+            self.res = s.run_cmd(self.command, self.arguments)  # type: ignore[arg-type]
 
         elif self.runType == 'Script':
-            self.res = s.run_ps(self.script)
+            self.res = s.run_ps(self.script)  # type: ignore[arg-type]
 
     def output(self):
         entry_context = None

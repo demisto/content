@@ -41,13 +41,13 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-    from elasticsearch import Elasticsearch
-    from elasticsearch.helpers import scan
+    from elasticsearch import Elasticsearch  # type: ignore[assignment]
+    from elasticsearch.helpers import scan  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
-    from elasticsearch7.helpers import scan
+    from elasticsearch7.helpers import scan  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
