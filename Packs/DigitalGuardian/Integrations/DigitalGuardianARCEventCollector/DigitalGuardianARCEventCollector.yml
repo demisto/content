@@ -69,7 +69,7 @@ script:
     description: Gets events from the configured Digital Guardian ARC export profile.
     execution: false
     name: digital-guardian-get-events
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: devdemisto/python3:3.11.11.1932361
   isfetchevents: true
   runonce: false
   script: '-'
