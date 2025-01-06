@@ -1,0 +1,25 @@
+{
+    "name": "Proofpoint CASB",
+    "description": "Parsing and modeling rules for Proofpoint CASB logs",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
+    "useCases": [],
+    "keywords": [
+        "proofpoint",
+        "casb",
+        "cloud security"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
