@@ -33,5 +33,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
 ![Digital Guardian Logo](../doc_files/DigitalGuardian_Demo.png)
