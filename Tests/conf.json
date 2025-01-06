@@ -464,12 +464,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "EwsExtension",
-            "playbookID": "playbook-EWS_O365_Extension_test",
-            "fromversion": "6.0.0",
-            "timeout": 500
-        },
-        {
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
@@ -1649,18 +1643,6 @@
             "playbookID": "GRR Test"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "virusTotal-test-playbook",
-            "timeout": 1400
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_preferred_vendors",
-            "playbookID": "virusTotaI-test-preferred-vendors",
-            "timeout": 1400
-        },
-        {
             "integrations": [
                 "Gmail Single User",
                 "Gmail"
@@ -1979,10 +1961,6 @@
             "playbookID": "JiraV3 Test",
             "instance_names": "jira_basic_auth",
             "is_mockable": false
-        },
-        {
-            "integrations": "ipinfo",
-            "playbookID": "IPInfoTest"
         },
         {
             "integrations": "ipinfo_v2",
@@ -6218,9 +6196,6 @@
         "SlackV2": "Integration slackV2 is deprecated.",
         "DSPM": "No instance",
         "Symantec Email Security Cloud": "No instance",
-        "RedLock": "Integration is deprecated.",
-        "FalconIntel": "Integration is deprecated.",
-        "EwsExtension": "Integration is deprecated.",
         "ipinfo" : "Integration is deprecated.",
         "VirusTotal": "Integration is deprecated.",
         "epo": "Integration is deprecated."
