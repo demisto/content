@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![GRACase](../doc_files/GraCases.png)
+![GRACase](../doc_files/GRACase.png)
