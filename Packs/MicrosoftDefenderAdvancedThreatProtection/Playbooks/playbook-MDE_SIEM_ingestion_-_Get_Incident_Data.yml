@@ -336,5 +336,7 @@ outputs:
   description: The details of the endpoint.
   type: string
 fromversion: 6.5.0
+tests:
+ -  No tests
 marketplaces:
 - xsoar
