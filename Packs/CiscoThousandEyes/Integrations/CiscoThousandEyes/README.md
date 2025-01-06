@@ -16,7 +16,7 @@ This integration was integrated and tested with version 1.0.0 of CiscoThousandEy
 
 ## Note:
 >This API returns a list of activity log events **in the current account group**.
-If user has permission View activity log for all users in account group the logs returned include events across all the account groups they belong to.
+If the user has View activity log permission for all users in the account group, the logs returned include events across all the account groups they belong to.
 
 ## Commands
 

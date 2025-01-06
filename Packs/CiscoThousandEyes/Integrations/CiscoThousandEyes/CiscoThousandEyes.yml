@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Data Enrichment & Threat Intelligence
 sectionOrder:
 - Connect
 - Collect
@@ -45,7 +45,7 @@ configuration:
   section: Connect
   advanced: true
 description: This is the Cisco ThousandEyes event collector integration for Cortex XSIAM.
-display: CiscoThousandEyes
+display: Cisco ThousandEyes
 name: CiscoThousandEyes
 script:
   commands:

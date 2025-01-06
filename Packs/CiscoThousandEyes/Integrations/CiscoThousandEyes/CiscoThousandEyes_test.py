@@ -26,12 +26,53 @@ def mock_client():
 def mock_http_request(method, full_url, params=None):
     if "alerts" in full_url:
         return util_load_json("test_data/alerts_list.json")
-    elif "events" in full_url:
+    elif "audit" in full_url:
         return util_load_json("test_data/events_list.json")
     return {}
 
 
-def test_is_fetch_paginated():
+@pytest.mark.parametrize(
+    "fetch_type, next_page_url, request_url, previous_page_url, expected_result, case_id",
+    [
+        pytest.param(
+            "alerts",
+            "https://api.example.com/v1/alerts?page=2",
+            "https://api.example.com/v1/alerts?page=1",
+            "https://api.example.com/v1/alerts?page=1",
+            True,
+            "Case 1: alerts, next_page_url != request_url",
+            id="alerts_next_page_different",
+        ),
+        pytest.param(
+            "alerts",
+            "https://api.example.com/v1/alerts?page=1",
+            "https://api.example.com/v1/alerts?page=1",
+            "https://api.example.com/v1/alerts?page=1",
+            False,
+            "Case 2: alerts, next_page_url == request_url",
+            id="alerts_next_page_same",
+        ),
+        pytest.param(
+            "audit",
+            "https://api.example.com/v1/events?page=2",
+            "https://api.example.com/v1/events?page=2",
+            "https://api.example.com/v1/events?page=1",
+            True,
+            "Case 3: events, request_url != previous_page_url",
+            id="events_request_diff_previous",
+        ),
+        pytest.param(
+            "audit",
+            "https://api.example.com/v1/events?page=1",
+            "https://api.example.com/v1/events?page=1",
+            "https://api.example.com/v1/events?page=1",
+            False,
+            "Case 4: events, request_url == previous_page_url",
+            id="events_request_same_previous",
+        ),
+    ],
+)
+def test_is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url, expected_result, case_id):
     """
     Given:
     - Different scenarios for pagination during data fetch:
@@ -46,26 +87,8 @@ def test_is_fetch_paginated():
     - Return False if pagination should stop (e.g., next_page_url matches request_url or previous_page_url).
     """
     from CiscoThousandEyes import is_fetch_paginated
-    # Test case for 'alerts' where next_page_url is different from request_url
-    fetch_type = "alerts"
-    next_page_url = "https://api.example.com/v1/alerts?page=2"
-    request_url = "https://api.example.com/v1/alerts?page=1"
-    previous_page_url = "https://api.example.com/v1/alerts?page=1"
-    assert is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url) is True
-
-    # Test case for 'alerts' where next_page_url equals request_url
-    next_page_url = "https://api.example.com/v1/alerts?page=1"
-    assert is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url) is False
-
-    # Test case for 'events' where request_url is different from previous_page_url
-    fetch_type = "events"
-    request_url = "https://api.example.com/v1/events?page=2"
-    previous_page_url = "https://api.example.com/v1/events?page=1"
-    assert is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url) is True
-
-    # Test case for 'events' where request_url equals previous_page_url
-    request_url = "https://api.example.com/v1/events?page=1"
-    assert is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url) is False
+    result = is_fetch_paginated(fetch_type, next_page_url, request_url, previous_page_url)
+    assert result is expected_result, f"Failed {case_id}"
 
 
 def test_full_fetch_events(mocker):
@@ -88,7 +111,7 @@ def test_full_fetch_events(mocker):
     client = mock_client()
     last_run = {
         "alerts": {"last_fetch": "2024-11-19T14:20:00Z"},
-        "events": {"last_fetch": "2024-11-28T08:59:17Z"},
+        "audit": {"last_fetch": "2024-11-28T08:59:17Z"},
     }
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(demisto, "debug")
@@ -156,7 +179,7 @@ def test_get_events_command(mocker):
 
         if "alerts" in full_url:
             return util_load_json("test_data/alerts_list.json")
-        elif "events" in full_url:
+        elif "audit" in full_url:
             call_count += 1
 
             if call_count == 1:
@@ -176,7 +199,7 @@ def test_get_events_command(mocker):
 
     last_run = {
         "alerts": {"last_fetch": "2024-11-18T14:20:00Z"},
-        "events": {"last_fetch": "2024-11-28T08:59:17Z"},
+        "audit": {"last_fetch": "2024-11-28T08:59:17Z"},
     }
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(demisto, "debug")
@@ -214,7 +237,7 @@ def test_get_events_command_with_limit(mocker):
 
     last_run = {
         "alerts": {"last_fetch": "2024-11-19T14:20:00Z"},
-        "events": {"last_fetch": "2024-11-28T08:59:17Z"},
+        "audit": {"last_fetch": "2024-11-28T08:59:17Z"},
     }
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(demisto, "debug")
@@ -249,7 +272,7 @@ def test_fetch_events_by_nextTrigger(mocker):
             "next_page": "example.com/v7/alerts?startDate=2024-11-19T14:20:00Z&endDate=2024-12-30T11:24:09Z&max=500",
             "offset": 3,
         },
-        "events": {
+        "audit": {
             "last_fetch": "2024-12-22T07:40:10Z",
             "next_page": "example.com/v7/audit-user-events?startDate=2024-11-28T08:59:17Z&endDate=2024-12-30T11:24:11Z&max=500",
             "offset": 10,
@@ -263,7 +286,7 @@ def test_fetch_events_by_nextTrigger(mocker):
 
         if "alerts" in full_url:
             return util_load_json("test_data/alerts_list.json")
-        elif "events" in full_url:
+        elif "audit" in full_url:
             call_count += 1
 
             if call_count == 1:
@@ -290,7 +313,7 @@ def test_fetch_events_by_nextTrigger(mocker):
     )
 
     assert len(events) == 9
-    assert next_run.get("alerts").get("offset") == 0
+    assert "offset" not in next_run.get("alerts")
     assert "nextTrigger" not in next_run
     assert events[0].get('startDate') == "2024-11-20T14:20:00Z"
 
@@ -315,7 +338,7 @@ def test_fetch_events_in_multiple_cycles(mocker):
     client = mock_client()
     last_run = {
         "alerts": {"last_fetch": "2024-11-19T14:20:00Z"},
-        "events": {"last_fetch": "2024-11-28T08:59:17Z"},
+        "audit": {"last_fetch": "2024-11-28T08:59:17Z"},
     }
     call_count = 0
 
@@ -324,7 +347,7 @@ def test_fetch_events_in_multiple_cycles(mocker):
 
         if "alerts" in full_url:
             return util_load_json("test_data/alerts_list.json")
-        elif "events" in full_url:
+        elif "audit" in full_url:
             call_count += 1
 
             if call_count == 1:
@@ -336,7 +359,7 @@ def test_fetch_events_in_multiple_cycles(mocker):
                     "endDate": "2024-12-30T08:56:46Z",
                     "_links": {
                         "self": {
-                            "href": "https://api.thousandeyes.com/v7/audit-user-events?aid=2078791&useAllPermittedAids=false&max=500&cursor=b2Zmc2V0PTU1MDE4Mzgw&startDate=2024-11-28T08:59:17Z&endDate=2024-12-30T08:56:46Z"
+                            "href": "https://example.com"
                         }
                     },
                 }
@@ -365,10 +388,10 @@ def test_fetch_events_in_multiple_cycles(mocker):
     full_events = first_fetch_events + second_fetch_events
 
     assert len(full_events) == 22
-    assert next_run.get("alerts").get("offset") == 0
-    assert next_run.get("events").get("offset") == 0
+    assert "offset" not in next_run.get("alerts")
+    assert "offset" not in next_run.get("audit")
     assert "nextTrigger" not in next_run
-    assert next_run.get("events").get("last_fetch") == "2024-12-22T07:40:10Z"
+    assert next_run.get("audit").get("last_fetch") == "2024-12-22T07:40:10Z"
     assert next_run.get("alerts").get("last_fetch") == "2024-12-22T07:29:00Z"
 
 
