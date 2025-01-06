@@ -66,7 +66,7 @@ def get_events(
 
     next_page_url = last_run.get("next_page", "")
     pagination_offset = last_run.get("offset", 0)
-    params = {} if next_page_url else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
+    params = {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
 
     fetched_events: list[dict] = []
     has_next = True
