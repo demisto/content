@@ -430,7 +430,7 @@ def test_subscriptions_list_command(mocker):
         ]
     })
     commandResult = waf.subscriptions_list_command(client)
-    # import pdb; pdb.set_trace()
+
     assert commandResult.readable_output == (
         '### Subscriptions: \n'
         '|displayName|state|subscriptionId|tenantId|\n'
