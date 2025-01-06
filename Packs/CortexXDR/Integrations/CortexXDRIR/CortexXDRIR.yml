@@ -2608,6 +2608,9 @@ script:
       isArray: true
       name: action_id
       deprecated: true
+    - description: Whether to poll until action is finished.
+      name: do_not_poll
+      hidden: true
     description: Initiates a new endpoint script execution to delete the specified file.
     name: xdr-file-delete-script-execute
     polling: true
@@ -2720,6 +2723,9 @@ script:
       isArray: true
       name: action_id
       deprecated: true
+    - description: Whether to poll until action is finished.
+      name: do_not_poll
+      hidden: true
     description: Initiates a new endpoint script execution kill process.
     name: xdr-kill-process-script-execute
     polling: true
