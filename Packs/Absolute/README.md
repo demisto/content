@@ -1,3 +1,4 @@
+# Absolute
 Absolute enables you to manage and secure your data, devices, and applications with an unbreakable connection to every endpoint. Your sensitive data remains protected, even when accessed from outside your network.
 
 ## What does this pack do?
@@ -8,6 +9,7 @@ Absolute enables you to manage and secure your data, devices, and applications w
 - Initiate an un-enroll request on a list of eligible devices.
 - Get a list of device records and the corresponding software application data for a device.
 - Get a list of devices' geo location records and their corresponding data.
+- Log Normalization - XDM mapping for key event types.
 
 ## Prerequisites
 
@@ -40,3 +42,13 @@ Note: If you close this dialog box before downloading or copying the secret key,
 - On the **API Token Management** page, the new token is added to your list of tokens.
 - If a 401 error causes the API authentication to fail, you can enable authentication debugging from the Absolute console.
 - The secret key is comparable to a password. Keep it secure, and do not share it with anyone.
+
+### Supported Event Types:
+* [SIEM Events API](https://api.absolute.com/api-doc/doc.html%20target=%22_blank#tag/SIEM-Event-Reporting).
+
+### Absolute Event Collector:
+To enable the MongoDB Atlas Event Collector, follow these steps:
+1. Go to **Settings** &rarr; **Configurations** &rarr; **Automation & Feed Integrations**.
+2. In the search bar, type **Absolute**.
+3. At the right-corner, click **+ Add instance**.
+4. Follow the instruction in the prompt window to configure the Absolute Event Collector.
