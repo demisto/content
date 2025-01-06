@@ -1,6 +1,6 @@
 id: Detonate URL - ThreatStream
 version: -1
-name: Detonate URL - ThreatStream - devV2andV3
+name: Detonate URL - ThreatStream
 fromversion: 5.0.0
 description: |-
   Detonates one or more URLs using the Anomali ThreatStream v3 sandbox integration.
