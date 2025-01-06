@@ -24,7 +24,7 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-    from elasticsearch import Elasticsearch, NotFoundError
+    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
@@ -125,6 +125,7 @@ def timestamp_to_date(timestamp_string):
     Returns:
         (datetime).represented by the timestamp in the format '%Y-%m-%d %H:%M:%S.%f'
     """
+    timestamp_number: float
     # find timestamp in form of more than seconds since epoch: 1572164838000
     if TIME_METHOD == 'Timestamp-Milliseconds':
         timestamp_number = float(int(timestamp_string) / 1000)
@@ -160,7 +161,7 @@ def elasticsearch_builder(proxies):
     }
     if ELASTIC_SEARCH_CLIENT != ELASTICSEARCH_V8:
         # Adding the proxy related parameters to the Elasticsearch client v7 and below or OpenSearch (BC)
-        connection_args["connection_class"] = RequestsHttpConnection
+        connection_args["connection_class"] = RequestsHttpConnection  # type: ignore[assignment]
         connection_args["proxies"] = proxies
 
     # The input of proxy configuration is currently missing on client v8 - in this case we are dependent on the client using the
@@ -184,7 +185,7 @@ def elasticsearch_builder(proxies):
         else:  # Elasticsearch version v7 and below or OpenSearch (BC)
             connection_args["http_auth"] = (USERNAME, PASSWORD)
 
-    es = Elasticsearch(**connection_args)
+    es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     if API_KEY_ID and hasattr(es, 'transport'):
         es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
