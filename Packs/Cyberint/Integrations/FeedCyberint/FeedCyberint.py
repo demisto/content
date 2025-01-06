@@ -66,7 +66,7 @@ class Client(BaseClient):
 
         while has_more:
             if offset >= init_offset + MAX_LIMIT_SIZE_PER_EXEC:
-                demisto.setIntegrationContext({'offset': offset})
+                demisto.setIntegrationContext({'date_time': date_time, 'offset': offset})
                 has_more = False
                 continue
 

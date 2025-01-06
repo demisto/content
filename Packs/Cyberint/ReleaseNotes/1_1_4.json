@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Changed the internal identifier of the incoming and outgoing mappers: users who have selected previous mappers may need to select the new one"
+    "breakingChangesNotes": "Changed the internal identifier of the incoming and outgoing mappers: users who have selected previous mappers may need to select the new one. The Cyberint integration now includes a new required configuration field: Company Name."
 }

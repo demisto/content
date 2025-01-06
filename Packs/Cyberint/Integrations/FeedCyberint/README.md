@@ -9,7 +9,7 @@ This integration was integrated and tested with version 1 of Cyberint Feed.
 
     | **Parameter** | **Description**                                                                                                                                                                                        | **Required** |
     | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-    | Cyberint API URL | Example: https://yourcompany.cyberint.io                                                                                                                                                               | True |
+    | Cyberint API URL | Example: `https://yourcompany.cyberint.io`                                                                                                                                                               | True |
     | API access token |                                                                                                                                                                                                        | True |
     | Fetch indicators | Should be checked (true)                                                                                                                                                                               | False |
     | Indicator Type | Which indicator types to fetch                                                                                                                                                                         | True |
@@ -44,16 +44,15 @@ Gets indicators from the feed.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cyberint.value | String | The indicator value. |
-| Cyberint.type | String | The indicator type. |
-| Cyberint.Tags | String | Tags that are associated with the indicator. |
-| Cyberint.description | String | The feed description. |
+| **Path**                   | **Type** | **Description** |
+|----------------------------| --- | --- |
+| Cyberint.ioc_value         | String | The indicator value. |
+| Cyberint.ioc_type          | String | The indicator type. |
+| Cyberint.description       | String | The feed description. |
 | Cyberint.detected_activity | String | The feed detected activity. |
-| Cyberint.observation_date | String | The feed observation date. |
-| Cyberint.severity_score | String | The feed severity score. |
-| Cyberint.confidence | String | The feed confidence. |
+| Cyberint.observation_date  | String | The feed observation date. |
+| Cyberint.severity_score    | String | The feed severity score. |
+| Cyberint.confidence        | String | The feed confidence. |
 
 #### Command example
 ```!cyberint-get-indicators limit=10 execution-timeout=700```
