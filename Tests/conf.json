@@ -5203,6 +5203,11 @@
             "fromversion": "6.0.0"
         },
         {
+            "playbookID": "ValidateContent - Test",
+            "fromversion": "5.5.0",
+            "marketplaces": "xsoar_saas"
+        },
+        {
             "playbookID": "DeleteContext-auto-subplaybook-test",
             "fromversion": "5.0.0"
         },
