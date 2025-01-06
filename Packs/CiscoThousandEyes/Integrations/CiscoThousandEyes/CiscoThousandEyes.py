@@ -317,12 +317,12 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
     alerts = [item for item in all_events if "id" in item]
     events = [item for item in all_events if "id" not in item]
 
-    alerts_table = tableToMarkdown(name="Test Alerts", t=alerts, headers=["id", "alertType", "startDate", "violationCount",
-                                                                          "duration", "suppressed", "meta", "SOURCE_LOG_TYPE"])
-    event_table = tableToMarkdown("Test Events", events, ["accountGroupName", "aid", "date", "event", "ipAddress",
-                                                          "uid", "user", "SOURCE_LOG_TYPE"])
+    alerts_table = tableToMarkdown(name="Test Alerts", t=alerts, headers=["SOURCE_LOG_TYPE", "alertType", "startDate", "id",
+                                                                          "duration", "suppressed", "meta", "violationCount"])
+    event_table = tableToMarkdown("Test Events", events, ["SOURCE_LOG_TYPE", "aid", "date", "event", "ipAddress",
+                                                          "uid", "user", "accountGroupName"])
 
-    return all_events, CommandResults(readable_output=alerts_table + "\n" + event_table)
+    return all_events, CommandResults(readable_output=f"{alerts_table}\n{event_table}", raw_response=all_events)
 
 
 def fetch_events(
