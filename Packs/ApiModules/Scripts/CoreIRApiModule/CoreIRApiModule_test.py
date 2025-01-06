@@ -423,16 +423,52 @@ def test_get_distribution_url(requests_mock):
         'package_type': 'x86'
     }
 
-    readable_output, outputs, _ = get_distribution_url_command(client, args)
+    result = get_distribution_url_command(client, args)
     expected_url = get_distribution_url_response.get('reply').get('distribution_url')
-    assert outputs == {
-        'CoreApiModule.Distribution(val.id == obj.id)': {
-            'id': '1111',
-            'url': expected_url
-        }
+    assert result.outputs == {
+        'id': '1111',
+        'url': expected_url
     }
 
-    assert readable_output == f'[Distribution URL]({expected_url})'
+    assert result.readable_output == f'[Distribution URL]({expected_url})'
+
+
+def test_download_distribution(requests_mock):
+    """
+    Given:
+        - Core client
+        - Distribution ID and package type
+    When
+        - Running xdr-download-distribution command
+    Then
+        - Verify filename
+        - Verify readable output is as expected
+    """
+    from CoreIRApiModule import get_distribution_url_command, CoreClient
+
+    get_distribution_url_response = load_test_data('./test_data/get_distribution_url.json')
+    dummy_url = "https://xdrdummyurl.com/11111-distributions/11111/sh"
+    requests_mock.post(
+        f'{Core_URL}/public_api/v1/distributions/get_dist_url/',
+        json=get_distribution_url_response
+    )
+    requests_mock.get(
+        dummy_url,
+        content=b'\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1'
+    )
+    installer_file_name = "xdr-agent-install-package.msi"
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'distribution_id': '1111',
+        'package_type': 'x86',
+        'download_package': 'true'
+    }
+    result = get_distribution_url_command(client, args)
+    assert result[0]['File'] == installer_file_name
+    assert result[1].readable_output == "Installation package downloaded successfully."
 
 
 def test_get_audit_management_logs(requests_mock):

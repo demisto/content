@@ -6,15 +6,14 @@
         "TIM_REVIEWER": "The GitHub username for TIM reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
-        "mayagoldb",
-        "ilaredo",
+        "mayyagoldman",
         "talzich"
     ],
     "CONTRIBUTION_TL": "JudahSchwartz",
     "CONTRIBUTION_SECURITY_REVIEWER": ["karinafishman"],
     "ON_CALL_DEVS": [
-        "sshuker",
-        "sberman"
+        "mwienfeld",
+        "okarkkatz"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"
