@@ -1448,9 +1448,10 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
                 else ITEM_ATTACHMENT_TYPE
             }
 
-    except TypeError as e:
-        if str(e) != "must be string or buffer, not None":
+    except (TypeError, ErrorCannotOpenFileAttachment) as e:
+        if str(e) not in ("must be string or buffer, not None", "The attachment could not be opened."):
             raise
+        demisto.debug(f"Add attachment info to context, without the content. Error: {str(e)}")
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
