@@ -4440,7 +4440,7 @@ def test_set_xsoar_entries___idp_or_mobile_detection(mocker, updated_object):
         assert entries == []
 
 
-@pytest.mark.parametrize('updated_object', input_data.set_xsoar_entries)
+@pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
 def test_set_xsoar_entries__empty_reopen_statuses(mocker, updated_object):
     """
     Given
