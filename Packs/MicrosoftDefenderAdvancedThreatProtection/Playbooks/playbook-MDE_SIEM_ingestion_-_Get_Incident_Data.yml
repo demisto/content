@@ -335,8 +335,6 @@ outputs:
 - contextPath: Endpoint
   description: The details of the endpoint.
   type: string
-tests:
-- Test Playbook - MDE SIEM ingestion - Get Incident Data
 fromversion: 6.5.0
 marketplaces:
 - xsoar
