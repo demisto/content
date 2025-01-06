@@ -6217,7 +6217,13 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
         "DSPM": "No instance",
-        "Symantec Email Security Cloud": "No instance"
+        "Symantec Email Security Cloud": "No instance",
+        "RedLock": "Integration is deprecated.",
+        "FalconIntel": "Integration is deprecated.",
+        "EwsExtension": "Integration is deprecated.",
+        "ipinfo" : "Integration is deprecated.",
+        "VirusTotal": "Integration is deprecated.",
+        "epo": "Integration is deprecated."
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
