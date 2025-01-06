@@ -26,7 +26,7 @@ EPO_SYSTEM_ATTRIBUTE_MAP = {
     'Processors': 'EPOComputerProperties.NumOfCPU',
     'Memory': 'EPOComputerProperties.TotalPhysicalMemory',
 }
-
+NEW_LINE = '\n'
 ''' CLIENT CLASS '''
 
 
@@ -300,8 +300,6 @@ class Client(BaseClient):
                                       resp_type='text',
                                       timeout=self.timeout)
 
-        # response = response.split('"')[1] if response.startswith('"') else response
-        # response = response.replace(r'\n', '\n')
         return self._parse_response(response)
 
     def apply_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
@@ -833,7 +831,7 @@ def system_to_md(system: dict, verbose: bool = False) -> str:
         for key in EPO_SYSTEM_ATTRIBUTE_MAP:
             md += f'{system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get(key))} |'
 
-        md += '\n'
+        md += NEW_LINE
     return md
 
 
@@ -905,7 +903,7 @@ def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output = f"#### ePO Help - {args['command']} \n "
         for line in json_response:
             line = line.replace("\r\n", ' ')
-            line = line.replace('\n', ' ')
+            line = line.replace(NEW_LINE, ' ')
             readable_output += line
     else:
         if search:
@@ -913,7 +911,7 @@ def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output = '#### ePO Help\n'
         for line in json_response:
             line = line.replace("\r\n", ' ')
-            line = line.replace('\n', ' ')
+            line = line.replace(NEW_LINE, ' ')
 
             if (not search) or (search in line.lower()):
                 desc = ''
@@ -921,7 +919,7 @@ def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                 if '-' in line:
                     desc = line.split('-')[1] if line.split('-')[1] else 'N/A'
                     cmd = line.split('-')[0].rstrip() if line.split('-')[0] else 'N/A'
-                    readable_output += "- **" + cmd + "** - " + desc + '\n'
+                    readable_output += f"- **{cmd}** - {desc}{NEW_LINE}"
 
     return CommandResults(
         readable_output=readable_output
@@ -1150,7 +1148,7 @@ def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> List[Comma
     response_json, response = client.find_systems(group_id)
 
     if response:
-        md = '#### Systems in ' + name + '\n'
+        md = f"#### Systems in {name}{NEW_LINE}"
         if len(response_json) > 0:
             md += systems_to_md(response_json, verbose)
             endpoints = prettify_find_system(list(response_json))
