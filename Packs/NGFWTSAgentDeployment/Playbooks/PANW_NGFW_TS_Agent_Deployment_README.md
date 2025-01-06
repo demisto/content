@@ -44,4 +44,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PANW NGFW TS Agent Deployment](https://github.com/demisto/content/raw/103784c12ffdc0826c8610a1324dd60e7b4e2e13/Packs/NGFWTSAgentDeployment/doc_files/PANW_NGFW_TS_Agent_Deployment_Fri_Feb_04_2022.png)
+![PANW NGFW TS Agent Deployment](../doc_files/PANW_NGFW_TS_Agent_Deployment.png)

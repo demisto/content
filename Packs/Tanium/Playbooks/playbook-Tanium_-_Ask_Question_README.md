@@ -34,4 +34,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tanium_Ask_Question](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tanium_Ask_Question.png)
+![Tanium_Ask_Question](../doc_files/Tanium_-_Ask_Question.png)

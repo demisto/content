@@ -12,6 +12,6 @@ The playbooks included in this pack help you respond to Cortex XSIAM alerts in a
 - Remediates the incident by blocking malicious indicators and isolating infected endpoints.
 - Run XQL Queries as part of an automation, or in a playbook (consumes compute units).
 
-![Cortex XSIAM Video](https://raw.githubusercontent.com/demisto/content/171e5a1e2d66eb73a6f0b3e9b5fca48b7ede355f/Packs/Core/doc_files/XSIAM.png)
+![Cortex XSIAM Video](doc_files/XSIAM.png)
 
-![T1036 - Masquerading](https://raw.githubusercontent.com/demisto/content/171e5a1e2d66eb73a6f0b3e9b5fca48b7ede355f/Packs/Core/doc_files/T1036_-_Masquerading.png)
+![T1036 - Masquerading](doc_files/T1036_-_Masquerading.png)
