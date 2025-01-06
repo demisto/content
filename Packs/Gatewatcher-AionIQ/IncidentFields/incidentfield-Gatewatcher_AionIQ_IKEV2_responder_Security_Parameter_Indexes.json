@@ -1,0 +1,32 @@
+{
+    "id": "incident_gatewatcherikev2respspi",
+    "version": -1,
+    "modified": "2024-12-04T14:07:58.815705441+01:00",
+    "name": "Gatewatcher AionIQ IKEV2 responder Security Parameter Indexes",
+    "ownerOnly": false,
+    "cliName": "gatewatcherikev2respspi",
+    "type": "shortText",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Gatewatcher Incident",
+        "Gatewatcher Alert Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}
