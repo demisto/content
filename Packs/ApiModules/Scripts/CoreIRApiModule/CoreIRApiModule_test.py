@@ -1420,7 +1420,7 @@ def test_action_status_get_command(mocker):
 
     res = action_status_get_command(client, args)
     assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
-                                        headers=['action_id', 'endpoint_id', 'status', 'error_description'])
+                                                  headers=['action_id', 'endpoint_id', 'status', 'error_description'])
     assert res.outputs == action_status_get_command_expected_result
     assert res.raw_response == result
 
