@@ -1,5 +1,13 @@
 {
     "absolute_secure_endpoint_raw": {
+        "parsed_fields_NewValue": {
+            "type": "string",
+            "is_array": false
+        },
+        "parsed_fields_OldValue": {
+            "type": "string",
+            "is_array": false
+        },        
         "id": {
             "type": "string",
             "is_array": false
