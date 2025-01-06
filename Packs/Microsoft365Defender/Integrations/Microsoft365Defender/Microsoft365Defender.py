@@ -44,9 +44,7 @@ MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
     'InformationalExpectedActivity': 'Resolved',
 }
 
-
 MICROSOFT_INCIDENT_ID_KEY = 'incidentId'
-LAST_FETCHED_INCIDENT_IDS_INTEGRATION_CONTEXT_KEY = 'last_fetched_incident_ids'
 MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR = "Mirrored from Cortex XSOAR"
 COMMENT_TO_MICROSOFT_DEFAULT_TAG = 'CommentToMicrosoft365Defender'
 
@@ -306,6 +304,9 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
     last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
 
+    for comment in raw_incident.get('comments', []):
+        comment.update({'comment': re.sub(r'<.*?>', '', comment.get('comment', ''))})
+
     mailboxes_set = set()
     mailboxes = []
     for alert in alerts_list:
@@ -314,6 +315,7 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
                 mailboxes.append({'Mailbox': entity.get('mailboxAddress', ''),
                                   'Display Name': entity.get('mailboxDisplayName', '')})
                 mailboxes_set.add(entity.get('mailboxAddress', ''))
+
     return {
         'Categories': [alert.get('category', '') for alert in alerts_list],
         'Impacted entities': list({(entity.get('domainName', ''))
@@ -331,7 +333,8 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
                      'tags': ','.join(device.get('tags', []))
                      } for alert in alerts_list
                     for device in alert.get('devices', [])],
-        'Mailboxes': mailboxes}
+        'Mailboxes': mailboxes,
+        'comments': raw_incident.get('comments', [])}
 
 
 def convert_incident_to_readable(raw_incident: dict) -> dict:
@@ -509,25 +512,10 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
                           outputs=incident, readable_output=human_readable_table)
 
 
-def store_ids_for_first_mirroring(incidents: list):
-    """
-    Stores the fetched incident IDs in the integration context to trigger mirroring.
-    We're triggering mirroring for new incidents to mirror existing comments.
-
-    Args:
-        incidents (list): List of fetched incidents.
-    """
-    int_context = get_integration_context()
-    fetched_incidents_ids = [json.loads(incident.get('rawJSON')).get("incidentId", "") for incident in incidents]
-    int_context.setdefault(LAST_FETCHED_INCIDENT_IDS_INTEGRATION_CONTEXT_KEY, []).extend(fetched_incidents_ids)
-    demisto.debug(f"Microsoft 365 Defender  - Saving the following incident ids in the integration context: {int_context=}")
-    set_integration_context(int_context)
-
-
 @logger
 def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int,
                     timeout: int = None) -> List[
-        dict]:
+    dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -567,6 +555,7 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
     if len(incidents_queue) < fetch_limit:
 
         incidents = []
+        comments = []
 
         # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
         # incident we skip (offset) the number of incidents we already fetched.
@@ -608,7 +597,6 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
 
     oldest_incidents = incidents_queue[:fetch_limit]
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
-    store_ids_for_first_mirroring(oldest_incidents)
     demisto.setLastRun({'last_run': new_last_run,
                         'incidents_queue': incidents_queue[fetch_limit:]})
     return oldest_incidents
@@ -714,30 +702,6 @@ def fetch_modified_incident_ids(client: Client, last_update_time: str) -> List[s
     return incidents
 
 
-def is_new_incident(incident_id: str) -> bool:
-    """
-    Returns whether the microsoft incident id is a new fetched incident in XSOAR which should mirror existing comments.
-
-    Args:
-        incident_id (str): The Microsoft incident ID.
-
-    Returns:
-        bool: Whether it's a new incident in XSOAR.
-    """
-    int_context = get_integration_context()
-    last_fetched_ids = int_context.get(LAST_FETCHED_INCIDENT_IDS_INTEGRATION_CONTEXT_KEY) or []
-    demisto.debug(f"Microsoft Defender 365 - Last fetched incident ids are: {last_fetched_ids}")
-    if id_in_last_fetch := incident_id in last_fetched_ids:
-        demisto.debug(f"Microsoft Defender 365 - Incident {incident_id} is in the last fetched incidents")
-        last_fetched_ids.remove(incident_id)
-        int_context[LAST_FETCHED_INCIDENT_IDS_INTEGRATION_CONTEXT_KEY] = last_fetched_ids
-        demisto.debug(f"Microsoft Defender 365 - Removed incident {incident_id} from last fetched incidents")
-        set_integration_context(int_context)
-    else:
-        demisto.debug(f"Microsoft Defender 365 - Incident {incident_id} is not in the last fetched incidents")
-    return id_in_last_fetch
-
-
 def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dict], close_incident: bool) -> List[dict]:
     """
     Get the entries for closing or reopening incidents.
@@ -816,8 +780,8 @@ def fetch_modified_incident(client: Client, incident_id: str) -> dict:
     return incident
 
 
-def get_entries_for_comments(comments: List[dict[str, str]], last_update: datetime, comment_tag: str, new_incident: bool) -> List[
-        dict]:
+def get_entries_for_comments(comments: List[dict[str, str]], last_update: datetime, comment_tag: str) -> List[
+    dict]:
     """
     Get the entries for the comments of the incident. Args: comments (List[dict]): The comments of the incident from Microsoft
     365 Defender. last_update (datetime): The last run time of the mirroring - should bring in comments that were added
@@ -834,13 +798,12 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
             demisto.debug(f"Microsoft Defender 365 - comment {str(comment)}")
             comment_time = dateparser.parse(comment.get('createdTime', ''))
             assert comment_time is not None, f'could not parse {comment.get("createdTime")}'
-            if new_incident or comment_time > last_update:
-                clean_comment = re.sub(r'<.*?>', '', comment.get('comment', ''))
+            if comment_time > last_update:
                 entries.append(entry := {
                     'Type': EntryType.NOTE,
                     'Contents': f"Created By: {comment.get('createdBy', '')}\n"
                                 f"Created On: {comment.get('createdTime', '')}\n"
-                                f"{clean_comment}",
+                                f"{comment.get('comment', '')}",
                     'ContentsFormat': EntryFormat.TEXT,
                     'Tags': [comment_tag],
                     'Note': True,
@@ -852,8 +815,8 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
     return entries
 
 
-def get_incident_entries(mirrored_object: dict, last_update: datetime, comment_tag: str,
-                         new_incident: bool, close_incident: bool = False) -> List[dict]:
+def get_incident_entries(mirrored_object: dict, last_update: datetime, comment_tag: str, close_incident: bool = False) -> List[
+    dict]:
     """
     Creates the entries for the mirrored in incident.
     Args:
@@ -868,7 +831,7 @@ def get_incident_entries(mirrored_object: dict, last_update: datetime, comment_t
         List[dict]: The entries for the incident.
     """
     entries = get_modified_incidents_close_or_repopen_entries([mirrored_object], close_incident=close_incident)
-    entries.extend(get_entries_for_comments(mirrored_object.get('comments', []), last_update, comment_tag, new_incident))
+    entries.extend(get_entries_for_comments(mirrored_object.get('comments', []), last_update, comment_tag))
     return entries
 
 
@@ -887,7 +850,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
     assert last_update is not None, f'could not parse {remote_args.last_update}'
     close_incident = argToBoolean(demisto.params().get('close_incident', False))
-    remote_incident_id = remote_args.remote_incident_id
+    remote_incident_id = arg_to_number(remote_args.remote_incident_id)
     mirrored_object: Dict = {}
     demisto.debug(
         f'Microsoft Defender 365 - Performing get-remote-data command with incident id: {remote_incident_id} and '
@@ -895,8 +858,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     try:
         mirrored_object = fetch_modified_incident(client, remote_args.remote_incident_id)
         demisto.debug(f"Microsoft Defender 365 - mirrored in object {str(mirrored_object)}")
-        new_incident = is_new_incident(remote_incident_id)
-        entries = get_incident_entries(mirrored_object, last_update, comment_tag, new_incident, close_incident=close_incident)
+        entries = get_incident_entries(mirrored_object, last_update, comment_tag, close_incident=close_incident)
         demisto.debug(f"Microsoft Defender 365 - mirrored in entries {str(entries)}")
         return GetRemoteDataResponse(mirrored_object, entries)
     except Exception as e:
@@ -1067,7 +1029,7 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
-        params.get('certificate_thumbprint', '')
+                             params.get('certificate_thumbprint', '')
 
     private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
                    or params.get('private_key', ''))
