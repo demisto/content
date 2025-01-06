@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Acquire And Analyze Host Forensics](https://raw.githubusercontent.com/demisto/content/f80f71e1e885d285d611b7e685443cc7896f6706/Packs/WindowsForensicsPack/doc_files/Acquire_And_Analyze_Host_Forensics.png)
+![Acquire And Analyze Host Forensics](../doc_files/Acquire_And_Analyze_Host_Forensics.png)
