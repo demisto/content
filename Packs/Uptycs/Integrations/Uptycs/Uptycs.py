@@ -136,9 +136,9 @@ def apply_equals_cuts(query, cuts):
                                                                     cuts.get(key)))
                     use_and = True
                 else:
-                    if type(cuts.get(key)) == str:
+                    if type(cuts.get(key)) is str:
                         query = (f"{query} {key}='{cuts.get(key)}'")
-                    if type(cuts.get(key)) == int:
+                    if type(cuts.get(key)) is int:
                         query = (f"{query} {key}={cuts.get(key)}")
                     use_and = True
 
@@ -195,6 +195,7 @@ def uptycs_parse_date_range(timeago, start_time, end_time):
         temp_time_ago, now = None, None
         number = timeago.split(" ")[0]
         unit = timeago.split(" ")[1]
+        temp_time_ago, now = parse_date_range(timeago, date_format="%Y-%m-%d %H:%M:%S.000")
         if unit == 'minutes' or unit == 'minute':
             temp_time_ago = datetime.strftime(
                 datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S.000")
@@ -1597,7 +1598,7 @@ def uptycs_set_asset_tag():
     tag_set = False
     tag_key = demisto.args().get('tag_key')
     tag_value = demisto.args().get('tag_value')
-    new_tag = ''
+    new_tag = ""
     for tag in tags:
         if tag_key in tag:
             temp_tag = tag.split('=')

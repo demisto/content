@@ -2038,7 +2038,7 @@ def test_chat_add_user_command(mocker, chat, member, expected_exit, expected_war
     get_user_mock = mocker.patch('MicrosoftTeams.get_user', side_effect=mocked_get_user)
     add_user_to_chat_mock = mocker.patch('MicrosoftTeams.add_user_to_chat')
 
-    if expected_warning == ValueError:
+    if expected_warning is ValueError:
         with pytest.raises(ValueError) as e:
             chat_add_user_command()
         assert str(e.value) == expected_result
@@ -2111,7 +2111,7 @@ def test_chat_list_command(mocker, requests_mock, args, expected_response, expec
     return_results = mocker.patch('MicrosoftTeams.return_results')
     mocker.patch.object(demisto, 'args', return_value=args)
 
-    if expected_response == ValueError:
+    if expected_response is ValueError:
         with pytest.raises(ValueError) as e:
             chat_list_command()
         assert str(e.value) == "Retrieve a single chat does not support the 'filter' ODate query parameter."
