@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Any
 import urllib3
 
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -48,7 +48,7 @@ class Client(BaseClient):
         return response
 
     def bulk_action(self, action_type, entities):
-        if type(entities) == str:
+        if type(entities) is str:
             entities = json.loads(entities)
         url_suffix = f'rest/{self.tenant_id}/ems/bulk'
         payload = {
@@ -113,10 +113,10 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
     else:
         start_time = round((datetime.now() - timedelta(days=int(fetch_start))).timestamp() * 1000)
     if fetch_query_filter:
-        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round((datetime.now().timestamp() * 1000))})'\
+        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round(datetime.now().timestamp() * 1000)})'\
                              + fetch_query_filter
     else:
-        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round((datetime.now().timestamp() * 1000))})'
+        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round(datetime.now().timestamp() * 1000)})'
 
     results = client.query_entities(entity_type=object_to_fetch, query_filter=fetch_query_filter,
                                     order_by="Id desc", entity_fields=fetch_fields,
@@ -141,7 +141,7 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
     demisto.incidents(incidents)
 
 
-def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_entity_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     entity_type = args.get('entity_type', None)
     entity_id = args.get('entity_id', None)
@@ -180,7 +180,7 @@ def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def query_entities_command(client: Client, args: Dict[str, Any]):
+def query_entities_command(client: Client, args: dict[str, Any]):
 
     entity_type = args.get('entity_type', None)
     entity_fields = args.get('entity_fields', None)
@@ -234,7 +234,7 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
         )
 
 
-def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_entities_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     entities = args.get('entities', None)
 
@@ -269,7 +269,7 @@ def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def update_entities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_entities_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     entities = args.get('entities', None)
 
@@ -304,7 +304,7 @@ def update_entities_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def create_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
@@ -365,7 +365,7 @@ def create_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
@@ -431,7 +431,7 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def create_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
@@ -488,7 +488,7 @@ def create_request_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def update_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
