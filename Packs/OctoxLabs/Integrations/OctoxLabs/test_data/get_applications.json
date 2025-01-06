@@ -1,0 +1,35 @@
+{
+  "count": 1,
+  "results": [
+    {
+      "VulnerabilityMaxSeverity": [
+        ""
+      ],
+      "Description": [
+        "HP Operations agent Consolidated Package Description"
+      ],
+      "Architecture": [
+        "x86"
+      ],
+      "Version": [
+        ""
+      ],
+      "VulnerabilityCount": [
+        0
+      ],
+      "Groups": [
+        "hp"
+      ],
+      "Count": [
+        625
+      ],
+      "Publisher": [
+        ""
+      ],
+      "Name": [
+        "HP Operations agent Consolidated Package - 12.22.7"
+      ],
+      "Id": "7ppKz5MBusCvq4kXw1wZ"
+    }
+  ]
+}
