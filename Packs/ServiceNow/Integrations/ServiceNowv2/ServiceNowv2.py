@@ -823,7 +823,7 @@ class Client(BaseClient):
         """
         query_params = {'sysparm_limit': 1, 'sysparm_query': f'name={template_name}'}
 
-        result = self.send_request('table/sys_template', 'GET', params=query_params)
+        result = self.send_request(r'table/sys_template', 'GET', params=query_params)
 
         if len(result['result']) == 0:
             raise ValueError("Incorrect template name.")
@@ -3251,8 +3251,8 @@ def main():
             demisto.debug(f'{force_default_url=}, ignoring api {version=} configured in parameters')
         # Either no API version configured, OR force_default_url=True
         api = '/api/now/'
-        sc_api = '/api/sn_sc/'
-        cr_api = '/api/sn_chg_rest/'
+        sc_api = r'/api/sn_sc/'
+        cr_api = r'/api/sn_chg_rest/'
     server_url = params.get('url')
     sc_server_url = f'{get_server_url(server_url)}{sc_api}'
     cr_server_url = f'{get_server_url(server_url)}{cr_api}'
