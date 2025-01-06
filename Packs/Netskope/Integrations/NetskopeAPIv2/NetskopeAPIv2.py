@@ -13,6 +13,7 @@ MIN_PAGE_SIZE = 1
 MAX_LIMIT = 50
 MIN_LIMIT = 1
 MAX_FETCH_PER_EVENT_TYPE = 50
+JS_NUMBER_LIMIT = 2 ** 53 - 1
 TIME_FORMAT = "%d-%m-%Y %H:%M"
 
 ALERT_HEADERS = [
@@ -1253,7 +1254,7 @@ def parse_incident(
     for key, value in incident.items():
         # JavaScript does not work well with large numbers larger than 2^53-1 so need to stringify them.
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-        if isinstance(value, int) and value > 2 ** 53 - 1:
+        if isinstance(value, int) and value > JS_NUMBER_LIMIT:
             incident[key] = str(value)
     return {
         "name": f"{incident_type} ID: {incident_id}",
