@@ -46,7 +46,7 @@ tasks:
       version: -1
       name: Search for related alerts
       description: |-
-        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+        Searches for alerts. A summarized version of this script is available with the summarized version argument.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -79,7 +79,8 @@ tasks:
                   simple: 'caseid:'
               suffix:
                 value:
-                  simple: ' and (mitreattcktechnique:*T1086* or mitreattcktechnique:*T1059* or mitreattcktechnique:* T1047*)'
+                  simple: ' and (mitreattcktechnique:*T1086* or mitreattcktechnique:*T1059*
+                    or mitreattcktechnique:* T1047*)'
           - operator: concat
             args:
               prefix: {}
@@ -98,7 +99,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 240,
           "y": 330
         }
       }
@@ -125,7 +126,6 @@ tasks:
       '#none#':
       - "3"
       - "1"
-      - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -171,7 +171,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 660,
           "y": 330
         }
       }
@@ -198,7 +198,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "5"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -208,6 +208,8 @@ tasks:
             value:
               simple: foundIncidents.name
             iscontext: true
+          right:
+            value: {}
         - operator: isEqualString
           left:
             value:
@@ -252,8 +254,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 700
+          "x": 600,
+          "y": 830
         }
       }
     note: false
@@ -280,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1500
+          "x": 230,
+          "y": 1650
         }
       }
     note: false
@@ -317,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1330
+          "x": 600,
+          "y": 1480
         }
       }
     note: false
@@ -348,8 +350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 830
+          "x": 600,
+          "y": 960
         }
       }
     note: false
@@ -385,7 +387,7 @@ tasks:
             `${Core.RiskyHost.risk_level}`
 
             #### Related Alerts Found in the Incident:
-            `${foundIncidents.name}`
+            `${.=val.foundIncidents.name || "None"}`
 
             #### Process involved in login event:
             `${Core.OriginalAlert.event.login_data.process_image_name}`
@@ -446,8 +448,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1170
+          "x": 600,
+          "y": 1320
         }
       }
     note: false
@@ -502,8 +504,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 990
+          "x": 600,
+          "y": 1120
         }
       }
     note: false
@@ -528,7 +530,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -539,8 +541,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 330
+          "x": 600,
+          "y": 670
         }
       }
     note: false
@@ -555,14 +557,13 @@ view: |-
     "linkLabelsPosition": {
       "11_10_Disable user": 0.38,
       "11_6_No Action": 0.43,
-      "4_5_yes": 0.44,
       "4_6_#default#": 0.26
     },
     "paper": {
       "dimensions": {
-        "height": 1515,
-        "width": 1240,
-        "x": 0,
+        "height": 1665,
+        "width": 810,
+        "x": 230,
         "y": 50
       }
     }
