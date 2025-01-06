@@ -3,7 +3,7 @@
     "playbook_id": "Suspicious local administrator login",
     "suggestion_reason": "Recommended for Suspicious local administrator login alerts.",
     "description": "This trigger is responsible for handling alerts for Suspicious local administrator login.",
-    "trigger_name": "Alert Trigger - Suspicious local administrator login",
+    "trigger_name": "Suspicious local administrator login",
     "fromVersion": "8.8.0",
     "alerts_filter": {
       "filter": {
