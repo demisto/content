@@ -2462,7 +2462,7 @@ def get_remote_data_command(args: dict[str, Any]):
                 detection_type = 'Detection'
                 set_xsoar_entries(updated_object, entries, remote_incident_id,
                                   detection_type, reopen_statuses_list)  # sets in place
-        # for endpoint (in the new version) ,idp and mobile detections
+        # for endpoint (in the new version) ,idp/ods/ofp/mobile detections
         elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION, IncidentType.ON_DEMAND):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
