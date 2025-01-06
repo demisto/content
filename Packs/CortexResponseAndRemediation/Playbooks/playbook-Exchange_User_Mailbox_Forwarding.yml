@@ -42,6 +42,11 @@ description: |-
   - `Microsoft Graph User` for disabling user accounts and revoking active sessions.
   - `Exchange Online EWS` for disabling mailbox forwarding.
   - `Security And Compliance V2` for fetching email interaction statistics.
+tags:
+- TA0009 - Collection
+- TA0010 - Exfiltration
+- T1114 - Email Collection
+- T1020 - Automated Exfiltration
 starttaskid: "0"
 tasks:
   "0":
