@@ -1,10 +1,7 @@
 EmailRep.io provides the reputation and reports for email addresses.
 This integration was integrated and tested with version EmailRep Alpha API v0.1 of EmailRep.io
-## Configure EmailRepIO on Cortex XSOAR
+## Configure EmailRepIO in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EmailRepIO.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -14,9 +11,8 @@ This integration was integrated and tested with version EmailRep Alpha API v0.1 
 | proxy | Use system proxy settings | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### emailrepio-email-reputation-get
 ***
@@ -153,5 +149,4 @@ There is no context output for this command.
 
 #### Command Example
 ```!emailrepio-email-address-report email_address="test@example.com" tags="spam"```
-
 

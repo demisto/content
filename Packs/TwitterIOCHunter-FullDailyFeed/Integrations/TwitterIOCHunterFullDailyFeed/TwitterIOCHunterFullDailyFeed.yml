@@ -102,7 +102,7 @@ script:
   - arguments: []
     description: Get Indicators from TwitterIOCHunter
     name: twitteriochunter-get-indicators
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   isFetchSamples: true
   script: ''

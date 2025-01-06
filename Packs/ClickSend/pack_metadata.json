@@ -2,12 +2,14 @@
     "name": "ClickSend",
     "description": "Make voice call from XSOAR",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Bar Halifa-Levi Trustnet",
     "url": "",
     "email": "",
     "created": "2023-07-18T13:28:32Z",
-    "categories": ["Messaging and Conferencing"],
+    "categories": [
+        "Messaging and Conferencing"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

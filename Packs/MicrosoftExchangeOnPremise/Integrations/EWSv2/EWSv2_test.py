@@ -408,9 +408,51 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     EWSv2.MAX_FETCH = 1
     last_run = mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'getLastRun', return_value=current_last_run)
-    fetch_emails_as_incidents(client, 'Inbox')
+    fetch_emails_as_incidents(client, 'Inbox', False)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
+
+@pytest.mark.parametrize(
+    "skip_unparsable_emails_param, exception_type, expected",
+    [
+        (True, IndexError("Unparsable email ignored"), "Unparsable email ignored"),
+        (True, UnicodeError("Unparsable email ignored"), "Unparsable email ignored"),
+        (True, Exception("Unparsable email not ignored"), "Unparsable email not ignored"),
+        (False, Exception("Unparsable email not ignored"), "Unparsable email not ignored"),
+        (False, IndexError("Unparsable email not ignored"), "Unparsable email not ignored"),
+    ],
+)
+def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_type, expected):
+    """Check the fetch command in skip_unparsable_emails parameter use-cases.
+
+    Given:
+        - An exception has occurred while processing an email message.
+    When:
+        - Running fetch command.
+    Then:
+        - If skip_unparsable_emails parameter is True, and the Exception is a specific type we allow to fail due to parsing error:
+            log the exception message and continue processing the next email (ignore unparsable email).
+        - If skip_unparsable_emails parameter is False, raise the exception (crash the fetch command).
+    """
+    from EWSv2 import fetch_emails_as_incidents
+
+    import demistomock as demisto
+
+    class MockEmailObject:
+        def __init__(self):
+            self.message_id = "Value"
+
+    client = TestNormalCommands.MockClient()
+    mocker.patch.object(
+        demisto, "getLastRun", return_value={"lastRunTime": "2021-07-14T12:59:17Z", "folderName": "Inbox", "ids": []}
+    )
+    mocker.patch.object(EWSv2, "parse_incident_from_item", side_effect=exception_type)
+    mocker.patch.object(EWSv2, "fetch_last_emails", return_value=[MockEmailObject()])
+    mocker.patch.object(EWSv2, "get_account", return_value=[{}])
+    with pytest.raises((Exception, UnicodeError, IndexError)) as e:
+        fetch_emails_as_incidents(client, "Inbox", skip_unparsable_emails_param)
+        assert expected == str(e)
 
 
 class MockItem:

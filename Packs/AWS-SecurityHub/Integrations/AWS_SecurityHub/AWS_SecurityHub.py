@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import boto3
 
 import urllib3.util
-from datetime import timezone
+from datetime import UTC
 from dateparser import parse
 
 # Disable insecure warnings
@@ -815,7 +815,7 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         date_from = parse(f'{first_fetch_timestamp} UTC')
         last_run = date_from.isoformat()  # type: ignore
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     filters = {
         'CreatedAt': [{

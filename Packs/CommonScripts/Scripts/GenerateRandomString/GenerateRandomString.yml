@@ -49,4 +49,4 @@ scripttarget: 0
 tests:
 - RandomStringGenerateTest
 fromversion: 6.2.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.113941

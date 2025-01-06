@@ -3,32 +3,28 @@ Mattermost is an open-source, self-hostable online chat service with file sharin
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---mattermost-v2).
 
-## Configure Mattermost v2 on Cortex XSOAR
+## Configure Mattermost v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Mattermost v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Bot Access Token | The Bot Access Token to use for connection. | True |
-    | Personal Access Token | The Personal Access Token to use for connection. | True |
-    | Team Name |  | True |
-    | Default Notifications Channel | If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel. | False |
-    | Enable Incident Mirroring |  | False |
-    | Allow external users to create incidents via DM. |  | False |
-    | Types of Notifications to Send | Notifications of type 'externalAskSubmit' or 'externalFormSubmit' are not configurable because they are required to allow Ask tasks to be sent correctly. | False |
-    | Long running instance. Required for investigation mirroring and direct messages. |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Bot Access Token | The Bot Access Token to use for connection. | True |
+| Personal Access Token | The Personal Access Token to use for connection. | True |
+| Team Name |  | True |
+| Default Notifications Channel | If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel. | False |
+| Enable Incident Mirroring |  | False |
+| Allow external users to create incidents via DM. |  | False |
+| Types of Notifications to Send | Notifications of type 'externalAskSubmit' or 'externalFormSubmit' are not configurable because they are required to allow Ask tasks to be sent correctly. | False |
+| Long running instance. Required for investigation mirroring and direct messages. |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### mattermost-get-team

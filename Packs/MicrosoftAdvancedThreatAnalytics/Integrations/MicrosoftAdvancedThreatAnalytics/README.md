@@ -2,11 +2,8 @@ Manage suspicious activities, monitoring alerts and entities on Microsoft ATA.
 
 This integration was integrated and tested with version 1.9.7478.57683 of Microsoft Advanced Threat Analytics.
 
-## Configure Microsoft Advanced Threat Analytics on Cortex XSOAR
+## Configure Microsoft Advanced Threat Analytics in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Advanced Threat Analytics.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -22,11 +19,10 @@ This integration was integrated and tested with version 1.9.7478.57683 of Micros
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ms-ata-suspicious-activities-list
@@ -475,4 +471,3 @@ Retrieves information of distinct entity, such as computers and users.
 >|Type|SuspiciousActivitySeverityToCountMapping|UpdateTime|IsBehaviorChanged|
 >|---|---|---|---|
 >| UserProfile | Low: 0<br/>Medium: 0<br/>High: 0 | 2020-07-28T09:00:13.8696377Z | true |
-

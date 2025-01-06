@@ -1,27 +1,23 @@
 This is the Zero Networks event collector integration for Cortex XSIAM.
 
-## Configure Zero Networks Segment Event Collector on Cortex XSIAM
+## Configure Zero Networks Segment Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Zero Networks Segment Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API Key | The API key to use for connection. | True |
-    | Fetch network events |  | False |
-    | Network Activity Filters | Use filters to reduce the amount of events. | False |
-    | Maximum audit events to fetch | Maximum number of audit events per fetch. The default value is 10000. | False |
-    | Maximum network activities events to fetch | Maximum number of network activities events per fetch. The default value is 2000. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Key | The API key to use for connection. | True |
+| Fetch network events |  | False |
+| Network Activity Filters | Use filters to reduce the amount of events. | False |
+| Maximum audit events to fetch | Maximum number of audit events per fetch. The default value is 10000. | False |
+| Maximum network activities events to fetch | Maximum number of network activities events per fetch. The default value is 2000. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### zero-networks-segment-get-events

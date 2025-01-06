@@ -1,0 +1,6 @@
+id: Azure_Firewall_ParsingRule
+name: Azure Firewall Parsing Rule
+fromversion: 8.7.0   
+tags: []
+rules: ''
+samples: ''

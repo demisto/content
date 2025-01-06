@@ -2,7 +2,7 @@
     "name": "Endace",
     "description": "This integration uses Endace APIs to search, archive and download PCAP file from either a single EndaceProbe or many via the InvestigationManager and enables integration of full historical packet capture into security automation workflows",
     "support": "partner",
-    "currentVersion": "1.1.12",
+    "currentVersion": "1.1.13",
     "author": "Endace",
     "url": "https://www.endace.com/",
     "email": "support@endace.com",

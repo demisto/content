@@ -11,29 +11,25 @@ You are required to fill in only the *Authentication token* parameter. For more 
 ### AppRole Auth Method
 You are required to fill in only the *Username / Role ID* parameter with the role ID and *Password / Secret ID* parameter with the secret ID, and check the *Use AppRole Auth Method* checkbox. For more details, see the [HashiCorp Vault documentation](https://www.vaultproject.io/docs/auth/approle).
 
-## Configure HashiCorp Vault on Cortex XSOAR
+## Configure HashiCorp Vault in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HashiCorp Vault.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                                                                  | **Required** |
-    |----------------------------------------------------------------------------------------------------------------------------------| --- | --- |
-    | HashiCorp server URL (e.g., https://192.168.0.1:8200) | The server URL                                                                                                                   | True |
-    | Use AppRole Auth Method | Set as true if you are using the [AppRole](https://developer.hashicorp.com/vault/docs/auth/approle) method for authentication. | False |
-    | Username / Role ID | The username for the Hashicorp vault.                                                                                            | False |
-    | Password / Secret ID | The password for the Hashicorp vault.                                                                                             | False |
-    | Authentication token | A token for authentication for the Hashicorp vault. (Use instead of password and username.)                                            | False |
-    | Vault enterprise namespace | The [namespace](https://developer.hashicorp.com/vault/tutorials/enterprise/namespaces) used for the vault by the user.  | False |
-    | Trust any certificate (not secure) | Mark as true to make unverified HTTP requests.                                                                                    | False |
-    | Use system proxy settings | Mark as true to use proxy settings.                                                                                                        | False |
-    | Fetches credentials | Mark as true to fetch credentials to the Cortex XSOAR credentials vault.                                                                 | False |
-    | CSV list of secrets engine types to fetch secrets from | Possible values are KV, Cubbyhole, AWS.                                                                                           | False |
-    | Concat username to credential object name | Should be used in case there are several secrets under the same folder in order to make the credential object unique.            | False |
+| **Parameter** | **Description**                                                                                                                  | **Required** |
+|----------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+| HashiCorp server URL (e.g., https://192.168.0.1:8200) | The server URL                                                                                                                   | True |
+| Use AppRole Auth Method | Set as true if you are using the [AppRole](https://developer.hashicorp.com/vault/docs/auth/approle) method for authentication. | False |
+| Username / Role ID | The username for the Hashicorp vault.                                                                                            | False |
+| Password / Secret ID | The password for the Hashicorp vault.                                                                                             | False |
+| Authentication token | A token for authentication for the Hashicorp vault. (Use instead of password and username.)                                            | False |
+| Vault enterprise namespace | The [namespace](https://developer.hashicorp.com/vault/tutorials/enterprise/namespaces) used for the vault by the user.  | False |
+| Trust any certificate (not secure) | Mark as true to make unverified HTTP requests.                                                                                    | False |
+| Use system proxy settings | Mark as true to use proxy settings.                                                                                                        | False |
+| Fetches credentials | Mark as true to fetch credentials to the Cortex XSOAR credentials vault.                                                                 | False |
+| CSV list of secrets engine types to fetch secrets from | Possible values are KV, Cubbyhole, AWS.                                                                                           | False |
+| Concat username to credential object name | Should be used in case there are several secrets under the same folder in order to make the credential object unique.            | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### hashicorp-list-secrets-engines
 ***
@@ -403,6 +399,67 @@ Create a new authentication token.
 
 #### Command example
 ```!hashicorp-create-token display_name=token explicit_max_ttl=3600 renewable=false```
+
+
+### hashicorp-generate-role-secret
+***
+Generates and issues a new SecretID on an existing AppRole.
+
+#### Base Command
+
+`hashicorp-generate-role-secret`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_name | The name of the AppRole. | Required |
+| meta_data | Metadata to be tied to the SecretID. | Optional |
+| cidr_list | Comma separated string or list of CIDR blocks enforcing secret IDs to be used from specific set of IP addresses. | Optional |
+| token_bound_cidrs | Comma-separated string or list of CIDR blocks. | Optional |
+| num_uses | Number of times this SecretID can be used, after which the SecretID expires. A value of zero will allow unlimited uses. | Optional |
+| ttl_seconds | Duration in seconds after which this SecretID expires. A value of zero will allow the SecretID to not expire. | Optional |
+
+#### Context Output
+There is no context output for this command.
+#### Command example
+```!hashicorp-generate-role-secret role_name=my-role```
+
+#### Human Readable Output
+>SecretID:123
+
+
+
+### hashicorp-get-role-id
+***
+Retrieves the AppRole ID for a specified role.
+
+
+#### Base Command
+
+`hashicorp-get-role-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_name | The name of the AppRole. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HashiCorp.AppRole.Id | string | AppRole ID. | 
+| HashiCorp.AppRole.Name | string | AppRole Name. | 
+
+#### Command example
+```!hashicorp-get-role-id role_name=my-role```
+
+#### Human Readable Output
+|Id|Name|
+|---|---|
+|role_id|role_name|
+
 
 ## Additional Information
 - In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the ***configure-engine*** command.

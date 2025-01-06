@@ -2,7 +2,7 @@
     "name": "Logz.io",
     "description": "Logz.io Package to fetch alerts from logz.io and threat hunting",
     "support": "partner",
-    "currentVersion": "1.1.19",
+    "currentVersion": "1.1.20",
     "author": "Logz.io",
     "url": "",
     "email": "support@logz.io",

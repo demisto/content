@@ -1,9 +1,6 @@
 Use Trend Micro Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.
-## Configure TrendMicro Cloud App Security on Cortex XSOAR
+## Configure TrendMicro Cloud App Security in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TrendMicro Cloud App Security.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ Use Trend Micro Cloud App Security integration to protect against ransomware, ph
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trendmicro-cas-security-events-list
 ***
@@ -662,4 +658,3 @@ Adds or removes senders, URLs, SHA-1 hash values to or from blocked lists. You m
 >|filehashes|senders|urls|
 >|---|---|---|
 >| f3cdddb37f6a933d6a256bd98b4bc703a448c621 | 123@gmail.com,<br/>456@gmail.com | ubb.com,<br/>ggyu.com |
-

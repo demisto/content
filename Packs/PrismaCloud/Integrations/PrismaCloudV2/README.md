@@ -4,32 +4,28 @@ This integration was integrated and tested with version 23.2.1 of PrismaCloud
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---prisma-cloud-v2).
 
-## Configure Prisma Cloud v2 on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Prisma Cloud v2.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Username / Access Key ID |  | True |
-    | Password / Access Key Secret |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Maximum number of incidents to fetch | Maximum is limited to 200. | False |
-    | First fetch time interval | Date or relative timestamp to start fetching incidents from, in the format of &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days. | False |
-    | Advanced: Time in minutes to look back when fetching incidents | Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time. | False |
-    | Fetch only incidents matching these filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | False |
-    | Fetch incidents |  | False |
-    | Output results of old version commands to the context data in the old format |  | False |
-    | Mirroring Direction | 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).' | False |
-    | Close Mirrored XSOAR Incident | When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR. | False |
-    | Close Mirrored Prisma Cloud Alert |  When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud. | False |
+## Configure Prisma Cloud v2 in Cortex
 
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Username / Access Key ID |  | True |
+| Password / Access Key Secret |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Maximum number of incidents to fetch | Maximum is limited to 200. | False |
+| First fetch time interval | Date or relative timestamp to start fetching incidents from, in the format of &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days. | False |
+| Advanced: Time in minutes to look back when fetching incidents | Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time. | False |
+| Fetch only incidents matching these filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | False |
+| Fetch incidents |  | False |
+| Output results of old version commands to the context data in the old format |  | False |
+| Mirroring Direction | 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).' | False |
+| Close Mirrored XSOAR Incident | When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Prisma Cloud Alert |  When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud. | False |
+
+
 
 ### Incident Mirroring
  
@@ -62,7 +58,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
  
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### prisma-cloud-alert-dismiss
@@ -3005,4 +3001,3 @@ Retrieves the code errors detected by Application Security during periodic scans
 | PrismaCloud.CodeIssue.resourceId | String | The identifier of the resource related to the code issue. | 
 | PrismaCloud.CodeIssue.riskFactors | String | Risk factors associated with the code issue, such as high-impact areas or sensitive data. | 
 | PrismaCloud.CodeIssue.isIndirectPackage | String | Indicates whether the issue is from an indirect package \(true/false\). | 
-

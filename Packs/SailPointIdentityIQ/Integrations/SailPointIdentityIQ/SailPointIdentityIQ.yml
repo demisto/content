@@ -468,7 +468,7 @@ script:
     - contextPath: IdentityIQ.Alert.application
       description: List of applications that are related to this alert.
       type: String
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.11.10.116439
   isfetch: true
   script: ''
   subtype: python3

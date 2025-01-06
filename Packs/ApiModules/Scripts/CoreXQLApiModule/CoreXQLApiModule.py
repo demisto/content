@@ -116,9 +116,14 @@ class CoreClient(BaseClient):
             return response['data']
 
     def start_xql_query(self, data: dict) -> str:
-        res = self._http_request(method='POST', url_suffix='/xql/start_xql_query', json_data=data)
-        execution_id = res.get('reply', "")
-        return execution_id
+        try:
+            res = self._http_request(method='POST', url_suffix='/xql/start_xql_query', json_data=data)
+            execution_id = res.get('reply', "")
+            return execution_id
+        except Exception as e:
+            if 'reached max allowed amount of parallel running queries' in str(e).lower():
+                return "FAILURE"
+            raise e
 
     def get_xql_query_results(self, data: dict) -> dict:
         res = self._http_request(method='POST', url_suffix='/xql/get_query_results', json_data=data)
@@ -630,6 +635,7 @@ def test_module(client: CoreClient, args: Dict[str, Any]) -> str:
 
 def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[CommandResults, list]:
     """Execute an XQL query as a scheduled command.
+       If 'start_xql_query' fails, the command will use a polling mechanism to start the XQL query again.
 
     Args:
         client (Client): The XDR Client.
@@ -641,6 +647,18 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
     if not args.get('query_name'):
         raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
+    if execution_id == 'FAILURE':
+        # the 'start_xql_query' function failed because it reached the maximum allowed number of parallel running queries.
+        # running the command again using polling with an interval of 'interval_in_secs' seconds.
+        command_results = CommandResults()
+        interval_in_secs = int(args.get('interval_in_seconds', 5))
+        scheduled_command = ScheduledCommand(command='xdr-xql-generic-query', next_run_in_seconds=interval_in_secs,
+                                             args=args, timeout_in_seconds=600)
+        command_results.scheduled_command = scheduled_command
+        command_results.readable_output = (f'The maximum allowed number of parallel running queries has been reached.'
+                                           f' The query will be executed in the next interval, in {interval_in_secs} seconds.')
+        return command_results
+
     if not execution_id:
         raise DemistoException('Failed to start query\n')
     args['query_id'] = execution_id

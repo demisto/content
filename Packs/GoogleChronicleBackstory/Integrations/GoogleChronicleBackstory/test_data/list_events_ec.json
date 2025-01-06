@@ -1,5 +1,5 @@
 {
-  "GoogleChronicleBackstory.Events": [
+  "GoogleChronicleBackstory.Events(val.id == obj.id)": [
     {
       "eventTimestamp": "2020-01-01T00:01:00Z",
       "collectedTimestamp": "2020-01-01T00:01:00Z",

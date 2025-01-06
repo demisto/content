@@ -2,7 +2,7 @@
     "name": "Cymptom",
     "description": "Cymptom is a Breach and Attack Simulation solution that revolutionizes\n  the existing approach by transforming attack simulation into a data analysis question.\n  Cymptom agentless scanning brings real-time always-on visibility into the entire\n  security posture.",
     "support": "partner",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.12",
     "author": "Cymptom",
     "url": "https://cymptom.com/",
     "email": "support@Cymptom.com",

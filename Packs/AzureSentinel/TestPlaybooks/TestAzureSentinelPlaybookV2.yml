@@ -653,7 +653,7 @@ tasks:
       name: Create file
       description: |
         Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
@@ -1235,7 +1235,7 @@ tasks:
       brand: Azure Sentinel
     nexttasks:
       '#none#':
-      - "36"
+      - "37"
     scriptarguments:
       limit:
         simple: "1"
@@ -1245,59 +1245,6 @@ tasks:
         "position": {
           "x": 1820,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "36":
-    id: "36"
-    taskid: ac5057b6-7d4a-43e5-813f-bc8e236eb0e0
-    type: condition
-    task:
-      id: ac5057b6-7d4a-43e5-813f-bc8e236eb0e0
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "37"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.ThreatIndicator.ID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.ThreatIndicator.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.ThreatIndicator.ETag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureSentinel.ThreatIndicator.Type
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1820,
-          "y": 525
         }
       }
     note: false

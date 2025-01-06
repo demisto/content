@@ -1,15 +1,12 @@
 The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
 This integration was integrated and tested with version 1.29 of AWS-EKS.
 
-## Configure AWS-EKS on Cortex XSOAR
+## Configure AWS-EKS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS-EKS.
-3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | AWS Default Region |  | True |
+    | AWS Default Region | AWS Default Region | True |
     | Access Key |  | True |
     | Secret Key |  | True |
     | Role Arn |  | False |
@@ -20,10 +17,9 @@ This integration was integrated and tested with version 1.29 of AWS-EKS.
     | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EKS commands. A role name for cross-organization account access must be provided to use this feature. | False |
     | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. | False |
     | Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts to access". | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
+    | Use system proxy settings | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Run commands in multiple AWS accounts
 
@@ -48,7 +44,7 @@ In this case, the user configured with `Access Key` and `Secret Key` must be abl
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-eks-list-clusters
@@ -521,4 +517,3 @@ Updates an access entry.
 >|Cluster Name|Principal Arn|Username|Type|Modified At|
 >|---|---|---|---|---|
 >| CLUSTER_NAME | principal_arn | username | STANDARD | 2024-02-26 09:38:11.578000+00:00 |
-

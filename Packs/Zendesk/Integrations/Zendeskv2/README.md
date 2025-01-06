@@ -1,37 +1,33 @@
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-zendesk-v2).
 
-## Configure Zendesk v2 on Cortex XSOAR
+## Configure Zendesk v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zendesk v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://demisto.zendesk.com) |  | True |
-    | Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | True |
-    | Password/API key |  | True |
-    | Fetch incidents |  | False |
-    | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
-    | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
-    | Mirror tags | Comment and files that will be marked with this tag will be pushed into Zendesk. | False |
-    | Ticket Field to Fetch by | Duplications might accrue when choosing 'updated-at' | True |
-    | Ticket types to fetch |  | False |
-    | Fetch tickets status filter |  | False |
-    | Fetch tickets priority filter |  | False |
-    | Fetch tickets query filter |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://demisto.zendesk.com) |  | True |
+| Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | True |
+| Password/API key |  | True |
+| Fetch incidents |  | False |
+| Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
+| Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
+| Mirror tags | Comment and files that will be marked with this tag will be pushed into Zendesk. | False |
+| Ticket Field to Fetch by | Duplications might accrue when choosing 'updated-at' | True |
+| Ticket types to fetch |  | False |
+| Fetch tickets status filter |  | False |
+| Fetch tickets priority filter |  | False |
+| Fetch tickets query filter |  | False |
+| Maximum number of incidents per fetch |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection. 
     (The test does not ensure sufficient permissions for all integration commands.)
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## Required permissions
@@ -982,4 +978,3 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 **Important Notes:** 
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
 - Required permissions: Admins
-

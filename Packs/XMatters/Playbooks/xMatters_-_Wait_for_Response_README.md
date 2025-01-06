@@ -36,4 +36,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 
-![xMatters - Wait for Response](xMatters_-_Wait_for_Response.png)
+![xMatters - Wait for Response](../doc_files/xMatters_-_Wait_for_Response.png)

@@ -2,7 +2,7 @@
     "name": "Postmark Spamcheck",
     "description": "Postmark’s spam API, Spamcheck, is a RESTfull interface to the Spam filter tool SpamAssassin.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "NVISO",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

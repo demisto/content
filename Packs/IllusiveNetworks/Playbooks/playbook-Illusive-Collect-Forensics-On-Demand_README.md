@@ -42,4 +42,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Illusive.Forensics.Evidence.title | The forensics evidence description | unknown |
 | Illusive.Forensics.IncidentId | The Incident Id | unknown |
 
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/0d472d7658632fa55e87a39e3562056d9cd289b8/Packs/IllusiveNetworks/doc_files/Illusive-Collect-Forensics-On-Demand.png)
+![Playbook Image](../doc_files/Illusive-Collect-Forensics-On-Demand.png)

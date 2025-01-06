@@ -1221,3 +1221,31 @@ def test_trashed_item_restore_command_happy_path(mocker):
     assert result.outputs_key_field == 'id'
     assert result.outputs == response
     assert result.readable_output == f'Item with the ID {item_id} was restored.'
+
+
+def test_event_init_source_none_with_created_at():
+    """
+    Tests the initialization of the Event class when:
+      - `source` exists but is `None` in `raw_input`.
+      - `created_at` exists directly in `raw_input`.
+
+    Given:
+        - `raw_input` with `source` set to `None` and a valid `created_at`.
+    When:
+        - Instantiating the Event class.
+    Then:
+        - Ensure the `created_at` field is set correctly.
+        - Ensure no `AttributeError` is raised due to `source` being `None`.
+    """
+    from BoxV2 import Event
+    raw_input = {
+        "created_at": "2024-12-16T15:00:00Z",
+        "source": None,
+        "event_id": "test_id_source_none",
+        "event_type": "test_type_source_none"
+    }
+    event = Event(raw_input)
+
+    assert event.created_at == "2024-12-16T15:00:00Z"  # `created_at` is set directly
+    assert event.event_id == "test_id_source_none"
+    assert event.event_type == "test_type_source_none"

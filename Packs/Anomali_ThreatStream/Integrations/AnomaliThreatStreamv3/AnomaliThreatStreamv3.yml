@@ -6456,7 +6456,7 @@ script:
       required: true
       description: JSON data of edits to be made {"is_public":false,"circles":[12866]}.
     description: Edit the values for observable that have been cloned.
-  dockerimage: demisto/py3-tools:1.0.0.112434
+  dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
   subtype: python3

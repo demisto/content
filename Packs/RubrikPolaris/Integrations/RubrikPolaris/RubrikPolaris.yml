@@ -58,6 +58,20 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
@@ -3060,7 +3074,598 @@ script:
     - contextPath: RubrikPolaris.SuspiciousFile.__typename
       description: 'The type name of the suspicious file response.'
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.108068
+  - name: ip
+    description: Retrieve the sensitive information available for the given IP address(es).
+    arguments:
+    - name: ip
+      description: The IP address(es) for which to retrieve sensitive information.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Tags
+      description: Tags of the IP address.
+      type: Unknown
+    - contextPath: IP.FeedRelatedIndicators.value
+      description: Indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP address.
+      type: String
+    - contextPath: IP.Organization.Name
+      description: The organization of the IP address.
+      type: String
+    - contextPath: IP.Organization.Type
+      description: The organization type of the IP address.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP address.
+      type: String
+    - contextPath: IP.Region
+      description: The region in which the IP address is located.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP address.
+      type: String
+    - contextPath: IP.Internal
+      description: Whether the IP address is internal or external.
+      type: Boolean
+    - contextPath: IP.UpdatedDate
+      description: The date that the IP address was last updated.
+      type: Date
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The name of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Address
+      description: The address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Country
+      description: The country of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The phone number of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Campaign
+      description: The campaign associated with the IP address.
+      type: String
+    - contextPath: IP.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the IP address.
+      type: String
+    - contextPath: IP.CommunityNotes.note
+      description: Notes on the IP address that were given by the community.
+      type: String
+    - contextPath: IP.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: IP.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: IP.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: IP.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: IP.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: IP.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: IP.ThreatTypes.threatcategoryconfidence
+      description: The confidence level provided by the vendor for the threat type category For example, a confidence of 90 for the threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: RubrikPolaris.IP.ip
+      description: 'IP address of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.fid
+      description: 'The foreign ID of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.name
+      description: 'The name of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.objectType
+      description: 'The type of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.protectionStatus
+      description: 'The protection status of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.lastSnapshot
+      description: 'The timestamp of the last snapshot of the object.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.generalInfo.redirectLink
+      description: 'The link to the object in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.riskLevel
+      description: 'The risk level of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.sensitiveFiles.mediumCount
+      description: 'The number of sensitive files of medium risk level.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.sensitiveHits
+      description: 'The number of sensitive files.'
+      type: Number
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.openAccessFiles
+      description: 'The number of open access files.'
+      type: Number
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.staleFiles
+      description: 'The number of stale files.'
+      type: Number
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.redirectLink
+      description: 'The link to the sensitive information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.policyNames
+      description: 'The names of the policies associated with the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.severity
+      description: 'The severity of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.detectionTime
+      description: 'The timestamp of the anomaly detection.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.anomalyInfo.createdFileCount
+      description: 'The number of created files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.deletedFileCount
+      description: 'The number of deleted files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.modifiedFileCount
+      description: 'The number of modified files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.suspiciousFileCount
+      description: 'The number of suspicious files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.redirectLink
+      description: 'The link to the anomaly information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.huntId
+      description: 'The ID of the latest threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.huntStartTime
+      description: 'The timestamp of the latest threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.isMalicious
+      description: 'Whether the latest threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.huntId
+      description: 'The ID of the latest malicious threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.huntStartTime
+      description: 'The timestamp of the latest malicious threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.isMalicious
+      description: 'Whether the latest malicious threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.redirectLink
+      description: 'The link to the threat hunt information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.isMalicious
+      description: 'Whether the latest threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest malicious threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest malicious threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious
+      description: 'Whether the latest malicious threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.redirectLink
+      description: 'The link to the threat monitoring information in the Rubrik UI.'
+      type: String
+  - name: domain
+    description: Retrieve the sensitive information available for the given domain(s).
+    arguments:
+    - name: domain
+      description: The domain(s) for which to retrieve sensitive information.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: String
+    - contextPath: Domain.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: Domain.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: Datte
+    - contextPath: Domain.NameServers
+      description: (List<String>) Name servers of the domain.  
+      type: Unknown
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.Subdomains
+      description: (List<String>) Subdomains of the domain.
+      type: Unknown
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.Tags
+      description: Tags of the domain.
+      type: Unknown
+    - contextPath: Domain.FeedRelatedIndicators.value
+      description: Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.MalwareFamily
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: (List<String>) Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy".'
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbusePhone
+      description: The phone number of contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS/History
+      description: List of Whois objects.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.DomainIDNName
+      description: The internationalized domain name (IDN) of the domain.
+      type: String
+    - contextPath: Domain.Port
+      description: Ports that are associated with the domain.
+      type: String
+    - contextPath: Domain.Internal
+      description: Whether or not the domain is internal or external.
+      type: Bool
+    - contextPath: Domain.Category
+      description: The category associated with the indicator.
+      type: String
+    - contextPath: Domain.Campaign
+      description: The campaign associated with the domain.
+      type: String
+    - contextPath: Domain.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the domain.
+      type: String
+    - contextPath: Domain.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: Domain.ThreatTypes.threatcategoryconfidence
+      description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: Domain.Geo.Location
+      description: 'The geolocation where the domain address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: Domain.Geo.Country
+      description: The country in which the domain address is located.
+      type: String
+    - contextPath: Domain.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: Domain.Tech.Country
+      description: The country of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Name
+      description: The name of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Email
+      description: The email address of the domain technical contact.
+      type: String
+    - contextPath: Domain.CommunityNotes.note
+      description: Notes on the domain that were given by the community.
+      type: String
+    - contextPath: Domain.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: Domain.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: Domain.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: Domain.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: Domain.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: Domain.Billing
+      description: The billing address of the domain.
+      type: String
+    - contextPath: RubrikPolaris.Domain.domain
+      description: 'The domain of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.fid
+      description: 'The foreign ID of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.name
+      description: 'The name of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.objectType
+      description: 'The type of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.protectionStatus
+      description: 'The protection status of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.lastSnapshot
+      description: 'The timestamp of the last snapshot of the object.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.generalInfo.redirectLink
+      description: 'The link to the object in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.riskLevel
+      description: 'The risk level of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.sensitiveFiles.mediumCount
+      description: 'The number of sensitive files of medium risk level.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.sensitiveHits
+      description: 'The number of sensitive files.'
+      type: Number
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.openAccessFiles
+      description: 'The number of open access files.'
+      type: Number
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.staleFiles
+      description: 'The number of stale files.'
+      type: Number
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.redirectLink
+      description: 'The link to the sensitive information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.policyNames
+      description: 'The names of the policies associated with the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.severity
+      description: 'The severity of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.detectionTime
+      description: 'The timestamp of the anomaly detection.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.createdFileCount
+      description: 'The number of created files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.deletedFileCount
+      description: 'The number of deleted files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.modifiedFileCount
+      description: 'The number of modified files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.suspiciousFileCount
+      description: 'The number of suspicious files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.redirectLink
+      description: 'The link to the anomaly information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.huntId
+      description: 'The ID of the latest threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.huntStartTime
+      description: 'The timestamp of the latest threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.isMalicious
+      description: 'Whether the latest threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.huntId
+      description: 'The ID of the latest malicious threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.huntStartTime
+      description: 'The timestamp of the latest malicious threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.isMalicious
+      description: 'Whether the latest malicious threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.redirectLink
+      description: 'The link to the threat hunt information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.isMalicious
+      description: 'Whether the latest threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest malicious threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest malicious threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious
+      description: 'Whether the latest malicious threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.redirectLink
+      description: 'The link to the threat monitoring information in the Rubrik UI.'
+      type: String
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.117242
   isfetch: true
   runonce: false
   script: '-'

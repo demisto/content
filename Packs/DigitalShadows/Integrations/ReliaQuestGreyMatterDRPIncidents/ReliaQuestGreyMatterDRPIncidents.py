@@ -579,7 +579,7 @@ def search_find(request_handler: Client, args):
             "tags": [],
             "types": [
                 "ACTORS",
-                "Bdemisto.info_POST",
+                "BLOG_POST",
                 "CAMPAIGNS",
                 "CHAT_MESSAGE",
                 "CLIENT_INCIDENT",

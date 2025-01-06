@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This version contains a known issue. Please ensure that you update the pack to version 1.37.0 or later."
+}

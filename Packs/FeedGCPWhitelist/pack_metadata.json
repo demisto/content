@@ -2,7 +2,7 @@
     "name": "Google IP Ranges Feed",
     "description": "Use the Google IP Ranges Feed integration to get GCP and Google global IP ranges.",
     "support": "xsoar",
-    "currentVersion": "2.0.39",
+    "currentVersion": "2.0.40",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

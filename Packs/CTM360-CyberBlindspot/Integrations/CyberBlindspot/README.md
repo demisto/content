@@ -1,30 +1,26 @@
 Take action on incidents derived from CTM360 CBS threat intelligence that is directly linked to your organization.
 This integration was integrated and tested with version `1.0.0` of CTM360_CyberBlindspot.
 
-## Configure CTM360 CyberBlindspot on Cortex XSOAR
+## Configure CTM360 CyberBlindspot in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CTM360 CyberBlindspot.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
-    | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
-    | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
-    | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
-    | Fetch incidents |  | False |
-    | Date From | Set the date/time incidents should be fetched from \(setting this will always get incidents from this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
-    | Date To | Set the date/time incidents should be fetched up to \(setting this will always get incidents before this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
+| First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
+| API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
+| Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
+| Fetch incidents |  | False |
+| Date From | Set the date/time incidents should be fetched from \(setting this will always get incidents from this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
+| Date To | Set the date/time incidents should be fetched up to \(setting this will always get incidents before this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ctm360-cbs-incident-list

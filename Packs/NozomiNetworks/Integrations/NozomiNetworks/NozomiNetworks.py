@@ -1,30 +1,55 @@
-from datetime import timezone
-
 from CommonServerPython import *
 
 ''' IMPORTS '''
 
 import urllib3
 import json
+import requests
 
 urllib3.disable_warnings()
 
 
-class Client(BaseClient):
-    def http_request(self, method, path, data=None):
-        response = self._http_request(
-            method,
-            url_suffix=path,
-            resp_type="json",
-            json_data=data
+class Client:
+    def __init__(self, base_url=None, headers=None, verify=None, auth=None, proxy=None):
+        self.base_url = base_url or demisto.params().get('endpoint')
+        self.headers = headers or {'accept': "application/json"}
+        self.verify = verify if verify is not None else not demisto.params().get('insecure', True)
+        self.proxy = proxy or demisto.params().get('proxy', False)
+        self.auth = auth or (
+            demisto.params().get("credentials", {}).get('identifier', ''),
+            demisto.params().get("credentials", {}).get('password', '')
         )
-        return response
+
+    def get_proxies(self):
+        if self.proxy:
+            return handle_proxy()
+        else:
+            return {}
+
+    def _make_request(self, method, path, **kwargs):
+        url = self.base_url + path
+        demisto.info("Nozomi url " + url)
+        response = requests.request(
+            method=method,
+            url=url,
+            headers=self.headers,
+            verify=self.verify,
+            proxies=self.get_proxies(),
+            auth=self.auth,
+            **kwargs
+        )
+
+        if response.status_code not in (200, 201, 202, 204):
+            demisto.info(f"Nozomi Unexpected status code: {response.status_code}. Returning empty JSON.")
+            return {"result": {}, "error": f"Unexpected status code: {response.status_code}"}
+
+        return response.json()
 
     def http_get_request(self, path):
-        return self.http_request('GET', path)
+        return self._make_request('GET', path)
 
     def http_post_request(self, path, data):
-        return self.http_request('POST', path, data)
+        return self._make_request('POST', path, json=data)
 
 
 ''' GLOBAL_VARIABLES '''
@@ -44,20 +69,13 @@ DEFAULT_ASSETS_FINDABLE_BY_A_COMMAND = 50
 
 
 def get_client():
-    return Client(
-        base_url=demisto.params().get('endpoint'),
-        verify=not demisto.params().get('insecure', True),
-        ok_codes=(200, 201, 202, 204),
-        headers={'accept': "application/json"},
-        auth=(demisto.params().get("credentials", {}).get('identifier', ''),
-              demisto.params().get("credentials", {}).get('password', '')),
-        proxy=demisto.params().get('proxy', False))
+    return Client()
 
 
 def parse_incident(i):
     return {
         'name': f"{i['name']}_{i['id']}",
-        'occurred': datetime.fromtimestamp(i['time'] / 1000, timezone.utc).isoformat(),
+        'occurred': datetime.fromtimestamp(i['record_created_at'] / 1000, timezone.utc).isoformat(),  # noqa: UP017
         'severity': parse_severity(i),
         'rawJSON': json.dumps(clean_null_terms(i))
     }
@@ -89,14 +107,14 @@ def ids_from_incidents(incidents_array):
 def better_than_time_filter(st):
     t = ''
     if st:
-        t = f' | where time > {st}'
+        t = f' | where record_created_at > {st}'
     return t
 
 
 def equal_than_time_filter(st):
     t = ''
     if st:
-        t = f' | where time == {st}'
+        t = f' | where record_created_at == {st}'
     return t
 
 
@@ -123,14 +141,14 @@ def has_last_run(lr):
 
 def incidents_better_than_time(st, head, risk, also_n2os_incidents, client):
     return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{better_than_time_filter(st)}'
+        f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{better_than_time_filter(st)}'
         f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {head}'
     )['result']
 
 
 def incidents_equal_than_time(st, risk, also_n2os_incidents, client):
     return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{equal_than_time_filter(st)}'
+        f'{QUERY_ALERTS_PATH} | sort record_created_at asc | sort id asc{equal_than_time_filter(st)}'
         f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)}'
     )['result']
 
@@ -180,7 +198,7 @@ def incidents(st, last_id, last_run, risk, also_n2os_incidents, client, head=DEF
 
 
 def last_fetched_time(inc, last_run):
-    return inc[-1]['time'] if len(inc) > 0 else last_run.get("last_fetch", 0)
+    return inc[-1]['record_created_at'] if len(inc) > 0 else last_run.get("last_fetch", 0)
 
 
 def last_fetched_id(inc, last_run):
@@ -196,7 +214,8 @@ def ack_unack_alerts(ids, status, client):
     for id in ids:
         data.append({'id': id, 'ack': status})
     response = client.http_post_request('/api/open/alerts/ack', {'data': data})
-    return response["result"]["id"]
+
+    return response.get("result", {}).get("id", None)
 
 
 def ack_alerts(ids, client):
@@ -437,8 +456,9 @@ def main():
         elif demisto.command() == 'nozomi-find-ip-by-mac':
             return_results(CommandResults(**find_ip_by_mac(demisto.args(), client)))
     except Exception as e:
-        demisto.error(f'nozomi: got an error {e}')
-        return_error(str(e))
+        error_message = f"Nozomi Error of type {type(e).__name__} occurred: {str(e)}"
+        demisto.error(error_message)
+        return_error(error_message)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

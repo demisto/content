@@ -18,7 +18,7 @@ from sixgill.sixgill_utils import is_indicator
 """ CONSTANTS """
 INTEGRATION_NAME = "Sixgil_DVE_Feed"
 CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
-MAX_INDICATORS = 1000
+MAX_INDICATORS = 100
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
 DEMISTO_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"

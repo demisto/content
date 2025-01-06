@@ -11,20 +11,17 @@ description: The Active Directory Query integration enables you to access and ma
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
   name: server_ip
-  defaultvalue: ""
   type: 0
   required: true
   section: Connect
-- display: Port. If not specified, the default port is 389, or 636 for LDAPS.
+- display: Server port. If not specified, the default port is 389 for LDAP, 636 for LDAPS, or 3268 for global catalog servers.
   name: port
-  defaultvalue: ""
   type: 0
   section: Connect
   advanced: true
   required: false
 - display: Username
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
   section: Connect
@@ -37,7 +34,6 @@ configuration:
   required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
-  defaultvalue: ""
   type: 0
   required: true
   section: Connect
@@ -95,7 +91,6 @@ configuration:
   section: Connect
 - display: Group CN for terminated employees
   name: group-cn
-  defaultvalue: ""
   type: 0
   section: Connect
   required: false
@@ -183,7 +178,7 @@ script:
   - name: ad-add-to-group
     arguments:
     - name: username
-      description: "The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified."
+      description: "The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified.\\n Supports single or comma delimited list of usernames."
     - name: computer-name
       description: The name of the computer to add to the group. If this argument is not specified, the username argument must be specified.
     - name: group-cn
@@ -191,6 +186,8 @@ script:
       description: The name of the group to add the user to.
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
+    - description: The name of the group to add as a member of the group specified group-cn.
+      name: nested_group_cn
     description: Adds an Active Directory user or computer to a group.
   - name: ad-remove-from-group
     arguments:
@@ -757,10 +754,9 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-    deprecated: false
   - description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
     name: get-mapping-fields
-    execution: false
+    arguments: []
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
       name: groupname
@@ -800,7 +796,7 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.98188
+  dockerimage: demisto/ldap:2.9.1.117493
   ismappable: true
   isremotesyncout: true
   runonce: false

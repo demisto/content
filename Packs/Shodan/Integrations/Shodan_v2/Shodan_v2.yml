@@ -371,7 +371,7 @@ script:
     - name: max_fetch
       description: The maximum amount of events to return.
       defaultValue: 50000
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.11.10.113941
   runonce: false
   script: '-'
   subtype: python3

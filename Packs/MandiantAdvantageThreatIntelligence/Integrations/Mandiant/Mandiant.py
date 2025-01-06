@@ -93,9 +93,9 @@ class MandiantClient(BaseClient):
 
         for ioc in response.get("iocs", []):
             tags = ioc.get("CustomFields", {}).get("tags", "")
+            name_ = ioc.get("CustomFields", {}).get("name", "")
             if not isinstance(tags, list):
                 key_ = tags
-                name_ = ioc.get("CustomFields", {}).get("name")
                 res_dict[key_] = name_
             else:
                 for t in tags:

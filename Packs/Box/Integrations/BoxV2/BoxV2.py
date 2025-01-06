@@ -11,7 +11,7 @@ import secrets
 import jwt
 import re
 from distutils.util import strtobool
-from datetime import timezone
+from datetime import UTC
 from typing import Any, Dict, Tuple, List, Optional, BinaryIO
 from requests.models import Response
 from hashlib import sha1
@@ -143,9 +143,11 @@ class Event:
 
     def __init__(self, raw_input):
         #  Created at time is stored in either or two locations, never both.
+        demisto.debug(f"Event init: created_at={raw_input.get('created_at')}, source exists= {bool(raw_input.get('source'))}")
         created_at = raw_input.get('created_at')
-        _created_at = raw_input.get('source').get('created_at')
+        _created_at = raw_input.get('source', {}).get('created_at') if raw_input.get('source') else None
         self.created_at = created_at if created_at is not None else _created_at
+        demisto.debug(f"Event init:{self.created_at=}")
         self.event_id = raw_input.get('event_id')
         self.event_type = raw_input.get('event_type')
         self.labels = raw_input
@@ -1935,7 +1937,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
         if not params.get('as_user'):
             raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is "
                                    "required.")
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(
             DATE_FORMAT)
         response = client.list_events(
             as_user=params.get('as_user'),  # type:ignore
@@ -1965,12 +1967,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     created_after = last_run.get('time', None)
     incidents = []
     if not created_after:
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(
             DATE_FORMAT)
     results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
     raw_incidents = results.get('entries', [])
-    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+    demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
+    next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()

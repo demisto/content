@@ -10,6 +10,7 @@ At the end of the playbook, it sets a possible verdict for the command line, bas
 4. Usage of malicious tools
 5. Indication of network activity
 6. Indication of suspicious LOLBIN execution
+7. Suspicious path and arguments in the command line
 
 Note: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check "For Each Input".
 
@@ -27,10 +28,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
-* MatchRegexV2
-* DeleteContext
 * Base64Decode
+* DeleteContext
+* MatchRegexV2
+* Set
 
 ### Commands
 
@@ -66,6 +67,7 @@ This playbook does not use any integrations.
 | CommandlineVerdict.maliciousTools | Command line verdict maliciousTools found. True/False | unknown |
 | CommandlineVerdict.networkActivity | Command line verdict networkActivity found. True/False | unknown |
 | CommandlineVerdict.SuspiciousLolbinExecution | Command line verdict SuspiciousLolbinExecution found. True/False | unknown |
+| CommandlineVerdict.SuspiciousCmdPathAndArguments | Command line verdict SuspiciousCmdPathAndArguments found. True/False | unknown |
 
 ## Playbook Image
 

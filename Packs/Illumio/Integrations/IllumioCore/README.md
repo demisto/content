@@ -1,25 +1,21 @@
 Connects to Illumio Core APIs to perform investigative and restorative actions.
 This integration was integrated and tested with version 1.1.2 of Illumio Python SDK.
 
-## Configure Illumio Core on Cortex XSOAR
+## Configure Illumio Core in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Illumio Core.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | The URL this integration should connect to. | True |
-    | Port | The port number to establish the connection. | True |
-    | API Key Username | The API user for authentication. | True |
-    | API Secret | The API Key required to authenticate to the service. | True |
-    | Organization ID | The organization ID to use when calling org-dependent APIs. | True |
-    | Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
-    | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The URL this integration should connect to. | True |
+| Port | The port number to establish the connection. | True |
+| API Key Username | The API user for authentication. | True |
+| API Secret | The API Key required to authenticate to the service. | True |
+| Organization ID | The organization ID to use when calling org-dependent APIs. | True |
+| Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
+| Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### illumio-traffic-analysis
 ***
@@ -1392,4 +1388,3 @@ Creates & assigns rules to a particular ruleset. Added or updated Rules will rem
 >|Rule HREF|Created At|Updated At|Enabled|Network Type|Ingress Services|Providers|Consumers|Resolve Providers As|Resolve Consumers As|
 >|---|---|---|---|---|---|---|---|---|---|
 >| /orgs/1/sec_policy/draft/rule_sets/2687/sec_rules/dummy | 03 Oct 2022, 12:19 PM | 03 Oct 2022, 12:19 PM | true | brn | /orgs/1/sec_policy/draft/services/1751 | ams | ams | workloads | workloads |
-

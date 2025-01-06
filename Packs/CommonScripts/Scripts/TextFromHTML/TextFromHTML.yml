@@ -52,7 +52,7 @@ args:
   defaultValue: "false"
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.75921
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - TextFromHTML_test_playbook
 contentitemexportablefields:

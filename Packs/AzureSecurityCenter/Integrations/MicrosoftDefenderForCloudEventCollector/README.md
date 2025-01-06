@@ -1,29 +1,25 @@
 XSIAM collector for Microsoft Defender for Cloud alerts.
 
-## Configure Microsoft Defender for Cloud Event Collector on Cortex XSIAM
+## Configure Microsoft Defender for Cloud Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
-2. Search for Microsoft Defender for Cloud Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Microsoft Azure Management URL |  | False |
-    | Client ID | Microsoft Defender for Cloud client ID | True |
-    | Tenant ID | Microsoft Defender for Cloud Tenant ID | True |
-    | Client Secret | Microsoft Defender for Cloud Client Secret | True |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Subscription ID to use |  | True |
-    | First fetch time interval | First time to start fetching alerts from. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Microsoft Azure Management URL |  | False |
+| Client ID | Microsoft Defender for Cloud client ID | True |
+| Tenant ID | Microsoft Defender for Cloud Tenant ID | True |
+| Client Secret | Microsoft Defender for Cloud Client Secret | True |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Subscription ID to use |  | True |
+| First fetch time interval | First time to start fetching alerts from. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## Known limitations

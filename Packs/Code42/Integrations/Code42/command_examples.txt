@@ -1,15 +1,5 @@
 !code42-alert-get id="ec45e919-8dd1-4624-9cc8-98d7f8f84bbf"
 !code42-alert-resolve id="ec45e919-8dd1-4624-9cc8-98d7f8f84bbf"
-!code42-departingemployee-add username="partner.demisto@example.com" departuredate="2020-01-28" note="Leaving for competitor"
-!code42-departingemployee-get username="partner.demisto@example.com"
-!code42-departingemployee-get-all
-!code42-departingemployee-remove username="partner.demisto@example.com"
-!code42-highriskemployee-add-risk-tags username="partner.demisto@example.com" risktags="PERFORMANCE_CONCERNS"
-!code42-highriskemployee-add username="partner.demisto@example.com" note="Approved activity"
-!code42-highriskemployee-get username="partner.demisto@example.com"
-!code42-highriskemployee-get-all
-!code42-highriskemployee-remove-risk-tags username="partner.demisto@example.com" risktags="PERFORMANCE_CONCERNS"
-!code42-highriskemployee-remove username="partner.demisto@example.com" note="Approved activity"
 !code42-user-create orgname="TestOrg" username="new.user@example.com" email="new.user@example.com"
 !code42-user-block username="partner.demisto@example.com"
 !code42-user-unblock username="partner.demisto@example.com"
@@ -22,5 +12,4 @@
 !code42-watchlists-add-user username="partner.demisto@example.com" watchlist="b55978d5-2d50-494d-bec9-678867f3830c"
 !code42-watchlists-remove-user username="partner.demisto@example.com" watchlist="b55978d5-2d50-494d-bec9-678867f3830c"
 !code42-watchlists-list-included-users watchlist="DEPARTING_EMPLOYEE"
-!code42-securitydata-search exposure=All results=3
 !code42-download-file hash=764f90384e56597e6bba691c75d23875

@@ -9,7 +9,7 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 comment: Prevents specific fields from being set manually.
 fromversion: 6.2.0

@@ -2,8 +2,7 @@ id: Checkpoint - Publish&Install configuration
 version: -1
 fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
-description: "Publish the Check Point Firewall configuration and install policy on\
-  \ all available gateways."
+description: "Publish the Check Point Firewall configuration and install policy on all available gateways."
 starttaskid: '0'
 tasks:
   '0':
@@ -152,8 +151,7 @@ tasks:
       id: d211fef6-b869-4518-8788-66323f2512d7
       version: -1
       name: Is there policy to install?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments is missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
       type: condition
       iscommand: false
       brand: ''
@@ -282,8 +280,7 @@ tasks:
       id: 7775d6f5-83b4-46ba-83e2-562e496320cf
       version: -1
       name: Check Point show gateways and servers command
-      description: List of all gateways and server available in Check Point device.
-        .
+      description: List of all gateways and server available in Check Point device. .
       script: '|||checkpoint-gateways-list'
       type: regular
       iscommand: true
@@ -318,12 +315,7 @@ tasks:
       id: 5b935b74-d33d-4fd2-8484-845f2fa8a61f
       version: -1
       name: GenericPolling
-      description: "Use this playbook as a sub-playbook to block execution of the\
-        \ master playbook until a remote action is complete.\nThis playbook implements\
-        \ polling by continuously running the command in Step \\#2 until the operation\
-        \ completes.\nThe remote action should have the following structure:\n\n1.\
-        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
-        3. (optional) Get the results of the operation."
+      description: "Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.\nThis playbook implements polling by continuously running the command in Step \\#2 until the operation completes.\nThe remote action should have the following structure:\n\n1. Initiate the operation.\n2. Poll to check if the operation completed.\n3. (optional) Get the results of the operation."
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -346,6 +338,10 @@ tasks:
         simple: '10'
       dt:
         simple: CheckPoint.ShowTask(val.progress-percentage != '100').task-id
+      AdditionalPollingCommandArgNames:
+        simple: session_id
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.sid}
     separatecontext: true
     loop:
       iscommand: false
@@ -374,12 +370,7 @@ tasks:
       id: 2d49366e-ead7-4da0-8bde-9ba7c47e45ae
       version: -1
       name: GenericPolling
-      description: "Use this playbook as a sub-playbook to block execution of the\
-        \ master playbook until a remote action is complete.\nThis playbook implements\
-        \ polling by continuously running the command in Step \\#2 until the operation\
-        \ completes.\nThe remote action should have the following structure:\n\n1.\
-        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
-        3. (optional) Get the results of the operation."
+      description: "Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.\nThis playbook implements polling by continuously running the command in Step \\#2 until the operation completes.\nThe remote action should have the following structure:\n\n1. Initiate the operation.\n2. Poll to check if the operation completed.\n3. (optional) Get the results of the operation."
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -402,6 +393,10 @@ tasks:
         simple: '10'
       dt:
         simple: CheckPoint.ShowTask(val.progress-percentage != '100').task-id
+      AdditionalPollingCommandArgNames:
+        simple: session_id
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.sid}
     separatecontext: true
     loop:
       iscommand: false
@@ -748,8 +743,7 @@ tasks:
       id: ff470de6-f208-4c38-8dea-a19b0319fdb6
       version: -1
       name: Is action manual handling enabled?
-      description: If action manual handling is enabled, the playbook will pause and
-        wait for manual review.
+      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
       type: condition
       iscommand: false
       brand: ''
@@ -901,16 +895,13 @@ inputs:
 - key: sid
   value: {}
   required: true
-  description: SID - Session unique identifier as returned by the login request required
-    for publish /install changes. Change configuration is seen by all users only after
-    publishing and policy install is complete.
+  description: SID - Session unique identifier as returned by the login request required for publish /install changes. Change configuration is seen by all users only after publishing and policy install is complete.
   playbookInputQuery:
 - key: install_policy
   value:
     simple: 'False'
   required: true
-  description: Whether the playbook should continue install policy process for Check
-    Point Firewall.
+  description: Whether the playbook should continue install policy process for Check Point Firewall.
   playbookInputQuery:
 - key: policy_package
   value:
@@ -922,8 +913,7 @@ inputs:
   value:
     simple: 'True'
   required: true
-  description: If one of the actions for the publish/install policy fails due to a
-    problem or error, the playbook will pause for manual review.
+  description: If one of the actions for the publish/install policy fails due to a problem or error, the playbook will pause for manual review.
   playbookInputQuery:
 outputs: []
 tests:

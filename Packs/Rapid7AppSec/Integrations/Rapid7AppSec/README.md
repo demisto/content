@@ -1,25 +1,21 @@
 Rapid7 AppSec integration allows the management of applications vulnerabilities and scans.
 This integration was integrated and tested with version 1 of rapid7appsec.
 
-## Configure Rapid7AppSec on Cortex XSOAR
+## Configure Rapid7AppSec in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rapid7AppSec.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-    | API Key | True |
-    | Password | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
+| API Key | True |
+| Password | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### app-sec-vulnerability-update
