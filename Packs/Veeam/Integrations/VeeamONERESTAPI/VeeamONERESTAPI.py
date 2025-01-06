@@ -562,11 +562,12 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
             if not api_key:
                 api_key = get_api_key(client)
                 demisto.setIntegrationContext({'token': api_key})
-                set_api_key(client, api_key)
+                
+            set_api_key(client, api_key)
 
-                response = client.get_about_request()
-                version = response.get('version', '')
-                check_version(version)
+            response = client.get_about_request()
+            version = response.get('version', '')
+            check_version(version)
 
             res = command(**command_params)
             return res
