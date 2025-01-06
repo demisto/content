@@ -10,6 +10,7 @@ import mimetypes
 import urllib3
 urllib3.disable_warnings()
 
+
 DEFAULT_FETCH_TIME = '10 minutes'
 
 INCIDENT = 'incident'
