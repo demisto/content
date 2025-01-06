@@ -26,13 +26,14 @@ repos:
     args:
     - --lock
     files: ^pyproject.toml$
-- repo: https://github.com/hadialqattan/pycln
-  rev: v2.1.2
-  hooks:
-  - id: pycln
-    min_py_version: '3.7'
-    args:
-    - --all
+## CIAC-12536 ##
+# - repo: https://github.com/hadialqattan/pycln
+#   rev: v2.4.0
+#   hooks:
+#   - id: pycln
+#     min_py_version: '3.7'
+#     args:
+#     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.0.272
   hooks:
