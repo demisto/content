@@ -215,7 +215,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: LOW
+              simple: HIGH
           ignorecase: true
     continueonerrortype: ""
     view: |-
