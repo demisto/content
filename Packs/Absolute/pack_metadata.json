@@ -9,9 +9,15 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Eido"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "absolute",
+        "secure endpoint"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
