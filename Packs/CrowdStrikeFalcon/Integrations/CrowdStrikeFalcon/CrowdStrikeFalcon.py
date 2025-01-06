@@ -2451,19 +2451,23 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_incident_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
+                detection_type = 'Incident'
+                set_xsoar_entries(updated_object, entries, remote_incident_id,
+                                  detection_type, reopen_statuses_list)
         # for legacy endpoint detections
         elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
+                detection_type ='Detection'
+                set_xsoar_entries(updated_object, entries, remote_incident_id,
+                                  detection_type, reopen_statuses_list)  # sets in place
         # for endpoint (in the new version) ,idp and mobile detections
         elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION, IncidentType.ON_DEMAND):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_idp_or_mobile_detection_entries(  #TODO here to, and the description of all changes
+                set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)  # sets in place
 
         else:
@@ -2599,21 +2603,7 @@ def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, re
                           f"{updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
-def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
-                                reopen_statuses_list: list):
-    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
-    demisto.debug(f'In set_xsoar_detection_entries {reopen_statuses_set=} {remote_detection_id=}')
-    if demisto.params().get('close_incident'):
-        if updated_object.get('status') == 'closed':
-            close_in_xsoar(entries, remote_detection_id, 'Detection')
-        elif updated_object.get('status') in reopen_statuses_set:
-            reopen_in_xsoar(entries, remote_detection_id, 'Detection')
-        else:
-            demisto.debug(f"In set_xsoar_detection_entries not closing and not reopening {remote_detection_id=} "
-                          f"since {updated_object.get('status')=} and {reopen_statuses_set=}.")
-
-
-def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str,
+def set_xsoar_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
                                               incident_type_name: str, reopen_statuses_list: list):
     """
         Send the updated object to the relevant status handler
@@ -2622,8 +2612,8 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
         :param updated_object: The updated object.
         :type entries: ``list``
         :param entries: The list of entries to add the new entry into.
-        :type remote_idp_detection_id: ``str``
-        :param remote_idp_detection_id: the remote idp detection id
+        :type remote_detection_id: ``str``
+        :param remote_detection_id: the remote detection id
         :type reopen_statuses_list: ``list``
         :param reopen_statuses_list: the set of statuses that should reopen an incident in XSOAR.
 
@@ -2631,14 +2621,14 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
         :rtype ``dict``
     """
     reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
-    demisto.debug(f'In set_xsoar_idp_or_mobile_detection_entries {reopen_statuses_set=} {remote_idp_detection_id=}')
+    demisto.debug(f'In set_xsoar_entries {reopen_statuses_set=} {remote_detection_id=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
-            close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
+            close_in_xsoar(entries, remote_detection_id, incident_type_name)
         elif updated_object.get('status') in reopen_statuses_set:
-            reopen_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
+            reopen_in_xsoar(entries, remote_detection_id, incident_type_name)
         else:
-            demisto.debug(f"In set_xsoar_idp_or_mobile_detection_entries not closing and not reopening {remote_idp_detection_id=}"
+            demisto.debug(f"In set_xsoar_entries not closing and not reopening {remote_detection_id=}"
                           f" since {updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
