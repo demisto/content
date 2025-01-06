@@ -795,6 +795,7 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
     """
     entries = []
     for comment in comments:
+        # check if the comment is a mirrored out entry to ms fto avoid duplicates
         if MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR not in comment.get('comment', ''):
             demisto.debug(f"Microsoft Defender 365 - comment {str(comment)}")
             comment_time = dateparser.parse(comment.get('createdTime', ''))
