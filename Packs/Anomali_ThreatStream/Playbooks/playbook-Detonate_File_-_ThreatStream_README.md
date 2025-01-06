@@ -51,4 +51,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_File_ThreatStream](../doc_files/Detonate_File_ThreatStream.png)
+![Detonate_File_ThreatStream](../doc_files/Detonate_File_-_ThreatStream.png)

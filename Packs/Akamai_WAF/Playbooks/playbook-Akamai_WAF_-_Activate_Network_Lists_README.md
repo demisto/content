@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Akamai_WAF_Activate_Network_Lists](../doc_files/Akamai_WAF_Activate_Network_Lists.png)
+![Akamai_WAF_Activate_Network_Lists](../doc_files/Akamai_WAF_-_Activate_Network_Lists.png)

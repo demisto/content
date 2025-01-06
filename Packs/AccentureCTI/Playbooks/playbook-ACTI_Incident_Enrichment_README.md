@@ -30,4 +30,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![ACTI Incident Enrichment](../doc_files/171863775-19f86d1d-e691-4d2d-bd20-f259f0747d52.png)
+![ACTI Incident Enrichment](../doc_files/ACTI_Incident_Enrichment.png)

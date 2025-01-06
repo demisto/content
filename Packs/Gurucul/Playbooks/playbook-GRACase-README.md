@@ -27,4 +27,4 @@ This playbook uses the following integrations,commands and scripts.
 | --- | --- | --- |
 | Gra.Anomalies.anomaly_name | Anomaly Name. |  String|
 
-![Playbook Image](../doc_files/GraCases.png)
+![Playbook Image](../doc_files/GRACase.png)

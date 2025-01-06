@@ -40,4 +40,4 @@ This playbook does not use any scripts.
 | Humio.Result.metaData | MetaData from the poll | unknown |
 | Humio.Result.job_id | Humio Job id the results came from | unknown |
 
-![Playbook Image](../doc_files/playbook-Humio_QueryJob_Poll.png)
+![Playbook Image](../doc_files/Humio_QueryJob_Poll.png)
