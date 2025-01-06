@@ -2,13 +2,13 @@
 
 [[package]]
 name = "astroid"
-version = "3.3.5"
+version = "3.3.8"
 description = "An abstract syntax tree for Python with inference support."
 optional = false
 python-versions = ">=3.9.0"
 files = [
-    {file = "astroid-3.3.5-py3-none-any.whl", hash = "sha256:a9d1c946ada25098d790e079ba2a1b112157278f3fb7e718ae6a9252f5835dc8"},
-    {file = "astroid-3.3.5.tar.gz", hash = "sha256:5cfc40ae9f68311075d27ef68a4841bdc5cc7f6cf86671b49f00607d30188e2d"},
+    {file = "astroid-3.3.8-py3-none-any.whl", hash = "sha256:187ccc0c248bfbba564826c26f070494f7bc964fd286b6d9fff4420e55de828c"},
+    {file = "astroid-3.3.8.tar.gz", hash = "sha256:a88c7994f914a4ea8572fac479459f4955eeccc877be3f2d959a33273b0cf40b"},
 ]
 
 [package.dependencies]
@@ -709,13 +709,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.33.0"
+version = "1.33.3"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 files = [
-    {file = "demisto_sdk-1.33.0-py3-none-any.whl", hash = "sha256:4957b315d3e182cf932ef8af0240cdb3f763b24ca594d85d80ca0b8db920e3ad"},
-    {file = "demisto_sdk-1.33.0.tar.gz", hash = "sha256:55a4a3ddb4084f420185ab395063c7c28e825f225c390383b57beff558217f1d"},
+    {file = "demisto_sdk-1.33.3-py3-none-any.whl", hash = "sha256:527bbc13cecd2672cd8ae22ae19e09c7c5b502fb78e450e0850b81c9052fcdc4"},
+    {file = "demisto_sdk-1.33.3.tar.gz", hash = "sha256:3f1a79c9bb45e0d69a8e90d034e0f172c50da8c6e64b1cae50f55c5086b3dc98"},
 ]
 
 [package.dependencies]
@@ -762,7 +762,7 @@ prettytable = ">=3.2.0,<4.0.0"
 pydantic = ">=1.10,<2.0"
 pygithub = ">=2.2.0,<3.0.0"
 pykwalify = ">=1.8.0,<2.0.0"
-pylint = ">=3.3.1,<4.0.0"
+pylint = ">=3.3.2,<4.0.0"
 PyPDF2 = ">=1.28.6,<2.0.0"
 pyspellchecker = ">=0.6.3,<0.7.0"
 pytest-freezegun = ">=0.4.2,<0.5.0"
@@ -2687,17 +2687,17 @@ reference = "pypi-public"
 
 [[package]]
 name = "pylint"
-version = "3.3.1"
+version = "3.3.3"
 description = "python code static checker"
 optional = false
 python-versions = ">=3.9.0"
 files = [
-    {file = "pylint-3.3.1-py3-none-any.whl", hash = "sha256:2f846a466dd023513240bc140ad2dd73bfc080a5d85a710afdb728c420a5a2b9"},
-    {file = "pylint-3.3.1.tar.gz", hash = "sha256:9f3dcc87b1203e612b78d91a896407787e708b3f189b5fa0b307712d49ff0c6e"},
+    {file = "pylint-3.3.3-py3-none-any.whl", hash = "sha256:26e271a2bc8bce0fc23833805a9076dd9b4d5194e2a02164942cb3cdc37b4183"},
+    {file = "pylint-3.3.3.tar.gz", hash = "sha256:07c607523b17e6d16e2ae0d7ef59602e332caa762af64203c24b41c27139f36a"},
 ]
 
 [package.dependencies]
-astroid = ">=3.3.4,<=3.4.0-dev0"
+astroid = ">=3.3.8,<=3.4.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = {version = ">=0.2", markers = "python_version < \"3.11\""}
 isort = ">=4.2.5,<5.13.0 || >5.13.0,<6"
@@ -4553,4 +4553,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.11"
-content-hash = "de755d9266e531463fb1ec3da3949ce230b1d45011b23f12cb5d61989709d2ea"
+content-hash = "456f9b85fbae6a1ff461346a3a8d80e40488b38546304491f8560605c973e924"

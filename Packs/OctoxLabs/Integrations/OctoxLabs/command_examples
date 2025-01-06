@@ -15,3 +15,16 @@
 !octoxlabs-get-user-by-username username="xsoar"
 !octoxlabs-get-groups page=1
 !octoxlabs-get-permissions page=1
+!octoxlabs-search-scroll-devices fields="Adapters,Hostname,Groups" size=100
+!octoxlabs-search-scroll-devices scroll_id="scroll-id"
+!octoxlabs-search-scroll-users fields="Username" size=100
+!octoxlabs-search-scroll-users scroll_id="scroll-id"
+!octoxlabs-search-scroll-applications fields="Name" size=100
+!octoxlabs-search-scroll-applications scroll_id="scroll-id"
+!octoxlabs-search-scroll-avm size=100
+!octoxlabs-search-scroll-avm scroll_id="scroll-id"
+!octoxlabs-search-users-inventory fields="Username" size=100 page=1
+!octoxlabs-search-applications fields="Name" size=100 page=1
+!octoxlabs-search-avm size=100 page=1
+!octoxlabs-get-user-inventory-detail username="octouser01" discovery_id=1232
+!octoxlabs-get-application-detail application_id="application-id" discovery_id=1232
