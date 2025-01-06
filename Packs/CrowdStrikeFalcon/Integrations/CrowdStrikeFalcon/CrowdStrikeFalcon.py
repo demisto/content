@@ -2459,7 +2459,7 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
-                detection_type ='Detection'
+                detection_type = 'Detection'
                 set_xsoar_entries(updated_object, entries, remote_incident_id,
                                   detection_type, reopen_statuses_list)  # sets in place
         # for endpoint (in the new version) ,idp and mobile detections
@@ -2604,7 +2604,7 @@ def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, re
 
 
 def set_xsoar_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
-                                              incident_type_name: str, reopen_statuses_list: list):
+                      incident_type_name: str, reopen_statuses_list: list):
     """
         Send the updated object to the relevant status handler
 

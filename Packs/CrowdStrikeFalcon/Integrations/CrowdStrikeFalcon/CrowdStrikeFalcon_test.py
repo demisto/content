@@ -4391,7 +4391,6 @@ def test_set_xsoar_entries__empty(mocker, updated_object):
     assert entries == []
 
 
-
 @pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_detections_entries_args)
 def test_set_xsoar_detection_entries_empty_check(mocker, updated_object):
     """
