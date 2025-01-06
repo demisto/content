@@ -2,7 +2,6 @@ import pytest
 from contextlib import nullcontext as does_not_raise
 from datetime import datetime
 from unittest.mock import call
-from typing import Optional
 
 from AWSGuardDutyEventCollector import get_events
 from test_data.finding_for_test import FINDING, FINDING_OUTPUT, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
@@ -31,8 +30,8 @@ FINDINGS = {
 }
 
 
-def get_expected_list_finding_args(detector_id: str, updated_at_ts: int, gd_severity: int, max_results: Optional[int],
-                                   next_token: Optional[str]):
+def get_expected_list_finding_args(detector_id: str, updated_at_ts: int, gd_severity: int, max_results: int | None,
+                                   next_token: str | None):
     """Return arguments as expected in the AWSClient session list_finding function."""
     list_finding_args = {
         'DetectorId': detector_id,
@@ -352,11 +351,11 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
 
     event_resource = events[0].get('Resource', {})
     event_service = events[0].get('Service', {})
-    assert type(event_resource.get('EksClusterDetails', {}).get('CreatedAt')) == str
-    assert type(event_resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('TaskCreatedAt')) == str
-    assert type(event_resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('StartedAt')) == str
-    assert type(event_service.get('EbsVolumeScanDetails', {}).get('ScanStartedAt')) == str
-    assert type(event_service.get('EbsVolumeScanDetails', {}).get('ScanCompletedAt')) == str
+    assert type(event_resource.get('EksClusterDetails', {}).get('CreatedAt')) is str
+    assert type(event_resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('TaskCreatedAt')) is str
+    assert type(event_resource.get('EcsClusterDetails', {}).get('TaskDetails', {}).get('StartedAt')) is str
+    assert type(event_service.get('EbsVolumeScanDetails', {}).get('ScanStartedAt')) is str
+    assert type(event_service.get('EbsVolumeScanDetails', {}).get('ScanCompletedAt')) is str
 
 
 @pytest.mark.parametrize('collect_from, last_ids, list_detectors_res, list_finding_ids_res, findings_res, '
