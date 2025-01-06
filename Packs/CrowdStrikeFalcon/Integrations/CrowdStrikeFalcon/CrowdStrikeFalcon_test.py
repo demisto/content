@@ -4339,7 +4339,7 @@ def test_set_xsoar_entries__incident(mocker, updated_object, entry_content, clos
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = ['New', 'Reopened', 'In Progress']
-    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, "'Incident'", reopen_statuses)
     if entry_content:
         assert entry_content in entries[0].get('Contents')
     else:
@@ -4363,7 +4363,7 @@ def test_set_xsoar_entries__reopen(mocker, updated_object):
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
-    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, 'Incident', reopen_statuses)
     if updated_object.get('status') == 'Reopened':
         assert 'dbotIncidentReopen' in entries[0].get('Contents')
     else:
@@ -4387,7 +4387,7 @@ def test_set_xsoar_entries__empty(mocker, updated_object):
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = []  # don't add a reopen entry in any case
-    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, 'Incident', reopen_statuses)
     assert entries == []
 
 
@@ -4408,7 +4408,7 @@ def test_set_xsoar_detection_entries_empty_check(mocker, updated_object):
     mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
     reopen_statuses = []  # don't add a reopen entry in any case
-    set_xsoar_entries(updated_object, entries, input_data.remote_detection_id, reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_detection_id, 'Detection', reopen_statuses)
     assert entries == []
 
 
