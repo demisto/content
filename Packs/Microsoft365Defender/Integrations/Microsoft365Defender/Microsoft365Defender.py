@@ -858,7 +858,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
         f'last_update: {remote_args.last_update}')
     try:
         mirrored_object = fetch_modified_incident(client, remote_incident_id)
-        demisto.debug(f"Microsoft Defender 365 - mirrored in object {str(mirrored_object)}")
+        demisto.debug(f"Microsoft Defender 365 - mirrored in object {mirrored_object}")
         entries = get_incident_entries(mirrored_object, last_update, comment_tag, close_incident=close_incident)
         demisto.debug(f"Microsoft Defender 365 - mirrored in entries {str(entries)}")
         return GetRemoteDataResponse(mirrored_object, entries)
