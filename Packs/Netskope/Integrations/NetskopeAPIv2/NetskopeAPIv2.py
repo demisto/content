@@ -1249,7 +1249,10 @@ def parse_incident(
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
     for key, value in incident.items():
-        incident[key] = str(value) if isinstance(value, int) else value
+        # JavaScript does not work well with large numbers larger than 2^53-1 so need to stringify them.
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+        if isinstance(value, int) and value > 2 ** 53 - 1:
+            incident[key] = str(value)
     return {
         "name": f"{incident_type} ID: {incident_id}",
         "incident_type": incident_type,
