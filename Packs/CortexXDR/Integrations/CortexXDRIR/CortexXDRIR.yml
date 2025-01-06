@@ -2775,7 +2775,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: The acton IDs for polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
