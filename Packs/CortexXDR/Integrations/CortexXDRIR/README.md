@@ -1325,7 +1325,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1397,7 +1397,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1453,7 +1453,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | --- | --- | --- |
 | PaloAltoNetworksXDR.endpointScan.actionId | Number | The action ID of the scan request. | 
 | PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted? | 
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1771,7 +1771,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | PaloAltoNetworksXDR.RetrievedFiles.endpoint_id | string | Endpoint ID. Added only when the operation is successful. | 
 | PaloAltoNetworksXDR.RetrievedFiles.file_link | string | Link to the file. Added only when the operation is successful. | 
 | PaloAltoNetworksXDR.RetrievedFiles.status | string | The action status. Added only when the operation is unsuccessful. | 
-| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1986,7 +1986,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Investigat
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -2145,7 +2145,7 @@ Initiates a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -2182,7 +2182,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -2219,7 +2219,7 @@ Initiates a new endpoint script execution to check if the file exists.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -2256,7 +2256,7 @@ Initiates a new endpoint script execution kill process.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 

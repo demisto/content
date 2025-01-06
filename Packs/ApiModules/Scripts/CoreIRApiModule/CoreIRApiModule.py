@@ -1363,7 +1363,7 @@ class CoreClient(BaseClient):
             resp_type='response',
         )
 
-    def action_status_get(self, action_id) -> Dict[str, Any]:
+    def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
             'group_action_id': action_id,
         }

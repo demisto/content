@@ -973,7 +973,7 @@ script:
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1032,7 +1032,7 @@ script:
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1129,7 +1129,7 @@ script:
       description: Was the scan aborted.
       type: Boolean
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1438,7 +1438,7 @@ script:
       description: ID of the action to retrieve files from selected endpoints.
       type: string
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1588,7 +1588,7 @@ script:
       description: The specified action ID.
       type: number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1666,7 +1666,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1873,7 +1873,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1932,7 +1932,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1991,7 +1991,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -2050,7 +2050,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -3364,7 +3364,7 @@ script:
       description: The specified action ID.
       type: number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -3435,7 +3435,7 @@ script:
       description: The specified action ID.
       type: number
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: Core.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.

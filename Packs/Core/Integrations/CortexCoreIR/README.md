@@ -609,7 +609,7 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -689,7 +689,7 @@ Restores a quarantined file on requested endpoints.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -736,7 +736,7 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | --- | --- | --- |
 | Core.endpointScan.actionId | Number | The action ID of the scan request. | 
 | Core.endpointScan.aborted | Boolean | Was the scan aborted. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1070,7 +1070,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1278,7 +1278,7 @@ Retrieves the status of the requested actions according to the action ID.
 | Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
 | Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
 | Core.GetActionStatus.action_id | number | The specified action ID. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1356,7 +1356,7 @@ Initiates a new endpoint script execution action using the provided snippet code
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1492,7 +1492,7 @@ Initiate a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1529,7 +1529,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1566,7 +1566,7 @@ Initiates a new endpoint script execution to check if file exists.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -1603,7 +1603,7 @@ Initiates a new endpoint script execution kill process.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -2937,7 +2937,7 @@ Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
 | Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
 | Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
 | Core.GetActionStatus.action_id | number | The specified action ID. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
@@ -2994,7 +2994,7 @@ Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and a
 | Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
 | Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
 | Core.GetActionStatus.action_id | number | The specified action ID. | 
-| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket that the error happened in. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
 | Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
 | Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 

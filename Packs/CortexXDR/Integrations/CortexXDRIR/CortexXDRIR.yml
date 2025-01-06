@@ -1614,7 +1614,7 @@ script:
     polling: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1689,7 +1689,7 @@ script:
     polling: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -1796,7 +1796,7 @@ script:
       description: Was the scan aborted?
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -2193,7 +2193,7 @@ script:
       description: The action status. Added only when the operation is unsuccessful.
       type: string
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -2486,7 +2486,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -2709,7 +2709,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -2790,7 +2790,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -2873,7 +2873,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
@@ -2956,7 +2956,7 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
-      description: The bucket that the error happened in.
+      description: The bucket in which the error occurred.
       type: String
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
       description: The name of the file that caused the error.
