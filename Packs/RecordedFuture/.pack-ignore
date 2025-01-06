@@ -18,3 +18,6 @@ ignore=GR107
 
 [file:playbook-Recorded_Future_Domain_Abuse.yml]
 ignore=GR107
+
+[file:RecordedFutureLists_description.md]
+ignore=DS107
