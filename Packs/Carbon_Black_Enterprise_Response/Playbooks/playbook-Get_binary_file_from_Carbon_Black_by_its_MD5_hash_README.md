@@ -41,4 +41,4 @@ cb-binary-download
 
 ## Playbook Image
 ---
-![Get binary file from Carbon Black by its MD5 hash](https://raw.githubusercontent.com/demisto/content/master/Packs/Carbon_Black_Enterprise_Response/doc_files/Get_binary_file_from_Carbon_Black_by_MD5_hash.png)
+![Get binary file from Carbon Black by its MD5 hash](../doc_files/Get_binary_file_from_Carbon_Black_by_its_MD5_hash.png)

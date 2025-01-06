@@ -35,4 +35,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![List Device Events - Chronicle](https://raw.githubusercontent.com/demisto/content/94f5c6cd2d456d700e20cc18c233cad547c04d63/Packs/GoogleChronicleBackstory/doc_files/List_Device_Events_-_Chronicle.png)
+![List Device Events - Chronicle](../doc_files/List_Device_Events_-_Chronicle.png)

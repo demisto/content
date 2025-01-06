@@ -57,13 +57,13 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 * When the playbook is triggered, a task called **Parse Vulnerability Alert** runs.
 * The task runs the **PrismaCloudComputeParseVulnerabilityAlert** script, which takes the `prismacloudcomputerawalertjson` field of the incident (the raw JSON alert data) as input.
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
+![image](doc_files/prisma_alert_raw_input.png)
 
 
 * Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSOAR object.
 
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
+![image](doc_files/prisma_alert_outputs.png)
 
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
 
@@ -101,7 +101,7 @@ In addition, the playbook can create and update external ticketing systems for e
 
 If any alerts are missing in Cortex XSIAM, check the status of the integration:
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_instance.png)
+![image](doc_files/prisma_instance.png)
 </~XSIAM>
 
 <~XSOAR>
@@ -160,13 +160,13 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 * When the playbook is triggered, a task called **Parse Vulnerability Alert** runs.
 * The task runs the **PrismaCloudComputeParseVulnerabilityAlert** script, which takes the `prismacloudcomputerawalertjson` field of the incident (the raw JSON alert data) as input.
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
+![image](doc_files/prisma_alert_raw_input.png)
 
 
 * Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSOAR object.
 
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
+![image](doc_files/prisma_alert_outputs.png)
 
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
 
@@ -203,5 +203,5 @@ In addition, the playbook can create and update external ticketing systems for e
 
 If any alerts are missing in Cortex XSOAR, check the status of the integration:
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_instance.png)
+![image](doc_files/prisma_instance.png)
 </~XSOAR>

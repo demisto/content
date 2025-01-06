@@ -38,4 +38,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![PS-Remote Acquire Host Forensics](https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS-Remote_Acquire_Host_Forensics.png)
+![PS-Remote Acquire Host Forensics](../doc_files/PS-Remote_Acquire_Host_Forensics.png)
