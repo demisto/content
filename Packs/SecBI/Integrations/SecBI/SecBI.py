@@ -42,9 +42,8 @@ class SecBIClient(BaseClient):
         :return: SecBI Incident IDs List
         """
         params = assign_params(query=query, limit=limit)
-        LOG('Performing SecBI get_incidents_list request to {}/{} with params={}'.format(self._base_url,
-                                                                                         SECBI_API_ENDPOINT_INCIDENTS,
-                                                                                         str(params)))
+        LOG(f'Performing SecBI get_incidents_list request to {self._base_url}/{SECBI_API_ENDPOINT_INCIDENTS} with '
+            f'params={str(params)}')
         return self._http_request(method='GET',
                                   url_suffix=SECBI_API_ENDPOINT_INCIDENTS,
                                   params=params)
