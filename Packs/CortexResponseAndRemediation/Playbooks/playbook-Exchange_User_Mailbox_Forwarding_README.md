@@ -49,7 +49,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* Cortex Core - IR
+* AzureRiskyUsers
+* Microsoft 365 Defender
+* Microsoft Graph User
+* EWSO365
+* SecurityAndComplianceV2
 
 ### Scripts
 
