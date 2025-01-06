@@ -1972,9 +1972,9 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             }
             if error_reason := error_reasons.get(endpoint_id):
                 action_result['ErrorReasons'] = error_reason
-                action_result['error_description'] = (error_reason.get('errorDescription') or
-                                                      get_missing_files_description(error_reason.get('missing_files')) or
-                                                      'An error occurred while processing the request.')
+                action_result['error_description'] = (error_reason.get('errorDescription')
+                                                      or get_missing_files_description(error_reason.get('missing_files'))
+                                                      or 'An error occurred while processing the request.')
             result.append(action_result)
 
     return CommandResults(
