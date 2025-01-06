@@ -944,7 +944,7 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
         client (Client): Netskope API client.
         params (Dict[str, Any]): Integration parameters.
     """
-    demisto.debug(f'fetch_incidents called with params {params}')
+
     incidents: list[dict] = []
     last_run: dict[str, Any] = {}
 
@@ -1243,13 +1243,13 @@ def parse_incident(
     Returns:
         dict: XSOAR Incident.
     """
-    demisto.debug(f'parse_incident called with params incident {incident} and incident_type {incident_type}')
     incident_id = (incident["object_id"]
                    if incident_type == "dlp_incident" else incident["_id"])
     incident["incident_type"] = incident_type
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
-    demisto.debug(f'updated incident {incident}')
+    for key, value in incident.items():
+        incident[key] = str(value) if isinstance(value, int) else value
     return {
         "name": f"{incident_type} ID: {incident_id}",
         "incident_type": incident_type,
@@ -1449,8 +1449,6 @@ def fetch_alerts_as_incidents(
     new_incidents = []
     last_run_id, last_run_timestamp = get_last_run(params, "alert")
     end_time_number = date_to_seconds_timestamp(datetime.now())
-    demisto.debug(f'last_run_id: {last_run_id}')
-    demisto.debug(f'end_time_number: {end_time_number}')
 
     response = list_event_func(
         query=alert_query,
@@ -1462,12 +1460,9 @@ def fetch_alerts_as_incidents(
     alerts = response["result"]
 
     for alert in alerts:
-        demisto.debug(f'alert: {alert}')
         if last_run_id != alert["_id"]:
             alert["incident_type"] = alert["alert_type"]
-            parsed_incident = parse_incident(alert, "alert", mirror_direction)
-            demisto.debug(f'parsed_incident: {parsed_incident}')
-            incidents.append(parsed_incident)
+            incidents.append(parse_incident(alert, "alert", mirror_direction))
             new_incidents.append(alert)
 
     last_run = update_last_run(
