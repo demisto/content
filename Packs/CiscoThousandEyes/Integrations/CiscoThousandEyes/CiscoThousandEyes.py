@@ -77,7 +77,7 @@ def get_events(
             if next_page_url
             else f"{client._base_url}{ENDPOINTS.get(fetch_type, '')}?{unquote(urlencode(params))}"
         )
-        response = client._http_request("GET", full_url=request_url, params=params)
+        response = client._http_request("GET", full_url=request_url)
         if next_page_url := response.get("_links", {}).get("next", {}).get("href"):
             has_next = True
         current_batch_events = response.get(RESPONSE_MAPPING_KEY.get(fetch_type), [])
