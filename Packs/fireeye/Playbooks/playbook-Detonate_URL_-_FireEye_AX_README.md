@@ -51,4 +51,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![Detonate URL - FireEye AX](../doc_files/playbook-Detonate_URL_-_FireEye_AX.png)
+![Detonate URL - FireEye AX](../doc_files/Detonate_URL_-_FireEye_AX.png)

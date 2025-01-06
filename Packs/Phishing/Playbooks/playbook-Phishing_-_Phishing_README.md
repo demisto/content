@@ -1,4 +1,4 @@
-Example basic Playbook to assess Wiz Issues
+Master playbook for phishing incidents. This playbook is a manual playbook.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,18 +7,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Wiz
+This playbook does not use any integrations.
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* wiz-get-resource
-* wiz-set-issue-note
-* wiz-issue-in-progress
-* wiz-get-issue-evidence
-* wiz-get-issues
-* wiz-set-issue-due-date
+This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
@@ -30,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Assess Wiz Issues](../Author_image.png)
+![Phishing_Playbook_Manual](../doc_files/Phishing_-_Phishing.png)

@@ -31,4 +31,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Endpoint_Enrichment_Cylance_Protect_v2](../doc_files/Endpoint_Enrichment_Cylance_Protect_v2.png)
+![Endpoint_Enrichment_Cylance_Protect_v2](../doc_files/Endpoint_Enrichment_-_Cylance_Protect_v2.png)

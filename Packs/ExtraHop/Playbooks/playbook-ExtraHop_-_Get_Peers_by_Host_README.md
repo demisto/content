@@ -38,4 +38,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![ExtraHop_Get_Peers_by_Host](../doc_files/ExtraHop_Get_Peers_by_Host.png)
+![ExtraHop_Get_Peers_by_Host](../doc_files/ExtraHop_-_Get_Peers_by_Host.png)

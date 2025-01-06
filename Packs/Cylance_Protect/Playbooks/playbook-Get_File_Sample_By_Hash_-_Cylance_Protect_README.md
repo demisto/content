@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get_File_Sample_By_Hash_Cylance_Protect](../doc_files/Get_File_Sample_By_Hash_Cylance_Protect.png)
+![Get_File_Sample_By_Hash_Cylance_Protect](../doc_files/Get_File_Sample_By_Hash_-_Cylance_Protect.png)

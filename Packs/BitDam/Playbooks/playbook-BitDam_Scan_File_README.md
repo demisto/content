@@ -43,4 +43,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_File_-_BitDam](../doc_files/Detonate_File_-_BitDam.png)
+![Detonate_File_-_BitDam](../doc_files/BitDam_Scan_File.png)

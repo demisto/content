@@ -1,4 +1,4 @@
-Master playbook for phishing incidents. This playbook is a manual playbook.
+Parses Prisma Cloud Compute Cloud Discovery alerts. This is a default playbook.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* PrismaCloudComputeParseCloudDiscoveryAlert
 
 ### Commands
 This playbook does not use any commands.
@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing_Playbook_Manual](../doc_files/Phishing_Playbook_-_Manual.png)
+![Prisma_Cloud_Compute_Cloud_Discovery_Alert](../doc_files/Prisma_Cloud_Compute_-_Cloud_Discovery_Alert.png)

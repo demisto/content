@@ -37,4 +37,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Get File Sample By Hash - Cylance Protect v2](../doc_files/Get_File_Sample_By_Hash_Cylance_Protect_v2.png)
+![Get File Sample By Hash - Cylance Protect v2](../doc_files/Get_File_Sample_By_Hash_-_Cylance_Protect_v2.png)

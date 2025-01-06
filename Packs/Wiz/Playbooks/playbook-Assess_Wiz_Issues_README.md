@@ -1,4 +1,4 @@
-Parses Prisma Cloud Compute Cloud Discovery alerts. This is a default playbook.
+Example basic Playbook to assess Wiz Issues
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,13 +7,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* Wiz
 
 ### Scripts
-* PrismaCloudComputeParseCloudDiscoveryAlert
+This playbook does not use any scripts.
 
 ### Commands
-This playbook does not use any commands.
+* wiz-get-resource
+* wiz-set-issue-note
+* wiz-issue-in-progress
+* wiz-get-issue-evidence
+* wiz-get-issues
+* wiz-set-issue-due-date
 
 ## Playbook Inputs
 ---
@@ -25,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Prisma_Cloud_Compute_Cloud_Discovery_Alert](../doc_files/Prisma_Cloud_Compute_Cloud_Discovery_Alert.png)
+![Assess Wiz Issues](../doc_files/Assess_Wiz_Issues.png)

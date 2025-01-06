@@ -128,4 +128,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Indicator_Pivoting-DomainTools_Iris](../doc_files/Indicator_Pivoting_DomainTools_Iris.png)
+![Indicator_Pivoting-DomainTools_Iris](../doc_files/Indicator_Pivoting-DomainTools_Iris.png)

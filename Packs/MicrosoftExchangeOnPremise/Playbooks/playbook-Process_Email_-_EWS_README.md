@@ -41,4 +41,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Process_Email_EWS](../doc_files/Process_Email_EWS.png)
+![Process_Email_EWS](../doc_files/Process_Email_-_EWS.png)
