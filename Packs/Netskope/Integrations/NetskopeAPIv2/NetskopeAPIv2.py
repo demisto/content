@@ -12,6 +12,7 @@ MAX_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 1
 MAX_LIMIT = 50
 MIN_LIMIT = 1
+MAX_FETCH_PER_EVENT_TYPE = 50
 TIME_FORMAT = "%d-%m-%Y %H:%M"
 
 ALERT_HEADERS = [
@@ -955,6 +956,7 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     alert_query = params.get("alerts_query")
     alert_max_fetch = arg_to_number(params["max_fetch"]) or MAX_LIMIT
 
+    max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE
     if (event_types and (event_max_fetch := arg_to_number(
             params["max_events_fetch"])) is not None):
         max_fetch_per_event_type = event_max_fetch // (len(event_types))
