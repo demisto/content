@@ -2609,9 +2609,9 @@ def set_xsoar_entries(updated_object: dict[str, Any], entries: list, remote_dete
     reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
     demisto.debug(f'In set_xsoar_entries {reopen_statuses_set=} {remote_detection_id=}')
     if demisto.params().get('close_incident'):
-        if updated_object.get('status') == 'closed':
+        if updated_object.get('status').lower() == 'closed':
             close_in_xsoar(entries, remote_detection_id, incident_type_name)
-        elif updated_object.get('status') in reopen_statuses_set:
+        elif updated_object.get('status').lower() in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_detection_id, incident_type_name)
         else:
             demisto.debug(f"In set_xsoar_entries not closing and not reopening {remote_detection_id=}"
