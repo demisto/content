@@ -32,7 +32,7 @@ RUN bash /features/src/github-cli/install.sh
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN python -m pip install --user pipx \
     && python -m pipx ensurepath \
-    && pipx install poetry \
+    && pipx install poetry==1.8.5 \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
     && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $HOME/.zshrc \
     && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/zsh-autosuggestions \
