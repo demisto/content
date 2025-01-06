@@ -49,4 +49,4 @@ This input is meant to handle more complex filters not covered by the other inpu
 
 ## Playbook Image
 ---
-![PCAP Search](https://raw.githubusercontent.com/demisto/content/92a11ee3040136818c9a7dc34d05b2c87b33f4be/Packs/PcapAnalysis/doc_files/PCAP_Search.png)
+![PCAP Search](../doc_files/PCAP_Search.png)
