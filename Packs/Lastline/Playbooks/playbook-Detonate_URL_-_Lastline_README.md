@@ -70,4 +70,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Detonate_URL_Lastline](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Lastline.png)
+![Detonate_URL_Lastline](../doc_files/Detonate_URL_-_Lastline.png)
