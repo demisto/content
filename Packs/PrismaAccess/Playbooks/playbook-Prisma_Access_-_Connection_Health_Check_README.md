@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Prisma Access - Connection Health Check](../doc_files/Prisma_Access_Tunnel_Health.png)
+![Prisma Access - Connection Health Check](../doc_files/Prisma_Access_-_Connection_Health_Check.png)
