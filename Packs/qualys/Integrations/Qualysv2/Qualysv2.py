@@ -10,7 +10,6 @@ import requests
 from urllib3 import disable_warnings
 
 
-
 disable_warnings()  # pylint: disable=no-member
 
 
@@ -2453,7 +2452,8 @@ def build_unparsed_output(**kwargs) -> tuple[dict[str, Any], str]:
         unparsed_output = limit_result(unparsed_output, inner_args_values["limit"])
     if original_amount and original_amount > int(inner_args_values["limit"]):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    readable_output = tableToMarkdown(name=f"{command_parse_and_output_data['table_name']}{NEW_LINE}{limit_msg}", t=unparsed_output)
+    readable_output = tableToMarkdown(
+        name=f"{command_parse_and_output_data['table_name']}{NEW_LINE}{limit_msg}", t=unparsed_output)
 
     return unparsed_output, readable_output
 
