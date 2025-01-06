@@ -2,7 +2,7 @@
     "name": "Keeper Security",
     "description": "Use Keeper Security to manage and extract data regarding your Keeper Security products.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -19,7 +19,6 @@
         "secret"
     ],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }

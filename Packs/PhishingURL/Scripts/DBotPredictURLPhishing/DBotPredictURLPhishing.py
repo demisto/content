@@ -739,7 +739,6 @@ def update_and_load_model(
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
         msg_list.append(MSG_UPDATE_LOGO.format(MAJOR_VERSION, model_docker_minor, model.major, model.minor))
-        model = load_demisto_model()
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         raise DemistoException(MSG_WRONG_CONFIG_MODEL)
