@@ -7,6 +7,7 @@ import urllib3
 import traceback
 from typing import Any, Tuple, Dict
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
