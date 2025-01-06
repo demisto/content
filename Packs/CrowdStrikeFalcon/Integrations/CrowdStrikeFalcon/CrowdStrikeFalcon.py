@@ -1674,7 +1674,7 @@ def get_incidents_entities(incidents_ids: list):
 
 def get_detection_entities(incidents_ids: list):
     """
-        Send a request to retrieve IDP/ODS and mobile detection entities.
+        Send a request to retrieve IDP/ODS/OFP and mobile detection entities.
 
         :type incidents_ids: ``list``
         :param incidents_ids: The list of ids to search their entities.
@@ -2459,17 +2459,12 @@ def get_remote_data_command(args: dict[str, Any]):
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
         # for endpoint (in the new version) ,idp and mobile detections
-        elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION:
-            mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id)
+        elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION, IncidentType.ON_DEMAND):
+            mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_idp_or_mobile_detection_entries(
+                set_xsoar_idp_or_mobile_detection_entries(  #TODO here to, and the description of all changes
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)  # sets in place
-        elif incident_type == IncidentType.ON_DEMAND:
-            mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
-            if updated_object:
-                demisto.debug(f'Update on-demand detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2540,23 +2535,28 @@ def get_remote_detection_data(remote_incident_id: str):
     return mirrored_data, updated_object
 
 
-def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
+def get_remote_detection_data_for_multiple_types(remote_incident_id):
     """
-        Gets the relevant Endpoint or IDP or Mobile detection entity from the remote system (CrowdStrike Falcon).
+        Gets the relevant detection entity from the remote system (CrowdStrike Falcon).
+        This function handles the following detection types:
+        - IDP (Identity Protection)
+        - Mobile
+        - Detection (not legacy)
+        - OFP (Other File Protection)
+        - ODS (On-Demand Scans)
 
         :type remote_incident_id: ``str``
         :param remote_incident_id: The incident id to return its information.
 
-        :return: The Endpoint or IDP or Mobile detection entity.
+        :return: The detection entity.
         :rtype ``dict``
         :return: The object with the updated fields.
         :rtype ``dict``
-        :return: The detection type (endpoint or idp or mobile).
+        :return: The detection type.
         :rtype ``str``
     """
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
-    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirrored_data=}')
     detection_type = ''
     mirroring_fields = ['status']
     updated_object: dict[str, Any] = {}
@@ -2576,8 +2576,12 @@ def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
         updated_object = {'incident_type': OFP_DETECTION}
         detection_type = 'ofp'
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    if 'ods' in mirrored_data['type']:
+        updated_object = {'incident_type': ON_DEMAND_SCANS_DETECTION}
+        detection_type = 'ods'
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
-    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
+    demisto.debug(f'in get_remote_detection_data_for_multiple_types {mirrored_data=} { mirroring_fields=} {updated_object=}')
     return mirrored_data, updated_object, detection_type
 
 
