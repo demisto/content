@@ -64,7 +64,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -520
+          "y": -440
         }
       }
     note: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 1090,
-          "y": 110
+          "y": 120
         }
       }
     note: false
@@ -144,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9af4f20c-1cc5-4b74-8e97-66d603a266bb
+    taskid: 81e20815-1f8f-4844-895e-68f66ea6db1f
     type: regular
     task:
-      id: 9af4f20c-1cc5-4b74-8e97-66d603a266bb
+      id: 81e20815-1f8f-4844-895e-68f66ea6db1f
       version: -1
       name: Get Azure user risk score
       description: Returns a list of all risky users and their properties.
@@ -179,20 +179,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 27a1d414-6552-4533-8d16-0f05f9f65b55
+    taskid: 9e18431c-9d6c-4d10-8bf9-a79e259b5472
     type: condition
     task:
-      id: 27a1d414-6552-4533-8d16-0f05f9f65b55
+      id: 9e18431c-9d6c-4d10-8bf9-a79e259b5472
       version: -1
-      name: Get risky user value
+      name: Check user risk score
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automationsscript
       type: condition
       iscommand: false
       brand: ""
@@ -231,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 29fcf05e-3254-429e-8d8a-b0367fd7614e
+    taskid: 58e997bd-fa51-41b9-8e94-3473c3881e59
     type: regular
     task:
-      id: 29fcf05e-3254-429e-8d8a-b0367fd7614e
+      id: 58e997bd-fa51-41b9-8e94-3473c3881e59
       version: -1
       name: Get Azure risky user detections
       description: Returns a comma-separated list of the Risk Detection objects and their properties.
@@ -266,20 +267,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a5e6f5e1-3af5-4820-8167-50939a52c227
+    taskid: 9bca58e7-7159-4149-824f-169580c9eb81
     type: regular
     task:
-      id: a5e6f5e1-3af5-4820-8167-50939a52c227
+      id: 9bca58e7-7159-4149-824f-169580c9eb81
       version: -1
-      name: Get risky user reasons value
+      name: Get risky user activity
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automationsscript
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -314,13 +316,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: dac59cb8-1ecb-4711-8081-7a51c41458d8
+    taskid: 59da37a5-c608-4f67-84fe-087321520256
     type: condition
     task:
-      id: dac59cb8-1ecb-4711-8081-7a51c41458d8
+      id: 59da37a5-c608-4f67-84fe-087321520256
       description: ""
       version: -1
-      name: Check if user is risky
+      name: Check user risk score
       type: condition
       iscommand: false
       brand: ""
@@ -395,10 +397,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0676d4d1-e7b7-4c04-8a10-6886b39469f2
+    taskid: 19e009b2-b4a9-4b69-8a41-18c78f22e4ac
     type: regular
     task:
-      id: 0676d4d1-e7b7-4c04-8a10-6886b39469f2
+      id: 19e009b2-b4a9-4b69-8a41-18c78f22e4ac
       version: -1
       name: Extract Azure user detections
       description: |-
@@ -406,9 +408,10 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -471,10 +474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7b2abc89-01dc-4e88-808d-64aaf961feee
+    taskid: 7ce27bae-e219-4888-8d78-5afe5d9c48b8
     type: regular
     task:
-      id: 7b2abc89-01dc-4e88-808d-64aaf961feee
+      id: 7ce27bae-e219-4888-8d78-5afe5d9c48b8
       version: -1
       name: Get timestamp for Azure detections
       description: |
@@ -509,10 +512,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 194307b4-8a67-43e0-80e0-c2b2f3e385b9
+    taskid: c0ff360a-1f8d-4af8-8635-9c29f2c06cf9
     type: regular
     task:
-      id: 194307b4-8a67-43e0-80e0-c2b2f3e385b9
+      id: c0ff360a-1f8d-4af8-8635-9c29f2c06cf9
       version: -1
       name: Collect user information
       description: Returns information about each alert ID.
@@ -535,7 +538,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -250
+          "y": -180
         }
       }
     note: false
@@ -547,12 +550,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 36b5cf50-49f8-4619-8fad-4e838f7fa3d6
+    taskid: 8aee3a72-4abc-41e8-8d9a-4c3b79b1b016
     type: regular
     task:
-      id: 36b5cf50-49f8-4619-8fad-4e838f7fa3d6
+      id: 8aee3a72-4abc-41e8-8d9a-4c3b79b1b016
       version: -1
-      name: Check IP Reputation
+      name: Get IP reputation
       description: Checks the reputation of an IP address.
       script: '|||ip'
       type: regular
@@ -586,12 +589,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: cf92beec-39f4-4e45-8acf-ba49d7d28bdc
+    taskid: 8b31ebe4-f831-4d96-8be9-68cc325b9bf1
     type: regular
     task:
-      id: cf92beec-39f4-4e45-8acf-ba49d7d28bdc
+      id: 8b31ebe4-f831-4d96-8be9-68cc325b9bf1
       version: -1
-      name: Check Email Reputation
+      name: Get Email reputation
       description: Return email information and reputation.
       script: '|||email'
       type: regular
@@ -625,12 +628,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c1e9a90f-3070-4e12-8c55-e36ee2168aaf
+    taskid: b5f28af3-c85f-4e9a-8432-98de0d324f2d
     type: regular
     task:
-      id: c1e9a90f-3070-4e12-8c55-e36ee2168aaf
+      id: b5f28af3-c85f-4e9a-8432-98de0d324f2d
       version: -1
-      name: Check Domain Reputation
+      name: Get Domain reputation
       description: Returns domain information and reputation.
       script: '|||domain'
       type: regular
@@ -693,7 +696,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": 110
+          "y": 120
         }
       }
     note: false
@@ -705,20 +708,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 37ec9f8e-3006-4ec8-88ba-f528ba380a80
+    taskid: 64be2b3d-af92-455f-818a-e2e4e75a9ee3
     type: regular
     task:
-      id: 37ec9f8e-3006-4ec8-88ba-f528ba380a80
+      id: 64be2b3d-af92-455f-818a-e2e4e75a9ee3
       version: -1
-      name: Get malicious Email value
+      name: Check Email reputation
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -769,20 +773,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 86f0f6cb-55b1-4288-8fd0-f9843f8fb7e6
+    taskid: 35e0f51d-e1c2-4737-8f2a-d0b578241e90
     type: regular
     task:
-      id: 86f0f6cb-55b1-4288-8fd0-f9843f8fb7e6
+      id: 35e0f51d-e1c2-4737-8f2a-d0b578241e90
       version: -1
-      name: Get malicious Domain value
+      name: Check Domain reputation
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -852,7 +857,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -380
+          "y": -310
         }
       }
     note: false
@@ -886,7 +891,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -30
+          "y": -20
         }
       }
     note: false
@@ -898,20 +903,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 6e8901c6-4a3e-47f0-8e2d-776989b75e3a
+    taskid: a4f41b44-31cb-4ffa-8b04-13c043ef3e6e
     type: regular
     task:
-      id: 6e8901c6-4a3e-47f0-8e2d-776989b75e3a
+      id: a4f41b44-31cb-4ffa-8b04-13c043ef3e6e
       version: -1
-      name: Get malicious IP value
+      name: Check IP reputation
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -981,7 +987,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 110
+          "y": 120
         }
       }
     note: false
@@ -993,10 +999,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 8f1ab895-4fda-4a90-8324-75c12ad749ff
+    taskid: 2a178317-b1f5-418d-8716-9a2f93d42a8d
     type: playbook
     task:
-      id: 8f1ab895-4fda-4a90-8324-75c12ad749ff
+      id: 2a178317-b1f5-418d-8716-9a2f93d42a8d
       version: -1
       name: O365 - Security And Compliance - Search
       description: |-
@@ -1051,10 +1057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4714c9e3-9202-4a17-81b1-120e3e9bfa9f
+    taskid: d6c7a3ca-8885-4e9e-8377-03cfe327e1f1
     type: regular
     task:
-      id: 4714c9e3-9202-4a17-81b1-120e3e9bfa9f
+      id: d6c7a3ca-8885-4e9e-8377-03cfe327e1f1
       version: -1
       name: Get timestamp for compliance search
       description: |
@@ -1341,7 +1347,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2110
+          "y": 2090
         }
       }
     note: false
@@ -1373,7 +1379,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2250
+          "y": 2230
         }
       }
     note: false
@@ -1482,7 +1488,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2420
+          "y": 2400
         }
       }
     note: false
@@ -1523,7 +1529,7 @@ tasks:
       {
         "position": {
           "x": 120,
-          "y": 1940
+          "y": 1920
         }
       }
     note: false
@@ -1554,7 +1560,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": 110
+          "y": 120
         }
       }
     note: false
@@ -1566,10 +1572,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: c956fd95-5629-47e8-8a97-fd0b3eeceefa
+    taskid: e302b09c-496a-4e41-8a76-3eb89b8c8266
     type: regular
     task:
-      id: c956fd95-5629-47e8-8a97-fd0b3eeceefa
+      id: e302b09c-496a-4e41-8a76-3eb89b8c8266
       version: -1
       name: Get Azure alerts
       description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
@@ -1612,9 +1618,10 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automationsscript
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1660,9 +1667,10 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        - For Cortex, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automationsscript
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1697,12 +1705,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 842d6d84-c2e1-4905-89fe-12b30822c2b4
+    taskid: b3384680-5740-433d-8dbf-b3a1103b4580
     type: title
     task:
-      id: 842d6d84-c2e1-4905-89fe-12b30822c2b4
+      id: b3384680-5740-433d-8dbf-b3a1103b4580
       version: -1
-      name: Disable User & Forwarding
+      name: Disable User & Forwarding Settings
       type: title
       iscommand: false
       brand: ""
@@ -1740,10 +1748,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3005,
+        "height": 2905,
         "width": 2930,
         "x": -1050,
-        "y": -520
+        "y": -440
       }
     }
   }
