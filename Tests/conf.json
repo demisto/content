@@ -5205,7 +5205,7 @@
         {
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
-            "has_api": true
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5830,9 +5830,15 @@
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
-            "integrations": "AWS-SNS-Listener",
+            "integrations": [
+                "AWS-SNS-Listener",
+                "AWS - SNS"
+            ],
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener",
+            "instance_names": [
+                "AWS-SNS-Listener",
+                "AWSSNS"
+            ],
             "is_mockable": false
         },
         {
