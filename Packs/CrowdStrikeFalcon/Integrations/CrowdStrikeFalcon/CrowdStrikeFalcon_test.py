@@ -7602,3 +7602,62 @@ def test_enrich_groups_no_resources(mocker):
     mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value={"resources": None})
 
     assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}
+
+
+def test_transform_incidents_to_events():
+    """
+    Given:
+        - An XSOAR incident with 'name', 'occurred', and 'rawJSON' fields.
+    When:
+        - Calling transform_incidents_to_events.
+    Assert:
+        - Ensure the correct XSIAM event fields (e.g. '_time') and that irrelevant mirroring fields are removed.
+    """
+    from CrowdStrikeFalcon import transform_incidents_to_events
+
+    incident = {
+        'name': 'Incident ID: inc:046761c46ec8',
+        'occurred': '2025-01-01T14:01:46Z',
+        'rawJSON': '{"incident_id": "inc:046761c46ec8", "cloud_provider": "AZURE", "mirror_instance": "TEST INSTANCE"}',
+    }
+
+    expected_event = {
+        'name': 'Incident ID: inc:046761c46ec8',
+        '_time': '2025-01-01T14:01:46Z',
+        'incident_id': 'inc:046761c46ec8',
+        'cloud_provider': 'AZURE'
+    }
+
+    events = transform_incidents_to_events([incident])
+    assert events[0] == expected_event
+
+
+def test_get_events_command(mocker):
+    """
+    Given:
+        - A fetch type 'Indicator of Attack' (IOA) in the command arguments.
+    When:
+        - Calling get_events_command.
+    Assert:
+        - Validate that fetch_incidents and table_to_markdown have correct inputs.
+        - Ensure the returned events are as expected.
+    """
+    from CrowdStrikeFalcon import get_events_command, INTEGRATION_NAME
+
+    mocker.patch('CrowdStrikeFalcon.is_xsiam', return_value=True)
+
+    expected_events = load_json('test_data/ioa_fetch_incidents.json/ioa_events_page_1_raw_response.json')['resources']['events']
+    fetch_events = mocker.patch('CrowdStrikeFalcon.fetch_events', return_value=([], expected_events))
+    table_to_markdown = mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
+
+    fetch_type = 'Indicator of Attack'
+    args = {'fetch_type': fetch_type}
+
+    events, _ = get_events_command(args)
+
+    table_to_markdown_kwargs: dict = table_to_markdown.call_args.kwargs
+
+    assert fetch_events.call_args[0][0] == fetch_type
+    assert table_to_markdown_kwargs['name'] == f'{INTEGRATION_NAME} Events'
+    assert table_to_markdown_kwargs['t'] == expected_events
+    assert events == expected_events

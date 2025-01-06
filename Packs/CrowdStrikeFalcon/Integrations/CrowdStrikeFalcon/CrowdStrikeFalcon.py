@@ -339,6 +339,7 @@ class IncidentType(Enum):
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
+MIRRORING_FIELDS = ('mirror_direction', 'mirror_instance')
 
 
 ''' HELPER FUNCTIONS '''
@@ -377,6 +378,30 @@ def modify_detection_outputs(detection):
     })
     detection["behaviors"] = [behavior]
     return detection
+
+
+def transform_incidents_to_events(incidents: list[dict]) -> list[dict]:
+    """Transforms XSOAR incidents to XSIAM events with '_time' field.
+
+    Args:
+        incidents (list): List of XSOAR incidents with 'rawJSON', 'name', and 'occurred' fields.
+
+    Returns:
+        list[dict]: List of event dictionaries.
+    """
+    events = []
+
+    for incident in incidents:
+        raw_incident: dict = json.loads(incident.get('rawJSON', '{}'))
+        event = {key: value for key, value in raw_incident.items() if key not in MIRRORING_FIELDS}
+
+        timestamp = arg_to_datetime(incident.get('occurred'))
+        event['_time'] = timestamp.strftime(DATE_FORMAT) if timestamp else None
+        event['name'] = incident.get('name')
+
+        events.append(event)
+
+    return events
 
 
 def error_handler(res):
@@ -2941,8 +2966,11 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}, {}, {}]
 
 
-def fetch_incidents() -> tuple[list[dict], list[dict]]:
-    """Fetches incidents from detections, incidents, and indicators in CrowdStrike Falcon.
+def fetch_incidents(fetch_type: str | None = None) -> tuple[list[dict], list[dict]]:
+    """Fetches incidents from CrowdStrike Falcon incidents and detections.
+
+    Args:
+        fetch_type (str | None): Optional incident or detection type to fetch - takes from params if not given.
 
     Raises:
         DemistoException: If using fetch types not supported by the legacy version (pre-Raptor release).
@@ -2972,7 +3000,7 @@ def fetch_incidents() -> tuple[list[dict], list[dict]]:
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
-    fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
+    fetch_incidents_or_detections = fetch_type or params.get('fetch_incidents_or_detections', "")
     look_back = int(params.get('look_back') or 1)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -3500,11 +3528,13 @@ def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict
         extracted_resource_id=id[0] if id else None,
         incident_type=incident_type
     )
-    incident_context = {
+    incident = ioa_event | incident_metadata
+    report_date_time = incident.get('report_date_time')
+    return {
         'name': f'IOA Event ID: {ioa_event.get("event_id")}',
-        'rawJSON': json.dumps(ioa_event | incident_metadata)
+        'occurred': str(report_date_time) if report_date_time else None,
+        'rawJSON': json.dumps(incident)
     }
-    return incident_context
 
 
 def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None,
@@ -4217,13 +4247,37 @@ def generate_endpoint_by_contex_standard(single_device, state_data):
     return endpoint
 
 
-def get_events_command():
+def fetch_events(fetch_type: str | None = None) -> tuple[list[dict], list[dict]]:
+    """Fetches incidents from CrowdStrike Falcon incidents and detections and transforms them to events with '_time' field.
+
+    Args:
+        fetch_type (str | None): Optional incident or detection type to fetch.
+
+    Returns:
+        tuple[list[dict], list[dict]]: Tuple of next run and fetched events.
+    """
+    next_run, incidents = fetch_incidents(fetch_type)
+    events = transform_incidents_to_events(incidents)
+    return next_run, events
+
+
+def get_events_command(args: dict[str, str]):
     """Implements 'cs-falcon-get-events' command (which calls the `fetch_incidents` function).
+
+    Args:
+        args (dict): The command arguments.
+
+    Raises:
+        DemistoException: If not being run on a Cortex XSIAM tenant.
 
     Returns:
         tuple[list[dict], CommandResults]: A tuple of events and CommandResults with human readable output.
     """
-    _, events = fetch_incidents()
+    if not is_xsiam():
+        raise DemistoException('This command can only be run on Cortex XSIAM tenants.')
+
+    fetch_type = args.get('fetch_type')
+    _, events = fetch_events(fetch_type)
 
     human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} Events', t=events)
     return events, CommandResults(readable_output=human_readable)
@@ -7139,16 +7193,17 @@ def main():
             demisto.setLastRun(next_run)
 
         elif command == 'fetch-events':  # XSIAM
-            next_run, events = fetch_incidents()
+            next_run, events = fetch_events()
             demisto.debug(f'Creating {len(events)} in XSIAM')
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Setting next run to {next_run}')
             demisto.setLastRun(next_run)
 
         elif command == 'cs-falcon-get-events':
-            events, results = get_events_command()
+            should_push_events = argToBoolean(args.pop('should_push_events', False))
+            events, results = get_events_command(args)
             return_results(results)
-            if argToBoolean(args.get('should_push_events', False)):
+            if should_push_events:
                 demisto.debug(f'Creating {len(events)} in XSIAM')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
@@ -7189,11 +7244,11 @@ def main():
         elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
         elif command == 'cs-falcon-status-get-command':
-            demisto.results(status_get_command(demisto.args()))
+            demisto.results(status_get_command(args))
         elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
         elif command == 'cs-falcon-get-extracted-file':
-            demisto.results(get_extracted_file_command(demisto.args()))
+            demisto.results(get_extracted_file_command(args))
         elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':

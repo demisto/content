@@ -3896,7 +3896,7 @@ Gets the detections for a specific incident.
 ### get-mapping-fields
 
 ***
-Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported on Cortex XSOAR only.
 
 #### Base Command
 
@@ -3909,7 +3909,7 @@ There is no context output for this command.
 ### get-remote-data
 
 ***
-Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only.
+Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported on Cortex XSOAR only.
 
 #### Base Command
 
@@ -3929,7 +3929,7 @@ There is no context output for this command.
 ### get-modified-remote-data
 
 ***
-Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported on Cortex XSOAR only.
 
 #### Base Command
 
@@ -3948,7 +3948,7 @@ There is no context output for this command.
 ### update-remote-system
 
 ***
-Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported on Cortex XSOAR only.
 
 #### Base Command
 
@@ -6538,7 +6538,7 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 ### cs-falcon-get-events
 
 ***
-Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events.
+Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events. Note that this command is supported on Cortex XSIAM only.
 
 #### Base Command
 
@@ -6548,6 +6548,7 @@ Get events from CrowdStrike Falcon. This command is intended for development and
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| fetch_type | Type of incidents or detections. Note that the "On-Demand Scans Detection" option is not available in the legacy version of the API. | Optional |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
 
 #### Context Output
@@ -6556,16 +6557,17 @@ There is no context output for this command.
 
 #### Command Example
 
-```!cs-falcon-get-events should_push_events=false```
+```!cs-falcon-get-events fetch_type='IDP Detection' should_push_events=false```
 
 
 #### Human Readable Output
 
 >### CrowdStrike Falcon Events
 >
->| COL_A | COL_B |
->| --- | --- |
->| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z |
+>|cid|created|email_state|end|fine_score|host_ids|hosts|incident_id|incident_type|modified_timestamp|name|objectives|start|state|status|tactics|techniques|users|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 20879a8064904ecfbb62c118a6a19411 | 2025-01-01T14:07:50Z | START | 2025-01-01T14:25:02Z | 50 | 046761c46ec84f40b27b6f79ce7cd32c | {'cid': '20879a8064904ecfbb62c118a6a19411', 'platform_name': 'Windows', 'service_provider': 'GCP'} | inc:046761c46ec84f40b27b6f79ce7cd32c:34d7e501ffc745b294c2dcca9e8ee2ec | incident | 2025-01-06T13:37:06.099351844Z | Incident ID: inc:046761c46ec84f40b27b6f79ce7cd32c:34d7e501ffc745b294c2dcca9e8ee2ec | Follow Through,<br>Keep Access,<br>Gain Access,<br>Falcon Detection Method | 2025-01-01T14:01:46Z | closed | New | Execution,<br>Defense Evasion,<br>Privilege Escalation,<br>Credential Access,<br>Machine Learning,<br>Falcon Intel | PowerShell,<br>XSL Script Processing,<br>Bypass User Account Control,<br>Access Token Manipulation,<br>OS Credential Dumping,<br>Sensor-based ML,<br>Masquerading,<br>Intelligence Indicator - Domain | INSTANCE-1$,<br>JohnDoe |
+>| 20879a8064904ecfbb62c118a6a19411 | 2024-11-05T03:18:56Z |  | 2024-11-05T03:59:57Z | 3 | 046761c46ec84f40b27b6f79ce7cd32c | {'cid': '20879a8064904ecfbb62c118a6a19411', 'platform_name': 'Windows', 'service_provider': 'GCP'} | inc:046761c46ec84f40b27b6f79ce7cd32c:7802cba9a0f844b2b4e8dfa1cd14013e | incident | 2025-01-06T13:37:06.25324133Z | Incident ID: inc:046761c46ec84f40b27b6f79ce7cd32c:7802cba9a0f844b2b4e8dfa1cd14013e | Explore,<br>Follow Through,<br>Keep Access | 2024-11-05T03:18:55Z | closed | New | Lateral Movement,<br>Execution,<br>Defense Evasion | Remote Desktop Protocol,<br>Command and Scripting Interpreter,<br>XSL Script Processing | JohnDoe |
 
 
 ## Troubleshooting
