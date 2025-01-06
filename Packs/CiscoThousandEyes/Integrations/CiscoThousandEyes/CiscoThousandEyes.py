@@ -63,7 +63,7 @@ def get_events(
     )
     last_run = last_run.get(fetch_type, {})
     demisto.debug(f"start fetching {fetch_type} type. with last_run: {last_run}")
-    
+
     next_page_url = last_run.get("next_page", "")
     pagination_offset = last_run.get("offset", 0)
     params = {} if next_page_url else {"startDate": start_date, "endDate": end_date, "max": PAGE_SIZE}
@@ -136,7 +136,7 @@ def prepare_next_run(
     previous_offset = last_run.get("offset", 0)
     previous_page_url = last_run.get("next_page", "")
     previous_last_date = last_run.get("last_fetch", "")
-    
+
     # For alerts we know the page_limit at the endpoint(500)
     # therefore we calculate the remainder from the fetch_limit % the page_limit
     # Audit there is no defined limit so we calculate the fetchLimit % the last bath plus the previous offset if necessary
@@ -349,10 +349,10 @@ def fetch_events(
     """
     alert_events, audit_events = [], []
     alert_next_run, audit_next_run = {}, {}
-    
+
     last_run = demisto.getLastRun()
     is_new_fetch = "nextTrigger" not in last_run
-    
+
     if is_new_fetch or last_run.get("alerts", {}).get("next_page"):
         alert_events, alert_next_run = get_events(
             client, "alerts", start_date=start_date, end_date=end_date, fetch_limit=max_fetch_alerts, last_run=last_run
@@ -365,7 +365,7 @@ def fetch_events(
     events = alert_events + audit_events
     add_type_to_events(events)
 
-    next_run = {"alerts": alert_next_run, "audit": audit_next_run}
+    next_run: Dict[str, Any] = {"alerts": alert_next_run, "audit": audit_next_run}
     if any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
         next_run["nextTrigger"] = "0"
     demisto.debug(f"Setting next run {next_run}.")
