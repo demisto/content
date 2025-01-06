@@ -1,5 +1,6 @@
 Simple web server with a file uploading console to store small files.
-This is helpful to make your environment ready for testing purpose for your playbooks or automations to download files from a web server.
+
+Helps make your environment ready for testing purpose for your playbooks or automations to download files from a web server. NOTE: For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) documentation.
 
 ## Configure Web File Repository in Cortex
 
