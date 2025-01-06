@@ -5203,11 +5203,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "playbookID": "ValidateContent - Test",
-            "fromversion": "5.5.0",
-            "has_api": true
-        },
-        {
             "playbookID": "DeleteContext-auto-subplaybook-test",
             "fromversion": "5.0.0"
         },
@@ -5830,9 +5825,15 @@
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
-            "integrations": "AWS-SNS-Listener",
+            "integrations": [
+                "AWS-SNS-Listener",
+                "AWS - SNS"
+            ],
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener",
+            "instance_names": [
+                "AWS-SNS-Listener",
+                "AWSSNS"
+            ],
             "is_mockable": false
         },
         {
@@ -5876,6 +5877,10 @@
         {
             "integrations": "DSPM",
             "playbookID": "DSPM Test"
+        },
+        {
+            "integrations": "Symantec Email Security Cloud",
+            "playbookID": "SymantecEmailSecurity_TestPlaybook"
         }
     ],
     "skipped_tests": {
@@ -6073,6 +6078,7 @@
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
+        "RedCanary": "No instance",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
@@ -6205,7 +6211,8 @@
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
-        "DSPM": "No instance"
+        "DSPM": "No instance",
+        "Symantec Email Security Cloud": "No instance"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
