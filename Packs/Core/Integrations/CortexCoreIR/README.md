@@ -323,6 +323,7 @@ Gets the distribution URL for downloading the installation package.
 | --- | --- | --- |
 | distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints &gt; Agent Installation page. | Required | 
 | package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
+| download_package | Supported only for package_type x64 or x86. Whether to download the installation package file. | Optional | 
 
 
 #### Context Output
@@ -2815,7 +2816,7 @@ Initiates a new endpoint script execution action using a script from the script 
 ### core-terminate-process
 
 ***
-Terminate a process by its instance ID.
+Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
 
 #### Base Command
 
@@ -2841,7 +2842,7 @@ Terminate a process by its instance ID.
 ### core-terminate-causality
 
 ***
-Stops a process by its causality ID.
+Stops a process by its causality ID. Available only for XSIAM 2.4 and above.
 
 ##### Command Example
 
