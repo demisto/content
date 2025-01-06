@@ -42,7 +42,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch events |  | False |
-| Max events per fetch | Default is 5000. | False |
+| Max events per fetch | Default is 500. | False |
 | Events Fetch Interval |  | False |
 
 ### Required API client scope
@@ -104,7 +104,7 @@ Newly fetched Cortex XSOAR incidents will be mirrored in the chosen direction. H
 CrowdStrike Falcon incidents or detections can be fetched as incidents (Cortex XSOAR) or events (Cortex XSIAM).
 Users can specify a fetch query per CrowdStrike Falcon fetch type when configuring the integration instance to control which records are fetched.
 
-### Incident Operations Management (IOM) Fetch Query
+### Indicator of Misconfiguration (IOM) Fetch Query
 
 The IOM Fetch query relies on an [FQL](https://falconpy.io/Usage/Falcon-Query-Language.html) filter expression.
 
@@ -130,7 +130,7 @@ Available filters:
 
 For example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
-### Indicators of Attack (IOA) Fetch Query
+### Indicator of Attack (IOA) Fetch Query
 
 The IOA fetch query uses a query parameter format: `param1=val1&param2=val2`
 
