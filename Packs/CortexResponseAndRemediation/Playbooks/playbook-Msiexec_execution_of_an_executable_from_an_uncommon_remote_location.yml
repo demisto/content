@@ -27,7 +27,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": -980
+          "y": -1180
         }
       }
     note: false
@@ -148,14 +148,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+      - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 510,
-          "y": -835
+          "y": -1035
         }
       }
     note: false
@@ -1247,6 +1247,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: d67060d3-b18c-4aed-8a68-a578e7113bf7
+    type: regular
+    task:
+      id: d67060d3-b18c-4aed-8a68-a578e7113bf7
+      version: -1
+      name: Extract Indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      text:
+        simple: ${alert.targetprocesscmd}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1259,10 +1295,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3615,
+        "height": 3815,
         "width": 1750,
         "x": -550,
-        "y": -980
+        "y": -1180
       }
     }
   }
