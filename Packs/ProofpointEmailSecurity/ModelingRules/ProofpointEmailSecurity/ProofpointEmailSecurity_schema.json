@@ -44,6 +44,10 @@
           "type": "string",
           "is_array": false
       },
+      "tags": {
+          "type": "string",
+          "is_array": false
+      },
       "envelope": {
           "type": "string",
           "is_array": false
