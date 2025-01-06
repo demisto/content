@@ -2812,14 +2812,14 @@ def add_fields_to_events(events, time_field_path, event_type_field):
 
 
 def truncate_asset_size(asset):
-    host_id = asset.get('ID') or 'NO_ID'
-    detection_id = asset.get('DETECTION', {}).get('UNIQUE_VULN_ID', 'No detection')
-    detection_str = f' detection ID: {detection_id}' if detection_id else ''
-
-    results_characters_lim = 10000
     if results := asset.get('DETECTION', {}).get('RESULTS'):
         results_size = get_size_of_object(results)
         if results_size > ASSET_SIZE_LIMIT:
+            host_id = asset.get('ID') or 'NO_ID'
+            detection_id = asset.get('DETECTION', {}).get('UNIQUE_VULN_ID', 'No detection')
+            detection_str = f' detection ID: {detection_id}' if detection_id else ''
+            results_characters_lim = 10000
+
             asset['DETECTION']['RESULTS'] = results[:results_characters_lim]
             asset['isTruncated'] = True
             demisto.debug(f'Truncated Asset ID: {host_id}{detection_str} to {results_characters_lim}')
@@ -2864,7 +2864,7 @@ def get_detections_from_hosts(hosts):
     demisto.debug(f'Received {len(hosts)} hosts for extraction')
     fetched_assets = []
     for host in hosts:
-        if check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
+        if check_fetch_duration_time_exceeded(EXECUTION_START_TIME):  # We want to check that our execution is not too long.
             return [], True
         detections_list = host.get('DETECTION_LIST', {}).get('DETECTION') or [{}]
 
