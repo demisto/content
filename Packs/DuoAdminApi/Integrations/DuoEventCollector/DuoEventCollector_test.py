@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import demistomock as demisto
 from unittest.mock import MagicMock, patch
 from DuoEventCollector import (Client, GetEvents, LogType, Params, parse_events, main,
-                               parse_mintime, validate_request_order_array, calculate_window)
+                               parse_mintime, validate_request_order_array, calculate_window, handle_request_types)
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
@@ -704,3 +704,45 @@ def test_check_window_before_call_5_sec_time_delta():
     # min time 13 sec less than the end time return true (more then 5 sec delta)
     mintime = datetime.strptime("2020-01-24 15:11:20", DATE_FORMAT)
     assert client.check_window_before_call(mintime=mintime.timestamp())
+
+
+def test_handle_request_types_remove_type():
+    """
+    Given:
+        The log_type_array dict and the last run object.
+    When:
+        Some of the types in the last_run do not exist in the logs_type_array param any more.
+    Then:
+        assert that only events that are specified in the log_type_array exists.
+    """
+    demisto_params = {'logs_type_array': 'AUTHENTICATION, ADMINISTRATION'}
+    last_run = {'request_order': ['ADMINISTRATION', 'AUTHENTICATION', 'TELEPHONY']}
+    assert handle_request_types(demisto_params, last_run) == ['ADMINISTRATION', 'AUTHENTICATION']
+
+
+def test_handle_request_types_add_new_type():
+    """
+    Given:
+        The log_type_array dict and the last run object.
+    When:
+        The configuration of the instance was changed and a new event_type was added to the logs_type_array.
+    Then:
+        assert that all events that are specified in the log_type_array exists.
+    """
+    demisto_params = {'logs_type_array': 'AUTHENTICATION, ADMINISTRATION, TELEPHONY'}
+    last_run = {'request_order': ['ADMINISTRATION', 'AUTHENTICATION']}
+    assert handle_request_types(demisto_params, last_run) == ['ADMINISTRATION', 'AUTHENTICATION', 'TELEPHONY']
+
+
+def test_handle_request_type_no_changes():
+    """
+    Given:
+        The log_type_array dict and the last run object.
+    When:
+        No configuration was changed
+    Then:
+        assert that all events specified in the last_run object remain.
+    """
+    demisto_params = {'logs_type_array': 'AUTHENTICATION, ADMINISTRATION'}
+    last_run = {'request_order': ['ADMINISTRATION', 'AUTHENTICATION']}
+    assert handle_request_types(demisto_params, last_run) == ['ADMINISTRATION', 'AUTHENTICATION']
