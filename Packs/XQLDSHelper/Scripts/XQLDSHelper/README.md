@@ -129,17 +129,17 @@ The summary of the template structure in the templates is provided below.
 
 The `.entry.type` specifies the type of the entry, as shown below.
 
-| **Entry Type** | **Entry** |
-| --- | --- |
-| markdown | Markdown ![Markdown](../../doc_files/markdown.png) |
-| markdown-table | Markdown Table ![Markdown Table](../../doc_files/markdown-table.png) |
-| number | Number ![Number](../../doc_files/number.png) |
-| number-trend | Number Trend ![Number Trend](../../doc_files/number-trend.png) |
-| pie | Pie Chart ![Pie](../../doc_files/pie-dynamic.png) |
-| line | Line Chart ![Line](../../doc_files/line-static.png) |
-| single-bar | Single-Bar Chart ![Single-Bar](../../doc_files/single-bar-static.png) |
-| stacked-bar | Stacked-Bar Chart ![Stacked-Bar](../../doc_files/stacked-bar.png) |
-| duration | Time duration ![Duration](../../doc_files/duration.png) |
+| **Entry Type** | **Entry** | **Image** |
+| --- | --- | --- |
+| markdown | Markdown | ![](../../doc_files/markdown.png) |
+| markdown-table | Markdown Table | ![](../../doc_files/markdown-table.png) |
+| number | Number | ![](../../doc_files/number.png) |
+| number-trend | Number Trend | ![](../../doc_files/number-trend.png) |
+| pie | Pie Chart | ![](../../doc_files/pie-dynamic.png) |
+| line | Line Chart | ![](../../doc_files/line-static.png) |
+| single-bar | Single-Bar Chart | ![](../../doc_files/single-bar-static.png) |
+| stacked-bar | Stacked-Bar Chart | ![](../../doc_files/stacked-bar.png) |
+| duration | Time duration | ![](../../doc_files/duration.png) |
 
 This node supports [Variable Substitution](#Variable-Substitution) for all parameters.
 
