@@ -52,7 +52,8 @@ def test_test_module(mock_client: Client, mocker):
         "CloudflareZeroTrustEventCollector.fetch_events",
         return_value=({}, [])
     )
-    result = test_module(mock_client)
+    events_types = ["Account Audit Logs", "User Audit Logs", "Access Authentication Logs"]
+    result = test_module(mock_client, events_types)
     assert result == "ok"
 
 

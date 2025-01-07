@@ -1,21 +1,31 @@
 ## Cloudflare Zero Trust
 
-_____
 Use this integration to fetch account audit logs, user audit logs, and access authentication logs from Cloudflare Zero Trust as events in Cortex XSIAM.
-_____
 
-#### **1. Retrieve Global API Key**
+#### **Retrieve Global API Key**
 
-- Visit [Retrieve Global API Key](https://developers.cloudflare.com/fundamentals/api/get-started/keys/).
 
-  **Note:** The Global API Key is an all-purpose token that can read and edit any data or settings that you can access in the dashboard.  
-  - API Key is available here: [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)  
+- Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens).
+- Scroll to the API Keys section.
+- Here, you will find the Global API Key. Click View to reveal it (you may need to enter your password).
+- To learn more about the Global API Key, visit the [Cloudflare API Key Documentation.](https://developers.cloudflare.com/fundamentals/api/get-started/keys/).
 
-#### **2. Find Associated Email**
+#### **Find Associated Email**
 
-- Visit [Verify Email Address](https://developers.cloudflare.com/fundamentals/setup/account/verify-email-address/).
-- **API email** can be found here: [Cloudflare Profile](https://dash.cloudflare.com/profile).  
+- API email can be found here: [Cloudflare Profile](https://dash.cloudflare.com/profile).
 
-### Notes:
+- For more details on verifying your associated email, visit the  [Verify Email Address](https://developers.cloudflare.com/fundamentals/setup/account/verify-email-address/).
 
-The global rate limit for the Cloudflare API is 1200 requests per five minutes per user, and applies cumulatively regardless of whether the request is made via the dashboard, API key, or API token.
+
+#### **Token Permissions**
+
+This API token will affect the below accounts and zones, along with their respective permissions:
+
+- All accounts:
+
+  - Account Analytics: Read
+  - Access Audit Logs: Read
+- All zones:
+
+  - Logs: Read
+  - Analytics: Read
