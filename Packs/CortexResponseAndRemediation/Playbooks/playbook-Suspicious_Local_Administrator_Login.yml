@@ -446,6 +446,8 @@ tasks:
           accessor: agentid
           transformers:
           - operator: uniq
+      is_raw_command:
+        simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
