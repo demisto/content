@@ -1022,9 +1022,9 @@ Updates the status of a workbench alert.
 | --- | --- | --- |
 | workbench_id | ID of the workbench you would like to update the status for. e.g. workbench_id="WB-14-20190709-00003". | Required | 
 | if_match | Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details. e.g. if_match="d41d8cd98f00b204e9800998ecf8427e". | Required | 
-| status | Status to assign to the workbench alert. e.g. status="true_positive". Possible values are: open, in_progress, closed. | Required | 
+| status | Status to assign to the workbench alert. e.g. status="closed". Possible values are: open, in_progress, closed. | Optional | 
 | inv_status | The status of an investigation. *NOTE: THIS FIELD IS DEPRECATED!* e.g. inv_status="true_positive". Possible values are: new, in_progress, true_positive, false_positive, benign_true_positive, closed. | Optional | 
-| inv_result | The findings of a case or investigation. e.g. status="noteworthy". Possible values are: noteworthy, in_progress, true_positive, false_positive, benign_true_positive, other_findings, no_findings. | Optional | 
+| inv_result | The findings of a case or investigation. e.g. status="noteworthy". Possible values are: noteworthy, true_positive, false_positive, benign_true_positive, no_findings. | Optional | 
 
 #### Context Output
 
