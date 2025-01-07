@@ -36,7 +36,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchAlertsV2
+SearchAlertsV2
 
 ### Commands
 
