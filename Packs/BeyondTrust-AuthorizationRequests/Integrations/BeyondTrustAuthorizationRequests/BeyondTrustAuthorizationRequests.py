@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
-import time
 import datetime
 
 # disable insecure warnings
@@ -91,7 +90,7 @@ def get_ticket(client: Client):
         table formated ticket data
     """
 
-    sys_id = demisto.args().get("sys_id")  # str(demisto.args()["sys_id"])
+    sys_id = demisto.args().get("sys_id") 
     endpoint = f"/AuthorizationRequest/{sys_id}"
     try:
         response = client.make_api_request(endpoint, method='GET')
