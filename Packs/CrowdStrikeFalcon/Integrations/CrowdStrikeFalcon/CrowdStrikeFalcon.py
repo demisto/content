@@ -3528,13 +3528,11 @@ def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict
         extracted_resource_id=id[0] if id else None,
         incident_type=incident_type
     )
-    incident = ioa_event | incident_metadata
-    report_date_time = incident.get('report_date_time')
-    return {
+    incident_context = {
         'name': f'IOA Event ID: {ioa_event.get("event_id")}',
-        'occurred': str(report_date_time) if report_date_time else None,
-        'rawJSON': json.dumps(incident)
+        'rawJSON': json.dumps(ioa_event | incident_metadata)
     }
+    return incident_context
 
 
 def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None,
