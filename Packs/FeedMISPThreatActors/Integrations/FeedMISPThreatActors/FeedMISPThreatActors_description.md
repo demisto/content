@@ -1,8 +1,13 @@
-## BaseIntegration Help
+# MISP Threat Actors Feed Integration
 
-Markdown file for integration configuration  help snippet. In this file add:
+## Overview
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+The MISP Threat Actors Feed integration allows you to retrieve and ingest threat actor information from the MISP threat actor galaxy into your TIM.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+## Configuring the Integration
+
+- **Fetch Interval**: Set how often TIM should fetch new data.
+
+## Usage
+
+Once configured, this integration will automatically fetch new threat actor data based on your specified interval.
