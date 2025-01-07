@@ -1,5 +1,5 @@
 ## Overview
-Use CrowdStrike Falcon Streaming v2 integration to connect to CrowdStrike Falcon stream and fetch incidents to Cortex.
+Use CrowdStrike Falcon Streaming v2 integration to connect to CrowdStrike Falcon stream and fetch events as incidents to Cortex XSOAR.
 
 
 ## Define CrowdStrike API client
@@ -9,7 +9,7 @@ Follow [this article](https://www.crowdstrike.com/blog/tech-center/get-access-fa
 
 The required scope is Event streams.
 
-## Configure CrowdStrike Falcon Streaming v2 in Cortex
+## Configure CrowdStrike Falcon Streaming v2 on Cortex XSOAR
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for CrowdStrike Falcon Streaming v2
 3. Click __Add instance__ to create and configure a new integration instance.
@@ -65,7 +65,7 @@ In order to view sample events, enable events storage by selecting the checkbox 
 The last events (maximum of 20) are fetched every 1 minute. Allow the integration to run for at least 5 minutes before running the command.
 After you finish mapping, it is recommended to turn off the **Store sample events for mapping** to reduce performance overhead.
 
-For Cortex XSOAR version 6.0 and above, you will be able to fetch samples in the mapping wizard.
+For Cortex XSOAR version 6.0 and above, you will be able to fetch samples in the mapping wizard
 
 For earlier versions, you should run the `crowdstrike-falcon-streaming-get-sample-events` command.
 

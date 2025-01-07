@@ -324,5 +324,3 @@ tests:
 - No tests - deprecated
 fromversion: 5.0.0
 deprecated: true
-marketplaces:
-- xsoar
