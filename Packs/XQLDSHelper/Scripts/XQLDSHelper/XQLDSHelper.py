@@ -1846,7 +1846,7 @@ class Main:
             'Entry': entry
         }
         if not cache_entry and self.__cache_type == CacheType.ENTRY:
-            cache.save_entry(self.__query_params, entry)  # noqa
+            cache.save_entry(self.__query_params, entry)  # type: ignore[arg-type]
 
         return CommandResults(
             readable_output='Done.',
