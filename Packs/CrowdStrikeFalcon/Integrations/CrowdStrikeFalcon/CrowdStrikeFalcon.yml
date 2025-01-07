@@ -70,61 +70,64 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-  defaultvalue:marketplacev2: '500'
+  defaultvalue:marketplacev2: '200'
+  additionalinfo: Input a value between 1-500.
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
   required: false
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
   required: false
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: Mobile Detections fetch query
   name: mobile_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: IOM fetch query
   name: iom_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: IOA fetch query
   name: ioa_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments."
 - display: Detections from On-Demand Scans fetch query
   name: on_demand_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-- display: OFP Detection fetch query
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
+- display: OFP Detections fetch query
   name: ofp_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -5114,21 +5117,20 @@ script:
     hidden: false
     hidden:xsoar: true
   dockerimage: demisto/py3-tools:1.0.0.114656
+  # Fetch incidents on XSOAR only
   isfetch: false
   isfetch:xsoar: true
-  
+  # Fetch events on XSIAM only
   isfetchevents: false
   isfetchevents:marketplacev2: true
-
+  # Incident mapper on XSOAR only
   ismappable: true
   ismappable:marketplacev2: false
-
+  # Mirroring in / out on XSOAR only
   isremotesyncin: true
   isremotesyncin:marketplacev2: false
-
   isremotesyncout: true
   isremotesyncout:marketplacev2: false
-
   script: '-'
   subtype: python3
   type: python
