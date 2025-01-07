@@ -46,6 +46,7 @@ SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
 LOCKED_UPDATES_LOCK = None
 EVENTS_COUNT_CURRENT_INTERVAL = 0
 EVENTS = []
+COUNTER = 0
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -143,7 +144,13 @@ class Client(BaseClient):
         # End of new part.
         
         events: list[str] = raw_response.split('\n')
-        offset = (json.loads(events.pop())).get("offset")
+        offset = None
+        try:
+            offset_context = events.pop()
+            loaded_offset_context = json.loads(offset_context)
+            offset = loaded_offset_context.get("offset")
+        except Exception as e:
+            demisto.error(f"couldn't decode offset with {offset_context=}, reason {e}")
         return events, offset
 
 
@@ -427,9 +434,7 @@ async def test_new_endpoint(client):
 
 
 def reset_offset_command(client: Client):  # pragma: no cover
-    ctx = get_integration_context()
-    ctx["reset_offset"] = True
-    set_integration_context(ctx)
+    set_integration_context({})
     return 'Offset was reset successfully.', {}, {}
 
 
@@ -478,12 +483,13 @@ async def fetch_events_command(client: Client,
 
     """
     offset = ctx.get("offset")
-    async for events, counter in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
-        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter))  # noqa: RUF006
+    async for events in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
+        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
 
 
-async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter):
-    demisto.info(f"got {len(events)} events, moving to processing events data for the {counter} time.")
+async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset):
+    global COUNTER
+    demisto.info(f"got {len(events)} events, moving to processing events data for the {COUNTER} time.")
     processed_events = []
     if should_skip_decode_events:
         demisto.info("Skipping decode events.")
@@ -507,13 +513,14 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                 demisto.debug(f"Couldn't decode {event=}, reason: {e}")
             finally:
                 processed_events.append(event)
-    demisto.info(f"Sending {len(processed_events)} events to xsiam for the {counter} time.")
+    demisto.info(f"Sending {len(processed_events)} events to xsiam for the {COUNTER} time.")
     tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True, url_key="host",
-                                    data_format="json")
-    demisto.info(f"Finished executing send_events_to_xsiam for the {counter} time, waiting for tasks to end.")
+                                    data_format="json", data_size_expected_to_split_evenly=True)
+    demisto.info(f"Finished executing send_events_to_xsiam for the {COUNTER} time, waiting for tasks to end.")
     await asyncio.gather(*tasks)
-    demisto.info(f"Finished gathering all tasks for the {counter} time.")
+    demisto.info(f"Finished gathering all tasks for the {COUNTER} time.")
+    COUNTER += 1
     asyncio.create_task(update_total_events_fetched_and_offset(len(processed_events), offset))  # noqa: RUF006
 
 
@@ -523,9 +530,6 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
         demisto.info("Starting to update module health")
         await update_module_health()
         demisto.info("Finished updating module health")
-        ctx = get_integration_context() or {}
-        if ctx.get("reset_offset", False):
-            offset = None
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
@@ -548,7 +552,7 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
             await asyncio.sleep(60)
             demisto.info("Done sleeping 60 seconds.")
         if events:
-            yield events, counter
+            yield events
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             demisto.info(f"got {len(events)} events which is less than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}," \
                             "going to sleep for 60 seconds.")
@@ -585,7 +589,8 @@ def decode_url(headers: str) -> dict:
 
 def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
+                       data_size_expected_to_split_evenly=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -727,7 +732,10 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-    data_chunks = split_data_to_chunks(data, chunk_size)
+    if data_size_expected_to_split_evenly:
+        data_chunks = split_data_to_chunks_evenly(data, chunk_size)
+    else:
+        data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
         chunk_size = len(data_chunk)
@@ -753,8 +761,8 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
 
 
     if multiple_threads:
-        demisto.info("Sending events to xsiam asynchronusly.")
-        all_chunks = [chunk for chunk in data_chunks]
+        demisto.info("Sending events to xsiam asynchronously.")
+        all_chunks = list(data_chunks)
         demisto.info("Finished appending all data_chunks to a list.")
         support_multithreading()
         # tasks = [loop.run_in_executor(None, send_events_async, chunk) for chunk in all_chunks]
@@ -772,9 +780,32 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
     return
 
 
+def split_data_to_chunks_evenly(data, target_chunk_size):
+    """
+    Splits a string of data into chunks of an approximately specified size.
+    The actual size can be lower.
+
+    :type data: ``list`` or a ``string``
+    :param data: A list of data or a string delimited with \n  to split to chunks.
+    :type target_chunk_size: ``int``
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
+
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
+    :rtype: ``collections.Iterable[list]``
+    """
+    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    if isinstance(data, str):
+        data = data.split('\n')
+    entry_size = sys.getsizeof(data[0])
+    num_of_entries_per_chunk = target_chunk_size // entry_size
+    for i in range(0, len(data), num_of_entries_per_chunk):
+        chunk = data[i:i+num_of_entries_per_chunk]
+        yield chunk
+
+
 def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False):
+                         add_proxy_to_request=False, multiple_threads=False, data_size_expected_to_split_evenly=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -828,7 +859,8 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        multiple_threads=multiple_threads
+        multiple_threads=multiple_threads,
+        data_size_expected_to_split_evenly=data_size_expected_to_split_evenly
     )
 
 

@@ -126,7 +126,7 @@ display: Akamai WAF SIEM
 name: Akamai WAF SIEM
 script:
   commands:
-  - description: Reset the last offset in case the offset is invalid.
+  - description: Reset the last offset to start fetching from the first fetch timestamp, use this command when the instance is disabled.
     name: akamai-siem-reset-offset
   - arguments:
     - description: 'Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912.'
