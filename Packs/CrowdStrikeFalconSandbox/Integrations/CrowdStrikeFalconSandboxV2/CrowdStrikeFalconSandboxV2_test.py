@@ -1,4 +1,3 @@
-import io
 import json
 
 import pytest
@@ -17,7 +16,7 @@ BASE_URL = 'https://test.com'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -28,8 +27,8 @@ client = Client(base_url=BASE_URL,
 
 
 def test_validated_term():
-    assert 'USA' == validated_term('country', 'USA')
-    assert 1 == validated_term('verdict', 'Whitelisted')
+    assert validated_term('country', 'USA') == 'USA'
+    assert validated_term('verdict', 'Whitelisted') == 1
 
 
 def test_validated_search_terms():
@@ -170,9 +169,9 @@ def test_results_in_progress_polling_true_with_file(mocker, requests_mock):
     assert file_result['Type'] == 9
     assert file_result['File'].endswith("pdf")
     assert len(scan_result) == len(hash_response_json) + 1
-    assert ['SUCCESS', 'SUCCESS'] == [o['state'] for o in scan_result[0].outputs]
-    assert ['malicious', 'malicious'] == [o['verdict'] for o in scan_result[0].outputs]
-    assert [False, False] == [o.bwc_fields['url_analysis'] for o in map(lambda x: x.indicator, scan_result[1:])]
+    assert [o['state'] for o in scan_result[0].outputs] == ['SUCCESS', 'SUCCESS']
+    assert [o['verdict'] for o in scan_result[0].outputs] == ['malicious', 'malicious']
+    assert [o.bwc_fields['url_analysis'] for o in map(lambda x: x.indicator, scan_result[1:])] == [False, False]
 
 
 def test_results_in_progress_polling_false(requests_mock):
@@ -367,7 +366,7 @@ def test_crowdstrike_submit_url_command_poll(requests_mock, mocker):
 
 
 def test_get_api_id_deprecated_env_id():
-    assert 'filename:200' == get_api_id({'environmentId': 200, 'environementID': 100, 'file': 'filename'})
+    assert get_api_id({'environmentId': 200, 'environementID': 100, 'file': 'filename'}) == 'filename:200'
 
 
 def test_get_api_id_onlyfile():
@@ -380,8 +379,8 @@ def test_get_api_id_onlyfile():
 
 
 def test_get_submission_arguments():
-    assert {'environment_id': 200, 'submit_name': 'steve'} == \
-        get_submission_arguments({'environmentId': 200, 'environmentID': 300, 'submit_name': 'steve'})
+    assert get_submission_arguments({'environmentId': 200, 'environmentID': 300, 'submit_name': 'steve'}) == \
+        {'environment_id': 200, 'submit_name': 'steve'}
 
 
 def test_crowdstrike_analysis_overview_summary_command(requests_mock):
@@ -411,9 +410,9 @@ def test_crowdstrike_analysis_overview_summary_command(requests_mock):
 
 def test_crowdstrike_analysis_overview_refresh_command(requests_mock):
     call = requests_mock.get(BASE_URL + '/overview/filehash/refresh', status_code=200, json={})
-    assert 'The request to refresh the analysis overview was sent successfully.' == \
-           crowdstrike_analysis_overview_refresh_command(client, {'file': 'filehash'}).readable_output \
-           and call.called
+    assert crowdstrike_analysis_overview_refresh_command(client, {'file': 'filehash'}).readable_output == \
+        'The request to refresh the analysis overview was sent successfully.' \
+        and call.called
 
 
 def test_crowdstrike_analysis_overview_command(requests_mock):
@@ -447,7 +446,7 @@ def test_crowdstrike_analysis_overview_command(requests_mock):
 
 @freeze_time("2000-10-31")
 def test_get_default_file_name():
-    assert 'CrowdStrike_report_972950400.pdf' == get_default_file_name('pdf')
+    assert get_default_file_name('pdf') == 'CrowdStrike_report_972950400.pdf'
 
 
 @pytest.mark.parametrize('command_name, method_name', [('cs-falcon-sandbox-search', 'crowdstrike_search_command'),
