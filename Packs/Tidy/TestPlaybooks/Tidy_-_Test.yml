@@ -589,3 +589,5 @@ inputs: []
 outputs: []
 fromversion: 6.0.0
 description: Test Tidy content developer setup on a aws mac machine.
+
+test

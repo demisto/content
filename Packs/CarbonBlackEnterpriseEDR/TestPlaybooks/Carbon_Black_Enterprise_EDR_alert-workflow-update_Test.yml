@@ -148,3 +148,5 @@ outputs: []
 quiet: true
 fromversion: 6.10.0
 description: Test playbook for 'alert-workflow-update' command.
+
+test

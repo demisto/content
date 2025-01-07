@@ -167,3 +167,5 @@ view: |-
   }
 fromversion: 5.0.0
 description: This is a test playbook
+
+test

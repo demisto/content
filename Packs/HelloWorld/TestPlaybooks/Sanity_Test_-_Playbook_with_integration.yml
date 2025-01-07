@@ -137,3 +137,5 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: Tests locking mechanism and configuration.
+
+test

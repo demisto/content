@@ -147,3 +147,5 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 description: Testing get indicators command of MISP Feed integration
+
+test

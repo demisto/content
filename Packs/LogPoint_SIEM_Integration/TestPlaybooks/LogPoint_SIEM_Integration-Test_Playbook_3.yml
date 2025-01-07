@@ -566,3 +566,5 @@ inputs: []
 outputs: []
 sourceplaybookid: LogPoint SIEM Integration - Test Playbook 2
 fromversion: 6.0.0
+
+test

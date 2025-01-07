@@ -346,3 +346,5 @@ view: |-
   }
 fromversion: 5.0.0
 description: 'Tests the Code42 commands.'
+
+test

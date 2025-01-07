@@ -386,3 +386,5 @@ outputs: []
 fromversion: 5.0.0
 description: 'This playbook uses the Agari Phishing Defense integration and tests
   all the commands of the integration.'
+
+test

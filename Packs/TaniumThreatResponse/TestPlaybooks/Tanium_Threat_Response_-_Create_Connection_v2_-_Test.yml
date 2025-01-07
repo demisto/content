@@ -219,3 +219,5 @@ view: |-
     }
   }
 fromversion: 6.0.0
+
+test

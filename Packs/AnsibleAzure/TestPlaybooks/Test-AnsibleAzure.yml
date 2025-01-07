@@ -640,3 +640,5 @@ fromversion: 6.0.0
 description: "Test playbook for Ansible Azure Integration"
 tests:
 - No tests (auto formatted)
+
+test

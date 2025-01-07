@@ -117,3 +117,4 @@ fromversion: 6.10.0
 description: "Test playbook for testing 'cb-eedr-process-search' command with polling: true."
 
 test
+test
