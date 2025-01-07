@@ -656,7 +656,7 @@ class EntryBuilder:
         """
         d: dict[str, float] = defaultdict(float)
         for fields in dataset:
-            d[fields.get(group_by)] += to_float(fields.get(sum_field))
+            d[fields.get(group_by) or ''] += to_float(fields.get(sum_field))
         return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
 
     @staticmethod
@@ -784,13 +784,10 @@ class EntryBuilder:
                 ) -> None:
                     assert isinstance(field, dict), f'field in .fields must be dict - {type(field)}'
 
-                    self.__color = field.get('color')
-                    assert isinstance(self.__color, str) or self.__color is None, (
+                    self.__color = field.get('color') or default_color
+                    assert isinstance(self.__color, str), (
                         f'field.color must be str or null - {type(self.__color)}'
                     )
-                    if not self.__color:
-                        self.__color = default_color
-
                     self.__label = field.get('label')
                     assert isinstance(self.__label, str) or self.__label is None, (
                         f'field.label must be str or null - {type(self.__label)}'
@@ -812,7 +809,7 @@ class EntryBuilder:
                 self,
                 template: dict[str, Any],
             ) -> None:
-                self.__records: self.Records | None = None
+                self.__records: Records | None = None
                 self.__fields: dict[str, Field] | None = None
                 
                 group = template.get('group')
@@ -856,7 +853,7 @@ class EntryBuilder:
             )
             # Create color mapping
             colors = EntryBuilder.__make_color_palette(
-                names=names.keys(),
+                names=list(names),
                 colors=records.colors,
             )
             # Build stats
@@ -864,10 +861,10 @@ class EntryBuilder:
                 assign_params(
                     name=to_str(name),
                     data=[to_float(value)],
-                    color=colors.get(name),  # noqa
+                    color=colors.get(name),  # type: ignore[arg-type]
                 ) for fields in sorted(
                     dataset,
-                    key=lambda v: to_float(v.get(records.sort.by)),  # noqa
+                    key=lambda v: to_float(v.get(records.sort.by)),  # type: ignore[union-attr]
                     reverse=not records.sort.asc,
                 ) for name, value in [
                     (fields.get(records.name_field), fields.get(records.data_field))
@@ -928,7 +925,7 @@ class EntryBuilder:
                 def by(
                     self,
                 ) -> str:
-                    return self.__by  # noqa
+                    return self.__by  # type: ignore[return-value]
 
                 @property
                 def asc(
@@ -971,19 +968,19 @@ class EntryBuilder:
                     def name_field(
                         self,
                     ) -> str:
-                        return self.__name_field  # noqa
+                        return self.__name_field  # type: ignore[return-value]
 
                     @property
                     def data_field(
                         self,
                     ) -> str:
-                        return self.__data_field  # noqa
+                        return self.__data_field  # type: ignore[return-value]
 
                     @property
                     def colors(
                         self,
                     ) -> dict[str, str] | list[str] | str:
-                        return self.__colors  # noqa
+                        return self.__colors  # type: ignore[return-value]
 
                 class Field:
                     def __init__(
@@ -993,13 +990,10 @@ class EntryBuilder:
                     ) -> None:
                         assert isinstance(field, dict), f'field in y.fields must be dict - {type(field)}'
 
-                        self.__color = field.get('color')
-                        assert isinstance(self.__color, str) or self.__color is None, (
+                        self.__color = field.get('color') or default_color
+                        assert isinstance(self.__color, str), (
                             f'field.color must be str or null - {type(self.__color)}'
                         )
-                        if not self.__color:
-                            self.__color = default_color
-
                         self.__label = field.get('label')
                         assert isinstance(self.__label, str) or self.__label is None, (
                             f'field.label must be str or null - {type(self.__label)}'
@@ -1021,7 +1015,7 @@ class EntryBuilder:
                     self,
                     y: dict[str, Any],
                 ) -> None:
-                    self.__records: self.Records | None = None
+                    self.__records: Records | None = None
                     self.__fields: dict[str, Field] | None = None
 
                     group = y.get('group')
@@ -1089,7 +1083,7 @@ class EntryBuilder:
             )
             # Create color mapping
             ycolors = EntryBuilder.__make_color_palette(
-                names=ynames.keys(),
+                names=list(ynames),
                 colors=records.colors,
             )
             # Build stats
@@ -1109,7 +1103,7 @@ class EntryBuilder:
                     groups[name_str] = assign_params(
                         name=name_str,
                         data=[to_float(data)],
-                        color=ycolors.get(name),
+                        color=ycolors.get(name),  # type: ignore[arg-type]
                     )
                     xlabel = xlabel or to_str(
                         y_fields.get(template.x.field) if template.x.field else x_val
@@ -1322,7 +1316,7 @@ class EntryBuilder:
             if template.sort.by:
                 dataset = sorted(
                     dataset,
-                    key=lambda v: SortableValue(v.get(template.sort.by)),  # noqa
+                    key=lambda v: SortableValue(v.get(template.sort.by)),  # type: ignore[arg-type]
                     reverse=not template.sort.asc,
                 )
 
@@ -1696,7 +1690,7 @@ class Main:
             variable_substitution[1] = var_closing
 
         return Formatter(
-            variable_substitution=tuple(variable_substitution),  # nowa
+            variable_substitution=tuple(variable_substitution),  # type: ignore[arg-type]
             keep_symbol_to_null=True,
         )
 
@@ -1755,6 +1749,22 @@ class Main:
             )
         )
 
+    def __arg_to_int(
+        self,
+        name: str,
+        default_value: int,
+    ) -> int:
+        arg = self.__args.get(name)
+        if arg is None or arg == '':
+            return default_value
+        elif isinstance(arg, (str, int, float)):
+            try:
+                return int(arg)
+            except Exception:
+                raise DemistoException(f'Invalid {name} - {arg}')
+        else:
+            raise DemistoException(f'Invalid {name} - {arg}')
+
     def __init__(
         self,
         args: dict[str, Any],
@@ -1776,15 +1786,15 @@ class Main:
         if self.__cache_type not in [x.value for x in list(CacheType)]:
             raise DemistoException('Invalid cache_type - {self.__cache_type}')
 
-        self.__max_retries: int = arg_to_number(
-            args.get('max_retries') or DEFAULT_RETRY_MAX
-        )
-        self.__retry_interval: int = arg_to_number(
-            args.get('retry_interval') or DEFAULT_RETRY_INTERVAL
-        )
-        self.__polling_interval: int = arg_to_number(
-            args.get('polling_interval') or DEFAULT_POLLING_INTERVAL
-        )
+        self.__max_retries: int = self.__arg_to_int(
+            'max_retries', DEFAULT_RETRY_MAX
+        )  # Allow 0
+        self.__retry_interval: int = self.__arg_to_int(
+            'retry_interval', DEFAULT_RETRY_INTERVAL
+        ) or DEFAULT_RETRY_INTERVAL
+        self.__polling_interval: int = self.__arg_to_int(
+            args.get('polling_interval'), DEFAULT_POLLING_INTERVAL
+        ) or DEFAULT_POLLING_INTERVAL
         self.__xql_query_instance: str | None = (
             demisto.get(self.__template, 'query.command.using')
             or args.get('xql_query_instance')
