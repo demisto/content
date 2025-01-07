@@ -4,8 +4,8 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Doppel Inc",
-    "url": "",
-    "email": "",
+    "url": "https://www.doppel.com/",
+    "email": "integrations@doppel.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
