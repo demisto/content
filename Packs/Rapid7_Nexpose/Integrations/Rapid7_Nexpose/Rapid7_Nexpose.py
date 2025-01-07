@@ -2404,14 +2404,14 @@ def create_credential_creation_body(service: CredentialService, database_name: s
 
     error_message: str = ""
     if len(missing_params) > 0:
-        error_message += f"Missing required parameters for \"{service.value}\": {', '.join(missing_params)}.\n"
+        error_message += f'Missing required parameters for "{service.value}": {", ".join(missing_params)}.\n'
 
     if len(special_validation_errors) > 0:
         for special_validation_error in special_validation_errors:
-            error_message += f"{special_validation_error}\n"
+            error_message += f'{special_validation_error}\n'
 
     if error_message:
-        raise ValueError(error_message.rstrip("\n"))
+        raise ValueError(error_message.rstrip('\n'))
 
     return account_data
 
