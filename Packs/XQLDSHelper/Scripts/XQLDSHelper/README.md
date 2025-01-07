@@ -136,8 +136,8 @@ The `.entry.type` specifies the type of the entry, as shown below.
 | number | Number ![Number](../../doc_files/number.png) |
 | number-trend | Number Trend ![Number Trend](../../doc_files/number-trend.png) |
 | pie | Pie Chart ![Pie](../../doc_files/pie.png) |
-| line | Line Chart ![Line](../../doc_files/line.png) |
-| single-bar | Single-Bar Chart ![Single-Bar](../../doc_files/single-bar.png) |
+| line | Line Chart ![Line](../../doc_files/line-static.png) |
+| single-bar | Single-Bar Chart ![Single-Bar](../../doc_files/single-bar-static.png) |
 | stacked-bar | Stacked-Bar Chart ![Stacked-Bar](../../doc_files/stacked-bar.png) |
 | duration | Time duration ![Duration](../../doc_files/duration.png) |
 
