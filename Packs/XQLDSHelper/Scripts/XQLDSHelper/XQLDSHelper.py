@@ -6,15 +6,15 @@ import gzip
 import math
 import base64
 import hashlib
-import datetime
 import dateparser
 import itertools
 import colorsys
 import traceback
 import urllib.parse
-from collections import defaultdict, namedtuple
-from collections.abc import Iterator
-from typing import Tuple, Callable, NamedTuple, Self
+from datetime import timezone
+from collections import defaultdict
+from collections.abc import Iterator, Iterable
+from typing import Tuple, Self
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
@@ -111,7 +111,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> Self:
+    ) -> Self:  # noqa
         """ Create a ContextData with the new value
 
         :param value: The new value.
@@ -309,7 +309,7 @@ class SortableValue(object):
                 or (isinstance(obj1, bool) and isinstance(obj2, bool))
                 or (isinstance(obj1, str) and isinstance(obj2, str))
             ):
-                return obj1 < obj2
+                return obj1 < obj2  # noqa
             elif obj1 is None or obj2 is None:
                 return bool(obj2 is None) < bool(obj1 is None)
             else:
@@ -342,8 +342,8 @@ class QueryParams:
         self,
         query_name: str,
         query_string: str,
-        earliest_time: datetime.datetime,
-        latest_time: datetime.datetime,
+        earliest_time: datetime,
+        latest_time: datetime,
     ) -> None:
         if not query_string:
             raise DemistoException('Query string is required.')
@@ -377,13 +377,13 @@ class QueryParams:
     @property
     def earliest_time(
         self,
-    ) -> datetime.datetime:
+    ) -> datetime:
         return self.__earliest_time
 
     @property
     def latest_time(
         self,
-    ) -> datetime.datetime:
+    ) -> datetime:
         return self.__latest_time
 
     @property
@@ -614,14 +614,14 @@ class EntryBuilder:
     """
     @staticmethod
     def __enum_fields_by_group(
-        dataset: Iterator[dict[str, Any]],
+        dataset: Iterable[dict[str, Any]],
         sort_by: str,
         group_by: str,
         asc: bool,
-    ) -> Iterator[
+    ) -> Iterable[
         Tuple[
             str,
-            Iterator[dict[str, Any]]
+            Iterable[dict[str, Any]]
         ]
     ]:
         """ Enumerate fields with a group value by group
@@ -638,7 +638,7 @@ class EntryBuilder:
                 key=lambda v: SortableValue(v.get(sort_by)),
                 reverse=not asc,
             ),
-            key=lambda v: v.get(group_by)
+            key=lambda v: v.get(group_by)  # noqa
         )
 
     @staticmethod
@@ -654,7 +654,7 @@ class EntryBuilder:
         :param group_by: The field name to group the fields.
         :return: Mapping of field name with the sum value in descending order by the sum.
         """
-        d = defaultdict(float)
+        d: dict[str, float] = defaultdict(float)
         for fields in dataset:
             d[fields.get(group_by)] += to_float(fields.get(sum_field))
         return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
@@ -670,7 +670,7 @@ class EntryBuilder:
         :param colors: The base color mapping, or colors for 'names' in order
         :return: The color mapping. (name and color)
         """
-        color_order = []
+        color_order: list[str] = []
         if isinstance(colors, str):
             color_order = [color_order] * len(names)
         elif isinstance(colors, list):
@@ -749,26 +749,26 @@ class EntryBuilder:
                     self.__colors = colors
 
                     sort = records.get('sort') or {}
-                    assert isinstance(sort, dict) or sort is None, f'sort must be dict or null - {type(sort)}'
+                    assert isinstance(sort, dict), f'sort must be dict or null - {type(sort)}'
                     self.__sort = self.Sort(sort, default_by=self.data_field)
 
                 @property
                 def name_field(
                     self,
                 ) -> str:
-                    return self.__name_field
+                    return self.__name_field  # noqa
 
                 @property
                 def data_field(
                     self,
                 ) -> str:
-                    return self.__data_field
+                    return self.__data_field  # noqa
 
                 @property
                 def colors(
                     self,
                 ) -> dict[str, str] | list[str] | str:
-                    return self.__colors
+                    return self.__colors  # noqa
 
                 @property
                 def sort(
@@ -812,13 +812,15 @@ class EntryBuilder:
                 self,
                 template: dict[str, Any],
             ) -> None:
+                self.__records: self.Records | None = None
+                self.__fields: dict[str, Field] | None = None
+                
                 group = template.get('group')
                 if group == 'records':
                     records = template.get(group)
                     assert isinstance(records, dict), f'records must be dict - {type(records)}'
 
                     self.__records = self.Records(records)
-                    self.__fields = None
                 elif group == 'fields':
                     fields = template.get(group)
                     assert isinstance(fields, dict), f'fields must be dict - {type(fields)}'
@@ -830,7 +832,6 @@ class EntryBuilder:
                             EntryBuilder.list_colors(len(fields))
                         )
                     }
-                    self.__records = None
                 else:
                     raise DemistoException(f"group must be 'records' or 'fields' - {group}")
 
@@ -863,10 +864,10 @@ class EntryBuilder:
                 assign_params(
                     name=to_str(name),
                     data=[to_float(value)],
-                    color=colors.get(name),
+                    color=colors.get(name),  # noqa
                 ) for fields in sorted(
                     dataset,
-                    key=lambda v: to_float(v.get(records.sort.by)),
+                    key=lambda v: to_float(v.get(records.sort.by)),  # noqa
                     reverse=not records.sort.asc,
                 ) for name, value in [
                     (fields.get(records.name_field), fields.get(records.data_field))
@@ -927,7 +928,7 @@ class EntryBuilder:
                 def by(
                     self,
                 ) -> str:
-                    return self.__by
+                    return self.__by  # noqa
 
                 @property
                 def asc(
@@ -970,19 +971,19 @@ class EntryBuilder:
                     def name_field(
                         self,
                     ) -> str:
-                        return self.__name_field
+                        return self.__name_field  # noqa
 
                     @property
                     def data_field(
                         self,
                     ) -> str:
-                        return self.__data_field
+                        return self.__data_field  # noqa
 
                     @property
                     def colors(
                         self,
                     ) -> dict[str, str] | list[str] | str:
-                        return self.__colors
+                        return self.__colors  # noqa
 
                 class Field:
                     def __init__(
@@ -1020,13 +1021,15 @@ class EntryBuilder:
                     self,
                     y: dict[str, Any],
                 ) -> None:
+                    self.__records: self.Records | None = None
+                    self.__fields: dict[str, Field] | None = None
+
                     group = y.get('group')
                     if group == 'records':
                         records = y.get(group)
                         assert isinstance(records, dict), f'y.records must be dict - {type(records)}'
 
                         self.__records = self.Records(records)
-                        self.__fields = None
                     elif group == 'fields':
                         fields = y.get(group)
                         assert isinstance(fields, dict), f'y.fields must be dict - {type(fields)}'
@@ -1038,7 +1041,6 @@ class EntryBuilder:
                                 EntryBuilder.list_colors(len(fields))
                             )
                         }
-                        self.__records = None
                     else:
                         raise DemistoException(f"y.group must be 'records' or 'fields' - {group}")
 
@@ -1276,11 +1278,10 @@ class EntryBuilder:
                 self.__title = template.get('title') or ''
                 assert isinstance(self.__title, str), f'title must be str or null - {type(self.__title)}'
 
+                self.__columns: list[Column] | None = None
                 if columns := template.get('columns'):
                     assert isinstance(columns, list), f'columns must be list or null - {type(columns)}'
                     self.__columns = [self.Column(c) for c in columns]
-                else:
-                    self.__columns = None
 
                 sort = template.get('sort') or {}
                 assert isinstance(sort, dict), f'sort must be dict or null - {type(sort)}'
@@ -1612,8 +1613,8 @@ class Main:
     @staticmethod
     def __parse_date_time(
         value: Any,
-        base_time: datetime.datetime | None,
-    ) -> datetime.datetime:
+        base_time: datetime | None,
+    ) -> datetime:
         """ Parse a date time value
 
         :param value: The date or time to parse
@@ -1621,7 +1622,7 @@ class Main:
         :return: aware datetime object
         """
         if value in (None, ''):
-            return datetime.datetime.now(datetime.UTC)
+            return datetime.now(timezone.utc)
 
         if isinstance(value, int):
             # Parse as time stamp
@@ -1631,7 +1632,7 @@ class Main:
                 while value > 4294967295:
                     value /= 1000
 
-                return datetime.datetime.fromtimestamp(value).astimezone(datetime.UTC)
+                return datetime.fromtimestamp(value).astimezone(timezone.utc)
             except Exception as e:
                 raise DemistoException(f'Error with input date / time - {e}')
 
@@ -1733,7 +1734,7 @@ class Main:
             or args.get('round_time')
             or 0
         ):
-            base_time = datetime.datetime.fromtimestamp(
+            base_time = datetime.fromtimestamp(
                 math.floor(base_time.timestamp() / round_time) * round_time,
                 base_time.tzinfo
             )
