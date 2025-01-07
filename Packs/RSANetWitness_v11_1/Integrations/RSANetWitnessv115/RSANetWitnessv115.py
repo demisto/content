@@ -66,13 +66,13 @@ class Client(BaseClient):
         params = assign_params(until=until, since=since, pageSize=page_size, pageNumber=page_number)
         return self._http_request('GET', 'rest/api/incidents', params=params)
 
-    def get_incident_request(self, inc_id: str | None) -> dict:
+    def get_incident_request(self, inc_id: str | None) -> list:
         data = json.dumps({
             'meta_name': 'incidentId',
             'meta_value': inc_id,
             'numberOfRecords': "0",
         })
-        response = self._http_request('GET', 'rest/api/incidents/fetch',data=data)
+        response = self._http_request('GET', 'rest/api/incidents/fetch', data=data)
 
         # Ensure the response is a list
         if not isinstance(response, list):
@@ -100,8 +100,8 @@ class Client(BaseClient):
             return_empty_response=True,
         )
 
-    def incident_list_alerts_request(self, page_size: str | None, page_number: str | None, id_: str | None) -> dict:
-        #params = assign_params(pageNumber=page_number, pageSize=page_size)
+    def incident_list_alerts_request(self, page_size: str | None, page_number: str | None, id_: str | None) -> list:
+        # params = assign_params(pageNumber=page_number, pageSize=page_size)
         data = json.dumps({
             'meta_name': 'incidentId',
             'meta_value': id_,
