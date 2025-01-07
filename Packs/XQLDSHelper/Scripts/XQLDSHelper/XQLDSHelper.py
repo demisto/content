@@ -49,6 +49,7 @@ def to_str(
     """
     return val if isinstance(val, str) else json.dumps(val)
 
+
 class CacheType(enum.StrEnum):  # pylint: disable=no-member
     NONE = 'none'
     DATASET = 'dataset'
