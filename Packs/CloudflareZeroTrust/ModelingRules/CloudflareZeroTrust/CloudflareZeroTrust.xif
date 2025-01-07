@@ -1,7 +1,7 @@
 [MODEL: dataset = cloudflare_zerotrust_raw]
 /* Access authentication logs
    https://developers.cloudflare.com/api/operations/access-authentication-logs-get-access-authentication-logs */
-filter SOURCE_LOG_TYPE = "access_authentication_logs" 
+filter SOURCE_LOG_TYPE = "Access Authentication Logs" 
 | alter 
     user_ipv4 = if(ip_address ~= "(?:\d{1,3}\.){3}\d{1,3}", ip_address),
     user_ipv6 = if(ip_address ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", ip_address)
@@ -21,7 +21,7 @@ filter SOURCE_LOG_TYPE = "access_authentication_logs"
 /* User & Account Audit logs
    https://developers.cloudflare.com/api/operations/audit-logs-get-user-audit-logs 
    https://developers.cloudflare.com/api/operations/audit-logs-get-account-audit-logs */
-filter SOURCE_LOG_TYPE in ("account_audit_logs", "user_audit_logs")
+filter SOURCE_LOG_TYPE in ("Account Audit Logs", "User Audit Logs")
 | alter 
     action_type = action -> type, // A short string that describes the action that was performed.
     action_result = action -> result, // A boolean that indicates if the action attempted was successful.
