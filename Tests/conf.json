@@ -20,26 +20,22 @@
     },
     "testTimeout": 160,
     "testInterval": 20,
-    "tests": [
-        {
-            "integrations": "GitLabv2",
-            "playbookID": "Test-GitLab-v2"
-        },
-        {
-            "integrations": "MITRE ATT&CK v2",
-            "playbookID": "FeedMitreAttackv2_test"
-        },
+    "tests": [ 
         {
             "integrations": "CrowdStrike Falcon Intel v2",
             "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
         },
         {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod"
+            "integrations": "SlackV3",
+            "playbookID": "SlackV3 TestPB"
         },
         {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "MDE SIEM ingestion - Get Incident Data"
+            "integrations": "Panorama",
+            "playbookID": "PAN-OS - Block URL - Custom URL Category"
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Cortex XDR - Retrieve File by sha256"
         }
     ],
     "skipped_tests": {
@@ -398,6 +394,8 @@
         "MailSenderNew",
         "MicrosoftExchangeOnPremise",
         "ServiceNow",
+        "CortexXDR",
+        "PAN-OS",
         "QRadar",
         "OpenPhish",
         "AbuseDB",
@@ -407,6 +405,23 @@
         "MicrosoftGraphMail",
         "MISP",
         "Slack",
+        "CrowdStrikeFalconX",
+        "FeedMitreAttackv2",
+        "URLHaus",
+        "MicrosoftDefenderAdvancedThreatProtection",
+        "CrowdStrikeIntel",
+        "Shodan",
+        "MailListener",
+        "FeedOffice365",
+        "PANWComprehensiveInvestigation",
+        "CortexDataLake",
+        "PrismaCloud",
+        "AzureSecurityCenter",
+        "PrismaCloudCompute",
+        "CortexXpanse",
+        "PrismaSaasSecurity",
+        "PaloAltoNetworks_IoT",
+        "PaloAltoNetworksAIOps",
         "Jira",
         "Campaign"
     ],
