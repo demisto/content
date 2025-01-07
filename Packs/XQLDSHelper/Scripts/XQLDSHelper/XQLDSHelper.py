@@ -14,12 +14,15 @@ import urllib.parse
 from datetime import timezone
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Tuple, Self  # pylint: disable=no-name-in-module
+from typing import Tuple, TypeVar  # , Self
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_MAX = 10
+
+
+ContextData = TypeVar('ContextData')
 
 
 def to_float(
@@ -111,7 +114,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> Self:  # type: ignore[valid-type]
+    ) -> ContextData:  # typing.Self
         """ Create a ContextData with the new value
 
         :param value: The new value.

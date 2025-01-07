@@ -4,6 +4,7 @@ import pytest
 import re
 import sys
 import json
+import gzip
 import tarfile
 import datetime
 import fnmatch
@@ -13,9 +14,12 @@ import freezegun
 import os.path
 import urllib.parse
 from collections.abc import Iterator
-from typing import Any, Self
+from typing import Any, TypeVar
 from types import TracebackType
 from pytest_mock import MockerFixture
+
+
+MainTester = TypeVar('MainTester')
 
 
 def to_list(
@@ -110,7 +114,7 @@ class MainTester:
 
     def __enter__(
         self,
-    ) -> Self:
+    ) -> MainTester:
         if self.__frozen_now:
             self.__freezer_now = freezegun.freeze_time(self.__frozen_now)
             self.__freezer_now.start()
@@ -227,13 +231,13 @@ class MainTester:
         self,
     ) -> Any:
         if file_name := demisto.get(self.__config, 'xql.response'):
-            with open(file_name) as f:
+            with open(file_name, 'r') as f:
                 return json.loads(f.read())
 
-        raise RuntimeError(
+        raise RuntimeError((
             "xql.response is not configured."
             " This test case may have been expected to hit the cache, but it didn't."
-        )
+        ))
 
     def __get_query_results(
         self,
@@ -265,7 +269,10 @@ class MainTester:
             var = r'>val.map((record) => " - " + record.text).join("\n")'
             if var == func:
                 return '\n'.join(
-                    ' - ' + x.get('text') for x in dataset
+                    map(
+                        lambda x: ' - ' + x.get('text'),
+                        dataset
+                    )
                 )
 
             var = (
@@ -274,7 +281,10 @@ class MainTester:
             )
             if var == ''.join(func.strip().split()):
                 return '\n'.join(
-                    f' - {x[0]+1}: ' + x[1].get('text') for x in enumerate(dataset)
+                    map(
+                        lambda x: f' - {x[0]+1}: ' + x[1].get('text'),
+                        enumerate(dataset)
+                    )
                 )
 
         var = r"""encodeURIComponent(val).replace('"', '%22')"""
@@ -289,7 +299,7 @@ class MainTester:
             return val[0] if val else '255.255.255.255'
 
         if func:
-            print(f'Not implemented - {dt}')
+            raise RuntimeError(f'Not implemented - {dt}')
             sys.exit(1)
 
         return val
@@ -374,10 +384,13 @@ class MainTester:
                     expected_entry,
                     skip_keys=skip_keys,
                 )
+                """
                 if not ok:
                     print(json.dumps(self.__config, indent=2))
                     print(json.dumps(returned_entry, indent=2))
+                """
                 assert ok
+
 
             # Validate 'QueryParams' - only when results.QueryParams is provided
             returned_qparams = results.get('Contents').get('QueryParams')
@@ -388,9 +401,11 @@ class MainTester:
                     expected_qparams,
                     skip_keys=False,
                 )
+                """
                 if not ok:
                     print(json.dumps(self.__config, indent=2))
                     print(json.dumps(returned_qparams, indent=2))
+                """
                 assert ok
 
 
@@ -399,7 +414,7 @@ class TestXQLDSHelper:
     def __enum_test_config(
         file_path: str,
     ) -> Iterator[dict[str, Any]]:
-        with open(file_path) as f:
+        with open(file_path, 'r') as f:
             ents = json.load(f)
             assert isinstance(ents, list), f'Invalid test file - {file_path}'
             for ent in ents:
