@@ -1419,7 +1419,7 @@ def b64_encode(text):
 
 def b64_decode(b64_str):
     """
-    Decode a str in a base 64 format to a picture.
+    Decode a str in a base 64 format to a picture. ONLY FOR TEST
     Replaces the use of base64.b64decode function which doesn't add padding to the supplied str.
 
     :param b64_str: string to decode
