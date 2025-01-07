@@ -778,7 +778,7 @@ def autofocus_top_tags_search(client: Client, scope, tag_class_display, private,
         'scope': scope,
         'tagScopes': tag_scopes
     }
-    path = '/top-tags/search/'
+    path = r'/top-tags/search/'
     resp = client.http_request(url_suffix=path, data=data, err_operation='Top tags operation failed')
     in_progress = resp.get('af_in_progress')
     status = 'in progress' if in_progress else 'complete'
@@ -1032,7 +1032,7 @@ def validate_no_multiple_indicators_for_search(arg_dict):
         elif val:
             used_arg = arg
     if not used_arg:
-        raise DemistoException('In order to perform a samples/sessions search, a query or an indicator must be given.')
+        raise DemistoException(r'In order to perform a samples/sessions search, a query or an indicator must be given.')
     return used_arg
 
 
@@ -1892,7 +1892,7 @@ def get_export_list_command(client: Client, args):
         'apiKey': ''
     }
 
-    results = client.http_request(url_suffix='/export', method='POST', data=data,
+    results = client.http_request(url_suffix=r'/export', method='POST', data=data,
                                   err_operation=f"Failed to fetch export list: {args.get('label')}")
 
     indicators = []
