@@ -131,15 +131,15 @@ The `.entry.type` specifies the type of the entry, as shown below.
 
 | **Entry Type** | **Entry** |
 | --- | --- |
-| markdown | Markdown ![Markdown](./../doc_files/markdown.png) |
-| markdown-table | Markdown Table ![Markdown Table](./../doc_files/markdown-table.png) |
-| number | Number ![Number](./../doc_files/number.png) |
-| number-trend | Number Trend ![Number Trend](./../doc_files/number-trend.png) |
-| pie | Pie Chart ![Pie](./../doc_files/pie.png) |
-| line | Line Chart ![Line](./../doc_files/line.png) |
-| single-bar | Single-Bar Chart ![Single-Bar](./../doc_files/single-bar.png) |
-| stacked-bar | Stacked-Bar Chart ![Stacked-Bar](./../doc_files/stacked-bar.png) |
-| duration | Time duration ![Duration](./../doc_files/duration.png) |
+| markdown | Markdown ![Markdown](../../doc_files/markdown.png) |
+| markdown-table | Markdown Table ![Markdown Table](../../doc_files/markdown-table.png) |
+| number | Number ![Number](../../doc_files/number.png) |
+| number-trend | Number Trend ![Number Trend](../../doc_files/number-trend.png) |
+| pie | Pie Chart ![Pie](../../doc_files/pie.png) |
+| line | Line Chart ![Line](../../doc_files/line.png) |
+| single-bar | Single-Bar Chart ![Single-Bar](../../doc_files/single-bar.png) |
+| stacked-bar | Stacked-Bar Chart ![Stacked-Bar](../../doc_files/stacked-bar.png) |
+| duration | Time duration ![Duration](../../doc_files/duration.png) |
 
 This node supports [Variable Substitution](#Variable-Substitution) for all parameters.
 
@@ -293,7 +293,7 @@ That is intended to create a number widget from the record set, as shown below, 
 | 1234 |
 
 The widget will be displayed as shown below.
-![Number](./../doc_files/number.png)
+![Number](../../doc_files/number.png)
 
 The record set must contain at most one record for the number widget entry. An error is raised if it contains more than one record.
 
@@ -362,7 +362,7 @@ That is intended to create a number-trend widget from the record set, as shown b
 
 
 The widget will be displayed as shown below.
-![Number Trend](./../doc_files/number-trend.png)
+![Number Trend](../../doc_files/number-trend.png)
 
 The record set must contain at most one record for the number-trend widget entry. An error is raised if it contains more than one record.
 
@@ -435,7 +435,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample pie chart created using those settings.
-![Dynamic-Pie](./../doc_files/pie-dynamic.png)
+![Dynamic-Pie](../../doc_files/pie-dynamic.png)
 
 
 When specifying `fields` for `.group`, it indicates that each field's value is represented as a separate slice in the pie chart.
@@ -488,7 +488,7 @@ Each key defined in the `.fields` is plotted as a separate slice in the pie char
 For example, in the above configuration, `total_bytes_sent_mb` will be displayed as the first slice, and `total_bytes_received_mb` will be displayed as the second slice.
 
 This is a sample pie chart created using those settings.
-![Static-Pie](./../doc_files/pie-static.png)
+![Static-Pie](../../doc_files/pie-static.png)
 
 > .params
 
@@ -646,7 +646,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample line chart created using those settings.
-![Dynamic-Line](./../doc_files/line-dynamic.png)
+![Dynamic-Line](../../doc_files/line-dynamic.png)
 
 When specifying `fields` for `.y.group`, it indicates that the values for each field are displayed individually on the Y-axis.
 In this case, each field's value is plotted as a separate series, with distinct legend labels for each field.
@@ -711,7 +711,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample line chart created using those settings.
-![Static-Line](./../doc_files/line-static.png)
+![Static-Line](../../doc_files/line-static.png)
 
 > .params
 
@@ -802,7 +802,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample single-bar chart created using those settings.
-![Dynamic-Single-Bar](./../doc_files/single-bar-dynamic.png)
+![Dynamic-Single-Bar](../../doc_files/single-bar-dynamic.png)
 
 
 When specifying `fields` for `.group`, it indicates that each field's value is represented as a separate bar in the single-bar chart.
@@ -855,7 +855,7 @@ Each key defined in the `.fields` is plotted as a separate bar in the single-bar
 For example, in the above configuration, `total_bytes_sent_mb` will be displayed as the first bar, and `total_bytes_received_mb` will be displayed as the second bar.
 
 This is a sample single-bar chart created using those settings.
-![Static-Single-Bar](./../doc_files/single-bar-static.png)
+![Static-Single-Bar](../../doc_files/single-bar-static.png)
 
 > .params
 
@@ -1016,7 +1016,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample stacked-bar chart created using those settings.
-![Dynamic-Stacked-Bar](./../doc_files/stacked-bar-dynamic.png)
+![Dynamic-Stacked-Bar](../../doc_files/stacked-bar-dynamic.png)
 
 When specifying `fields` for `.y.group`, it indicates that the values for each field are displayed individually on the Y-axis.
 In this case, each field's value is plotted as a separate group, with distinct legend labels for each field.
@@ -1084,7 +1084,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample stacked-bar chart created using those settings.
-![Static-Stacked-Bar](./../doc_files/stacked-bar-static.png)
+![Static-Stacked-Bar](../../doc_files/stacked-bar-static.png)
 
 > .params
 
@@ -1148,7 +1148,7 @@ That is intended to create a number widget from the record set, as shown below, 
 | 86340 |
 
 The widget will be displayed as shown below.
-![Duration](./../doc_files/duration.png)
+![Duration](../../doc_files/duration.png)
 
 The record set must contain at most one record for the duration widget entry. An error is raised if it contains more than one record.
 
