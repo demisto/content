@@ -492,7 +492,7 @@ def get_items_from_mailbox(account, item_ids):  # pragma: no cover
     result = list(account.fetch(ids=items))
     result = [x for x in result if not (isinstance(x, ErrorInvalidIdMalformed | ErrorItemNotFound))]
     if len(result) != len(item_ids):
-        raise Exception("One or more items were not found/malformed. Check the input item ids")
+        raise Exception('One or more items were not found/malformed. Check the input item ids')
     return result
 
 
@@ -522,7 +522,7 @@ def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
             return account.root._folders_map[path]
 
     folder = account.public_folders_root if is_public else account.root.tois
-    path = path.replace("/", "\\")
+    path = path.replace('/', '\\')
     path = path.split('\\')
     for part in path:
         try:
@@ -1265,7 +1265,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
             for header in item.headers:
                 labels.append({'type': f'Email/Header/{header.name}', 'value': str(header.value)})
                 headers.append(f"{header.name}: {header.value}")
-            labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
+            labels.append({'type': 'Email/headers', 'value': '\r\n'.join(headers)})
 
         # handle item id
         if item.message_id:
@@ -2319,17 +2319,17 @@ def sub_main():  # pragma: no cover
             error_message_simple = log_message + " Please retry your request."
 
         if isinstance(e, ConnectionError):
-            error_message_simple = "Could not connect to the server.\n" \
-                                   "Verify that the Hostname or IP address is correct.\n\n" \
-                                   "Additional information: {}".format(str(e))
+            error_message_simple = 'Could not connect to the server.\n' \
+                                   'Verify that the Hostname or IP address is correct.\n\n' \
+                                   'Additional information: {}'.format(str(e))
         if isinstance(e, ErrorInvalidPropertyRequest):
             error_message_simple = "Verify that the Exchange version is correct."
         else:
             from exchangelib.errors import MalformedResponseError
 
             if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
-                error_message_simple = "Got invalid response from the server.\n" \
-                                       "Verify that the Hostname or IP address is is correct."
+                error_message_simple = 'Got invalid response from the server.\n' \
+                                       'Verify that the Hostname or IP address is is correct.'
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
@@ -2354,14 +2354,14 @@ def sub_main():  # pragma: no cover
         if not error_message_simple:
             error_message = error_message_simple = str(e)
         else:
-            error_message = error_message_simple + "\n" + str(e)
+            error_message = error_message_simple + '\n' + str(e)
 
         stacktrace = traceback.format_exc()
         if stacktrace:
-            error_message += "\nFull stacktrace:\n" + stacktrace
+            error_message += '\nFull stacktrace:\n' + stacktrace
 
         if debug_log:
-            error_message += "\nFull debug log:\n" + debug_log
+            error_message += '\nFull debug log:\n' + debug_log
 
         if demisto.command() == 'fetch-incidents':
             raise Exception(str(e) + traceback.format_exc())
