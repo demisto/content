@@ -59,4 +59,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR Remote PsExec with LOLBIN command execution alert](../doc_files/Cortext_XDR_-_Remote_PsExec_with_LOLBIN_command_execution_alert.png)
+![Cortex XDR Remote PsExec with LOLBIN command execution alert](../doc_files/Cortex_XDR_-_Remote_PsExec_with_LOLBIN_command_execution_alert.png)
