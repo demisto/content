@@ -7,6 +7,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEFAULT_LIMIT = 50
+NEW_LINE = '\n'
 
 
 class Client(BaseClient):
@@ -1111,7 +1112,7 @@ def main() -> None:
             return_results(command_map[command](client, args))  # type: ignore
 
     except Exception as err:
-        return_error(f'Failed to execute {command} command. \nError: {str(err)}')
+        return_error(f'Failed to execute {command} command. {NEW_LINE}Error: {str(err)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
