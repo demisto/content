@@ -1322,7 +1322,7 @@ class EntryBuilder:
             if template.sort.by:
                 dataset = sorted(
                     dataset,
-                    key=lambda v: SortableValue(v.get(template.sort.by)),
+                    key=lambda v: SortableValue(v.get(template.sort.by)),  # noqa
                     reverse=not template.sort.asc,
                 )
 
@@ -1696,7 +1696,7 @@ class Main:
             variable_substitution[1] = var_closing
 
         return Formatter(
-            variable_substitution=tuple(variable_substitution),
+            variable_substitution=tuple(variable_substitution),  # nowa
             keep_symbol_to_null=True,
         )
 
@@ -1765,27 +1765,27 @@ class Main:
         fields = dict(fields, **(fields.get('CustomFields') or {}))
         fields.pop('CustomFields', None)
 
-        self.__context = ContextData(
+        self.__context: ContextData = ContextData(
             context=demisto.context(),
             alert=fields if is_xsiam() else None,
             incident=None if is_xsiam() else fields,
         )
         self.__template_name, self.__template = self.__get_template(args)
         self.__formatter = self.__create_formatter(args, self.__template)
-        self.__cache_type = args.get('cache_type') or CacheType.DATASET
+        self.__cache_type: str = args.get('cache_type') or CacheType.DATASET
         if self.__cache_type not in [x.value for x in list(CacheType)]:
             raise DemistoException('Invalid cache_type - {self.__cache_type}')
 
-        self.__max_retries = arg_to_number(
+        self.__max_retries: int = arg_to_number(
             args.get('max_retries') or DEFAULT_RETRY_MAX
         )
-        self.__retry_interval = arg_to_number(
+        self.__retry_interval: int = arg_to_number(
             args.get('retry_interval') or DEFAULT_RETRY_INTERVAL
         )
-        self.__polling_interval = arg_to_number(
+        self.__polling_interval: int = arg_to_number(
             args.get('polling_interval') or DEFAULT_POLLING_INTERVAL
         )
-        self.__xql_query_instance = (
+        self.__xql_query_instance: str | None = (
             demisto.get(self.__template, 'query.command.using')
             or args.get('xql_query_instance')
         )
@@ -1836,7 +1836,7 @@ class Main:
             'Entry': entry
         }
         if not cache_entry and self.__cache_type == CacheType.ENTRY:
-            cache.save_entry(self.__query_params, entry)
+            cache.save_entry(self.__query_params, entry)  # noqa
 
         return CommandResults(
             readable_output='Done.',
