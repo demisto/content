@@ -53,10 +53,15 @@ def to_str(
     return val if isinstance(val, str) else json.dumps(val)
 
 
-class CacheType(enum.Enum):
+class CacheType(str, enum.Enum):
     NONE = 'none'
     DATASET = 'dataset'
     ENTRY = 'entry'
+
+    def __str__(
+        self
+    ) -> str:
+        return self.value
 
 
 class ContextData:
@@ -1785,7 +1790,7 @@ class Main:
         )
         self.__template_name, self.__template = self.__get_template(args)
         self.__formatter = self.__create_formatter(args, self.__template)
-        self.__cache_type: str = args.get('cache_type') or CacheType.DATASET.value
+        self.__cache_type: str = args.get('cache_type') or CacheType.DATASET
         if self.__cache_type not in [x.value for x in list(CacheType)]:
             raise DemistoException('Invalid cache_type - {self.__cache_type}')
 
@@ -1818,7 +1823,7 @@ class Main:
         :return: The command results.
         """
         cache = Cache(self.__template_name)
-        if self.__cache_type == CacheType.ENTRY.value:
+        if self.__cache_type == CacheType.ENTRY:
             entry = cache_entry = cache.load_entry(self.__query_params.query_hash())
         else:
             entry = cache_entry = None
@@ -1830,7 +1835,7 @@ class Main:
             ).build(
                 query=Query(
                     query_params=self.__query_params,
-                    cache=cache if self.__cache_type != CacheType.NONE.value else None,
+                    cache=cache if self.__cache_type != CacheType.NONE else None,
                     xql_query_instance=self.__xql_query_instance,
                     polling_interval=self.__polling_interval,
                     retry_interval=self.__retry_interval,
@@ -1849,7 +1854,7 @@ class Main:
             'QueryHash': self.__query_params.query_hash(),
             'Entry': entry
         }
-        if not cache_entry and self.__cache_type == CacheType.ENTRY.value:
+        if not cache_entry and self.__cache_type == CacheType.ENTRY:
             cache.save_entry(self.__query_params, entry)  # type: ignore[arg-type]
 
         return CommandResults(
