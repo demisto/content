@@ -2787,19 +2787,29 @@ def get_audit_agent_reports_command(client, args):
 def get_distribution_url_command(client, args):
     distribution_id = args.get('distribution_id')
     package_type = args.get('package_type')
+    download_package = argToBoolean(args.get('download_package', False))
 
     url = client.get_distribution_url(distribution_id, package_type)
 
-    return (
-        f'[Distribution URL]({url})',
-        {
-            f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution(val.id == obj.id)': {
+    if download_package and package_type not in ['x64', 'x86']:
+        raise DemistoException("`download_package` argument can be used only for package_type 'x64' or 'x86'.")
+
+    if not download_package:
+        return CommandResults(
+            outputs={
                 'id': distribution_id,
                 'url': url
-            }
-        },
-        url
-    )
+            },
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
+            outputs_key_field='id',
+            readable_output=f'[Distribution URL]({url})'
+        )
+
+    return download_installation_package(client,
+                                         url,
+                                         package_type,
+                                         distribution_id,
+                                         args.get("integration_context_brand", "CoreApiModule"))
 
 
 def get_distribution_status_command(client, args):
@@ -2821,6 +2831,32 @@ def get_distribution_status_command(client, args):
         },
         distribution_list
     )
+
+
+def download_installation_package(client, url: str, package_type: str, distribution_id: str, brand: str):
+    dist_file_contents = client._http_request(
+        method='GET',
+        full_url=url,
+        resp_type="content"
+    )
+    if package_type in ["x64", "x86"]:
+        file_ext = "msi"
+    else:
+        file_ext = "zip"
+    file_result = fileResult(
+        filename=f"xdr-agent-install-package.{file_ext}",
+        data=dist_file_contents
+    )
+    result = CommandResults(
+        outputs={
+            'id': distribution_id,
+            'url': url
+        },
+        outputs_prefix=f'{brand}.Distribution',
+        outputs_key_field='id',
+        readable_output="Installation package downloaded successfully."
+    )
+    return [file_result, result]
 
 
 def get_process_context(alert, process_type):
