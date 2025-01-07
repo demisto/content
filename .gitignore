@@ -11,7 +11,6 @@ Integrations/SymantecMSS/test_data/SymantecXML.txt
 *.pyc
 *.swp
 .pytest_cache
-.python-version
 CommonServerPython.py
 *Module.py
 !Packs/ApiModules/Scripts/*/*Module.py
@@ -36,7 +35,6 @@ conftest.py
 !Tests/tests_e2e/conftest.py
 venv
 failed_unittests.txt
-.python-version
 Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
