@@ -90,7 +90,7 @@ def get_ticket(client: Client):
         table formated ticket data
     """
 
-    sys_id = demisto.args().get("sys_id") 
+    sys_id = demisto.args().get("sys_id")
     endpoint = f"/AuthorizationRequest/{sys_id}"
     try:
         response = client.make_api_request(endpoint, method='GET')
