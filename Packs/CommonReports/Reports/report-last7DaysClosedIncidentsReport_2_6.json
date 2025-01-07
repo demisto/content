@@ -2,7 +2,7 @@
     "id": "last7DaysClosedIncidentsReport",
     "name": "Last 7 days closed incidents",
     "description": "All closed incidents in the last 7 days. Counts of types, severity, SLAs and analysts work, and a list of all closed incidents.",
-    "fromVersion": "5.0.0",
+    "fromVersion": "9.0.0",
     "tags": [],
     "createdBy": "DBot",
     "modified": "2018-01-24T10:26:16.063341264Z",
@@ -736,6 +736,5 @@
             }
         ],
         "isPredefined": false
-    },
-    "toVersion": "8.9.0"
+    }
 }
