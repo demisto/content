@@ -5,6 +5,10 @@
     "description": "Designed to display data about incident which are related to port scanning activities detected by Cortex XDR",
     "version": -1,
     "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar",
+        "xpanse"
+    ],
     "detailsV2": {
         "tabs": [
             {
