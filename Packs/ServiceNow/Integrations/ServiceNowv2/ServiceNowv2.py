@@ -501,12 +501,12 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
     dic_fields = {}
 
     if fields:
-        if '=' not in fields:
+        if "=" not in fields:
             raise Exception(
                 f'The argument: {fields}.\nmust contain a "=" to specify the keys and values. e.g: key=val.')
         arr_fields = fields.split(delimiter)
         for f in arr_fields:
-            field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
+            field = f.split("=", 1)  # a field might include a '=' sign in the value. thus, splitting only once.
             if len(field) > 1:
                 dic_fields[field[0]] = field[1]
 

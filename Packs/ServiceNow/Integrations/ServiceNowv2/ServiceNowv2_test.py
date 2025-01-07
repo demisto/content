@@ -178,7 +178,7 @@ def test_split_fields():
 
     with pytest.raises(Exception) as err:
         split_fields('a')
-    assert "must contain a '=' to specify the keys and values" in str(err)
+    assert 'must contain a "=" to specify the keys and values' in str(err)
 
 
 def test_split_fields_with_special_delimiter():
@@ -199,7 +199,7 @@ def test_split_fields_with_special_delimiter():
 
     with pytest.raises(Exception) as e:
         split_fields('a')
-    assert "must contain a '=' to specify the keys and values" in str(e)
+    assert 'must contain a "=" to specify the keys and values' in str(e)
 
 
 def test_convert_to_notes_result():
@@ -1956,8 +1956,8 @@ def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
     if 'assigned_to' in args:
         with pytest.raises(DemistoException) as e:
             res = get_ticket_fields(args)
-        assert str(e.value) == "Could not set a value for the argument 'assigned_to' and add it to the clear_fields. \
-                You can either set or clear the field value."
+        assert str(e.value) == 'Could not set a value for the argument "assigned_to" and add it to the clear_fields. \
+                You can either set or clear the field value.'
     else:
         res = get_ticket_fields(args)
         assert res == expected_ticket_fields
