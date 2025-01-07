@@ -15,7 +15,7 @@ During the analysis, the playbook will perform the following:
 Investigation:
 During the alert investigation, the playbook will perform the following:
 
-- Searches for related Cortex XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE techniques to identify malicious activity: T1055 - Process Injection, T1566 - Phishing.
+- Searches for related Cortex XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE techniques to identify malicious activity: T1055 - Process Injection, T1566 - Phishing. If related alerts are found, the playbook will automatically disable the malicious scheduled task.
 
 Remediation:
 
