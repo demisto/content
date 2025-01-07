@@ -1,4 +1,4 @@
-Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and since 2010, a content distribution network to provide content across its network of servers.
+Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and a content distribution network to provide content across its network of servers.
 This integration was integrated and tested with version 1 of Cloudflare Zero Trust.
 
 ## Configure Cloudflare Zero Trust in Cortex

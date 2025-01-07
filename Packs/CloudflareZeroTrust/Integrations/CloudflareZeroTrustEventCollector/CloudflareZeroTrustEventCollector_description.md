@@ -5,21 +5,21 @@ Use this integration to fetch account audit logs, user audit logs, and access au
 #### **Retrieve Global API Key**
 
 
-- Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens).
-- Scroll to the API Keys section.
-- Here, you will find the Global API Key. Click View to reveal it (you may need to enter your password).
-- To learn more about the Global API Key, visit the [Cloudflare API Key Documentation.](https://developers.cloudflare.com/fundamentals/api/get-started/keys/).
+1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens).
+2. Scroll to the **API Keys** section.
+3. Click **View** to reveal the Global API Key.  (You may need to enter your password).
+To learn more about the Global API Key, visit the [Cloudflare API Key Documentation.](https://developers.cloudflare.com/fundamentals/api/get-started/keys/).
 
 #### **Find Associated Email**
 
-- API email can be found here: [Cloudflare Profile](https://dash.cloudflare.com/profile).
+The associated API email can be found here: [Cloudflare Profile](https://dash.cloudflare.com/profile).
 
-- For more details on verifying your associated email, visit the  [Verify Email Address](https://developers.cloudflare.com/fundamentals/setup/account/verify-email-address/).
+For more details on verifying your associated email, visit the  [Verify Email Address](https://developers.cloudflare.com/fundamentals/setup/account/verify-email-address/).
 
 
 #### **Token Permissions**
 
-This API token will affect the below accounts and zones, along with their respective permissions:
+This API token will affect the following accounts and zones, along with their respective permissions:
 
 - All accounts:
 
