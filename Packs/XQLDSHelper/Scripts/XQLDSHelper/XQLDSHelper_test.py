@@ -4,7 +4,6 @@ import pytest
 import re
 import sys
 import json
-import gzip
 import tarfile
 import datetime
 import fnmatch
@@ -228,13 +227,13 @@ class MainTester:
         self,
     ) -> Any:
         if file_name := demisto.get(self.__config, 'xql.response'):
-            with open(file_name, 'r') as f:
+            with open(file_name) as f:
                 return json.loads(f.read())
 
-        raise RuntimeError((
+        raise RuntimeError(
             "xql.response is not configured."
             " This test case may have been expected to hit the cache, but it didn't."
-        ))
+        )
 
     def __get_query_results(
         self,
@@ -266,10 +265,7 @@ class MainTester:
             var = r'>val.map((record) => " - " + record.text).join("\n")'
             if var == func:
                 return '\n'.join(
-                    map(
-                        lambda x: ' - ' + x.get('text'),
-                        dataset
-                    )
+                    ' - ' + x.get('text') for x in dataset
                 )
 
             var = (
@@ -278,10 +274,7 @@ class MainTester:
             )
             if var == ''.join(func.strip().split()):
                 return '\n'.join(
-                    map(
-                        lambda x: f' - {x[0]+1}: ' + x[1].get('text'),
-                        enumerate(dataset)
-                    )
+                    f' - {x[0]+1}: ' + x[1].get('text') for x in enumerate(dataset)
                 )
 
         var = r"""encodeURIComponent(val).replace('"', '%22')"""
@@ -386,7 +379,6 @@ class MainTester:
                     print(json.dumps(returned_entry, indent=2))
                 assert ok
 
-
             # Validate 'QueryParams' - only when results.QueryParams is provided
             returned_qparams = results.get('Contents').get('QueryParams')
             expected_qparams = self.__config.get('results').get('QueryParams')
@@ -407,7 +399,7 @@ class TestXQLDSHelper:
     def __enum_test_config(
         file_path: str,
     ) -> Iterator[dict[str, Any]]:
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             ents = json.load(f)
             assert isinstance(ents, list), f'Invalid test file - {file_path}'
             for ent in ents:
