@@ -68,6 +68,7 @@ def preprocess_text(text, model_type, is_return_error):
         hash_seed = None
         clean_html = None
         demisto.debug(f"{model_type=} didn't match the conditions. {preprocess_type=} {hash_seed=} {clean_html=}")
+
     if isinstance(text, str):
         input_type = 'string'
         input_ = text

@@ -225,6 +225,7 @@ tokenizer = None
 
 def read_file(input_data, input_type):
     data = []  # type: ignore
+    file_path, file_content = '', ''
     if not input_data:
         return data
     file_content = ''
