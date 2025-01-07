@@ -216,6 +216,8 @@ class Client(BaseClient):
                     # last_modified values in the context, for server version higher than 6.5.0.
                     last_run = demisto.getLastRun()
                     etag = last_run.get(url, {}).get('etag')
+                    if etag:
+                        etag = etag.strip('"')
                     last_modified = last_run.get(url, {}).get('last_modified')
                     last_updated = last_run.get(url, {}).get('last_updated')
                     # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
@@ -321,6 +323,8 @@ def get_no_update_value(response: requests.Response, url: str) -> bool:
         return True
 
     etag = response.headers.get('ETag')
+    if etag:
+        etag = etag.strip('"')
     last_modified = response.headers.get('Last-Modified')
     current_time = datetime.utcnow()
     # Save the current time as the last updated time. This will be used to indicate the last time the feed was updated in XSOAR.

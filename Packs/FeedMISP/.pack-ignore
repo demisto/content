@@ -1,6 +1,3 @@
-[file:FeedMISP.yml]
-ignore=IN122
-
 [file:FeedMISP_image.png]
 ignore=IM111
 

@@ -1,0 +1,1474 @@
+id: Uncommon remote scheduled task created
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Uncommon remote scheduled task created
+description: "This playbook handles \"Uncommon remote scheduled task created\" alerts.\n\nPlaybook Stages:\n\nAnalysis:\n\n- The playbook checks if the remote IP is external or has a bad reputation.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n\n- Searches for related XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.\n- Searches for related XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.\n- Searches for suspicious command-line parameters indicating a malicious scheduled task.\n\nRemediation:\n\n- Automatically disable the malicious scheduled task.\n- Block the malicious IP (requires analyst approval).\n- Automatically Close the alert.\n\nRequirements:\n\nFor response actions, the following integrations are required: \n\n- PAN-OS."
+tags:
+- TA0002 - Execution
+- T1053 - Scheduled Task/Job
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e27de70b-ada6-422e-81fe-6950a566b050
+    type: start
+    task:
+      id: e27de70b-ada6-422e-81fe-6950a566b050
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+    type: title
+    task:
+      id: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: eae7099d-0e36-4442-8d50-a5e79d067791
+    type: condition
+    task:
+      id: eae7099d-0e36-4442-8d50-a5e79d067791
+      version: -1
+      name: Check whether the remote IP is external
+      description: |-
+        Determines the appropriate verdict if the task was created from an external IP address.
+
+        Remote scheduled tasks created from an external IP address may indicate unauthorized access or malicious activity. Legitimate remote scheduled tasks should be created from trusted internal sources. If the task is created from an external IP, the playbook will proceed with remediation actions; otherwise, it will continue investigating the alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "Yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.InRange
+            iscontext: true
+          right:
+            value:
+              simple: "no"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ababf146-0f9f-4621-8323-18c3256738ee
+    type: title
+    task:
+      id: ababf146-0f9f-4621-8323-18c3256738ee
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d6cce08c-349e-44db-807d-b6348886db73
+    type: title
+    task:
+      id: d6cce08c-349e-44db-807d-b6348886db73
+      version: -1
+      name: No Results Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 287b6585-4340-4fd2-8134-6ee815f90846
+    type: condition
+    task:
+      id: 287b6585-4340-4fd2-8134-6ee815f90846
+      version: -1
+      name: Found any alerts indicating this is a malicious scheduled task?
+      description: Determines whether the alert contains agent alerts indicating that the alert was part of an attack pattern.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3444c540-601c-4417-8813-0ceacb6ec77e
+    type: regular
+    task:
+      id: 3444c540-601c-4417-8813-0ceacb6ec77e
+      version: -1
+      name: Close Alert - No results returned
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      closeNotes:
+        simple: No Results Found
+      closeReason:
+        simple: Resolved - Handled by the playbook "Uncommon remote scheduled task created"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: cbb88a25-3267-48dc-8423-605dbeb295a0
+    type: regular
+    task:
+      id: cbb88a25-3267-48dc-8423-605dbeb295a0
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious scheduled task detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Uncommon remote scheduled task created"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bb3ed083-823b-4e17-8494-16ec6bc49b2a
+    type: regular
+    task:
+      id: bb3ed083-823b-4e17-8494-16ec6bc49b2a
+      version: -1
+      name: Disable the malicious scheduled task
+      description: Disable the malicious scheduled task by executing shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "22"
+      '#none#':
+      - "69"
+    scriptarguments:
+      commands:
+        simple: powershell.exe schtasks /change /tn "${Core.OriginalAlert.event.scheduled_task_path}" /disable
+      endpoint_ids:
+        simple: ${alert.agentid}
+      timeout:
+        simple: "120"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 47529ac8-a0ed-4d35-8019-a8b679181f22
+    type: condition
+    task:
+      id: 47529ac8-a0ed-4d35-8019-a8b679181f22
+      version: -1
+      name: Is there a malicious IP to block?
+      description: Checks whether a malicious IP is detected and requires blocking.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 53d9f3a4-a2b0-488e-8dc1-3ec51aea3c00
+    type: playbook
+    task:
+      id: 53d9f3a4-a2b0-488e-8dc1-3ec51aea3c00
+      version: -1
+      name: PAN-OS - Block IP
+      description: |-
+        This playbook blocks IP addresses with 2 optional actions:
+
+        - Block IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall. The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+
+
+        - Utilize the Dynamic Address Group (DAG) capability of PAN-OS. DAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.
+        The playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.
+        If the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed.
+      playbookName: PAN-OS - Block IP
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      MaliciousIPs:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 25929bfd-f6cd-43f9-87cd-8d0c0caf677d
+    type: regular
+    task:
+      id: 25929bfd-f6cd-43f9-87cd-8d0c0caf677d
+      version: -1
+      name: Disable the malicious scheduled task manually
+      description: "Dear Analyst,\n\nDuring the remediation process the playbook failed to disable the scheduled task: ${Core.OriginalAlert.event.scheduled_task_path}\n\nPlease manually disable this scheduled task."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 3180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c5219f31-047d-4cee-888e-f7c63909a296
+    type: title
+    task:
+      id: c5219f31-047d-4cee-888e-f7c63909a296
+      version: -1
+      name: Block Malicious IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ff18f72c-0256-4776-823c-90dd05fdba39
+    type: title
+    task:
+      id: ff18f72c-0256-4776-823c-90dd05fdba39
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 91b0123e-c227-465b-84d6-a3c53e9a8eb4
+    type: regular
+    task:
+      id: 91b0123e-c227-465b-84d6-a3c53e9a8eb4
+      version: -1
+      name: Get scheduled task details
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: fc12c772-ab66-433e-85e8-d1a3d8daadcb
+    type: playbook
+    task:
+      id: fc12c772-ab66-433e-85e8-d1a3d8daadcb
+      version: -1
+      name: Command-Line Analysis
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      Commandline:
+        simple: ${Core.OriginalAlert.event.scheduled_task_image_command_line}
+      StringSimilarityThreshold:
+        simple: "0.5"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b6d11f6e-a28a-459a-8004-bec570e4b02a
+    type: title
+    task:
+      id: b6d11f6e-a28a-459a-8004-bec570e4b02a
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6d96992e-fe69-4b71-8e3c-9f64ce6a2aec
+    type: title
+    task:
+      id: 6d96992e-fe69-4b71-8e3c-9f64ce6a2aec
+      version: -1
+      name: Investigation on remote host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 58967e13-7736-4385-858d-85a8966dacd3
+    type: regular
+    task:
+      id: 58967e13-7736-4385-858d-85a8966dacd3
+      version: -1
+      name: Search for related alerts on the remote host
+      description: This task searches for XSIAM agent related alerts on the remote endpoint from the past 24 hours, if an agent is installed.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      fromdate:
+        simple: 1 day ago
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: agent_ip_addresses:${Core.OriginalAlert.event.actor_remote_ip}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 789cf6e0-eded-4b32-8108-8091409a2537
+    type: condition
+    task:
+      id: 789cf6e0-eded-4b32-8108-8091409a2537
+      version: -1
+      name: Found any alerts of malicious activity on the remote host?
+      description: Determines if there are agent alerts on the remote host indicating that the alert was part of an attack pattern.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: TRAPS
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.CustomFields.categoryname
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 7272972f-d88b-484d-897b-61c0fce7def0
+    type: regular
+    task:
+      id: 7272972f-d88b-484d-897b-61c0fce7def0
+      version: -1
+      name: Determine whether the remote IP address is internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        complex:
+          root: Core.OriginalAlert.event.actor_remote_ip
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.actor_remote_ip
+                iscontext: true
+              right:
+                value:
+                  simple: '::'
+              ignorecase: true
+      ipRanges:
+        complex:
+          root: lists
+          accessor: PrivateIPs
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+              unpack_matches: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 5ba5e082-b8f3-413f-89f6-40261ef6a811
+    type: title
+    task:
+      id: 5ba5e082-b8f3-413f-89f6-40261ef6a811
+      version: -1
+      name: Analyst Decision
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: fb2896f9-3c9e-4e1f-8d40-db749410a130
+    type: title
+    task:
+      id: fb2896f9-3c9e-4e1f-8d40-db749410a130
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 86404fb8-c406-4ba8-89c3-508c91daaa5b
+    type: regular
+    task:
+      id: 86404fb8-c406-4ba8-89c3-508c91daaa5b
+      version: -1
+      name: Close Alert - False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      closeNotes:
+        simple: False Positive
+      closeReason:
+        simple: Resolved - Handled as False Positive by the playbook "Uncommon remote scheduled task created"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 2329c33f-d84f-4b85-8a5a-08264d5756ae
+    type: title
+    task:
+      id: 2329c33f-d84f-4b85-8a5a-08264d5756ae
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: e9832b8f-c70f-45f0-8ba4-d7f746daa77b
+    type: title
+    task:
+      id: e9832b8f-c70f-45f0-8ba4-d7f746daa77b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 4373ba97-486c-4617-8298-86a924dc5ca8
+    type: regular
+    task:
+      id: 4373ba97-486c-4617-8298-86a924dc5ca8
+      version: -1
+      name: Search for related alerts by name and MITRE Technique
+      description: |+
+        This task searches by MITRE technique for suspicious related alerts that may indicate a compromised endpoint.
+        Focus on identifying alerts associated with the following MITRE techniques from the last 3 hours:
+        - T1202 - Indirect Command Execution
+        - T1021 - Remote Services
+
+        And the following alert:
+        - "WildFire Malware"
+
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      fromdate:
+        simple: 3 hours ago
+      query:
+        simple: (mitreattcktechnique:*T1202* or mitreattcktechnique:*T1021* or name:"WildFire Malware") and -name:"Uncommon remote scheduled task created" and agentid:${alert.agentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 3dca7f38-a58c-4c1c-8a67-e28182e1216a
+    type: title
+    task:
+      id: 3dca7f38-a58c-4c1c-8a67-e28182e1216a
+      version: -1
+      name: Command-line Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: f5c5e77b-66e5-465a-8773-c1d20a200bfa
+    type: condition
+    task:
+      id: f5c5e77b-66e5-465a-8773-c1d20a200bfa
+      version: -1
+      name: Found any malicious or suspicious cmd parameters?
+      description: Determines the appropriate verdict based on the results of the command-line analysis.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Malicious Cmd parameters:
+      - "3"
+      Suspicious Cmd parameters:
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: Malicious Cmd parameters
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.AMSI
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.maliciousTools
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.networkActivity
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.SuspiciousLolbinExecution
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.SuspiciousCmdPathAndArguments
+            iscontext: true
+    - label: Suspicious Cmd parameters
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.base64
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.suspiciousParameters
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: e7cb4db3-f70e-4474-8ae5-1ad159731138
+    type: regular
+    task:
+      id: e7cb4db3-f70e-4474-8ae5-1ad159731138
+      version: -1
+      name: Notify to War Room - Scheduled Task Disabled
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      value:
+        simple: "Dear Analyst,\n\nDuring the remediation process the playbook executed a shell command to disable the following scheduled task: \n${Core.OriginalAlert.event.scheduled_task_path}\n\n"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 661be0e9-3bb5-4a3c-8908-4586f05d54e7
+    type: regular
+    task:
+      id: 661be0e9-3bb5-4a3c-8908-4586f05d54e7
+      version: -1
+      name: Check remote IP reputation
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      ip:
+        simple: ${Core.OriginalAlert.event.actor_remote_ip}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: ba4fa808-bf46-4d09-8491-24e0aa59c3ee
+    type: regular
+    task:
+      id: ba4fa808-bf46-4d09-8491-24e0aa59c3ee
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 1666967d-c2af-4352-82f0-0d17d99b391f
+    type: condition
+    task:
+      id: 1666967d-c2af-4352-82f0-0d17d99b391f
+      version: -1
+      name: Has the script disabled the task successfully?
+      description: Verify if the script successfully disabled the task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: Core.ScriptResult.results.standard_output
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 0ae56624-11e4-4420-8245-6b62c02d8a2f
+    type: collection
+    task:
+      id: 0ae56624-11e4-4420-8245-6b62c02d8a2f
+      version: -1
+      name: Analyst decision for suspicious cmd parameters
+      description: Analyst review is required to determine, based on suspicious command-line parameters, whether to take remediation actions  such as disabling the scheduled task and blocking the IP if malicious or to close the alert as a false positive.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: "Dear Analyst,\n\nSummary of the investigation of the remote scheduled task creation:\n\n- The task was created from an internal IP address: ${Core.OriginalAlert.event.actor_remote_ip}.\n- No related alerts were found indicating malicious activity on the endpoint or remote endpoint.\n- No malicious command line indicators were detected.\n \nHowever, the playbook detected suspicious arguments in the command line. \nThe following command line contains suspicious parameters:\n\n${Core.OriginalAlert.event.scheduled_task_image_command_line}\n\nDecision Needed: \n\nWould you like to proceed with disabling the scheduled task, or should this be considered a false positive?"
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Disable Schedule Task
+      - False Positive
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "The following command line contains suspicious parameters:\n\n${Core.OriginalAlert.event.scheduled_task_image_command_line}\n\nWould you like to proceed with disabling the scheduled task, or should this be considered a false positive? "
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Disable Schedule Task
+        - simple: False Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Decision to Disable Scheduled Task
+      description: "Dear Analyst,\n\nSummary of the investigation of the remote scheduled task creation:\n\n- The task was created from an internal IP address.\n- No related alerts were found indicating malicious activity on the endpoint or remote endpoint.\n- No malicious command line indicators were detected.\n \nHowever, the playbook detected suspicious arguments in the command line. \n\nDecision Needed: "
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: f12ee6de-ec1a-4c0b-872a-7653ef15891c
+    type: condition
+    task:
+      id: f12ee6de-ec1a-4c0b-872a-7653ef15891c
+      version: -1
+      name: Should disable schedule task based on the analyst decision?
+      description: Checks if the scheduled task should be disabled based on the analyst's decision.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      Disable Schedule Task:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Disable Schedule Task
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Decision to Disable Scheduled Task.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable Schedule Task
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_22_#error#": 0.55,
+      "17_13_#default#": 0.42,
+      "17_23_yes": 0.69,
+      "2_3_Yes": 0.12,
+      "32_3_yes": 0.29,
+      "66_3_Malicious Cmd parameters": 0.36,
+      "66_41_Suspicious Cmd parameters": 0.57,
+      "70_67_yes": 0.52,
+      "72_3_Disable Schedule Task": 0.42,
+      "72_43_#default#": 0.53,
+      "8_30_#default#": 0.55,
+      "8_3_yes": 0.13
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4505,
+        "width": 2060,
+        "x": -10,
+        "y": -440
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+marketplaces:
+- marketplacev2

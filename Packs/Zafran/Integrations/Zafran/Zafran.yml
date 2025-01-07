@@ -1,0 +1,136 @@
+commonfields:
+  id: Zafran API
+  version: -1
+name: Zafran API
+display: Zafran API
+category: Utilities
+description: 'The Zafran API provides a programmatic way to interact with the Zafran Exposure Management Platform for various use cases.'
+configuration:
+- name: url
+  display: Server URL (e.g. api.zafran.io)
+  defaultvalue: https://api.zafran.io
+  type: 0
+  required: true
+- name: api_key
+  display: API Key
+  defaultvalue: ''
+  type: 4
+  required: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: false
+  commands:
+  - name: zafran-mitigation-performed
+    description: Update on mitigations performed
+    arguments:
+    - name: external_ticket_id
+      description: 'External service ticket ID.'
+      required: false
+      isArray: false
+    - name: external_ticket_url
+      description: 'External service ticket link.'
+      required: false
+      isArray: false
+    - name: id
+      description: 'Mitigation ID.'
+      required: true
+      isArray: false
+    - name: state
+      description: 'Mitigation status     new - New mitigation     pending_approval - Waiting for mitigation approval     rejected - Mitigative action was rejected.     in_progress - Mitigation approved and in progress.     completed - Mitigation applied successfully.'
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - new
+      - pending_approval
+      - rejected
+      - in_progress
+      - completed
+    outputs:
+    - type: Number
+      contextPath: Zafran.MitigationsPerformedResponse.internal_status_code
+      description: 'Internal status code.'
+    - type: String
+      contextPath: Zafran.MitigationsPerformedResponse.message
+      description: 'Error message.'
+  - name: zafran-mitigations-export
+    description: Export recommended mitigations.
+    arguments:
+    - name: filter
+      description: ZQL filter.
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Zafran.UpstreamMitigation.assets_count
+      description: 'Assets count.'
+    - type: String
+      contextPath: Zafran.UpstreamMitigation.control_product
+      description: 'Control Product.'
+    - type: Number
+      contextPath: Zafran.UpstreamMitigation.exposure
+      description: 'Exposure in days.'
+    - type: String
+      contextPath: Zafran.UpstreamMitigation.id
+      description: 'Zafran mitigation unique id.'
+    - type: String
+      contextPath: Zafran.UpstreamMitigation.mitigation_type
+      description: 'Mitigation type.'
+    - type: String
+      contextPath: Zafran.UpstreamMitigation.recommendation
+      description: 'Recommendation.'
+    - type: String
+      contextPath: Zafran.UpstreamMitigation.title
+      description: 'Title.'
+    - type: Number
+      contextPath: Zafran.UpstreamMitigation.vulnerabilities_count
+      description: 'Vulnerabilities count.'
+    - type: Number
+      contextPath: Zafran.UpstreamMitigation.internal_status_code
+      description: 'Internal status code.'
+    - type: String
+      contextPath: Zafran.UpstreamMitigation.message
+      description: 'Error message.'
+  - name: zafran-mitigations-performed
+    description: Update on mitigations performed
+    arguments:
+    - name: mitigation_id
+      description: 'Mitigation ID.'
+      required: false
+      isArray: false
+    - name: mitigation_ids
+      description: 'Mitigation IDs.'
+      required: false
+      isArray: true
+    - name: state
+      description: 'Mitigation status     new - New mitigation     pending_approval - Waiting for mitigation approval     rejected - Mitigative action was rejected.     in_progress - Mitigation approved and in progress.     completed - Mitigation applied successfully.'
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - new
+      - pending_approval
+      - rejected
+      - in_progress
+      - completed
+    outputs:
+    - type: Number
+      contextPath: Zafran.MitigationsPerformedResponse.internal_status_code
+      description: 'Internal status code.'
+    - type: String
+      contextPath: Zafran.MitigationsPerformedResponse.message
+      description: 'Error message.'
+fromversion: 6.0.0

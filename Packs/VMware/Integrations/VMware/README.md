@@ -1,20 +1,16 @@
 VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.
 This integration was integrated and tested with version 7.03 of VMware
 
-## Configure VMware on Cortex XSOAR
+## Configure VMware in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VMware.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                        | **Description**                                   | **Required** |
-    |--------------------------------------|------------|---|
-    | Server URL (i.e., 192.168.0.1:30022) | The server URL of the VCenter.                    | True       |
-    | Credentials                          | Username and password used to login into the system. | True       |
-    | insecure                             | Trust any certificate (not secure).               | True       |
-    | proxy                                | Use system proxy settings.                        | False      |
+| **Parameter**                        | **Description**                                   | **Required** |
+|--------------------------------------|------------|---|
+| Server URL (i.e., 192.168.0.1:30022) | The server URL of the VCenter.                    | True       |
+| Credentials                          | Username and password used to login into the system. | True       |
+| insecure                             | Trust any certificate (not secure).               | True       |
+| proxy                                | Use system proxy settings.                        | False      |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Use Cases
 - Create and revert to snapshot.
@@ -22,7 +18,7 @@ This integration was integrated and tested with version 7.03 of VMware
 - Power-on, power-off, suspend, reboot, clone, create, delete, relocate, resigster and unregister virtual machines.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### vmware-get-vms
 ***
@@ -779,4 +775,3 @@ There is no context output for this command.
 
 #### Human Readable Output
 >Virtual Machine was unregistered successfully.
-

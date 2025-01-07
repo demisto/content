@@ -7,6 +7,18 @@
                     {
                         "fieldId": "incident_sekoiaxdralertreject",
                         "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
@@ -141,6 +153,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -153,6 +166,7 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-hmim4odmnc-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -167,6 +181,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-hmim4odmnc-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -182,6 +197,7 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-hmim4odmnc-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -196,6 +212,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-hmim4odmnc-caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -210,6 +227,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-hmim4odmnc-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -225,6 +243,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-field-changed-caseinfoid-hmim4odmnc-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -307,6 +326,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-hmim4odmnc-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -381,6 +401,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -424,6 +445,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -449,6 +471,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -492,6 +515,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -514,8 +538,10 @@
                         "hideName": false,
                         "i": "xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-caseinfoid-7bde8760-a95c-11ed-9145-25ddf42500b6",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Comments",
                         "query": "SekoiaXDRPrintComments",
@@ -630,8 +656,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Alert information",
                         "static": false,
@@ -656,8 +684,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Details",
                         "static": false,
@@ -670,8 +700,10 @@
                         "hideName": false,
                         "i": "xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-caseinfoid-c0be8e90-ac48-11ed-bd2d-994e9b5e36b1",
                         "items": [],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Case Information",
                         "query": "SekoiaXDRPrintCase",
@@ -692,15 +724,17 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sekoiaxdrkillchain",
-                                "height": 106,
+                                "height": 22,
                                 "id": "d4996120-d848-11ed-a2c5-afbbb72993fe",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Kill Chain",
                         "static": false,
@@ -713,8 +747,10 @@
                         "hideName": true,
                         "i": "xwqxiqdriy-field-changed-xwqxiqdriy-308b91c0-3d3c-11ef-bbb1-2b336ca0953c",
                         "items": [],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Impacted assets",
                         "query": "SekoiaXDRPrintAssets",

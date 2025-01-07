@@ -1,0 +1,35 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Netskope Outgoing Mapper",
+    "mapping": {
+        "Netskope DLP Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "original_severity": {
+                    "simple": "netskopeoriginalseverity"
+                },
+                "original_status": {
+                    "simple": "netskopeoriginalstatus"
+                },
+                "severity": {
+                    "simple": "netskopeseverity"
+                },
+                "status": {
+                    "simple": "sourcestatus"
+                },
+                "timestamp": {
+                    "simple": "netskopetimestamp"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Netskope Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

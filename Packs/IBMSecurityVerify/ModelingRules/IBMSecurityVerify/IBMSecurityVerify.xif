@@ -1,0 +1,161 @@
+//Created a generic mapping rule for fields relevant to most event types in IBM Security Verify.
+[RULE: generic_fields_mapping]
+alter
+    src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    src_ipv4 = arrayindex(regextract(data -> origin, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter
+    xdm.event.type = if(event_type in ("sso", "authentication"), "authentication", event_type),
+    xdm.event.id = id,
+    xdm.source.ipv4 = if(src_ipv4 != null, src_ipv4, ""),
+    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, ""),
+    xdm.source.user_agent = data -> devicetype,
+    xdm.observer.name = if(tenantname != null AND servicename != null, concat(tenantname, " - ", servicename), tenantname),
+    xdm.observer.unique_identifier = tenantid;
+
+[MODEL: dataset=ibm_security_verify_raw]
+/*
+Mapping of 'management' event types.
+*/
+filter event_type = "management"
+| alter
+    src_user1 = arrayindex(regextract(data -> performedby_username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
+    src_user2 = arrayindex(regextract(data -> username, "(.+)\@") ,0),
+    mod = if(data -> modified = "[]", null, data -> modified),
+    res = lowercase(data -> result)
+| alter
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res IN("pending", "sent"), XDM_CONST.OUTCOME_UNKNOWN, res = "skipped", XDM_CONST.OUTCOME_PARTIAL, res),
+    xdm.event.operation_sub_type = coalesce(data -> dict_op, data -> action),
+    xdm.target.application.name = data -> applicationname,
+    xdm.event.description = if(data -> cause != null AND data -> modified != null, concat(rtrim(data -> cause, "."), ". modified properties: ", mod), coalesce(data -> cause, data -> modified)), // Checks if 'cause' and 'modified' are both populated. If so, appends the cause with a list of modified properties. If not, returns whichever field is available.
+    xdm.event.original_event_type = data -> messageid,
+    xdm.auth.mfa.method = data -> mfamethod,
+    xdm.source.user.identifier = if(data -> performedby IN("System", "shared_apikey"), null, data -> performedby),
+    xdm.source.application.name = coalesce(data -> performedby_clientname, if(data -> performedby IN("System", "shared_apikey"), data -> performedby)),
+    xdm.source.user.username = coalesce(src_user2, data -> username, src_user1, data -> performedby_username), //2 possible username fields, performedby_username and username.
+    xdm.source.user.upn = if(src_user2 != null, data -> username ,src_user1 != null, data -> performedby_username),
+    xdm.target.resource.id = data -> entitlementid,
+    xdm.target.resource.name = data -> entitlementname,
+    xdm.target.resource.sub_type = data -> entitlementsubtype,
+    xdm.target.resource.type = if(data -> entitlementtype != null AND data -> entitlementcategory != null, concat(data -> entitlementtype, " - ", data -> entitlementcategory), coalesce(data -> entitlementtype, data -> entitlementcategory, data -> resource )), // The "type" field represents the role, while the "category" field specifies the role type, e.g., "role - admin."
+    xdm.source.user.groups = to_json_string(data -> entitlements) -> []
+| call generic_fields_mapping;
+
+/*
+Mapping of 'sso' event types.
+*/
+filter event_type = "sso"
+| alter
+    res = lowercase(data -> result),
+    src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
+| alter
+    xdm.event.description = data -> cause,
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.auth.service = "SP",
+    xdm.auth.auth_method = data -> subtype,
+    xdm.source.user.identifier = data -> userid,
+    xdm.source.user.username = coalesce(src_user, data -> username),
+    xdm.source.user.upn = if(src_user != null, data -> username),
+    xdm.target.resource.id = data -> applicationid,
+    xdm.target.resource.name = data -> applicationname,
+    xdm.target.application.name = data -> applicationname,
+    xdm.source.host.device_id = data -> deviceid,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.target.ipv4 = "", //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.source.port = 0, //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.target.port = 0, //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.event.original_event_type = event_type
+| call generic_fields_mapping;
+
+/*
+Mapping of 'authentication' event types
+*/
+filter event_type = "authentication"
+| alter
+    res = lowercase(data -> result),
+    src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
+    subtype = lowercase(data -> subtype),
+    mfamethod = lowercase(data -> mfamethod),
+    cause_lower = lowercase(data -> cause),
+    mfaresult_lower = lowercase(data -> mfaresult)
+| alter
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
+    xdm.event.outcome_reason = if(mfaresult_lower = "user_denied" or cause_lower ~= "one-time password .*? was invalid", "mfa_failure", cause_lower ~= "the account for the user [^\s]+ is locked" or cause_lower contains "locked_pwd_failures", "account_locked", cause_lower contains "invalid_creds", "bad_credentials", cause_lower ~= "user [^\s]+ is not authorized to access this resource", "auth_login_restrictions", cause_lower contains "user_fraudulent", "risky_signin" ,cause_lower contains "user_denied","user_reject", cause_lower ~= "user [^\s]+ is not an active user", "account_expired_or_disabled", cause_lower ~= "unexpected error - unable to fetch the tenant's state from cache." or cause_lower ~= "unexpected error - [\S]+ an error occurred while mapping the user", "failed_login", cause_lower ~= "unexpected error", "OTHER", to_string(data -> cause)),
+    xdm.event.operation = if(subtype = "mfa",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
+    xdm.event.operation_sub_type = if(mfamethod = "fido2", "hardware_token", mfamethod = "email otp", "email", mfamethod = "ibm verify push", "application", mfamethod = "sms otp", "sms", subtype in ("certificate", "social", "socialjwt"), "application", subtype = "user_password", "password", subtype = "federation", "Generic SSO", subtype = "device trust", "trusted_login", subtype),
+    xdm.event.description = data -> cause,
+    xdm.auth.service = "IDP",
+    xdm.auth.auth_method = data -> sourcetype,
+    xdm.source.user.identifier = if(data -> subject = "UNKNOWN", null, coalesce(data -> subject, data -> performedby)),
+    xdm.target.url = data -> ["target"],
+    xdm.source.user.username = coalesce(src_user, data -> username),
+    xdm.source.user.upn = if(src_user != null, data -> username),
+    xdm.source.host.device_id = data -> deviceid,
+    xdm.source.host.device_category = if(lowercase(data -> mfadevice) ~= "iphone" or lowercase(data -> devicetype) ~= "verify/3" or lowercase(data -> devicetype) ~= "com.ibm.security.verifyapp", "Mobile", null),
+    xdm.auth.mfa.method = data -> mfamethod,
+    xdm.auth.mfa.client_details = data -> mfadevice,
+    xdm.event.original_event_type = event_type,
+    xdm.session_context_id = data -> usersessionid,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.target.ipv4 = "", //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.source.port = 0, //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.target.port = 0 //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+| call generic_fields_mapping;
+
+/*
+Mapping of 'slo' event types.
+*/
+filter event_type = "slo"
+| alter
+    res = lowercase(data -> result),
+    src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
+| alter
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res IN("pending", "sent"), XDM_CONST.OUTCOME_UNKNOWN, res = "skipped", XDM_CONST.OUTCOME_PARTIAL, res),
+    xdm.event.operation_sub_type = data -> action,
+    xdm.target.application.name = data -> applicationname,
+    xdm.event.description = data -> cause,
+    xdm.event.outcome_reason = data -> logoutresultdetail,
+    xdm.auth.service = data -> sourcetype,
+    xdm.source.user.identifier = coalesce(data -> userid, data -> subject),
+    xdm.source.user.username = coalesce(src_user, data -> username),
+    xdm.source.user.upn = if(src_user != null, data -> username),
+    xdm.target.url = data -> ["target"],
+    xdm.network.session_id = data -> usersessionid
+| call generic_fields_mapping;
+
+/*
+Mapping of 'access_request' event types.
+*/
+filter event_type = "access_request"
+| alter
+    inter_user1 = arrayindex(regextract(data -> approver_username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
+    inter_user2 = arrayindex(regextract(data -> performedby_username, "(.+)\@") ,0),
+    src_user1 = arrayindex(regextract(data -> requestor_username, "(.+)\@") ,0),
+    src_user2 = arrayindex(regextract(data -> beneficiary_username, "(.+)\@") ,0),
+    src_ipv4 =  arrayindex(regextract(data -> origin, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    action = lowercase(data -> action),
+    stat = data -> status
+| alter
+    xdm.target.application.name = data -> applicationname,
+    xdm.intermediate.user.identifier = coalesce(data -> approver, data -> performedby),
+    xdm.intermediate.user.username = coalesce(inter_user1, inter_user2, data -> approver_username ,data -> performedby_username),
+    xdm.intermediate.user.upn = if(inter_user1 != null, data -> approver_username, inter_user2 != null, data -> performedby_username),
+    xdm.source.user.identifier = coalesce(data -> requestor, data -> beneficiary),
+    xdm.source.user.username = coalesce(src_user1, src_user2, data -> username, data -> beneficiary_username),
+    xdm.source.user.upn = if(src_user1 != null, data -> requestor_username, src_user2 != null, data -> beneficiary_username),
+    xdm.event.description = data -> cause,
+    xdm.source.user_agent = data -> devicetype,
+    xdm.target.resource.name = data -> entitlement_name,
+    xdm.target.resource.value = if(data -> entitlement_rights = "", null, data -> entitlement_rights),
+    xdm.target.resource.type = data -> entitlement_type,
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.session_context_id = data -> request,
+    xdm.event.operation_sub_type = data -> resource,
+    xdm.event.type = event_type,
+    xdm.event.id = id,
+    xdm.event.is_completed = if(stat = "pending", False, stat IN ("invalidated", "completed"), True),
+    xdm.event.outcome = if(action IN("complete", "approve"), XDM_CONST.OUTCOME_SUCCESS, action = "invalid", XDM_CONST.OUTCOME_FAILED, action = "submit", XDM_CONST.OUTCOME_PARTIAL, action),
+    xdm.observer.name = if(tenantname != null AND servicename != null, concat(tenantname, " - ", servicename), tenantname),
+    xdm.observer.unique_identifier = tenantid;

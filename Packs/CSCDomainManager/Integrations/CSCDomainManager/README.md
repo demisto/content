@@ -1,22 +1,18 @@
 CSCDomainManager uses rules-based technology, customizable reporting, granular user management, and more—and is the world's first multilingual domain management tool, available in English, French, and German.
 This integration was integrated and tested with version 2.0.0 of CSCDomainManager.
 
-## Configure CSCDomainManager on Cortex XSOAR
+## Configure CSCDomainManager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CSCDomainManager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL | The endpoint URL | True |
-    | Token | The token to use for connection | True |
-    | API Key | The API Key to use for connection | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL | The endpoint URL | True |
+| Token | The token to use for connection | True |
+| API Key | The API Key to use for connection | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Access and Security
  Customers request access through their CSC service team.  Their service team will gather the details for
@@ -34,7 +30,7 @@ Token will expire after 30 consecutive days of no activity, you can reactive it 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### csc-domains-search
@@ -762,4 +758,3 @@ Get domain data by qualified domain name
 >|Qualified Domain Name|Domain|Idn|Generic top-level domains|Managed Status|Registration Date|Registry Expiry Date|Paid Through Date|Country Code|Server Delete Prohibited|Server Transfer Prohibited|Server Update Prohibited|Name Servers|Dns Type|Whois Contact first Name|Whois Contact last Name|Whois Contact email|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| csc-panw.biz | csc-panw |  | false | ACTIVE | 22-Apr-2024 UTC | 22-Apr-2025 UTC | 22-Apr-2025 UTC |  |  | false |  | dns1.cscdns.net,<br/>dns2.cscdns.net | CSC_BASIC | Domain | Administrator | admin@internationaladmin.com |
-

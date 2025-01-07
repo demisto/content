@@ -307,3 +307,113 @@ def test_get_cps_enrollment_by_id_command(mocker, akamai_waf_client):
     _, context_entry, raw_response = get_cps_enrollment_by_id_command(client=akamai_waf_client, enrollment_id=193622)
     assert expected_raw_response == raw_response
     assert expected_context_entry == context_entry
+
+
+def test_list_appsec_config_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_appsec_config_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_appsec_config_command
+
+    test_data = util_load_json("test_data/list_appsec_config_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client, "list_appsec_config", return_value=expected_raw_response
+    )
+
+    human_readable, context_entry, raw_response = list_appsec_config_command(
+        client=akamai_waf_client
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_dns_zones_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_dns_zones_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_dns_zones_command
+
+    test_data = util_load_json("test_data/list_dns_zones_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client, "list_dns_zones", return_value=expected_raw_response
+    )
+
+    human_readable, context_entry, raw_response = list_dns_zones_command(
+        client=akamai_waf_client
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_dns_zone_recordsets_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_dns_zone_recordsets_command with a specific zone.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_dns_zone_recordsets_command
+
+    zone = "example.com"
+    test_data = util_load_json("test_data/list_dns_zone_recordsets_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client,
+        "list_dns_zone_recordsets",
+        return_value=expected_raw_response,
+    )
+
+    human_readable, context_entry, raw_response = list_dns_zone_recordsets_command(
+        client=akamai_waf_client, zone=zone
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_cps_active_certificates_command(mocker, akamai_waf_client):
+    """
+    When:
+        - running the command list_cps_active_certificates_command with a specific contract_id.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_cps_active_certificates_command
+
+    contract_id = "contract123"
+    test_data = util_load_json("test_data/list_cps_active_certificates_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(
+        akamai_waf_client,
+        "list_cps_active_certificates",
+        return_value=expected_raw_response,
+    )
+
+    human_readable, context_entry, raw_response = list_cps_active_certificates_command(
+        client=akamai_waf_client, contract_id=contract_id
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry

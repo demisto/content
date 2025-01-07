@@ -1,0 +1,194 @@
+[
+    {
+        "APIExecutionMetrics": null,
+        "Brand": "",
+        "Category": "",
+        "Contents": [
+            {
+                "cacheVersn": 0,
+                "calculatedTime": "2024-09-12T13:59:03.465561694Z",
+                "comments": [
+                    {
+                        "cacheVersn": 0,
+                        "category": "Sighting",
+                        "content": "Created",
+                        "created": "2024-09-12T13:59:03.463242591Z",
+                        "entryId": "",
+                        "id": "1783a8d5-8565-4df9-823b-40afe7711ba8",
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sizeInBytes": 0,
+                        "source": "DBot",
+                        "type": "IndicatorCommentTimeLine",
+                        "user": "DBot",
+                        "version": 0
+                    },
+                    {
+                        "cacheVersn": 0,
+                        "category": "Indicator Update",
+                        "content": "New relationship related-to created to Okta",
+                        "created": "2024-09-12T13:59:04.019291163Z",
+                        "entryId": "",
+                        "id": "26029eca-3c64-48fe-800f-9e0d86f50336",
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sizeInBytes": 0,
+                        "source": "XSOAR (XSOAR)",
+                        "type": "IndicatorCommentTimeLine",
+                        "user": "DBot",
+                        "version": 0
+                    }
+                ],
+                "CustomFields": {
+                    "author": "Austin Songer @austinsonger",
+                    "description": "Detects when a user account is locked out.",
+                    "publications": [
+                        {
+                            "date": "2021-09-12",
+                            "link": "https://developer.okta.com/docs/reference/api/system-log/",
+                            "source": "Sigma Rule",
+                            "title": "Okta User Account Locked Out"
+                        },
+                        {
+                            "date": "2021-09-12",
+                            "link": "https://developer.okta.com/docs/reference/api/event-types/",
+                            "source": "Sigma Rule",
+                            "title": "Okta User Account Locked Out"
+                        }
+                    ],
+                    "service": "okta",
+                    "sigmacondition": [
+                        {
+                            "condition": "selection"
+                        }
+                    ],
+                    "sigmadetection": [
+                        {
+                            "key": "displaymessage",
+                            "modifiers": "",
+                            "selection": "selection",
+                            "values": "(1)Max sign in attempts exceeded"
+                        }
+                    ],
+                    "sigmafalsepositives": [
+                        {
+                            "reason": "Unknown"
+                        }
+                    ],
+                    "sigmaruleid": "14701da0-4b0f-4ee6-9c95-2ffb4e73bb9a",
+                    "sigmarulelevel": "MEDIUM",
+                    "sigmaruleraw": "title: Okta User Account Locked Out\nid: 14701da0-4b0f-4ee6-9c95-2ffb4e73bb9a\nstatus: test\ndescription: Detects when a user account is locked out.\nreferences:\n    - https://developer.okta.com/docs/reference/api/system-log/\n    - https://developer.okta.com/docs/reference/api/event-types/\nauthor: Austin Songer @austinsonger\ndate: 2021/09/12\nmodified: 2022/10/09\ntags:\n    - attack.impact\nlogsource:\n    product: okta\n    service: okta\ndetection:\n    selection:\n        displaymessage: Max sign in attempts exceeded\n    condition: selection\nfalsepositives:\n    - Unknown\nlevel: medium",
+                    "sigmarulestatus": "TEST",
+                    "tags": [
+                        "Impact"
+                    ]
+                },
+                "expirationSource": {
+                    "brand": "",
+                    "expirationInterval": 0,
+                    "expirationPolicy": "never",
+                    "instance": "",
+                    "moduleId": "",
+                    "setTime": "2024-09-12T13:59:03.463273477Z",
+                    "source": "indicatorType",
+                    "user": ""
+                },
+                "expirationStatus": "active",
+                "firstSeen": "0001-01-01T00:00:00Z",
+                "firstSeenEntryID": "0513bd02-6ac1-448a-8b18-ad344e9a174d@e25161b1-971c-41f9-8cc7-c040112f579c",
+                "id": "28dbd5b46d657b978815af51f6938e78",
+                "indicator_type": "Sigma Rule",
+                "isDetectable": false,
+                "isPreventable": false,
+                "lastSeen": "0001-01-01T00:00:00Z",
+                "lastSeenEntryID": "0513bd02-6ac1-448a-8b18-ad344e9a174d@e25161b1-971c-41f9-8cc7-c040112f579c",
+                "modified": "2024-09-12T13:59:04.467484342Z",
+                "primaryTerm": 1,
+                "score": 0,
+                "sequenceNumber": 49,
+                "sizeInBytes": 3397,
+                "sortValues": [
+                    "1726149543465",
+                    "28dbd5b46d657b978815af51f6938e78"
+                ],
+                "source": "DBot",
+                "timestamp": "2024-09-12T13:59:03.465561694Z",
+                "value": "Okta User Account Locked Out",
+                "version": 2
+            }
+        ],
+        "ContentsFormat": "json",
+        "EntryContext": null,
+        "Evidence": false,
+        "EvidenceID": "",
+        "File": "",
+        "FileID": "",
+        "FileMetadata": null,
+        "HumanReadable": "## Found indicators\nID | IndicatorType | InvestigationIDs | Score | Source | Value\n-|-|-|-|-|-\n28dbd5b46d657b978815af51f6938e78 | Sigma Rule |  | 0 | DBot | Okta User Account Locked Out\n",
+        "ID": "",
+        "IgnoreAutoExtract": false,
+        "ImportantEntryContext": null,
+        "IndicatorTimeline": null,
+        "Metadata": {
+            "brand": "Builtin",
+            "cacheVersn": 0,
+            "category": "",
+            "contents": "",
+            "contentsSize": 0,
+            "created": "2024-09-12T14:03:12.88682457Z",
+            "cronView": false,
+            "endingDate": "0001-01-01T00:00:00Z",
+            "entryTask": null,
+            "errorSource": "",
+            "file": "",
+            "fileID": "",
+            "fileMetadata": null,
+            "format": "json",
+            "id": "",
+            "incidentCreationTime": "0001-01-01T00:00:00Z",
+            "IndicatorTimeline": null,
+            "instance": "Builtin",
+            "InstanceID": "InternalModule",
+            "investigationCreationTime": "0001-01-01T00:00:00Z",
+            "investigationId": "e25161b1-971c-41f9-8cc7-c040112f579c",
+            "isTodo": false,
+            "mirrored": false,
+            "modified": "0001-01-01T00:00:00Z",
+            "note": false,
+            "parentContent": "!py script=`return_results(json.dumps(demisto.executeCommand('findIndicators', {'value': 'Okta User Account Locked Out'})))` raw-response=true",
+            "parentEntryTruncated": false,
+            "parentId": "b463117b-ec10-403a-8c93-8f946b0e785e@e25161b1-971c-41f9-8cc7-c040112f579c",
+            "pinned": false,
+            "playbookId": "",
+            "recurrent": false,
+            "Relationships": null,
+            "reputations": null,
+            "reputationSize": 0,
+            "retryTime": "0001-01-01T00:00:00Z",
+            "scheduled": false,
+            "scheduledEntryGuid": "",
+            "sizeInBytes": 0,
+            "startDate": "0001-01-01T00:00:00Z",
+            "system": "",
+            "tags": null,
+            "tagsRaw": null,
+            "taskId": "",
+            "times": 0,
+            "timezoneOffset": 0,
+            "type": 1,
+            "user": "",
+            "version": 0
+        },
+        "ModuleName": "",
+        "NextRun": "",
+        "Note": false,
+        "PollingArgs": null,
+        "PollingCommand": "",
+        "PollingItemsRemaining": 0,
+        "ReadableContentsFormat": "",
+        "Relationships": null,
+        "System": "",
+        "Tags": null,
+        "Timeout": "",
+        "Type": 1,
+        "Version": 0
+    }
+]

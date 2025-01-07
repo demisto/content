@@ -730,11 +730,12 @@ def test_get_power_query_results(mocker, requests_mock):
     main()
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    readable_output = ('### SentinelOne - Get Power Query Results - for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
+    readable_output = ('### SentinelOne - Get Power Query Results for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
                        '\nRecommendation: Result set limited to 1000 rows by default. To display more rows, add'
-                       ' a command like \"| limit 10000\".\n|eventTime|agentUuid|siteId|\n|---|---|---|\n'
-                       '| 1724151854609 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n'
-                       '| 1724151823332 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n')
+                       ' a command like \"| limit 10000\".\n\nSummary information and details about the power query'
+                       '\n|Agent Uuid|Event Time|Site Id|\n|---|---|---|\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151854609 | 123456789 |\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151823332 | 123456789 |\n')
     assert command_results.readable_output == readable_output
 
 
@@ -763,11 +764,12 @@ def test_get_power_query_results_without_query_id(mocker, requests_mock):
     main()
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    readable_output = ('### SentinelOne - Get Power Query Results - for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
+    readable_output = ('### SentinelOne - Get Power Query Results for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
                        '\nRecommendation: Result set limited to 1000 rows by default. To display more rows, add'
-                       ' a command like \"| limit 10000\".\n|eventTime|agentUuid|siteId|\n|---|---|---|\n'
-                       '| 1724151854609 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n'
-                       '| 1724151823332 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n')
+                       ' a command like \"| limit 10000\".\n\nSummary information and details about the power query'
+                       '\n|Agent Uuid|Event Time|Site Id|\n|---|---|---|\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151854609 | 123456789 |\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151823332 | 123456789 |\n')
     assert command_results.readable_output == readable_output
 
 

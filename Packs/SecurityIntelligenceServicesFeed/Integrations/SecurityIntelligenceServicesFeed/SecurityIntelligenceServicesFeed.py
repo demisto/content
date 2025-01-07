@@ -3,7 +3,7 @@ from CommonServerPython import *
 '''IMPORTS'''
 
 from typing import Dict, Any, List, Union, Optional, Generator
-from datetime import timezone
+from datetime import UTC
 import csv
 import gzip
 import boto3 as s3
@@ -331,7 +331,7 @@ def prepare_date_string_for_custom_fields(date_string: str) -> str:
     parsed_dt = dateparser.parse(date_string)
     if parsed_dt:
         if parsed_dt.tzinfo is None:
-            parsed_dt = parsed_dt.replace(tzinfo=timezone.utc)
+            parsed_dt = parsed_dt.replace(tzinfo=UTC)
         return parsed_dt.isoformat()
     return ''
 
@@ -357,7 +357,7 @@ def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any], tags: Lis
     if feed_type == 'domain':
         if indicator.get('Timestamp'):
             fields['firstseenbysource'] = datetime.fromtimestamp(int(indicator.get('Timestamp')),  # type: ignore
-                                                                 timezone.utc).isoformat()
+                                                                 UTC).isoformat()
     else:
         fields['threattypes'] = [{'threatcategory': feed_type.capitalize() if feed_type != 'phish' else 'Phishing'}]
         if indicator.get('MatchType'):
@@ -421,7 +421,7 @@ def get_latest_key(client: Client, feed_type: str, first_fetch_interval: str,
         return object_key_list[-1].get('Key', '') if object_key_list else cached_key
 
     # Parsing first fetch time.
-    date_from, now = dateparser.parse(f'{first_fetch_interval} UTC'), datetime.now(timezone.utc)
+    date_from, now = dateparser.parse(f'{first_fetch_interval} UTC'), datetime.now(UTC)
 
     # Fetching latest object keys.
     latest_key_list: List[str] = [key_dict.get('Key', '') for key_dict in

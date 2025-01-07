@@ -240,5 +240,7 @@ outputs:
   description: Version of CVSS used in the calculation.
   type: number
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.116949
 fromversion: 5.0.0
+tests:
+- No tests

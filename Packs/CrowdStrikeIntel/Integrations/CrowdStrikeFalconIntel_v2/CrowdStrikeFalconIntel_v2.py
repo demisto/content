@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 from dateparser import parse
 
@@ -74,7 +74,7 @@ class Client:
                     parsed_date = parse(args[key])
                     assert parsed_date is not None
                     filter_query += f"{api_key}:" \
-                                    f"{operator}{int(parsed_date.replace(tzinfo=timezone.utc).timestamp())}+"
+                                    f"{operator}{int(parsed_date.replace(tzinfo=UTC).timestamp())}+"
 
         if filter_query.endswith('+'):
             filter_query = filter_query[:-1]
@@ -324,9 +324,9 @@ def get_indicator_outputs(resource: dict[str, Any]) -> dict[str, Any]:
             'ID': indicator_id,
             'Type': indicator_type,
             'Value': indicator_value,
-            'LastUpdate': datetime.fromtimestamp(last_update, timezone.utc).isoformat() if last_update
+            'LastUpdate': datetime.fromtimestamp(last_update, UTC).isoformat() if last_update
             else None,
-            'PublishDate': datetime.fromtimestamp(publish_date, timezone.utc).isoformat() if publish_date
+            'PublishDate': datetime.fromtimestamp(publish_date, UTC).isoformat() if publish_date
             else None,
             'MaliciousConfidence': malicious_confidence,
             'Reports': reports,
@@ -424,9 +424,9 @@ def cs_actors_command(client: Client, args: dict[str, str]) -> CommandResults:
                 'Slug': slug,
                 'ShortDescription': short_description,
                 'Description': description,
-                'FirstActivityDate': datetime.fromtimestamp(first_activity_date, timezone.utc).isoformat()
+                'FirstActivityDate': datetime.fromtimestamp(first_activity_date, UTC).isoformat()
                 if first_activity_date else None,
-                'LastActivityDate': datetime.fromtimestamp(last_activity_date, timezone.utc).isoformat()
+                'LastActivityDate': datetime.fromtimestamp(last_activity_date, UTC).isoformat()
                 if last_activity_date else None,
                 'Active': active,
                 'KnownAs': known_as,
@@ -539,9 +539,9 @@ def cs_reports_command(client: Client, args: dict[str, str]) -> CommandResults:
                 'Type': report_type,
                 'SubType': sub_type,
                 'Slug': slug,
-                'CreatedDate': datetime.fromtimestamp(created_date, timezone.utc).isoformat()
+                'CreatedDate': datetime.fromtimestamp(created_date, UTC).isoformat()
                 if created_date else None,
-                'LastModifiedSate': datetime.fromtimestamp(last_modified_date, timezone.utc).isoformat()
+                'LastModifiedSate': datetime.fromtimestamp(last_modified_date, UTC).isoformat()
                 if last_modified_date else None,
                 'ShortDescription': short_description,
                 'Description': description,

@@ -573,6 +573,15 @@
                                 "listId": "caseinfoid-field-changed-caseinfoid-63341610-90bd-11ed-b33e-6f8b92988dc1",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "securonixpolicystages",
+                                "height": 22,
+                                "id": "dde23910-a636-11ef-8853-fdeeed272621",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,

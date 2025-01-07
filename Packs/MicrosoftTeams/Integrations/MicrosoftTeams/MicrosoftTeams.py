@@ -45,7 +45,8 @@ PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).g
     or demisto.params().get('key', '')
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
-URL_REGEX = r'https?://[^\s]*'
+URL_REGEX = r'(?<!\]\()https?://[^\s]*'
+XSOAR_ENGINE_URL_REGEX = r'\bhttps?://(?:\w+[\w.-]*\w+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+(?:/(?:\w+/)*\w+)?'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
@@ -59,11 +60,12 @@ MESSAGE_TYPES: dict = {
 }
 
 NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>.\nView it on: <incident_link>"
-
-if '@' in BOT_ID:
-    demisto.debug("setting tenant id in the integration context")
-    BOT_ID, tenant_id, service_url = BOT_ID.split('@')
-    set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
+MISS_CONFIGURATION_ERROR_MESSAGE = "Did not receive a tenant ID from Microsoft Teams. Verify that the messaging endpoint in the "\
+                                   "Demisto bot configuration in Microsoft Teams is configured correctly.\nUse the "\
+                                   "`microsoft-teams-create-messaging-endpoint` command to get the correct messaging endpoint "\
+                                   "based on the server URL, the server version, and the instance configurations.\n"\
+                                   "For more information See - "\
+                                   "https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting."
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
@@ -208,6 +210,13 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
                                "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 
     demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
+
+
+def reset_graph_auth_command():
+    """
+    A wrapper function for the reset_graph_auth() which resets the Graph API authorization in the integration context.
+    """
+    reset_graph_auth()
     return_results(CommandResults(readable_output='Authorization was reset successfully.'))
 
 
@@ -359,12 +368,15 @@ def urlify_hyperlinks(message: str, url_header: str | None = EXTERNAL_FORM_URL_D
     :return: Formatted message with hyperlinks.
     """
     url_header = url_header or EXTERNAL_FORM_URL_DEFAULT_HEADER
-    formatted_message: str = message
 
-    for url_match in re.finditer(URL_REGEX, message):
-        url = url_match.group()
+    def replace_url(match):
+        url = match.group()
         # is the url is a survey link coming from Data Collection task
-        formatted_message = formatted_message.replace(url, f'[{url_header if EXTERNAL_FORM in url else url}]({url})')
+        return f'[{url_header if EXTERNAL_FORM in url else url}]({url})'
+
+    # Replace all URLs that are not already part of markdown links
+    formatted_message: str = re.sub(URL_REGEX, replace_url, message)
+
     return formatted_message
 
 
@@ -613,6 +625,48 @@ def process_ask_user(message: str) -> dict:
     return create_adaptive_card(body, actions)
 
 
+def add_data_to_actions(card_json, data_value):
+
+    # If the current item is a list, iterate over it
+    if isinstance(card_json, list):
+        for item in card_json:
+            add_data_to_actions(item, data_value)
+
+    # If the current item is a dictionary
+    elif isinstance(card_json, dict):
+        # Check if this dictionary is an Action.Submit or Action.Execute
+        if card_json.get("type") in ["Action.Submit", "Action.Execute"]:
+            # Add the 'data' key with the provided value
+            card_json["data"] = data_value
+
+        # Only check nested elements within 'actions'
+        if "actions" in card_json:
+            add_data_to_actions(card_json["actions"], data_value)
+
+        # Handle nested card inside Action.ShowCard
+        if card_json.get("type") == "Action.ShowCard" and "card" in card_json:
+            add_data_to_actions(card_json["card"], data_value)
+
+
+def process_adaptive_card(adaptive_card_obj: dict) -> dict:
+    """
+    Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
+    of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
+    investigation_id and task_id to them.
+    :param adaptive_card_obj: The adaptive card object.
+    :return: Adaptive card with entitlement.
+    """
+
+    adaptive_card = adaptive_card_obj.get('adaptive_card', '')
+    data_obj: dict = {}
+    data_obj["entitlement"] = str(adaptive_card_obj.get('entitlement', ''))
+    data_obj["investigation_id"] = str(adaptive_card_obj.get('investigation_id', ''))
+    data_obj["task_id"] = str(adaptive_card_obj.get('task_id', ''))
+
+    add_data_to_actions(adaptive_card.get('content', ''), data_obj)
+    return adaptive_card
+
+
 def get_bot_access_token() -> str:
     """
     Retrieves Bot Framework API access token, either from cache or from Microsoft
@@ -681,10 +735,7 @@ def get_graph_access_token() -> str:
         return access_token
     tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
-        raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
-            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
-        )
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     headers = None
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
@@ -2092,11 +2143,11 @@ def send_message():
 
     recipient: str = channel_id or personal_conversation_id
 
-    conversation: dict
+    conversation: dict = {}
 
     if message:
-        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match and is_teams_ask_message(message):
+        entitlement_match_msg: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match_msg and is_teams_ask_message(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
@@ -2116,10 +2167,13 @@ def send_message():
                 'entities': entities
             }
     else:  # Adaptive card
-        conversation = {
-            'type': 'message',
-            'attachments': [adaptive_card]
-        }
+        entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get('entitlement', ''))
+        if entitlement_match_ac:
+            adaptive_card_processed = process_adaptive_card(adaptive_card)
+            conversation = {
+                'type': 'message',
+                'attachments': [adaptive_card_processed]
+            }
 
     service_url: str = integration_context.get('service_url', '')
     if not service_url:
@@ -2441,6 +2495,13 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     :return: None
     """
     response: str = value.get('response', '')
+    if not response:
+        # Adaptive Card Response Received
+        remove_keys = ['entitlement', 'investigation_id', 'task_id']
+        response_dict = {key: value for key, value in value.items() if key not in remove_keys}
+        response = tableToMarkdown("Response", response_dict, headers=list(response_dict.keys()))
+
+    demisto.debug(f"Entitlement Response Received\n{value}")
     entitlement_guid: str = value.get('entitlement', '')
     investigation_id: str = value.get('investigation_id', '')
     task_id: str = value.get('task_id', '')
@@ -2595,10 +2656,7 @@ def ring_user():
     integration_context: dict = get_integration_context()
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
-        raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
-            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
-        )
+        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     # get user to call name and id
     username_to_call = demisto.args().get('username')
     user: list = get_user(username_to_call)
@@ -2724,6 +2782,117 @@ def long_running_loop():
             time.sleep(5)
 
 
+def token_permissions_list_command():
+    """
+    Gets the Graph access token stored in the integration context and displays the token's API permissions in the war room.
+
+    Use-case:
+    This command is ideal for users encountering insufficient permissions errors when attempting to
+    execute an integration command.
+    By utilizing this command, the user can identify the current permissions associated with their token (app), compare them to
+    the required permissions for executing the desired command (detailed in the integration's docs), and determine any additional
+    permissions needed to be added to their application.
+    """
+    # Get the used token from the integration context:
+    access_token: str = get_graph_access_token()
+
+    # Decode the token and extract the roles:
+    if access_token:
+        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+            roles = decoded_token.get('roles', [])
+
+        else:  # Authorization code flow
+            roles = decoded_token.get('scp', '')
+            roles = roles.split()
+
+        if roles:
+            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
+                                 sorted(roles), headers=['Permission'])
+        else:
+            hr = 'No permissions obtained for the used graph access token.'
+
+    else:
+        hr = 'Graph access token is not set.'
+
+    demisto.debug(f"'microsoft-teams-token-permissions-list' command result is: {hr}. Authorization type is: {AUTH_TYPE}.")
+
+    result = CommandResults(
+        readable_output=hr
+    )
+
+    return_results(result)
+
+
+def create_messaging_endpoint_command():
+    """
+    Generates the messaging endpoint, based on the server url, the server version and the instance configurations.
+
+    The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the Prerequisites of
+    the integration's set-up.
+    Link to documentation: https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#1-using-cortex-xsoar-or-cortex-xsiam-rerouting
+    """
+    server_address = ''
+    messaging_endpoint = ''
+
+    # Get instance name and server url:
+    urls = demisto.demistoUrls()
+    instance_name = demisto.integrationInstance()
+    xsoar_url = urls.get('server', '')
+    engine_url = demisto.args().get('engine_url', '')
+
+    if is_using_engine():  # In case of an XSOAR engine user - The user must provide the engine address.
+        if not engine_url:
+            raise ValueError("Your instance configuration involves a Cortex XSOAR engine.\nIn that case the messaging endpoint "
+                             "that should be added to the Demisto bot configuration in Microsoft Teams is the engine's IP "
+                             "(or DNS name) and the port in use, in the following format - `https://IP:port` or `http://IP:port`."
+                             " For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.\nTo test the format validity run"
+                             " this command with your engine's URL set as the value of the `engine_url` argument.")
+
+        elif engine_url and not re.search(XSOAR_ENGINE_URL_REGEX, engine_url):  # engine url is not valid
+            raise ValueError("Invalid engine URL - Please ensure that the `engine_url` includes the IP (or DNS name)"
+                             " and the port in use, and that it is in the correct format: `https://IP:port` or `http://IP:port`.")
+        else:
+            messaging_endpoint = engine_url
+
+    elif engine_url:  # engine_url was unnecessarily set
+        raise ValueError("Your instance configuration doesn't involve a Cortex XSOAR engine, but an `engine_url` was set.\n"
+                         "If you wish to run on an engine - set this option in the instance configuration. Otherwise, delete "
+                         "the value of the `engine_url` argument.")
+
+    elif is_xsoar_on_prem():
+        messaging_endpoint = urljoin(urljoin(xsoar_url, 'instance/execute'), instance_name)
+
+    else:  # XSIAM or XSOAR SAAS
+        if is_xsiam():
+            # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
+            # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
+            xsoar_url = xsoar_url.replace('xdr', 'crtx', 1)
+
+        # Add the 'ext-' prefix to the xsoar url
+        if xsoar_url.startswith('http://'):
+            server_address = xsoar_url.replace('http://', 'http://ext-', 1)
+        elif xsoar_url.startswith('https://'):
+            server_address = xsoar_url.replace('https://', 'https://ext-', 1)
+
+        messaging_endpoint = urljoin(urljoin(server_address, 'xsoar/instance/execute'), instance_name)
+
+    hr = f"The messaging endpoint is:\n `{messaging_endpoint}`\n\n The messaging endpoint should be added to the Demisto bot"\
+         f" configuration in Microsoft Teams as part of the prerequisites of the integration's setup.\n"\
+         f"For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
+
+    demisto.debug(
+        f"The messaging endpoint that should be added to the Demisto bot configuration in Microsoft Teams is:"
+        f" {messaging_endpoint}")
+
+    result = CommandResults(
+        readable_output=hr
+    )
+
+    return_results(result)
+
+
 def validate_auth_code_flow_params(command: str = ''):
     """
     Validates that the necessary parameters for the Authorization Code flow have been received.
@@ -2798,6 +2967,34 @@ def fetch_samples():
     demisto.incidents(get_integration_context().get('samples'))
 
 
+def auth_type_switch_handling():
+    """
+    Handling cases where the user switches the auth type in the integration instance (from the client credentials flow to the
+    auth code flow and vice versa), by auto-resetting the Graph API authorization in the integration context.
+    """
+    integration_context = get_integration_context()
+    current_auth_type = integration_context.get('current_auth_type', '')
+    if current_auth_type:
+        demisto.debug(f'current_auth_type is: {current_auth_type}')
+    else:
+        # current_auth_type is not set - First run of the integration instance
+        demisto.debug(f'This is the first run of the integration instance.\n'
+                      f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
+        integration_context['current_auth_type'] = AUTH_TYPE
+        set_integration_context(integration_context)
+        current_auth_type = AUTH_TYPE
+
+    if current_auth_type != AUTH_TYPE:
+        # First run after the user switched the authentication type
+        demisto.debug(f'The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n'
+                      f'Resetting the integration context.')
+        reset_graph_auth()
+        integration_context = get_integration_context()
+        demisto.debug(f'Setting the current_auth_type in the integration context to {AUTH_TYPE}.')
+        integration_context['current_auth_type'] = AUTH_TYPE
+        set_integration_context(integration_context)
+
+
 def main():   # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     demisto.debug("Main started...")
@@ -2820,8 +3017,9 @@ def main():   # pragma: no cover
         'microsoft-teams-channel-user-list': channel_user_list_command,
         'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
         'microsoft-teams-generate-login-url': generate_login_url_command,
-        'microsoft-teams-auth-reset': reset_graph_auth
-
+        'microsoft-teams-auth-reset': reset_graph_auth_command,
+        'microsoft-teams-token-permissions-list': token_permissions_list_command,
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
     }
 
     commands_auth_code: dict = {
@@ -2837,6 +3035,9 @@ def main():   # pragma: no cover
 
     ''' EXECUTION '''
     command: str = demisto.command()
+
+    if command != 'test-module':  # skipping test-module since it doesn't have integration context
+        auth_type_switch_handling()  # handles auth type switch cases
 
     try:
         support_multithreading()

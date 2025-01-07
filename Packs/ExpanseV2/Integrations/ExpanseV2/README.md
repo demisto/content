@@ -6,38 +6,34 @@ Cortex Xpanse is a Palo Alto Networks company.
 
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
-## Configure Cortex Xpanse on Cortex XSOAR
+## Configure Cortex Xpanse in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cortex Xpanse.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Your server URL | True |
-    | apikey | API Key | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
-    | max_fetch | Maximum number of incidents per fetch | False |
-    | first_fetch | First fetch time | False |
-    | priority | Fetch Xpanse issues with Priority | False |
-    | activity_status | Fetch Xpanse issues with Activity Status | False |
-    | progress_status | Fetch Xpanse issues with Progress Status | False |
-    | business_unit | Fetch issues with Business Units \(comma separated string\) | False |
-    | tag | Fetch issues with Tags \(comma separated string\) | False |
-    | issue_type | Fetch issue with Types \(comma separated string\) | False |
-    | mirror_direction | Incident Mirroring Direction | False |
-    | sync_owners | Sync Incident Owners | False |
-    | incoming_tags | Tag\(s\) for mirrored comments | False |
-    | sync_tags | Mirror out Entries with tag\(s\) | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Your server URL | True |
+| apikey | API Key | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| max_fetch | Maximum number of incidents per fetch | False |
+| first_fetch | First fetch time | False |
+| priority | Fetch Xpanse issues with Priority | False |
+| activity_status | Fetch Xpanse issues with Activity Status | False |
+| progress_status | Fetch Xpanse issues with Progress Status | False |
+| business_unit | Fetch issues with Business Units \(comma separated string\) | False |
+| tag | Fetch issues with Tags \(comma separated string\) | False |
+| issue_type | Fetch issue with Types \(comma separated string\) | False |
+| mirror_direction | Incident Mirroring Direction | False |
+| sync_owners | Sync Incident Owners | False |
+| incoming_tags | Tag\(s\) for mirrored comments | False |
+| sync_tags | Mirror out Entries with tag\(s\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### expanse-get-issues
@@ -5626,5 +5622,4 @@ Returns all domains which have been seen with the specified certificate.
 | FlatDomainList | SearchTerm | TotalDomainCount |
 |---|---|---|
 | california.us.expanse.co, dc.us.expanse.co | *.us.expanse.co | 2 |
-
 

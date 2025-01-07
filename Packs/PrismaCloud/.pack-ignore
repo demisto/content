@@ -72,7 +72,16 @@ ignore=PR101,MR108
 # GR103 is temporary, see CIAC-11705
 [file:incidenttype-Azure_AKS_Misconfiguration.json]
 ignore=GR103
+
 [file:incidenttype-Azure_Network_Misconfiguration.json]
 ignore=GR103
+
 [file:incidenttype-Azure_SQL_Misconfiguration.json]
 ignore=GR103
+
+[file:playbook-Prisma_Cloud_-_VM_Alert_Prioritization.yml]
+ignore=GR107
+
+[file:playbook-Prisma_Cloud_-_Find_Public_Cloud_Resource_by_Public_IP.yml]
+ignore=GR107
+

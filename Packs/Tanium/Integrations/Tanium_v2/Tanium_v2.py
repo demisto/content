@@ -372,7 +372,7 @@ class Client(BaseClient):
             'QueryText': question.get('query_text')
         }
 
-        saved_question_id = question.get('saved_question').get('id')
+        saved_question_id = (question.get('saved_question') or {}).get('id')
         if saved_question_id:
             item['SavedQuestionId'] = saved_question_id
 

@@ -128,9 +128,9 @@ script:
       description: The hostname to run the command on. This will override the default hostname specified in the instance.
     - name: command
       required: true
-      description: Command to execute
+      description: Command to execute.
     - name: arguments
-      description: Comma separate list of arguments
+      description: Comma separate list of arguments.
     - name: decode
       auto: PREDEFINED
       predefined:
@@ -219,28 +219,28 @@ script:
       - utf_16_le
       - utf_7
       - utf_8
-      description: Decode codec to use when decoding command outputs (overrides value set in the instance)
+      description: Decode codec to use when decoding command outputs (overrides value set in the instance).
     outputs:
     - contextPath: WinRM.Process
-      description: Process object of the WinRM command
+      description: Process object of the WinRM command.
     - contextPath: WinRM.Process.Output
-      description: STDOUT of the WinRM command
+      description: STDOUT of the WinRM command.
     - contextPath: WinRM.Process.Error
-      description: STDERR of the WinRM command
+      description: STDERR of the WinRM command.
     - contextPath: WinRM.Process.Status
-      description: Status code of the WInRM command
-    description: Executes a command on the host
+      description: Status code of the WInRM command.
+    description: Executes a command on the host.
     execution: true
   - name: winrm-run-powershell
     arguments:
     - name: hostname
       description: The hostname to run the command on. This will override the default hostname specified in the instance.
     - name: entryID
-      description: The entry ID of the powershell script to run (overrides scriptname and script)
+      description: The entry ID of the powershell script to run (overrides scriptname and script).
     - name: script
-      description: The powershell script to execute (requires code, not a file input)
+      description: The powershell script to execute (requires code, not a file input).
     - name: scriptname
-      description: Name of the script (optional)
+      description: Name of the script (optional).
     - name: decode
       auto: PREDEFINED
       predefined:
@@ -329,16 +329,16 @@ script:
       - utf_16_le
       - utf_7
       - utf_8
-      description: Decode codec to use when decoding command outputs (overrides value set in the instance)
+      description: Decode codec to use when decoding command outputs (overrides value set in the instance).
     outputs:
     - contextPath: WinRM.Powershell.Output
-      description: STDOUT of the WinRM command
+      description: STDOUT of the WinRM command.
     - contextPath: WinRM.Powershell.Error
-      description: STDERR of the WinRM command
+      description: STDERR of the WinRM command.
     - contextPath: WinRM.Powershell.Status
-      description: Status code of the WInRM command
-    description: Executes a Powershell script on the endpoint
-  dockerimage: demisto/auth-utils:1.0.0.76157
+      description: Status code of the WInRM command.
+    description: Executes a Powershell script on the endpoint.
+  dockerimage: demisto/auth-utils:1.0.0.1839651
   subtype: python3
 fromversion: 5.0.0
 tests:

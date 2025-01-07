@@ -1,22 +1,18 @@
 Drift integration to fetch, modify, create and delete contacts within the Drift Plattform's Contact API.
 This integration was integrated and tested with version 1.7 of Drift
 
-## Configure Drift on Cortex XSOAR
+## Configure Drift in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Drift.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Access Token | API Access Token | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Fetch indicators |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Access Token | API Access Token | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Fetch indicators |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### drift-get-contact
 ***

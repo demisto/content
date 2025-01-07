@@ -16,6 +16,9 @@ configuration:
   name: use_ssl
   type: 8
   required: false
+- display:  Use SASL PLAIN for connection (using SSL)
+  name: use_sasl
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -37,6 +40,11 @@ configuration:
   name: additional_password
   type: 9
   required: false
+- display: SASL PLAIN Username
+  name: credentials
+  type: 9
+  displaypassword: SASL PLAIN Password
+  required: false
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   type: 0
@@ -54,6 +62,12 @@ configuration:
   display: Maximum number of messages to fetch
   name: max_fetch
   type: 0
+  required: false
+- display: Stop consuming upon timeout
+  additionalinfo: When fetching a significant number of messages (100+), it's advisable to halt message consumption upon timeout. This ensures that the fetch terminates if no messages are received after a specified duration, instead of requesting messages until reaching the maximum number of messages to fetch.
+  name: stop_consuming_upon_timeout
+  type: 8
+  advanced: true
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -118,6 +132,9 @@ script:
       name: offset
     - description: Partition (number).
       name: partition
+    - description: Poll timeout to consume a message.
+      name: poll_timeout
+      defaultValue: 1.0
     description: Consumes a single Kafka message.
     name: kafka-consume-msg
     outputs:
@@ -148,7 +165,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.117327
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test

@@ -1,3 +1,4 @@
+# pylint: disable=E9010
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -1757,6 +1758,56 @@ def domain_command(
                 "Name": whois_data.get("registrarName"),
             },
         }
+        readable_domain_reputation = tableToMarkdown(
+            name=f'"Umbrella Investigate" Domain Reputation for: {domain}',
+            t={
+                "Risk Score": risk_score_data.get("risk_score"),
+                "Secure Rank": security_data.get("securerank2"),
+                "Populairty": security_res.get("popularity"),
+                "Demisto Reputation": scoreToReputation(dbot_score),
+                "First Queried time": whois_data.get("created"),
+            },
+            headers=[],
+        )
+        readable_whois = tableToMarkdown(
+            name=f'"Umbrella Investigate" WHOIS Record Data for: {domain}',
+            t={
+                "Name": domain,
+                "Registrar Name": whois_data.get("registrarName"),
+                "Last Retrieved": whois_data.get("timeOfLatestRealtimeCheck"),
+                "Created": whois_data.get("created"),
+                "Updated": whois_data.get("updated"),
+                "Expires": whois_data.get("expires"),
+                "IANAID": whois_data.get("registrarIANAID"),
+                "Last Observed": whois_data.get("auditUpdatedDate"),
+            },
+            headers=[],
+            date_fields=["Last Retrieved"],
+        )
+        readable_name_servers = tableToMarkdown(
+            name="Name Servers:",
+            t={"Name Servers": whois_data.get("nameServers", [])},
+            headers=[],
+        )
+        readable_emails = tableToMarkdown(
+            name="Emails:", t=whois_data.get("emails", []), headers=["Emails"]
+        )
+        readable_domain = tableToMarkdown(
+            name="Domain Categorization:",
+            t={
+                "Content Categories": categorization_data.get("content_categories"),
+                "Malware Categories": categorization_data.get("security_categories"),
+            },
+            headers=[],
+        )
+        readable = (
+            readable_domain_reputation
+            + readable_whois
+            + readable_name_servers
+            + readable_emails
+            + readable_domain
+        )
+
         command_results.append(
             CommandResults(
                 outputs=outputs,
@@ -1766,13 +1817,7 @@ def domain_command(
                     domain=domain,
                     dbot_score=dbot_score,
                 ),
-                readable_output=tableToMarkdown(
-                    name=f"{domain} WHOIS information:",
-                    t=outputs.get("Umbrella"),
-                    headers=[],
-                    removeNull=True,
-                    headerTransform=string_to_header,
-                ),
+                readable_output=readable,
             )
         )
 

@@ -24,8 +24,8 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | Indicator Query | The indicator query is "investigationsCount:>=X" where X is the number of related incidents to the indicator that you set. |  | Optional |
 | ActionToPerform | This input specifies which action the playbook performs on the provided indicators. Possible input values can be:    AutoExclude, TagIndicators |  | Optional |
-| TagValueForIndicators | This input specifies the tag value to apply to the indicators. An example value can be whitelist_review. This input should be used only if The ActionToPerform input value is TagIndicators. |  | Optional |
-| OpenIncidentToReviewIndicatorsManually | This input determines if processed indicators that have the whitelist review tag are reviewed in a new incident. To create an incident, enter any value other than 'No'. | No | Optional |
+| TagValueForIndicators | This input specifies the tag value to apply to the indicators. An example value can be allowlist_review. This input should be used only if The ActionToPerform input value is TagIndicators. |  | Optional |
+| OpenIncidentToReviewIndicatorsManually | This input determines if processed indicators that have the allowlist review tag are reviewed in a new incident. To create an incident, enter any value other than 'No'. | No | Optional |
 | AutoExcludeReason | Provide the reason that will appear in the XSOAR exclusion |  | Optional |
 | indicatorsValues | A comma-separated list of indicator values. Supports values of more than one indicator type. For example the value of an IP address, a domain, and a file hash. | | Optional |
 | indicatorsTypes | A comma-separated list of indicator types. Supports multiple types. For example IP, Host and Email. | | Optional |

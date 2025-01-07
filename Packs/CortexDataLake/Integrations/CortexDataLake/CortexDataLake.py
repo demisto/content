@@ -54,7 +54,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
+    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr):
         headers = get_x_content_info_headers()
         headers['Authorization'] = registration_id
         headers['Accept'] = 'application/json'
@@ -62,6 +62,8 @@ class Client(BaseClient):
         self.refresh_token = refresh_token
         self.enc_key = enc_key
         self.use_ssl = use_ssl
+        self.is_fr = is_fr
+        self.registration_id = registration_id
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
         self._set_access_token()
@@ -171,9 +173,14 @@ class Client(BaseClient):
         """
         demisto.debug('CDL - Fetching access token')
         try:
+            token = get_encrypted(self.refresh_token, self.enc_key)
+            if self.is_fr:
+                data = {'encrypted_token': token, 'registration_id': self.registration_id}
+            else:
+                data = {'token': token}
             oproxy_response = self._http_request('POST',
                                                  '/cdl-token',
-                                                 json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
+                                                 json_data=data,
                                                  timeout=(60 * 3, 60 * 3),
                                                  retries=3,
                                                  backoff_factor=10,
@@ -1215,9 +1222,14 @@ def main():
     enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
     if not enc_key or not refresh_token or not registration_id_and_url:
         raise DemistoException('Key, Token and ID must be provided.')
+    is_fr = ('federal.paloaltonetworks.com' in demisto.getLicenseCustomField('Http_Connector.url'))
+    demisto.debug(f"working on tenant with {is_fr=}")
     registration_id_and_url = registration_id_and_url.split('@')
     if len(registration_id_and_url) != 2:
-        token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
+        if is_fr:
+            token_retrieval_url = "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"
+        else:
+            token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
     else:
         token_retrieval_url = registration_id_and_url[1]
     registration_id = registration_id_and_url[0]
@@ -1234,7 +1246,7 @@ def main():
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
+    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr)
 
     try:
         if command == 'test-module':

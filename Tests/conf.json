@@ -53,6 +53,7 @@
         },
         {
             "playbookID": "Endpoint Investigation Plan - Test",
+            "integrations": "Cortex Core - IR",
             "timeout": 600
         },
         {
@@ -114,7 +115,8 @@
             "timeout": 500,
             "integrations": [
                 "Active Directory Query v2",
-                "VirusTotal (API v3)"
+                "VirusTotal (API v3)",
+                "Cortex Core - IR"
             ],
             "instance_names": [
                 "active_directory_80k",
@@ -1723,6 +1725,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Onion address extraction test",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "Domain extraction test",
             "fromversion": "5.5.0"
         },
@@ -2636,7 +2642,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "DemistoUploadFileV2 Test",
+            "playbookID": "UploadFile Test",
             "integrations": "Core REST API"
         },
         {
@@ -3100,8 +3106,8 @@
         },
         {
             "integrations": "AWS - EC2",
-            "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
+            "instance_names": "aws_alloacte_host",
             "fromversion": "5.0.0",
             "memory_threshold": 90,
             "timeout": 700,
@@ -3344,14 +3350,58 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_demisto_feed_elastic_v8",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_generic_feed_elastic_v8",
+            "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "os_demisto_feed",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "os_generic_feed",
+            "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "os_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v8",
             "playbookID": "Elasticsearch_v2_test-v8"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test-v7-v8"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v8",
+            "playbookID": "Elasticsearch_v2_test-v7-v8"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "os_v7",
+            "playbookID": "Elasticsearch_v2_test-v7-v8"
         },
         {
             "integrations": "PolySwarm",
@@ -5155,7 +5205,7 @@
         {
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
-            "has_api": true
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5661,6 +5711,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA_dictionary_commands_tpb",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "CiscoSMA",
             "playbookID": "CiscoSMA",
             "fromversion": "6.2.0"
@@ -5775,9 +5830,15 @@
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
-            "integrations": "AWS-SNS-Listener",
+            "integrations": [
+                "AWS-SNS-Listener",
+                "AWS - SNS"
+            ],
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener",
+            "instance_names": [
+                "AWS-SNS-Listener",
+                "AWSSNS"
+            ],
             "is_mockable": false
         },
         {
@@ -5813,6 +5874,18 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "netskope_api_v2",
+            "playbookID": "Netskope_V2_Test"
+        },
+        {
+            "integrations": "DSPM",
+            "playbookID": "DSPM Test"
+        },
+        {
+            "integrations": "Symantec Email Security Cloud",
+            "playbookID": "SymantecEmailSecurity_TestPlaybook"
         }
     ],
     "skipped_tests": {
@@ -5919,7 +5992,7 @@
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "Zscaler Test": "Issue 40157, API subscription currently Expired",
         "Cisco Firepower - Test": "Issue 32412",
-        "cisco-ise-test-playbook": "Issue 44351",
+        "cisco-ise-test-playbook": "CRTX-146167",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
         "playbook-EWS_O365_Extension_test": "Issue 25605, Issue 39008",
@@ -5954,7 +6027,6 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
-        "Elasticsearch_v2_test-v8": "CRTX-61980",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
@@ -5995,18 +6067,23 @@
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
         "VMWare Test": "CIAC-10276",
-        "AWS - EC2 Test Playbook": "CIAC-10426",
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
         "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant",
         "CloudConvert-test": "CRTX-122593",
         "CiscoMerakiv2": "CIAC-11322",
         "Test_XFE_v2": "CRTX-112127",
-        "test-ProofpointThreatProtectionIntegration-Playbook": "No instance"
+        "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
+        "Generic Webhook - Test": "CIAC-11234",
+        "Netskope_V2_Test": "No instance - developed by Qmasters",
+        "IAMInitOktaUser - Test": "CIAC-12093",
+        "TAXII2 Server Performance Test": "CIAC-9768",
+        "BoxV2_TestPlaybook": "CRTX-145174"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
+        "RedCanary": "No instance",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
@@ -6085,7 +6162,6 @@
         "icebrg": "No instance - Issue 14312 - CIAC-2006",
         "Freshdesk": "No instance - Trial account expired",
         "Kafka V2": "No instance - Can not connect to instance from remote",
-        "KafkaV3": "No instance - Can not connect to instance from remote",
         "Check Point Sandblast": "No instance - Issue 15948",
         "Remedy AR": "No instance - getting 'Not Found' in test button",
         "Salesforce": "No instance - Issue 15901 - CIAC-1976",
@@ -6102,6 +6178,7 @@
         "Workday": "No instance - License expired Issue: 29595 - CIAC-1508",
         "FireEyeFeed": "No instance - License expired Issue: 31838",
         "Akamai WAF": "No instance - Issue 32318 - CIAC-1407",
+        "Akamai WAF SIEM": "No instance",
         "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299 - CIAC-1323",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
@@ -6138,7 +6215,9 @@
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
-        "SlackV2": "Integration slackV2 is deprecated."
+        "SlackV2": "Integration slackV2 is deprecated.",
+        "DSPM": "No instance",
+        "Symantec Email Security Cloud": "No instance"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
@@ -6438,6 +6517,7 @@
         "IPv4 extraction test",
         "IPv4 CIDR extraction test",
         "IPv6 CIDR extraction test",
-        "IPv6 extraction test"
+        "IPv6 extraction test",
+        "Onion address extraction test"
     ]
 }

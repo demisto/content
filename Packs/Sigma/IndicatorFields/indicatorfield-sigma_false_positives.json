@@ -1,0 +1,49 @@
+{
+    "id": "indicator_sigmafalsepositives",
+    "version": -1,
+    "modified": "2024-08-12T15:18:59.533574561Z",
+    "name": "Sigma False Positives",
+    "ownerOnly": false,
+    "cliName": "sigmafalsepositives",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Sigma Rule"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "reason",
+            "displayName": "Reason",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -67,4 +67,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![GVault_Search_Groups](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Google_Vault_Search_Groups.png)
+![GVault_Search_Groups](../doc_files/Google_Vault_Search_Groups.png)

@@ -54,7 +54,7 @@ description: OpenPhish uses proprietary Artificial Intelligence algorithms to au
 name: OpenPhish_v2
 display: OpenPhish v2
 script:
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.113941
   commands:
   - name: url
     arguments:
@@ -62,10 +62,10 @@ script:
       isArray: true
       required: true
       default: true
-      description: URL to check
+      description: URL to check.
     outputs:
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
     - contextPath: URL.Malicious.Description
@@ -81,10 +81,10 @@ script:
     description: Checks the reputation of a URL.
   - name: openphish-reload
     arguments: []
-    description: Reload OpenPhish database
+    description: Reload OpenPhish database.
   - name: openphish-status
     arguments: []
-    description: Show OpenPhish database status
+    description: Show OpenPhish database status.
   script: '-'
   subtype: python3
   type: python

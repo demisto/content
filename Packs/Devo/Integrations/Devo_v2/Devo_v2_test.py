@@ -2,7 +2,7 @@ import json
 import time
 import copy
 from unittest.mock import MagicMock, patch
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import pytest
 import re
 from freezegun import freeze_time
@@ -925,7 +925,7 @@ def test_to_unix_current_time():
 
 
 def test_to_unix_datetime_object():
-    dt = datetime(2024, 3, 23, 12, 0, 0, tzinfo=timezone.utc)  # Ensure timezone is UTC
+    dt = datetime(2024, 3, 23, 12, 0, 0, tzinfo=UTC)  # Ensure timezone is UTC
     unix_timestamp = _to_unix(dt)
     assert unix_timestamp == 1711195200
 

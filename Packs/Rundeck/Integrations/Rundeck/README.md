@@ -1,10 +1,7 @@
 Rundeck is a runbook automation for incident management, business continuity, and self-service operations. The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack.
 This integration was integrated and tested with version 24 of Rundeck.
-## Configure Rundeck on Cortex XSOAR
+## Configure Rundeck in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rundeck.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -14,9 +11,8 @@ This integration was integrated and tested with version 24 of Rundeck.
 | proxy | Use system proxy settings | False |
 | project_name | Project Name | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### rundeck-projects-list
 ***
@@ -577,5 +573,4 @@ Send webhook event
 |Job Id|Execution Id|
 |---|---|
 | 123 | 199 |
-
 

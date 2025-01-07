@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from datetime import timezone
+from datetime import UTC, datetime
 import random
 
 import dateparser
@@ -74,7 +74,7 @@ def parser(
     assert isinstance(
         date_obj, datetime
     ), f"Could not parse date {date_str}"  # MYPY Fix
-    return date_obj.replace(tzinfo=timezone.utc)
+    return date_obj.replace(tzinfo=UTC)
 
 
 def get_token_soap_request(user, password, instance, domain=None):
@@ -1200,6 +1200,7 @@ def search_applications_command(client: Client, args: dict[str, str]):
     limit = args.get("limit")
     endpoint_url = f"{API_ENDPOINT}/core/system/application/"
 
+    res: dict | list[dict] = {}
     if app_id:
         endpoint_url = f"{API_ENDPOINT}/core/system/application/{app_id}"
         res = client.do_rest_request("GET", endpoint_url)
@@ -1491,9 +1492,22 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
             "Found arguments to associate an attachment to a record, but not all required arguments supplied"
         )
 
-    attachment_id = upload_file_command(client, args)
+    entry_ids: list = argToList(args.get("entryId"))
+    attachment_ids: list = []
+    for entry_id in entry_ids:
+        attachment_ids.append(upload_file_command(client, {"entryId": entry_id}))
+    demisto.debug(f'All new uploaded {attachment_ids=}')
+
     if should_associate_to_record:
-        args["fieldsToValues"] = json.dumps({associate_field: [attachment_id]})
+        # Check if there are already attachments associated with this record.
+        record, _, errors = client.get_record(app_id, content_id, 0)
+        if errors:
+            return_error(errors)
+        record_attachments = record.get("Attachments", [])
+        demisto.debug(f'Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well')
+        attachment_ids.extend(record_attachments)
+        demisto.debug(f'All {attachment_ids=}')
+        args["fieldsToValues"] = json.dumps({associate_field: attachment_ids})
         update_record_command(client, args)
 
 
@@ -1708,14 +1722,14 @@ def fetch_incidents(
     # Build incidents
     incidents = []
     # Encountered that sometimes, somehow, on of next_fetch is not UTC.
-    last_fetch_time = from_time.replace(tzinfo=timezone.utc)
+    last_fetch_time = from_time.replace(tzinfo=UTC)
     next_fetch = last_fetch_time
     for record in records:
         incident, incident_created_time = client.record_to_incident(
             record, app_id, fetch_param_id
         )
         # Encountered that sometimes, somehow, incident_created_time is not UTC.
-        incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
+        incident_created_time = incident_created_time.replace(tzinfo=UTC)
         if last_fetch_time < incident_created_time:
             incidents.append(incident)
             if next_fetch < incident_created_time:
@@ -1743,7 +1757,7 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str) -> datetime:
         start_fetch = parser(next_run)
     else:
         start_fetch, _ = parse_date_range(first_fetch_time)
-    start_fetch.replace(tzinfo=timezone.utc)
+    start_fetch.replace(tzinfo=UTC)
     return start_fetch
 
 

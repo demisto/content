@@ -1,30 +1,26 @@
 Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
 This integration was integrated and tested with version 1.1.10 of Covalence Managed Security.
 
-## Configure Covalence Managed Security on Cortex XSOAR
+## Configure Covalence Managed Security in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Covalence Managed Security.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Credentials |  | True |
-    | Password |  | True |
-    | Use system proxy settings |  | False |
-    | First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch Limit | The maximum number of incidents to fetch | False |
-    | Broker Server URL | Broker Server URL (Optional).  Required to use Broker commands. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Credentials |  | True |
+| Password |  | True |
+| Use system proxy settings |  | False |
+| First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch Limit | The maximum number of incidents to fetch | False |
+| Broker Server URL | Broker Server URL (Optional).  Required to use Broker commands. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cov-mgsec-get-aro
@@ -678,4 +674,3 @@ Comment on an ARO.
 >|Acknowledged|Acknowledged By|Acknowledged Time|Aro Id|Author|Author Organization|Author Organization Type|Created Time|Id|Last Updated Time|Sensitive|Source|Text|Type|Visible To|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | 2024-04-12 17:01:25 | b25e461e-75e9-415b-a631-6d0f4516f33a | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | ID: 00000000-1111-2222-3333-444444444444<br/>email: foo@bar.com<br/>name: Field Effect | Field Effect | 2024-04-12 17:01:25 | b14a53a4-23ac-488d-b992-dbc1d5ef5361 | 2024-04-12 17:01:25 | false | Portal | Risk mitigated. | Comment | {'ID': '00000000-1111-2222-3333-444444444444', 'email': None, 'name': 'Tradecraft Test & Development (Do Not Delete)'},<br/>{'ID': '00000000-1111-2222-3333-444444444444', 'email': 'foo@bar.com', 'name': 'Field Effect'} |
-

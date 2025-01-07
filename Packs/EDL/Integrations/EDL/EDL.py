@@ -1361,7 +1361,6 @@ def test_module(_: dict, params: dict):
         2. Valid cache_refresh_rate
     """
     if not params.get('longRunningPort'):
-        # This is for the autogeneration port feature before port allocation.
         params['longRunningPort'] = '1111'
     get_params_port(params)
     on_demand = params.get('on_demand', None)

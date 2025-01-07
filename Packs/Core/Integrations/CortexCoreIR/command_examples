@@ -37,4 +37,7 @@
 !core-remove-blocklist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252
 !core-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252
 !core-remove-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252
+!core-terminate-process agent_id=1 instance_id=1 incident_id=1 interval_in_seconds=1 timeout_in_seconds=1
+!core-terminate-causality agent_id=1 causality_id=1 incident_id=1 interval_in_seconds=1 timeout_in_seconds=1!core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200
 !core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200
+!core-get-asset-details asset_id=123

@@ -46,7 +46,7 @@ class Client(BaseClient):
         return super()._http_request(headers=self.headers, method=method, params=params,
                                      url_suffix=url_suffix, resp_type=resp_type, ok_codes=ok_codes)  # type: ignore[misc]
 
-    def get_events_request(self, params: dict = None):
+    def get_events_request(self, params: dict = None):  # pragma: no cover
         try:
             return self.http_request(
                 method='GET',
@@ -109,12 +109,13 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
     events: List[Dict] = []
     if not last_run and first_fetch_time:
         last_run['latest_event_time'] = first_fetch_time
-    elif type(last_run.get('latest_event_time')) == str:
+    elif type(last_run.get('latest_event_time')) is str:
         last_run['latest_event_time'] = parse_date_string(last_run.get('latest_event_time'))
     while True:
         response = client.get_events_request(params=query_params).json()
         fetched_events = response.get('data') or []
         if not fetched_events:
+            demisto.debug("no events fetched from the api at all")
             break
         demisto.info(f'fetched events length: ({len(fetched_events)})')
         demisto.debug(f'fetched events: ({fetched_events})')
@@ -125,7 +126,8 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
         else:
             events.extend(fetched_events)
             query_params['page'] = response.get('meta', {}).get('next_page', 1)
-    new_last_run_obj: dict = {'latest_event_time': events[0].get('occurred_date') if events else datetime.now()}
+    new_last_run_obj: dict = \
+        {'latest_event_time': events[0].get('occurred_date') if events else datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run_obj}.')
     return events, new_last_run_obj
 

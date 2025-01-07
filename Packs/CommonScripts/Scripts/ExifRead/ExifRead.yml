@@ -22,7 +22,7 @@ outputs:
   description: Exif tag value.
   type: string
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.96102
+dockerimage: demisto/py3-tools:1.0.0.114656
 fromversion: 6.5.0
 tests:
 - ExifReadTest

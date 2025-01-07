@@ -1,0 +1,51 @@
+[MODEL: dataset = amazon_aws_raw]
+/* 
+    CloudTrail Audit Logs
+    AWS event schema version: 1.11
+    https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html
+*/
+filter _log_type = "Cloud Audit Log"
+| alter // initializations
+    resource_arn = arraystring(arraymap(resources -> [], "@element" -> ARN), ","),
+    resource_account_id = arraystring(arraymap(resources -> [], "@element" -> accountId), ","),
+    resource_name = arraystring(arraymap(resources -> [], arrayindex(regextract("@element" -> ARN, "/([^\/]+)$"), -1)), ","), // extract last segment from ARN after last /
+    resource_type = arraystring(arraymap(resources -> [], "@element" -> type), ","),
+    user_identity_arn = userIdentity -> arn,
+    user_identity_type = userIdentity -> type,
+    source_ipv4 = if(sourceIPAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", sourceIPAddress), // The IP address that the request was made from. For actions that originate from the service console, the address reported is for the underlying customer resource, not the console web server.
+    source_ipv6 = if(sourceIPAddress ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", sourceIPAddress)
+| alter // XDM Mappings 
+    xdm.event.description = object_create("requestParameters", requestParameters, "additionalEventData", additionalEventData, "responseElements", responseElements),
+    xdm.event.id = eventId,
+    xdm.event.operation_sub_type = eventName,
+    xdm.event.original_event_type = eventType,
+    xdm.event.outcome = if(errorCode = null, XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = if(errorMessage != null and errorMessage != "", concat(errorCode, ": ", errorMessage), errorCode),
+    xdm.event.type = eventName,
+    xdm.network.session_id = requestID,
+    xdm.network.tls.cipher = tlsDetails -> cipherSuite,
+    xdm.network.tls.protocol_version = tlsDetails -> tlsVersion,
+    xdm.observer.content_version = eventVersion, 
+    xdm.observer.name = eventSource,
+    xdm.observer.type = eventCategory,
+    xdm.session_context_id = sharedEventID,
+    xdm.source.cloud.project_id = userIdentity -> accountId,
+    xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
+    xdm.source.host.device_id = vpcEndpointId,
+    xdm.source.host.ipv4_public_addresses = if(source_ipv4 != null and not incidr(source_ipv4, "10.0.0.0/8") and not incidr(source_ipv4, "172.16.0.0/12") and not incidr(source_ipv4, "192.168.0.0/16") and not incidr(source_ipv4, "127.0.0.0/8") and not incidr(source_ipv4, "169.254.0.0/16") and not incidr(source_ipv4, "100.64.0.0/10"), arraycreate(source_ipv4)),
+    xdm.source.host.fqdn = if(source_ipv4 = null and source_ipv6 = null and sourceIPAddress !~= "AWS Internal", sourceIPAddress), //  For services in AWS, only the DNS name is displayed.
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.ipv6 = source_ipv6,
+    xdm.source.user_agent = userAgent,
+    xdm.source.user.groups = if(user_identity_type in ("Role", "AssumedRole"), arraycreate(userIdentity -> sessionContext.sessionIssuer.userName)),
+    xdm.source.user.identifier = coalesce(userIdentity -> principalId, userIdentity -> onBehalfOf.userId),
+    xdm.source.user.username = coalesce(userIdentity -> userName, userIdentity -> sessionContext.sessionIssuer.userName, user_identity_arn),
+    xdm.source.user.user_type = if(user_identity_type = "Unknown", XDM_CONST.IDENTITY_TYPE_UNKNOWN, user_identity_type),
+    xdm.target.cloud.project_id = if(resource_account_id != null and resource_account_id != "", resource_account_id, coalesce(recipientAccountId, vpcEndpointAccountId)),
+    xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
+    xdm.target.cloud.region = awsRegion,
+    xdm.target.host.fqdn = coalesce(requestParameters -> Host, tlsDetails -> clientProvidedHostHeader),
+    xdm.target.host.hostname = coalesce(requestParameters -> Host, tlsDetails -> clientProvidedHostHeader),
+    xdm.target.resource.id = if(resource_arn != "", resource_arn),
+    xdm.target.resource.name = if(resource_name != null and resource_name != "", resource_name, resource_arn),
+    xdm.target.resource.type = if(resource_type != "", resource_type);

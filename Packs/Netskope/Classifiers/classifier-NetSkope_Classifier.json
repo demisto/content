@@ -8,9 +8,11 @@
         "Legal Hold": "Netskope Legal Hold",
         "Remediation": "Netskope Alert",
         "Security Assessment": "Netskope Alert",
+        "alert": "Netskope Alert",
         "anomaly": "Netskope Alert",
         "application": "Netskope Event",
         "audit": "Netskope Event",
+        "dlp_incident": "Netskope DLP Incident",
         "infrastructure": "Netskope Event",
         "malsite": "Netskope Malicious Sites",
         "malware": "Netskope Malware",
@@ -22,14 +24,10 @@
         "watchlist": "Netskope Alert"
     },
     "name": "Netskope Classifier",
-    "propagationLabels": [
-        "all"
-    ],
     "transformer": {
-        "complex": null,
         "simple": "incident_type"
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.10.0"
 }

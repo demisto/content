@@ -374,6 +374,48 @@ def test_fetch_incidents_compromised_credentials_when_email_not_present(mocker, 
     assert next_run == expected_next_run
 
 
+def test_fetch_incidents_compromised_credentials_when_email_and_username_not_present(mocker, mock_client, requests_mock):
+    """
+     Test case scenario for execution of fetch_incidents for compromised credentials when email and username not present.
+
+     Given:
+         - mock client
+     When:
+         - Calling `fetch_incidents` function.
+     Then:
+         - Returns a valid command output.
+     """
+    from Ignite import fetch_incidents
+
+    last_run = {'fetch_count': 1,
+                'start_time': '2024-05-16T10:22:38Z',
+                'total': 31,
+                'fetch_sum': 30,
+                'end_time': '2024-05-30T19:42:05Z',
+                'last_timestamp': 1617219725,
+                'hit_ids': []
+                }
+
+    expected_next_run = {'fetch_count': 0, 'start_time': '2021-03-31T19:42:05Z', 'total': None, 'fetch_sum': 0,
+                         'end_time': '2024-05-30T19:42:05Z', 'last_time': '2021-03-31T19:42:05Z',
+                         'hit_ids': ['sample_id_1'], 'last_timestamp': 1617219725}
+
+    mock_response: dict = util_load_json('test_data/fetch_compromised_credentials.json')
+
+    del mock_response['hits']['hits'][0]['_source']['email']
+    del mock_response['hits']['hits'][0]['_source']['username']
+    incidents_response = util_load_json(
+        'test_data/incidents_compromised_credentials_when_email_username_not_present.json')
+
+    demisto_params = {**BASIC_PARAMS, 'severity': 'Medium'}
+    mocker.patch.object(demisto, 'params', return_value=demisto_params)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["COMPROMISED_CREDENTIALS"]}', json=mock_response, status_code=200)
+    next_run, incidents = fetch_incidents(client=mock_client, last_run=last_run, params={})
+
+    assert incidents == incidents_response
+    assert next_run == expected_next_run
+
+
 def test_fetch_incidents_compromised_credentials_when_fpid_not_present(mocker, mock_client, requests_mock):
     """
      Test case scenario for execution of fetch_incidents for fetch compromised credentials when fpid not provided in response.
@@ -401,6 +443,7 @@ def test_fetch_incidents_compromised_credentials_when_fpid_not_present(mocker, m
     mock_response: dict = util_load_json('test_data/fetch_compromised_credentials.json')
 
     del mock_response['hits']['hits'][0]['_source']['email']
+    del mock_response['hits']['hits'][0]['_source']['username']
     del mock_response['hits']['hits'][0]['_source']['fpid']
 
     incidents_response = util_load_json('test_data/incidents_compromised_credentials_when_fpid_not_present.json')
