@@ -1131,7 +1131,7 @@
       "response": "./test_data/qr_duration.json"
     },
     "config": {
-      "now": "2025-01-01T01:23:45.1234Z"
+      "now": "2025-01-01T01:23:45.1234+00:00"
     },
     "results": {
       "QueryParams": {

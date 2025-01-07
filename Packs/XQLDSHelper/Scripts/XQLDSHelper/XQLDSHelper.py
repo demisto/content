@@ -11,18 +11,15 @@ import itertools
 import colorsys
 import traceback
 import urllib.parse
-from datetime import timezone
+from datetime import UTC
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Tuple, TypeVar  # , Self
+from typing import Tuple, Self
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_MAX = 10
-
-
-ContextDataSelf = TypeVar('ContextDataSelf', bound='ContextData')
 
 
 def to_float(
@@ -119,7 +116,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> ContextDataSelf:  # typing.Self
+    ) -> Self:
         """ Create a ContextData with the new value
 
         :param value: The new value.
@@ -1624,7 +1621,7 @@ class Main:
         :return: aware datetime object
         """
         if value in (None, ''):
-            return datetime.now(timezone.utc)
+            return datetime.now(UTC)
 
         if isinstance(value, int):
             # Parse as time stamp
@@ -1634,7 +1631,7 @@ class Main:
                 while value > 4294967295:
                     value /= 1000
 
-                return datetime.fromtimestamp(value).astimezone(timezone.utc)
+                return datetime.fromtimestamp(value).astimezone(UTC)
             except Exception as e:
                 raise DemistoException(f'Error with input date / time - {e}')
 
