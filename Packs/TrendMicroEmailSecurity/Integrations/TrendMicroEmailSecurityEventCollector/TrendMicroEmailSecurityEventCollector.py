@@ -67,8 +67,6 @@ class NoContentException(Exception):
     see `handle_error_no_content` method
     """
 
-    ...
-
 
 class Client(BaseClient):
     """Client class to interact with the service API
@@ -380,7 +378,6 @@ def test_module(client: Client):
         # This type of error is raised when events are not returned, but the API call was successful,
         # therefore `ok` will be returned
         demisto.debug("test module: got no logs, but connection is successful")
-        pass
 
     return "ok"
 
@@ -463,6 +460,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
+            should_update_last_run = False
             return_results(test_module(client))
 
         elif command == "trend-micro-get-events":
