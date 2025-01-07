@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
 import enum
+import pytz
 import gzip
 import math
 import base64
@@ -11,10 +12,9 @@ import itertools
 import colorsys
 import traceback
 import urllib.parse
-from datetime import UTC
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Tuple, Self
+from typing import Tuple
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
@@ -116,7 +116,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> Self:
+    ) -> Any:  # typing.Self
         """ Create a ContextData with the new value
 
         :param value: The new value.
@@ -1564,7 +1564,7 @@ class EntryBuilder:
         return build_entry(
             self.__formatter.build(
                 template=params,
-                context=self.__context.inherit({
+                context=self.__context.inherit({  # type: ignore[arg-type]
                     'dataset': dataset
                 })
             ),
@@ -1621,7 +1621,7 @@ class Main:
         :return: aware datetime object
         """
         if value in (None, ''):
-            return datetime.now(UTC)
+            return datetime.now(pytz.UTC)
 
         if isinstance(value, int):
             # Parse as time stamp
@@ -1631,7 +1631,7 @@ class Main:
                 while value > 4294967295:
                     value /= 1000
 
-                return datetime.fromtimestamp(value).astimezone(UTC)
+                return datetime.fromtimestamp(value).astimezone(pytz.UTC)
             except Exception as e:
                 raise DemistoException(f'Error with input date / time - {e}')
 
