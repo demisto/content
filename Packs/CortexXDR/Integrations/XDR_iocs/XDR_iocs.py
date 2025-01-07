@@ -893,7 +893,7 @@ def main():  # pragma: no cover
                      "minutes could lead to internal error from xdr side.")
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
-    Client.use_old_override_severity_parameter = 'new_configuration' not in params  # For Backwards Compatibility
+    Client.use_old_override_severity_parameter = 'override_severity' in params  # For Backwards Compatibility
     Client.override_severity = argToBoolean(params.get('override_severity', True))  # For Backwards Compatibility
     Client.tlp_color = params.get('tlp_color')
     Client.comments_as_tags = argToBoolean(params.get('comments_as_tags', False))
