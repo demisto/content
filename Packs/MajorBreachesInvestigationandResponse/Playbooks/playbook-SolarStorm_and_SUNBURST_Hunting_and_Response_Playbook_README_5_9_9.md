@@ -15,7 +15,7 @@ Hunt for the SUNBURST backdoor
 If compromised hosts are found then:
 
 - Notify security team to review and trigger remediation response actions
-- Fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
+- Fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions fromaa the security team.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
