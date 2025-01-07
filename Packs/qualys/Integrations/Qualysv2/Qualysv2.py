@@ -14,7 +14,6 @@ disable_warnings()  # pylint: disable=no-member
 
 
 """ CONSTANTS """
-NEW_LINE = '\n'
 VENDOR = 'qualys'
 PRODUCT = 'qualys'
 BEGIN_RESPONSE_LOGS_CSV = "----BEGIN_RESPONSE_BODY_CSV"
@@ -1600,21 +1599,20 @@ class Client(BaseClient):
     def error_handler(res):
         err_msg = ""
         if res.status_code == 414 or res.status_code == 520:
-            err_msg += (f"If this error was produced by a schedule-scan-create, "
-                        f"please execute it again with IP list of less than 5000 characters{NEW_LINE}{NEW_LINE}")
+            err_msg += (f'If this error was produced by a schedule-scan-create, '
+                        f'please execute it again with IP list of less than 5000 characters"\n""\n"')
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
-            err_msg = f'{err_msg}{NEW_LINE}Error Code: {simple_response.get("CODE")}{NEW_LINE}' \
-                      f'Error Message: {simple_response.get("TEXT")}'
+            err_msg = f'{err_msg}"\n"Error Code: {simple_response.get("CODE")}"\n"Error Message: {simple_response.get("TEXT")}'
         except Exception:
             try:
                 # Try to parse json error response
                 error_entry = res.json()
-                err_msg += f"{NEW_LINE}{json.dumps(error_entry)}"
+                err_msg += f'"\n"{json.dumps(error_entry)}'
                 raise DemistoException(err_msg, res=res)
             except (ValueError, TypeError):
-                err_msg += f"{NEW_LINE}{res.text}"
+                err_msg += f'"\n"{res.text}'
                 raise DemistoException(err_msg, res=res)
         raise DemistoException(err_msg, res=res)
 
@@ -1814,7 +1812,7 @@ def create_ip_list_markdown_table(dicts_of_ranges_and_ips: List[List[dict[str, s
     """
     readable_output = ""
     if dicts_of_ranges_and_ips[0]:
-        readable_output += f"{tableToMarkdown(name='', t=dicts_of_ranges_and_ips[0])}{NEW_LINE}"
+        readable_output += f'{tableToMarkdown(name="", t=dicts_of_ranges_and_ips[0])}"\n"'
     if dicts_of_ranges_and_ips[1]:
         readable_output += tableToMarkdown(name="", t=dicts_of_ranges_and_ips[1])
     return readable_output
@@ -2282,7 +2280,7 @@ def format_and_validate_response(response: Union[bytes, requests.Response]) -> d
     raw_response = parse_raw_response(response)
     simple_response = get_simple_response_from_raw(raw_response)
     if simple_response and simple_response.get("CODE"):
-        raise DemistoException(f"{NEW_LINE}{simple_response.get('TEXT')} {NEW_LINE}Code: {simple_response.get('CODE')}")
+        raise DemistoException(f'"\n"{simple_response.get("TEXT")} "\n"Code: {simple_response.get("CODE")}')
     return raw_response
 
 
@@ -2455,7 +2453,7 @@ def build_unparsed_output(**kwargs) -> tuple[dict[str, Any], str]:
     if original_amount and original_amount > int(inner_args_values["limit"]):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
     readable_output = tableToMarkdown(
-        name=f"{command_parse_and_output_data['table_name']}{NEW_LINE}{limit_msg}", t=unparsed_output)
+        name=f'{command_parse_and_output_data["table_name"]}"\n"{limit_msg}', t=unparsed_output)
 
     return unparsed_output, readable_output
 
@@ -2482,7 +2480,7 @@ def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
     limit_msg = ""
 
     if "STATUS" in handled_result:
-        readable_output += f'### Current Status: {handled_result["STATUS"]}{NEW_LINE}'
+        readable_output += f'### Current Status: {handled_result["STATUS"]}"\n"'
 
     if command_parse_and_output_data["collection_name"] in handled_result:
         asset_collection = handled_result[command_parse_and_output_data["collection_name"]]
@@ -2497,7 +2495,7 @@ def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
 
         ip_and_range_list = create_single_host_list(handled_result)
         dicts_of_ranges_and_ips = build_ip_and_range_dicts(ip_and_range_list)
-        readable_output = f"{limit_msg}{NEW_LINE}"
+        readable_output = f'{limit_msg}"\n"'
         readable_output += create_ip_list_markdown_table(dicts_of_ranges_and_ips)
 
     return handled_result, readable_output
@@ -2534,7 +2532,7 @@ def build_multiple_values_parsed_output(**kwargs) -> tuple[List[Any], str]:
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
     headers = command_parse_and_output_data.get("table_headers") if command_parse_and_output_data.get("table_headers") else None
     readable_output = tableToMarkdown(
-        name=f"{command_parse_and_output_data['table_name']}{NEW_LINE}{limit_msg}", t=parsed_output, headers=headers
+        name=f'{command_parse_and_output_data["table_name"]}"\n"{limit_msg}', t=parsed_output, headers=headers
     )
     return parsed_output, readable_output
 
@@ -2580,7 +2578,7 @@ def build_host_list_detection_outputs(**kwargs) -> tuple[List[Any], str]:
                 qid = "QID: " + detection.get("QID")
                 headers.append(qid)
                 readable_output[qid] = detection.get("RESULTS")
-        readable += tableToMarkdown(f"Host Detection List - {ip}{NEW_LINE}{limit_msg}",
+        readable += tableToMarkdown(f'Host Detection List - {ip}"\n"{limit_msg}',
                                     readable_output, removeNull=True, headers=headers)
     return parsed_output, readable
 
@@ -2659,7 +2657,7 @@ def build_ip_list_from_single_value(**kwargs) -> tuple[dict[str, Any], str]:
         Tuple containing a dictionary created from those key-value pairs and a markdown table as a string
     """
     unparsed_output = kwargs["handled_result"]
-    readable_output = f"### {unparsed_output['KEY']}{NEW_LINE}"
+    readable_output = f'### {unparsed_output["KEY"]}"\n"'
     if unparsed_output["VALUE"]:
         list_of_hosts = unparsed_output["VALUE"].split(",")
         dicts_of_ranges_and_ips = build_ip_and_range_dicts(list_of_hosts)
@@ -2751,7 +2749,7 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
     formatted_response = parse_raw_response(raw_response)
     simple_response = get_simple_response_from_raw(formatted_response)
     if simple_response and simple_response.get("CODE"):
-        raise DemistoException(f"{NEW_LINE}{simple_response.get('TEXT')} {NEW_LINE}Code: {simple_response.get('CODE')}")
+        raise DemistoException(f'"\n"{simple_response.get("TEXT")} "\n"Code: {simple_response.get("CODE")}')
 
     response_requested_value = dict_safe_get(formatted_response,
                                              ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"])
@@ -2831,7 +2829,7 @@ def truncate_asset_size(asset):
         # For extra debugging in case other/additional keys has oversize data
         for key, val in asset.items():
             if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
-                demisto.debug(f'Data under key "{key}" has size of {val_size}:{NEW_LINE}'
+                demisto.debug(f'Data under key "{key}" has size of {val_size}:"\n"'
                               f'{str(val)[:10000]}...')
 
 
@@ -3553,7 +3551,7 @@ def main():  # pragma: no cover
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command.{NEW_LINE}Error:{NEW_LINE}{str(e)}")
+        return_error(f'Failed to execute {command} command."\n"Error:"\n"{str(e)}')
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
