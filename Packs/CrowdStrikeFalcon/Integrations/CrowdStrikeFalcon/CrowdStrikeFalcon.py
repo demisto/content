@@ -7187,19 +7187,19 @@ def main():
 
         elif command == 'fetch-incidents':  # XSOAR
             next_run, incidents = fetch_incidents()
-            demisto.debug(f'Creating {len(incidents)} in XSOAR')
+            demisto.debug(f'Creating {len(incidents)} incidents in XSOAR')
             demisto.incidents(incidents)
             demisto.debug(f'Setting next run to {next_run}')
             demisto.setLastRun(next_run)
 
         elif command == 'fetch-events':  # XSIAM
             next_run, events = fetch_events()
-            demisto.debug(f'Creating {len(events)} in XSIAM')
+            demisto.debug(f'Creating {len(events)} events in XSIAM')
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Setting next run to {next_run}')
             demisto.setLastRun(next_run)
 
-        elif command == 'cs-falcon-get-events':
+        elif command == 'cs-falcon-get-events':  # XSIAM
             should_push_events = argToBoolean(args.pop('should_push_events', False))
             events, results = get_events_command(args)
             return_results(results)
