@@ -2188,20 +2188,6 @@
             "pid_threshold": 12
         },
         {
-            "integrations": [
-                "VirusTotal - Private API",
-                "VirusTotal"
-            ],
-            "playbookID": "vt-detonate test",
-            "instance_names": [
-                "virus_total_private_api_general",
-                "virus_total_general"
-            ],
-            "timeout": 1400,
-            "fromversion": "5.5.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Cisco ASA",
             "playbookID": "Cisco ASA - Test Playbook"
         },
@@ -3293,15 +3279,6 @@
         {
             "playbookID": "Request Debugging - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Test Convert file hash to corresponding hashes",
-            "fromversion": "4.5.0",
-            "integrations": [
-                "VirusTotal",
-                "Zimperium"
-            ],
-            "instance_names": "virus_total_general"
         },
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
@@ -6197,7 +6174,6 @@
         "DSPM": "No instance",
         "Symantec Email Security Cloud": "No instance",
         "ipinfo" : "Integration is deprecated.",
-        "VirusTotal": "Integration is deprecated.",
         "epo": "Integration is deprecated."
     },
     "native_nightly_packs":[
