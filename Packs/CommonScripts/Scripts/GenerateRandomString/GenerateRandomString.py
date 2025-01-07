@@ -18,10 +18,10 @@ def set_characters(characters: str, digits: bool, lowercase: bool, punctuation: 
     if not any([uppercase, lowercase, digits, punctuation]):
         return_error("Punctuation, Digits, Uppercase or Lowercase must be True.")
 
-    characters += string.ascii_lowercase if lowercase else ''
-    characters += string.ascii_uppercase if uppercase else ''
-    characters += string.digits if digits else ''
-    characters += string.punctuation if punctuation else ''
+    characters += string.ascii_lowercase if lowercase else ""
+    characters += string.ascii_uppercase if uppercase else ""
+    characters += string.digits if digits else ""
+    characters += string.punctuation if punctuation else ""
     return characters
 
 
@@ -30,13 +30,15 @@ def create_password(characters, length):
     for x in range(0, length):
         password += random.SystemRandom(random.seed(time.time())).choice(characters)  # type: ignore
 
-    entry_context = {'RandomString': password}
+    entry_context = {"RandomString": password}
     raw = json.loads(json.dumps(entry_context))
-    results = CommandResults(content_format=EntryFormat.JSON,
-                             entry_type=EntryType.NOTE,
-                             outputs=entry_context,
-                             readable_output=tableToMarkdown('RandomString Generated.', raw) if raw else 'No result were found',
-                             raw_response=raw)
+    results = CommandResults(
+        content_format=EntryFormat.JSON,
+        entry_type=EntryType.NOTE,
+        outputs=entry_context,
+        readable_output=tableToMarkdown("RandomString Generated.", raw) if raw else "No result were found",
+        raw_response=raw,
+    )
     return results
 
 

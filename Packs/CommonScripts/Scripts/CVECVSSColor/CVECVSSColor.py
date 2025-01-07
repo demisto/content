@@ -1,4 +1,3 @@
-
 from CommonServerPython import *
 import math
 
@@ -15,16 +14,16 @@ def get_color(cvss: int | float) -> str:
     """
 
     colors = {
-        'Green1': '#50C878',
-        'Green2': '#6CB65B',
-        'Green3': '#89C35B',
-        'Green4': '#A3C157',
-        'Amber1': '#FFB347',
-        'Amber2': '#FFA07A',
-        'Amber3': '#FF7F50',
-        'Red1': '#FF6347',
-        'Red2': '#FF4500',
-        'Red3': '#FF4040'
+        "Green1": "#50C878",
+        "Green2": "#6CB65B",
+        "Green3": "#89C35B",
+        "Green4": "#A3C157",
+        "Amber1": "#FFB347",
+        "Amber2": "#FFA07A",
+        "Amber3": "#FF7F50",
+        "Red1": "#FF6347",
+        "Red2": "#FF4500",
+        "Red3": "#FF4040",
     }
 
     cvss = int(math.ceil(cvss))
@@ -42,13 +41,13 @@ def get_color(cvss: int | float) -> str:
 
 
 def main():
-    indicator = demisto.callingContext.get('args', {}).get('indicator', {})
-    cvss = indicator.get('CustomFields', {}).get('cvssscore', '')
-    theme = demisto.callingContext.get('context', 'light').get('User', 'light').get('theme', 'light')
+    indicator = demisto.callingContext.get("args", {}).get("indicator", {})
+    cvss = indicator.get("CustomFields", {}).get("cvssscore", "")
+    theme = demisto.callingContext.get("context", "light").get("User", "light").get("theme", "light")
     cvss = 0 if not cvss else float(cvss)
 
     if cvss == 0:
-        if theme not in ('light', ''):
+        if theme not in ("light", ""):
             return_results(CommandResults(readable_output="# <-:->{{color:#FFFFFF}}(**N\A**)"))
         else:
             return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\A**)"))
@@ -57,5 +56,5 @@ def main():
         return_results(CommandResults(readable_output=f"# <-:->{{{{color:{color}}}}}(**{cvss}**)"))
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

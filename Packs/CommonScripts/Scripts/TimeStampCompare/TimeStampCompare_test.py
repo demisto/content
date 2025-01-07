@@ -13,22 +13,11 @@ def test_compare_times():
 
 
 def test_command():
-    args = {
-        'tested_time': "01-01-2020 00:00:00",
-        'values_to_compare': "2020-02-01T00:00:00,31.12.2019"
-    }
+    args = {"tested_time": "01-01-2020 00:00:00", "values_to_compare": "2020-02-01T00:00:00,31.12.2019"}
     _, results, _ = time_stamp_compare_command(args)
 
     assert len(results[DT_STRING]) == 2
     assert results[DT_STRING] == [
-        {
-            "ComparedTime": "2020-02-01T00:00:00",
-            "Result": "after",
-            "TestedTime": "01-01-2020 00:00:00"
-        },
-        {
-            "ComparedTime": "31.12.2019",
-            "Result": "before",
-            "TestedTime": "01-01-2020 00:00:00"
-        }
+        {"ComparedTime": "2020-02-01T00:00:00", "Result": "after", "TestedTime": "01-01-2020 00:00:00"},
+        {"ComparedTime": "31.12.2019", "Result": "before", "TestedTime": "01-01-2020 00:00:00"},
     ]

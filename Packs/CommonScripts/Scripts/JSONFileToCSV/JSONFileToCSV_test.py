@@ -13,6 +13,7 @@ def getFilePath_mock(entry_id):
 
 def test_json_to_csv():
     from JSONFileToCSV import json_to_csv
+
     data = [
         {"a": 1, "b": 2, "c": 3},
         {"a": 11, "b": 12, "c": 13},

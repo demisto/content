@@ -6,7 +6,7 @@ from typing import Dict, List, Union
 
 
 def hook(obj: Dict) -> Dict:
-    """ Hook to convert string to json if possible """
+    """Hook to convert string to json if possible"""
     new_obj = {}
     for k, v in obj.items():
         try:
@@ -17,7 +17,7 @@ def hook(obj: Dict) -> Dict:
 
 
 def unescape(args: Dict) -> Union[Dict, List]:
-    """ Unescape json string """
+    """Unescape json string"""
     json_str = json.dumps(args.get("value"))
     return json.loads(json_str, object_hook=hook)
 

@@ -17,10 +17,7 @@ class TestParseExcel:
 
     @staticmethod
     def mock_file_path(mocker, path, name):
-        mocker.patch.object(demisto, "getFilePath", return_value={
-            "path": path,
-            "name": name
-        })
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": path, "name": name})
 
     @staticmethod
     def mock_demisto(mocker, args_value=None, file_obj=None):
@@ -31,17 +28,15 @@ class TestParseExcel:
 
     @staticmethod
     def get_demisto_results():
-        return demisto.results.call_args[0][0]['Contents']
+        return demisto.results.call_args[0][0]["Contents"]
 
     @staticmethod
     def create_file_object(file_path):
-        return {
-            "path": file_path,
-            "name": file_path.split("/")[-1]
-        }
+        return {"path": file_path, "name": file_path.split("/")[-1]}
 
     def test_main_csv(self, mocker):
         from ParseExcel import main
+
         with open("./TestData/file_example_result.json") as f:
             expected = json.load(f)
 

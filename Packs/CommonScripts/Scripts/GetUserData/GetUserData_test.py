@@ -172,9 +172,7 @@ def test_is_brand_available_brand_not_enabled(mocker: MockerFixture):
     result = modules.is_brand_available(command)
 
     assert result is False
-    mock_debug.assert_called_once_with(
-        "Skipping command 'test-command' since the brand 'TestBrand' is not available."
-    )
+    mock_debug.assert_called_once_with("Skipping command 'test-command' since the brand 'TestBrand' is not available.")
 
 
 def test_is_brand_available_brand_not_in_brands_to_run(mocker: MockerFixture):
@@ -273,9 +271,7 @@ def test_is_valid_args_with_all_empty_values(mocker: MockerFixture):
     result = is_valid_args(command)
 
     assert result is False
-    mock_debug.assert_called_once_with(
-        "Skipping command 'test-command' since no required arguments were provided."
-    )
+    mock_debug.assert_called_once_with("Skipping command 'test-command' since no required arguments were provided.")
 
 
 def test_create_account_with_minimal_info():
@@ -328,11 +324,7 @@ def test_create_account_with_all_fields():
 
     result = create_account(**account_info)
 
-    expected = {
-        k: {"Value": v, "Source": "FullTestSource"}
-        for k, v in account_info.items()
-        if k != "source"
-    }
+    expected = {k: {"Value": v, "Source": "FullTestSource"} for k, v in account_info.items() if k != "source"}
     assert result == expected
 
 
@@ -472,9 +464,7 @@ def test_enrich_data_with_source_empty_elements(mocker):
     Then:
         The function returns a dictionary with empty elements removed and remaining elements enriched with source information.
     """
-    mock_remove_empty = mocker.patch(
-        "GetUserData.remove_empty_elements", return_value={"name": "John"}
-    )
+    mock_remove_empty = mocker.patch("GetUserData.remove_empty_elements", return_value={"name": "John"})
 
     data = {"name": "John", "age": "", "email": None}
     source = "CleanDB"
@@ -620,10 +610,7 @@ def test_prepare_human_readable_error():
 
     assert len(result) == 1
     assert isinstance(result[0], CommandResults)
-    assert (
-        result[0].readable_output
-        == '#### Error for !test-command arg1="value1"\nError occurred'
-    )
+    assert result[0].readable_output == '#### Error for !test-command arg1="value1"\nError occurred'
     assert result[0].entry_type == EntryType.ERROR
     assert result[0].mark_as_note is True
 
@@ -724,9 +711,7 @@ def test_get_output_key_no_match(mocker: MockerFixture):
     result = get_output_key("Account", raw_context)
 
     assert result == ""
-    mock_debug.assert_called_once_with(
-        "Output key Account not found in entry context keys: ['User']"
-    )
+    mock_debug.assert_called_once_with("Output key Account not found in entry context keys: ['User']")
 
 
 def test_get_outputs_with_single_item():
@@ -860,9 +845,7 @@ def test_run_execute_command_success(mocker: MockerFixture):
     )
 
     # Call the function
-    entry_context, human_readable, errors = run_execute_command(
-        "test-command", {"arg1": "value1"}
-    )
+    entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
 
     # Assert the results
     assert entry_context == [{"ContextKey": "ContextValue"}]
@@ -908,18 +891,14 @@ def test_run_execute_command_error(mocker: MockerFixture):
     )
 
     # Call the function
-    entry_context, human_readable, errors = run_execute_command(
-        "test-command", {"arg1": "value1"}
-    )
+    entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
 
     # Assert the results
     assert entry_context == [{}]
     assert human_readable == ""
     assert len(errors) == 1
     assert isinstance(errors[0], CommandResults)
-    mock_prepare_human_readable.assert_called_once_with(
-        "test-command", {"arg1": "value1"}, "Error occurred", is_error=True
-    )
+    mock_prepare_human_readable.assert_called_once_with("test-command", {"arg1": "value1"}, "Error occurred", is_error=True)
     demisto.debug.assert_called_with("Finished executing command: test-command")
 
 
@@ -958,9 +937,7 @@ def test_run_execute_command_multiple_entries(mocker: MockerFixture):
     )
 
     # Call the function
-    entry_context, human_readable, errors = run_execute_command(
-        "test-command", {"arg1": "value1"}
-    )
+    entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
 
     # Assert the results
     assert entry_context == [{"Context1": "Value1"}, {"Context2": "Value2"}]
@@ -979,9 +956,7 @@ class TestGetUserData:
         Then:
             It returns the expected tuple of readable outputs and account output.
         """
-        command = Command(
-            "SailPointIdentityIQ", "identityiq-search-identities", {"id": "123"}
-        )
+        command = Command("SailPointIdentityIQ", "identityiq-search-identities", {"id": "123"})
         mock_outputs = {
             "id": "123",
             "userName": "test_user",
@@ -999,9 +974,7 @@ class TestGetUserData:
                 "Source": "SailPointIdentityIQ",
             },
             "is_enabled": {"Value": True, "Source": "SailPointIdentityIQ"},
-            "name": {
-                "formatted": {"Value": "Test User", "Source": "SailPointIdentityIQ"}
-            },
+            "name": {"formatted": {"Value": "Test User", "Source": "SailPointIdentityIQ"}},
         }
 
         mocker.patch(
@@ -1029,9 +1002,7 @@ class TestGetUserData:
         Then:
             It returns the expected tuple of readable outputs and account output.
         """
-        command = Command(
-            "SailPointIdentityNow", "identitynow-get-accounts", {"id": "456"}
-        )
+        command = Command("SailPointIdentityNow", "identitynow-get-accounts", {"id": "456"})
         mock_outputs = {"id": "456", "name": "test_account", "disabled": False}
         expected_account = {
             "id": {"Value": "456", "Source": "SailPointIdentityNow"},
@@ -1064,9 +1035,7 @@ class TestGetUserData:
         Then:
             It returns the expected tuple of readable outputs, account output, and manager DN.
         """
-        command = Command(
-            "Active Directory Query v2", "ad-get-user", {"username": "ad_user"}
-        )
+        command = Command("Active Directory Query v2", "ad-get-user", {"username": "ad_user"})
         mock_outputs = {
             "sAMAccountName": "ad_user",
             "displayName": "AD User",
@@ -1113,9 +1082,7 @@ class TestGetUserData:
         Then:
             It returns the expected tuple of readable outputs, account output, and manager DN.
         """
-        command = Command(
-            "Active Directory Query v2", "ad-get-user", {"username": "ad_user", "attributes": "whenCreated"}
-        )
+        command = Command("Active Directory Query v2", "ad-get-user", {"username": "ad_user", "attributes": "whenCreated"})
         mock_outputs = {
             "sAMAccountName": "ad_user",
             "displayName": "AD User",
@@ -1123,7 +1090,7 @@ class TestGetUserData:
             "memberOf": ["Group1"],
             "userAccountControlFields": {"ACCOUNTDISABLE": False},
             "manager": ["CN=Manager,OU=Users,DC=example,DC=com"],
-            "whenCreated": ["2024-11-05 09:11:18+00:00"]
+            "whenCreated": ["2024-11-05 09:11:18+00:00"],
         }
         expected_account = {
             "username": {"Value": "ad_user", "Source": "Active Directory Query v2"},
@@ -1134,8 +1101,7 @@ class TestGetUserData:
             },
             "groups": {"Value": "Group1", "Source": "Active Directory Query v2"},
             "is_enabled": {"Value": True, "Source": "Active Directory Query v2"},
-            "whenCreated": {'Source': 'Active Directory Query v2',
-                            'Value': '2024-11-05 09:11:18+00:00'}
+            "whenCreated": {"Source": "Active Directory Query v2", "Value": "2024-11-05 09:11:18+00:00"},
         }
 
         mocker.patch(
@@ -1325,9 +1291,7 @@ class TestGetUserData:
         Then:
             It returns the expected tuple of readable outputs and account output.
         """
-        command = Command(
-            "Microsoft Graph User", "msgraph-user-get", {"user": "graph_user"}
-        )
+        command = Command("Microsoft Graph User", "msgraph-user-get", {"user": "graph_user"})
         mock_outputs = {
             "ID": "131415",
             "Username": "graph_user",
@@ -1380,12 +1344,8 @@ class TestGetUserData:
         Then:
             It returns the expected tuple of readable outputs and account output.
         """
-        command = Command(
-            "Microsoft Graph User", "msgraph-user-get-manager", {"user": "graph_user"}
-        )
-        mock_outputs = {
-            "Manager": {"DisplayName": "Graph Manager", "Mail": "manager@example.com"}
-        }
+        command = Command("Microsoft Graph User", "msgraph-user-get-manager", {"user": "graph_user"})
+        mock_outputs = {"Manager": {"DisplayName": "Graph Manager", "Mail": "manager@example.com"}}
         expected_account = {
             "manager_display_name": {
                 "Value": "Graph Manager",
@@ -1424,9 +1384,7 @@ class TestGetUserData:
         """
         user_name = "xdr_user"
         outputs_key_field = "PaloAltoNetworksXDR"
-        command = Command(
-            "Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name}
-        )
+        command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
         mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
         expected_account = {
             "id": {"Value": "xdr_user", "Source": "Cortex XDR - IR"},
@@ -1438,9 +1396,7 @@ class TestGetUserData:
             "GetUserData.run_execute_command",
             return_value=([mock_outputs], "Human readable output", []),
         )
-        mocker.patch(
-            "GetUserData.get_output_key", return_value="PaloAltoNetworksXDR.RiskyUser"
-        )
+        mocker.patch("GetUserData.get_output_key", return_value="PaloAltoNetworksXDR.RiskyUser")
         mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 

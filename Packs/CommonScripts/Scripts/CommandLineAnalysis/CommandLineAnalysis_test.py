@@ -12,7 +12,7 @@ from CommandLineAnalysis import (
     check_amsi,
     check_mixed_case_powershell,
     check_powershell_suspicious_patterns,
-    analyze_command_line
+    analyze_command_line,
 )
 
 

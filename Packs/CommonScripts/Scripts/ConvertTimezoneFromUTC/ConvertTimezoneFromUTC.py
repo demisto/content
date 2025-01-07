@@ -17,13 +17,13 @@ def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> str
     return desired_time
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     try:
         # Get Args
         args = demisto.args()
-        str_utc_time = args.get('value')
-        requested_timezone = args.get('timezone')
-        fmt = args.get('format')
+        str_utc_time = args.get("value")
+        requested_timezone = args.get("timezone")
+        fmt = args.get("format")
 
         # Convert UTC time string to a datetime type
         utc_time = determine_correct_format(time=str_utc_time, fmt=fmt)
@@ -33,8 +33,8 @@ def main():     # pragma: no cover
 
     except Exception as e:
         demisto.error(format_exc())
-        return_error(f'ConvertTimezone command failed. Error: {e}')
+        return_error(f"ConvertTimezone command failed. Error: {e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

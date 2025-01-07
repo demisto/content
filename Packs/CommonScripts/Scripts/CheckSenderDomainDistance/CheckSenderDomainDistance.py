@@ -21,41 +21,57 @@ def main():
     res = []
     found = False
 
-    domains = argToList(demisto.get(demisto.args(), 'domain'))
+    domains = argToList(demisto.get(demisto.args(), "domain"))
     if not domains:
-        res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
-                    'Contents': 'Unable to extract domain from arguments'})
+        res.append(
+            {
+                "Type": entryTypes["error"],
+                "ContentsFormat": formats["text"],
+                "Contents": "Unable to extract domain from arguments",
+            }
+        )
     else:
-        sender = demisto.get(demisto.args(), 'sender')
+        sender = demisto.get(demisto.args(), "sender")
         if sender:
-            parts = sender.split('@')
+            parts = sender.split("@")
             if len(parts) == 2:
                 if not parts[1] in domains:
                     distances = []
                     for domain in domains:
                         distance = levenshtein(domain, parts[1])
                         distances.append(distance)
-                        closeDistance = demisto.get(demisto.args(), 'distance')
+                        closeDistance = demisto.get(demisto.args(), "distance")
                         closeDistanceInt = int(closeDistance) if closeDistance else 3
                         if distance > 0 and distance < closeDistanceInt:
-                            res.append({'Type': entryTypes['note'], 'ContentsFormat': formats['text'],
-                                        'Contents': 'Domain ' + parts[1] + ' is suspiciously close to ' + domain})
+                            res.append(
+                                {
+                                    "Type": entryTypes["note"],
+                                    "ContentsFormat": formats["text"],
+                                    "Contents": "Domain " + parts[1] + " is suspiciously close to " + domain,
+                                }
+                            )
                             found = True
                     if len(distances) > 0:
                         # Override the context on each run
-                        demisto.setContext('LevenshteinDistance', distances if len(distances) > 1 else distances[0])
+                        demisto.setContext("LevenshteinDistance", distances if len(distances) > 1 else distances[0])
             else:
-                res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
-                            'Contents': 'Unable to extract domain from sender - ' + sender})
+                res.append(
+                    {
+                        "Type": entryTypes["error"],
+                        "ContentsFormat": formats["text"],
+                        "Contents": "Unable to extract domain from sender - " + sender,
+                    }
+                )
         else:
-            res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
-                        'Contents': 'Unable to find sender in email'})
+            res.append(
+                {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Unable to find sender in email"}
+            )
     if found:
-        res.append('yes')  # type: ignore
+        res.append("yes")  # type: ignore
     else:
-        res.append('no')  # type: ignore
+        res.append("no")  # type: ignore
     demisto.results(res)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

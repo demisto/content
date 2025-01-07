@@ -23,10 +23,10 @@ def get_errors(entries: List) -> List[str]:
             entry_details = entry[0]
         else:
             entry_details = entry
-        is_error_entry = isinstance(entry_details, dict) and entry_details['Type'] == entryTypes['error']
+        is_error_entry = isinstance(entry_details, dict) and entry_details["Type"] == entryTypes["error"]
         if is_error_entry:
             demisto.debug(f'error entry contents: "{entry_details["Contents"]}"')
-            error_messages.append(entry_details['Contents'])
+            error_messages.append(entry_details["Contents"])
 
     return error_messages
 
@@ -36,15 +36,12 @@ def get_entries(entry_ids: list) -> list:
 
     if is_xsiam_or_xsoar_saas():
         entry_ids_str = ",".join(entry_ids)
-        entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
+        entries = demisto.executeCommand("getEntriesByIDs", {"entryIDs": entry_ids_str})
         if is_error(entries) and UNSUPPORTED_COMMAND_MSG in get_error(entries):
             entries = []  # unsupported, try again using getEntry
 
     if not entries:
-        entries = [
-            demisto.executeCommand('getEntry', {'id': entry_id})
-            for entry_id in entry_ids
-        ]
+        entries = [demisto.executeCommand("getEntry", {"id": entry_id}) for entry_id in entry_ids]
     return entries
 
 
@@ -52,21 +49,23 @@ def main():
     try:
         args = demisto.args()
         # the entry_id argument can be a list of entry ids or a single entry id
-        entry_ids = args.get('entry_id', demisto.get(demisto.context(), 'lastCompletedTaskEntries'))
+        entry_ids = args.get("entry_id", demisto.get(demisto.context(), "lastCompletedTaskEntries"))
         entry_ids = argToList(entry_ids)
 
         entries = get_entries(entry_ids)
         error_messages = get_errors(entries)
 
-        return_results(CommandResults(
-            readable_output='\n'.join(error_messages),
-            outputs_prefix='ErrorEntries',
-            outputs=error_messages,
-            raw_response=error_messages,
-        ))
+        return_results(
+            CommandResults(
+                readable_output="\n".join(error_messages),
+                outputs_prefix="ErrorEntries",
+                outputs=error_messages,
+                raw_response=error_messages,
+            )
+        )
     except Exception as e:
-        return_error(f'Failed to fetch errors for the given entry id(s). Problem: {str(e)}')
+        return_error(f"Failed to fetch errors for the given entry id(s). Problem: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

@@ -17,17 +17,15 @@ def test_change_remediation_to_critical(mocker):
     """
     import ChangeRemediationSLAOnSevChange
 
-    demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand')
+    demisto_execute_mock = mocker.patch.object(demisto, "executeCommand")
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'new': 'Critical'
-    })
+    mocker.patch.object(demisto, "args", return_value={"new": "Critical"})
 
     ChangeRemediationSLAOnSevChange.main()
     assert demisto_execute_mock.call_count == 1
     execute_command_args = demisto_execute_mock.call_args_list[0][0]
-    assert execute_command_args[0] == 'setIncident'
-    assert execute_command_args[1] == {'sla': 60, 'slaField': 'remediationsla'}
+    assert execute_command_args[0] == "setIncident"
+    assert execute_command_args[1] == {"sla": 60, "slaField": "remediationsla"}
 
 
 @freeze_time("2022-01-01 00:00:00 UTC")
@@ -45,15 +43,13 @@ def test_change_remediation_to_non_critical(mocker):
     """
     import ChangeRemediationSLAOnSevChange
 
-    demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand')
+    demisto_execute_mock = mocker.patch.object(demisto, "executeCommand")
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'new': 'Low'
-    })
+    mocker.patch.object(demisto, "args", return_value={"new": "Low"})
 
     ChangeRemediationSLAOnSevChange.main()
     assert demisto_execute_mock.call_count == 1
     execute_command_args = demisto_execute_mock.call_args_list[0][0]
-    assert execute_command_args[0] == 'setIncident'
+    assert execute_command_args[0] == "setIncident"
 
-    assert execute_command_args[1] == {'sla': '2022-01-07T00:00:00+00:00', 'slaField': 'remediationsla'}
+    assert execute_command_args[1] == {"sla": "2022-01-07T00:00:00+00:00", "slaField": "remediationsla"}

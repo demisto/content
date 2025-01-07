@@ -10,16 +10,11 @@ class Base64EncodeV2(unittest.TestCase):
         Then: Validate that the human readable and context outputs are properly formatted and that the input was encoded
         correctly.
         """
-        input = '日本語'
-        expected_result = '5pel5pys6Kqe'
+        input = "日本語"
+        expected_result = "5pel5pys6Kqe"
         actual_result, output = encode(input)
         assert actual_result == expected_result
-        assert output == {
-            'Base64':
-                {
-                    'encoded': expected_result
-                }
-        }
+        assert output == {"Base64": {"encoded": expected_result}}
 
     def test_encode_english(self):
         """
@@ -28,16 +23,11 @@ class Base64EncodeV2(unittest.TestCase):
         Then: Validate that the human readable and context outputs are properly formatted and that the input was encoded
         correctly.
         """
-        input = 'test'
-        expected_result = 'dGVzdA=='
+        input = "test"
+        expected_result = "dGVzdA=="
         actual_result, output = encode(input)
         assert actual_result == expected_result
-        assert output == {
-            'Base64':
-                {
-                    'encoded': expected_result
-                }
-        }
+        assert output == {"Base64": {"encoded": expected_result}}
 
     def test_encode_german(self):
         """
@@ -46,16 +36,11 @@ class Base64EncodeV2(unittest.TestCase):
         Then: Validate that the human readable and context outputs are properly formatted and that the input was encoded
         correctly.
         """
-        input = 'äpfel'
-        expected_result = 'w6RwZmVs'
+        input = "äpfel"
+        expected_result = "w6RwZmVs"
         actual_result, output = encode(input)
         assert actual_result == expected_result
-        assert output == {
-            'Base64':
-                {
-                    'encoded': expected_result
-                }
-        }
+        assert output == {"Base64": {"encoded": expected_result}}
 
     def test_encode_hebrew(self):
         """
@@ -64,16 +49,11 @@ class Base64EncodeV2(unittest.TestCase):
         Then: Validate that the human readable and context outputs are properly formatted and that the input was encoded
         correctly.
         """
-        input = 'בדיקה'
-        expected_result = '15HXk9eZ16fXlA=='
+        input = "בדיקה"
+        expected_result = "15HXk9eZ16fXlA=="
         actual_result, output = encode(input)
         assert actual_result == expected_result
-        assert output == {
-            'Base64':
-                {
-                    'encoded': expected_result
-                }
-        }
+        assert output == {"Base64": {"encoded": expected_result}}
 
     def test_encode_arabic(self):
         """
@@ -82,13 +62,8 @@ class Base64EncodeV2(unittest.TestCase):
         Then: Validate that the human readable and context outputs are properly formatted and that the input was encoded
         correctly.
         """
-        input = 'امتحان'
-        expected_result = '2KfZhdiq2K3Yp9mG'
+        input = "امتحان"
+        expected_result = "2KfZhdiq2K3Yp9mG"
         actual_result, output = encode(input)
         assert actual_result == expected_result
-        assert output == {
-            'Base64':
-                {
-                    'encoded': expected_result
-                }
-        }
+        assert output == {"Base64": {"encoded": expected_result}}

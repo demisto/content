@@ -7,9 +7,9 @@ def main():
     ret = []
     sysargs = None
 
-    cmdarg = demisto.args()['cmd']
-    if 'sysargs' in demisto.args():
-        sysargs = demisto.args()['sysargs']
+    cmdarg = demisto.args()["cmd"]
+    if "sysargs" in demisto.args():
+        sysargs = demisto.args()["sysargs"]
 
     if sysargs is None:
         output = None
@@ -22,18 +22,20 @@ def main():
     else:
         ret.append(subprocess.check_output([cmdarg, sysargs]))
 
-    ret = [r.decode('utf-8') for r in ret]     # type:ignore[union-attr]
-    ec = {'Command': cmdarg, 'Results': ret[0]}
+    ret = [r.decode("utf-8") for r in ret]  # type:ignore[union-attr]
+    ec = {"Command": cmdarg, "Results": ret[0]}
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': ret,
-        'HumanReadable': ret[0],
-        'EntryContext': {'CommandResults': ec}
-    })
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "Contents": ret,
+            "HumanReadable": ret[0],
+            "EntryContext": {"CommandResults": ec},
+        }
+    )
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
     sys.exit(0)

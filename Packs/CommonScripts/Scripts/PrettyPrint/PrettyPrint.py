@@ -3,7 +3,7 @@ from pprint import pformat
 
 
 def main():
-    value = demisto.args()['value']
+    value = demisto.args()["value"]
     demisto.results(pformat(value))
 
 

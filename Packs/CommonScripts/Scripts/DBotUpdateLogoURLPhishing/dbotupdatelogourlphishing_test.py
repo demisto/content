@@ -29,14 +29,16 @@ def test_new_major_logo_added(mocker):
     docker_version = 1
     model_mock_docker = PhishingURLModelMock(major=1, minor=0)
     model_mock_demisto = PhishingURLModelMock(major=0, minor=1)
-    mocker.patch.object(demisto, 'args', return_value={'logoName': 'url_name',
-                                                       'action': KEY_ADD_LOGO, 'logoImageId': 'logo_id'})
-    mocker.patch('DBotUpdateLogoURLPhishing.load_model_from_docker', return_value=model_mock_docker, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.load_demisto_model', return_value=model_mock_demisto, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.oob_model_exists_and_updated',
-                 return_value=(True, current_major_version, current_minor_version), create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.MAJOR_VERSION', docker_version)
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/logo.png"})
+    mocker.patch.object(demisto, "args", return_value={"logoName": "url_name", "action": KEY_ADD_LOGO, "logoImageId": "logo_id"})
+    mocker.patch("DBotUpdateLogoURLPhishing.load_model_from_docker", return_value=model_mock_docker, create=True)
+    mocker.patch("DBotUpdateLogoURLPhishing.load_demisto_model", return_value=model_mock_demisto, create=True)
+    mocker.patch(
+        "DBotUpdateLogoURLPhishing.oob_model_exists_and_updated",
+        return_value=(True, current_major_version, current_minor_version),
+        create=True,
+    )
+    mocker.patch("DBotUpdateLogoURLPhishing.MAJOR_VERSION", docker_version)
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/logo.png"})
     msg_list = main()
     assert MSG_LOGO_ADDED in msg_list
     assert MSG_SAVE_MODEL_IN_DEMISTO % (str(docker_version), str(current_minor_version + 1))
@@ -49,14 +51,16 @@ def test_same_major_no_added_logo(mocker):
     docker_version = 0
     model_mock_docker = PhishingURLModelMock(major=0, minor=0)
     model_mock_demisto = PhishingURLModelMock(major=0, minor=0)
-    mocker.patch.object(demisto, 'args', return_value={'logoName': 'url_name',
-                                                       'action': KEY_ADD_LOGO, 'logoImageId': 'logo_id'})
-    mocker.patch('DBotUpdateLogoURLPhishing.load_model_from_docker', return_value=model_mock_docker, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.load_demisto_model', return_value=model_mock_demisto, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.oob_model_exists_and_updated',
-                 return_value=(True, current_major_version, current_minor_version), create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.MAJOR_VERSION', docker_version)
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/logo.png"})
+    mocker.patch.object(demisto, "args", return_value={"logoName": "url_name", "action": KEY_ADD_LOGO, "logoImageId": "logo_id"})
+    mocker.patch("DBotUpdateLogoURLPhishing.load_model_from_docker", return_value=model_mock_docker, create=True)
+    mocker.patch("DBotUpdateLogoURLPhishing.load_demisto_model", return_value=model_mock_demisto, create=True)
+    mocker.patch(
+        "DBotUpdateLogoURLPhishing.oob_model_exists_and_updated",
+        return_value=(True, current_major_version, current_minor_version),
+        create=True,
+    )
+    mocker.patch("DBotUpdateLogoURLPhishing.MAJOR_VERSION", docker_version)
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/logo.png"})
     msg_list = main()
     assert MSG_LOGO_ADDED in msg_list
     assert MSG_SAVE_MODEL_IN_DEMISTO % (str(docker_version), str(current_minor_version + 1))
@@ -69,14 +73,16 @@ def test_new_major_no_added_logo(mocker):
     docker_version = 2
     model_mock_docker = PhishingURLModelMock(major=2, minor=0)
     model_mock_demisto = PhishingURLModelMock(major=0, minor=0)
-    mocker.patch.object(demisto, 'args', return_value={'logoName': 'url_name',
-                                                       'action': KEY_ADD_LOGO, 'logoImageId': 'logo_id'})
-    mocker.patch('DBotUpdateLogoURLPhishing.load_model_from_docker', return_value=model_mock_docker, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.load_demisto_model', return_value=model_mock_demisto, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.oob_model_exists_and_updated',
-                 return_value=(True, current_major_version, current_minor_version), create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.MAJOR_VERSION', docker_version)
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/logo.png"})
+    mocker.patch.object(demisto, "args", return_value={"logoName": "url_name", "action": KEY_ADD_LOGO, "logoImageId": "logo_id"})
+    mocker.patch("DBotUpdateLogoURLPhishing.load_model_from_docker", return_value=model_mock_docker, create=True)
+    mocker.patch("DBotUpdateLogoURLPhishing.load_demisto_model", return_value=model_mock_demisto, create=True)
+    mocker.patch(
+        "DBotUpdateLogoURLPhishing.oob_model_exists_and_updated",
+        return_value=(True, current_major_version, current_minor_version),
+        create=True,
+    )
+    mocker.patch("DBotUpdateLogoURLPhishing.MAJOR_VERSION", docker_version)
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/logo.png"})
     msg_list = main()
     assert MSG_LOGO_ADDED in msg_list
     assert MSG_SAVE_MODEL_IN_DEMISTO % (str(docker_version), str(current_minor_version + 1))
@@ -89,14 +95,16 @@ def test_same_major_added_logo(mocker):
     docker_version = 1
     model_mock_docker = PhishingURLModelMock(major=1, minor=0)
     model_mock_demisto = PhishingURLModelMock(major=1, minor=3)
-    mocker.patch.object(demisto, 'args', return_value={'logoName': 'url_name',
-                                                       'action': KEY_ADD_LOGO, 'logoImageId': 'logo_id'})
-    mocker.patch('DBotUpdateLogoURLPhishing.load_model_from_docker', return_value=model_mock_docker, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.load_demisto_model', return_value=model_mock_demisto, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.oob_model_exists_and_updated',
-                 return_value=(True, current_major_version, current_minor_version), create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.MAJOR_VERSION', docker_version)
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/logo.png"})
+    mocker.patch.object(demisto, "args", return_value={"logoName": "url_name", "action": KEY_ADD_LOGO, "logoImageId": "logo_id"})
+    mocker.patch("DBotUpdateLogoURLPhishing.load_model_from_docker", return_value=model_mock_docker, create=True)
+    mocker.patch("DBotUpdateLogoURLPhishing.load_demisto_model", return_value=model_mock_demisto, create=True)
+    mocker.patch(
+        "DBotUpdateLogoURLPhishing.oob_model_exists_and_updated",
+        return_value=(True, current_major_version, current_minor_version),
+        create=True,
+    )
+    mocker.patch("DBotUpdateLogoURLPhishing.MAJOR_VERSION", docker_version)
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/logo.png"})
     msg_list = main()
     assert MSG_LOGO_ADDED in msg_list
     assert MSG_SAVE_MODEL_IN_DEMISTO % (str(docker_version), str(current_minor_version + 1))
@@ -109,15 +117,25 @@ def test_add_logo_with_associated_domain(mocker):
     docker_version = 1
     model_mock_docker = PhishingURLModelMock(major=1, minor=0)
     model_mock_demisto = PhishingURLModelMock(major=0, minor=1)
-    mocker.patch.object(demisto, 'args', return_value={'logoName': 'url_name',
-                                                       'associatedDomains': 'custom_domain',
-                                                       'action': KEY_ADD_LOGO, 'logoImageId': 'logo_id'})
-    mocker.patch('DBotUpdateLogoURLPhishing.load_model_from_docker', return_value=model_mock_docker, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.load_demisto_model', return_value=model_mock_demisto, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.oob_model_exists_and_updated',
-                 return_value=(True, current_major_version, current_minor_version), create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.MAJOR_VERSION', docker_version)
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/logo.png"})
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "logoName": "url_name",
+            "associatedDomains": "custom_domain",
+            "action": KEY_ADD_LOGO,
+            "logoImageId": "logo_id",
+        },
+    )
+    mocker.patch("DBotUpdateLogoURLPhishing.load_model_from_docker", return_value=model_mock_docker, create=True)
+    mocker.patch("DBotUpdateLogoURLPhishing.load_demisto_model", return_value=model_mock_demisto, create=True)
+    mocker.patch(
+        "DBotUpdateLogoURLPhishing.oob_model_exists_and_updated",
+        return_value=(True, current_major_version, current_minor_version),
+        create=True,
+    )
+    mocker.patch("DBotUpdateLogoURLPhishing.MAJOR_VERSION", docker_version)
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/logo.png"})
     msg_list = main()
     assert MSG_LOGO_ADDED in msg_list
     assert MSG_SAVE_MODEL_IN_DEMISTO % (str(docker_version), str(current_minor_version + 1))
@@ -126,21 +144,21 @@ def test_add_logo_with_associated_domain(mocker):
 
 def test_execute_action(mocker):
     model = PhishingURLModelMock(major=1, minor=0)
-    success, msg = execute_action(KEY_ADD_LOGO, 'logo_test', 'logo_content_test', 'domain_test', model)
+    success, msg = execute_action(KEY_ADD_LOGO, "logo_test", "logo_content_test", "domain_test", model)
     assert msg == MSG_LOGO_ADDED
-    success, msg = execute_action(KEY_REMOVE_LOGO, 'logo_test', '', '', model)
+    success, msg = execute_action(KEY_REMOVE_LOGO, "logo_test", "", "", model)
     assert msg == MSG_LOGO_REMOVED
-    success, msg = execute_action(KEY_MODIFY_LOGO, 'logo_test', '', 'domain_test', model)
+    success, msg = execute_action(KEY_MODIFY_LOGO, "logo_test", "", "domain_test", model)
     assert msg == MSG_LOGO_AMENDED
 
 
 def test_get_concat_logo_single_image(mocker):
     path = "test_data/logo.png"
-    with open(path, 'rb') as file:
+    with open(path, "rb") as file:
         logo_content = file.read()
     logo_list = [logo_content] * 3
     concat_image_found = get_concat_logo_single_image(logo_list)
-    with open('test_data/image.png', 'rb') as f:
+    with open("test_data/image.png", "rb") as f:
         image_concat_true = f.read()
     assert concat_image_found == image_concat_true
 
@@ -149,15 +167,19 @@ def test_display_all_logos(mocker):
     current_major_version = 0
     current_minor_version = 1
     path = "test_data/logo.png"
-    with open(path, 'rb') as file:
-        logo_content = base64.b64encode(file.read()).decode('utf-8')
-    p_logos_dict = {'logo_1': logo_content, 'logo_2': logo_content, 'logo_3': logo_content}
+    with open(path, "rb") as file:
+        logo_content = base64.b64encode(file.read()).decode("utf-8")
+    p_logos_dict = {"logo_1": logo_content, "logo_2": logo_content, "logo_3": logo_content}
     model_mock_docker = PhishingURLModelMock(major=0, minor=0)
-    model_mock_demisto = PhishingURLModelMock(top_domains=None, logos_dict=p_logos_dict, minor=1, major=0,
-                                              custom_logo_associated_domain={})
-    mocker.patch('DBotUpdateLogoURLPhishing.load_model_from_docker', return_value=model_mock_docker, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.load_demisto_model', return_value=model_mock_demisto, create=True)
-    mocker.patch('DBotUpdateLogoURLPhishing.oob_model_exists_and_updated',
-                 return_value=(True, current_major_version, current_minor_version), create=True)
-    mocker.patch.object(demisto, 'args', return_value={'action': KEY_DISPLAY_LOGOS})
+    model_mock_demisto = PhishingURLModelMock(
+        top_domains=None, logos_dict=p_logos_dict, minor=1, major=0, custom_logo_associated_domain={}
+    )
+    mocker.patch("DBotUpdateLogoURLPhishing.load_model_from_docker", return_value=model_mock_docker, create=True)
+    mocker.patch("DBotUpdateLogoURLPhishing.load_demisto_model", return_value=model_mock_demisto, create=True)
+    mocker.patch(
+        "DBotUpdateLogoURLPhishing.oob_model_exists_and_updated",
+        return_value=(True, current_major_version, current_minor_version),
+        create=True,
+    )
+    mocker.patch.object(demisto, "args", return_value={"action": KEY_DISPLAY_LOGOS})
     main()

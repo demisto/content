@@ -17,10 +17,10 @@ def test_port_listen_check_success(mocker):
     # Setup a socket connection which is successful
     socket = mocker.MagicMock()
     socket.connect_ex.return_value = 0
-    mocker.patch('socket.socket', return_value=socket)
+    mocker.patch("socket.socket", return_value=socket)
 
-    expected_human_readable = 'Port 80 is open on host: testhost.com'
-    expected_outputs = {'portOpen': True}
+    expected_human_readable = "Port 80 is open on host: testhost.com"
+    expected_outputs = {"portOpen": True}
 
     result = port_listen_check(80, "testhost.com")
     assert result.readable_output == expected_human_readable
@@ -42,10 +42,10 @@ def test_port_listen_check_fail(mocker):
     # Setup a socket connection which is unsuccessful
     socket = mocker.MagicMock()
     socket.connect_ex.return_value = 1
-    mocker.patch('socket.socket', return_value=socket)
+    mocker.patch("socket.socket", return_value=socket)
 
-    expected_human_readable = 'Port 80 is not open on host: testhost.com'
-    expected_outputs = {'portOpen': False}
+    expected_human_readable = "Port 80 is not open on host: testhost.com"
+    expected_outputs = {"portOpen": False}
 
     result = port_listen_check(80, "testhost.com")
     assert result.readable_output == expected_human_readable
@@ -66,11 +66,11 @@ def test_main(mocker):
     # Setup a socket connection which is successful
     socket = mocker.MagicMock()
     socket.connect_ex.return_value = 0
-    mocker.patch('socket.socket', return_value=socket)
+    mocker.patch("socket.socket", return_value=socket)
 
     # Patch Demisto objects
-    mocker.patch.object(demisto, 'args', return_value={'port': '80', 'host': 'testhost.com'})
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "args", return_value={"port": "80", "host": "testhost.com"})
+    mocker.patch.object(demisto, "results")
 
     # Execute Script
     main()
@@ -78,5 +78,5 @@ def test_main(mocker):
     # Validate Outputs
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]["Type"] == entryTypes["note"]
     assert results[0]["EntryContext"]["portOpen"]

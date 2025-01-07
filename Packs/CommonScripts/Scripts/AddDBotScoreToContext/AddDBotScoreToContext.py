@@ -9,18 +9,9 @@ def main():
     vendor = demisto.args().get("vendor")
     reliability = demisto.args().get("reliability", None)
 
-    dbotscore = {
-        "Indicator": indicator,
-        "Type": indicatorType,
-        "Vendor": vendor,
-        "Score": score,
-        "Reliability": reliability
-    }
+    dbotscore = {"Indicator": indicator, "Type": indicatorType, "Vendor": vendor, "Score": score, "Reliability": reliability}
 
-    command_results = CommandResults(
-        outputs_prefix='DBotScore',
-        outputs=dbotscore
-    )
+    command_results = CommandResults(outputs_prefix="DBotScore", outputs=dbotscore)
     return_results(command_results)
 
 

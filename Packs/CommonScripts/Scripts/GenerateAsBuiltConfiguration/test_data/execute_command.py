@@ -167,16 +167,12 @@ def execute_command(*args):
                             "detailsV2": {
                                 "tabs": [
                                     {
-                                        'sections': [
+                                        "sections": [
                                             {
-                                                'name': 'test-name',
-                                                'items': [
-                                                    {'fieldId': 'asowner'}
-                                                ],
-                                                'columns': [
-                                                    {'key': 'asowner'}
-                                                ],
-                                                'type': 'evidence'
+                                                "name": "test-name",
+                                                "items": [{"fieldId": "asowner"}],
+                                                "columns": [{"key": "asowner"}],
+                                                "type": "evidence",
                                             }
                                         ]
                                     }
@@ -700,9 +696,7 @@ def execute_command(*args):
                                                     "transformers": None,
                                                 }
                                             },
-                                            "FileName": {
-                                                "simple": "file-detonated-via-demisto"
-                                            },
+                                            "FileName": {"simple": "file-detonated-via-demisto"},
                                             "Interval": {"simple": "1"},
                                             "Timeout": {"simple": "15"},
                                             "playbook": {"simple": "default"},
@@ -966,9 +960,7 @@ def execute_command(*args):
                                                 "complex": {
                                                     "filters": None,
                                                     "root": "inputs.File",
-                                                    "transformers": [
-                                                        {"operator": "uniq"}
-                                                    ],
+                                                    "transformers": [{"operator": "uniq"}],
                                                 }
                                             },
                                             "interval": {"simple": "1"},
@@ -1080,11 +1072,7 @@ def execute_command(*args):
                                         "evidenceData": {},
                                         "id": "25",
                                         "nextTasks": {"#none#": ["3"]},
-                                        "scriptArguments": {
-                                            "entry_id": {
-                                                "simple": "${inputs.File.EntryID}"
-                                            }
-                                        },
+                                        "scriptArguments": {"entry_id": {"simple": "${inputs.File.EntryID}"}},
                                         "skipUnavailable": True,
                                         "task": {
                                             "brand": "OPSWAT Filescan",
@@ -1110,9 +1098,7 @@ def execute_command(*args):
                                                         {
                                                             "left": {
                                                                 "isContext": True,
-                                                                "value": {
-                                                                    "simple": "inputs.File.EntryID"
-                                                                },
+                                                                "value": {"simple": "inputs.File.EntryID"},
                                                             },
                                                             "operator": "isExists",
                                                         }
@@ -1487,11 +1473,7 @@ def execute_command(*args):
                                 "icon": "activedirectory.png",
                                 "id": "test-name",
                                 "image": "",
-                                "integrationScript": {
-                                    "commands": [
-                                        {"name": "test-name"}
-                                    ]
-                                },
+                                "integrationScript": {"commands": [{"name": "test-name"}]},
                                 "itemVersion": "",
                                 "modified": "2024-06-06T15:38:50.814677124Z",
                                 "name": "test-name",
@@ -1573,11 +1555,7 @@ def execute_command(*args):
                                     "hidden": False,
                                     "icon": "",
                                     "id": "",
-                                    "integrationScript": {
-                                        "commands": [
-                                            {"name": 'a name'}
-                                        ]
-                                    },
+                                    "integrationScript": {"commands": [{"name": "a name"}]},
                                     "itemVersion": "",
                                     "modified": "0001-01-01T00:00:00Z",
                                     "name": "",

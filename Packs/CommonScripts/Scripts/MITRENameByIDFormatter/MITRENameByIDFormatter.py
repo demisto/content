@@ -15,12 +15,12 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
     """
     try:
         technique_names = {}
-        query = f'mitreid:{mitre_id}'
-        demisto.debug(f'Querying for {query} in TIM')
+        query = f"mitreid:{mitre_id}"
+        demisto.debug(f"Querying for {query} in TIM")
 
-        success, response = execute_command(command="SearchIndicator",
-                                            args={"query": query, "add_fields_to_context": "mitreid"},
-                                            fail_on_error=False)
+        success, response = execute_command(
+            command="SearchIndicator", args={"query": query, "add_fields_to_context": "mitreid"}, fail_on_error=False
+        )
 
         if not success:
             demisto.debug(f"Failed to execute findIndicators command: {get_error(response)}")
@@ -35,9 +35,9 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
                 technique_names[indicator["mitreid"]] = indicator["value"]
 
         else:
-            success, response = execute_command(command="IsIntegrationAvailable",
-                                                args={"brandname": "MITRE ATT&CK v2"},
-                                                fail_on_error=False)
+            success, response = execute_command(
+                command="IsIntegrationAvailable", args={"brandname": "MITRE ATT&CK v2"}, fail_on_error=False
+            )
 
             if isinstance(response, str) and response.lower() == "no":
                 demisto.debug("Please set an instance of MITRE Att&ck Feed.")
@@ -64,7 +64,7 @@ def is_valid_attack_pattern(items) -> list:
 
 
 def main():
-    the_input = demisto.args().get('input')
+    the_input = demisto.args().get("input")
 
     entries_list = is_valid_attack_pattern(the_input)
 

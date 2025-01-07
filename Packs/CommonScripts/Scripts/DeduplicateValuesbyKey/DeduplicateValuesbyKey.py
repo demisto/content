@@ -43,10 +43,9 @@ def main():  # pragma: no cover
 
     values = generate_unique_values_from_objects(object_list, key, keep_none)
 
-    return_results(CommandResults(
-        outputs_prefix="unique_values",
-        outputs_key_field="unique_values",
-        outputs={"unique_values": values}))
+    return_results(
+        CommandResults(outputs_prefix="unique_values", outputs_key_field="unique_values", outputs={"unique_values": values})
+    )
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

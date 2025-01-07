@@ -3,6 +3,7 @@ from GetDomainDNSDetails import make_query, get_domain_dns_details_command
 from typing import cast, List, TYPE_CHECKING
 
 import dns.rdatatype
+
 if TYPE_CHECKING:
     import dns.resolver
 
@@ -22,7 +23,7 @@ class MockAnswer:
         self.rrset = rrset
 
 
-class MockResolver():
+class MockResolver:
     def __init__(self):
         self.nameservers = []
 
@@ -42,13 +43,13 @@ def test_make_query(mocker):
     Then
         - CNAME of the domain is returned
     """
-    resolver = cast('dns.resolver.Resolver', MockResolver())
+    resolver = cast("dns.resolver.Resolver", MockResolver())
     answer = make_query(resolver, "example.com", "CNAME", False)
 
     assert len(answer) == 1
-    assert 'CNAME' in answer
-    assert len(answer['CNAME']) == 1
-    assert answer['CNAME'][0] == "fakeCNAME"
+    assert "CNAME" in answer
+    assert len(answer["CNAME"]) == 1
+    assert answer["CNAME"][0] == "fakeCNAME"
 
 
 def test_get_domain_dns_details_command(mocker):
@@ -61,21 +62,18 @@ def test_get_domain_dns_details_command(mocker):
         - resolution is performed
         - expected output is returned to context in DomainDNSDetails
     """
-    mocker.patch('dns.resolver.Resolver', side_effect=MockResolver)
-    args = {
-        'domain': 'developers.paloaltonetworks.com',
-        'server': '1.1.1.1'
-    }
+    mocker.patch("dns.resolver.Resolver", side_effect=MockResolver)
+    args = {"domain": "developers.paloaltonetworks.com", "server": "1.1.1.1"}
 
     result = get_domain_dns_details_command(args)
 
     assert result.outputs == {
-        'DomainDNSDetails': {
-            'domain': 'developers.paloaltonetworks.com',
-            'server': '1.1.1.1',
-            'A': ['fakeA'],
-            'AAAA': ['fakeAAAA'],
-            'CNAME': ['fakeCNAME'],
-            'NS': ['fakeNS']
+        "DomainDNSDetails": {
+            "domain": "developers.paloaltonetworks.com",
+            "server": "1.1.1.1",
+            "A": ["fakeA"],
+            "AAAA": ["fakeAAAA"],
+            "CNAME": ["fakeCNAME"],
+            "NS": ["fakeNS"],
         }
     }
