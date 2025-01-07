@@ -14,7 +14,7 @@ import urllib.parse
 from datetime import timezone
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Tuple, Self
+from typing import Tuple, Self  # pylint: disable = no-name-in-module
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
@@ -49,8 +49,7 @@ def to_str(
     """
     return val if isinstance(val, str) else json.dumps(val)
 
-
-class CacheType(enum.StrEnum):
+class CacheType(enum.StrEnum):  # pylint: disable=no-member
     NONE = 'none'
     DATASET = 'dataset'
     ENTRY = 'entry'
@@ -809,8 +808,8 @@ class EntryBuilder:
                 self,
                 template: dict[str, Any],
             ) -> None:
-                self.__records: Records | None = None
-                self.__fields: dict[str, Field] | None = None
+                self.__records: Records | None = None  # pylint:disable=invalid-name
+                self.__fields: dict[str, Field] | None = None  # pylint:disable=invalid-name
                 
                 group = template.get('group')
                 if group == 'records':
@@ -1015,8 +1014,8 @@ class EntryBuilder:
                     self,
                     y: dict[str, Any],
                 ) -> None:
-                    self.__records: Records | None = None
-                    self.__fields: dict[str, Field] | None = None
+                    self.__records: Records | None = None  # pylint:disable=invalid-name
+                    self.__fields: dict[str, Field] | None = None  # pylint:disable=invalid-name
 
                     group = y.get('group')
                     if group == 'records':
@@ -1272,7 +1271,7 @@ class EntryBuilder:
                 self.__title = template.get('title') or ''
                 assert isinstance(self.__title, str), f'title must be str or null - {type(self.__title)}'
 
-                self.__columns: list[Column] | None = None
+                self.__columns: list[Column] | None = None  # pylint:disable=invalid-name
                 if columns := template.get('columns'):
                     assert isinstance(columns, list), f'columns must be list or null - {type(columns)}'
                     self.__columns = [self.Column(c) for c in columns]
@@ -1793,7 +1792,7 @@ class Main:
             'retry_interval', DEFAULT_RETRY_INTERVAL
         ) or DEFAULT_RETRY_INTERVAL
         self.__polling_interval: int = self.__arg_to_int(
-            args.get('polling_interval'), DEFAULT_POLLING_INTERVAL
+            'polling_interval', DEFAULT_POLLING_INTERVAL
         ) or DEFAULT_POLLING_INTERVAL
         self.__xql_query_instance: str | None = (
             demisto.get(self.__template, 'query.command.using')
@@ -1815,9 +1814,10 @@ class Main:
         :return: The command results.
         """
         cache = Cache(self.__template_name)
-        cache_entry = None
         if self.__cache_type == CacheType.ENTRY:
             entry = cache_entry = cache.load_entry(self.__query_params.query_hash())
+        else:
+            entry = cache_entry = None
 
         if not cache_entry:
             entry = EntryBuilder(
