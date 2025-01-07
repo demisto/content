@@ -7,7 +7,7 @@ from pytest_mock import MockerFixture
 from requests_mock import Mocker as RequestsMock
 import dateparser
 
-from OnePasswordEventCollector import Client
+from OnePassword import Client
 
 
 BASE_URL = 'http://example.com'
@@ -29,7 +29,7 @@ def util_load_json(path: str):
 
 @pytest.fixture
 def authenticated_client() -> Client:
-    """Fixture to create a OnePasswordEventCollector.Client instance"""
+    """Fixture to create a OnePassword.Client instance"""
     return Client(base_url=BASE_URL, verify=False, proxy=False, headers=HEADERS)
 
 
@@ -57,7 +57,7 @@ def test_get_limit_param_for_event_type():
     Assert:
         - Ensure the 'limit' value of the specified event type is as expected.
     """
-    from OnePasswordEventCollector import get_limit_param_for_event_type
+    from OnePassword import get_limit_param_for_event_type
 
     expected_audit_events_limit = '500'
     expected_sign_in_attempts_limit = '4000'
@@ -84,7 +84,7 @@ def test_add_fields_event():
     Assert:
         - Ensure the '_time' and 'event_type' fields are added and correctly set.
     """
-    from OnePasswordEventCollector import add_fields_to_event, arg_to_datetime, DATE_FORMAT
+    from OnePassword import add_fields_to_event, arg_to_datetime, DATE_FORMAT
 
     event_timestamp = '2024-12-02T11:54:19.710457472Z'
     expected_event_time = arg_to_datetime(event_timestamp).strftime(DATE_FORMAT)
@@ -113,7 +113,7 @@ def test_create_get_events_request_body_invalid_inputs():
     Assert:
         - Ensure a ValueError is raised with the appropriate error message.
     """
-    from OnePasswordEventCollector import create_get_events_request_body
+    from OnePassword import create_get_events_request_body
 
     with pytest.raises(ValueError, match="Either a 'pagination_cursor' or a 'from_date' need to be specified."):
         create_get_events_request_body()
@@ -151,7 +151,7 @@ def test_create_get_events_request_body_valid_inputs(
     Assert:
         - Ensure the request body is as expected.
     """
-    from OnePasswordEventCollector import create_get_events_request_body
+    from OnePassword import create_get_events_request_body
 
     request_body = create_get_events_request_body(from_date=from_date, pagination_cursor=pagination_cursor)
 
@@ -161,7 +161,7 @@ def test_create_get_events_request_body_valid_inputs(
 def test_client_get_events(authenticated_client: Client, mocker: MockerFixture):
     """
     Given:
-        - A OnePasswordEventCollector.Client instance with valid inputs to the get_events method.
+        - A OnePassword.Client instance with valid inputs to the get_events method.
 
     When:
         - Calling Client.get_events.
@@ -197,7 +197,7 @@ def test_get_events_from_client(authenticated_client: Client, mocker: MockerFixt
         - Ensure Client.get_events is called twice (because first response['has_more'] is True).
         - Ensure the number of events does not exceed the specified maximum and the events are as expected.
     """
-    from OnePasswordEventCollector import get_events_from_client
+    from OnePassword import get_events_from_client
 
     event_type = 'audit events'
     from_date = datetime(2024, 12, 2, 11, 50)
@@ -224,9 +224,9 @@ def test_push_events(mocker: MockerFixture):
     Assert:
         - Ensure send_events_to_xsiam is called once with the correct inputs.
     """
-    from OnePasswordEventCollector import push_events, VENDOR as EXPECTED_VENDOR, PRODUCT as EXPECTED_PRODUCT
+    from OnePassword import push_events, VENDOR as EXPECTED_VENDOR, PRODUCT as EXPECTED_PRODUCT
 
-    send_events_to_xsiam = mocker.patch('OnePasswordEventCollector.send_events_to_xsiam')
+    send_events_to_xsiam = mocker.patch('OnePassword.send_events_to_xsiam')
 
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
     push_events(expected_events)
@@ -250,9 +250,9 @@ def test_set_next_run(mocker: MockerFixture):
     Assert:
         - Ensure demisto.setLastRun is called once with the correct inputs.
     """
-    from OnePasswordEventCollector import set_next_run
+    from OnePassword import set_next_run
 
-    demisto_set_last_run = mocker.patch('OnePasswordEventCollector.demisto.setLastRun')
+    demisto_set_last_run = mocker.patch('OnePassword.demisto.setLastRun')
 
     next_run = {'auditevents': {'from_date': '2024-12-02T11:55:21Z', 'ids': ['second (and last) event']}}
     set_next_run(next_run)
@@ -273,7 +273,7 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
         - Ensure correct inputs to get_events_from_client.
         - Ensure correct fetch_events outputs (last_run, events).
     """
-    from OnePasswordEventCollector import fetch_events
+    from OnePassword import fetch_events
 
     # Inputs
     event_type = 'audit events'
@@ -283,7 +283,7 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
     expected_type_next_run = {'from_date': '2024-12-02T11:55:20Z', 'ids': ['second (and last) event']}
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
-    get_events_from_client = mocker.patch('OnePasswordEventCollector.get_events_from_client', return_value=expected_events)
+    get_events_from_client = mocker.patch('OnePassword.get_events_from_client', return_value=expected_events)
     type_next_run, events = fetch_events(
         authenticated_client,
         event_type=event_type,
@@ -305,7 +305,7 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
 def test_test_module_command(authenticated_client: Client, requests_mock: RequestsMock):
     """
     Given:
-        - A list of 1Password event types and a OnePasswordEventCollector.Client instance.
+        - A list of 1Password event types and a OnePassword.Client instance.
 
     When:
         - Calling test_module_command (which calls Client.get_events).
@@ -313,7 +313,7 @@ def test_test_module_command(authenticated_client: Client, requests_mock: Reques
     Assert:
         - Ensure client errors are gracefully handled and the correct error message appears.
     """
-    from OnePasswordEventCollector import test_module_command, urljoin
+    from OnePassword import test_module_command, urljoin
 
     event_types = ['Sign in attempts']
 
@@ -338,12 +338,12 @@ def test_get_events_command(authenticated_client: Client, mocker: MockerFixture)
         - Ensure correct inputs to tableToMarkdown.
         - Ensure correct get_events_command outputs.
     """
-    from OnePasswordEventCollector import get_events_command, flattenTable
+    from OnePassword import get_events_command, flattenTable
 
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
-    mocker.patch('OnePasswordEventCollector.get_events_from_client', return_value=expected_events)
-    table_to_markdown = mocker.patch('OnePasswordEventCollector.tableToMarkdown')
+    mocker.patch('OnePassword.get_events_from_client', return_value=expected_events)
+    table_to_markdown = mocker.patch('OnePassword.tableToMarkdown')
     event_type = 'audit events'
     args = {'event_type': event_type, 'limit': '10', 'from_date': '2024-12-02T11:55:00Z'}
 

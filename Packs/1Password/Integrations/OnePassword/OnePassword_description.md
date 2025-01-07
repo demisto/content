@@ -1,4 +1,4 @@
-## 1Password Event Collector Help
+## 1Password
 
 ### How to get the configuration parameters
 
