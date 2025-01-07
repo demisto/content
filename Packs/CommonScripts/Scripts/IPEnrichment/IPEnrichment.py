@@ -168,7 +168,6 @@ class IPCommandRunner:
                     - A list of dictionaries, where each dictionary represents an endpoint and contains the raw output.
             """
         demisto.debug(f'run command {command.name} with args={args}')
-        print(f'run command {command.name} with args={args}')
 
         raw_outputs = run_execute_command(command, args)
         command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = get_command_results(command, raw_outputs, args, self.verbose)
@@ -402,7 +401,6 @@ def get_analytics_prevalence(ip_command_runner: IPCommandRunner, ips: str) -> di
 
 def get_indicator_tim_data(ip_command_runner: IPCommandRunner, ips: list[str]) -> tuple[dict[str, Any], CommandResults]:
     """Retrieve TIM data for IP indicators."""
-    print("TIM DATA")
     find_indicators_command = Command(
         name="findIndicators",
         output_keys=["Contents"],
@@ -412,8 +410,47 @@ def get_indicator_tim_data(ip_command_runner: IPCommandRunner, ips: list[str]) -
     query = f"(type:IPv6 or type:IPv6CIDR or type:IP) and ({ips_value_query})"
     command_context_outputs, command_contents, command_human_readable_outputs, command_error_outputs = ip_command_runner.run_command(find_indicators_command, {
         "query": query})  #RETURNS A LIST OF DICTIONARIES PER INDICATOR, TODO: IF MISSING? IF EMPTY EMPTY LIST IS RETUNRED. WHAT TO DO IF MULTIPLE RESULTS FOR ONE IP?
-    raw_content = command_contents[0] if isinstance(command_contents, list) else {}
+    demisto.debug(f"IPEnrichment: get_indicator_tim_data {command_contents=}")
+    # raw_content = command_contents[0] if isinstance(command_contents, list) else {}
+    for content in command_contents:
+        scores = content.get("insightCache", {}).get("scores", {})
+        ips_context = []
+        dbot_scores_context = []
+        integration_ips_context = []
+        for score_source, score_value in scores.items():
+            context = score_value.get("context", {})
+            for key, value in context.items():
+                if key == "IP(val.Address && val.Address == obj.Address)":
+                    enrich_data_with_source(value[0], score_source)
+                    ips_context.append(value)
+                    continue
+                if key == "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":
+                    enrich_data_with_source(value[0], score_source)
+                    dbot_scores_context.append(value)
+                    continue
+                else:
+                    #parse the integration name from this format: 'Whois.IP(val.query && val.query == obj.query)'
+                    integration_prefix = key.split(".")[0]
+                    enrich_data_with_source(value, integration_prefix)
+                    integration_ips_context.append(value)
+
+        # # merge the context of the same type
+        # ips_context = merge_ips(ips_context)
+
+
+
+
+
+
+
+
+
+
     enriched_data = enrich_data_with_source(raw_content, "TIM")
+
+    demisto.debug(f"IPEnrichment: get_indicator_tim_data {enriched_data=}")
+
+    # tim_indicators = demisto.searchIndicators(query)
 
 
 
