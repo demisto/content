@@ -454,7 +454,7 @@ class Cache:
                     ).decode()
                 )
             except Exception as e:
-                demisto.debug('Failed to load cache data [{cache_node}] - {e}')
+                demisto.debug(f'Failed to load cache data [{cache_node}] - {e}')
                 return None
         else:
             return None

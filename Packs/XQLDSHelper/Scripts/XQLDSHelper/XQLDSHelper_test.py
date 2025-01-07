@@ -272,7 +272,10 @@ class MainTester:
                     )
                 )
 
-            var = r'''>(()=>{letitems=[];for(leti=0;i<val.length;++i){items.push(`-${i+1}:${val[i].text}`);}returnitems.join("\n");})()'''
+            var = (
+                r'''>(()=>{letitems=[];for(leti=0;i<val.length;++i)'''
+                r'''{items.push(`-${i+1}:${val[i].text}`);}returnitems.join("\n");})()'''
+            )
             if var == ''.join(func.strip().split()):
                 return '\n'.join(
                     map(
@@ -351,9 +354,9 @@ class MainTester:
     def main(
         self,
     ) -> None:
-        if errors := self.__config.get('errors'):
+        if self.__config.get('errors'):
             # Test for error occurrence
-            with pytest.raises(ExpectedException) as e:
+            with pytest.raises(ExpectedException):
                 XQLDSHelper.main()
         else:
             # Test for success
