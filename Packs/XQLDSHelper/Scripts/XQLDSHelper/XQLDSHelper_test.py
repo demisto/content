@@ -4,7 +4,6 @@ import pytest
 import re
 import sys
 import json
-import gzip
 import tarfile
 import datetime
 import fnmatch
@@ -19,7 +18,7 @@ from types import TracebackType
 from pytest_mock import MockerFixture
 
 
-MainTester = TypeVar('MainTester')
+MainTesterSelf = TypeVar('MainTesterSelf', bound='MainTester')
 
 
 def to_list(
@@ -114,7 +113,7 @@ class MainTester:
 
     def __enter__(
         self,
-    ) -> MainTester:
+    ) -> MainTesterSelf:
         if self.__frozen_now:
             self.__freezer_now = freezegun.freeze_time(self.__frozen_now)
             self.__freezer_now.start()

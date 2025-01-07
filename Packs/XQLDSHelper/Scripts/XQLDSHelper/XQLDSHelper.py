@@ -22,7 +22,7 @@ DEFAULT_RETRY_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_MAX = 10
 
 
-ContextData = TypeVar('ContextData')
+ContextDataSelf = TypeVar('ContextDataSelf', bound='ContextData')
 
 
 def to_float(
@@ -119,7 +119,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> ContextData:  # typing.Self
+    ) -> ContextDataSelf:  # typing.Self
         """ Create a ContextData with the new value
 
         :param value: The new value.
