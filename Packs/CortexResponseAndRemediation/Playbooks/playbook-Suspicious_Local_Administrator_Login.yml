@@ -437,9 +437,9 @@ tasks:
       - "7"
     scriptarguments:
       command_type:
-        simple: powershell
+        simple: native
       commands:
-        simple: Disable-LocalUser -Name "${Core.OriginalAlert.raw_abioc.event.login_data.dst_user}"
+        simple: powershell -Command Disable-LocalUser -Name "${Core.OriginalAlert.raw_abioc.event.login_data.dst_user}"
       endpoint_ids:
         complex:
           root: alert
