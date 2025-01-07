@@ -63,7 +63,7 @@ from requests.exceptions import ConnectionError
 
 from CommonServerPython import *
 
-
+#test
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
 # overriding this function to remove minor version test and remove error throw.
 # opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
