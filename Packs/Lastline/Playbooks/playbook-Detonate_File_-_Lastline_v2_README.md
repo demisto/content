@@ -75,5 +75,5 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_File_Lastline_v2](../doc_files/Detonate_File_Lastline_v2.png)
+![Detonate_File_Lastline_v2](../doc_files/Detonate_File_-_Lastline_v2.png)
 
