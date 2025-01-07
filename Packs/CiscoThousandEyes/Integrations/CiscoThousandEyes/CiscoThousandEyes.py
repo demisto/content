@@ -1,4 +1,3 @@
-from typing import Literal
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
@@ -17,9 +16,11 @@ DEFAULT_MAX_FETCH_ALERT = 2500
 DEFAULT_MAX_FETCH_AUDIT_EVENTS = 5000
 PAGE_SIZE = 500
 DEFAULT_LIMIT = 10
-ENDPOINTS = {"alerts": "/v7/alerts", "audit": "/v7/audit-user-events"}
-DATE_KEYS = {"alerts": "startDate", "audit": "date"}
-RESPONSE_MAPPING_KEY = {"alerts": "alerts", "audit": "auditEvents"}
+AUDIT = "audit"
+ALERTS = "alerts"
+ENDPOINTS = {ALERTS: "/v7/alerts", AUDIT: "/v7/audit-user-events"}
+DATE_KEYS = {ALERTS: "startDate", AUDIT: "date"}
+RESPONSE_MAPPING_KEY = {ALERTS: "alerts", AUDIT: "auditEvents"}
 
 """ CLIENT CLASS """
 
@@ -31,18 +32,18 @@ class Client(BaseClient):
 
 def get_events(
     client: Client,
-    fetch_type: Literal["alerts", "audit"],
+    fetch_type: str,
     fetch_limit: int,
     last_run: dict = {},
     start_date: str = "",
     end_date: str = ""
 ) -> tuple:
     """
-    Fetches events of the specified type ("alerts" or "audit") with support for pagination and deduplication.
+    Fetches events of the specified type (ALERTS or AUDIT) with support for pagination and deduplication.
 
     Args:
         client (Client): API client for making HTTP requests.
-        fetch_type (Literal["alerts", "audit"]): Type of events to fetch.
+        fetch_type (str): Type of events to fetch.
         fetch_limit (int): Maximum number of events to fetch.
         last_run (dict, optional): Metadata from the last fetch, including offset, next page, and last fetch date.
         start_date (str, optional): Start date for fetching events.
@@ -84,18 +85,18 @@ def get_events(
         deduplicate_events(
             current_batch_events, params.get("startDate"), DATE_KEYS.get(fetch_type, "")
         )
-        demisto.debug(f"got {len(current_batch_events)} after deduplication")
         fetched_events.extend(current_batch_events[pagination_offset:])
-        pagination_offset = 0
         if len(fetched_events) >= fetch_limit:
             demisto.debug(f"We reached the fetch limit . limit is: {fetch_limit}. received: {len(fetched_events)} events.")
             fetched_events = fetched_events[:fetch_limit]
             return fetched_events, prepare_next_run(fetch_type=fetch_type, fetch_limit=fetch_limit,
-                                                    current_batch_events=current_batch_events, fetched_events=fetched_events,
-                                                    request_url=request_url, last_run=last_run)
-    # Because the events are retrieved by date in descending order,
-    # we will take the date from the current fetch only if it is a new fetch and not a paged one.
-    # Otherwise, we will concatenate the last_fetch from the previous bath.
+                                                    last_batch_events=current_batch_events, fetched_events=fetched_events,
+                                                    request_url=request_url, previous_offset=last_run.get("offset", 0),
+                                                    last_run=last_run)
+        pagination_offset = 0
+    # Events are fetched in descending order by date.
+    # For new fetches (not paginated), use the latest event's date as the "last_fetch".
+    # For paginated fetches, retain the "last_fetch" from the previous batch.
     last_fetch = (
         last_run.get("last_fetch")
         if last_run.get("next_page")
@@ -111,18 +112,19 @@ def get_events(
 def prepare_next_run(
     fetch_type: str,
     fetch_limit: int,
-    current_batch_events: list[dict],
+    last_batch_events: list[dict],
     fetched_events: list[dict],
     request_url: str,
+    previous_offset: int,
     last_run: dict
 ) -> dict:
     """
     Calculates metadata for the next fetch, including the last fetch timestamp, next page URL, and pagination offset.
 
     Args:
-        fetch_type (str): Type of events ("alerts" or "audit").
+        fetch_type (str): Type of events (ALERTS or AUDIT).
         fetch_limit (int): Maximum number of events to fetch.
-        current_batch_events (list[dict]): Events from the current batch.
+        last_batch_events (list[dict]): Events from the last batch.
         fetched_events (list[dict]): All fetched events so far.
         request_url (str): URL of the current request.
         last_run (dict): Metadata from the previous fetch.
@@ -131,22 +133,14 @@ def prepare_next_run(
         dict: Contains "last_fetch" (str), "next_page" (str), and "offset" (int).
 
     Notes:
-        Pagination logic varies by fetch type ("alerts" vs "audit").
+        Pagination logic varies by fetch type (ALERTS vs AUDIT).
     """
-    previous_offset = last_run.get("offset", 0)
     previous_page_url = last_run.get("next_page", "")
     previous_last_date = last_run.get("last_fetch", "")
 
-    # For alerts we know the page_limit at the endpoint(500)
-    # therefore we calculate the remainder from the fetch_limit % the page_limit
-    # Audit there is no defined limit so we calculate the fetchLimit % the last bath plus the previous offset if necessary
-    pagination_offset = (
-        fetch_limit % len(current_batch_events)
-        if fetch_type == "audit"
-        else len(fetched_events) % PAGE_SIZE
-    )
+    pagination_offset = fetch_limit % len(last_batch_events)
     next_page_url = (
-        request_url if fetch_type == "audit" or pagination_offset else previous_page_url
+        request_url if fetch_type == AUDIT or pagination_offset else previous_page_url
     )
     is_paginated_fetch = is_fetch_paginated(
         fetch_type, next_page_url, request_url, previous_page_url
@@ -184,7 +178,7 @@ def is_fetch_paginated(
     Returns:
         bool: True if the fetch is paginated, False otherwise.
     """
-    if fetch_type == "alerts":
+    if fetch_type == ALERTS:
         return next_page_url != request_url
     return request_url != previous_page_url
 
@@ -204,9 +198,9 @@ def deduplicate_events(events: list, start_date: Any, date_key: str) -> None:
     Returns:
         None: The function modifies the `events` list in place.
     """
-    demisto.info(f"got {len(events)} before deduplication")
     if not start_date:
         return
+    demisto.debug(f"got {len(events)} before deduplication")
     start_date = arg_to_datetime(start_date)
     events[:] = [
         event
@@ -215,6 +209,7 @@ def deduplicate_events(events: list, start_date: Any, date_key: str) -> None:
         and start_date
         and event_date > start_date
     ]
+    demisto.debug(f"got {len(events)} after deduplication")
 
 
 def calculate_fetch_dates(
@@ -353,19 +348,19 @@ def fetch_events(
     last_run = demisto.getLastRun()
     is_new_fetch = "nextTrigger" not in last_run
 
-    if is_new_fetch or last_run.get("alerts", {}).get("next_page"):
+    if is_new_fetch or last_run.get(ALERTS, {}).get("next_page"):
         alert_events, alert_next_run = get_events(
-            client, "alerts", start_date=start_date, end_date=end_date, fetch_limit=max_fetch_alerts, last_run=last_run
+            client, ALERTS, start_date=start_date, end_date=end_date, fetch_limit=max_fetch_alerts, last_run=last_run
         )
-    if is_new_fetch or last_run.get("audit", {}).get("next_page"):
+    if is_new_fetch or last_run.get(AUDIT, {}).get("next_page"):
         audit_events, audit_next_run = get_events(
-            client, "audit", start_date=start_date, end_date=end_date, fetch_limit=max_fetch_audits, last_run=last_run
+            client, AUDIT, start_date=start_date, end_date=end_date, fetch_limit=max_fetch_audits, last_run=last_run
         )
 
     events = alert_events + audit_events
     add_type_to_events(events)
 
-    next_run: Dict[str, Any] = {"alerts": alert_next_run, "audit": audit_next_run}
+    next_run: Dict[str, Any] = {ALERTS: alert_next_run, AUDIT: audit_next_run}
     if any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
         next_run["nextTrigger"] = "0"
     demisto.debug(f"Setting next run {next_run}.")
