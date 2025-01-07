@@ -309,5 +309,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "Designed to display data about device control violations queried from Cortex XDR based on specified hosts, IP addresses, or XDR endpoint IDs."
+    "description": "Designed to display data about device control violations queried from Cortex XDR based on specified hosts, IP addresses, or XDR endpoint IDs.",
+    "marketplaces": [
+        "xsoar",
+        "xpanse"
+    ]
 }
