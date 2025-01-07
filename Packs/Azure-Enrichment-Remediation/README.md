@@ -20,21 +20,21 @@ This content pack includes the following playbook:
 
 #### Azure - Enrichment
 
-![Azure - Enrichment](https://raw.githubusercontent.com/demisto/content/0636a595509367554d21c0b932b2da2347b121b5/Packs/Azure-Enrichment-Remediation/doc_files/Azure_-_Enrichment.png)
+![Azure - Enrichment](doc_files/Azure_-_Enrichment.png)
 
 #### Azure - Network Security Group Remediation
 
-![Azure - Network Security Group Remediation](https://github.com/demisto/content/raw/master/Packs/Azure-Enrichment-Remediation/doc_files/Azure_-_Network_Security_Group_Remediation.png)
+![Azure - Network Security Group Remediation](doc_files/Azure_-_Network_Security_Group_Remediation.png)
 
 #### Azure - User Investigation
 
-![Azure - User Investigation](https://github.com/demisto/content/raw/master/Packs/Azure-Enrichment-Remediation/doc_files/Azure_-_User_Investigation.png)
+![Azure - User Investigation](doc_files/Azure_-_User_Investigation.png)
 
 #### Cloud Credentials Rotation - Azure
 
-![Cloud Credentials Rotation - Azure](https://github.com/demisto/content/raw/master/Packs/Azure-Enrichment-Remediation/doc_files/Cloud_Credentials_Rotation_-_Azure.png)
+![Cloud Credentials Rotation - Azure](doc_files/Cloud_Credentials_Rotation_-_Azure.png)
 
 
 #### Cloud Response - Azure
 
-![Cloud Response - Azure](https://github.com/demisto/content/raw/master/Packs/Azure-Enrichment-Remediation/doc_files/Cloud_Response_-_Azure.png)
+![Cloud Response - Azure](doc_files/Cloud_Response_-_Azure.png)

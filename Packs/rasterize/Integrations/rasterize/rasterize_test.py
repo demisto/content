@@ -218,7 +218,7 @@ TEST_DATA = [
 def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
     res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
-    assert type(res) == list
+    assert type(res) is list
     assert len(res) == expected_length
 
 
@@ -780,7 +780,7 @@ def test_rasterize_mailto(capfd, mocker):
 
     assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.' \
                                                               '\nURL: [\'mailto:some.person@gmail.com\']'
-    assert excinfo.type == SystemExit
+    assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
 
 
