@@ -85,7 +85,7 @@ script:
       - 'false'
     - description: The start date from which to filter events.
       name: start_date
-    - description: Event types to fetch. You can choose more than one, separated by commas, possible values are `Account Audit Logs`, `User Audit Logs`, and `Access Authentication Logs`.
+    - description: A comma-separated list of event types to fetch.
       name: event_types_to_fetch
       defaultValue: Account Audit Logs,User Audit Logs
       auto: PREDEFINED
