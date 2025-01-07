@@ -4,18 +4,18 @@ This integration was integrated and tested with version 1 of Cloudflare Zero Tru
 ## Configure Cloudflare Zero Trust in Cortex
 
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| Maximum number of account audit logs per fetch | False |
-| Maximum number of user audit logs per fetch | False |
-| Maximum number of access authentication logs per fetch | False |
-| API email | True |
-| Global API key | True |
-| Account ID | True |
-| Event types to fetch | True |
+| **Parameter** | **Required** | **Additional Info** |
+| --- | --- | --- |
+| Server URL | True | The base URL for the Cloudflare API (e.g., https://api.cloudflare.com). |
+| Trust any certificate (not secure) | False | |
+| Use system proxy settings | False | |
+| Maximum number of account audit logs per fetch | False | |
+| Maximum number of user audit logs per fetch | False | |
+| Maximum number of access authentication logs per fetch | False | |
+| API email | True | Obtain from your [Cloudflare Profile](https://dash.cloudflare.com/profile). |
+| Global API key | True | Obtain from your [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens). |
+| Account ID | True | Find it in the Cloudflare dashboard under [Account Overview](https://dash.cloudflare.com/). |
+| Event types to fetch | True | Specify the types of events to fetch. The options are: Account Audit Logs, User Audit Logs, and Access Authentication Logs. |
 
 ## Commands
 

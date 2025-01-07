@@ -79,12 +79,11 @@ class Client(BaseClient):
             method="GET",
             url_suffix=endpoint_urls[event_type],
             headers=self.headers,
-            params=params,
-            retries=3
+            params=params
         )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, event_types: list) -> str:
     """
     Tests API connectivity and authentication.
 
@@ -104,7 +103,7 @@ def test_module(client: Client) -> str:
             max_fetch_account_audit=1,
             max_fetch_user_audit=1,
             max_fetch_authentication=1,
-            event_types_to_fetch=[ACCOUNT_AUDIT_TYPE, USER_AUDIT_TYPE]
+            event_types_to_fetch=event_types
         )
 
     except Exception as e:
@@ -283,7 +282,6 @@ def calculate_fetch_dates(next_run: dict[str, Any], start_date: str = "") -> str
         str: The calculated start date in '%Y-%m-%dT%H:%M:%SZ' format.
     """
     now_utc_time = get_current_time()
-    # start_date = next_run.get('last_fetch') or "2024-12-01T10:08:58Z"
     start_date = start_date or next_run.get('last_fetch') or (
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     return start_date
@@ -301,14 +299,14 @@ def prepare_next_run(events: list[dict[str, Any]]) -> tuple[str, list[str]]:
             - str: The latest timestamp (up to seconds) of the fetched events.
             - list[str]: A list of IDs for the events with the latest timestamp.
     """
-    latest_time = events[-1].get('when') or events[-1].get('created_at', "")
+    latest_time = events[-1].get('when') or events[-1].get('created_at') or ""
     latest_time_obj = datetime.fromisoformat(latest_time.rstrip("Z"))
     latest_time_truncated = latest_time_obj.replace(microsecond=0).isoformat() + "Z"
 
     latest_ids = [
         event['id']
         for event in events
-        if (datetime.fromisoformat((event.get('when') or event.get('created_at', "")).rstrip("Z"))
+        if (datetime.fromisoformat((event.get('when') or event.get('created_at') or "").rstrip("Z"))
             .replace(microsecond=0).isoformat() + "Z") == latest_time_truncated
     ]
 
@@ -380,21 +378,23 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-    max_fetch_account_audit = arg_to_number(params.get('max_fetch_account_audit_logs') or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT)
-    max_fetch_user_audit = arg_to_number(params.get('max_fetch_user_audit_logs') or DEFAULT_MAX_FETCH_USER_AUDIT)
-    max_fetch_authentication = arg_to_number(params.get('max_fetch_access_authentication_logs')
-                                             or DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION)
-    event_types_to_fetch = argToList(params.get('event_types_to_fetch'))
 
     demisto.debug(f'Command being called is {command}')
+
     credentials = params.get("credentials", {})
+    max_fetch_account_audit = arg_to_number(params.get('max_fetch_account_audit_logs')) or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT
+    max_fetch_user_audit = arg_to_number(params.get('max_fetch_user_audit_logs')) or DEFAULT_MAX_FETCH_USER_AUDIT
+    max_fetch_authentication = (arg_to_number(params.get("max_fetch_access_authentication_logs"))
+                                or DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION)
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch"))
+
     try:
         headers = {
             'X-Auth-Email': credentials.get('identifier'),
             'X-Auth-Key': credentials.get('password'),
         }
         client = Client(
-            base_url=params.get('url', 'https://api.cloudflare.com/'),
+            base_url=params.get('url', ""),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             account_id=params.get('account_id', ""),
@@ -402,7 +402,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
-            result = test_module(client)
+            result = test_module(client=client, event_types=event_types_to_fetch)
             return_results(result)
 
         elif command == 'cloudflare-zero-trust-get-events':
