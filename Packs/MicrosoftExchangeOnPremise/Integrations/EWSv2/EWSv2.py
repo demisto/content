@@ -1546,9 +1546,10 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
             try:
                 if attachment.content:
                     entries.append(get_entry_for_file_attachment(item_id, attachment))
-            except TypeError as e:
-                if str(e) != "must be string or buffer, not None":
+            except (TypeError, ErrorCannotOpenFileAttachment) as e:
+                if str(e) not in ("must be string or buffer, not None", "The attachment could not be opened."):
                     raise
+                demisto.debug(f"Skipping attachment '{attachment.name}', Error: {e}")
         else:
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
             if attachment.item.mime_content:
