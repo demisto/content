@@ -27,11 +27,6 @@ Every call to the 1Password Events API must be authorized with a bearer token. T
    * Sign-in attempts (`signinattempts` feature)
 5. Click **Issue Token** to generate a new bearer token.
 6. Save the token in a secure location and use it in configuring this integration instance.
-7. The token can be verified by performing a `GET` request to the 1Password Events API introspection endpoint:
-
-```shell
-curl --location '{server-url}/api/v2/auth/introspect' --header 'Authorization: Bearer {api-token}'
-```
 
 #### Maximum Number of Events per Fetch
 

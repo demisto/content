@@ -23,7 +23,7 @@
         },
         "actor_type": "user",
         "_time": "2024-12-02T11:54:19Z",
-        "event_type": "audit events"
+        "SOURCE_LOG_TYPE": "AUDIT EVENTS"
     },
     {
         "uuid": "second (and last) event",
@@ -49,6 +49,6 @@
         },
         "actor_type": "user",
         "_time": "2024-12-02T11:55:20Z",
-        "event_type": "audit events"
+        "SOURCE_LOG_TYPE": "AUDIT EVENTS"
     }
 ]

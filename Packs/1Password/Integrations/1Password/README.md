@@ -1,10 +1,10 @@
-# 1Password Event Collector
+# 1Password
 
 Fetch events about actions performed by 1Password users within a specific account, access and modifications to items in shared vaults, and user sign-in attempts.
 
 This integration was integrated and tested with V2 endpoints of the 1Password Events API.
 
-## Configure 1Password Event Collector in Cortex
+## Configure 1Password in Cortex
 
 The integration can be configured to fetch three types of events from 1Password:
 
@@ -22,11 +22,6 @@ Every call to the 1Password Events API must be authorized with a bearer token. T
 4. Ensure the token has access to the event types listed above.
 5. Click **Issue Token** to generate a new bearer token.
 6. Save the token in a secure location and use it in configuring this integration instance.
-7. The token can be verified by performing a `GET` request to the 1Password Events API introspection endpoint:
-
-```shell
-curl --location '{server-url}/api/v2/auth/introspect' --header 'Authorization: Bearer {api-token}'
-```
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

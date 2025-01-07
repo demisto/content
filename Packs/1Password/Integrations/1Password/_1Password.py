@@ -113,7 +113,7 @@ def create_get_events_request_body(
 
 
 def add_fields_to_event(event: dict[str, Any], event_type: str):
-    """Sets the '_time' and 'event_type' fields to an event.
+    """Sets the '_time' and 'SOURCE_LOG_TYPE' fields to an event.
 
     Args:
         event (dict): Event dictionary with the new fields.
@@ -121,7 +121,7 @@ def add_fields_to_event(event: dict[str, Any], event_type: str):
     """
     event_time = arg_to_datetime(event['timestamp'], required=True)
     event['_time'] = event_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
-    event['event_type'] = event_type
+    event['SOURCE_LOG_TYPE'] = event_type.upper()
 
 
 def get_events_from_client(
