@@ -1,11 +1,9 @@
 """Unit test cases."""
-import io
 import json
 
 import pytest
 
 from CofenseIntelligenceV2 import *
-from typing import Dict
 import base64
 
 mock_params = {'url_threshold': 'Major', 'file_threshold': 'Major', 'email_threshold': 'Major', 'ip_threshold': 'Major',
@@ -16,7 +14,7 @@ mock_base_url = 'mock_base_url'
 mock_username = 'mock_username'
 mock_password = 'mock_password'
 
-headers: Dict = {
+headers: dict = {
     "Authorization": f"Basic {base64.b64encode(':'.join([mock_username, mock_password]).encode()).decode().strip()}"
 }
 DOMAIN_RELATIONSHIP = [
@@ -104,7 +102,7 @@ client = Client(
 
 def util_load_json(path):
     """Return json data from given file path."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -213,7 +211,7 @@ def test_search_url_command(mocker):
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert URL_RELATIONSHIP == (response[0].to_context())['Relationships']
+    assert (response[0].to_context())['Relationships'] == URL_RELATIONSHIP
 
 
 def test_check_email_command(mocker):
@@ -235,7 +233,7 @@ def test_check_email_command(mocker):
     response = check_email_command(client, mock_args, mock_params)
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_readable_outputs == response[0].readable_output
-    assert EMAIL_RELATIONSHIP == (response[0].to_context())['Relationships']
+    assert (response[0].to_context())['Relationships'] == EMAIL_RELATIONSHIP
 
 
 def test_check_ip_command(mocker):
@@ -259,7 +257,7 @@ def test_check_ip_command(mocker):
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert IP_RELATIONSHIP == (response[0].to_context())['Relationships']
+    assert (response[0].to_context())['Relationships'] == IP_RELATIONSHIP
 
 
 def test_check_file_command_with_md5_hash(mocker):
@@ -283,7 +281,7 @@ def test_check_file_command_with_md5_hash(mocker):
     mock_readable_outputs = test_data.get('mock_readable_md5')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert FILE_RELATIONSHIP_MD5 == (response[0].to_context())['Relationships']
+    assert (response[0].to_context())['Relationships'] == FILE_RELATIONSHIP_MD5
     assert response[0].indicator.md5 == mock_args['file']
     assert response[0].indicator.sha256 != mock_args['file']
 
@@ -309,7 +307,7 @@ def test_check_file_command_with_sha256_hash(mocker):
     mock_readable_outputs = test_data.get('mock_readable_sha256')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert FILE_RELATIONSHIP_SHA256 == (response[0].to_context())['Relationships']
+    assert (response[0].to_context())['Relationships'] == FILE_RELATIONSHIP_SHA256
     assert response[0].indicator.sha256 == mock_args['file']
     assert response[0].indicator.md5 != mock_args['file']
 
@@ -335,7 +333,7 @@ def test_check_domain_command(mocker):
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response[0].outputs)
     assert response[0].indicator.domain == "domain"
-    assert DOMAIN_RELATIONSHIP == (response[0].to_context())['Relationships']
+    assert (response[0].to_context())['Relationships'] == DOMAIN_RELATIONSHIP
     assert mock_readable_outputs == response[0].readable_output
 
 
