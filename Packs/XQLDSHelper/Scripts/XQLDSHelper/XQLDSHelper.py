@@ -14,7 +14,7 @@ import urllib.parse
 from datetime import timezone
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Tuple, Self  # pylint: disable = no-name-in-module
+from typing import Tuple, Self  # pylint: disable=no-name-in-module
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
@@ -311,7 +311,7 @@ class SortableValue(object):
             ):
                 return obj1 < obj2  # type: ignore[operator]
             elif obj1 is None or obj2 is None:
-                return bool(obj2 is None) < bool(obj1 is None)
+                return (obj2 is None) < (obj1 is None)
             else:
                 def __get_order(
                     v: Any,
@@ -809,8 +809,8 @@ class EntryBuilder:
                 self,
                 template: dict[str, Any],
             ) -> None:
-                self.__records: Records | None = None  # pylint:disable=invalid-name
-                self.__fields: dict[str, Field] | None = None  # pylint:disable=invalid-name
+                self.__records: Records | None = None  # pylint: disable=undefined-variable
+                self.__fields: dict[str, Field] | None = None  # pylint: disable=undefined-variable
                 
                 group = template.get('group')
                 if group == 'records':
@@ -1015,8 +1015,8 @@ class EntryBuilder:
                     self,
                     y: dict[str, Any],
                 ) -> None:
-                    self.__records: Records | None = None  # pylint:disable=invalid-name
-                    self.__fields: dict[str, Field] | None = None  # pylint:disable=invalid-name
+                    self.__records: Records | None = None  # pylint: disable=undefined-variable
+                    self.__fields: dict[str, Field] | None = None  # pylint: disable=undefined-variable
 
                     group = y.get('group')
                     if group == 'records':
@@ -1272,7 +1272,7 @@ class EntryBuilder:
                 self.__title = template.get('title') or ''
                 assert isinstance(self.__title, str), f'title must be str or null - {type(self.__title)}'
 
-                self.__columns: list[Column] | None = None  # pylint:disable=invalid-name
+                self.__columns: list[Column] | None = None  # pylint: disable=undefined-variable
                 if columns := template.get('columns'):
                     assert isinstance(columns, list), f'columns must be list or null - {type(columns)}'
                     self.__columns = [self.Column(c) for c in columns]
