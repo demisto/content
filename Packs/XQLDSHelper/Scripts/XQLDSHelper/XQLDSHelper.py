@@ -13,7 +13,7 @@ import traceback
 import urllib.parse
 from datetime import timezone
 from collections import defaultdict
-from collections.abc import Iterator, Iterable
+from collections.abc import Iterable
 from typing import Tuple, Self
 
 
@@ -111,7 +111,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> Self:  # noqa
+    ) -> Self:  # type: ignore[valid-type]
         """ Create a ContextData with the new value
 
         :param value: The new value.
@@ -309,7 +309,7 @@ class SortableValue(object):
                 or (isinstance(obj1, bool) and isinstance(obj2, bool))
                 or (isinstance(obj1, str) and isinstance(obj2, str))
             ):
-                return obj1 < obj2  # noqa
+                return obj1 < obj2  # type: ignore[operator]
             elif obj1 is None or obj2 is None:
                 return bool(obj2 is None) < bool(obj1 is None)
             else:
@@ -638,7 +638,7 @@ class EntryBuilder:
                 key=lambda v: SortableValue(v.get(sort_by)),
                 reverse=not asc,
             ),
-            key=lambda v: v.get(group_by)  # noqa
+            key=lambda v: v.get(group_by)  # type: ignore[arg-type, return-value]
         )
 
     @staticmethod
@@ -672,7 +672,7 @@ class EntryBuilder:
         """
         color_order: list[str] = []
         if isinstance(colors, str):
-            color_order = [color_order] * len(names)
+            color_order = [colors] * len(names)
         elif isinstance(colors, list):
             color_order = colors
 
@@ -730,10 +730,10 @@ class EntryBuilder:
                     records: dict[str, Any],
                 ) -> None:
                     self.__name_field = records.get('name-field')
-                    assert isinstance(self.__name_field, str), f'name-field must be dict - {type(self.__name_field)}'
+                    assert isinstance(self.__name_field, str), f'name-field must be str - {type(self.__name_field)}'
 
                     self.__data_field = records.get('data-field')
-                    assert isinstance(self.__data_field, str), f'data-field must be dict - {type(self.__data_field)}'
+                    assert isinstance(self.__data_field, str), f'data-field must be str - {type(self.__data_field)}'
 
                     colors = records.get('colors')
                     if isinstance(colors, list):
@@ -756,19 +756,19 @@ class EntryBuilder:
                 def name_field(
                     self,
                 ) -> str:
-                    return self.__name_field  # noqa
+                    return self.__name_field  # type: ignore[return-value]
 
                 @property
                 def data_field(
                     self,
                 ) -> str:
-                    return self.__data_field  # noqa
+                    return self.__data_field  # type: ignore[return-value]
 
                 @property
                 def colors(
                     self,
                 ) -> dict[str, str] | list[str] | str:
-                    return self.__colors  # noqa
+                    return self.__colors  # type: ignore[return-value]
 
                 @property
                 def sort(
@@ -949,10 +949,10 @@ class EntryBuilder:
                         records: dict[str, Any],
                     ) -> None:
                         self.__name_field = records.get('name-field')
-                        assert isinstance(self.__name_field, str), f'name-field must be dict - {type(self.__name_field)}'
+                        assert isinstance(self.__name_field, str), f'name-field must be str - {type(self.__name_field)}'
 
                         self.__data_field = records.get('data-field')
-                        assert isinstance(self.__data_field, str), f'data-field must be dict - {type(self.__data_field)}'
+                        assert isinstance(self.__data_field, str), f'data-field must be str - {type(self.__data_field)}'
 
                         colors = records.get('colors')
                         if isinstance(colors, list):
