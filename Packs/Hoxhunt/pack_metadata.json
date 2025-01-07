@@ -2,7 +2,7 @@
     "name": "Hoxhunt",
     "description": "Integration with Hoxhunt to manage Hoxhunt incidents",
     "support": "partner",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Hoxhunt",
     "url": "https://hoxhunt.com",
     "email": "support@hoxhunt.com",
