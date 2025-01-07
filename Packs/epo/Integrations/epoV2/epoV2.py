@@ -25,7 +25,7 @@ EPO_SYSTEM_ATTRIBUTE_MAP = {
     'Processors': 'EPOComputerProperties.NumOfCPU',
     'Memory': 'EPOComputerProperties.TotalPhysicalMemory',
 }
-NEW_LINE = '\n'
+
 ''' CLIENT CLASS '''
 
 
@@ -305,6 +305,8 @@ class Client(BaseClient):
                                       resp_type='text',
                                       timeout=self.timeout)
 
+        # response = response.split('"')[1] if response.startswith('"') else response
+        # response = response.replace(r'\n', '\n')
         return self._parse_response(response)
 
     def apply_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
@@ -740,11 +742,11 @@ class Client(BaseClient):
         except Exception:
             # for thoroughness, in case there's no colon in the output or something else
             # Or there was an error parsing the returned result from the server
-            res = {'status': 'Error', 'code': code, 'result': 'Unable to parse the server\'s response'}
-            err_msg = 'Error in API call [{}] - {}'.format(demisto.command, res['result'])
+            res = {'status': 'Error', 'code': code, 'result': r'Unable to parse the server\'s response'}
+            err_msg = f'Error in API call [{demisto.command}] - {res["result"]}'
             demisto.error(err_msg)
-            raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: "
-                                   f"{res['result']}")
+            raise DemistoException(f'Error occurred. Status: ({res["status"]}) Code: ({res["code"]}) Result: '
+                                   f'{res["result"]}')
 
         if res['status'] == 'OK':
             try:
@@ -753,10 +755,10 @@ class Client(BaseClient):
                 json_response = res['result']
             return json_response, json_response
         elif res['status'] == 'Error':
-            raise DemistoException(f"Error occurred. Status: ({res['status']}) Code: ({res['code']}) Result: "
-                                   f"{res['result']}")
+            raise DemistoException(f'Error occurred. Status: ({res["status"]}) Code: ({res["code"]}) Result: '
+                                   f'{res["result"]}')
         else:
-            raise DemistoException(f"Unknown error occurred.  Status: {res['status']} Result: {res['result']}")
+            raise DemistoException(f'Unknown error occurred.  Status: {res["status"]} Result: {res["result"]}')
 
 
 ''' HELPER FUNCTION'''
@@ -836,7 +838,7 @@ def system_to_md(system: dict, verbose: bool = False) -> str:
         for key in EPO_SYSTEM_ATTRIBUTE_MAP:
             md += f'{system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get(key))} |'
 
-        md += NEW_LINE
+        md += '\n'
     return md
 
 
@@ -905,10 +907,10 @@ def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     json_response, raw_response = client.epo_help(command=command, prefix=prefix)
 
     if 'command' in args:
-        readable_output = f"#### ePO Help - {args['command']} \n "
+        readable_output = f'#### ePO Help - {args["command"]} \n '
         for line in json_response:
             line = line.replace("\r\n", ' ')
-            line = line.replace(NEW_LINE, ' ')
+            line = line.replace('\n', ' ')
             readable_output += line
     else:
         if search:
@@ -916,7 +918,7 @@ def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output = '#### ePO Help\n'
         for line in json_response:
             line = line.replace("\r\n", ' ')
-            line = line.replace(NEW_LINE, ' ')
+            line = line.replace('\n', ' ')
 
             if (not search) or (search in line.lower()):
                 desc = ''
@@ -924,7 +926,7 @@ def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                 if '-' in line:
                     desc = line.split('-')[1] if line.split('-')[1] else 'N/A'
                     cmd = line.split('-')[0].rstrip() if line.split('-')[0] else 'N/A'
-                    readable_output += f"- **{cmd}** - {desc}{NEW_LINE}"
+                    readable_output += f"- **{cmd}** - {desc}\n"
 
     return CommandResults(
         readable_output=readable_output
@@ -1153,7 +1155,7 @@ def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> List[Comma
     response_json, response = client.find_systems(group_id)
 
     if response:
-        md = f"#### Systems in {name}{NEW_LINE}"
+        md = f'#### Systems in {name}\n'
         if len(response_json) > 0:
             md += systems_to_md(response_json, verbose)
             endpoints = prettify_find_system(list(response_json))
