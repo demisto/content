@@ -1,0 +1,1860 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import re
+import enum
+import gzip
+import math
+import base64
+import hashlib
+import datetime
+import dateparser
+import itertools
+import colorsys
+import traceback
+import urllib.parse
+from collections import defaultdict, namedtuple
+from collections.abc import Iterator
+from typing import Tuple, Callable, NamedTuple, Self
+
+
+DEFAULT_POLLING_INTERVAL = 10  # in seconds
+DEFAULT_RETRY_INTERVAL = 10  # in seconds
+DEFAULT_RETRY_MAX = 10
+
+
+def to_float(
+    val: Any
+) -> float | int:
+    """ Ensure the value is of number type (float or int).
+
+    :param val: The value.
+    :return: A float or int converted from `val`.
+    """
+    if val is None:
+        return 0
+    try:
+        val = float(val)
+        return int(val) if val.is_integer() else val
+    except (ValueError, TypeError):
+        return 0
+
+
+def to_str(
+    val: Any
+) -> str:
+    """ Ensure the value is of string type.
+
+    :param val: The value.
+    :return: A str converted from `val`.
+    """
+    return val if isinstance(val, str) else json.dumps(val)
+
+
+class CacheType(enum.StrEnum):
+    NONE = 'none'
+    DATASET = 'dataset'
+    ENTRY = 'entry'
+
+
+class ContextData:
+    def __init__(
+        self,
+        context: dict[str, Any] | None = None,
+        incident: dict[str, Any] | None = None,
+        alert: dict[str, Any] | None = None,
+        value: dict[str, Any] | None = None,
+    ) -> None:
+        self.__context = context
+        self.__value = value
+        self.__specials = {
+            'alert': alert if isinstance(alert, dict) else {},
+            'incident': incident if isinstance(incident, dict) else {},
+            'lists': None,
+        }
+
+    def get(
+        self,
+        key: str | None = None
+    ) -> Any:
+        """ Get the context value
+
+        :param key: The dt expressions (string within ${}).
+        :return: The value.
+        """
+        if not key:
+            return None
+
+        if key != '.' and not key.startswith('.=') and key.startswith('.'):
+            dx = self.__value
+            key = key[1:]
+        else:
+            for prefix in self.__specials.keys():
+                k = key[len(prefix):]
+                if key.startswith(prefix) and k[:1] in ('', '.', '(', '='):
+                    if prefix == 'lists':
+                        m = re.split('[.(=]', k[1:], maxsplit=1)
+                        if m[0]:
+                            dx = {
+                                prefix: {
+                                    m[0]: execute_command('getList', {'listName': m[0]})
+                                }
+                            }
+                            break
+                    else:
+                        dx = self.__specials
+                        break
+            else:
+                dx = self.__context
+
+        return demisto.dt(dx, key)
+
+    def inherit(
+        self,
+        value: dict[str, Any] | None = None,
+    ) -> Self:
+        """ Create a ContextData with the new value
+
+        :param value: The new value.
+        :return: ContextData created.
+        """
+        return ContextData(
+            context=self.__context,
+            incident=self.__specials.get('incident'),
+            alert=self.__specials.get('alert'),
+            value=value,
+        )
+
+
+class Formatter:
+    def __init__(
+        self,
+        variable_substitution: Tuple[str, str],
+        keep_symbol_to_null: bool
+    ) -> None:
+        self.__keep_symbol_to_null = keep_symbol_to_null
+        self.__var_opening, self.__var_closing = variable_substitution
+        if not self.__var_opening:
+            raise DemistoException('opening marker is required.')
+
+    @staticmethod
+    def __is_closure(
+        source: str,
+        ci: int,
+        closure_marker: str
+    ) -> bool:
+        if closure_marker:
+            return source[ci:ci + len(closure_marker)] == closure_marker
+        else:
+            c = source[ci]
+            if c.isspace():
+                return True
+            elif c.isascii():
+                return c != '_' and not c.isalnum()
+            else:
+                return False
+
+    @staticmethod
+    def __extract_dt(
+        dtstr: str,
+        dx: ContextData | None,
+    ) -> Any:
+        """ Extract dt expression
+
+        :param dtstr: The dt expressions (string within ${}).
+        :param dx: The context instance.
+        :return: The value extracted.
+        """
+        try:
+            return dx.get(dtstr) if dx else dtstr
+        except Exception:
+            return None
+
+    def __extract(
+        self,
+        source: str,
+        dx: ContextData | None,
+        si: int,
+        markers: Tuple[str, str] | None,
+    ) -> Tuple[Any, int | None]:
+        """ Extract a template text, or an enclosed value within starting and ending marks
+
+        :param source: The template text, or the enclosed value starts with the next charactor of a start marker
+        :param dx: The context data
+        :param si: The index of `source` to start extracting
+        :param markers: The opening and closing markers to find an end position for parsing an enclosed value.
+                        It must be None when the template text is given to `source`.
+        :return: The extracted value and index of `source` when parsing ended.
+                 The index is the next after the end marker when extracting the enclosed value.
+        """
+        out = None
+        ci = si
+        while ci < len(source):
+            if markers is not None and Formatter.__is_closure(source, ci, markers[1]):
+                key = source[si:ci] if out is None else str(out) + source[si:ci]
+                if markers == (self.__var_opening, self.__var_closing):
+                    xval = self.__extract_dt(key, dx)
+                    if xval is None and self.__keep_symbol_to_null:
+                        xval = markers[0] + key + markers[1]
+                    else:
+                        xval = self.build(xval, dx)
+                else:
+                    xval = markers[0] + key + markers[1]
+                return xval, ci + len(markers[1])
+            elif source[ci:ci + len(self.__var_opening)] == self.__var_opening:
+                xval, ei = self.__extract(
+                    source=source,
+                    dx=dx,
+                    si=ci + len(self.__var_opening),
+                    markers=(self.__var_opening, self.__var_closing),
+                )
+                if si != ci:
+                    out = source[si:ci] if out is None else str(out) + source[si:ci]
+
+                if ei is None:
+                    xval = self.__var_opening
+                    ei = ci + len(self.__var_opening)
+
+                if out is None:
+                    out = xval
+                elif xval is not None:
+                    out = str(out) + str(xval)
+                si = ci = ei
+            elif markers is None:
+                ci += 1
+            elif endc := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'", "`": "`"}.get(source[ci]):
+                xval, ei = self.__extract(
+                    source=source,
+                    dx=dx,
+                    si=ci + 1,
+                    markers=(source[ci], endc),
+                )
+                if si != ci:
+                    out = source[si:ci] if out is None else str(out) + source[si:ci]
+
+                if ei is None:
+                    xval = source[ci]
+                    ei = ci + len(source[ci])
+
+                if out is None:
+                    out = xval
+                elif xval is not None:
+                    out = str(out) + str(xval)
+
+                si = ci = ei
+            elif source[ci] == '\\':
+                ci += 2
+            else:
+                ci += 1
+
+        if markers is not None:
+            # unbalanced braces, brackets, quotes, etc.
+            return None, None
+        elif si >= len(source):
+            return out, ci
+        elif out is None:
+            return source[si:], ci
+        else:
+            return str(out) + source[si:], ci
+
+    def build(
+        self,
+        template: Any,
+        context: ContextData | None
+    ) -> Any:
+        """ Format a text from a template including DT expressions
+
+        :param template: The template.
+        :param context: The context instance.
+        :return: The text built from the template.
+        """
+        if isinstance(template, dict):
+            return {
+                self.build(k, context): self.build(v, context)
+                for k, v in template.items()
+            }
+        elif isinstance(template, list):
+            return [self.build(v, context) for v in template]
+        elif isinstance(template, str):
+            return self.__extract(
+                source=template,
+                dx=context,
+                si=0,
+                markers=None
+            )[0] if template else ''
+        else:
+            return template
+
+
+class SortableValue(object):
+    """
+    The custom value object class, which enables you to sort for any types of data even in different types.
+    """
+
+    def __init__(
+        self,
+        value: Any,
+    ) -> None:
+        self.__value = value
+
+    def __lt__(
+        self,
+        other: Any
+    ) -> bool:
+        def __lt(
+            obj1: Any,
+            obj2: Any
+        ) -> bool:
+            if (
+                (isinstance(obj1, (int, float)) and isinstance(obj2, (int, float)))
+                or (isinstance(obj1, bool) and isinstance(obj2, bool))
+                or (isinstance(obj1, str) and isinstance(obj2, str))
+            ):
+                return obj1 < obj2
+            elif obj1 is None or obj2 is None:
+                return bool(obj2 is None) < bool(obj1 is None)
+            else:
+                def __get_order(
+                    v: Any,
+                ) -> int:
+                    if isinstance(v, bool):
+                        return 1
+                    elif isinstance(v, (int, float)):
+                        return 2
+                    elif isinstance(v, str):
+                        return 3
+                    else:
+                        return 4
+
+                order1 = __get_order(obj1)
+                order2 = __get_order(obj2)
+                if n := (order1 > order2) - (order1 < order2):
+                    return n < 0
+                else:
+                    return json.dumps(obj1) < json.dumps(obj2)
+
+        if not isinstance(other, SortableValue):
+            return False
+        return __lt(self.__value, other.__value)
+
+
+class QueryParams:
+    def __init__(
+        self,
+        query_name: str,
+        query_string: str,
+        earliest_time: datetime.datetime,
+        latest_time: datetime.datetime,
+    ) -> None:
+        if not query_string:
+            raise DemistoException('Query string is required.')
+
+        if earliest_time.tzinfo is None or latest_time.tzinfo is None:
+            raise DemistoException('earliest_time and latest_time must be timezone aware.')
+
+        if earliest_time > latest_time:
+            raise DemistoException((
+                f'latest_time ({latest_time}) must be equal to or later than'
+                f' earliest_time ({earliest_time}).'
+            ))
+
+        self.__query_name = query_name
+        self.__query_string = '\n'.join(x.strip() for x in query_string.splitlines())
+        self.__earliest_time = earliest_time
+        self.__latest_time = latest_time
+
+    @property
+    def query_name(
+        self,
+    ) -> str:
+        return self.__query_name
+
+    @property
+    def query_string(
+        self,
+    ) -> str:
+        return self.__query_string
+
+    @property
+    def earliest_time(
+        self,
+    ) -> datetime.datetime:
+        return self.__earliest_time
+
+    @property
+    def latest_time(
+        self,
+    ) -> datetime.datetime:
+        return self.__latest_time
+
+    @property
+    def earliest_time_iso(
+        self,
+    ) -> str:
+        return self.__earliest_time.isoformat(timespec='milliseconds')
+
+    @property
+    def latest_time_iso(
+        self,
+    ) -> str:
+        return self.__latest_time.isoformat(timespec='milliseconds')
+
+    def query_hash(
+        self,
+    ) -> str:
+        # The input value doesn't include `query_name` for the hash.
+        return hashlib.sha256(
+            json.dumps({
+                'query_string': self.query_string,
+                'earliest_time': self.earliest_time_iso,
+                'latest_time': self.latest_time_iso,
+            }).encode()
+        ).hexdigest()
+
+
+class Cache:
+    @staticmethod
+    def __compress(
+        val: str
+    ) -> dict[str, str]:
+        return {
+            'type': 'gz+b85',
+            'data': base64.b85encode(gzip.compress(val.encode())).decode()
+        }
+
+    @staticmethod
+    def build_query_params(
+        query_params: QueryParams,
+    ) -> dict[str, Any]:
+        return {
+            'query_name': query_params.query_name,
+            'query_string': Cache.__compress(query_params.query_string),
+            'earliest_time': query_params.earliest_time_iso,
+            'latest_time': query_params.latest_time_iso,
+        }
+
+    def __load_data(
+        self,
+        query_hash: str,
+        cache_node: str,
+    ) -> Any:
+        cache = demisto.get(demisto.context(), self.__key)
+        if not isinstance(cache, dict):
+            return None
+
+        if cache.get('QueryHash') != query_hash:
+            return None
+
+        _data = demisto.get(cache, f'{cache_node}.data')
+        _type = demisto.get(cache, f'{cache_node}.type')
+        if _type == 'gz+b85':
+            try:
+                return json.loads(
+                    gzip.decompress(
+                        base64.b85decode(_data.encode())
+                    ).decode()
+                )
+            except Exception as e:
+                demisto.debug('Failed to load cache data [{cache_node}] - {e}')
+                return None
+        else:
+            return None
+
+    def __save_data(
+        self,
+        query_params: QueryParams,
+        cache_node: str,
+        data: Any,
+    ) -> None:
+        cache = {
+            'QueryParams': self.build_query_params(query_params),
+            'QueryHash': query_params.query_hash(),
+            cache_node: self.__compress(json.dumps(data)),
+        }
+        if incident_id := demisto.incident().get('id'):
+            target = 'alerts' if is_xsiam() else 'incidents'
+            demisto.executeCommand('executeCommandAt', {
+                'command': 'Set',
+                target: incident_id,
+                'arguments': {
+                    'key': self.__key,
+                    'value': cache,
+                    'append': 'false',
+                }
+            })
+
+    def __init__(
+        self,
+        name: str,
+    ) -> None:
+        name = urllib.parse.quote(name).replace('.', '%2E')
+        self.__key = f'XQLDSHelperCache.{name}'
+
+    def save_dataset(
+        self,
+        query_params: QueryParams,
+        dataset: list[dict[str, Any]],
+    ) -> None:
+        self.__save_data(
+            query_params=query_params,
+            cache_node='CacheDataset',
+            data=dataset,
+        )
+
+    def save_entry(
+        self,
+        query_params: QueryParams,
+        entry: dict[str, Any],
+    ) -> None:
+        self.__save_data(
+            query_params=query_params,
+            cache_node='CacheEntry',
+            data=entry,
+        )
+
+    def load_dataset(
+        self,
+        query_hash: str,
+    ) -> list[dict[str, Any]] | None:
+        dataset = self.__load_data(
+            query_hash=query_hash,
+            cache_node='CacheDataset',
+        )
+        return dataset if isinstance(dataset, list) else None
+
+    def load_entry(
+        self,
+        query_hash: str,
+    ) -> dict[str, Any] | None:
+        entry = self.__load_data(
+            query_hash=query_hash,
+            cache_node='CacheEntry',
+        )
+        return entry if isinstance(entry, dict) else None
+
+
+class Query:
+    """
+    This class allows you to get the query results.
+    """
+
+    def __init__(
+        self,
+        query_params: QueryParams,
+        cache: Cache | None,
+        xql_query_instance: str | None = None,
+        polling_interval: int = DEFAULT_POLLING_INTERVAL,
+        retry_interval: int = DEFAULT_RETRY_INTERVAL,
+        retry_max: int = DEFAULT_RETRY_MAX,
+    ) -> None:
+        self.__query_params = query_params
+        self.__cache = cache
+        self.__xql_query_instance = xql_query_instance
+        self.__polling_interval = polling_interval
+        self.__retry_interval = retry_interval
+        self.__retry_max = max(retry_max, 0)
+
+    def __query_xql(
+        self,
+    ) -> list[dict[str, Any]]:
+        time_frame = f'between {self.__query_params.earliest_time_iso} and {self.__query_params.latest_time_iso}'
+        demisto.debug(f'Run XQL: {self.__query_params.query_name} {time_frame}: {self.__query_params.query_string}')
+
+        for retry_count in range(self.__retry_max + 1):
+            try:
+                contents = execute_command(
+                    'xdr-xql-generic-query',
+                    assign_params(
+                        query_name=self.__query_params.query_name,
+                        query=self.__query_params.query_string,
+                        time_frame=time_frame,
+                        using=self.__xql_query_instance,
+                    ),
+                )
+                break
+            except Exception as e:
+                if retry_count < self.__retry_max:
+                    if 'reached max allowed amount of parallel running queries' in str(e):
+                        time.sleep(self.__retry_interval)
+                        continue
+                raise
+
+        execution_id = contents.get('execution_id')
+        if not execution_id:
+            raise DemistoException('No execution_id in the response.')
+
+        while True:
+            status = contents.get('status', '')
+            if status == 'SUCCESS':
+                return contents.get('results', [])
+            elif status == 'PENDING':
+                time.sleep(self.__polling_interval)
+                contents = execute_command(
+                    'xdr-xql-get-query-results',
+                    assign_params(query_id=execution_id)
+                )
+            else:
+                raise DemistoException(f'Failed to get query results - {contents}')
+
+    def query(
+        self,
+    ) -> list[dict[str, Any]]:
+        if self.__cache:
+            dataset = self.__cache.load_dataset(self.__query_params.query_hash())
+            if dataset is None:
+                dataset = self.__query_xql()
+                self.__cache.save_dataset(self.__query_params, dataset)
+            return dataset
+        else:
+            return self.__query_xql()
+
+
+class EntryBuilder:
+    """
+    This class helps to query XQL and build an entry data.
+    """
+    @staticmethod
+    def __enum_fields_by_group(
+        dataset: Iterator[dict[str, Any]],
+        sort_by: str,
+        group_by: str,
+        asc: bool,
+    ) -> Iterator[
+        Tuple[
+            str,
+            Iterator[dict[str, Any]]
+        ]
+    ]:
+        """ Enumerate fields with a group value by group
+
+        :param dataset: The list of fields.
+        :param sort_by: The field name to sort the dataset before grouping.
+        :param group_by: The name of the field to make groups.
+        :param asc: Set to True to sort the dataset in ascent order, Set to False for descent order.
+        :return: Each group value with fields.
+        """
+        return itertools.groupby(
+            sorted(
+                dataset,
+                key=lambda v: SortableValue(v.get(sort_by)),
+                reverse=not asc,
+            ),
+            key=lambda v: v.get(group_by)
+        )
+
+    @staticmethod
+    def __sum_by(
+        dataset: list[dict[str, Any]],
+        sum_field: str,
+        group_by: str,
+    ) -> dict[str, float]:
+        """ Sum field values by a field
+
+        :param dataset: The list of fields.
+        :param sum_field: The field name of the value to be summed.
+        :param group_by: The field name to group the fields.
+        :return: Mapping of field name with the sum value in descending order by the sum.
+        """
+        d = defaultdict(float)
+        for fields in dataset:
+            d[fields.get(group_by)] += to_float(fields.get(sum_field))
+        return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
+
+    @staticmethod
+    def __make_color_palette(
+        names: list[str],
+        colors: dict[str, str] | list[str] | str,
+    ) -> dict[str, str]:
+        """ Build a color table
+
+        :param names: The list of names to be mapped to colors
+        :param colors: The base color mapping, or colors for 'names' in order
+        :return: The color mapping. (name and color)
+        """
+        color_order = []
+        if isinstance(colors, str):
+            color_order = [color_order] * len(names)
+        elif isinstance(colors, list):
+            color_order = colors
+
+        color_map = {
+            name: color
+            for name, color in zip(
+                names,
+                color_order + EntryBuilder.list_colors(len(names))
+            )
+        }
+        if isinstance(colors, dict):
+            color_map.update(colors)
+        return color_map
+
+    @staticmethod
+    def __build_singley_chart(
+        chart_type: str,
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a single-Y chart entry
+
+        :param chart_type: The chart type. (bar or pie)
+        :param params: The template parameters for a single-Y chart.
+        :param dataset: The list of fields used to create the single-Y chart.
+        :return: A single-Y chart entry.
+        """
+        class Template:
+            class Records:
+                class Sort:
+                    def __init__(
+                        self,
+                        sort: dict[str, Any],
+                        default_by: str,
+                    ) -> None:
+                        self.__by = sort.get('by') or default_by
+                        assert isinstance(self.__by, str), f'sort.by must be str - {type(self.__by)}'
+
+                        self.__asc = EntryBuilder.to_sort_order(sort.get('order') or 'asc')
+
+                    @property
+                    def by(
+                        self,
+                    ) -> str:
+                        return self.__by
+
+                    @property
+                    def asc(
+                        self,
+                    ) -> bool:
+                        return self.__asc
+
+                def __init__(
+                    self,
+                    records: dict[str, Any],
+                ) -> None:
+                    self.__name_field = records.get('name-field')
+                    assert isinstance(self.__name_field, str), f'name-field must be dict - {type(self.__name_field)}'
+
+                    self.__data_field = records.get('data-field')
+                    assert isinstance(self.__data_field, str), f'data-field must be dict - {type(self.__data_field)}'
+
+                    colors = records.get('colors')
+                    if isinstance(colors, list):
+                        for color in colors:
+                            assert isinstance(color, str), f'color must be str - {type(color)}'
+                    elif isinstance(colors, dict):
+                        for color in colors.values():
+                            assert isinstance(color, str), f'color must be str - {type(color)}'
+                    elif colors is None:
+                        colors = []
+                    elif not isinstance(colors, str):
+                        raise DemistoException(f'colors must be dict, list or null - {type(colors)}')
+                    self.__colors = colors
+
+                    sort = records.get('sort') or {}
+                    assert isinstance(sort, dict) or sort is None, f'sort must be dict or null - {type(sort)}'
+                    self.__sort = self.Sort(sort, default_by=self.data_field)
+
+                @property
+                def name_field(
+                    self,
+                ) -> str:
+                    return self.__name_field
+
+                @property
+                def data_field(
+                    self,
+                ) -> str:
+                    return self.__data_field
+
+                @property
+                def colors(
+                    self,
+                ) -> dict[str, str] | list[str] | str:
+                    return self.__colors
+
+                @property
+                def sort(
+                    self,
+                ) -> Sort:
+                    return self.__sort
+
+            class Field:
+                def __init__(
+                    self,
+                    field: dict[str, Any],
+                    default_color: str,
+                ) -> None:
+                    assert isinstance(field, dict), f'field in .fields must be dict - {type(field)}'
+
+                    self.__color = field.get('color')
+                    assert isinstance(self.__color, str) or self.__color is None, (
+                        f'field.color must be str or null - {type(self.__color)}'
+                    )
+                    if not self.__color:
+                        self.__color = default_color
+
+                    self.__label = field.get('label')
+                    assert isinstance(self.__label, str) or self.__label is None, (
+                        f'field.label must be str or null - {type(self.__label)}'
+                    )
+
+                @property
+                def color(
+                    self,
+                ) -> str:
+                    return self.__color
+
+                @property
+                def label(
+                    self,
+                ) -> str | None:
+                    return self.__label
+
+            def __init__(
+                self,
+                template: dict[str, Any],
+            ) -> None:
+                group = template.get('group')
+                if group == 'records':
+                    records = template.get(group)
+                    assert isinstance(records, dict), f'records must be dict - {type(records)}'
+
+                    self.__records = self.Records(records)
+                    self.__fields = None
+                elif group == 'fields':
+                    fields = template.get(group)
+                    assert isinstance(fields, dict), f'fields must be dict - {type(fields)}'
+
+                    self.__fields = {
+                        name: self.Field(field, default_color=color)
+                        for (name, field), color in zip(
+                            fields.items(),
+                            EntryBuilder.list_colors(len(fields))
+                        )
+                    }
+                    self.__records = None
+                else:
+                    raise DemistoException(f"group must be 'records' or 'fields' - {group}")
+
+            @property
+            def records(
+                self,
+            ) -> Records | None:
+                return self.__records
+
+            @property
+            def fields(
+                self,
+            ) -> dict[str, Field] | None:
+                return self.__fields
+
+        template = Template(params)
+        if records := template.records:
+            names = EntryBuilder.__sum_by(
+                dataset=dataset,
+                sum_field=records.data_field,
+                group_by=records.name_field,
+            )
+            # Create color mapping
+            colors = EntryBuilder.__make_color_palette(
+                names=names.keys(),
+                colors=records.colors,
+            )
+            # Build stats
+            stats = [
+                assign_params(
+                    name=to_str(name),
+                    data=[to_float(value)],
+                    color=colors.get(name),
+                ) for fields in sorted(
+                    dataset,
+                    key=lambda v: to_float(v.get(records.sort.by)),
+                    reverse=not records.sort.asc,
+                ) for name, value in [
+                    (fields.get(records.name_field), fields.get(records.data_field))
+                ]
+            ]
+        elif fields := template.fields:
+            # Build stats
+            stats = [
+                {
+                    'name': to_str(group.label or field or ''),
+                    'data': [sum((to_float(x.get(field)) for x in dataset))],
+                    'color': group.color,
+                } for field, group in fields.items()
+            ]
+        else:
+            stats = []
+
+        return {
+            'Type': EntryType.WIDGET,
+            'ContentsFormat': chart_type,
+            'Contents': dict(
+                assign_params(
+                    params=params.get('params')
+                ),
+                stats=stats,
+            ),
+        }
+
+    @staticmethod
+    def __build_multiy_chart(
+        chart_type: str,
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a multi-Y chart entry
+
+        :param chart_type: The chart type. (bar or line)
+        :param params: The template parameters for a multi-Y chart.
+        :param dataset: The list of fields used to create the multi-Y chart.
+        :return: A multi-Y chart entry.
+        """
+        class Template:
+            class X:
+                def __init__(
+                    self,
+                    x: dict[str, Any],
+                ) -> None:
+                    self.__by = x.get('by')
+                    assert isinstance(self.__by, str), f'x.by must be str - {type(self.__by)}'
+
+                    self.__asc = EntryBuilder.to_sort_order(x.get('order') or 'asc')
+                    self.__field = x.get('field')
+                    assert isinstance(self.__field, str) or self.__field is None, (
+                        f'x.field must be str or null - {type(self.__field)}'
+                    )
+
+                @property
+                def by(
+                    self,
+                ) -> str:
+                    return self.__by
+
+                @property
+                def asc(
+                    self,
+                ) -> bool:
+                    return self.__asc
+
+                @property
+                def field(
+                    self,
+                ) -> str | None:
+                    return self.__field
+
+            class Y:
+                class Records:
+                    def __init__(
+                        self,
+                        records: dict[str, Any],
+                    ) -> None:
+                        self.__name_field = records.get('name-field')
+                        assert isinstance(self.__name_field, str), f'name-field must be dict - {type(self.__name_field)}'
+
+                        self.__data_field = records.get('data-field')
+                        assert isinstance(self.__data_field, str), f'data-field must be dict - {type(self.__data_field)}'
+
+                        colors = records.get('colors')
+                        if isinstance(colors, list):
+                            for color in colors:
+                                assert isinstance(color, str), f'color must be str - {type(color)}'
+                        elif isinstance(colors, dict):
+                            for color in colors.values():
+                                assert isinstance(color, str), f'color must be str - {type(color)}'
+                        elif colors is None:
+                            colors = []
+                        elif not isinstance(colors, str):
+                            raise DemistoException(f'colors must be dict, list or null - {type(colors)}')
+                        self.__colors = colors
+
+                    @property
+                    def name_field(
+                        self,
+                    ) -> str:
+                        return self.__name_field
+
+                    @property
+                    def data_field(
+                        self,
+                    ) -> str:
+                        return self.__data_field
+
+                    @property
+                    def colors(
+                        self,
+                    ) -> dict[str, str] | list[str] | str:
+                        return self.__colors
+
+                class Field:
+                    def __init__(
+                        self,
+                        field: dict[str, Any],
+                        default_color: str,
+                    ) -> None:
+                        assert isinstance(field, dict), f'field in y.fields must be dict - {type(field)}'
+
+                        self.__color = field.get('color')
+                        assert isinstance(self.__color, str) or self.__color is None, (
+                            f'field.color must be str or null - {type(self.__color)}'
+                        )
+                        if not self.__color:
+                            self.__color = default_color
+
+                        self.__label = field.get('label')
+                        assert isinstance(self.__label, str) or self.__label is None, (
+                            f'field.label must be str or null - {type(self.__label)}'
+                        )
+
+                    @property
+                    def color(
+                        self,
+                    ) -> str:
+                        return self.__color
+
+                    @property
+                    def label(
+                        self,
+                    ) -> str | None:
+                        return self.__label
+
+                def __init__(
+                    self,
+                    y: dict[str, Any],
+                ) -> None:
+                    group = y.get('group')
+                    if group == 'records':
+                        records = y.get(group)
+                        assert isinstance(records, dict), f'y.records must be dict - {type(records)}'
+
+                        self.__records = self.Records(records)
+                        self.__fields = None
+                    elif group == 'fields':
+                        fields = y.get(group)
+                        assert isinstance(fields, dict), f'y.fields must be dict - {type(fields)}'
+
+                        self.__fields = {
+                            name: self.Field(field, default_color=color)
+                            for (name, field), color in zip(
+                                fields.items(),
+                                EntryBuilder.list_colors(len(fields))
+                            )
+                        }
+                        self.__records = None
+                    else:
+                        raise DemistoException(f"y.group must be 'records' or 'fields' - {group}")
+
+                @property
+                def records(
+                    self,
+                ) -> Records | None:
+                    return self.__records
+
+                @property
+                def fields(
+                    self,
+                ) -> dict[str, Field] | None:
+                    return self.__fields
+
+            def __init__(
+                self,
+                template: dict[str, Any],
+            ) -> None:
+                x = template.get('x')
+                assert isinstance(x, dict), f'x must be dict - {type(x)}'
+                self.__x = self.X(x)
+
+                y = template.get('y')
+                assert isinstance(y, dict), f'y must be dict - {type(y)}'
+                self.__y = self.Y(y)
+
+            @property
+            def x(
+                self,
+            ) -> X:
+                return self.__x
+
+            @property
+            def y(
+                self,
+            ) -> Y:
+                return self.__y
+
+        template = Template(params)
+        if records := template.y.records:
+            ynames = EntryBuilder.__sum_by(
+                dataset=dataset,
+                sum_field=records.data_field,
+                group_by=records.name_field,
+            )
+            # Create color mapping
+            ycolors = EntryBuilder.__make_color_palette(
+                names=ynames.keys(),
+                colors=records.colors,
+            )
+            # Build stats
+            stats = []
+            for x_val, x_dataset in EntryBuilder.__enum_fields_by_group(
+                dataset=dataset,
+                sort_by=template.x.by,
+                group_by=template.x.by,
+                asc=template.x.asc
+            ):
+                groups = {k: None for k in ynames.keys()}
+                xlabel = ''
+                for y_fields in x_dataset:
+                    data = y_fields.get(records.data_field)
+                    name = y_fields.get(records.name_field)
+                    name_str = to_str(name)
+                    groups[name_str] = assign_params(
+                        name=name_str,
+                        data=[to_float(data)],
+                        color=ycolors.get(name),
+                    )
+                    xlabel = xlabel or to_str(
+                        y_fields.get(template.x.field) if template.x.field else x_val
+                    )
+
+                stats.append({
+                    'name': xlabel,
+                    'groups': [
+                        assign_params(
+                            name=k,
+                            data=[0],
+                            color=ycolors.get(k),
+                        ) if v is None else v
+                        for k, v in groups.items()
+                    ],
+                })
+        elif fields := template.y.fields:
+            # Build stats
+            stats = [
+                {
+                    'name': to_str(y_fields.get(template.x.field) if template.x.field else x_val),
+                    'groups': [
+                        {
+                            'name': to_str(y_group.label or field or ''),
+                            'data': [to_float(y_fields.get(field))],
+                            'color': y_group.color,
+                        } for field, y_group in fields.items()
+                    ]
+                } for x_val, x_dataset in EntryBuilder.__enum_fields_by_group(
+                    dataset=dataset,
+                    sort_by=template.x.by,
+                    group_by=template.x.by,
+                    asc=template.x.asc,
+                ) for y_fields in x_dataset
+            ]
+        else:
+            stats = []
+
+        return {
+            'Type': EntryType.WIDGET,
+            'ContentsFormat': chart_type,
+            'Contents': dict(
+                assign_params(
+                    params=params.get('params')
+                ),
+                stats=stats,
+            ),
+        }
+
+    @staticmethod
+    def __build_single_bar(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a single bar entry
+
+        :param params: The template parameters for 'single-bar'.
+        :param dataset: The list of fields used to create the single-bar chart.
+        :return: An single bar entry.
+        """
+        return EntryBuilder.__build_singley_chart(
+            chart_type='bar',
+            params=params,
+            dataset=dataset,
+        )
+
+    @staticmethod
+    def __build_stacked_bar(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a stacked bar entry
+
+        :param params: The template parameters for 'stacked-bar'.
+        :param dataset: The list of fields used to create the stacked-bar chart.
+        :return: An stacked bar entry.
+        """
+        return EntryBuilder.__build_multiy_chart(
+            chart_type='bar',
+            params=params,
+            dataset=dataset,
+        )
+
+    @staticmethod
+    def __build_line(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a line entry
+
+        :param params: The template parameters for 'line'.
+        :param dataset: The list of fields used to create the line chart.
+        :return: A line entry.
+        """
+        return EntryBuilder.__build_multiy_chart(
+            chart_type='line',
+            params=params,
+            dataset=dataset,
+        )
+
+    @staticmethod
+    def __build_pie(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a pie entry
+
+        :param params: The template parameters for 'pie'.
+        :param dataset: The list of fields used to create the pie chart.
+        :return: A pie chart entry.
+        """
+        return EntryBuilder.__build_singley_chart(
+            chart_type='pie',
+            params=params,
+            dataset=dataset,
+        )
+
+    @staticmethod
+    def __build_markdown_table(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a markdown table
+
+        :param params: The template parameters for 'markdown-table'.
+        :param dataset: The list of fields used to create the markdown table.
+        :return: A markdown table.
+        """
+        class Template:
+            class Sort:
+                def __init__(
+                    self,
+                    sort: dict[str, Any],
+                ) -> None:
+                    self.__by = sort.get('by')
+                    assert isinstance(self.__by, str) or self.__by is None, (
+                        f'sort.by must be str or null - {type(self.__by)}'
+                    )
+                    self.__asc = EntryBuilder.to_sort_order(sort.get('order') or 'asc')
+
+                @property
+                def by(
+                    self,
+                ) -> str | None:
+                    return self.__by
+
+                @property
+                def asc(
+                    self,
+                ) -> bool:
+                    return self.__asc
+
+            class Column:
+                def __init__(
+                    self,
+                    column: dict[str, Any],
+                ) -> None:
+                    assert isinstance(column, dict), f'column in columns must be dict - {type(column)}'
+                    self.field = column.get('field')
+                    self.label = column.get('label') or self.field or ''
+
+            def __init__(
+                self,
+                template: dict[str, Any],
+            ) -> None:
+                self.__title = template.get('title') or ''
+                assert isinstance(self.__title, str), f'title must be str or null - {type(self.__title)}'
+
+                if columns := template.get('columns'):
+                    assert isinstance(columns, list), f'columns must be list or null - {type(columns)}'
+                    self.__columns = [self.Column(c) for c in columns]
+                else:
+                    self.__columns = None
+
+                sort = template.get('sort') or {}
+                assert isinstance(sort, dict), f'sort must be dict or null - {type(sort)}'
+                self.__sort = self.Sort(sort)
+
+                self.__default = template.get('default') or ''
+                assert isinstance(self.__default, (str, dict)), (
+                    f'default must be str, dict or null - {type(self.__default)}'
+                )
+
+            @property
+            def title(
+                self,
+            ) -> str:
+                return self.__title
+
+            @property
+            def columns(
+                self,
+            ) -> list[Column] | None:
+                return self.__columns
+
+            @property
+            def sort(
+                self,
+            ) -> Sort:
+                return self.__sort
+
+            @property
+            def default(
+                self,
+            ) -> str | dict[str, Any]:
+                return self.__default
+
+        template = Template(params)
+
+        if dataset:
+            if template.sort.by:
+                dataset = sorted(
+                    dataset,
+                    key=lambda v: SortableValue(v.get(template.sort.by)),
+                    reverse=not template.sort.asc,
+                )
+
+            # Build markdown
+            md = tableToMarkdown(
+                template.title,
+                dataset,
+                headers=[c.field for c in template.columns] if template.columns else None,
+                headerTransform=lambda field: next(
+                    (c.label for c in template.columns or [] if c.field == field),
+                    pascalToSpace(field.replace('_', ' '))
+                ),
+                sort_headers=False,
+            )
+        elif isinstance(template.default, dict):
+            return template.default
+        else:
+            md = template.default
+
+        return {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.MARKDOWN,
+            'HumanReadable': md,
+            'Contents': None,
+        }
+
+    @staticmethod
+    def __build_duration(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a duration entry
+
+        :param params: The template parameters for 'duration'.
+        :param dataset: The list of fields used to create the duration entry.
+        :return: A duration entry.
+        """
+        field = params.get('field')
+        if not field or not isinstance(field, str):
+            raise DemistoException(f'field must be str - {type(field)}')
+
+        if len(dataset) > 1:
+            raise DemistoException('The duration entry allows at most one record.')
+
+        return {
+            'Type': EntryType.WIDGET,
+            'ContentsFormat': 'duration',
+            'Contents': dict(
+                assign_params(
+                    params=params.get('params')
+                ),
+                stats=int(to_float((dataset or [{}])[0].get(field))),
+            ),
+        }
+
+    @staticmethod
+    def __build_number(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a number entry
+
+        :param params: The template parameters for 'number'.
+        :param dataset: The list of fields used to create the number entry.
+        :return: A number entry.
+        """
+        field = params.get('field')
+        if not field or not isinstance(field, str):
+            raise DemistoException(f'field must be str - {type(field)}')
+
+        if len(dataset) > 1:
+            raise DemistoException('The number entry allows at most one record.')
+
+        return {
+            'Type': EntryType.WIDGET,
+            'ContentsFormat': 'number',
+            'Contents': dict(
+                assign_params(
+                    params=params.get('params')
+                ),
+                stats=to_float((dataset or [{}])[0].get(field)),
+            ),
+        }
+
+    @staticmethod
+    def __build_number_trend(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a number trend entry
+
+        :param params: The template parameters for 'number-trend'.
+        :param dataset: The list of fields used to create the number trend entry.
+        :return: A number trend entry.
+        """
+        prev_field = params.get('prev-field')
+        if not prev_field or not isinstance(prev_field, str):
+            raise DemistoException(f'prev-field must be str - {type(prev_field)}')
+
+        curr_field = params.get('curr-field')
+        if not curr_field or not isinstance(curr_field, str):
+            raise DemistoException(f'curr-field must be str - {type(curr_field)}')
+
+        if len(dataset) > 1:
+            raise DemistoException('The number-trend entry allows at most one record.')
+
+        fields = (dataset or [{}])[0]
+
+        return {
+            'Type': EntryType.WIDGET,
+            'ContentsFormat': 'number',
+            'Contents': dict(
+                assign_params(
+                    params=params.get('params')
+                ),
+                stats={
+                    'prevSum': to_float(fields.get(prev_field)),
+                    'currSum': to_float(fields.get(curr_field)),
+                },
+            ),
+        }
+
+    @staticmethod
+    def __build_markdown(
+        params: dict[str, Any],
+        dataset: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """ Build a markdown entry
+
+        :param params: The template parameters for 'markdown'.
+        :param dataset: The list of fields used to create the markdown entry.
+        :return: A markdown entry.
+        """
+        if not dataset:
+            entry = params.get('default')
+            if isinstance(entry, dict):
+                return entry
+            elif isinstance(entry, str):
+                text = entry
+            else:
+                text = str(params.get('text') or '')
+        else:
+            text = str(params.get('text') or '')
+
+        return {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.MARKDOWN,
+            'HumanReadable': text,
+            'Contents': None,
+        }
+
+    @staticmethod
+    def to_sort_order(
+        order: str,
+    ) -> bool:
+        if order == 'asc':
+            return True
+        elif order == 'desc':
+            return False
+        else:
+            raise DemistoException(f'Invalid sort order - {order}')
+
+    @staticmethod
+    def list_colors(
+        n: int,
+    ) -> list[str]:
+        colors = [
+            f'rgb({int(r * 256)}, {int(g * 256)}, {int(b * 256)})'
+            for r, g, b in [
+                colorsys.hsv_to_rgb(i / n, 1, 0.9)
+                for i in range(max(0, n))
+            ]
+        ]
+        return list(reversed(colors[1::2])) + colors[::2]
+
+    def __init__(
+        self,
+        formatter: Formatter,
+        context: ContextData,
+    ) -> None:
+        self.__formatter = formatter
+        self.__context = context
+
+    def build(
+        self,
+        query: Query,
+        entry_params: dict[str, Any],
+    ) -> dict[str, Any]:
+        entry_type = entry_params.get('type')
+        if not entry_type:
+            raise DemistoException('type is required.')
+
+        params = entry_params.get(entry_type, {})
+        if not isinstance(params, dict):
+            raise DemistoException(f'{entry_type} must be dict - {type(params)}.')
+
+        build_entry = {
+            'single-bar': lambda params, dataset: self.__build_single_bar(
+                params=params,
+                dataset=dataset,
+            ),
+            'stacked-bar': lambda params, dataset: self.__build_stacked_bar(
+                params=params,
+                dataset=dataset,
+            ),
+            'line': lambda params, dataset: self.__build_line(
+                params=params,
+                dataset=dataset,
+            ),
+            'pie': lambda params, dataset: self.__build_pie(
+                params=params,
+                dataset=dataset,
+            ),
+            'markdown-table': lambda params, dataset: self.__build_markdown_table(
+                params=params,
+                dataset=dataset,
+            ),
+            'duration': lambda params, dataset: self.__build_duration(
+                params=params,
+                dataset=dataset,
+            ),
+            'number': lambda params, dataset: self.__build_number(
+                params=params,
+                dataset=dataset,
+            ),
+            'number-trend': lambda params, dataset: self.__build_number_trend(
+                params=params,
+                dataset=dataset,
+            ),
+            'markdown': lambda params, dataset: self.__build_markdown(
+                params=params,
+                dataset=dataset,
+            ),
+        }.get(entry_type)
+
+        if not build_entry:
+            raise DemistoException(f'Invalid type - {entry_type}')
+
+        dataset = query.query()
+        return build_entry(
+            self.__formatter.build(
+                template=params,
+                context=self.__context.inherit({
+                    'dataset': dataset
+                })
+            ),
+            dataset
+        )
+
+
+''' MAIN FUNCTION '''
+
+
+class Main:
+    @staticmethod
+    def __get_template(
+        args: dict[str, Any],
+    ) -> Tuple[str, dict[str, Any]]:
+        """ Get the templates with its name
+
+        :param args: The argument parameters.
+        :return: The template name and template.
+        """
+        templates_type = args.get('templates_type') or 'raw'
+        if templates_type == 'raw':
+            templates = args.get('templates')
+        elif templates_type == 'list':
+            templates = execute_command('getList', {
+                'listName': args.get('templates')
+            })
+        else:
+            raise DemistoException(f'Invalid template type - {templates_type}')
+
+        if isinstance(templates, str):
+            templates = json.loads(templates)
+        if not isinstance(templates, dict):
+            raise DemistoException(f'Invalid templates - {templates}')
+
+        template_name = args.get('template_name') or ''
+        if template := templates.get(template_name):
+            if not isinstance(template, dict):
+                raise DemistoException(f'Invalid template - {template}')
+        else:
+            raise DemistoException(f'No templates were found - {template_name}')
+
+        return template_name, template
+
+    @staticmethod
+    def __parse_date_time(
+        value: Any,
+        base_time: datetime.datetime | None,
+    ) -> datetime.datetime:
+        """ Parse a date time value
+
+        :param value: The date or time to parse
+        :param base_time: The base time for the relative time.
+        :return: aware datetime object
+        """
+        if value in (None, ''):
+            return datetime.datetime.now(datetime.UTC)
+
+        if isinstance(value, int):
+            # Parse as time stamp
+            try:
+                # Considered the value as seconds > milliseconds > microseconds when it's too large (> uint max).
+                # (Currently later than 2106-02-07 06:28:15)
+                while value > 4294967295:
+                    value /= 1000
+
+                return datetime.datetime.fromtimestamp(value).astimezone(datetime.UTC)
+            except Exception as e:
+                raise DemistoException(f'Error with input date / time - {e}')
+
+        if isinstance(value, str):
+            value = value.strip()
+            try:
+                # Parse as time stamp
+                return Main.__parse_date_time(int(value), base_time)
+            except (TypeError, ValueError):
+                pass
+
+        try:
+            date_time = dateparser.parse(
+                value,
+                settings=assign_params(
+                    RELATIVE_BASE=base_time
+                )
+            )
+            assert date_time is not None, f'could not parse {value}'
+
+            if date_time.tzinfo is not None:
+                return date_time
+
+            date_time = dateparser.parse(
+                value,
+                settings=assign_params(
+                    TIMEZONE='UTC',
+                    RETURN_AS_TIMEZONE_AWARE=True,
+                    RELATIVE_BASE=base_time,
+                )
+            )
+            assert date_time is not None, f'could not parse {value}'
+            return date_time
+        except Exception as e:
+            raise DemistoException(f'Error with input date / time - {e}')
+
+    @staticmethod
+    def __create_formatter(
+        args: dict[str, Any],
+        template: dict[str, Any],
+    ) -> Formatter:
+        variable_substitution = args.get('variable_substitution') or '${,}'
+        if isinstance(variable_substitution, str):
+            variable_substitution = variable_substitution.split(',', maxsplit=1)
+        elif not isinstance(variable_substitution, list):
+            raise DemistoException(f'Invalid variable substitution - {variable_substitution}')
+
+        if not variable_substitution or not variable_substitution[0]:
+            raise DemistoException('variable_substitution must have a opensing marker.')
+        elif len(variable_substitution) >= 3:
+            raise DemistoException(f'too many values for variable_substitution - {variable_substitution}.')
+        elif len(variable_substitution) == 1:
+            variable_substitution = [variable_substitution[0], '']
+
+        var_opening = demisto.get(template, 'config.variable_substitution.opening')
+        if isinstance(var_opening, str):
+            variable_substitution[0] = var_opening
+
+        var_closing = demisto.get(template, 'config.variable_substitution.closing')
+        if isinstance(var_closing, str):
+            variable_substitution[1] = var_closing
+
+        return Formatter(
+            variable_substitution=tuple(variable_substitution),
+            keep_symbol_to_null=True,
+        )
+
+    @staticmethod
+    def __build_query_params(
+        args: dict[str, Any],
+        query_name: str,
+        template: dict[str, Any],
+        formatter: Formatter,
+        context: ContextData,
+    ) -> QueryParams:
+        """ Build query parameters
+
+        :param args: The argument parameters.
+        :param query_name: The name of the query.
+        :param template: The template.
+        :param formatter: The formatter to process variable substitution.
+        :param context: The context data.
+        :return: Query parameters.
+        """
+        base_time = args.get('base_time')
+        if not base_time:
+            # Set default base time
+            for k in ['alert.occurred', 'incident.occurred', 'alert.created', 'incident.created']:
+                base_time = context.get(k)
+                if base_time and base_time != '0001-01-01T00:00:00Z':
+                    break
+            else:
+                base_time = 'now'
+
+        base_time = Main.__parse_date_time(base_time, None)
+
+        if round_time := arg_to_number(
+            demisto.get(template, 'query.time_range.round_time')
+            or args.get('round_time')
+            or 0
+        ):
+            base_time = datetime.datetime.fromtimestamp(
+                math.floor(base_time.timestamp() / round_time) * round_time,
+                base_time.tzinfo
+            )
+
+        return QueryParams(
+            query_name=query_name,
+            query_string=formatter.build(
+                template=demisto.get(template, 'query.xql'),
+                context=context,
+            ),
+            earliest_time=Main.__parse_date_time(
+                args.get('earliest_time') or '24 hours ago',
+                base_time
+            ),
+            latest_time=Main.__parse_date_time(
+                args.get('latest_time') or 'now',
+                base_time
+            )
+        )
+
+    def __init__(
+        self,
+        args: dict[str, Any],
+    ) -> None:
+        self.__args = args
+
+        fields = demisto.incident()
+        fields = dict(fields, **(fields.get('CustomFields') or {}))
+        fields.pop('CustomFields', None)
+
+        self.__context = ContextData(
+            context=demisto.context(),
+            alert=fields if is_xsiam() else None,
+            incident=None if is_xsiam() else fields,
+        )
+        self.__template_name, self.__template = self.__get_template(args)
+        self.__formatter = self.__create_formatter(args, self.__template)
+        self.__cache_type = args.get('cache_type') or CacheType.DATASET
+        if self.__cache_type not in [x.value for x in list(CacheType)]:
+            raise DemistoException('Invalid cache_type - {self.__cache_type}')
+
+        self.__max_retries = arg_to_number(
+            args.get('max_retries') or DEFAULT_RETRY_MAX
+        )
+        self.__retry_interval = arg_to_number(
+            args.get('retry_interval') or DEFAULT_RETRY_INTERVAL
+        )
+        self.__polling_interval = arg_to_number(
+            args.get('polling_interval') or DEFAULT_POLLING_INTERVAL
+        )
+        self.__xql_query_instance = (
+            demisto.get(self.__template, 'query.command.using')
+            or args.get('xql_query_instance')
+        )
+        self.__query_params = self.__build_query_params(
+            args=args,
+            query_name=self.__template_name,
+            template=self.__template,
+            formatter=self.__formatter,
+            context=self.__context,
+        )
+
+    def create(
+        self,
+    ) -> CommandResults:
+        """ Create a graph entry
+
+        :return: The command results.
+        """
+        cache = Cache(self.__template_name)
+        cache_entry = None
+        if self.__cache_type == CacheType.ENTRY:
+            entry = cache_entry = cache.load_entry(self.__query_params.query_hash())
+
+        if not cache_entry:
+            entry = EntryBuilder(
+                formatter=self.__formatter,
+                context=self.__context,
+            ).build(
+                query=Query(
+                    query_params=self.__query_params,
+                    cache=cache if self.__cache_type != CacheType.NONE else None,
+                    xql_query_instance=self.__xql_query_instance,
+                    polling_interval=self.__polling_interval,
+                    retry_interval=self.__retry_interval,
+                    retry_max=self.__max_retries,
+                ),
+                entry_params=self.__template.get('entry') or {},
+            )
+
+        res = {
+            'QueryParams': {
+                'query_name': self.__query_params.query_name,
+                'query_string': self.__query_params.query_string,
+                'earliest_time': self.__query_params.earliest_time_iso,
+                'latest_time': self.__query_params.latest_time_iso,
+            },
+            'QueryHash': self.__query_params.query_hash(),
+            'Entry': entry
+        }
+        if not cache_entry and self.__cache_type == CacheType.ENTRY:
+            cache.save_entry(self.__query_params, entry)
+
+        return CommandResults(
+            readable_output='Done.',
+            outputs={
+                'XQLDSHelper': res
+            },
+            raw_response=res,
+        )
+
+
+def main():
+    try:
+        return_results(Main(demisto.args()).create())
+    except Exception as e:
+        return_error(f'{e}\n\n{traceback.format_exc()}')
+
+
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
