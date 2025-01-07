@@ -77,5 +77,5 @@ filter event_type = "audit"
         xdm.alert.description = arrayindex(regextract(arraystring(tags,","),"name\":\"eventDetails\",\"value\":\"(.*?)\"}"),0),
         xdm.observer.type = metadata -> origin.type,
         xdm.observer.content_version = metadata -> origin.schemaVersion,
-        //xdm.observer.version = metadata -> origin.data.version,
+        xdm.observer.version = metadata -> origin.data.version,
         xdm.observer.name = metadata -> origin.data.cid;
