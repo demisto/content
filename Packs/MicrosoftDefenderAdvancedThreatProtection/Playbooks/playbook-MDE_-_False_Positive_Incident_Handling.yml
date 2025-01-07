@@ -111,6 +111,8 @@ tasks:
         simple: ${inputs.Classification}
       determination:
         simple: ${inputs.Reason}
+      comments:
+        simple: ${inputs.Comment}
       status:
         simple: Resolved
     separatecontext: false
