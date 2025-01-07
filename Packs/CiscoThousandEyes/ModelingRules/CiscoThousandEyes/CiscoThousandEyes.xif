@@ -14,9 +14,9 @@ filter SOURCE_LOG_TYPE = "AuditEvents"
     xdm.source.ipv6 = user_ipv6,
     xdm.source.user.groups = arrayfilter(arraycreate(accountGroupName, aid), "@element" != null),
     xdm.source.user.identifier = uid,
-    xdm.source.user.username = coalesce(arrayindex(regextract(user, "\(([^\)]+)\)"), 0), user), // extract user email from with parentheses, e.g., "API Sandbox User (noreply@thousandeyes.com)"
-    xdm.target.resource.name = if(affected_resources_count > 0, arraystring(arraymap(resources -> [], "@element" -> name)), ","),
-    xdm.target.resource.type = if(affected_resources_count > 0, arraystring(arraymap(resources -> [], "@element" -> type)), ",");
+    xdm.source.user.username = coalesce(arrayindex(regextract(user, "\(([^\)]+)\)"), 0), user), // extract user email from within parentheses, e.g., "API Sandbox User (noreply@thousandeyes.com)"
+    xdm.target.resource.name = if(affected_resources_count > 0, arraystring(arraydistinct(arraymap(resources -> [], "@element" -> name)), ",")),
+    xdm.target.resource.type = if(affected_resources_count > 0, arraystring(arraydistinct(arraymap(resources -> [], "@element" -> type)), ","));
 
 /* Alerts (https://developer.cisco.com/docs/thousandeyes/alert/)  */
 filter SOURCE_LOG_TYPE = "Alerts"  
