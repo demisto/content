@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Any, Dict, List
+from typing import Any
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -21,7 +21,7 @@ class Client(BaseClient):
         self._username = username
         self._password = password
 
-    def login(self) -> Dict[str, Any]:
+    def login(self) -> dict[str, Any]:
         data = {
             "email": self._username,
             "password": self._password
@@ -59,7 +59,7 @@ class Client(BaseClient):
                 return_error(
                     f'Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}')
 
-    def fetch_detections(self, token: str, hours: str) -> Dict[str, Any]:
+    def fetch_detections(self, token: str, hours: str) -> dict[str, Any]:
         headers = {
             'Authorization': f'Bearer {token}'
         }
@@ -70,7 +70,7 @@ class Client(BaseClient):
             url_suffix='/ioc-detections/' + hours,
         )
 
-    def fetch_progressions(self, token: str, hours: str) -> Dict[str, Any]:
+    def fetch_progressions(self, token: str, hours: str) -> dict[str, Any]:
         headers = {
             'Authorization': f'Bearer {token}'
         }
@@ -81,7 +81,7 @@ class Client(BaseClient):
             url_suffix='/trails/' + hours,
         )
 
-    def fetch_trail_details(self, token: str, trail_id: str) -> Dict[str, Any]:
+    def fetch_trail_details(self, token: str, trail_id: str) -> dict[str, Any]:
         headers = {
             'Authorization': f'Bearer {token}'
         }
@@ -93,7 +93,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, args: Dict[str, Any]) -> str:
+def test_module(client: Client, args: dict[str, Any]) -> str:
     token = client.get_access_token()
     hours = args.get('hours', '72')
 
@@ -109,7 +109,7 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
     return 'ok'
 
 
-def fetch_detections_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def fetch_detections_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """confluera-fetch-detections command : Returns detections present in Confluera
       Iq-Hub portal.
 
@@ -138,7 +138,7 @@ def fetch_detections_command(client: Client, args: Dict[str, Any]) -> List[Comma
 
     result = client.fetch_detections(token, hours)
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     total_detections = 0
     for idx, ioc in enumerate(result):
@@ -171,7 +171,7 @@ def fetch_detections_command(client: Client, args: Dict[str, Any]) -> List[Comma
     return command_results
 
 
-def fetch_progressions_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def fetch_progressions_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """confluera-fetch-progressions command : Returns progressions present in Confluera
       Iq-Hub portal.
 
@@ -200,7 +200,7 @@ def fetch_progressions_command(client: Client, args: Dict[str, Any]) -> List[Com
 
     result = client.fetch_progressions(token, hours)
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     total_progressions = 0
     for idx, ioc in enumerate(result):
@@ -233,7 +233,7 @@ def fetch_progressions_command(client: Client, args: Dict[str, Any]) -> List[Com
     return command_results
 
 
-def fetch_trail_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def fetch_trail_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """confluera-fetch-trail-details command : Returns details of a progression ,
       present in Confluera Iq-Hub portal ,of which provided detection is a part of.
 
