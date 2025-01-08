@@ -864,10 +864,11 @@ class EntryBuilder:
             )
             # Create color mapping
             colors = EntryBuilder.__make_color_palette(
-                names=list(filter(lambda x:isinstance(x, str), names)),
+                names=[x for x in names if isinstance(x, str)],
                 colors=records.colors,
             )
             # Build stats
+            sort: Template.Records.Sort = records.sort
             stats = [
                 assign_params(
                     name=to_str(name),
@@ -875,8 +876,8 @@ class EntryBuilder:
                     color=colors.get(name),
                 ) for fields in sorted(
                     dataset,
-                    key=lambda v: to_float(v.get(records.sort.by)),
-                    reverse=not records.sort.asc,
+                    key=lambda v: to_float(v.get(sort.by)),
+                    reverse=not sort.asc,
                 ) for name, value in [
                     (fields.get(records.name_field, ''), fields.get(records.data_field))
                 ]
@@ -1101,7 +1102,7 @@ class EntryBuilder:
             )
             # Create color mapping
             ycolors = EntryBuilder.__make_color_palette(
-                names=list(filter(lambda x:isinstance(x, str), ynames)),
+                names=[x for x in ynames if isinstance(x, str)],
                 colors=records.colors,
             )
             # Build stats
