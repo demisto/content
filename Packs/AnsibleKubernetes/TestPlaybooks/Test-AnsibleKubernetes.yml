@@ -677,3 +677,4 @@ inputs: []
 outputs: []
 fromversion: 6.0.0
 description: Test playbook for Ansible Kubernetes
+
