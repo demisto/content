@@ -137,3 +137,4 @@ view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,
 inputs: []
 outputs: []
 description: Test Playbook for the XSOAR EDL Checker integration.
+

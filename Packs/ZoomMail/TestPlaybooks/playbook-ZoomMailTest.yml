@@ -213,3 +213,4 @@ outputs: []
 quiet: true
 fromversion: 6.10.0
 description: Tests the functionality of the ZoomMail integration.
+
