@@ -35,13 +35,11 @@ def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> t
             return None
         return res_model[0]["Contents"], UNKNOWN_MODEL_TYPE
 
+    res = None
     if store_type == "mlModel":
         res = load_from_models(model_name) or load_from_list(model_name)
     elif store_type == "list":
         res = load_from_list(model_name) or load_from_models(model_name)
-    else:
-        res = None
-        demisto.debug(f"{store_type=} didn't match any of the conditions. {res=}")
 
     return res or handle_error(f"error reading model {model_name} from Demisto", is_return_error)  # type: ignore
 
@@ -55,6 +53,8 @@ def handle_error(message, is_return_error):
 
 
 def preprocess_text(text, model_type, is_return_error):
+    hash_seed, clean_html, preprocess_type = None, None, None
+
     if model_type in [FASTTEXT_MODEL_TYPE, UNKNOWN_MODEL_TYPE]:
         preprocess_type = 'nlp'
         hash_seed = demisto.args().get('hashSeed')
@@ -63,11 +63,8 @@ def preprocess_text(text, model_type, is_return_error):
         preprocess_type = 'none'
         hash_seed = None
         clean_html = 'false'
-    else:
-        preprocess_type = None
-        hash_seed = None
-        clean_html = None
-        demisto.debug(f"{model_type=} didn't match the conditions. {preprocess_type=} {hash_seed=} {clean_html=}")
+
+    input_type, input_ = None, None
 
     if isinstance(text, str):
         input_type = 'string'
@@ -75,10 +72,6 @@ def preprocess_text(text, model_type, is_return_error):
     elif isinstance(text, list):
         input_type = 'json_string'
         input_ = json.dumps(text)
-    else:
-        input_type = ''
-        input_ = ''
-        demisto.debug(f"{text=} isn't of type list or str. {input_type=} {input_=}")
     language = demisto.args().get('language', 'English')
     tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
     args = {'input': input_,
