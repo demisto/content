@@ -387,8 +387,7 @@ def prepare_search_query_data(args: dict) -> dict:
             from_time = now - (60 * 60 * 24 * within_the_last)
         elif timeframe == 'hours':
             from_time = now - (60 * 60 * within_the_last)
-        else:  # timeframe == 'minutes':
-            demisto.debug(f"{timeframe=} should be minutes.")
+        elif timeframe == 'minutes':
             from_time = now - (60 * within_the_last)
         conditions.extend((
             {
@@ -469,8 +468,7 @@ def prepare_search_query_data(args: dict) -> dict:
             to_time = now + (60 * 60 * 24 * within_the_last)
         elif timeframe == 'hours':
             to_time = now + (60 * 60 * within_the_last)
-        else:  # timeframe == 'minutes':
-            demisto.debug(f"{timeframe=} should be minutes.")
+        elif timeframe == 'minutes':
             to_time = now + (60 * within_the_last)
         conditions.extend((
             {
@@ -1282,7 +1280,6 @@ def get_artifact_type(client, artifact_id):
 
 
 def incident_attachments_command(client, incident_id):
-    incident_owner = ""
     response = incident_attachments(client, incident_id)
     if response:
         attachments = []
