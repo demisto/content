@@ -67,7 +67,18 @@ class Client(BaseClient):
         return self._http_request('GET', 'rest/api/incidents', params=params)
 
     def get_incident_request(self, inc_id: str | None) -> dict:
-        return self._http_request('GET', f'rest/api/incidents/{inc_id}')
+        data = json.dumps({
+            'meta_name': 'incidentId',
+            'meta_value': inc_id,
+            'numberOfRecords': "0",
+        })
+        response = self._http_request('GET', 'rest/api/incidents/fetch',data=data)
+
+        # Ensure the response is a list
+        if not isinstance(response, list):
+            raise ValueError("Expected the response to be a list")
+
+        return response
 
     def update_incident_request(self, id_: Any | None, status: Any | None, assignee: Any | None) -> dict:
         data = assign_params(status=status, assignee=assignee)
@@ -90,10 +101,23 @@ class Client(BaseClient):
         )
 
     def incident_list_alerts_request(self, page_size: str | None, page_number: str | None, id_: str | None) -> dict:
-        params = assign_params(pageNumber=page_number, pageSize=page_size)
-        return self._http_request(
-            'GET', f'rest/api/incidents/{id_}/alerts', params=params
+        #params = assign_params(pageNumber=page_number, pageSize=page_size)
+        data = json.dumps({
+            'meta_name': 'incidentId',
+            'meta_value': id_,
+            'numberOfRecords': "0",
+            'includeFields': "null"
+        })
+
+        response = self._http_request(
+            'GET', 'rest/api/alert/fetch', data=data
         )
+
+        # Ensure the response is a list
+        if not isinstance(response, list):
+            raise ValueError("Expected the response to be a list")
+
+        return response
 
     def services_list_request(self, name: Any | None) -> dict:
         params = assign_params(name=name)

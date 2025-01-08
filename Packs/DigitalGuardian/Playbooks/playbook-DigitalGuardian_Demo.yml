@@ -1,0 +1,472 @@
+id: Digital Guardian Demo Playbook
+version: -1
+name: Digital Guardian Demo Playbook
+description: This playbook will show how to handle an exfiltration event through Digital
+  Guardian by emailing a user's manager and adding the user to a DG Watchlist.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 88ac459f-e1af-4abb-8aaf-b79e63012f29
+    type: start
+    task:
+      id: 88ac459f-e1af-4abb-8aaf-b79e63012f29
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: e81ff2cb-4039-47a8-8b20-0fc08cc0510f
+    type: condition
+    task:
+      id: e81ff2cb-4039-47a8-8b20-0fc08cc0510f
+      version: -1
+      name: Check if Event matches the condition
+      description: Check for incident name matching event criteria
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '13'
+      'yes':
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: incident.name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.Incident Match
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 2ac2e077-3171-4b73-8577-53fbc2ecefdd
+    type: regular
+    task:
+      id: 2ac2e077-3171-4b73-8577-53fbc2ecefdd
+      version: -1
+      name: Send the Manager email about the violation
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: ${incident.digitalguardianusername} has written ${incident.digitalguardianfilename}
+          to removable media
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Removable Media Policy Violation
+      templateParams: {}
+      to:
+        complex:
+          root: UserManagerEmail
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: b20c5d85-4db6-4b50-80ee-0fee65435bcf
+    type: regular
+    task:
+      id: b20c5d85-4db6-4b50-80ee-0fee65435bcf
+      version: -1
+      name: Close incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: fcb0832b-09cc-49b1-8c8b-c0dfe81b4329
+    type: condition
+    task:
+      id: fcb0832b-09cc-49b1-8c8b-c0dfe81b4329
+      version: -1
+      name: Found user in AD
+      description: Check if we found the user in Active Directory
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '19'
+      'yes':
+      - '12'
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ActiveDirectory.Users.sAMAccountName
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: fdcfdd25-f8c2-48d8-8e77-854e26a9046c
+    type: regular
+    task:
+      id: fdcfdd25-f8c2-48d8-8e77-854e26a9046c
+      version: -1
+      name: Add  user to the DG Watchlist
+      description: Add User to Watchlist Entry
+      script: Digital Guardian|||digitalguardian-add-watchlist-entry
+      type: regular
+      iscommand: true
+      brand: Digital Guardian
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      watchlist_entry:
+        simple: ${inputs.User Name}
+      watchlist_name:
+        simple: ${inputs.Watchlist Name}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 7906cccb-e7b6-4372-894f-d97567ee8435
+    type: regular
+    task:
+      id: 7906cccb-e7b6-4372-894f-d97567ee8435
+      version: -1
+      name: Manually handle other alert type
+      description: This alert is different from the one configured in this playbook
+        to automatically investigate, please handle manually.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: ba0e57ca-65e6-4208-87fc-b26781eade5d
+    type: playbook
+    task:
+      id: ba0e57ca-65e6-4208-87fc-b26781eade5d
+      version: -1
+      name: Active Directory - Get User Manager Details
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      UserEmail: {}
+      Username:
+        complex:
+          root: inputs.User Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 653b480f-1a20-4bc3-8bb1-368a0ccb6730
+    type: playbook
+    task:
+      id: 653b480f-1a20-4bc3-8bb1-368a0ccb6730
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.User Name
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: 77aa8463-497e-499c-8eb0-28512cc8f4c0
+    type: condition
+    task:
+      id: 77aa8463-497e-499c-8eb0-28512cc8f4c0
+      version: -1
+      name: Shall we notify the manager?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Notify Manager
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+          ignorecase: true
+    view: "{\n  \"position\": {\n    \"x\": 1237.5,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: c1efa71f-e72d-4eff-83fe-e3d08d105438
+    type: condition
+    task:
+      id: c1efa71f-e72d-4eff-83fe-e3d08d105438
+      version: -1
+      name: Is User's Manager email found?
+      description: Check if User's Manager email is found
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '18'
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UserManagerEmail
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: 26f9cbac-cd35-42a3-8886-eb06dc816813
+    type: regular
+    task:
+      id: 26f9cbac-cd35-42a3-8886-eb06dc816813
+      version: -1
+      name: Manually Notify Manager
+      description: "User's Manager email not found: please manually notify the user's\
+        \ manager"
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: ffb165b3-1945-4aab-8c2b-910d3deb10e3
+    type: regular
+    task:
+      id: ffb165b3-1945-4aab-8c2b-910d3deb10e3
+      version: -1
+      name: Manually Investigate
+      description: The Digital Guardian integration is not enabled, or the User was
+        not found in Active Directory, investigate manually and handle the issue.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1790,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: 65e5d731-6a38-49ca-8c74-115c591fedb5
+    type: condition
+    task:
+      id: 65e5d731-6a38-49ca-8c74-115c591fedb5
+      version: -1
+      name: Is Digital Guardian Enabled?
+      description: Is Digital Guardian integration enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '19'
+      'yes':
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Digital Guardian
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '21':
+    id: '21'
+    taskid: bcbdd941-c197-4b41-8533-54f048b867b0
+    type: title
+    task:
+      id: bcbdd941-c197-4b41-8533-54f048b867b0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"20_2_yes\": 0.41\n  },\n  \"paper\":\
+  \ {\n    \"dimensions\": {\n      \"height\": 1785,\n      \"width\": 2120,\n  \
+  \    \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: User Name
+  value:
+    simple: ${incident.digitalguardianusername}
+  required: true
+  description: User Name to check
+- key: Watchlist Name
+  value:
+    simple: DLP-USB-USERS
+  required: true
+  description: The name of the DG watchlist to add the user to.
+- key: Incident Match
+  value:
+    simple: DLP1008
+  required: true
+  description: The incident name should contain this string in order for the playbook
+    to handle the event.  The default is DLP1008 which is a USB Exfiltration event.
+- key: Notify Manager
+  value:
+    simple: 'true'
+  required: false
+  description: Notify User's Manager
+outputs: []
+sourceplaybookid: 20bb2629-4467-456f-8d20-c89e17842fa7
+fromversion: 5.0.0
+tests:
+- No tests
