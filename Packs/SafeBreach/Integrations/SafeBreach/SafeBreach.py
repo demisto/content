@@ -958,7 +958,7 @@ class Client(BaseClient):
         error_map = {"ERROR": "errors", "WARNING": "warnings"}
         log = {}
         preference = demisto.args().get("error_type") if demisto else None
-        preference = error_map.get(preference, "")
+        preference = error_map.get(preference, "")  # type: ignore[arg-type]
         connector_map = self.get_integration_details()
         for connector in error_logs:
             # if preference is empty means we need to fetch both the errors and warnings.
