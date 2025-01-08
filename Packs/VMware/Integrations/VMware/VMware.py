@@ -490,7 +490,7 @@ def get_events(si, args):
     if (args.get('start_date') and not time.beginTime) or (args.get('end_date') and not time.endTime):  # type: ignore
         raise Exception("Dates given in a wrong format.")
     by_user_name = vim.event.EventFilterSpec.ByUsername()  # type: ignore
-    by_user_name.userList = args.get('user', '').split(',') if args.get('user') else None
+    by_user_name.userList = args.get('user', '').split(',') or None  # type: ignore[assignment]
     filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")  # type: ignore
     ids = args.get('event-type').split(',')
 
