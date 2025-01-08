@@ -1269,6 +1269,23 @@ Caching can be controlled by the `cache_type` argument parameter.
    * Only entry data is stored in the cache. The same entry is returned if the query parameters remain unchanged. This option helps minimize the cache data size. However, if only the parameters within the entry are modified (for example, if the 'colors' parameter is modified), the correct entry cannot be retrieved, as it does not re-query the record set to create a new entry with the updated settings.
 
 
+## Record Limit for Query Results
+
+XQL queries are executed using the `xdr-xql-generic-query` command, which is provided by the `XQL Query Engine` integration.
+By default, the command limits the number of record sets returned. To retrieve more records, you need to add a `limit` stage in the XQL query.
+
+Below is a sample XQL query that includes a `limit` stage:
+
+```
+dataset = panw_ngfw_traffic_raw 
+| filter app != null
+| bin _time span = 1h timeshift = 3600
+| dedup session_id
+| comp approx_top(app, 10) as apps by _time
+| limit 240 // to allow retrieving up to 10 apps x 24 hours of records, as the default limit is 100.
+```
+
+
 ## Sample Content Bundle
 
 To assist you more effectively, we’ve provided sample automation scripts with List data, including XQL query strings, in a content bundle.
