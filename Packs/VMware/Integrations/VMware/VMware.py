@@ -203,11 +203,11 @@ def apply_get_vms_filters(args, vm_summery):
 
 def get_priority(priority):
     if priority == 'highPriority':
-        return vim.VirtualMachine.MovePriority().highPriority  # type: ignore
+        return vim.VirtualMachine.MovePriority().highPriority  # type: ignore[call-arg] # pylint: disable=no-value-for-parameter
     elif priority == 'lowPriority':
-        return vim.VirtualMachine.MovePriority().lowPriority  # type: ignore
+        return vim.VirtualMachine.MovePriority().lowPriority  # type: ignore[call-arg] # pylint: disable=no-value-for-parameter
     else:
-        return vim.VirtualMachine.MovePriority().defaultPriority  # type: ignore
+        return vim.VirtualMachine.MovePriority().defaultPriority  # type: ignore[call-arg] # pylint: disable=no-value-for-parameter
 
 
 def get_vms(si, args):
@@ -855,6 +855,7 @@ def main():  # pragma: no cover
         sys.stdout = StringIO()
     res = []
     si = None
+    result: Any
     try:
         si = login(demisto.params())
         if demisto.command() == 'test-module':
