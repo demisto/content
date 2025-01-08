@@ -24,17 +24,17 @@ Core_URL = 'https://api.xdrurl.com'
 POWERSHELL_COMMAND_CASES = [
     pytest.param(
         "Write-Output 'Hello, world, it`s me!'",
-        "powershell -Command 'Write-Output ''Hello, world, it`s me!'''",
+        "powershell -Command \"Write-Output ''Hello, world, it`s me!''\"",
         id='Hello World message',
     ),
     pytest.param(
         r"New-Item -Path 'C:\Users\User\example.txt' -ItemType 'File'",
-        "powershell -Command 'New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File'''",
+        "powershell -Command \"New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File''\"",
         id='New file in path with backslashes',
     ),
     pytest.param(
         "$message = 'This is a test with special chars: `&^%$#@!'; Write-Output $message",
-        "powershell -Command '$message = ''This is a test with special chars: `&^%$#@!''; Write-Output $message'",
+        "powershell -Command \"$message = ''This is a test with special chars: `&^%$#@!''; Write-Output $message\"",
         id='Special characters message',
     ),
     pytest.param(
@@ -46,11 +46,11 @@ POWERSHELL_COMMAND_CASES = [
             "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }"
         ),
         (
-            "powershell -Command '$users = @(JohnDoe) -split '';''; query user | Select-Object -Skip 1 | "
+            "powershell -Command \"$users = @(JohnDoe) -split '';''; query user | Select-Object -Skip 1 | "
             "ForEach-Object { $sessionInfo = $_ -split ''\\s+'' | "
             "Where-Object { $_ -ne '''' -and $_ -notlike ''Disc'' }; "
             "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart(''>''); "
-            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }'"
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }\""
         ),
         id='End RDP session for users',
     ),
