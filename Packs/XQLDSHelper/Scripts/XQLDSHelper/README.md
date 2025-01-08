@@ -107,7 +107,7 @@ The summary of the template structure in the templates is provided below.
 ---
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| .query.xql | The XQL query string to retrieve the record set to create an entry. [Variable Substitution](#Variable-Substitution) is supported. | String |
+| .query.xql | The XQL query string to retrieve the record set to create an entry. [Variable Substitution](#variable-substitution) is supported. | String |
 | .query.command.using | [Optional] The name of the integration instance to execute the XQL query command. It overrides `xql_query_instance` in the argument parameters. | String |
 | .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. It overrides `round_time` in the argument parameters. | String or Number |
 
@@ -141,7 +141,7 @@ The `.entry.type` specifies the type of the entry, as shown below.
 | stacked-bar | Stacked-Bar Chart | ![](../../doc_files/stacked-bar.png) |
 | duration | Time duration | ![](../../doc_files/duration.png) |
 
-This node supports [Variable Substitution](#Variable-Substitution) for all parameters.
+This node supports [Variable Substitution](#variable-substitution) for all parameters.
 
 
 #### Node: entry.markdown
@@ -406,7 +406,7 @@ In this case, the settings must be configured under the `.records` node, as show
 | --- | --- | --- |
 | .records.name-field | The name of the field used to display the legend labels for each slice in the pie chart. | String |
 | .records.data-field | The name of the field that represents the summed value for each slice. | String |
-| .records.colors | [Optional] The color configuration for each slice. For more details, see [.colors](#Common-Node:-.colors). | List, Dict, or String |
+| .records.colors | [Optional] The color configuration for each slice. For more details, see [.colors](#common-node:-colors). | List, Dict, or String |
 | .records.sort.by | [Optional] The name of the field by which to sort the record set. If not specified, the value of `.records.data-field` will be used by default. | String |
 | .records.sort.order | [Optional] The sort order. Specifies either `asc` (default) for ascending or `desc` for descending. | String |
 
@@ -611,7 +611,7 @@ In this case, the settings must be configured under the `.y.records` node, as sh
 | --- | --- | --- |
 | .y.records.name-field | The name of the field used to display the legend labels for each item in the series. | String |
 | .y.records.data-field | The name of the field that represents the summed value plotted for each X-axis item. | String |
-| .y.records.colors | [Optional] The color configuration for each item in the series. For more details, see [.colors](#Common-Node:-.colors). | List, Dict or String |
+| .y.records.colors | [Optional] The color configuration for each item in the series. For more details, see [.colors](#common-node:-colors). | List, Dict or String |
 
 Below is a sample XQL query and the corresponding `records` structure in the entry node.
 
@@ -774,7 +774,7 @@ In this case, the settings must be configured under the `.records` node, as show
 | --- | --- | --- |
 | .records.name-field | The name of the field used to display the legend labels for each bar in the single-bar chart. | String |
 | .records.data-field | The name of the field that represents the summed value for each bar. | String |
-| .records.colors | [Optional] The color configuration for each bar. For more details, see [.colors](#Common-Node:-.colors). | List, Dict, or String |
+| .records.colors | [Optional] The color configuration for each bar. For more details, see [.colors](#common-node:-colors). | List, Dict, or String |
 | .records.sort.by | [Optional] The name of the field by which to sort the record set. If not specified, the value of `.records.data-field` will be used by default. | String |
 | .records.sort.order | [Optional] The sort order. Specifies either `asc` (default) for ascending or `desc` for descending. | String |
 
@@ -982,7 +982,7 @@ In this case, the settings must be configured under the `.y.records` node, as sh
 | --- | --- | --- |
 | .y.records.name-field | The name of the field used to display the legend labels for each item in the groups. | String |
 | .y.records.data-field | The name of the field that represents the summed value plotted for each X-axis item. | String |
-| .y.records.colors | [Optional] The color configuration for each item in the groups. For more details, see [.colors](#Common-Node:-.colors). | List, Dict, or String |
+| .y.records.colors | [Optional] The color configuration for each item in the groups. For more details, see [.colors](#common-node:-colors). | List, Dict, or String |
 
 Below is a sample XQL query and the corresponding `records` structure in the entry node.
 
