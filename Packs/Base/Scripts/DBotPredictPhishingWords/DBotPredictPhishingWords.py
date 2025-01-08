@@ -35,6 +35,7 @@ def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> t
             return None
         return res_model[0]["Contents"], UNKNOWN_MODEL_TYPE
 
+    res = None
     if store_type == "mlModel":
         res = load_from_models(model_name) or load_from_list(model_name)
     elif store_type == "list":
@@ -52,6 +53,8 @@ def handle_error(message, is_return_error):
 
 
 def preprocess_text(text, model_type, is_return_error):
+    hash_seed, clean_html, preprocess_type = None, None, None
+
     if model_type in [FASTTEXT_MODEL_TYPE, UNKNOWN_MODEL_TYPE]:
         preprocess_type = 'nlp'
         hash_seed = demisto.args().get('hashSeed')
@@ -60,6 +63,9 @@ def preprocess_text(text, model_type, is_return_error):
         preprocess_type = 'none'
         hash_seed = None
         clean_html = 'false'
+
+    input_type, input_ = None, None
+
     if isinstance(text, str):
         input_type = 'string'
         input_ = text
