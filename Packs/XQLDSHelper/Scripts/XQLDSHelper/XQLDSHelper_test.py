@@ -15,6 +15,7 @@ import urllib.parse
 from collections.abc import Iterator
 from typing import Any
 from types import TracebackType
+from typing_extensions import Self
 from pytest_mock import MockerFixture
 
 
@@ -110,7 +111,7 @@ class MainTester:
 
     def __enter__(
         self,
-    ):
+    ) -> Self:
         if self.__frozen_now:
             self.__freezer_now = freezegun.freeze_time(self.__frozen_now)
             self.__freezer_now.start()
