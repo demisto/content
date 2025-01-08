@@ -2222,6 +2222,11 @@ def panorama_edit_address_group_command(args: dict):
     element_to_remove = argToList(
         args['element_to_remove']) if 'element_to_remove' in args else None
 
+    match_path: str
+    match_param: str
+    addresses_param: str
+    addresses_path: str
+    result: Any
     if type_ == 'dynamic':
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
@@ -2790,7 +2795,7 @@ def panorama_edit_service_group(service_group_name: str, services: List[str], ta
         'element': '',
         'key': API_KEY,
     }
-
+    result: Any
     if services:
         services_xpath = XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']/members"
         services_element = '<members>' + add_argument_list(services, 'member', False) + '</members>'
@@ -4268,7 +4273,7 @@ def panorama_custom_block_rule_command(args: dict):
     tags = argToList(args['tags']) if 'tags' in args else None
     where = args.get('where', 'bottom')
     dst = args.get('dst')
-
+    result: Any
     if not DEVICE_GROUP:
         if target:
             raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
@@ -14317,7 +14322,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
     ip_duration_sec = args.get('ip_duration_sec', '')
     exception_id = ""
     exception_name = ""
-
+    params: dict
     if xpath_action == 'block-ip' and (not ip_track_by or not ip_duration_sec):
         raise DemistoException(
             "ip_track_by and ip_duration_sec are required when action is 'Block IP'."
