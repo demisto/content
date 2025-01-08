@@ -1112,11 +1112,7 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
   }
 }
 ```
-next(iter(x), {})
-x[0] if x else {}
-x and x[0] or {}
-data_list and data_list[0] or {}
-next(iter(data_list ), {})
+
 
 #### Node: entry.duration
 ---
