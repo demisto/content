@@ -1687,29 +1687,43 @@ class Main:
         args: dict[Hashable, Any],
         template: dict[Hashable, Any],
     ) -> Formatter:
-        variable_substitution = args.get('variable_substitution') or '${,}'
-        if isinstance(variable_substitution, str):
-            variable_substitution = variable_substitution.split(',', maxsplit=1)
-        elif not isinstance(variable_substitution, list):
-            raise DemistoException(f'Invalid variable substitution - {variable_substitution}')
+        vs = args.get('variable_substitution') or '${,}'
+        if isinstance(vs, str):
+            vs = vs.split(',', maxsplit=1)
+        elif not isinstance(vs, list):
+            raise DemistoException(f'Invalid variable substitution - {vs}')
 
-        if not variable_substitution or not variable_substitution[0]:
+        if not vs or not vs[0]:
             raise DemistoException('variable_substitution must have a opening marker.')
-        elif len(variable_substitution) >= 3:
-            raise DemistoException(f'too many values for variable_substitution - {variable_substitution}.')
-        elif len(variable_substitution) == 1:
-            variable_substitution = [variable_substitution[0], '']
+        elif len(vs) == 1:
+            assert isinstance(vs[0], str), f'opening marker must be of type str - {vs[0]}'
+            vs = [vs[0], '']
+        elif len(vs) == 2:
+            assert isinstance(vs[0], str) and isinstance(vs[1], str), (
+                f'opening/closing marker must be of type str - {vs}'
+            )
+        else:
+            raise DemistoException(f'too many values for variable_substitution - {vs}.')
 
         var_opening = demisto.get(template, 'config.variable_substitution.opening')
-        if isinstance(var_opening, str):
-            variable_substitution[0] = var_opening
+        if var_opening is not None:
+            assert var_opening and isinstance(var_opening, str), (
+                'config.variable_substitution.opening must be of type str,'
+                f'and cannot be empty when provided - {var_opening}'
+            )
+        else:
+            var_opening = vs[0]
 
         var_closing = demisto.get(template, 'config.variable_substitution.closing')
-        if isinstance(var_closing, str):
-            variable_substitution[1] = var_closing
+        if var_closing is not None:
+            assert isinstance(var_closing, str), (
+                f'config.variable_substitution.closing must be of type str - {var_opening}'
+            )
+        else:
+            var_closing = vs[1]
 
         return Formatter(
-            variable_substitution=tuple(variable_substitution),  # type: ignore[arg-type]
+            variable_substitution=(str(var_opening), str(var_closing)),
             keep_symbol_to_null=True,
         )
 
