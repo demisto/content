@@ -2212,6 +2212,7 @@ def cast_mime_item_to_message(item):
 
     return message
 
+
 def parse_incident_from_item(item):  # pragma: no cover
     """
     Parses an incident from an item
