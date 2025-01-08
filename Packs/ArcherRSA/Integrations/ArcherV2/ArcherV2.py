@@ -1295,6 +1295,7 @@ def search_applications_command(client: Client, args: dict[str, str]):
     limit = args.get("limit")
     endpoint_url = f"{API_ENDPOINT}/core/system/application/"
 
+    res = []
     if app_id:
         endpoint_url = f"{API_ENDPOINT}/core/system/application/{app_id}"
         res = client.do_rest_request("GET", endpoint_url)
@@ -1666,7 +1667,7 @@ def is_valid_xml(xml_document: str, blacklisted_tags: list[str] | None = None) -
     except ET.ParseError:
         return False
 
-    return all(not (root.tag == blacklisted_tag or root.find(blacklisted_tag) is not None) for blacklisted_tag in blacklisted_tags)
+    return all(root.tag != blacklisted_tag and root.find(blacklisted_tag) is None for blacklisted_tag in blacklisted_tags)
 
 
 def search_records_command(client: Client, args: dict[str, str]):
@@ -1819,12 +1820,16 @@ def fetch_incidents(
     xml_filter_condition = params.get("fetch_xml")
     logical_operator = params.get("logical_operator")
 
-    # If an XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
+    # If XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
     if xml_filter_condition and not is_valid_xml(xml_filter_condition, blacklisted_tags=[FilterConditionTypes.date.value]):
         raise ValueError(
             "The 'XML for fetch filtering' parameter either contains a "
             f"syntax error or is of type '{FilterConditionTypes.date.value}'."
         )
+
+    # If logical operator is given, verify it is not "or" since it would result in the fetching of duplicate incidents
+    if logical_operator and logical_operator.casefold() == "or":
+        raise ValueError("The 'Fetch filtering logic operator' parameter cannot have a value of 'OR'.")
 
     # API Call
     records, _ = client.search_records(

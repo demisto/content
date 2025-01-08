@@ -3,11 +3,12 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/ or https://192.168.0.1/archer)
+- additionalinfo: 'For example: https://192.168.0.1/rsaarcher, https://192.168.0.1/, or https://192.168.0.1/archer.'
+  display: Server URL 
   name: url
   required: true
   type: 0
-- additionalinfo: Change only if you have another API endpoint.
+- additionalinfo: Change only if using another API endpoint.
   defaultvalue: api
   display: 'Advanced: API Endpoint'
   name: api_endpoint
@@ -42,19 +43,20 @@ configuration:
   name: applicationDateField
   required: true
   type: 0
-  additionalinfo: The value should be the field name
+  additionalinfo: The value should be the field name.
 - defaultvalue: '10'
   display: Maximum number of incidents to pull per fetch
   name: fetch_limit
   type: 0
   required: false
 - defaultvalue: 3 days
-  additionalinfo: 'In the <number> <time unit> format. For example: 12 hours, 7 days, 3 months, 1 year.'
+  additionalinfo: 'Time from which to begin fetching incidents in the <number> <time unit> format. For example: 12 hours, 7 days, 3 months, 1 year.'
   display: First fetch timestamp
   name: fetch_time
   type: 0
   required: false
-- display: List of fields from the application to get into the incident
+- additionalinfo: 'A comma-separated list of application field names. For example: "Field A,Field B".'
+  display: List of fields from the application to get into the incident
   name: fields_to_fetch
   type: 0
   required: false
@@ -63,12 +65,12 @@ configuration:
   name: fetch_xml
   type: 0
   required: false
-- additionalinfo: 'Logic operator used for building the "OperatorLogic" XML element for filtering. For example: Inputting "AND" results in "<OperatorLogic>1 AND 2 AND 3 ... AND N</OperatorLogic>", where N is the number of filtering conditions.'
+- additionalinfo: 'Logic operator used for building the "OperatorLogic" XML element for filtering. For example: Inputting "AND" results in "<OperatorLogic>1 AND 2 AND 3 ... AND N</OperatorLogic>", where N is the number of filtering conditions. This cannot be "OR" since it would result in the fetching of duplicate incidents.'
   display: Fetch filtering logic operator
   name: logical_operator
   type: 0
   required: false
-- additionalinfo: Request timeout value, in seconds. Default is 400.
+- additionalinfo: Request timeout value in seconds.
   defaultvalue: '400'
   display: Timeout
   name: timeout

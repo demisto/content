@@ -1,35 +1,38 @@
 The RSA Archer GRC platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.
 
-## Configure RSA Archer v2 on Cortex XSOAR
+## Configure RSA Archer v2 in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for RSA Archer v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL<br/>For example: <https://example.net>, <https://example.net/rsaarcher>, <https://example.net/archer> | True |
-    | API Endpoint<br/>Warning: Change only if you have another API endpoint. | True |
-    | Username | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Instance name | True |
-    | User domain | False |
-    | Application ID for fetch | True |
-    | Application date field for fetch | True |
-    | Maximum number of incidents to pull per fetch | False |
-    | First fetch timestamp | False |
-    | List of fields from the application to get into the incident | False |
-    | XML for fetch filtering | False |
-    | Fetch filtering logic operator | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL | For example: https://192.168.0.1/rsaarcher, https://192.168.0.1/, or https://192.168.0.1/archer. | True |
+    | Advanced: API Endpoint | Change only if using another API endpoint. | True |
+    | Username | | True |
+    | Fetch incidents | | False |
+    | Incident type | | False |
+    | Trust any certificate (not secure) | | False |
+    | Use system proxy settings | | False |
+    | Timeout | Request timeout value in seconds. Default is 400. | False |
+    | Instance name | | True |
+    | User domain | | False |
+    | Application ID for fetch | | True |
+    | Application date field for fetch | The value should be the field name. Default is Date/Time Occurred. | True |
+    | Maximum number of incidents to pull per fetch | Default is 10. | False |
+    | First fetch timestamp | Time from which to begin fetching incidents in the `<number> <time unit>` format. For example: 12 hours, 7 days, 3 months, 1 year. | False |
+    | List of fields from the application to get into the incident | A comma-separated list of application field names. For example: `Field A,Field B`. | False |
+    | XML for fetch filtering | XML condition element which can be appended to the fetch date filter conditions. For example: "TextFilterCondition" XML element. This cannot be a "DateComparisonFilterCondition" element since it would interfere with the existing fetch filter. | False |
+    | Fetch filtering logic operator | Logic operator used for building the "OperatorLogic" XML element for filtering. For example: Inputting "AND" results in `<OperatorLogic>1 AND 2 AND 3 ... AND N</OperatorLogic>`, where `N` is the number of filtering conditions. This cannot be "OR" since it would result in the fetching of duplicate incidents. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Limitations
 
-- The XML for fetch filtering configuration parameter cannot be a "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter. Other types of filtering conditions, such as "TextFilterCondition", are allowed.
+- The "XML for fetch filtering" configuration parameter cannot be a "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter. Other types of filtering conditions, such as "TextFilterCondition", are allowed.
+
+- The "Fetch filtering logic operator" configuration parameter cannot have a value of "OR" since it would result in the fetching of duplicate incidents.
 
 - Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requires credential based authentication.
 
@@ -69,7 +72,7 @@ Gets application details or list of all applications.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "Application": {
@@ -123,7 +126,7 @@ Gets all application fields by application ID.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "ApplicationField": [
@@ -211,7 +214,7 @@ Returns a mapping from list value name to list value ID.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "ApplicationField": {
@@ -263,7 +266,7 @@ Returns a mapping of fields by level ID.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "LevelMapping": [
@@ -335,7 +338,7 @@ Gets information about a content record in the given application.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "Record": {
@@ -461,7 +464,7 @@ To determine the appropriate field type value, use the `archer-get-application-f
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "Record": {
@@ -500,7 +503,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {}
 ```
 
@@ -537,7 +540,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {}
 ```
 
@@ -571,7 +574,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {}
 ```
 
@@ -630,7 +633,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "Report": [
@@ -674,7 +677,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {}
 ```
 
@@ -747,7 +750,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {}
 ```
 
@@ -784,7 +787,7 @@ Returns a list of values for a specified field, for example, fieldID=16114. This
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "ApplicationField": {
@@ -865,7 +868,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {}
 ```
 
@@ -899,7 +902,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {
     "File": {
         "EntryID": "16680@b32fdf18-1c65-43af-8918-7f85a1fab951",
@@ -953,7 +956,7 @@ Gets details for a user or a list of all users.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "User": {
@@ -1019,7 +1022,7 @@ Search for records inside the given application
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "Record": {
@@ -1071,7 +1074,7 @@ Searches records by report GUID.
 
 #### Context Example
 
-```
+```json
 {
     "Archer": {
         "SearchByReport": {
@@ -1147,7 +1150,7 @@ There is no context output for this command.
 
 #### Context Example
 
-```
+```json
 {}
 ```
 
