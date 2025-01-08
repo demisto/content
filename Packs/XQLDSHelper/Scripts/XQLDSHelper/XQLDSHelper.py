@@ -713,8 +713,9 @@ class EntryBuilder:
                         sort: dict[str, Any],
                         default_by: str,
                     ) -> None:
-                        self.__by = sort.get('by') or default_by
-                        assert isinstance(self.__by, str), f'sort.by must be str - {type(self.__by)}'
+                        by = sort.get('by') or default_by
+                        assert isinstance(by, str) or by is None, f'sort.by must be str or null - {type(by)}'
+                        self.__by = by or default_by
 
                         self.__asc = EntryBuilder.to_sort_order(sort.get('order') or 'asc')
 
@@ -734,11 +735,13 @@ class EntryBuilder:
                     self,
                     records: dict[str, Any],
                 ) -> None:
-                    self.__name_field = records.get('name-field')
-                    assert isinstance(self.__name_field, str), f'name-field must be str - {type(self.__name_field)}'
+                    name_field = records.get('name-field')
+                    assert isinstance(name_field, str), f'name-field must be str - {type(name_field)}'
+                    self.__name_field = name_field
 
-                    self.__data_field = records.get('data-field')
-                    assert isinstance(self.__data_field, str), f'data-field must be str - {type(self.__data_field)}'
+                    data_field = records.get('data-field')
+                    assert isinstance(data_field, str), f'data-field must be str - {type(data_field)}'
+                    self.__data_field = data_field
 
                     colors = records.get('colors')
                     if isinstance(colors, list):
@@ -761,13 +764,13 @@ class EntryBuilder:
                 def name_field(
                     self,
                 ) -> str:
-                    return self.__name_field  # type: ignore[return-value]
+                    return self.__name_field
 
                 @property
                 def data_field(
                     self,
                 ) -> str:
-                    return self.__data_field  # type: ignore[return-value]
+                    return self.__data_field
 
                 @property
                 def colors(

@@ -13,12 +13,9 @@ import freezegun
 import os.path
 import urllib.parse
 from collections.abc import Iterator
-from typing import Any, TypeVar
+from typing import Any
 from types import TracebackType
 from pytest_mock import MockerFixture
-
-
-MainTesterSelf = TypeVar('MainTesterSelf', bound='MainTester')
 
 
 def to_list(
@@ -113,7 +110,7 @@ class MainTester:
 
     def __enter__(
         self,
-    ) -> MainTesterSelf:
+    ):
         if self.__frozen_now:
             self.__freezer_now = freezegun.freeze_time(self.__frozen_now)
             self.__freezer_now.start()
