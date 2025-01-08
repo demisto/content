@@ -69,9 +69,9 @@ class ContextData:
         alert: dict[Hashable, Any] | None = None,
         value: dict[Hashable, Any] | None = None,
     ) -> None:
-        self.__context = context
-        self.__value = value
-        self.__specials = {
+        self.__context: dict[Hashable, Any] = context
+        self.__value: dict[Hashable, Any] = value
+        self.__specials: dict[Hashable, Any] = {
             'alert': alert if isinstance(alert, dict) else {},
             'incident': incident if isinstance(incident, dict) else {},
             'lists': None,
@@ -643,7 +643,7 @@ class EntryBuilder:
                 key=lambda v: SortableValue(v.get(sort_by)),
                 reverse=not asc,
             ),
-            key=lambda v: v.get(group_by)
+            key=lambda v: v.get(group_by)  # type: ignore[arg-type, return-value]
         )
 
     @staticmethod
@@ -661,7 +661,7 @@ class EntryBuilder:
         """
         d: dict[Hashable, float] = defaultdict(float)
         for fields in dataset:
-            d[fields.get(group_by) or ''] += to_float(fields.get(sum_field))
+            d[fields.get(group_by)] += to_float(fields.get(sum_field))
         return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
 
     @staticmethod
@@ -681,7 +681,7 @@ class EntryBuilder:
         elif isinstance(colors, list):
             color_order = colors
 
-        color_map = {
+        color_map: dict[Hashable, str] = {
             name: color
             for name, color in zip(
                 names,
@@ -865,7 +865,7 @@ class EntryBuilder:
             )
             # Create color mapping
             colors = EntryBuilder.__make_color_palette(
-                names=list(names),
+                names=list(filter(lambda x:isinstance(x, str), names)),
                 colors=records.colors,
             )
             # Build stats
@@ -1102,7 +1102,7 @@ class EntryBuilder:
             )
             # Create color mapping
             ycolors = EntryBuilder.__make_color_palette(
-                names=list(ynames),
+                names=list(filter(lambda x:isinstance(x, str), ynames)),
                 colors=records.colors,
             )
             # Build stats
@@ -1694,7 +1694,7 @@ class Main:
             raise DemistoException(f'Invalid variable substitution - {variable_substitution}')
 
         if not variable_substitution or not variable_substitution[0]:
-            raise DemistoException('variable_substitution must have a opensing marker.')
+            raise DemistoException('variable_substitution must have a opening marker.')
         elif len(variable_substitution) >= 3:
             raise DemistoException(f'too many values for variable_substitution - {variable_substitution}.')
         elif len(variable_substitution) == 1:
@@ -1807,13 +1807,16 @@ class Main:
 
         self.__max_retries: int = self.__arg_to_int(
             'max_retries', DEFAULT_RETRY_MAX
-        )  # Allow 0
+        )  # max_retries accepts 0
+
         self.__retry_interval: int = self.__arg_to_int(
             'retry_interval', DEFAULT_RETRY_INTERVAL
         ) or DEFAULT_RETRY_INTERVAL
+
         self.__polling_interval: int = self.__arg_to_int(
             'polling_interval', DEFAULT_POLLING_INTERVAL
         ) or DEFAULT_POLLING_INTERVAL
+
         self.__xql_query_instance: str | None = (
             demisto.get(self.__template, 'query.command.using')
             or args.get('xql_query_instance')
@@ -1835,26 +1838,25 @@ class Main:
         """
         cache = Cache(self.__template_name)
         if self.__cache_type == CacheType.ENTRY:
-            entry = cache_entry = cache.load_entry(self.__query_params.query_hash())
+            cache_entry = cache.load_entry(self.__query_params.query_hash())
         else:
-            entry = cache_entry = None
+            cache_entry = None
 
-        if not cache_entry:
-            entry = EntryBuilder(
-                formatter=self.__formatter,
-                context=self.__context,
-            ).build(
-                query=Query(
-                    query_params=self.__query_params,
-                    cache=cache if self.__cache_type != CacheType.NONE else None,
-                    xql_query_instance=self.__xql_query_instance,
-                    polling_interval=self.__polling_interval,
-                    retry_interval=self.__retry_interval,
-                    retry_max=self.__max_retries,
-                ),
-                entry_params=self.__template.get('entry') or {},
-            )
-
+        entry = cache_entry or EntryBuilder(
+            formatter=self.__formatter,
+            context=self.__context,
+        ).build(
+            query=Query(
+                query_params=self.__query_params,
+                cache=cache if self.__cache_type != CacheType.NONE else None,
+                xql_query_instance=self.__xql_query_instance,
+                polling_interval=self.__polling_interval,
+                retry_interval=self.__retry_interval,
+                retry_max=self.__max_retries,
+            ),
+            entry_params=self.__template.get('entry') or {},
+        )
+  
         res = {
             'QueryParams': {
                 'query_name': self.__query_params.query_name,
