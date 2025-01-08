@@ -34,7 +34,6 @@ select = [
     "E742", # ambiguous-class-name
     "E743", # ambiguous-function-name
     "E902", # io-error
-    "E999", # syntax-error
 
     "F402", # import-shadowed-by-loop-var
     "F404", # late-future-import
@@ -164,7 +163,6 @@ select = [
     "SIM220", # expr-and-not-expr
     "SIM221", # expr-or-not-expr
     "SIM223", # expr-and-false
-    "SIM910", # dict-get-with-none-default
 
     "T203", # p-print
 
@@ -174,7 +172,6 @@ select = [
     "UP013", # convert-typed-dict-functional-to-class
     "UP017", # datetime-timezone-utc
     "UP021", # replace-universal-newlines
-    "UP027", # unpacked-list-comprehension
     "UP029", # unnecessary-builtin-import
     "UP033", # lru-cache-with-maxsize-none
     "UP037", # quoted-annotation
