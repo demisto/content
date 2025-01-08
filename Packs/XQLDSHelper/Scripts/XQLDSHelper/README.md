@@ -1260,7 +1260,7 @@ In addition, it supports extended variables that start with `.`. Currently, only
 
 
 
-### Caching
+## Caching
 
 When caching is enabled, data is stored in the context data and retrieved from it to create the entry, preventing repeated execution of the same query with the same conditions in order to improve performance.
 It is managed under the `XQLDSHelperCache.<template-name>` path within the context data.
@@ -1274,7 +1274,7 @@ Caching can be controlled by the `cache_type` argument parameter.
 
 
 
-### Sample Content Bundle
+## Sample Content Bundle
 
 To assist you more effectively, we’ve provided sample automation scripts with List data, including XQL query strings, in a content bundle.
 You can conveniently download them using the link here.
