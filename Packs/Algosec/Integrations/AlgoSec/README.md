@@ -1,4 +1,4 @@
-Algosec BusinessFlow(ABF), Firewall Analyzer (AFA) and FireFlow(AFF).
+Algosec AppViz, Firewall Analyzer (AFA) and FireFlow(AFF).
 
 ## Configure AlgoSec on XSOAR
 ---
@@ -70,7 +70,7 @@ There is no context output for this command.
 
 ### 3. algosec-get-applications
 ---
-Find applications containing network objects related to IP address using BusinessFlow
+Find applications containing network objects related to IP address using AppViz
 
 ##### Base Command
 

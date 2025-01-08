@@ -2,7 +2,7 @@
     "name": "KELA RaDark",
     "description": "This content pack enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.",
     "support": "partner",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.8",
     "author": "KELA",
     "url": "ke-la.com",
     "email": "support@ke-la.com",

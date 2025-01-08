@@ -891,7 +891,7 @@ class Client(BaseClient):
         """
         headers = {
             'token': self._token,
-            'Accept': 'application/vnd.snypr.app-v4.0+json'
+            'Accept': 'application/vnd.snypr.app-v6.0+json'
         }
         params = {
             'type': 'list',
@@ -916,7 +916,7 @@ class Client(BaseClient):
         """
         headers = {
             'token': self._token,
-            'Accept': 'application/vnd.snypr.app-v4.0+json'
+            'Accept': 'application/vnd.snypr.app-v6.0+json'
         }
         params = {
             'type': 'metaInfo',
@@ -2808,12 +2808,41 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
             incident_id = str(incident.get('incidentId', 0))
             violator_id = str(incident.get('violatorId', 0))
             reasons = incident.get('reason', [])
+            policy_list: list[str] = []
+            policy_stages_json = {}
+            policy_stages_table = []
             if isinstance(reasons, list):
                 for reason in reasons:
                     if isinstance(reason, str) and 'PolicyType' in reason:
                         policy_type = reason.split(':')[-1].strip()
                         incident['policy_type'] = policy_type
-                        break
+                    if isinstance(reason, dict) and 'Policies' in reason:
+                        # Parse the policies.
+                        policies = reason.get('Policies')
+                        if not isinstance(policies, dict):
+                            continue
+                        policy_keys = list(policies.keys())
+                        policy_keys.sort()
+                        for stage_key in policy_keys:
+                            stage_dict = policies.get(stage_key)
+                            if not stage_dict or not isinstance(stage_dict, dict):
+                                continue
+                            stage_name = list(stage_dict.keys())[0]
+                            stage_policies: list[str] = stage_dict.get(stage_name)  # type: ignore
+                            if not stage_policies or not isinstance(stage_policies, list):
+                                continue
+                            stage_policies_str = ", ".join(
+                                str(policy) for policy in stage_policies)  # type: ignore
+                            policy_list.extend(stage_policies)  # type: ignore
+                            policy_stages_json[f'{stage_key}:{stage_name}'] = stage_policies
+                            policy_stages_table.append({'Stage Name': f'{stage_key}:{stage_name}',
+                                                        'Policies': stage_policies_str})
+
+            if policy_list:
+                # Add the parsed policies to the incident.
+                incident['policy_list'] = list(dict.fromkeys(policy_list))
+                incident['policy_stages_json'] = policy_stages_json
+                incident['policy_stages_table'] = policy_stages_table
 
             if incident_id not in already_fetched:
                 incident.update(get_mirroring())

@@ -176,8 +176,14 @@ class Client(BaseClient):
 
             if 'objectId' in json_response:
                 object_id = json_response['objectId']
+            else:
+                object_id = ""
+                demisto.debug("no objectId in json_response")
             if 'productId' in json_response:
                 product_id = json_response['productId']
+            else:
+                product_id = ""
+                demisto.debug("no productId in json_response")
 
             return object_id, product_id
         else:
@@ -1348,7 +1354,7 @@ def epo_get_tables_command(client: Client, args: Dict[str, Any]) -> CommandResul
     table_name = args.get('table')
     response_json, response = client.get_table(table_name=table_name)
 
-    if type(response_json) == dict:
+    if type(response_json) is dict:
         headers = list(response_json.keys())
     else:
         headers = list(set().union(*(entry.keys() for entry in response_json)))
@@ -1389,7 +1395,7 @@ def epo_query_table_command(client: Client, args: Dict[str, Any]) -> CommandResu
                                                  group=group,
                                                  join_tables=join_tables)
 
-    if type(response_json) == dict:
+    if type(response_json) is dict:
         headers = list(response_json.keys())
     else:
         headers = list(set().union(*(entry.keys() for entry in response_json)))

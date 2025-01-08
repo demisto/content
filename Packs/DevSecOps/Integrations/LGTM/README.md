@@ -1,10 +1,7 @@
 An Integration with LGTM API
 This integration was integrated and tested with version 1.0 of LGTM
-## Configure LGTM on Cortex XSOAR
+## Configure LGTM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for LGTM.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,9 +10,8 @@ This integration was integrated and tested with version 1.0 of LGTM
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lgtm-add-project
 ***
@@ -1798,4 +1794,3 @@ Provide a summary of results for the projects in the query job
 >|data|
 >|---|
 >| {'project': {'id': 1511896439667, 'url-identifier': 'g/my-devsecops/galaxy', 'name': 'my-devsecops/galaxy', 'url': 'https://lgtm.com/projects/g/my-devsecops/galaxy'}, 'status': 'success', 'total': 0, 'internal': 0, 'external': 0} |
-

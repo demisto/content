@@ -18,7 +18,7 @@ dependson:
   should:
   - Confluera|||confluera-fetch-detections
   - Confluera|||confluera-fetch-progressions
-dockerimage: demisto/python3:3.10.14.95956
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

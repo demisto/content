@@ -235,7 +235,7 @@ script:
       defaultValue: 50
     description: A generic LDAP search command.
     name: ad-entries-search
-  dockerimage: demisto/py3-tools:1.0.0.102774
+  dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
   subtype: python3

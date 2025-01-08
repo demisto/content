@@ -1,30 +1,26 @@
 The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 This integration was integrated and tested with version 14.0 of Cisco Email Security Appliance.
-## Configure Cisco ESA on Cortex XSOAR
+## Configure Cisco ESA in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco ESA.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
-    | First fetch timestamp | Timestamp in ISO format or number time unit,<br/>e.g., 2022-01-01T00:00:00000Z, 12 hours, 7 days, 3 months, now. | False |
-    | Filter by | The message field by which to fetch results. | False |
-    | Filter operator | The message field operator by which to fetch results. | False |
-    | Filter value | The message filter value by which to fetch results. | False |
-    | Recipient filter operator | The message recipient filter operator by which to fetch results. | False |
-    | Recipient filter value | The message recipient filter value by which to fetch results. | False |
-    | Time to live for the JWT connection token (in minutes). |   | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
+| Username |  | True |
+| Password |  | True |
+| Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
+| First fetch timestamp | Timestamp in ISO format or number time unit,<br/>e.g., 2022-01-01T00:00:00000Z, 12 hours, 7 days, 3 months, now. | False |
+| Filter by | The message field by which to fetch results. | False |
+| Filter operator | The message field operator by which to fetch results. | False |
+| Filter value | The message filter value by which to fetch results. | False |
+| Recipient filter operator | The message recipient filter operator by which to fetch results. | False |
+| Recipient filter value | The message recipient filter value by which to fetch results. | False |
+| Time to live for the JWT connection token (in minutes). |   | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Troubleshooting
 If you encounter multiple recurring errors similar to the following message:
@@ -36,7 +32,7 @@ If the time to live is shorter, it can lead to the authorization error above. To
 By default, this value is 30 minutes and should only be reduced if these errors occur.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-esa-spam-quarantine-message-search
 ***
@@ -1442,3 +1438,205 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 12 | 1345 | 0 | 1 | 0 | 19 | 15 | 4 | 0 | 0 | 0 | 0 | 0 | 3 | 4 | 0 | 4 | 179 | 5 | 0 | 1567 | 1 | 1383 | 0 | 0 |
 
+
+### cisco-esa-dictionary-add
+
+***
+Add a new dictionary.
+
+#### Base Command
+
+`cisco-esa-dictionary-add`
+
+#### Input
+
+| **Argument Name** | **Description**| **Required** |
+| --- |---| --- |
+| mode | The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name. Possible values are: cluster, group, machine. Default is cluster.| Optional | 
+| host_name | Required when cluster mode is 'machine'.| Optional | 
+| group_name | Required when cluster mode is 'group'.| Optional | 
+| dictionary_name | The name of the dictionary for which to get information. This argument is optional. | Optional | 
+| whole_words | Indicates if the words need to be matched completely. Possible values are: True, False. Default value is True. | Required | 
+| words | A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".<br/>A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.<br/>Example: ['*credit',2,'prefix'],['*aba'],['À term 1']. | Required | 
+| ignore_case_sensitive | Indicates if the term that needs to be matched is case-sensitive. Possible values are: True, False. Default value is False.| Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cisco-esa-dictionary-add dictionary_name=testing1 ignore_case_sensitive=False whole_words=False mode=cluster words=['*credit',2,'prefix'],['test2']```
+
+```!cisco-esa-dictionary-add dictionary_name=testing2 words=['*credit',2,'prefix'],['test2']```
+
+#### Human Readable Output
+
+**test_dictionary was added successfully.**
+
+### cisco-esa-dictionary-edit
+
+***
+Edit a dictionary.
+
+#### Base Command
+
+`cisco-esa-dictionary-edit`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| mode | The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name. Possible values are: cluster, group, machine. Default is cluster.                                                                                                       | Optional | 
+| host_name | Required when cluster mode is 'machine'.                                                                                                                                                                                                                                                                                                                               | Optional | 
+| group_name | Required when cluster mode is 'group'.                                                                                                                                                                                                                                                                                                                                 | Optional | 
+| dictionary_name | The name of the dictionary for which to get information. This argument is optional.                                                                                                                                                                                                                                                                                    | Optional | 
+| updated_name | Specifies a new name for the dictionary to modify.                                                                                                                                                                                                                                                                                                                     | Optional | 
+| whole_words | Indicates if the words need to be matched completely. Possible values are: True, False. Default value is True.                                                                                                                                                                                                                                                         | Optional | 
+| words | A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".<br/>A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.<br/>Example: ['*credit',2,'prefix'],['*aba'],['À term 1']. | Required | 
+| ignore_case_sensitive | Indicates if the term that needs to be matched is case-sensitive. Possible values are: True, False. Default value is False. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cisco-esa-dictionary-edit dictionary_name=testing1 words=['*credit',6,'prefix'],['test2']```
+
+#### Human Readable Output
+
+**test_dictionary has been successfully updated.**
+
+### cisco-esa-dictionary-list
+
+***
+Retrieve information of all dictionaries or a specific configured dictionary and their list of words.
+
+#### Base Command
+
+`cisco-esa-dictionary-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', please a group_name. If the cluster mode is set to 'machine', specify a host_name. Possible values are: cluster, group, machine. Default is cluster. | Optional | 
+| host_name | Required when cluster mode is 'machine'. | Optional | 
+| group_name | Required when cluster mode is 'group'. | Optional | 
+| dictionary_name | The name of the dictionary for which to get information. This argument is optional.  | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoESA.Dictionary.name | String | The name of the dictionary. | 
+| CiscoESA.Dictionary.encoding | String | The encoding format used for the dictionary. | 
+| CiscoESA.Dictionary.ignorecase | Number | Indicates whether the dictionary ignores case sensitivity \(1 for true, 0 for false\). | 
+| CiscoESA.Dictionary.words | List | The words in the dictionary. | 
+| CiscoESA.Dictionary.words_count.term_count | Number | The count of individual terms in the dictionary. | 
+| CiscoESA.Dictionary.words_count.smart_identifier_count | Number | The count of smart identifiers in the dictionary \(special terms with additional metadata\). | 
+| CiscoESA.Dictionary.wholewords | Number | Indicates whether the dictionary considers whole words only \(1 for true, 0 for false\). | 
+
+#### Command example
+```!cisco-esa-dictionary-list mode=cluster dictionary_name=test```
+
+#### Human Readable Output
+
+>### Information for Dictionary: testing
+>| Name | Words | Ignore Case | Whole Words | Words Count | Smart Identifier Count | Encoding |
+>| --- | --- | --- | --- | --- | --- | --- |
+>| testing | ['test6', 1], ['testing7', 1], ['noy', 1] | 1 | 1 | term_count: 4 | 0 | utf-8 |
+
+
+### cisco-esa-dictionary-words-delete
+
+***
+Delete existing words from a specific dictionary.
+
+#### Base Command
+
+`cisco-esa-dictionary-words-delete`
+
+#### Input
+
+| **Argument Name** | **Description**| **Required** |
+| --- |---| --- |
+| mode | The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name. Possible values are: cluster, group, machine. Default is cluster. | Optional | 
+| host_name | Required when cluster mode is 'machine'.| Optional | 
+| group_name | Required when cluster mode is 'group'.| Optional | 
+| dictionary_name | The name of the dictionary for which to get information. This argument is optional.| Optional | 
+| words | A list of terms that need to be deleted.<br/>Example: *credit,aba,term.| Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cisco-esa-dictionary-words-delete dictionary_name=testing mode=cluster words=*credit```
+
+```!cisco-esa-dictionary-words-delete dictionary_name=testing words=test1,test2```
+
+#### Human Readable Output
+
+**Words deleted successfully from test_dictionary.**
+
+### cisco-esa-dictionary-words-add
+
+***
+Add words to a specific dictionary.
+
+#### Base Command
+
+`cisco-esa-dictionary-words-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name. Possible values are: cluster, group, machine. Default is cluster. | Optional | 
+| host_name | Required when cluster mode is 'machine'. | Optional | 
+| group_name | Required when cluster mode is 'group'. | Optional | 
+| dictionary_name | The name of the dictionary for which to get information. This argument is optional.  | Optional | 
+| words | A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".<br/>A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.<br/>Example: ['*credit',2,'prefix'],['*aba'],['À term 1']. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cisco-esa-dictionary-words-add dictionary_name=testing words=['*ssn',2,'prefix'],['test3']```
+
+```!cisco-esa-dictionary-words-add dictionary_name=testing1 mode=cluster words=['test1'],['testing2']```
+
+#### Human Readable Output
+
+**Added successfully to test_dictionary.**
+
+### cisco-esa-dictionary-delete
+
+***
+Delete a dictionary.
+
+#### Base Command
+
+`cisco-esa-dictionary-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name. Possible values are: cluster, group, machine. Default is cluster. | Optional | 
+| host_name | Required when cluster mode is 'machine'. | Optional | 
+| group_name | Required when cluster mode is 'group'. | Optional | 
+| dictionary_name | The name of the dictionary for which to get information. This argument is optional.  | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command example
+```!cisco-esa-dictionary-delete dictionary_name=test mode=cluster```
+
+#### Human Readable Output
+
+**test_dictionary deleted successfully.**

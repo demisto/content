@@ -213,7 +213,7 @@ script:
       name: indicator_type
     description: Gets indicators from the feed.
     name: plaintext-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.112434
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: false
   script: '-'

@@ -35,7 +35,7 @@
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
-<p><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks. For more information, see <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines"> Cortex XSOAR Engines</a>.</p>
+<p><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks. For more information, see:<br><a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Engines">Cortex XSOAR 6.13 - Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines">Cortex XSOAR 8 Cloud- Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Engines">Cortex XSOAR 8.7 On-prem - Engines</a>.</p>
 <h2>Fetched Incidents Data</h2>
 <p>The integration fetches newly created tickets according to the following parameters, which you define in the instance configuration: <em><strong>ticket_type</strong></em>, <em><strong>query</strong></em>, and <em><strong>limit</strong></em>. For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. After that, it will fetch incidents that were created after the timestamp of the last fetch.</p>
 <p>Data:</p>
@@ -469,7 +469,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49080934-eac54300-f24d-11e8-8a68-41401ef2f37c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49080934-eac54300-f24d-11e8-8a68-41401ef2f37c.png" alt="image"></a></p>
+<p><a href="../../doc_files/49080934-eac54300-f24d-11e8-8a68-41401ef2f37c.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49080934-eac54300-f24d-11e8-8a68-41401ef2f37c.png" alt="image"></a></p>
 <h3 id="h_2766128079841543393964767">2. Create a ticket</h3>
 <p>Creates a new ServiceNow ticket.</p>
 <h5>Base Command</h5>
@@ -930,7 +930,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49081133-7939c480-f24e-11e8-9e91-bad17c618e8d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49081133-7939c480-f24e-11e8-9e91-bad17c618e8d.png" alt="image"></a></p>
+<p><a href="../../doc_files/49081133-7939c480-f24e-11e8-9e91-bad17c618e8d.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081133-7939c480-f24e-11e8-9e91-bad17c618e8d.png" alt="image"></a></p>
 <h3 id="h_57281505611101543393969762">3. Update a ticket</h3>
 <hr>
 <p>Updates a specified ServiceNow ticket.</p>
@@ -1386,7 +1386,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49081247-e4839680-f24e-11e8-848f-fda6bc14fe9e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49081247-e4839680-f24e-11e8-848f-fda6bc14fe9e.png" alt="image"></a></p>
+<p><a href="../../doc_files/49081247-e4839680-f24e-11e8-848f-fda6bc14fe9e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081247-e4839680-f24e-11e8-848f-fda6bc14fe9e.png" alt="image"></a></p>
 <h3 id="h_68978447212351543393976748">4. Delete a ticket</h3>
 <hr>
 <p>Deletes a specified ServiceNow ticket.</p>
@@ -1420,7 +1420,7 @@
 <h5>Command Example</h5>
 <p><code>!servicenow-delete-ticket id=0c23f8d24f102300d316b63ca310c742</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49081310-21e82400-f24f-11e8-9876-4d1ae0f32f1a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49081310-21e82400-f24f-11e8-9876-4d1ae0f32f1a.png" alt="image"></a></p>
+<p><a href="../../doc_files/49081310-21e82400-f24f-11e8-9876-4d1ae0f32f1a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081310-21e82400-f24f-11e8-9876-4d1ae0f32f1a.png" alt="image"></a></p>
 <h3 id="h_88472210313581543393982361">5. Add a link to a ticket</h3>
 <hr>
 <p>Adds a link to a specified ServiceNow ticket.</p>
@@ -1470,7 +1470,7 @@
 <h5>Command Example</h5>
 <p><code>!servicenow-add-link id="bd5d42994f82230021ae045e9310c7bd" ticket_type="incident" link="www.demisto.com" text="this is a link"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49081488-b6eb1d00-f24f-11e8-8c33-4da0b732937a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49081488-b6eb1d00-f24f-11e8-8c33-4da0b732937a.png" alt="image"></a></p>
+<p><a href="../../doc_files/49081488-b6eb1d00-f24f-11e8-8c33-4da0b732937a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081488-b6eb1d00-f24f-11e8-8c33-4da0b732937a.png" alt="image"></a></p>
 <h3 id="h_53831027625241543393995300">6. Add a comment to a ticket</h3>
 <hr>
 <p>Adds a comment to a specified ticket.</p>
@@ -1514,7 +1514,7 @@
 <h5>Command Example</h5>
 <p><code>!servicenow-add-comment id="0c23f8d24f102300d316b63ca310c742" ticket_type="incident" comment="This is a comment"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49081549-e13cda80-f24f-11e8-9b64-19e3f49483e8.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49081549-e13cda80-f24f-11e8-9b64-19e3f49483e8.png" alt="image"></a></p>
+<p><a href="../../doc_files/49081549-e13cda80-f24f-11e8-9b64-19e3f49483e8.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081549-e13cda80-f24f-11e8-9b64-19e3f49483e8.png" alt="image"></a></p>
 <h3 id="h_982871326451543394001189">7. Get ticket information from a query</h3>
 <hr>
 <p>Retrieves ticket information via a query.</p>
@@ -1771,7 +1771,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49081849-bf902300-f250-11e8-9786-f55cd9faa98a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49081849-bf902300-f250-11e8-9786-f55cd9faa98a.png" alt="image"></a></p>
+<p><a href="../../doc_files/49081849-bf902300-f250-11e8-9786-f55cd9faa98a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081849-bf902300-f250-11e8-9786-f55cd9faa98a.png" alt="image"></a></p>
 <h3 id="h_59791168127661543394007101">8. Upload a file to a ticket</h3>
 <hr>
 <p>Uploads a file to a specified ServiceNow ticket.</p>
@@ -1867,7 +1867,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49082217-e569f780-f251-11e8-8fda-a0516b297d6f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49082217-e569f780-f251-11e8-8fda-a0516b297d6f.png" alt="image"></a></p>
+<p><a href="../../doc_files/49082217-e569f780-f251-11e8-8fda-a0516b297d6f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49082217-e569f780-f251-11e8-8fda-a0516b297d6f.png" alt="image"></a></p>
 <h3 id="h_42025144228861543394012547">9. Get record information</h3>
 <hr>
 <p>Retrieves information for a specified record.</p>
@@ -1953,7 +1953,7 @@
     }
 }</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49082687-17c82480-f253-11e8-9ab2-bdbb379fbdad.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49082687-17c82480-f253-11e8-9ab2-bdbb379fbdad.png" alt="image"></a></p>
+<p><a href="../../doc_files/49082687-17c82480-f253-11e8-9ab2-bdbb379fbdad.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49082687-17c82480-f253-11e8-9ab2-bdbb379fbdad.png" alt="image"></a></p>
 <h3 id="h_31329423830051543394018349">10. Query a table</h3>
 <hr>
 <p>Queries a specified table in ServiceNow.</p>
@@ -2107,7 +2107,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49082769-480fc300-f253-11e8-93f2-c2ca049ffdbc.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49082769-480fc300-f253-11e8-93f2-c2ca049ffdbc.png" alt="image"></a></p>
+<p><a href="../../doc_files/49082769-480fc300-f253-11e8-93f2-c2ca049ffdbc.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49082769-480fc300-f253-11e8-93f2-c2ca049ffdbc.png" alt="image"></a></p>
 <h3 id="h_11">11. Create a record in a table</h3>
 <hr>
 <p>Creates a new record in a specified ServiceNow table.</p>
@@ -2201,7 +2201,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49083041-1519ff00-f254-11e8-9af9-ac2fd755965d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49083041-1519ff00-f254-11e8-9af9-ac2fd755965d.png" alt="image"></a></p>
+<p><a href="../../doc_files/49083041-1519ff00-f254-11e8-9af9-ac2fd755965d.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49083041-1519ff00-f254-11e8-9af9-ac2fd755965d.png" alt="image"></a></p>
 <h3 id="h_82174951331301543394025269">12. Update a record in a table</h3>
 <hr>
 <p>Updates a record in a specified ServiceNow table.</p>
@@ -2294,7 +2294,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49083116-5d392180-f254-11e8-8854-6b250075eab2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49083116-5d392180-f254-11e8-8854-6b250075eab2.png" alt="image"></a></p>
+<p><a href="../../doc_files/49083116-5d392180-f254-11e8-8854-6b250075eab2.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49083116-5d392180-f254-11e8-8854-6b250075eab2.png" alt="image"></a></p>
 <h3 id="h_70112060732471543394030180">13. Delete a record from a table</h3>
 <hr>
 <p>Deletes a record from a specified ServiceNow table.</p>
@@ -2328,7 +2328,7 @@
 <h5>Command Example</h5>
 <pre><code>!servicenow-delete-record id=748692114fc2230021ae045e9310c7ff table_name=incident</code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49083163-82c62b00-f254-11e8-95bd-ff220d887ee2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49083163-82c62b00-f254-11e8-95bd-ff220d887ee2.png" alt="image"></a></p>
+<p><a href="../../doc_files/49083163-82c62b00-f254-11e8-95bd-ff220d887ee2.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49083163-82c62b00-f254-11e8-95bd-ff220d887ee2.png" alt="image"></a></p>
 <h3 id="h_6980755125801543393891359">14. List API fiels for a table</h3>
 <hr>
 <p>Lists API fields for a specified ServiceNow table.</p>
@@ -2585,7 +2585,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49084292-b35b9400-f257-11e8-98b9-40c404c2a52f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49084292-b35b9400-f257-11e8-98b9-40c404c2a52f.png" alt="image"></a></p>
+<p><a href="../../doc_files/49084292-b35b9400-f257-11e8-98b9-40c404c2a52f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49084292-b35b9400-f257-11e8-98b9-40c404c2a52f.png" alt="image"></a></p>
 <h3 id="h_36360169033681543394035550">15. Query computers</h3>
 <hr>
 <p>Queries the cmdb_ci_computer table in ServiceNow.</p>
@@ -2824,7 +2824,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49084519-5dd3b700-f258-11e8-8675-47bf47bc3fba.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49084519-5dd3b700-f258-11e8-8675-47bf47bc3fba.png" alt="image"></a></p>
+<p><a href="../../doc_files/49084519-5dd3b700-f258-11e8-8675-47bf47bc3fba.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49084519-5dd3b700-f258-11e8-8675-47bf47bc3fba.png" alt="image"></a></p>
 <h3 id="h_65378198335911543394040311">16. Query groups</h3>
 <hr>
 <p>Queries the sys_user_group table in ServiceNow.</p>
@@ -2923,7 +2923,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49084595-95dafa00-f258-11e8-99d0-d55a044b5b8d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49084595-95dafa00-f258-11e8-99d0-d55a044b5b8d.png" alt="image"></a></p>
+<p><a href="../../doc_files/49084595-95dafa00-f258-11e8-99d0-d55a044b5b8d.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49084595-95dafa00-f258-11e8-99d0-d55a044b5b8d.png" alt="image"></a></p>
 <h3 id="h_7352020637051543394046045">17. Query users</h3>
 <hr>
 <p>Queries the sys_user table in ServiceNow.</p>
@@ -3028,7 +3028,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49084694-dfc3e000-f258-11e8-83d5-f5ee9b23f9c6.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49084694-dfc3e000-f258-11e8-83d5-f5ee9b23f9c6.png" alt="image"></a></p>
+<p><a href="../../doc_files/49084694-dfc3e000-f258-11e8-83d5-f5ee9b23f9c6.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49084694-dfc3e000-f258-11e8-83d5-f5ee9b23f9c6.png" alt="image"></a></p>
 <h3 id="h_4958559901351544082835053">18. Get table names</h3>
 <hr>
 <p>Retrieves table names by a label to use in commands.</p>
@@ -3104,7 +3104,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/49531657-66189b80-f8c3-11e8-8479-cba45949186c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49531657-66189b80-f8c3-11e8-8479-cba45949186c.png" alt="image"></a></p>
+<p><a href="../../doc_files/49531657-66189b80-f8c3-11e8-8479-cba45949186c.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49531657-66189b80-f8c3-11e8-8479-cba45949186c.png" alt="image"></a></p>
 <h3 id="h_a467aa87-6fbc-4eef-bf89-81f7c839f442">19. Get ticket notes</h3>
 <hr>
 <p>Returns notes for a specified ticket.</p>
@@ -3201,7 +3201,7 @@
     }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/52177960-28f05d00-27d1-11e9-8628-9e46a3916f61.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/52177960-28f05d00-27d1-11e9-8628-9e46a3916f61.png" alt="image"></a></p>
+<p><a href="../../doc_files/52177960-28f05d00-27d1-11e9-8628-9e46a3916f61.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/52177960-28f05d00-27d1-11e9-8628-9e46a3916f61.png" alt="image"></a></p>
 <p> </p>
 <h2>Additional Information</h2>
 <p>The tables and fields in the ServiceNow UI are different than those in the API. Each table and field name in the UI have their representation in the API.</p>

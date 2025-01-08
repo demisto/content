@@ -8,7 +8,7 @@
         "byTo": "",
         "byFrom": "days",
         "toValue": null,
-        "fromValue": null,
+        "fromValue": 180,
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",

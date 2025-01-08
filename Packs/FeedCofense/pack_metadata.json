@@ -2,7 +2,7 @@
     "name": "Cofense Feed",
     "description": "Ingest human-verified phishing indicators from Cofense Intelligence. Cofense Intelligence is reliable, human-verified phishing intelligence for actionable defense and strategic planning. Cofense researchers track emerging trends in phishing, research active threats, and supplement highest-priority investigations.",
     "support": "partner",
-    "currentVersion": "1.1.5",
+    "currentVersion": "1.1.6",
     "author": "Cofense",
     "url": "https://cofense.com/contact-support/",
     "email": "support@cofense.com",

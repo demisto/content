@@ -1,0 +1,60 @@
+commonfields:
+  id: Symantec Endpoint Security
+  version: -1
+name: Symantec Endpoint Security
+display: Symantec Endpoint Security
+category: Analytics & SIEM
+description: "Symantec Endpoint Security Event Collector for Cortex XSIAM."
+configuration:
+- display: Server URL
+  name: host
+  type: 0
+  defaultvalue: https://api.sep.securitycloud.symantec.com
+  required: true
+  section: Connect
+- displaypassword: OAuth credential
+  name: token
+  hiddenusername: true
+  type: 9
+  required: true
+  section: Connect
+- display: Stream ID
+  name: stream_id
+  type: 0
+  required: true
+  additionalinfo: ""
+  section: Connect
+- display: Channel ID
+  name: channel_id
+  type: 0
+  required: true
+  additionalinfo: ""
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+script:
+  script: ""
+  type: python
+  commands: []
+  dockerimage: demisto/python3:3.11.10.113941
+  longRunning: true
+  subtype: python3
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests

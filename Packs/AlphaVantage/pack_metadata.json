@@ -2,7 +2,7 @@
     "name": "AlphaVantage",
     "description": "The Alpha Vantage content pack provides accessible APIs for financial market data such as stock prices. Utilize this pack to get open stock prices, high/low price, trade volume, and so on.",
     "support": "community",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.14",
     "author": "Ohad Valtzer",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

@@ -1,0 +1,151 @@
+{
+    "links": [
+        {
+            "href": "self1",
+            "rel": "self"
+        },
+        {
+            "href": "next",
+            "rel": "next"
+        }
+    ],
+    "results": [
+        {
+            "alertConfigId": "a",
+            "created": "2024-07-17T09:59:07Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "1",
+            "lastNotified": "2024-10-22T16:32:10Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-07-17T10:07:14Z"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-04T10:02:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "2",
+            "lastNotified": "2024-11-12T06:27:15Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-11-04T10:02:01Z"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-04T10:34:47Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "3",
+            "lastNotified": "2024-11-12T06:27:15Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-11-04T10:34:47Z"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-04T10:34:47Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "4",
+            "lastNotified": "2024-11-12T06:27:15Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-11-04T10:34:47Z"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-04T10:34:47Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "5",
+            "lastNotified": "2024-11-12T06:27:15Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-11-04T10:34:47Z"
+        },
+                {
+            "alertConfigId": "id",
+            "created": "2024-11-04T10:35:47Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "6",
+            "lastNotified": "2024-11-12T06:27:15Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-11-04T10:36:47Z"
+        },
+                {
+            "alertConfigId": "id",
+            "created": "2024-11-04T10:37:47Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "7",
+            "lastNotified": "2024-11-12T06:27:15Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-11-04T10:37:47Z"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-11-04T10:39:47Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "8",
+            "lastNotified": "2024-11-12T06:27:15Z",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id",
+            "status": "OPEN",
+            "updated": "2024-11-04T10:34:47Z"
+        }
+    ],
+    "totalCount": 15
+}

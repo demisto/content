@@ -68,4 +68,4 @@ the incident | string |
 
 ## Playbook Image
 ---
-![Illusive - Data Enrichment](https://raw.githubusercontent.com/demisto/content/bb996a5e640102bdfdefb010f1e42c147b4b573c/Packs/IllusiveNetworks/doc_files/Illusive-Data_Enrichment.png)
+![Illusive - Data Enrichment](../doc_files/Illusive-Data_Enrichment.png)

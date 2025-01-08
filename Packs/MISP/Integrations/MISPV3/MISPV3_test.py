@@ -344,6 +344,30 @@ def test_convert_arg_to_misp_args(mocker):
     assert convert_arg_to_misp_args(args, args_names) == [{'dst-port': 8001}, {'src-port': 8002}, {'name': 'test'}]
 
 
+@pytest.mark.parametrize('dbot_type, dbot_score_type, value, expected_type_object', [
+    ("IP", DBotScoreType.IP, "123.123.123.123", Common.IP),
+    ("DOMAIN", DBotScoreType.DOMAIN, "example.org", Common.Domain),
+    ("EMAIL", DBotScoreType.EMAIL, "admin@admin.test", Common.EMAIL),
+    ("URL", DBotScoreType.URL, "https://example.org", Common.URL)
+])
+def test_get_dbot_indicator(
+    dbot_type: str,
+    dbot_score_type: DBotScoreType,
+    value: Any,
+    expected_type_object: Any
+) -> None:
+
+    from MISPV3 import get_dbot_indicator
+    score: Common.DBotScore = Common.DBotScore(
+        indicator=value,
+        indicator_type=dbot_score_type,
+        score=Common.DBotScore.GOOD,
+        reliability=DBotScoreReliability.A,
+        malicious_description="Match found in MISP")
+    object = get_dbot_indicator(dbot_type, score, value)
+    assert isinstance(object, expected_type_object)
+
+
 @pytest.mark.parametrize('dbot_type, value, error_expected', REPUTATION_COMMANDS_ERROR_LIST)
 def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
     """
@@ -937,3 +961,55 @@ def test_get_role_info(mocker):
         ]
     }
     assert result.outputs == expected_output['MISP.Role']
+
+
+@pytest.mark.parametrize(('value, dbot_type, malicious_tag_ids'
+                          ', suspicious_tag_ids, benign_tag_ids, reliability'
+                          ', attributes_limit, search_warninglists'), [
+    ("192.168.0.1", "IP", {}, {}, {}, DBotScoreReliability.A, 50, True)
+])
+def test_get_indicator_results(
+    value,
+    dbot_type,
+    malicious_tag_ids,
+    suspicious_tag_ids,
+    benign_tag_ids,
+    reliability,
+    attributes_limit,
+    search_warninglists,
+    mocker
+):
+    """Tests the get indicator results function"""
+
+    mock_misp(mocker)
+    from MISPV3 import get_indicator_results
+    from pymisp import ExpandedPyMISP
+    import pymisp
+    mocker.patch.object(ExpandedPyMISP, 'search', return_value={})
+    mocker.patch('MISPV3.build_attributes_search_response', return_value={'test': 'test'})
+    mocker.patch('MISPV3.build_events_search_response', return_value={'test': 'test'})
+    response: Response = Response()
+
+    def json_func():
+        return {
+            "192.168.0.1": [{
+                "id": "100",
+                "name": "my_custom_list"
+            }]
+        }
+    response.json = json_func
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=response)
+    mocker.patch.object(pymisp.api.PyMISP, "_check_response", return_value=response.json())
+    result = get_indicator_results(
+        value,
+        dbot_type,
+        malicious_tag_ids,
+        suspicious_tag_ids,
+        benign_tag_ids,
+        reliability,
+        attributes_limit,
+        search_warninglists
+    )
+    assert "my_custom_list" in result.readable_output
+    assert isinstance(result.indicator, Common.IP)
+    assert result.indicator.dbot_score.score == Common.DBotScore.GOOD

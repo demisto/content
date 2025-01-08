@@ -41,8 +41,9 @@ configuration:
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
-  section: Connect - Advanced
+  section: Collect
   required: false
+  advanced: true
 - display: Allow external users to create incidents via DM.
   name: allow_incidents
   type: 8
@@ -525,7 +526,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/netutils:1.0.0.110556
+  dockerimage: demisto/netutils:1.0.0.118055
 fromversion: 6.10.0
 tests:
 - MattermostV2 - testplaybook

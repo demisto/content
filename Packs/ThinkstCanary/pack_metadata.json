@@ -2,7 +2,7 @@
     "name": "Thinkst Canary",
     "description": "By presenting itself as an apparently benign and legitimate service(s), the Canary draws the attention of unwanted activity. When someone trips one of the Canary's triggers, an alert is sent to notify the responsible parties so that action can be taken before valuable systems in your network are compromised.",
     "support": "xsoar",
-    "currentVersion": "1.0.22",
+    "currentVersion": "1.0.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

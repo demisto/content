@@ -1,4 +1,4 @@
-description: Parse files from log bundle output
+description: Parse files from log bundle output.
 id: Health Check - Log Analysis Read All files
 inputs:
 - description: Log bundle files
@@ -6,16 +6,11 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: ""
-  key: Health Check Thresholds
-  playbookInputQuery:
-  required: false
-  value:
-    simple: ${Health Check Thresholds}
+
 name: Health Check - Log Analysis Read All files
 outputs:
 - contextPath: HealthCheck.ActionableItems
-  description: Data read from war room file
+  description: Data read from the War Room file.
 starttaskid: "0"
 tasks:
   "0":
@@ -130,8 +125,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Read server log file line by line and display warnings, fatal errors
-        and keyword results in a table to the war room
+      description: Read the server log file line by line and display warnings, fatal errors and keyword results in a table in the War Room.
       id: 55ae5ab9-a42d-4765-8033-fcd64d491320
       iscommand: false
       name: Read server.log file and display
@@ -611,8 +605,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Read panic log file line by line and display warnings, fatal errors
-        and keyword results in a table to the war room
+      description: Read the panic log file line by line and display warnings, fatal errors and keyword results in a table in the War Room.
       id: 105f11f8-1574-4521-819a-6e2462bf0fc4
       iscommand: false
       name: Read the panic.log file
@@ -644,6 +637,6 @@ view: |-
       }
     }
   }
-fromversion: 6.0.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

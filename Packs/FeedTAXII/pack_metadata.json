@@ -2,7 +2,7 @@
     "name": "TAXII Feed",
     "description": "Ingest indicator feeds from TAXII 1 and TAXII 2 servers.",
     "support": "xsoar",
-    "currentVersion": "1.2.20",
+    "currentVersion": "1.2.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

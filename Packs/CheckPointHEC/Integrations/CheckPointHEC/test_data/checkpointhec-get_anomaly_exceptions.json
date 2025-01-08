@@ -1,0 +1,25 @@
+{
+    "responseEnvelope": {
+        "requestId": "00000000-0000-0000-0000-000000000000",
+        "responseCode": 200,
+        "responseText": "",
+        "additionalText": "",
+        "recordsNumber": 1,
+        "scrollId": ""
+    },
+    "responseData": [
+        {
+            "added_by": "a@b.test",
+            "anomaly_type": "superman_anomaly",
+            "comments": null,
+            "customer_domain": "test",
+            "enabled": true,
+            "event_id": "00000000000000000000000000000000",
+            "exception_rule": "Apply for all past events: Yes\nWhitelist: Ignore all geo suspicious events from **a@b.test**\n\nanomaly-comment:  Test for XSOAR",
+            "expiration_date": null,
+            "id": "00000",
+            "insert_time": "2024-10-08T13:15:15.283094",
+            "update_time": "2024-10-08T13:15:15.283094"
+        }
+    ]
+}

@@ -34,4 +34,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Process_Indicators_Against_Business_Partners_IP_List.png)
+![Playbook Image](../doc_files/TIM_-_Process_Indicators_Against_Business_Partners_IP_List.png)

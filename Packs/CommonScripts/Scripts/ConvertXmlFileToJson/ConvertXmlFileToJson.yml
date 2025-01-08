@@ -25,6 +25,6 @@ args:
   defaultValue: "True"
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/xml-feed:1.0.0.86490
+dockerimage: demisto/xml-feed:1.0.0.116765
 tests:
 - No tests (auto formatted)

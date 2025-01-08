@@ -445,7 +445,7 @@ script:
       name: end_ip
     - description: IP address and subnet mask of address. Required for ipmask address type.
       name: subnet
-    - description: The subnet name
+    - description: The subnet name.
       name: subnet_name
     - auto: PREDEFINED
       description: 'The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure".'
@@ -495,7 +495,7 @@ script:
       name: end_ip
     - description: IP address and subnet mask of address. Required for ipmask address type.
       name: subnet
-    - description: The subnet name
+    - description: The subnet name.
       name: subnet_name
     - auto: PREDEFINED
       description: 'The address SDN. Required for dynamic address type. Possible values are: "aci", "aws", "nsx", "nuage", and "azure".'
@@ -1817,7 +1817,7 @@ script:
     - defaultValue: '50'
       description: To which index to get the list. Default is 50.
       name: limit
-    description: List dynamic interfaces
+    description: List dynamic interfaces.
     name: fortimanager-dynamic-interface-list
     outputs:
     - contextPath: FortiManager.DynamicInterface.color
@@ -1833,7 +1833,7 @@ script:
       description: Default mapping intrazone deny.
       type: String
     - contextPath: FortiManager.DynamicInterface.defmap-zonemember
-      description: Default mapping zone members
+      description: Default mapping zone members.
       type: String
     - contextPath: FortiManager.DynamicInterface.description
       description: Dynamic interface description.
@@ -1968,7 +1968,7 @@ script:
       description: The installation task PID.
       type: Number
     - contextPath: FortiManager.Installation.src
-      description: The installation task source
+      description: The installation task source.
       type: String
     - contextPath: FortiManager.Installation.start_tm
       description: The installation task start time.
@@ -1985,7 +1985,7 @@ script:
     - contextPath: FortiManager.Installation.user
       description: The installation task user.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   subtype: python3

@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any, Tuple
+from typing import Any
 import base64
 import json
 from dateparser import parse
@@ -60,7 +60,7 @@ class Client(BaseClient):
     def _save_access_token(self, access_token: str):
         self.access_token = access_token
         self._headers = {
-            "Authorization": f'bearer {access_token}'}
+            "Authorization": f'Bearer {access_token}'}
 
     def _is_access_token_valid(self, integration_context: dict) -> bool:
         access_token_expiration = integration_context.get('expires_in')
@@ -222,7 +222,7 @@ def test_module(client: Client, is_fetch: bool = False) -> str:
     return message
 
 
-def get_incidents(client: Client, args: Dict[str, Any]):
+def get_incidents(client: Client, args: dict[str, Any]):
     from_time = args.get('from_time', None)
     to_time = args.get('to_time', None)
 
@@ -272,7 +272,7 @@ def get_incidents(client: Client, args: Dict[str, Any]):
 
     raw_results = result.get("objects")
 
-    results: List[Dict[str, Any]] = []
+    results: List[dict[str, Any]] = []
     for res in raw_results:
         row = filter_human_readable(res, human_columns=INCIDENT_COLUMNS)
 
@@ -294,8 +294,8 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
-        Tuple[List[Dict], int, List[str]]:
+def fetch_incidents(client: Client, args: dict[str, Any]) -> \
+        tuple[List[dict], int, List[str]]:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     last_ids = last_run.get("last_ids", [])
@@ -359,7 +359,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
     return incidents, next_fetch_start_time, last_ids
 
 
-def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicent(client: Client, args: dict[str, Any]) -> CommandResults:
     incident_id = args.get('id', None)
     if not incident_id:
         raise DemistoException(
@@ -386,7 +386,7 @@ def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_assets(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     ip_address = args.get('ip_address', None)
     name = args.get('name', None)
     asset_id = args.get('asset_id', None)
@@ -429,7 +429,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return endpoints
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> \
+def endpoint_command(client: Client, args: dict[str, Any]) -> \
         List[CommandResults]:
     id = args.get("id", None)
     ip_address = args.get("ip", None)

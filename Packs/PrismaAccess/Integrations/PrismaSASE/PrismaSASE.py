@@ -99,12 +99,12 @@ class Client(BaseClient):
                     if key == 'profile_setting':
                         val = argToList(field_value)
                         rule[key] = {'group': val}
-                    if key == 'source_user':
+                    elif key == 'source_user':
                         val = argToList(field_value, ';')
                         rule[key] = val
-                    if isinstance(SECURITYRULE_FIELDS.get(key), str):
+                    elif isinstance(SECURITYRULE_FIELDS.get(key), str):
                         rule[key] = field_value  # type: ignore
-                    if isinstance(SECURITYRULE_FIELDS.get(key), list):
+                    elif isinstance(SECURITYRULE_FIELDS.get(key), list):
                         val = argToList(field_value)
                         rule[key] = val  # type: ignore
 
@@ -1977,7 +1977,7 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     for profile in profiles:
         # we only want predefined profiles
         if profile.get('folder', '') == 'predefined':
-            for category in categories.keys():
+            for category in categories:
                 categories[category].extend(profile.get(category, []))
                 categories[category].extend(profile.get('credential_enforcement', {}).get(category, []))
                 # remove duplicates

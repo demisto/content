@@ -177,6 +177,15 @@ class Client(OktaClient):
             json_data=body
         )
 
+    def revoke_session(self, user_id):
+        uri = f'/api/v1/users/{user_id}/lifecycle/expire_password_with_temp_password'
+        params = {"revokeSessions": 'true'}
+        return self.http_request(
+            method="POST",
+            url_suffix=uri,
+            params=params
+        )
+
     def expire_password(self, user_id, args):
         uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
         params = {"tempPassword": args.get('temporary_password', 'false')}
@@ -824,11 +833,19 @@ def set_password_command(client, args):
 
 def expire_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
+    hide_password = argToBoolean(args.get('hide_password', False))
+    revoke_session = argToBoolean(args.get('revoke_session', False))
 
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
-
-    raw_response = client.expire_password(user_id, args)
+    if revoke_session is True:
+        raw_response = client.revoke_session(user_id)
+    else:
+        raw_response = client.expire_password(user_id, args)
+    if 'tempPassword' in raw_response and hide_password:
+        raw_response['tempPassword'] = (
+            'Output removed by user. hide_password argument set to True'
+        )
     user_context = client.get_users_context(raw_response)
 
     readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
@@ -1432,6 +1449,7 @@ def main():
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get('private_key'),
             jwt_algorithm=JWTAlgorithm(params['jwt_algorithm']) if params.get('jwt_algorithm') else None,
+            key_id=params.get('key_id', None),
         )
 
         if command in commands:

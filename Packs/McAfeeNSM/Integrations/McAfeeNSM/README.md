@@ -102,7 +102,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46800139-7565e780-cd5f-11e8-81d6-02f79db8dddf.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46800139-7565e780-cd5f-11e8-81d6-02f79db8dddf.png" alt="image" width="751" height="274"></a></p>
+<p><a href="../../doc_files/46800139-7565e780-cd5f-11e8-81d6-02f79db8dddf.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46800139-7565e780-cd5f-11e8-81d6-02f79db8dddf.png" alt="image" width="751" height="274"></a></p>
 <h3 id="h_104113752811539684881373">2. Get all domains</h3>
 <hr>
 <p>Returns all domains.</p>
@@ -162,7 +162,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46800212-a5ad8600-cd5f-11e8-8f11-86ebf0f2ca56.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46800212-a5ad8600-cd5f-11e8-8f11-86ebf0f2ca56.png" alt="image" width="751" height="128"></a></p>
+<p><a href="../../doc_files/46800212-a5ad8600-cd5f-11e8-8f11-86ebf0f2ca56.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46800212-a5ad8600-cd5f-11e8-8f11-86ebf0f2ca56.png" alt="image" width="751" height="128"></a></p>
 <h3 id="h_1631259691571539684929078">3. Get alerts</h3>
 <hr>
 <p>Returns alerts according to query parameters.</p>
@@ -651,7 +651,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46800465-6cc1e100-cd60-11e8-972a-35871783836f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46800465-6cc1e100-cd60-11e8-972a-35871783836f.png" alt="image" width="753" height="328"></a></p>
+<p><a href="../../doc_files/46800465-6cc1e100-cd60-11e8-972a-35871783836f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46800465-6cc1e100-cd60-11e8-972a-35871783836f.png" alt="image" width="753" height="328"></a></p>
 <h3 id="h_135223014451539685246613">7. Get policy details for a single IPS policy</h3>
 <hr>
 <p>Returns policy details for the specified IPS policy.</p>
@@ -741,7 +741,7 @@
 <h5>Command Example</h5>
 <pre><code>!nsm-get-ips-policy-details policy_id=0</code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46800954-ead2b780-cd61-11e8-90d5-b2ee2a75980e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46800954-ead2b780-cd61-11e8-90d5-b2ee2a75980e.png" alt="image" width="750" height="248"></a></p>
+<p><a href="../../doc_files/46800954-ead2b780-cd61-11e8-90d5-b2ee2a75980e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46800954-ead2b780-cd61-11e8-90d5-b2ee2a75980e.png" alt="image" width="750" height="248"></a></p>
 <h3 id="h_3782375735151539685390349">8. Get all attack definitions</h3>
 <hr>
 <p>Returns all available attack definitions in McAfee NSM.</p>
@@ -819,7 +819,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46801086-4bfa8b00-cd62-11e8-90f6-f292a615d366.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46801086-4bfa8b00-cd62-11e8-90f6-f292a615d366.png" alt="image" width="751" height="226"></a></p>
+<p><a href="../../doc_files/46801086-4bfa8b00-cd62-11e8-90f6-f292a615d366.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46801086-4bfa8b00-cd62-11e8-90f6-f292a615d366.png" alt="image" width="751" height="226"></a></p>
 <h2>Troubleshooting</h2>
 <hr>
 <p>If you receive an <code>401 Unauthorized</code> error, the user credentials may be incorrect.</p>

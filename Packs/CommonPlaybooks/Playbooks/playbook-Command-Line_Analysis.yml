@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Command-Line Analysis
-description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
+description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n7. Suspicious path and arguments in the command line\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
 starttaskid: "0"
 tasks:
   "0":
@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": -970
+          "y": -1620
         }
       }
     note: false
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 650
+          "y": 0
         }
       }
     note: false
@@ -102,7 +102,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": -180
+          "y": -830
         }
       }
     note: false
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": -10
+          "y": -660
         }
       }
     note: false
@@ -164,7 +164,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       type: title
       iscommand: false
       brand: ""
@@ -214,7 +216,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": -330
+          "y": -980
         }
       }
     note: false
@@ -244,6 +246,7 @@ tasks:
       - "22"
       - "31"
       - "39"
+      - "45"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -657,7 +660,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": -500
+          "y": -1150
         }
       }
     note: false
@@ -1120,7 +1123,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 780
+          "y": 130
         }
       }
     note: false
@@ -1182,7 +1185,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": 150
+          "y": -500
         }
       }
     note: false
@@ -1330,7 +1333,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": 480
+          "y": -170
         }
       }
     note: false
@@ -1465,7 +1468,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": -665
+          "y": -1315
         }
       }
     note: false
@@ -1506,7 +1509,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": -840
+          "y": -1490
         }
       }
     note: false
@@ -1529,7 +1532,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1548,7 +1553,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": 320
+          "y": -330
         }
       }
     note: false
@@ -1573,14 +1578,14 @@ tasks:
     nexttasks:
       '#none#':
       - "38"
-      - "12"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2240,
-          "y": 950
+          "y": 300
         }
       }
     note: false
@@ -1605,7 +1610,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "41"
     scriptarguments:
       Commandline:
         complex:
@@ -1661,7 +1666,7 @@ tasks:
       {
         "position": {
           "x": 1850,
-          "y": 1090
+          "y": 440
         }
       }
     note: false
@@ -1702,7 +1707,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 70,
           "y": 1410
         }
       }
@@ -1739,7 +1744,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 70,
           "y": 1610
         }
       }
@@ -1750,7 +1755,264 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "41":
+    id: "41"
+    taskid: 5e4bfe08-b080-43f9-8930-25c8fef9b738
+    type: title
+    task:
+      id: 5e4bfe08-b080-43f9-8930-25c8fef9b738
+      version: -1
+      name: Suspicious Command-line path and arguments
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 15a423f3-58a4-4bcb-8e17-45907b22ba0c
+    type: regular
+    task:
+      id: 15a423f3-58a4-4bcb-8e17-45907b22ba0c
+      version: -1
+      name: Search for suspicious path in the Command-line
+      description: Extracts regex data from the provided text. The script supports groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousCmdPath
+      data:
+        complex:
+          root: commandline
+          accessor: original
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: commandline.decoded
+                iscontext: true
+              raw: {}
+      regex:
+        simple: (?i)(\\temp\\)
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 38648326-762d-4be2-8cbc-081a0f8a04bc
+    type: condition
+    task:
+      id: 38648326-762d-4be2-8cbc-081a0f8a04bc
+      version: -1
+      name: Found any suspicious path in the Command-line
+      description: |-
+        Determines the appropriate verdict based on:
+        - IP Reputation.
+        - Whether the task was created from an external IP address.
+        - Suspicious Command-line parameters.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "Yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousCmdPath
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: ec1a8793-7715-444e-812f-746b33637555
+    type: regular
+    task:
+      id: ec1a8793-7715-444e-812f-746b33637555
+      version: -1
+      name: Search for suspicious arguments with a suspicious path
+      description: Extracts regex data from the provided text. The script supports groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousCmdPathAndArguments
+      data:
+        complex:
+          root: commandline
+          accessor: original
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: commandline.decoded
+                iscontext: true
+              raw: {}
+      regex:
+        simple: (?i)(rundll32|tasklist|lsass|shadow|wmic)
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: a86c5c18-8d9c-4034-8d0d-1da4b0aae564
+    type: condition
+    task:
+      id: a86c5c18-8d9c-4034-8d0d-1da4b0aae564
+      version: -1
+      name: Found suspicious Command-line path and arguments?
+      description: Found suspicious LOLBIN execution?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousCmdPathAndArguments
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 3e622f6a-54fa-4ad8-8633-60f3943c489a
+    type: regular
+    task:
+      id: 3e622f6a-54fa-4ad8-8633-60f3943c489a
+      version: -1
+      name: Set command line verdict of SuspiciousCmdPathAndArguments
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.SuspiciousCmdPathAndArguments
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1762,15 +2024,16 @@ view: |-
       "21_9_#default#": 0.71,
       "22_9_#default#": 0.85,
       "31_9_#default#": 0.9,
+      "43_44_Yes": 0.38,
       "7_4_#default#": 0.27,
       "7_8_yes": 0.58
     },
     "paper": {
       "dimensions": {
-        "height": 2815,
-        "width": 2850,
-        "x": 60,
-        "y": -970
+        "height": 3465,
+        "width": 3270,
+        "x": -360,
+        "y": -1620
       }
     }
   }
@@ -1831,6 +2094,9 @@ outputs:
   type: unknown
 - contextPath: CommandlineVerdict.SuspiciousLolbinExecution
   description: Command line verdict SuspiciousLolbinExecution found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.SuspiciousCmdPathAndArguments
+  description: Command line verdict SuspiciousCmdPathAndArguments found. True/False
   type: unknown
 tests:
   - no tests

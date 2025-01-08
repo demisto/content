@@ -15,3 +15,5 @@ dependson: {}
 timeout: 0s
 dockerimage: demisto/googleapi-python3:1.0.0.12698
 fromversion: 5.0.0
+tests:
+- No tests

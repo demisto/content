@@ -1,0 +1,1098 @@
+id: DSPM Test
+name: DSPM Test
+version: -1
+fromversion: 6.10.0
+starttaskid: '0'
+tasks:
+  "0":
+    id: "0"
+    taskid: ff8d4751-8d70-4f01-8285-e587dc49bd20
+    type: start
+    task:
+      id: ff8d4751-8d70-4f01-8285-e587dc49bd20
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4187d739-9e9f-422e-8c78-dd7f84d2186e
+    type: regular
+    task:
+      id: 4187d739-9e9f-422e-8c78-dd7f84d2186e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 185df9e1-c446-43ef-8a40-17f7918939db
+    type: regular
+    task:
+      id: 185df9e1-c446-43ef-8a40-17f7918939db
+      version: -1
+      name: dspm-list-risk-findings
+      script: DSPM|||dspm-list-risk-findings
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+      rule_name_equal:
+        simple: Sensitive asset open to world
+      status_equal:
+        simple: OPEN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 191a424b-e934-4025-827d-38fbac8fe28d
+    type: condition
+    task:
+      id: 191a424b-e934-4025-827d-38fbac8fe28d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.asset
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.cloudProvider
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b2937240-30e2-4984-8cd0-890eead03dff
+    type: regular
+    task:
+      id: b2937240-30e2-4984-8cd0-890eead03dff
+      version: -1
+      name: dspm-get-risk-finding-by-id
+      script: DSPM|||dspm-get-risk-finding-by-id
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      finding_id:
+        simple: ${DSPM.RiskFinding.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: da68bd19-14ba-4636-8201-13dfc2cbb8b4
+    type: condition
+    task:
+      id: da68bd19-14ba-4636-8201-13dfc2cbb8b4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.asset
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.ruleName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 974eddef-741c-4a5c-8896-78392132fabd
+    type: regular
+    task:
+      id: 974eddef-741c-4a5c-8896-78392132fabd
+      version: -1
+      name: dspm-list-assets
+      script: DSPM|||dspm-list-assets
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+      service_type_equal:
+        simple: AURORA
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b9202226-ef00-40e2-8b75-99bec996a659
+    type: condition
+    task:
+      id: b9202226-ef00-40e2-8b75-99bec996a659
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 30ada570-bfc5-48d5-84b4-a1f08ed6c7a8
+    type: regular
+    task:
+      id: 30ada570-bfc5-48d5-84b4-a1f08ed6c7a8
+      version: -1
+      name: dspm-get-asset-details
+      script: DSPM|||dspm-get-asset-details
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      asset_id:
+        simple: ${DSPM.Asset.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 72bddf35-e39d-4ff6-8d53-8eef5f457dd7
+    type: condition
+    task:
+      id: 72bddf35-e39d-4ff6-8d53-8eef5f457dd7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6f4a7378-efdd-4779-890f-3437ed9d0585
+    type: regular
+    task:
+      id: 6f4a7378-efdd-4779-890f-3437ed9d0585
+      version: -1
+      name: dspm-get-asset-files-by-id
+      script: DSPM|||dspm-get-asset-files-by-id
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      asset_id:
+        simple: ${DSPM.RiskFinding.asset.assetId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 8011c7e0-79aa-42fc-86c5-2b7ededd0b24
+    type: condition
+    task:
+      id: 8011c7e0-79aa-42fc-86c5-2b7ededd0b24
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5115b109-32f0-44b9-8cc4-ae97747a0ccc
+    type: regular
+    task:
+      id: 5115b109-32f0-44b9-8cc4-ae97747a0ccc
+      version: -1
+      name: dspm-get-list-of-asset-fields-by-id
+      script: DSPM|||dspm-get-list-of-asset-fields-by-id
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      assetId:
+        simple: ${DSPM.Asset.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 737b0ea9-c798-4f66-8e24-78c93be555e5
+    type: regular
+    task:
+      id: 737b0ea9-c798-4f66-8e24-78c93be555e5
+      version: -1
+      name: dspm-get-data-types
+      script: DSPM|||dspm-get-data-types
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 088920cb-fec9-4505-8691-622713e2f14d
+    type: condition
+    task:
+      id: 088920cb-fec9-4505-8691-622713e2f14d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypes.Key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypes.No
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ebcf9cb1-5474-4693-81b6-734d8fab271a
+    type: regular
+    task:
+      id: ebcf9cb1-5474-4693-81b6-734d8fab271a
+      version: -1
+      name: dspm-list-labels
+      script: DSPM|||dspm-list-labels
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 6c99fdae-d60d-4ed7-8e1f-3db41e79a735
+    type: condition
+    task:
+      id: 6c99fdae-d60d-4ed7-8e1f-3db41e79a735
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Label.Key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Label.No
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c75e5f40-58c8-40fc-8c80-c9ee577b55fd
+    type: regular
+    task:
+      id: c75e5f40-58c8-40fc-8c80-c9ee577b55fd
+      version: -1
+      name: dspm-list-data-types-findings
+      script: DSPM|||dspm-list-data-types-findings
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 755879f5-62a1-451c-8a8a-631eb11017f0
+    type: condition
+    task:
+      id: 755879f5-62a1-451c-8a8a-631eb11017f0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.dataTypeName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.records
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.publicRecords
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.assets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.clouds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.regions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.lastFound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.recordsAtRisk.high
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.recordsAtRisk.medium
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.recordsAtRisk.low
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 2a9c430d-101f-4208-8271-c9286b50f95f
+    type: regular
+    task:
+      id: 2a9c430d-101f-4208-8271-c9286b50f95f
+      version: -1
+      name: dspm-update-risk-finding-status
+      script: DSPM|||dspm-update-risk-finding-status
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      risk_finding_id:
+        simple: ${DSPM.RiskFinding.id}
+      status:
+        simple: OPEN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: ccf00a70-8e61-4152-85eb-fdc87672350c
+    type: condition
+    task:
+      id: ccf00a70-8e61-4152-85eb-fdc87672350c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFindingStatusUpdate.newStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFindingStatusUpdate.oldStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFindingStatusUpdate.riskFindingId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: aa415a81-710b-45a1-8480-deba52ff3688
+    type: regular
+    task:
+      id: aa415a81-710b-45a1-8480-deba52ff3688
+      version: -1
+      name: dspm-update-alert-status
+      script: DSPM|||dspm-update-alert-status
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      alert_id:
+        simple: ${DSPM.Alert.id}
+      status:
+        simple: OPEN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 7729882d-1a40-4a54-8a95-49b1e7606749
+    type: condition
+    task:
+      id: 7729882d-1a40-4a54-8a95-49b1e7606749
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AlertStatusUpdate.newStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AlertStatusUpdate.oldStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AlertStatusUpdate.alertId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 9eee59b8-964a-43b9-81d6-9f040b3df68a
+    type: regular
+    task:
+      id: 9eee59b8-964a-43b9-81d6-9f040b3df68a
+      version: -1
+      name: dspm-list-alerts
+      script: DSPM|||dspm-list-alerts
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      limit:
+        simple: "1"
+      status_equals:
+        simple: OPEN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 895ac6cf-f050-43f2-8cf1-7f86dfd25126
+    type: condition
+    task:
+      id: 895ac6cf-f050-43f2-8cf1-7f86dfd25126
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f901bd0a-bdfd-418d-83a1-b995447e9144
+    type: title
+    task:
+      id: f901bd0a-bdfd-418d-83a1-b995447e9144
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8fc5b1e4-19b2-4a72-8db3-5d43bbdfc40c
+    type: condition
+    task:
+      id: 8fc5b1e4-19b2-4a72-8db3-5d43bbdfc40c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4585,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

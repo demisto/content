@@ -94,9 +94,9 @@ class Client:
         """
         demisto.debug(f'check_window_before_call {mintime=}')
         mintime_dt = datetime.fromtimestamp(mintime)
-        if self.params.fetch_delay != '0' and self.params.end_window <= mintime_dt:
+        if self.params.fetch_delay != '0' and self.params.end_window - timedelta(seconds=5) <= mintime_dt:
             demisto.debug(f"check_window_before_call, don't perform API call {self.params.fetch_delay=} and "
-                          f"{self.params.end_window=} <= {mintime_dt=}")
+                          f"{(self.params.end_window - timedelta(seconds=5))=} <= {mintime_dt=}")
             return False
         demisto.debug('check_window_before_call, perform API call')
         return True

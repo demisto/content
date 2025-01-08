@@ -272,7 +272,7 @@ script:
     - contextPath: McAfee.TIE.FilesReferences.Hash
       description: The value of the hash.
       type: String
-  dockerimage: demisto/dxl:1.0.0.87530
+  dockerimage: demisto/dxl:1.0.0.116949
   runonce: false
   script: "-"
   subtype: python3
