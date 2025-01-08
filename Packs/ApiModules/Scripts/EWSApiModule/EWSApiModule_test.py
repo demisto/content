@@ -20,6 +20,7 @@ from exchangelib import (
     OAUTH2,
     Credentials,
     Configuration,
+    FileAttachment,
     Message,
 )
 from exchangelib.protocol import Protocol
@@ -720,10 +721,16 @@ def test_handle_html(mocker):
     mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
 
     html_input = '<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>'
-    expected_output = ('<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>',
-                       [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}])
+    expected_clean_body = '<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>'
+    expected_attachment_params = [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}]
 
-    assert handle_html(html_input) == expected_output
+    clean_body, attachments = handle_html(html_input)
+    assert clean_body == expected_clean_body
+    assert len(attachments) == len(expected_attachment_params)
+    for i, attachment in enumerate(attachments):
+        assert isinstance(attachment, FileAttachment)
+        attachment_params = {'data': attachment.content, 'name': attachment.name, 'cid': attachment.content_id}
+        assert attachment_params == expected_attachment_params[i]
 
 
 def test_handle_html_no_images(mocker):
@@ -738,9 +745,17 @@ def test_handle_html_no_images(mocker):
     mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
 
     html_input = '<html><body>some text</body></html>'
-    expected_output = ('<html><body>some text</body></html>', [])
+    expected_clean_body = '<html><body>some text</body></html>'
+    expected_attachment_params = []
 
-    assert handle_html(html_input) == expected_output
+    clean_body, attachments = handle_html(html_input)
+
+    assert clean_body == expected_clean_body
+    assert len(attachments) == len(expected_attachment_params)
+    for i, attachment in enumerate(attachments):
+        assert isinstance(attachment, FileAttachment)
+        attachment_params = {'data': attachment.content, 'name': attachment.name, 'cid': attachment.content_id}
+        assert attachment_params == expected_attachment_params[i]
 
 
 def test_handle_html_longer_input():
@@ -788,11 +803,11 @@ def test_handle_html_longer_input():
 
     clean_body, extracted_images = handle_html(html_content)
 
-    assert clean_body == expected_parsed_html.format(image0_cid=extracted_images[0].get('cid'),
-                                                     image1_cid=extracted_images[1].get('cid'))
+    assert clean_body == expected_parsed_html.format(image0_cid=extracted_images[0].content_id,
+                                                     image1_cid=extracted_images[1].content_id)
     assert len(extracted_images) == 2
     for i, image in enumerate(extracted_images):
-        assert image['data'] == expected_image_data[i]
+        assert image.content == expected_image_data[i]
 
 
 def test_get_config_args_from_context(mocker):

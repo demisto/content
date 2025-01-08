@@ -1649,11 +1649,12 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
                                         reply_to, importance)
 
         for attachment in attachments:
-            if not attachment.get('cid'):
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
-            else:
-                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                                is_inline=True, content_id=attachment.get('cid'))
+            if not isinstance(attachment, FileAttachment):
+                if not attachment.get('cid'):
+                    new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+                else:
+                    new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                                    is_inline=True, content_id=attachment.get('cid'))
 
             message.attach(new_attachment)
 

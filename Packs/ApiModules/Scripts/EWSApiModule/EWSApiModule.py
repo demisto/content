@@ -620,9 +620,11 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
             'name': name
         }
         attachment['cid'] = cid
-        attachments.append(attachment)
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
         last_index = m.end() - 1
+        new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                        content_id=attachment.get('cid'), is_inline=True)
+        attachments.append(new_attachment)
 
     clean_body += html_body[last_index:]
     return clean_body, attachments
