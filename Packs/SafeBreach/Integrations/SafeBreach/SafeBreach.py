@@ -1622,7 +1622,7 @@ class Client(BaseClient):
 
     def rerun_test_or_simulation(self):
         account_id = self.account_id
-
+        test_data: dict
         if demisto.command() == "safebreach-rerun-test":
             test_data = {
                 "testId": demisto.args().get("test_id"),
