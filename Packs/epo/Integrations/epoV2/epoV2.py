@@ -7,9 +7,6 @@ import urllib3
 import traceback
 from typing import Any, Tuple, Dict
 
-import warnings
-warnings.filterwarnings("ignore", category=SyntaxWarning)
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
