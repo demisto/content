@@ -69,11 +69,11 @@ class ContextData:
         alert: dict[Hashable, Any] | None = None,
         value: dict[Hashable, Any] | None = None,
     ) -> None:
-        self.__context: dict[Hashable, Any] = context
-        self.__value: dict[Hashable, Any] = value
+        self.__context: dict[Hashable, Any] = context or {}
+        self.__value: dict[Hashable, Any] = value or {}
         self.__specials: dict[Hashable, Any] = {
-            'alert': alert if isinstance(alert, dict) else {},
-            'incident': incident if isinstance(incident, dict) else {},
+            'alert': alert or {},
+            'incident': incident or {},
             'lists': None,
         }
 
@@ -294,7 +294,6 @@ class SortableValue(object):
     """
     The custom value object class, which enables you to sort for any types of data even in different types.
     """
-
     def __init__(
         self,
         value: Any,
@@ -310,9 +309,9 @@ class SortableValue(object):
             obj2: Any
         ) -> bool:
             if (
-                (isinstance(obj1, (int, float)) and isinstance(obj2, (int, float)))
-                or (isinstance(obj1, bool) and isinstance(obj2, bool))
-                or (isinstance(obj1, str) and isinstance(obj2, str))
+                all(isinstance(x, (int, float)) for x in [obj1, obj2])
+                or all(isinstance(x, bool) for x in [obj1, obj2])
+                or all(isinstance(x, str) for x in [obj1, obj2])
             ):
                 return obj1 < obj2  # type: ignore[operator]
             elif obj1 is None or obj2 is None:
