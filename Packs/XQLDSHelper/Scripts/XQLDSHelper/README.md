@@ -1272,7 +1272,7 @@ Caching can be controlled by the `cache_type` argument parameter.
 ## Record Limit for Query Results
 
 XQL queries are executed using the `xdr-xql-generic-query` command, which is provided by the `XQL Query Engine` integration.
-By default, the command limits the number of record sets returned. To retrieve more records, you need to add a `limit` stage in the XQL query.
+By default, the command returns up to 100 records. To retrieve more records, you need to add a `limit` stage to the XQL query.
 
 Below is a sample XQL query that includes a `limit` stage:
 
