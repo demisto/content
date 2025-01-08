@@ -5104,7 +5104,8 @@ script:
       required: true
     description: Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events. Note that this command is supported on Cortex XSIAM only.
     name: cs-falcon-get-events
-    hidden:xsoar: true
+    hidden: true
+    hidden:marketplacev2: false
   dockerimage: demisto/py3-tools:1.0.0.114656
   # Fetch incidents on XSOAR only
   isfetch: true
