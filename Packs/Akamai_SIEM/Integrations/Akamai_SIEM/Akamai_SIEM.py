@@ -44,9 +44,9 @@ EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
 LOCKED_UPDATES_LOCK = None
-EVENTS_COUNT_CURRENT_INTERVAL = 0
 EVENTS = []
 COUNTER = 0
+MAX_ALLOWED_TASKS_SIZE = (10 ** 10)  # 10 GB
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -317,6 +317,23 @@ def test_module_command(client: Client) -> tuple[None, None, str]:
     raise DemistoException(f'Test module failed, {events}')
 
 
+async def wait_until_tasks_load_decrees():
+    demisto.info("[test] checking...")
+    while (current_tasks_total_size := get_tasks_total_size()) > MAX_ALLOWED_TASKS_SIZE:
+        demisto.info(f"[test] current tasks total size = {current_tasks_total_size} is larger than the max allowed tasks size"
+                     f"{MAX_ALLOWED_TASKS_SIZE}. sleeping for 60 seconds to let other tasks finish.")
+        await asyncio.sleep(60)
+    demisto.info("[test] finished checking...")
+
+
+def get_tasks_total_size() -> int:
+    tasks = asyncio.all_tasks()
+    total_size = 0
+    for task in tasks:
+        total_size += sys.getsizeof(task)
+    demisto.info(f"current tasks total size = {total_size}")
+    return total_size
+
 @logger
 def fetch_incidents_command(
         client: Client,
@@ -453,20 +470,11 @@ def is_last_request_smaller_than_page_size(num_events_from_previous_request: int
     return num_events_from_previous_request < page_size * ALLOWED_PAGE_SIZE_DELTA_RATIO
 
 
-async def update_total_events_fetched_and_offset(events_amount, offset):
-    async with LOCKED_UPDATES_LOCK:
-        global EVENTS_COUNT_CURRENT_INTERVAL
-        EVENTS_COUNT_CURRENT_INTERVAL += events_amount
-        set_integration_context({"offset": offset})
-
-
-async def update_module_health():
+async def update_module_health(events_amount, offset):
     async with LOCKED_UPDATES_LOCK:
         demisto.info("Updating module health")
-        global EVENTS_COUNT_CURRENT_INTERVAL
-        if EVENTS_COUNT_CURRENT_INTERVAL:
-            demisto.updateModuleHealth({'eventsPulled': (EVENTS_COUNT_CURRENT_INTERVAL)})
-        EVENTS_COUNT_CURRENT_INTERVAL = 0
+        set_integration_context({"offset": offset})
+        demisto.updateModuleHealth({'eventsPulled': (events_amount)})
 
 
 @logger
@@ -484,6 +492,7 @@ async def fetch_events_command(client: Client,
     """
     offset = ctx.get("offset")
     async for events in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
+        # await process_and_send_events_to_xsiam(events, should_skip_decode_events, offset)  # noqa: RUF006
         asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
 
 
@@ -515,24 +524,27 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                 processed_events.append(event)
     demisto.info(f"Sending {len(processed_events)} events to xsiam for the {COUNTER} time.")
     tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
-                                    chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, multiple_threads=True, url_key="host",
+                                    chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True, url_key="host",
                                     data_format="json", data_size_expected_to_split_evenly=True)
     demisto.info(f"Finished executing send_events_to_xsiam for the {COUNTER} time, waiting for tasks to end.")
     await asyncio.gather(*tasks)
     demisto.info(f"Finished gathering all tasks for the {COUNTER} time.")
     COUNTER += 1
-    asyncio.create_task(update_total_events_fetched_and_offset(len(processed_events), offset))  # noqa: RUF006
+    demisto.info("Starting to update module health")
+    # await update_module_health(len(processed_events), offset)  # noqa: RUF006
+    asyncio.create_task(update_module_health(len(processed_events), offset))  # noqa: RUF006
+    demisto.info("Finished updating module health")
 
 
 async def get_events_from_akamai(client: Client, config_ids, from_time, page_size, offset):
     counter = 0
     while True:
-        demisto.info("Starting to update module health")
-        await update_module_health()
-        demisto.info("Finished updating module health")
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
+            demisto.info(f"[test] testing for possible wait condition")
+            await wait_until_tasks_load_decrees()
+            demisto.info(f"[test] finished testing for possible wait condition")
             get_events_task = client.get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter)
             counter += 1
             events, offset = None, None
@@ -589,7 +601,7 @@ def decode_url(headers: str) -> dict:
 
 def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, send_events_asynchronously=False,
                        data_size_expected_to_split_evenly=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
@@ -634,15 +646,18 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
     :type items_count: ``str``
     :param items_count: the asset snapshot items count.
 
-    :type multiple_threads: ``bool``
-    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
-    Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
+    :type send_events_asynchronously: ``bool``
+    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
+    Note that when set to True, the updateModuleHealth should be done from the integration itself.
 
-    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
-    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
-    for future in concurrent.futures.as_completed(futures):
-        data_size += future.result()
-    :rtype: ``List[Future]`` or ``None```
+    :type data_size_expected_to_split_evenly: ``bool``
+    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
+    Use this to split data to chunks faster.
+
+    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
+    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
+    await asyncio.gather(*tasks)
+    :rtype: ``List[Task]`` or ``None``
     """
     data_size = 0
     params = demisto.params()
@@ -760,7 +775,7 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
         return chunk_size
 
 
-    if multiple_threads:
+    if send_events_asynchronously:
         demisto.info("Sending events to xsiam asynchronously.")
         all_chunks = list(data_chunks)
         demisto.info("Finished appending all data_chunks to a list.")
@@ -771,7 +786,7 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
         demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
         return tasks
     else:
-        demisto.info("Sending events to xsiam with a single thread.")
+        demisto.info("Sending events to xsiam synchronously.")
         for chunk in data_chunks:
             data_size += send_events(chunk)
 
@@ -805,7 +820,7 @@ def split_data_to_chunks_evenly(data, target_chunk_size):
 
 def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False, data_size_expected_to_split_evenly=False):
+                         add_proxy_to_request=False, send_events_asynchronously=False, data_size_expected_to_split_evenly=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -839,14 +854,18 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
     :type add_proxy_to_request :``bool``
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
-    :type multiple_threads: ``bool``
-    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+    :type send_events_asynchronously: ``bool``
+    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
+    Note that when set to True, the updateModuleHealth should be done from the integration itself.
 
-    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
-    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
-    for future in concurrent.futures.as_completed(futures):
-        data_size += future.result()
-    :rtype: ``List[Future]`` or ``None``
+    :type data_size_expected_to_split_evenly: ``bool``
+    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
+    Use this to split data to chunks faster.
+
+    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
+    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
+    await asyncio.gather(*tasks)
+    :rtype: ``List[Task]`` or ``None``
     """
     return akamai_send_data_to_xsiam(
         events,
@@ -859,7 +878,7 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        multiple_threads=multiple_threads,
+        send_events_asynchronously=send_events_asynchronously,
         data_size_expected_to_split_evenly=data_size_expected_to_split_evenly
     )
 
