@@ -104,7 +104,7 @@ tasks:
     task:
       id: 32a49ae6-3caf-4680-8f02-18ea37bdf96b
       version: -1
-      name: Non prevalent initiator with suspicious reputation or path?
+      name: Non-prevalent initiator with suspicious reputation or path?
       description: |-
         Determines the appropriate verdict if the scheduled task was created by a non-prevalent initiator process with a suspicious reputation or path.
 
@@ -578,7 +578,7 @@ tasks:
       id: 06f5b183-5ce4-4e90-8f21-35ef293ce760
       version: -1
       name: Notify to War Room - Scheduled Task Disabled
-      description: Prints text to the War Room (Markdown supported)
+      description: Prints text to the War Room (markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
