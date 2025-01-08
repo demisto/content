@@ -67,7 +67,7 @@ filter event_type = "audit"
         xdm.source.ipv6 = if(source_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", source_ip, null),
         xdm.target.ipv4 = if(target_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", target_ip, null),
         xdm.target.ipv6 = if(target_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", target_ip, null),
-        xdm.event.operation = audit -> action,
+        xdm.event.operation_sub_type = audit -> action,
         xdm.alert.severity = audit -> level,
         xdm.alert.subcategory = arrayindex(regextract(arraystring(tags,","),"name\":\"eventSubCategory\",\"value\":\"(.*?)\"}"),0),
         xdm.observer.unique_identifier = metadata -> customerId,
