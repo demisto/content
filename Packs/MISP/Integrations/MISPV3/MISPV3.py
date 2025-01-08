@@ -563,7 +563,7 @@ def get_new_misp_event_object(args):
         event.threat_level_id = THREAT_LEVELS_TO_ID[threat_level_id_arg]
 
     analysis_arg = args.get('analysis')
-    event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg  # type: ignore[assignment]
+    event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg, analysis_arg)
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
     event.date = datetime.strptime(args.get('creation_date'), "%Y-%m-%d") if args.get('creation_date') else datetime.today()
     event.published = argToBoolean(args.get('published', 'False'))
@@ -807,11 +807,13 @@ def get_indicator_results(
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')  # type: ignore[union-attr]
     if is_indicator_found:
-        outputs, score, found_tag, found_related_events = parse_response_reputation_command(misp_response,  # type: ignore[arg-type]
-                                                                                            malicious_tag_ids,
-                                                                                            suspicious_tag_ids,
-                                                                                            benign_tag_ids,
-                                                                                            attributes_limit)
+        outputs, score, found_tag, found_related_events = parse_response_reputation_command(
+            misp_response,  # type: ignore[arg-type]
+            malicious_tag_ids,
+            suspicious_tag_ids,
+            benign_tag_ids,
+            attributes_limit
+        )
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
