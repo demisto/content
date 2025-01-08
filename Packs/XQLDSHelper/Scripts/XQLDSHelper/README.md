@@ -1270,8 +1270,7 @@ Caching can be controlled by the `cache_type` argument parameter.
    * All the record sets retrieved from the query are stored in the cache. Entries will be correctly created even when only the parameters in the "entry" are modified, as they are rebuilt from the raw record sets in the cache, provided the query parameters remain unchanged.
 
  - cache_type: `entry`
-   * Only entry data is stored in the cache. The same entry is returned if the query parameters remain unchanged. This option helps minimize the cache data size. However, if only the parameters in the "entry" are modified, the correct entry cannot be retrieved because it does not query the record set again to recreate a new entry with the updated settings in the "entry".
-
+   * Only entry data is stored in the cache. The same entry is returned if the query parameters remain unchanged. This option helps minimize the cache data size. However, if only the parameters within the entry are modified (for example, if the 'colors' parameter is modified), the correct entry cannot be retrieved, as it does not re-query the record set to create a new entry with the updated settings.
 
 
 ## Sample Content Bundle
