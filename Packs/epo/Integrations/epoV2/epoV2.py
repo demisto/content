@@ -5,14 +5,13 @@ from CommonServerUserPython import *
 import json
 import urllib3
 import traceback
-from typing import Any
+from typing import Any, Tuple, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-NEW_LINE_N = "\n"
-NEW_LINE_R = "\r"
+
 GET = 'GET'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 EPO_SYSTEM_ATTRIBUTE_MAP = {
@@ -45,7 +44,7 @@ class Client(BaseClient):
         _, response = self.epo_help()
         return json.dumps(response)
 
-    def epo_help(self, command: str = None, prefix: str = None) -> tuple[dict, dict]:
+    def epo_help(self, command: str = None, prefix: str = None) -> Tuple[dict, dict]:
         """
 
         Args:
@@ -68,7 +67,7 @@ class Client(BaseClient):
                                           resp_type='text')
         return self._parse_response(epo_response)
 
-    def epo_get_latest_dat(self) -> tuple[dict, dict]:
+    def epo_get_latest_dat(self) -> Tuple[dict, dict]:
         """
         a direct call to specific url to get the version of the most updated dat file
         dat file is the McAfee A/V software definitions file.
@@ -79,12 +78,12 @@ class Client(BaseClient):
             full_url=dat_file_url,
             resp_type='text',
             timeout=self.timeout)
-        latest_version = raw_response.split(f'{NEW_LINE_R}{NEW_LINE_N}{NEW_LINE_R}{NEW_LINE_N}')[0].split('CurrentVersion=')[1]
+        latest_version = raw_response.split('\r\n\r\n')[0].split('CurrentVersion=')[1]
         json_response = {'LatestVersion': latest_version}
 
         return json_response, raw_response
 
-    def epo_get_current_dat(self) -> tuple[dict, dict]:
+    def epo_get_current_dat(self) -> Tuple[dict, dict]:
         """
         returns the currently installed dat file on the ePO system
         Returns(str):
@@ -99,7 +98,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def epo_command(self, command: str, params: dict, resp_type: str = 'json') -> tuple[dict, dict]:
+    def epo_command(self, command: str, params: dict, resp_type: str = 'json') -> Tuple[dict, dict]:
         """
         Runs any given command
         Args:
@@ -125,7 +124,7 @@ class Client(BaseClient):
                           abort_after_minutes: str = None,
                           stop_after_minutes: str = None,
                           randomization_interval: str = None
-                          ) -> tuple[dict, dict]:
+                          ) -> Tuple[dict, dict]:
 
         params = {
             'names': names,
@@ -152,7 +151,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def get_client_task_id_by_name(self, search_text: str) -> tuple[str, str]:
+    def get_client_task_id_by_name(self, search_text: str) -> Tuple[str, str]:
         """
          list all client tasks in ePO server
         Args:
@@ -194,7 +193,7 @@ class Client(BaseClient):
                 'Error getting DAT update task. It seems the task "VSEContentUpdateDemisto" is missing from the EPO '
                 'server. Please contact support for more details')
 
-    def update_repository(self, source_repo: str, target_branch: str) -> tuple[dict, dict]:
+    def update_repository(self, source_repo: str, target_branch: str) -> Tuple[dict, dict]:
         """
         Updating the local repository on the ePO from the public server.
         Returns:
@@ -248,7 +247,7 @@ class Client(BaseClient):
                 return entry['groupPath']
         return ''
 
-    def find_systems(self, group_id: int) -> tuple[dict, dict]:
+    def find_systems(self, group_id: int) -> Tuple[dict, dict]:
         """
         find all systems belongs to the given group Id
         Args:
@@ -268,7 +267,7 @@ class Client(BaseClient):
                                           timeout=self.timeout)
         return self._parse_response(raw_response)
 
-    def find_system(self, search_text: str) -> tuple[dict, dict]:
+    def find_system(self, search_text: str) -> Tuple[dict, dict]:
         """
         find system in the ePO Server system tree
         Args:
@@ -287,7 +286,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def wakeup_agent(self, names: str) -> tuple[dict, dict]:
+    def wakeup_agent(self, names: str) -> Tuple[dict, dict]:
         """
         wakeup agent for as system or list of systems
         Args:
@@ -306,9 +305,11 @@ class Client(BaseClient):
                                       resp_type='text',
                                       timeout=self.timeout)
 
+        # response = response.split('"')[1] if response.startswith('"') else response
+        # response = response.replace(r'\n', '\n')
         return self._parse_response(response)
 
-    def apply_tag(self, names: str, tag_name: str) -> tuple[int, dict]:
+    def apply_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
         """
         Apply the given tag name to machine(s) in names
         Args:
@@ -329,7 +330,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def clear_tag(self, names: str, tag_name: str) -> tuple[int, dict]:
+    def clear_tag(self, names: str, tag_name: str) -> Tuple[int, dict]:
         """
         Clear the given tag name for machine(s) in names
         Args:
@@ -350,7 +351,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def list_tag(self, search_text: str = None) -> tuple[dict, dict]:
+    def list_tag(self, search_text: str = None) -> Tuple[dict, dict]:
         """
         List tags available on ePO server
         Args:
@@ -369,7 +370,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def get_table(self, table_name: str = None) -> tuple[dict, dict]:
+    def get_table(self, table_name: str = None) -> Tuple[dict, dict]:
         """
         Get tables from ePO server
         Args:
@@ -397,7 +398,7 @@ class Client(BaseClient):
                     order: str = None,
                     group: str = None,
                     join_tables: str = None,
-                    ) -> tuple[dict, dict]:
+                    ) -> Tuple[dict, dict]:
         """
         query tables from ePO server
         Args:
@@ -441,7 +442,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def get_version(self) -> tuple[dict, dict]:
+    def get_version(self) -> Tuple[dict, dict]:
         """
         Get ePO Software Version
         Returns:
@@ -455,7 +456,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def move_system(self, names: str, parent_group_id: int) -> tuple[dict, dict]:
+    def move_system(self, names: str, parent_group_id: int) -> Tuple[dict, dict]:
         """
            Moves systems to a specified destination group by name or ID as returned
         Args:
@@ -472,7 +473,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def find_client_task(self, search_text: str = None) -> tuple[dict, dict]:
+    def find_client_task(self, search_text: str = None) -> Tuple[dict, dict]:
         """
            find client task in the ePo system
         Args:
@@ -490,7 +491,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def find_policy(self, search_text: str = None) -> tuple[dict, dict]:
+    def find_policy(self, search_text: str = None) -> Tuple[dict, dict]:
         """
            find policy task in the ePo system
         Args:
@@ -509,7 +510,7 @@ class Client(BaseClient):
         return self._parse_response(response)
 
     def assign_policy_to_group(self, group_id: int, product_id: str, object_id: int,
-                               reset_inheritance: str = 'false') -> tuple[int, dict]:
+                               reset_inheritance: str = 'false') -> Tuple[int, dict]:
         """
            Assign policy to group of machines
         Args:
@@ -531,7 +532,7 @@ class Client(BaseClient):
         return self._parse_response(response)
 
     def assign_policy_to_system(self, names: str, product_id: str, type_id: int, object_id: int,
-                                reset_inheritance: str = 'false') -> tuple[dict, dict]:
+                                reset_inheritance: str = 'false') -> Tuple[dict, dict]:
         """
            Assign policy to system(s)
         Args:
@@ -553,7 +554,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def list_issue(self, issue_id: str = '') -> tuple[dict, dict]:
+    def list_issue(self, issue_id: str = '') -> Tuple[dict, dict]:
         """
         list issue in the system
         Args:
@@ -574,7 +575,7 @@ class Client(BaseClient):
                                       timeout=self.timeout)
         return self._parse_response(response)
 
-    def delete_issue(self, issue_id: str) -> tuple[dict, dict]:
+    def delete_issue(self, issue_id: str) -> Tuple[dict, dict]:
         """
         delete issue in the system
         Args:
@@ -602,7 +603,7 @@ class Client(BaseClient):
                      issue_assignee_name: str = None,
                      issue_ticket_server_name: str = None,
                      issue_ticket_id: str = None,
-                     issue_properties: str = None) -> tuple[dict, dict]:
+                     issue_properties: str = None) -> Tuple[dict, dict]:
         """
         update an issue
         Args:
@@ -664,7 +665,7 @@ class Client(BaseClient):
                      issue_assignee_name: str = None,
                      issue_ticket_server_name: str = None,
                      issue_ticket_id: str = None,
-                     issue_properties: str = None) -> tuple[dict, dict]:
+                     issue_properties: str = None) -> Tuple[dict, dict]:
         """
         create an issue
         Args:
@@ -710,7 +711,7 @@ class Client(BaseClient):
         return self._parse_response(response)
 
     @staticmethod
-    def _parse_response(response: str) -> tuple[Any, Any]:
+    def _parse_response(response: str) -> Tuple[Any, Any]:
         """
         Parses the raw response returned from a remote command invocation, returning
         its content, which is trimmed of leading and trailing whitespace.
@@ -826,18 +827,18 @@ def system_to_md(system: dict, verbose: bool = False) -> str:
     """
     md = ''
     if verbose:
-        md += f'#### {system.get("EPOComputerProperties.ComputerName")} {NEW_LINE_N}'
-        md += f'Attribute|Value{NEW_LINE_N}-|-{NEW_LINE_N}'
+        md += f'#### {system.get("EPOComputerProperties.ComputerName")} \n'
+        md += 'Attribute|Value\n-|-\n'
         for key in system:
-            md += f'{key} | {system[key]}{NEW_LINE_N}'
+            md += f'{key} | {system[key]}\n'
 
-        md += f'---{NEW_LINE_N}'
+        md += '---\n'
     else:
         md += '|'
         for key in EPO_SYSTEM_ATTRIBUTE_MAP:
             md += f'{system.get(EPO_SYSTEM_ATTRIBUTE_MAP.get(key))} |'
 
-        md += NEW_LINE_N
+        md += '\n'
     return md
 
 
@@ -862,7 +863,7 @@ def systems_to_md(systems: dict, verbose: bool = False) -> str:
             tmp_head += key + '|'
             tmp_line += '-|'
 
-        md += f'{tmp_head} {NEW_LINE_N} {tmp_line} {NEW_LINE_N}'
+        md += f'{tmp_head} \n {tmp_line} \n'
         for system in systems:
             md += system_to_md(system, verbose)
     return md
@@ -886,7 +887,7 @@ def parse_command_args(command: str, command_args: str) -> dict:
 ''' COMMAND FUNCTIONS '''
 
 
-def epo_help_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Displays a list of all commands and help strings.
     XSOAR Cmd example: !epo-help command=epo.help
@@ -906,18 +907,18 @@ def epo_help_command(client: Client, args: dict[str, Any]) -> CommandResults:
     json_response, raw_response = client.epo_help(command=command, prefix=prefix)
 
     if 'command' in args:
-        readable_output = f"#### ePO Help - {args['command']} {NEW_LINE_N} "
+        readable_output = f"#### ePO Help - {args['command']} \n "
         for line in json_response:
-            line = line.replace(f"{NEW_LINE_R}{NEW_LINE_N}", ' ')
-            line = line.replace(f"{NEW_LINE_N}", ' ')
+            line = line.replace("\r\n", ' ')
+            line = line.replace('\n', ' ')
             readable_output += line
     else:
         if search:
             search = search.lower()
-        readable_output = f'#### ePO Help{NEW_LINE_N}'
+        readable_output = '#### ePO Help\n'
         for line in json_response:
-            line = line.replace(f"{NEW_LINE_R}{NEW_LINE_N}", ' ')
-            line = line.replace(f"{NEW_LINE_N}", ' ')
+            line = line.replace("\r\n", ' ')
+            line = line.replace('\n', ' ')
 
             if (not search) or (search in line.lower()):
                 desc = ''
@@ -925,7 +926,7 @@ def epo_help_command(client: Client, args: dict[str, Any]) -> CommandResults:
                 if '-' in line:
                     desc = line.split('-')[1] if line.split('-')[1] else 'N/A'
                     cmd = line.split('-')[0].rstrip() if line.split('-')[0] else 'N/A'
-                    readable_output += f"- **{cmd}** - {desc}{NEW_LINE_N}"
+                    readable_output += "- **" + cmd + "** - " + desc + '\n'
 
     return CommandResults(
         readable_output=readable_output
@@ -946,7 +947,7 @@ def epo_get_latest_dat_command(client: Client) -> CommandResults:
     json_response, raw_response = client.epo_get_latest_dat()
 
     latest_dat_version = json_response.get('LatestVersion')
-    readable_output = f'McAfee ePO Latest DAT file version available is: **{latest_dat_version}**{NEW_LINE_N}'
+    readable_output = f'McAfee ePO Latest DAT file version available is: **{latest_dat_version}**\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -976,7 +977,7 @@ def epo_get_current_dat_command(client: Client) -> CommandResults:
         'CurrentVersion': current_dat_version
     }
     current_dat_version = current_version.get('CurrentVersion')
-    readable_output = f'McAfee ePO Current DAT file version in repository is: **{current_dat_version}**{NEW_LINE_N}'
+    readable_output = f'McAfee ePO Current DAT file version in repository is: **{current_dat_version}**\n'
 
     return CommandResults(
         outputs_prefix='McAfee.ePO.epoDAT',
@@ -986,7 +987,7 @@ def epo_get_current_dat_command(client: Client) -> CommandResults:
     )
 
 
-def epo_command_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_command_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Executes the ePO command
     XSOAR CMD example: !epo-command command=system.find searchText=10.0.0.1
     headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
@@ -1023,7 +1024,7 @@ def epo_command_command(client: Client, args: dict[str, Any]) -> CommandResults:
             headers_list = list(response_json.keys())
             md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)
         elif isinstance(response_json, str):
-            md = f'#### ePO command *{args["command"]} * results:{NEW_LINE_N}  {response_json}'
+            md = f'#### ePO command *{args["command"]} * results:\n  {response_json}'
         elif isinstance(response_json, list) and len(response_json) and isinstance(response_json[0], str):
             headers_list = "output"
             md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers_list)
@@ -1039,7 +1040,7 @@ def epo_command_command(client: Client, args: dict[str, Any]) -> CommandResults:
         readable_output=md)
 
 
-def epo_update_client_dat_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_update_client_dat_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Executes the ePO command
        XSOAR CMD example: !epo-update-client-dat systems=192.168.1
        Args:
@@ -1090,7 +1091,7 @@ def epo_update_repository_command(client: Client) -> CommandResults:
     target_branch = 'Current'
     json_response, response = client.update_repository(source_repo, target_branch)
 
-    md = f"ePO repository update started.{NEW_LINE_N}"
+    md = "ePO repository update started.\n"
     md += str(json_response)
     return CommandResults(
         raw_response=response,
@@ -1098,7 +1099,7 @@ def epo_update_repository_command(client: Client) -> CommandResults:
     )
 
 
-def epo_get_system_tree_groups_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_get_system_tree_groups_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         find a group of machine in the epo system tree
         XSOAR CMD example:!epo-get-system-tree-group search="Lost"
@@ -1117,9 +1118,10 @@ def epo_get_system_tree_groups_command(client: Client, args: dict[str, Any]) -> 
             readable_output=f'System Tree Group {search_text} was not found.'
         )
 
-    md = f"#### ePO System Tree groups{NEW_LINE_N}Group ID | Group path{NEW_LINE_N}-|-{NEW_LINE_N}"
+    md = "#### ePO System Tree groups\n"
+    md += "Group ID | Group path\n-|-\n"
     for entry in json_response:
-        md += f'{entry["groupId"]}  | {entry["groupPath"]} {NEW_LINE_N}'
+        md += f'{entry["groupId"]}  | {entry["groupPath"]} \n'
 
     return CommandResults(
         raw_response=raw_response,
@@ -1130,7 +1132,7 @@ def epo_get_system_tree_groups_command(client: Client, args: dict[str, Any]) -> 
     )
 
 
-def epo_find_systems_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
         find a group of machine in the epo system tree
         XSOAR CMD Example: !epo-find-systems groupId=2
@@ -1153,7 +1155,7 @@ def epo_find_systems_command(client: Client, args: dict[str, Any]) -> List[Comma
     response_json, response = client.find_systems(group_id)
 
     if response:
-        md = f'#### Systems in {name}{NEW_LINE_N}'
+        md = '#### Systems in ' + name + '\n'
         if len(response_json) > 0:
             md += systems_to_md(response_json, verbose)
             endpoints = prettify_find_system(list(response_json))
@@ -1183,13 +1185,13 @@ def epo_find_systems_command(client: Client, args: dict[str, Any]) -> List[Comma
 
             return res
         else:
-            md += f'No systems found{NEW_LINE_N}'
+            md += 'No systems found\n'
             return [CommandResults(raw_response=response, readable_output=md)]
     else:
         raise DemistoException(f'No systems found. Response: {response}')
 
 
-def epo_find_system_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_find_system_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         find a a system in the epo system tree
         XSOAR CMD example: !epo-find-system searchText="TIE"
@@ -1205,7 +1207,7 @@ def epo_find_system_command(client: Client, args: dict[str, Any]) -> CommandResu
 
     response_json, response = client.find_system(search_text)
 
-    md = f'#### Systems in the System Tree{NEW_LINE_N}'
+    md = '#### Systems in the System Tree\n'
     if len(response_json) > 0:
         md += systems_to_md(response_json, verbose)
         endpoint_info = prettify_find_system(list(response_json))
@@ -1228,12 +1230,12 @@ def epo_find_system_command(client: Client, args: dict[str, Any]) -> CommandResu
             indicator=endpoint
         )
     else:
-        md += f'No systems found{NEW_LINE_N}'
+        md += 'No systems found\n'
         return CommandResults(raw_response=response,
                               readable_output=md)
 
 
-def epo_wakeup_agent_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_wakeup_agent_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         wake up agent for a system or list of systems
         XSOAR CMD example:epo-wakeup-agent names="TIE"
@@ -1249,11 +1251,11 @@ def epo_wakeup_agent_command(client: Client, args: dict[str, Any]) -> CommandRes
     if response_str.find('No systems found') >= 0:
         md = '#### No systems were found.'
     else:
-        md = f'#### ePO agents was awaken.{NEW_LINE_N}'
+        md = '#### ePO agents was awaken.\n'
         pattern_match = re.search(r'completed:\s([-]*\d+)\\nfailed:\s([-]*\d+)\\nexpired:\s([-]*\d+)', response_str)
         if pattern_match:
-            md += f'| Completed | Failed | Expired |{NEW_LINE_N}'
-            md += f'|-|-|-|{NEW_LINE_N}'
+            md += '| Completed | Failed | Expired |\n'
+            md += '|-|-|-|\n'
             for i in pattern_match.groups():
                 md += '|' + i
             md += '|'
@@ -1263,7 +1265,7 @@ def epo_wakeup_agent_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-def epo_apply_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_apply_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         apply tag to a machine or machines
         XSOAR CMD example: !epo-apply-tag names="TIE" tagName="Server"
@@ -1279,9 +1281,9 @@ def epo_apply_tag_command(client: Client, args: dict[str, Any]) -> CommandResult
     response_int, response = client.apply_tag(names, tag_name)
 
     if response_int > 0:
-        md = f"ePO applied the tags on the hostnames successfully.{NEW_LINE_N}"
+        md = "ePO applied the tags on the hostnames successfully.\n"
     else:
-        md = f"ePO could not find server or server already assigned to the given tag.{NEW_LINE_N}"
+        md = "ePO could not find server or server already assigned to the given tag.\n"
 
     return CommandResults(
         raw_response=response,
@@ -1289,7 +1291,7 @@ def epo_apply_tag_command(client: Client, args: dict[str, Any]) -> CommandResult
     )
 
 
-def epo_clear_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_clear_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         apply tag to a machine or machines
         XSOAR CMD example: !epo-clear-tag names="TIE" tagName="MARSERVER"
@@ -1305,9 +1307,9 @@ def epo_clear_tag_command(client: Client, args: dict[str, Any]) -> CommandResult
     response_json, response = client.clear_tag(names, tag_name)
 
     if response_json > 0:
-        md = f'ePO cleared the tags from the hostnames successfully.{NEW_LINE_N}'
+        md = 'ePO cleared the tags from the hostnames successfully.\n'
     else:
-        md = f"ePO could not find server or server already assigned to the given tag.{NEW_LINE_N}"
+        md = "ePO could not find server or server already assigned to the given tag.\n"
 
     return CommandResults(
         raw_response=response,
@@ -1315,7 +1317,7 @@ def epo_clear_tag_command(client: Client, args: dict[str, Any]) -> CommandResult
     )
 
 
-def epo_list_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_list_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         apply tag to a machine or machines
         XSOAR CMD example: !epo-list-tag searchText="server"
@@ -1339,7 +1341,7 @@ def epo_list_tag_command(client: Client, args: dict[str, Any]) -> CommandResults
     )
 
 
-def epo_get_tables_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_get_tables_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         get table details from ePO
         XSOAR CMD example: !epo-get-tables table="Client Events"
@@ -1367,7 +1369,7 @@ def epo_get_tables_command(client: Client, args: dict[str, Any]) -> CommandResul
     )
 
 
-def epo_query_table_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_query_table_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         query table details from ePO
         XSOAR CMD example: !epo-query-table target="FW_Rule"
@@ -1440,7 +1442,7 @@ def epo_get_version_command(client: Client) -> CommandResults:
     )
 
 
-def epo_move_system_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_move_system_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
        Moves systems to a specified destination group ID
        XSOAR CMD example: !epo-move-system names="TIE" parentGroupId="3"
@@ -1467,7 +1469,7 @@ def epo_move_system_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
 
-def epo_advanced_command_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_advanced_command_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         Executes the ePO command in advance mode
         XSOAR  CMD example: !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-Demand"
@@ -1482,7 +1484,7 @@ def epo_advanced_command_command(client: Client, args: dict[str, Any]) -> Comman
     return epo_command_command(client, parsed_args)
 
 
-def epo_find_client_task_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_find_client_task_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     find client task
     XSOAR CMD Example: !epo-find-client-task searchText="On-Demand"
@@ -1507,7 +1509,7 @@ def epo_find_client_task_command(client: Client, args: dict[str, Any]) -> Comman
     )
 
 
-def epo_find_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_find_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     find policy in ePO
     XSOAR CMD Example: !epo-find-policy searchText="On-Access"
@@ -1531,7 +1533,7 @@ def epo_find_policy_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
 
-def epo_assign_policy_to_group(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_assign_policy_to_group(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         Assigns policy to the specified group or resets group's inheritance for the specified policy
         XSOAR CMD Example: !epo-assign-policy-to-group groupId="2" productId="ENDP_AM_1000" objectId="130"
@@ -1565,7 +1567,7 @@ def epo_assign_policy_to_group(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
-def epo_assign_policy_to_system(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_assign_policy_to_system(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         Assigns policy to a supplied list of systems or resets systems' inheritance for the specified policy
     Args:
@@ -1597,7 +1599,7 @@ def epo_assign_policy_to_system(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def epo_list_issues_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_list_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         list issue in the system
         XSOAR CMD Example: !epo-list-issues
@@ -1624,16 +1626,16 @@ def epo_list_issues_command(client: Client, args: dict[str, Any]) -> CommandResu
         )
     else:
         if issue_id:
-            md = f'issue with id:{issue_id} is not exists{NEW_LINE_N}'
+            md = f'issue with id:{issue_id} is not exists\n'
         else:
-            md = f'The operation has failed{NEW_LINE_N}'
+            md = 'The operation has failed\n'
         return CommandResults(
             raw_response=raw_response,
             readable_output=md
         )
 
 
-def epo_delete_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_delete_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         delete issue from the system
         XSOAR CMD Example: !epo-delete-issue id=8
@@ -1662,7 +1664,7 @@ def epo_delete_issue_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-def epo_update_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         update issue in the system
         XSOAR CMD Example: !epo-update-issue id="9" name="test issue" desc="update from epo integration"
@@ -1702,7 +1704,7 @@ def epo_update_issue_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-def epo_create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def epo_create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
         Create an issue
     Args:
@@ -1853,7 +1855,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.{NEW_LINE_N}Error:{NEW_LINE_N}{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
