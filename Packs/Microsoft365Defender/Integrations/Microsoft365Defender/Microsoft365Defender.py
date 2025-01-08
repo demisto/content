@@ -34,7 +34,7 @@ CLASSIFICATION_DETERMINATION_MAPPING = {
     'TruePositive': ['MultiStagedAttack', 'MaliciousUserActivity', 'Malware', 'Phishing', 'CompromisedAccount',
                      'UnwantedSoftware', 'Other'],
     'InformationalExpectedActivity': ['SecurityTesting', 'LineOfBusinessApplication', 'ConfirmedActivity', 'Other'],
-    'FalsePositive': ['Clean', 'NoEnoughDataToValidate', 'Other'],
+    'FalsePositive': ['NotMalicious', 'NoEnoughDataToValidate', 'Other'],
     'Unknown': ['NotAvailable']}
 
 MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
