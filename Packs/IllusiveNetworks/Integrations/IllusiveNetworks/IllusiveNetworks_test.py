@@ -196,8 +196,8 @@ def test_get_forensics_timeline_command(requests_mock):
     }
     start_date_parsed, _ = parse_date_range(start_date, date_format=DATE_FORMAT, utc=True)
     end_date_parsed, _ = parse_date_range(end_date, date_format=DATE_FORMAT, utc=True)
-    url = 'https://server/api/v1/forensics/timeline?incident_id=3&end_date={}&start_date={}'\
-        .format(end_date_parsed, start_date_parsed)
+    url = f'https://server/api/v1/forensics/timeline?incident_id=3&end_date={end_date_parsed}&start_date={start_date_parsed}'\
+
     requests_mock.get(url, json=mock_response)
     _, outputs, _ = get_forensics_timeline_command(client, args)
 
