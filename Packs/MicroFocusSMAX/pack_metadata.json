@@ -2,7 +2,7 @@
     "name": "MicroFocus SMAX",
     "description": "You can use this pack to fetch SMAX incidents/requests and automate  different sort of actions",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Ayman Mahmoud",
     "url": "",
     "email": "amahmoud@paloaltonetworks.com",

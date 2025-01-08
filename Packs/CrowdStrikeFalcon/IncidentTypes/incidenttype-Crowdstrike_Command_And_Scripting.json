@@ -112,7 +112,7 @@
     "locked": false,
     "name": "Crowdstrike Command And Scripting",
     "onChangeRepAlg": 0,
-    "playbookId": "T1059 - Command and Scripting Interpreter",
+    "playbookId": "CrowdStrike Falcon - T1059 - Command and Scripting Interpreter",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
