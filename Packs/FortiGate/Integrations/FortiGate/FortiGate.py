@@ -1026,6 +1026,41 @@ class Client(BaseClient):
             error_handler=Client._error_handler,
         )
 
+
+    def update_firewall_address_ipv4_group_dev(
+            self,
+            name: str,
+            vdom: str | None = DEFAULT_VDOM,
+            type_: str | None = None,
+            comment: str | None = None,
+            members: list[str] | None = None,
+            excluded_members: list[str] | None = None,
+            exclude: str | None = None,
+            allow_routing: str | None = None,
+        ) -> dict[str, Any]:
+
+            j_data: dict = {"name": name}
+            if type_ is not None:
+                j_data["type"] = type_
+            if comment is not None:
+                j_data["comment"] = comment
+            if members is not None:
+                j_data["member"] = build_dicts_from_list(members)
+            if excluded_members is not None:
+                j_data["excluded-member"] = build_dicts_from_list(excluded_members)
+            if exclude is not None:
+                j_data["exclude"] = exclude
+            if allow_routing is not None:
+                j_data["allow-routing"] = allow_routing
+            demisto.debug(f"{j_data=}")
+            return self._http_request(
+                method="PUT",
+                url_suffix=urljoin(self.ADDRESS_IPV4_GROUP_ENDPOINT, name),
+                params={"vdom": vdom},
+                json_data=j_data,
+                error_handler=Client._error_handler,
+            )
+
     def update_firewall_address_ipv4_group(
         self,
         name: str,
@@ -3057,6 +3092,73 @@ def update_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
         readable_output=readable_output,
         raw_response=response,
     )
+
+
+def update_firewall_address_ipv4_group_command_dev(client: Client, args: dict[str, Any]) -> CommandResults:
+
+        vdom = args.get("vdom", DEFAULT_VDOM)
+        name = args.get("groupName", "")
+        comment = args.get("comment")
+        input_members = argToList(args.get("address"))
+        input_excluded_members = argToList(args.get("excluded_addresses"))
+        allow_routing = args.get("allow_routing")
+        action = args.get("action")
+
+        if bool(input_members or input_excluded_members) != bool(action):
+            raise DemistoException("`address` or `excluded_addresses` must be set with `action`.")
+
+        response = client.list_firewall_address_ipv4_groups(name, vdom)
+        result = extract_first_result(response)
+        demisto.debug(f"{result=}")
+        members = extract_key_from_items("name", result.get("member"))
+        demisto.debug(f"{members=}")
+        excluded_members = extract_key_from_items("name", result.get("exclude-member"))
+        demisto.debug(f"{excluded_members=}")
+
+        members = handle_group_items_by_action(
+            input_items=input_members,
+            action=action,
+            items=members,
+        )
+        demisto.debug(f"members after handling - {members}")
+        excluded_members = handle_group_items_by_action(
+            input_items=input_excluded_members,
+            action=action,
+            items=excluded_members,
+        )
+        demisto.debug(f"excluded_members after handling - {excluded_members}")
+
+        client.update_firewall_address_ipv4_group_dev(
+            vdom=vdom,
+            name=name,
+            comment=comment,
+            members=members,
+            excluded_members=excluded_members,
+            exclude="enable" if excluded_members else "disable",
+            allow_routing=allow_routing,
+        )
+        response = client.list_firewall_address_ipv4_groups(name, vdom)
+        result = extract_first_result(response)
+        members = extract_key_from_items("name", result.get("member"))
+        demisto.debug(f"members after updating - {members}")
+        uuid = result.get("uuid")
+
+        output = remove_empty_elements(
+            {
+                "Name": name,
+                "Address": {"Name": members},
+                "UUID": uuid,
+            }
+        )
+        readable_output = f"## The firewall address IPv4 group '{name}' was successfully updated."
+
+        return CommandResults(
+            outputs_prefix=ADDRESS_GROUP_CONTEXT,
+            outputs_key_field="Name",
+            outputs=output,
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
 
 @logger
@@ -5812,6 +5914,7 @@ def main() -> None:
         f"{FORTIGATE}-list-{FIREWALL}-{ADDRESS}-{IPV4}-{GROUP}s": list_firewall_address_ipv4_groups_command,
         f"{FORTIGATE}-create-{FIREWALL}-{ADDRESS}-{IPV4}-{GROUP}": create_firewall_address_ipv4_group_command,
         f"{FORTIGATE}-update-{FIREWALL}-{ADDRESS}-{IPV4}-{GROUP}": update_firewall_address_ipv4_group_command,
+        f"{FORTIGATE}-update-{FIREWALL}-{ADDRESS}-{IPV4}-{GROUP}-dev": update_firewall_address_ipv4_group_command_dev,
         f"{FORTIGATE}-delete-{FIREWALL}-{ADDRESS}-{IPV4}-{GROUP}": delete_firewall_address_ipv4_group_command,
         f"{FORTIGATE}-list-{FIREWALL}-{ADDRESS}-{IPV6}-{GROUP}s": list_firewall_address_ipv6_groups_command,
         f"{FORTIGATE}-create-{FIREWALL}-{ADDRESS}-{IPV6}-{GROUP}": create_firewall_address_ipv6_group_command,

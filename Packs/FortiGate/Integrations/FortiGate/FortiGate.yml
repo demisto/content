@@ -1313,6 +1313,45 @@ script:
     - contextPath: Frotigate.AddressGroup.UUID
       description: Universally Unique Identifier.
       type: String
+  - name: fortigate-update-firewall-address-ipv4-group-dev
+    description: Update firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device. New members will override the existing members within the group incase of a conflict.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: groupName
+      description: Name of the address group to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4-groups`.
+      required: true
+    - name: address
+      description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      isArray: true
+    - name: excluded_addresses
+      description: Comma-separated list of address names to exclude. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      isArray: true
+    - name: allow_routing
+      description: Enable/disable use of this address in the static route configuration.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: comment
+      description: A comment for the address group.
+    - name: action
+      description: Whether to add or remove members or excluded_members from address group.
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: The address group name.
+      type: String
+    - contextPath: Fortigate.AddressGroup.Address.Name
+      description: The address group members.
+      type: String
+    - contextPath: Frotigate.AddressGroup.UUID
+      description: Universally Unique Identifier.
+      type: String
   - name: fortigate-delete-firewall-address-ipv4-group
     description: Delete firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device.
     arguments:
