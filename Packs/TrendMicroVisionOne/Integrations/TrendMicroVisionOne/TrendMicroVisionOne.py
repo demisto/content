@@ -8,7 +8,7 @@ import json
 import requests
 import urllib3
 import re
-from datetime import datetime, timezone, timedelta, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 from requests.models import HTTPError
 
@@ -364,10 +364,10 @@ class Client(BaseClient):
         )
 
         # Regex expression for validating IPv6
-        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" "([0-9a-fA-F]){1,4}"
+        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" + "([0-9a-fA-F]){1,4}"
 
         # Regex expression for validating mac
-        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" "([0-9A-Fa-f]{2})"
+        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" + "([0-9A-Fa-f]{2})"
 
         p = re.compile(regex)
         p1 = re.compile(regex1)
