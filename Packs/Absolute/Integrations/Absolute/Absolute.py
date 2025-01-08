@@ -10,6 +10,11 @@ import urllib3
 from typing import Any
 import hmac
 
+from datetime import timedelta
+from authlib.jose import JsonWebSignature
+from requests.models import Response
+
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -100,6 +105,9 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
     "geoData.location.accuracy",
     "geoData.location.lastUpdateDateTimeUtc",
 ]
+
+SEIM_EVENTS_PAGE_SIZE = 1000
+CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
 
 
 class Client(BaseClient):
@@ -323,6 +331,69 @@ class Client(BaseClient):
                 raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
             return res.json()
         return None
+
+
+class ClientV3(BaseClient):
+    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool):
+        """
+        Client to use in the Absolute integration for API v3. Overrides BaseClient.
+
+        Args:
+            base_url (str): URL to access when doing a http request.
+            token_id (str): The Absolute token id
+            secret_key (str): User's Absolute secret key
+            verify (bool): Whether to check for SSL certificate validity.
+            proxy (bool): Whether the client should use proxies.
+        """
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._base_url = base_url
+        self._token_id = token_id
+        self._secret_key = secret_key
+        self._jws = JsonWebSignature()
+
+    def prepare_request_data(self, method: str, url_suffix: str, query_string: str) -> dict[str, Any]:
+        return {
+            "method": method,
+            "contentType": "application/json",
+            "uri": url_suffix,
+            "queryString": query_string,
+            "payload": {}
+        }
+
+    def prepare_request_payload(self, request_data: dict) -> dict[str, Any]:
+        return {
+            "data": request_data["payload"]
+        }
+
+    def prepare_request_headers(self, request_data: dict) -> dict[str, Any]:
+        return {
+            "alg": "HS256",
+            "kid": self._token_id,
+            "method": request_data["method"],
+            "content-type": request_data["contentType"],
+            "uri": request_data["uri"],
+            "query-string": request_data["queryString"],
+            "issuedAt": round(time.time() * 1000)
+        }
+
+    def prepare_request(self, method: str, url_suffix: str, query_string: str) -> bytes:
+        request_data = self.prepare_request_data(method, url_suffix, query_string)
+        request_payload_data = self.prepare_request_payload(request_data)
+        headers = self.prepare_request_headers(request_data)
+        return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
+
+    def perform_request(self, signed: bytes) -> Response:
+        try:
+            return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
+        except Exception as e:
+            demisto.error(f'Failed to perform request: {e}')
+
+    def fetch_events(self, query_string: str) -> dict:
+        signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
+        response = self.perform_request(signed)
+        response_content_json_str = response.content.decode('utf8').replace("'", '"')
+        events = json.loads(response_content_json_str)
+        return events
 
 
 def sign(key, msg):
@@ -806,6 +877,17 @@ def parse_geo_location_outputs(response):
     return parsed_response
 
 
+def prepare_query_string_for_fetch_events(page_size: int = None, start_date: datetime = None, end_date: datetime = None,
+                                          next_page: str = None) -> str:
+    query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+    if page_size:
+        query += f'&pageSize={page_size}'
+    if next_page:
+        query += f'&nextPage={next_page}'
+    demisto.debug(f'Query string for fetching events: {query}')
+    return query
+
+
 def get_device_application_list_command(args, client) -> CommandResults:
     page = arg_to_number(args.get('page', 0))
     limit = arg_to_number(args.get('limit', 50))
@@ -893,6 +975,85 @@ def get_device_location_command(args, client) -> CommandResults:
             readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
 
+''' EVENT COLLECTOR '''
+
+
+def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    next_page_token = last_run.get('next_page_token', '')
+    last_run_latest_events = last_run.get('latest_events_id')
+    last_end_date = last_run.get('end_date', '')
+    last_start_date = last_run.get('start_date', '')
+    end_date = datetime.utcnow()
+
+    start_date = datetime.strptime(last_start_date, "%Y-%m-%d %H:%M:%S") if next_page_token else (
+        datetime.strptime(last_end_date, "%Y-%m-%d %H:%M:%S") if last_end_date else end_date - timedelta(minutes=1))
+
+    demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {next_page_token=}, {last_run=}')
+    all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
+    if not all_events:
+        return [], {'next_page_token': '', 'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    'latest_events_id': []}
+
+    if last_run_latest_events:  # handle duplication
+        filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
+        all_events = filtered_events
+        demisto.debug(
+            f'Handle duplicate events: Found {len(all_events) - len(filtered_events)} duplicated events. Exist {len(filtered_events)} new events')
+
+    events, latest_events_id = add_time_field_to_events_and_get_latest_events(all_events)
+    demisto.debug(f'fetch_events: {latest_events_id=}')
+    return events, {'next_page_token': next_page_token, 'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"), 'latest_events_id': latest_events_id}
+
+
+def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> \
+    tuple[List[Dict[str, Any]], str]:
+    all_events = []
+    while len(all_events) < fetch_limit:
+        page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
+        query_string = prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date, end_date=end_date,
+                                                             next_page=next_page_token)
+        response = client.fetch_events(query_string=query_string)
+        events = response.get('data', [])
+        all_events.extend(events)
+        next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
+        if not next_page_token:
+            break
+
+    demisto.debug(f'run_fetch_mechanism: Fetched {len(all_events)} events')
+    return all_events, next_page_token
+
+
+def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]], should_get_latest_events: bool = True) -> tuple[
+    List[Dict[str, Any]], List[str]]:
+    demisto.debug("Adding _time field to events and optionally getting the latest events id")
+    latest_event_time = events[-1].get('eventDateTimeUtc')
+    latest_events_id = []
+    for event in events:
+        # adding time field
+        event_time = event.get('eventDateTimeUtc')
+        event['_time'] = event_time
+        # latest events batch
+        if should_get_latest_events and event_time == latest_event_time:
+            latest_events_id.append(event.get('id'))
+
+    return events, latest_events_id
+
+
+def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
+    end_date = arg_to_datetime(args.get('end_date', "now"))
+    start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
+    fetch_limit = int(args.get('limit', 50))
+    if start_date > end_date:
+        raise ValueError("Start date is greater than the end date. Please provide valid dates.")
+
+    events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
+    events, _ = add_time_field_to_events_and_get_latest_events(events, should_get_latest_events=False)
+    demisto.debug(f'get_events: Found {len(events)} events. {events=}')
+    return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -919,6 +1080,15 @@ def main() -> None:  # pragma: no cover
             secret_key=secret_key,
             x_abs_date=x_abs_date,
         )
+
+        client_v3 = ClientV3(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            token_id=token_id,
+            secret_key=secret_key
+        )
+
         args = demisto.args()
         if demisto.command() == 'test-module':
             return_results(test_module(client))
@@ -964,6 +1134,21 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == 'absolute-device-location-get':
             return_results(get_device_location_command(args=args, client=client))
+
+        elif demisto.command() == 'fetch-events':
+            max_events_per_fetch = int(arg_to_number(params.get('max_events_per_fetch', 10000)))
+            events, last_run_object = fetch_events(client_v3, max_events_per_fetch, demisto.getLastRun())
+            if events:
+                send_events_to_xsiam(events=events, vendor="Absolute", product="Secure Endpoint")
+                demisto.setLastRun(last_run_object)
+
+        elif demisto.command() == 'absolute-device-get-events':
+            demisto.debug(f'Fetching Absolute Device events with the following parameters: {args}')
+            should_push_events = argToBoolean(args.get('should_push_events', False))
+            events, command_result = get_events(args=args, client=client_v3)
+            if should_push_events:
+                send_events_to_xsiam(events=events, vendor="Absolute", product="Secure Endpoint")
+            return_results(command_result)
 
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing {INTEGRATION} command.')
