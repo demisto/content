@@ -13,7 +13,7 @@ import colorsys
 import traceback
 import urllib.parse
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, Hashable
 from typing import Tuple
 
 
@@ -64,10 +64,10 @@ class CacheType(str, enum.Enum):
 class ContextData:
     def __init__(
         self,
-        context: dict[str, Any] | None = None,
-        incident: dict[str, Any] | None = None,
-        alert: dict[str, Any] | None = None,
-        value: dict[str, Any] | None = None,
+        context: dict[Hashable, Any] | None = None,
+        incident: dict[Hashable, Any] | None = None,
+        alert: dict[Hashable, Any] | None = None,
+        value: dict[Hashable, Any] | None = None,
     ) -> None:
         self.__context = context
         self.__value = value
@@ -115,7 +115,7 @@ class ContextData:
 
     def inherit(
         self,
-        value: dict[str, Any] | None = None,
+        value: dict[Hashable, Any] | None = None,
     ) -> Any:  # typing.Self
         """ Create a ContextData with the new value
 
@@ -420,7 +420,7 @@ class Cache:
     @staticmethod
     def __compress(
         val: str
-    ) -> dict[str, str]:
+    ) -> dict[Hashable, str]:
         return {
             'type': 'gz+b85',
             'data': base64.b85encode(gzip.compress(val.encode())).decode()
@@ -429,7 +429,7 @@ class Cache:
     @staticmethod
     def build_query_params(
         query_params: QueryParams,
-    ) -> dict[str, Any]:
+    ) -> dict[Hashable, Any]:
         return {
             'query_name': query_params.query_name,
             'query_string': Cache.__compress(query_params.query_string),
@@ -497,7 +497,7 @@ class Cache:
     def save_dataset(
         self,
         query_params: QueryParams,
-        dataset: list[dict[str, Any]],
+        dataset: list[dict[Hashable, Any]],
     ) -> None:
         self.__save_data(
             query_params=query_params,
@@ -508,7 +508,7 @@ class Cache:
     def save_entry(
         self,
         query_params: QueryParams,
-        entry: dict[str, Any],
+        entry: dict[Hashable, Any],
     ) -> None:
         self.__save_data(
             query_params=query_params,
@@ -519,7 +519,7 @@ class Cache:
     def load_dataset(
         self,
         query_hash: str,
-    ) -> list[dict[str, Any]] | None:
+    ) -> list[dict[Hashable, Any]] | None:
         dataset = self.__load_data(
             query_hash=query_hash,
             cache_node='CacheDataset',
@@ -529,7 +529,7 @@ class Cache:
     def load_entry(
         self,
         query_hash: str,
-    ) -> dict[str, Any] | None:
+    ) -> dict[Hashable, Any] | None:
         entry = self.__load_data(
             query_hash=query_hash,
             cache_node='CacheEntry',
@@ -560,7 +560,7 @@ class Query:
 
     def __query_xql(
         self,
-    ) -> list[dict[str, Any]]:
+    ) -> list[dict[Hashable, Any]]:
         time_frame = f'between {self.__query_params.earliest_time_iso} and {self.__query_params.latest_time_iso}'
         demisto.debug(f'Run XQL: {self.__query_params.query_name} {time_frame}: {self.__query_params.query_string}')
 
@@ -602,7 +602,7 @@ class Query:
 
     def query(
         self,
-    ) -> list[dict[str, Any]]:
+    ) -> list[dict[Hashable, Any]]:
         if self.__cache:
             dataset = self.__cache.load_dataset(self.__query_params.query_hash())
             if dataset is None:
@@ -619,14 +619,14 @@ class EntryBuilder:
     """
     @staticmethod
     def __enum_fields_by_group(
-        dataset: Iterable[dict[str, Any]],
+        dataset: Iterable[dict[Hashable, Any]],
         sort_by: str,
         group_by: str,
         asc: bool,
     ) -> Iterable[
         Tuple[
             str,
-            Iterable[dict[str, Any]]
+            Iterable[dict[Hashable, Any]]
         ]
     ]:
         """ Enumerate fields with a group value by group
@@ -643,15 +643,15 @@ class EntryBuilder:
                 key=lambda v: SortableValue(v.get(sort_by)),
                 reverse=not asc,
             ),
-            key=lambda v: v.get(group_by)  # type: ignore[arg-type, return-value]
+            key=lambda v: v.get(group_by)
         )
 
     @staticmethod
     def __sum_by(
-        dataset: list[dict[str, Any]],
+        dataset: list[dict[Hashable, Any]],
         sum_field: str,
         group_by: str,
-    ) -> dict[str, float]:
+    ) -> dict[Hashable, float]:
         """ Sum field values by a field
 
         :param dataset: The list of fields.
@@ -659,7 +659,7 @@ class EntryBuilder:
         :param group_by: The field name to group the fields.
         :return: Mapping of field name with the sum value in descending order by the sum.
         """
-        d: dict[str, float] = defaultdict(float)
+        d: dict[Hashable, float] = defaultdict(float)
         for fields in dataset:
             d[fields.get(group_by) or ''] += to_float(fields.get(sum_field))
         return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
@@ -667,8 +667,8 @@ class EntryBuilder:
     @staticmethod
     def __make_color_palette(
         names: list[str],
-        colors: dict[str, str] | list[str] | str,
-    ) -> dict[str, str]:
+        colors: dict[Hashable, str] | list[str] | str,
+    ) -> dict[Hashable, str]:
         """ Build a color table
 
         :param names: The list of names to be mapped to colors
@@ -695,9 +695,9 @@ class EntryBuilder:
     @staticmethod
     def __build_singley_chart(
         chart_type: str,
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a single-Y chart entry
 
         :param chart_type: The chart type. (bar or pie)
@@ -710,7 +710,7 @@ class EntryBuilder:
                 class Sort:
                     def __init__(
                         self,
-                        sort: dict[str, Any],
+                        sort: dict[Hashable, Any],
                         default_by: str,
                     ) -> None:
                         by = sort.get('by') or default_by
@@ -733,7 +733,7 @@ class EntryBuilder:
 
                 def __init__(
                     self,
-                    records: dict[str, Any],
+                    records: dict[Hashable, Any],
                 ) -> None:
                     name_field = records.get('name-field')
                     assert isinstance(name_field, str), f'name-field must be of type str - {type(name_field)}'
@@ -775,8 +775,8 @@ class EntryBuilder:
                 @property
                 def colors(
                     self,
-                ) -> dict[str, str] | list[str] | str:
-                    return self.__colors  # type: ignore[return-value]
+                ) -> dict[Hashable, str] | list[str] | str:
+                    return self.__colors
 
                 @property
                 def sort(
@@ -787,15 +787,17 @@ class EntryBuilder:
             class Field:
                 def __init__(
                     self,
-                    field: dict[str, Any],
+                    field: dict[Hashable, Any],
                     default_color: str,
                 ) -> None:
                     assert isinstance(field, dict), f'field in .fields must be of type dict - {type(field)}'
 
-                    self.__color = field.get('color') or default_color
-                    assert isinstance(self.__color, str), (
-                        f'field.color must be of type str or null - {type(self.__color)}'
+                    color = field.get('color')
+                    assert isinstance(color, str) or color is None, (
+                        f'field.color must be of type str or null - {type(color)}'
                     )
+                    self.__color = color or default_color
+
                     self.__label = field.get('label')
                     assert isinstance(self.__label, str) or self.__label is None, (
                         f'field.label must be of type str or null - {type(self.__label)}'
@@ -815,10 +817,10 @@ class EntryBuilder:
 
             def __init__(
                 self,
-                template: dict[str, Any],
+                template: dict[Hashable, Any],
             ) -> None:
                 self.__records: Records | None = None  # pylint: disable=undefined-variable
-                self.__fields: dict[str, Field] | None = None  # pylint: disable=undefined-variable
+                self.__fields: dict[Hashable, Field] | None = None  # pylint: disable=undefined-variable
                 
                 group = template.get('group')
                 if group == 'records':
@@ -851,7 +853,7 @@ class EntryBuilder:
             @property
             def fields(
                 self,
-            ) -> dict[str, Field] | None:
+            ) -> dict[Hashable, Field] | None:
                 return self.__fields
 
         template = Template(params)
@@ -874,7 +876,7 @@ class EntryBuilder:
                     color=colors.get(name),
                 ) for fields in sorted(
                     dataset,
-                    key=lambda v: to_float(v.get(records.sort.by)),  # type: ignore[union-attr]
+                    key=lambda v: to_float(v.get(records.sort.by)),
                     reverse=not records.sort.asc,
                 ) for name, value in [
                     (fields.get(records.name_field, ''), fields.get(records.data_field))
@@ -906,9 +908,9 @@ class EntryBuilder:
     @staticmethod
     def __build_multiy_chart(
         chart_type: str,
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a multi-Y chart entry
 
         :param chart_type: The chart type. (bar or line)
@@ -920,7 +922,7 @@ class EntryBuilder:
             class X:
                 def __init__(
                     self,
-                    x: dict[str, Any],
+                    x: dict[Hashable, Any],
                 ) -> None:
                     by = x.get('by')
                     assert isinstance(by, str), f'x.by must be of type str - {type(by)}'
@@ -954,7 +956,7 @@ class EntryBuilder:
                 class Records:
                     def __init__(
                         self,
-                        records: dict[str, Any],
+                        records: dict[Hashable, Any],
                     ) -> None:
                         name_field = records.get('name-field')
                         assert isinstance(name_field, str), f'name-field must be of type str - {type(name_field)}'
@@ -992,20 +994,20 @@ class EntryBuilder:
                     @property
                     def colors(
                         self,
-                    ) -> dict[str, str] | list[str] | str:
+                    ) -> dict[Hashable, str] | list[str] | str:
                         return self.__colors
 
                 class Field:
                     def __init__(
                         self,
-                        field: dict[str, Any],
+                        field: dict[Hashable, Any],
                         default_color: str,
                     ) -> None:
                         assert isinstance(field, dict), f'field in y.fields must be of type dict - {type(field)}'
 
                         color = field.get('color')
                         assert isinstance(color, str) or color is None, (
-                            f'field.color must be of type str or null - {type(self.__color)}'
+                            f'field.color must be of type str or null - {type(color)}'
                         )
                         self.__color = color or default_color
 
@@ -1028,10 +1030,10 @@ class EntryBuilder:
 
                 def __init__(
                     self,
-                    y: dict[str, Any],
+                    y: dict[Hashable, Any],
                 ) -> None:
                     self.__records: Records | None = None  # pylint: disable=undefined-variable
-                    self.__fields: dict[str, Field] | None = None  # pylint: disable=undefined-variable
+                    self.__fields: dict[Hashable, Field] | None = None  # pylint: disable=undefined-variable
 
                     group = y.get('group')
                     if group == 'records':
@@ -1064,12 +1066,12 @@ class EntryBuilder:
                 @property
                 def fields(
                     self,
-                ) -> dict[str, Field] | None:
+                ) -> dict[Hashable, Field] | None:
                     return self.__fields
 
             def __init__(
                 self,
-                template: dict[str, Any],
+                template: dict[Hashable, Any],
             ) -> None:
                 x = template.get('x')
                 assert isinstance(x, dict), f'x must be of type dict - {type(x)}'
@@ -1120,7 +1122,7 @@ class EntryBuilder:
                     groups[name_str] = assign_params(
                         name=name_str,
                         data=[to_float(data)],
-                        color=ycolors.get(name),  # type: ignore[arg-type]
+                        color=ycolors.get(name),
                     )
                     xlabel = xlabel or to_str(
                         y_fields.get(template.x.field) if template.x.field else x_val
@@ -1172,9 +1174,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_single_bar(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a single bar entry
 
         :param params: The template parameters for 'single-bar'.
@@ -1189,9 +1191,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_stacked_bar(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a stacked bar entry
 
         :param params: The template parameters for 'stacked-bar'.
@@ -1206,9 +1208,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_line(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a line entry
 
         :param params: The template parameters for 'line'.
@@ -1223,9 +1225,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_pie(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a pie entry
 
         :param params: The template parameters for 'pie'.
@@ -1240,9 +1242,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_markdown_table(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a markdown table
 
         :param params: The template parameters for 'markdown-table'.
@@ -1253,7 +1255,7 @@ class EntryBuilder:
             class Sort:
                 def __init__(
                     self,
-                    sort: dict[str, Any],
+                    sort: dict[Hashable, Any],
                 ) -> None:
                     self.__by = sort.get('by')
                     assert isinstance(self.__by, str) or self.__by is None, (
@@ -1276,7 +1278,7 @@ class EntryBuilder:
             class Column:
                 def __init__(
                     self,
-                    column: dict[str, Any],
+                    column: dict[Hashable, Any],
                 ) -> None:
                     assert isinstance(column, dict), f'column in columns must be of type dict - {type(column)}'
                     self.field = column.get('field')
@@ -1284,7 +1286,7 @@ class EntryBuilder:
 
             def __init__(
                 self,
-                template: dict[str, Any],
+                template: dict[Hashable, Any],
             ) -> None:
                 self.__title = template.get('title') or ''
                 assert isinstance(self.__title, str), f'title must be of type str or null - {type(self.__title)}'
@@ -1324,7 +1326,7 @@ class EntryBuilder:
             @property
             def default(
                 self,
-            ) -> str | dict[str, Any]:
+            ) -> str | dict[Hashable, Any]:
                 return self.__default
 
         template = Template(params)
@@ -1333,7 +1335,7 @@ class EntryBuilder:
             if template.sort.by:
                 dataset = sorted(
                     dataset,
-                    key=lambda v: SortableValue(v.get(template.sort.by)),  # type: ignore[arg-type]
+                    key=lambda v: SortableValue(v.get(template.sort.by)),
                     reverse=not template.sort.asc,
                 )
 
@@ -1362,9 +1364,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_duration(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a duration entry
 
         :param params: The template parameters for 'duration'.
@@ -1391,9 +1393,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_number(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a number entry
 
         :param params: The template parameters for 'number'.
@@ -1420,9 +1422,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_number_trend(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a number trend entry
 
         :param params: The template parameters for 'number-trend'.
@@ -1458,9 +1460,9 @@ class EntryBuilder:
 
     @staticmethod
     def __build_markdown(
-        params: dict[str, Any],
-        dataset: list[dict[str, Any]],
-    ) -> dict[str, Any]:
+        params: dict[Hashable, Any],
+        dataset: list[dict[Hashable, Any]],
+    ) -> dict[Hashable, Any]:
         """ Build a markdown entry
 
         :param params: The template parameters for 'markdown'.
@@ -1520,8 +1522,8 @@ class EntryBuilder:
     def build(
         self,
         query: Query,
-        entry_params: dict[str, Any],
-    ) -> dict[str, Any]:
+        entry_params: dict[Hashable, Any],
+    ) -> dict[Hashable, Any]:
         entry_type = entry_params.get('type')
         if not entry_type:
             raise DemistoException('type is required.')
@@ -1590,8 +1592,8 @@ class EntryBuilder:
 class Main:
     @staticmethod
     def __get_template(
-        args: dict[str, Any],
-    ) -> Tuple[str, dict[str, Any]]:
+        args: dict[Hashable, Any],
+    ) -> Tuple[str, dict[Hashable, Any]]:
         """ Get the templates with its name
 
         :param args: The argument parameters.
@@ -1682,8 +1684,8 @@ class Main:
 
     @staticmethod
     def __create_formatter(
-        args: dict[str, Any],
-        template: dict[str, Any],
+        args: dict[Hashable, Any],
+        template: dict[Hashable, Any],
     ) -> Formatter:
         variable_substitution = args.get('variable_substitution') or '${,}'
         if isinstance(variable_substitution, str):
@@ -1713,9 +1715,9 @@ class Main:
 
     @staticmethod
     def __build_query_params(
-        args: dict[str, Any],
+        args: dict[Hashable, Any],
         query_name: str,
-        template: dict[str, Any],
+        template: dict[Hashable, Any],
         formatter: Formatter,
         context: ContextData,
     ) -> QueryParams:
@@ -1784,7 +1786,7 @@ class Main:
 
     def __init__(
         self,
-        args: dict[str, Any],
+        args: dict[Hashable, Any],
     ) -> None:
         self.__args = args
 
@@ -1864,7 +1866,7 @@ class Main:
             'Entry': entry
         }
         if not cache_entry and self.__cache_type == CacheType.ENTRY:
-            cache.save_entry(self.__query_params, entry)  # type: ignore[arg-type]
+            cache.save_entry(self.__query_params, entry)
 
         return CommandResults(
             readable_output='Done.',
