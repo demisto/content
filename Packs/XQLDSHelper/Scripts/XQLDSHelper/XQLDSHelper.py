@@ -64,14 +64,14 @@ class CacheType(str, enum.Enum):
 class ContextData:
     def __init__(
         self,
-        context: dict[Hashable, Any] | None = None,
-        incident: dict[Hashable, Any] | None = None,
-        alert: dict[Hashable, Any] | None = None,
-        value: dict[Hashable, Any] | None = None,
+        context: dict[str, Any] | None = None,
+        incident: dict[str, Any] | None = None,
+        alert: dict[str, Any] | None = None,
+        value: dict[str, Any] | None = None,
     ) -> None:
-        self.__context: dict[Hashable, Any] = context or {}
-        self.__value: dict[Hashable, Any] = value or {}
-        self.__specials: dict[Hashable, Any] = {
+        self.__context: dict[str, Any] = context or {}
+        self.__value: dict[str, Any] = value or {}
+        self.__specials: dict[str, Any] = {
             'alert': alert or {},
             'incident': incident or {},
             'lists': None,
@@ -115,7 +115,7 @@ class ContextData:
 
     def inherit(
         self,
-        value: dict[Hashable, Any] | None = None,
+        value: dict[str, Any] | None = None,
     ) -> Any:  # typing.Self
         """ Create a ContextData with the new value
 
