@@ -158,8 +158,10 @@ tasks:
     task:
       id: 8c9e5c77-8b33-4aff-8460-b5e17a76333c
       version: -1
-      name: Get host risk level
-      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      name: Get Host Risk Level
+      description: Retrieve the risk score of a specific host or list of hosts with
+        the highest risk score in the environment along with the reason affecting
+        each score.
       script: '|||core-list-risky-hosts'
       type: regular
       iscommand: true
@@ -263,8 +265,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 830
+          "x": 690,
+          "y": 840
         }
       }
     note: false
@@ -291,8 +293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 1650
+          "x": 450,
+          "y": 2320
         }
       }
     note: false
@@ -328,8 +330,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 1480
+          "x": 690,
+          "y": 2150
         }
       }
     note: false
@@ -359,8 +361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 960
+          "x": 690,
+          "y": 970
         }
       }
     note: false
@@ -440,7 +442,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "15"
     scriptarguments:
       command_type:
         simple: native
@@ -459,7 +461,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
+          "x": 1030,
           "y": 1320
         }
       }
@@ -515,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 1120
+          "x": 690,
+          "y": 1130
         }
       }
     note: false
@@ -552,8 +554,171 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 670
+          "x": 690,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 8ba62210-22a2-4b7a-8da5-c206c96f8fb3
+    type: regular
+    task:
+      id: 8ba62210-22a2-4b7a-8da5-c206c96f8fb3
+      version: -1
+      name: Get Action Status
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      action_id:
+        complex:
+          root: Core.ScriptRun
+          accessor: action_id
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 77fb4b5f-d4a3-4f17-871c-bc11fbe9c3a0
+    type: condition
+    task:
+      id: 77fb4b5f-d4a3-4f17-871c-bc11fbe9c3a0
+      version: -1
+      name: Was the User Disabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Core.ScriptResult.results.standard_output
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4047510e-a9c5-4230-8411-5b1ac7abbe5c
+    type: regular
+    task:
+      id: 4047510e-a9c5-4230-8411-5b1ac7abbe5c
+      version: -1
+      name: Get User Status
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      command_type:
+        simple: native
+      commands:
+        simple: powershell -Command Get-LocalUser -Name "${Core.OriginalAlert.raw_abioc.event.login_data.dst_user}"
+      endpoint_ids:
+        complex:
+          root: alert
+          accessor: agentid
+          transformers:
+          - operator: uniq
+      is_raw_command:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 32c07163-7d2f-4049-87f0-e1e930fcbe47
+    type: regular
+    task:
+      id: 32c07163-7d2f-4049-87f0-e1e930fcbe47
+      version: -1
+      name: Disable the User Manually
+      description: |
+        Dear Analyst,
+
+        During the remediation process, the playbook failed to disable the following user: ${Core.OriginalAlert.raw_abioc.event.dst_identity}
+        Please investigate this before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1980
         }
       }
     note: false
@@ -567,14 +732,17 @@ view: |-
   {
     "linkLabelsPosition": {
       "11_10_Disable user": 0.38,
-      "11_6_No Action": 0.43,
-      "4_6_#default#": 0.26
+      "11_6_No Action": 0.1,
+      "14_16_#default#": 0.49,
+      "14_7_yes": 0.2,
+      "4_12_yes": 0.46,
+      "4_6_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 1665,
-        "width": 810,
-        "x": 230,
+        "height": 2335,
+        "width": 1400,
+        "x": 240,
         "y": 50
       }
     }

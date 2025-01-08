@@ -8,7 +8,7 @@ Investigation:
  
 - Retrieves the name of the process image involved in the alert.
 - Checks for related Powershell/Command and Scripting/WMI alerts in the incident.
-- Retrieves the Risk Score for the host.
+- Retrieves the host risk score.
  
 Containment:
  
@@ -16,11 +16,10 @@ Containment:
 - Possible actions:
  - Disable User.
  - Take no action.
-- Upon analyst decision: Disable the local user account.
  
 Requirements: 
 
-For response actions, the following integration is required: Core - IR.
+- For response actions, the following integration is required: Core - IR.
 
 ## Dependencies
 
@@ -30,15 +29,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 This playbook does not use any sub-playbooks.
 
-
 ### Scripts
 
-SearchAlertsV2
+* SearchAlertsV2
 
 ### Commands
 
 * closeInvestigation
 * core-get-cloud-original-alerts
+* core-get-script-execution-results
 * core-list-risky-hosts
 * core-run-script-execute-commands
 
