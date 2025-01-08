@@ -78,6 +78,10 @@ configuration:
   - WHITE
   defaultvalue: WHITE
   section: Collect
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
 description: Fetched the MISP threat actor galaxy and builds it into Threat Actor indicators within TIM.
 display: Feed MISP Threat Actors
 name: FeedMISPThreatActors
