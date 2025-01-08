@@ -8847,6 +8847,7 @@ def censor_request_logs(request_log):
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
+
     request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
     request_log_lst = request_log_with_spaces.split()
 
