@@ -1,7 +1,13 @@
 id: Suspicious Local Administrator Login
 version: -1
 name: Suspicious Local Administrator Login
-description: "This playbook addresses the following alerts:\n \n- Suspicious local administrator login.\n \nPlaybook Stages:\n \nInvestigation:\n \n- Retrieves the name of the process image involved in the alert.\n- Checks for related Powershell/Command and Scripting/WMI alerts in the incident.\n- Retrieves the Risk Score for the host.\n \nContainment:\n \n- Provide a manual task for an analyst to review the findings and decide the next steps.\n- Possible actions:\n - Disable User.\n - Take no action.\n- Upon analyst decision: Disable the local user account.\n \nRequirements: \n\n- For response actions, the following integration is required: Core - IR."
+description: "This playbook addresses the following alerts:\n \n- Suspicious local
+  administrator login\n \nPlaybook Stages:\n \nInvestigation:\n \n- Retrieves the
+  name of the process image involved in the alert.\n- Checks for related Powershell/Command
+  and Scripting/WMI alerts in the incident.\n- Retrieves the host risk score.\n \nContainment:\n
+  \n- Provide a manual task for an analyst to review the findings and decide the next
+  steps.\n- Possible actions:\n - Disable User.\n - Take no action.\n \nRequirements:
+  \n\n- For response actions, the following integration is required: Core - IR."
 tags:
 - T1078 - Valid Accounts
 - TA0001 - Initial Access
@@ -192,7 +198,7 @@ tasks:
     task:
       id: cd0f32ec-8fce-4c74-8fd9-273e9f882f52
       version: -1
-      name: Are related alerts found or host risk score is high?
+      name: Check for Related Alerts or Host Risk Score
       type: condition
       iscommand: false
       brand: ""
@@ -426,7 +432,7 @@ tasks:
     task:
       id: 5bc51849-8fd5-4008-81e5-282079d5ebb9
       version: -1
-      name: Disable the user
+      name: Disable User
       description: Initiate a new endpoint script execution of shell commands.
       script: '|||core-run-script-execute-commands'
       type: regular
@@ -527,7 +533,7 @@ tasks:
     task:
       id: 0206dfb2-4202-44fb-8ea1-020a1df810d1
       version: -1
-      name: Get the process involved
+      name: Get Related Process Information
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
