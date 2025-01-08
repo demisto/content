@@ -625,7 +625,7 @@ class EntryBuilder:
         asc: bool,
     ) -> Iterable[
         Tuple[
-            str,
+            Hashable,
             Iterable[dict[Hashable, Any]]
         ]
     ]:
@@ -643,7 +643,7 @@ class EntryBuilder:
                 key=lambda v: SortableValue(v.get(sort_by)),
                 reverse=not asc,
             ),
-            key=lambda v: v.get(group_by)  # type: ignore[arg-type, return-value]
+            key=lambda v: v.get(group_by)
         )
 
     @staticmethod
