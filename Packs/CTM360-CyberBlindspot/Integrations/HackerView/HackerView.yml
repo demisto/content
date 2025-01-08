@@ -1,0 +1,178 @@
+category: Network Security
+commonfields:
+  id: CTM360_HackerView
+  version: -1
+configuration:
+- additionalinfo: "Choose the direction to mirror the incident: Incoming (from HackerView to Cortex XSOAR), Outgoing (from Cortex XSOAR to HackerView), or Incoming and Outgoing (from/to Cortex XSOAR and HackerView)."
+  defaultvalue: Incoming And Outgoing
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  hidden:
+  - marketplacev2
+  required: false
+- defaultvalue: 7 days
+  display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
+  additionalinfo: The time the incidents should be fetched starting from.
+  name: first_fetch
+  required: false
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The CTM360 HackerView API Key to use for fetching data.
+  name: api_key
+  required: true
+  hiddenusername: true
+  type: 9
+- name: max_fetch
+  display: Maximum Number of Incidents per Fetch
+  defaultvalue: "25"
+  type: 0
+  required: true
+  additionalinfo: Default is 25. Maximum is 200.
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Incident type
+  defaultvalue: HackerView Incident
+  name: incidentType
+  type: 13
+  required: false
+defaultmapperin: 'CTM360-HackerView - Incoming Mapper'
+description: 'External Attack Surface Management platform, which combines automated asset discovery, issue identification / management, remediation guidelines, security ratings and third party risk management.'
+display: CTM360 HackerView
+name: CTM360_HackerView
+script:
+  commands:
+  - name: ctm360-hv-incident-list
+    description: Get the list of incidents from HV.
+    arguments:
+    - description: Select "From" date to fetch incidents starting from it.
+      name: dateFrom
+      required: false
+    - description: Select "To" date to fetch incidents up to it.
+      name: dateTo
+      required: false
+    - description: Set number of results to fetch.
+      name: maxHits
+      required: false
+    - description: Set the order of the results.
+      name: order
+      required: false
+    outputs:
+    - contextPath: HackerView.IncidentList
+      description: List of all HV incidents.
+  - name: ctm360-hv-incident-status-change
+    description: Change status of a HV incident and optionally add a comment.
+    arguments:
+    - name: ticketId
+      description: '"ID" of the incident to change status.'
+      required: true
+    - name: ticketStatus
+      description: 'New "Status" of incident.'
+      required: true
+    - name: comment
+      description: '"Comment" to accompany the status change (Optional).'
+      required: false
+  - name: get-mapping-fields
+    description: Returns the list of fields for an incident type.
+    arguments: []
+  - name: ctm360-hv-incident-details
+    description: Fetch details of a single incident from the HackerView platform.
+    arguments:
+    - description: '"Ticket ID" of the incident to fetch.'
+      name: ticketId
+      required: true
+    outputs:
+    - contextPath: HackerView.RemoteIncident.id
+      description: Symbolic Incident ID.
+    - contextPath: HackerView.RemoteIncident.timestamp
+      description: DB timestamp.
+    - contextPath: HackerView.RemoteIncident.confidence
+      description: Confidence of report.
+    - contextPath: HackerView.RemoteIncident.cve_id
+      description: ID of associated CVE.
+    - contextPath: HackerView.RemoteIncident.cwe
+      description: List of associated CWEs.
+    - contextPath: HackerView.RemoteIncident.issue_category
+      description: Category of Incident.
+    - contextPath: HackerView.RemoteIncident.issue_name
+      description: Name of Incident.
+    - contextPath: HackerView.RemoteIncident.potential_attack_type
+      description: Potential attack to make use of incident.
+    - contextPath: HackerView.RemoteIncident.potential_impact
+      description: Potential impact of incident.
+    - contextPath: HackerView.RemoteIncident.status
+      description: Active status of Incident.
+    - contextPath: HackerView.RemoteIncident.progress_status
+      description: Progress of incident response.
+    - contextPath: HackerView.RemoteIncident.severity
+      description: Severity of incident.
+    - contextPath: HackerView.RemoteIncident.resolved_ip
+      description: IP resolved on affected asset.
+    - contextPath: HackerView.RemoteIncident.first_seen
+      description: Incident creation date.
+    - contextPath: HackerView.RemoteIncident.last_seen
+      description: Last discovery date for incident.
+    - contextPath: HackerView.RemoteIncident.last_updated
+      description: Last update date for incident.
+    - contextPath: HackerView.RemoteIncident.environments
+      description: env.
+    - contextPath: HackerView.RemoteIncident.ticket_id
+      description: Ticket ID.
+    - contextPath: HackerView.RemoteIncident.technologies
+      description: Technologies on affected asset.
+    - contextPath: HackerView.RemoteIncident.domain
+      description: domain of affected asset.
+    - contextPath: HackerView.RemoteIncident.host
+      description: host of affected asset.
+    - contextPath: HackerView.RemoteIncident.asset_type
+      description: affected asset type.
+    - contextPath: HackerView.RemoteIncident.asset
+      description: affected asset.
+  - name: get-remote-data
+    arguments:
+    - description: The incident ID.
+      name: id
+      required: true
+    - description: Retrieves entries that were created after lastUpdate.
+      name: lastUpdate
+      required: true
+    description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+  - name: get-modified-remote-data
+    arguments:
+    - description: A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
+    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
+  - name: update-remote-system
+    arguments:
+    - description: Remote ID of incident to update in the remote system.
+      name: remoteId
+      required: true
+    description: Updates the remote system with local changes.
+  isfetch: true
+  runonce: false
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
