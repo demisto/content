@@ -1322,7 +1322,7 @@ def update_firewall_policy_command(client: Client, args: dict) -> CommandResults
         destination_object = member_rule_list.get('DestinationAddressObjectList', [])
         destination_object = update_source_destination_object(destination_object, destination_rule_object_id,
                                                               destination_rule_object_type)
-  
+
     body = create_body_firewall_policy(
         domain,  # type: ignore[arg-type]
         name,  # type: ignore[arg-type]
