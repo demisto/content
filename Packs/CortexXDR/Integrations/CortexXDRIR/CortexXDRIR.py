@@ -22,6 +22,7 @@ FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts'
 ]
+
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
                               "investigation\",\"resolved_known_issue\","
@@ -198,8 +199,8 @@ def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> 
     """
     remove_nulls_from_alerts = REMOVE_ALERTS_NULL_VALUES in excluded_alert_fields
     demisto.debug(f"handle_excluded_data_from_alerts_param {remove_nulls_from_alerts=}, {excluded_alert_fields=}")
-    formated_excluded_data = [field for field in excluded_alert_fields if field != REMOVE_ALERTS_NULL_VALUES]
-    return formated_excluded_data, remove_nulls_from_alerts
+    formatted_excluded_data = [field for field in excluded_alert_fields if field != REMOVE_ALERTS_NULL_VALUES]
+    return formatted_excluded_data, remove_nulls_from_alerts
 
 
 class Client(CoreClient):
@@ -248,7 +249,6 @@ class Client(CoreClient):
         :param request_data: the api call request data
         :return: the filtered starred incidents.
         """
-        # TODO does not handle excluding fields
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
@@ -355,6 +355,7 @@ class Client(CoreClient):
             timeout=self.timeout
         )
         incident = reply.get('reply')
+        # workaround for excluding fields which is not supported with the get_incident_extra_data endpoint
         if exclude_artifacts:
             for field in FIELDS_TO_EXCLUDE:
                 incident.pop(field, None)
@@ -443,7 +444,7 @@ class Client(CoreClient):
                 'value': statuses
             })
         demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}, {exclude_artifacts=}")
-        if exclude_artifacts:  # in cases when the command is executed
+        if exclude_artifacts:  # relevant in cases when the command is executed
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE
         if excluded_alert_fields:
             request_data['alert_fields_to_exclude'] = excluded_alert_fields
@@ -647,7 +648,7 @@ def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
-    # in cases when the command is executed
+    # Relevant only in cases when the command is executed (not in mirroring)
     exclude_artifacts = argToBoolean(args.get('excluding_artifacts', 'False'))
     alert_fields_to_exclude = args.get('alert_fields_to_exclude', [])
     drop_nulls = args.get('drop_nulls', False)
@@ -681,8 +682,6 @@ def get_incident_extra_data_command(client, args):
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
 
     incident = sort_incident_data(raw_incident)
-    demisto.debug(f"line 673 {incident.get('network_artifacts')=}")
-    demisto.debug(f"line 673 {incident.get('file_artifacts')=}")
 
     if incident_alerts := incident.get('alerts'):
         readable_output.append(tableToMarkdown('Alerts', incident_alerts,
@@ -1008,7 +1007,6 @@ def get_remote_data_command(client, args, excluded_alert_fields=[], remove_nulls
             incident_data['id'] = incident_data.get('incident_id')
 
             sort_all_list_incident_fields(incident_data)
-            demisto.debug(f"{incident_data.get('alerts')=}")
 
             # deleting creation time as it keeps updating in the system
             del incident_data['creation_time']
@@ -1034,7 +1032,6 @@ def get_remote_data_command(client, args, excluded_alert_fields=[], remove_nulls
             incident_data['in_mirror_error'] = ''
             if not client.remove_additional_data():
                 incident_data['additional_data'] = incident_data.get('alerts')
-            # TODO add it to mapper
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
