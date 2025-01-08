@@ -226,7 +226,6 @@ IS_PY3 = sys.version_info[0] == 3
 PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
-warnings.simplefilter('ignore', SyntaxWarning)
 
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
@@ -12650,7 +12649,7 @@ def content_profiler(func):
 
 
 def find_and_remove_sensitive_text(text, pattern):
-    """
+    r"""
     Finds all appearances of sensitive information in a string using regex and adds the sensitive
     information to the list of strings that should not appear in any logs.
     The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
