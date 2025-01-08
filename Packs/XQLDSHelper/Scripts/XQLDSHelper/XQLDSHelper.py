@@ -869,13 +869,13 @@ class EntryBuilder:
                 assign_params(
                     name=to_str(name),
                     data=[to_float(value)],
-                    color=colors.get(name),  # type: ignore[arg-type]
+                    color=colors.get(name),
                 ) for fields in sorted(
                     dataset,
                     key=lambda v: to_float(v.get(records.sort.by)),  # type: ignore[union-attr]
                     reverse=not records.sort.asc,
                 ) for name, value in [
-                    (fields.get(records.name_field), fields.get(records.data_field))
+                    (fields.get(records.name_field, ''), fields.get(records.data_field))
                 ]
             ]
         elif fields := template.fields:
@@ -920,8 +920,9 @@ class EntryBuilder:
                     self,
                     x: dict[str, Any],
                 ) -> None:
-                    self.__by = x.get('by')
-                    assert isinstance(self.__by, str), f'x.by must be str - {type(self.__by)}'
+                    by = x.get('by')
+                    assert isinstance(by, str), f'x.by must be str - {type(by)}'
+                    self.__by = by
 
                     self.__asc = EntryBuilder.to_sort_order(x.get('order') or 'asc')
                     self.__field = x.get('field')
@@ -933,7 +934,7 @@ class EntryBuilder:
                 def by(
                     self,
                 ) -> str:
-                    return self.__by  # type: ignore[return-value]
+                    return self.__by
 
                 @property
                 def asc(
@@ -953,11 +954,13 @@ class EntryBuilder:
                         self,
                         records: dict[str, Any],
                     ) -> None:
-                        self.__name_field = records.get('name-field')
-                        assert isinstance(self.__name_field, str), f'name-field must be str - {type(self.__name_field)}'
+                        name_field = records.get('name-field')
+                        assert isinstance(name_field, str), f'name-field must be str - {type(name_field)}'
+                        self.__name_field = name_field
 
-                        self.__data_field = records.get('data-field')
-                        assert isinstance(self.__data_field, str), f'data-field must be str - {type(self.__data_field)}'
+                        data_field = records.get('data-field')
+                        assert isinstance(data_field, str), f'data-field must be str - {type(data_field)}'
+                        self.__data_field = data_field
 
                         colors = records.get('colors')
                         if isinstance(colors, list):
@@ -976,19 +979,19 @@ class EntryBuilder:
                     def name_field(
                         self,
                     ) -> str:
-                        return self.__name_field  # type: ignore[return-value]
+                        return self.__name_field
 
                     @property
                     def data_field(
                         self,
                     ) -> str:
-                        return self.__data_field  # type: ignore[return-value]
+                        return self.__data_field
 
                     @property
                     def colors(
                         self,
                     ) -> dict[str, str] | list[str] | str:
-                        return self.__colors  # type: ignore[return-value]
+                        return self.__colors
 
                 class Field:
                     def __init__(
