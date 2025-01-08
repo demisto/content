@@ -227,7 +227,7 @@ PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 if IS_PY3 and PY_VER_MINOR >= 12:
-    warnings.filterwarnings("ignore")
+    warnings.simplefilter('ignore', SyntaxWarning)
 
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
