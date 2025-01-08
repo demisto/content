@@ -207,7 +207,7 @@ def get_priority(priority):
     elif priority == 'lowPriority':
         return vim.VirtualMachine.MovePriority().lowPriority  # type: ignore[call-arg] # pylint: disable=no-value-for-parameter
     else:
-        return vim.VirtualMachine.MovePriority().defaultPriority  # type: ignore[call-arg] # pylint: disable=no-value-for-parameter
+        return vim.VirtualMachine.MovePriority().defaultPriority  # type: ignore # pylint: disable=no-value-for-parameter
 
 
 def get_vms(si, args):
