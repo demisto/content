@@ -1018,6 +1018,7 @@ tasks:
       regex:
         simple: (?i)(\\Downloads\\|\\INetCache\\Content.Outlook\\)
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
