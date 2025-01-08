@@ -50,6 +50,7 @@ def get_phishing_map_labels(comma_values):
 
 def read_file(input_data, input_type):
     data = []  # type: List[Dict[str, str]]
+    file_path, file_content = '', ''
     if not input_data:
         return data
     if input_type.endswith("string"):
