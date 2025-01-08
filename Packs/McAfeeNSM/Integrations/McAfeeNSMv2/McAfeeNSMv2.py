@@ -1323,7 +1323,7 @@ def update_firewall_policy_command(client: Client, args: dict) -> CommandResults
         destination_object = update_source_destination_object(destination_object, destination_rule_object_id,
                                                               destination_rule_object_type)
 
-    body = create_body_firewall_policy(domain, name, visible_to_child, description, is_editable, policy_type,
+    body = create_body_firewall_policy(domain, name, visible_to_child, description, is_editable, policy_type,  # type: ignore[arg-type]
                                        rule_description, response_param, rule_enabled, direction, source_object,
                                        destination_object)
 
@@ -1463,7 +1463,7 @@ def create_rule_object_command(client: Client, args: dict) -> CommandResults:
     from_address = from_address_ip_v_4 if from_address_ip_v_4 else from_address_ip_v_6
     to_address = to_address_ip_v_4 if to_address_ip_v_4 else to_address_ip_v_6
 
-    check_args_create_rule(rule_type, address, from_address, to_address, number)
+    check_args_create_rule(rule_type, address, from_address, to_address, number)  # type: ignore[arg-type]
 
     body = {
         'RuleObjDef': {
