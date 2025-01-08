@@ -22,7 +22,7 @@ comment: |-
 commonfields:
   id: GCPOffendingFirewallRule
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.11.11.1940698
 enabled: true
 engineinfo: {}
 name: GCPOffendingFirewallRule
