@@ -213,7 +213,7 @@ script:
       required: true
     description: Request to purchase an item offered for sale on an automated store.
     name: radark-item-purchase
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   script: ''
   subtype: python3

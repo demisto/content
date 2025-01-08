@@ -1014,8 +1014,8 @@ def test_find_asset_owners_no_record():
             ]
         }
     }
-    assert [] == find_asset_owners(input_asset)
-    assert [] == find_asset_owners({})
+    assert find_asset_owners(input_asset) == []
+    assert find_asset_owners({}) == []
 
 
 def test_validate_with_regex():

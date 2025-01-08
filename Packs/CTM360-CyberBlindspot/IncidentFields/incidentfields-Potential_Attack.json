@@ -1,0 +1,31 @@
+{
+    "id": "incident_ctm360_hackerview_potentialattack",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "name": "CTM360 HackerView Potential Attack Types",
+    "ownerOnly": false,
+    "description": "Attacks that may be attempted.",
+    "cliName": "ctm360hackerviewpotentialattack",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "HackerView Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}
