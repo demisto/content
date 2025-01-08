@@ -103,7 +103,7 @@ class WebSocketClient:  # pragma: no cover
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(
                         uri,
-                        ssl=SSL_CONTEXT,
+                        ssl=SSL_CONTEXT,  # type: ignore[arg-type]
                         proxy=PROXY_URL,
                     ) as websocket:
                         demisto.debug('MM: starting to authenticate')
