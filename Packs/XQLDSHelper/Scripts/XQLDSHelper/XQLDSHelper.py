@@ -714,7 +714,7 @@ class EntryBuilder:
                         default_by: str,
                     ) -> None:
                         by = sort.get('by') or default_by
-                        assert isinstance(by, str) or by is None, f'sort.by must be str or null - {type(by)}'
+                        assert isinstance(by, str) or by is None, f'sort.by must be of type str or null - {type(by)}'
                         self.__by = by or default_by
 
                         self.__asc = EntryBuilder.to_sort_order(sort.get('order') or 'asc')
@@ -736,28 +736,28 @@ class EntryBuilder:
                     records: dict[str, Any],
                 ) -> None:
                     name_field = records.get('name-field')
-                    assert isinstance(name_field, str), f'name-field must be str - {type(name_field)}'
+                    assert isinstance(name_field, str), f'name-field must be of type str - {type(name_field)}'
                     self.__name_field = name_field
 
                     data_field = records.get('data-field')
-                    assert isinstance(data_field, str), f'data-field must be str - {type(data_field)}'
+                    assert isinstance(data_field, str), f'data-field must be of type str - {type(data_field)}'
                     self.__data_field = data_field
 
                     colors = records.get('colors')
                     if isinstance(colors, list):
                         for color in colors:
-                            assert isinstance(color, str), f'color must be str - {type(color)}'
+                            assert isinstance(color, str), f'color must be of type str - {type(color)}'
                     elif isinstance(colors, dict):
                         for color in colors.values():
-                            assert isinstance(color, str), f'color must be str - {type(color)}'
+                            assert isinstance(color, str), f'color must be of type str - {type(color)}'
                     elif colors is None:
                         colors = []
                     elif not isinstance(colors, str):
-                        raise DemistoException(f'colors must be dict, list or null - {type(colors)}')
+                        raise DemistoException(f'colors must be of type dict, list or null - {type(colors)}')
                     self.__colors = colors
 
                     sort = records.get('sort') or {}
-                    assert isinstance(sort, dict), f'sort must be dict or null - {type(sort)}'
+                    assert isinstance(sort, dict), f'sort must be of type dict or null - {type(sort)}'
                     self.__sort = self.Sort(sort, default_by=self.data_field)
 
                 @property
@@ -790,15 +790,15 @@ class EntryBuilder:
                     field: dict[str, Any],
                     default_color: str,
                 ) -> None:
-                    assert isinstance(field, dict), f'field in .fields must be dict - {type(field)}'
+                    assert isinstance(field, dict), f'field in .fields must be of type dict - {type(field)}'
 
                     self.__color = field.get('color') or default_color
                     assert isinstance(self.__color, str), (
-                        f'field.color must be str or null - {type(self.__color)}'
+                        f'field.color must be of type str or null - {type(self.__color)}'
                     )
                     self.__label = field.get('label')
                     assert isinstance(self.__label, str) or self.__label is None, (
-                        f'field.label must be str or null - {type(self.__label)}'
+                        f'field.label must be of type str or null - {type(self.__label)}'
                     )
 
                 @property
@@ -823,13 +823,15 @@ class EntryBuilder:
                 group = template.get('group')
                 if group == 'records':
                     records = template.get(group)
-                    assert isinstance(records, dict), f'records must be dict - {type(records)}'
-
+                    assert isinstance(records, dict), (
+                        f'records is required and must be of type dict - {type(records)}'
+                    )
                     self.__records = self.Records(records)
                 elif group == 'fields':
                     fields = template.get(group)
-                    assert isinstance(fields, dict), f'fields must be dict - {type(fields)}'
-
+                    assert isinstance(fields, dict), (
+                        f'fields is required and must be of type dict - {type(fields)}'
+                    )
                     self.__fields = {
                         name: self.Field(field, default_color=color)
                         for (name, field), color in zip(
@@ -921,13 +923,13 @@ class EntryBuilder:
                     x: dict[str, Any],
                 ) -> None:
                     by = x.get('by')
-                    assert isinstance(by, str), f'x.by must be str - {type(by)}'
+                    assert isinstance(by, str), f'x.by must be of type str - {type(by)}'
                     self.__by = by
 
                     self.__asc = EntryBuilder.to_sort_order(x.get('order') or 'asc')
                     self.__field = x.get('field')
                     assert isinstance(self.__field, str) or self.__field is None, (
-                        f'x.field must be str or null - {type(self.__field)}'
+                        f'x.field must be of type str or null - {type(self.__field)}'
                     )
 
                 @property
@@ -955,24 +957,24 @@ class EntryBuilder:
                         records: dict[str, Any],
                     ) -> None:
                         name_field = records.get('name-field')
-                        assert isinstance(name_field, str), f'name-field must be str - {type(name_field)}'
+                        assert isinstance(name_field, str), f'name-field must be of type str - {type(name_field)}'
                         self.__name_field = name_field
 
                         data_field = records.get('data-field')
-                        assert isinstance(data_field, str), f'data-field must be str - {type(data_field)}'
+                        assert isinstance(data_field, str), f'data-field must be of type str - {type(data_field)}'
                         self.__data_field = data_field
 
                         colors = records.get('colors')
                         if isinstance(colors, list):
                             for color in colors:
-                                assert isinstance(color, str), f'color must be str - {type(color)}'
+                                assert isinstance(color, str), f'color must be of type str - {type(color)}'
                         elif isinstance(colors, dict):
                             for color in colors.values():
-                                assert isinstance(color, str), f'color must be str - {type(color)}'
+                                assert isinstance(color, str), f'color must be of type str - {type(color)}'
                         elif colors is None:
                             colors = []
                         elif not isinstance(colors, str):
-                            raise DemistoException(f'colors must be dict, list or null - {type(colors)}')
+                            raise DemistoException(f'colors must be of type dict, list or null - {type(colors)}')
                         self.__colors = colors
 
                     @property
@@ -999,15 +1001,17 @@ class EntryBuilder:
                         field: dict[str, Any],
                         default_color: str,
                     ) -> None:
-                        assert isinstance(field, dict), f'field in y.fields must be dict - {type(field)}'
+                        assert isinstance(field, dict), f'field in y.fields must be of type dict - {type(field)}'
 
-                        self.__color = field.get('color') or default_color
-                        assert isinstance(self.__color, str), (
-                            f'field.color must be str or null - {type(self.__color)}'
+                        color = field.get('color')
+                        assert isinstance(color, str) or color is None, (
+                            f'field.color must be of type str or null - {type(self.__color)}'
                         )
+                        self.__color = color or default_color
+
                         self.__label = field.get('label')
                         assert isinstance(self.__label, str) or self.__label is None, (
-                            f'field.label must be str or null - {type(self.__label)}'
+                            f'field.label must be of type str or null - {type(self.__label)}'
                         )
 
                     @property
@@ -1032,13 +1036,15 @@ class EntryBuilder:
                     group = y.get('group')
                     if group == 'records':
                         records = y.get(group)
-                        assert isinstance(records, dict), f'y.records must be dict - {type(records)}'
-
+                        assert isinstance(records, dict), (
+                            f'y.records is required and must be of type dict - {type(records)}'
+                        )
                         self.__records = self.Records(records)
                     elif group == 'fields':
                         fields = y.get(group)
-                        assert isinstance(fields, dict), f'y.fields must be dict - {type(fields)}'
-
+                        assert isinstance(fields, dict), (
+                            f'y.fields is required and must be of type dict - {type(fields)}'
+                        )
                         self.__fields = {
                             name: self.Field(field, default_color=color)
                             for (name, field), color in zip(
@@ -1066,11 +1072,11 @@ class EntryBuilder:
                 template: dict[str, Any],
             ) -> None:
                 x = template.get('x')
-                assert isinstance(x, dict), f'x must be dict - {type(x)}'
+                assert isinstance(x, dict), f'x must be of type dict - {type(x)}'
                 self.__x = self.X(x)
 
                 y = template.get('y')
-                assert isinstance(y, dict), f'y must be dict - {type(y)}'
+                assert isinstance(y, dict), f'y must be of type dict - {type(y)}'
                 self.__y = self.Y(y)
 
             @property
@@ -1251,7 +1257,7 @@ class EntryBuilder:
                 ) -> None:
                     self.__by = sort.get('by')
                     assert isinstance(self.__by, str) or self.__by is None, (
-                        f'sort.by must be str or null - {type(self.__by)}'
+                        f'sort.by must be of type str or null - {type(self.__by)}'
                     )
                     self.__asc = EntryBuilder.to_sort_order(sort.get('order') or 'asc')
 
@@ -1272,7 +1278,7 @@ class EntryBuilder:
                     self,
                     column: dict[str, Any],
                 ) -> None:
-                    assert isinstance(column, dict), f'column in columns must be dict - {type(column)}'
+                    assert isinstance(column, dict), f'column in columns must be of type dict - {type(column)}'
                     self.field = column.get('field')
                     self.label = column.get('label') or self.field or ''
 
@@ -1281,7 +1287,7 @@ class EntryBuilder:
                 template: dict[str, Any],
             ) -> None:
                 self.__title = template.get('title') or ''
-                assert isinstance(self.__title, str), f'title must be str or null - {type(self.__title)}'
+                assert isinstance(self.__title, str), f'title must be of type str or null - {type(self.__title)}'
 
                 self.__columns: list[Column] | None = None  # pylint: disable=undefined-variable
                 if columns := template.get('columns'):
@@ -1289,12 +1295,12 @@ class EntryBuilder:
                     self.__columns = [self.Column(c) for c in columns]
 
                 sort = template.get('sort') or {}
-                assert isinstance(sort, dict), f'sort must be dict or null - {type(sort)}'
+                assert isinstance(sort, dict), f'sort must be of type dict or null - {type(sort)}'
                 self.__sort = self.Sort(sort)
 
                 self.__default = template.get('default') or ''
                 assert isinstance(self.__default, (str, dict)), (
-                    f'default must be str, dict or null - {type(self.__default)}'
+                    f'default must be of type str, dict or null - {type(self.__default)}'
                 )
 
             @property
@@ -1367,7 +1373,7 @@ class EntryBuilder:
         """
         field = params.get('field')
         if not field or not isinstance(field, str):
-            raise DemistoException(f'field must be str - {type(field)}')
+            raise DemistoException(f'field must be of type str - {type(field)}')
 
         if len(dataset) > 1:
             raise DemistoException('The duration entry allows at most one record.')
@@ -1396,7 +1402,7 @@ class EntryBuilder:
         """
         field = params.get('field')
         if not field or not isinstance(field, str):
-            raise DemistoException(f'field must be str - {type(field)}')
+            raise DemistoException(f'field must be of type str - {type(field)}')
 
         if len(dataset) > 1:
             raise DemistoException('The number entry allows at most one record.')
@@ -1425,11 +1431,11 @@ class EntryBuilder:
         """
         prev_field = params.get('prev-field')
         if not prev_field or not isinstance(prev_field, str):
-            raise DemistoException(f'prev-field must be str - {type(prev_field)}')
+            raise DemistoException(f'prev-field must be of type str - {type(prev_field)}')
 
         curr_field = params.get('curr-field')
         if not curr_field or not isinstance(curr_field, str):
-            raise DemistoException(f'curr-field must be str - {type(curr_field)}')
+            raise DemistoException(f'curr-field must be of type str - {type(curr_field)}')
 
         if len(dataset) > 1:
             raise DemistoException('The number-trend entry allows at most one record.')
@@ -1522,7 +1528,7 @@ class EntryBuilder:
 
         params = entry_params.get(entry_type, {})
         if not isinstance(params, dict):
-            raise DemistoException(f'{entry_type} must be dict - {type(params)}.')
+            raise DemistoException(f'{entry_type} must be of type dict - {type(params)}.')
 
         build_entry = {
             'single-bar': lambda params, dataset: self.__build_single_bar(
