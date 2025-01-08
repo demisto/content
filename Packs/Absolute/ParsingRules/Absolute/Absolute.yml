@@ -1,5 +1,5 @@
 name: Absolute Parsing Rule
-id: Absolute_Parsing_Rule
+id: Absolute_ParsingRule
 fromversion: 8.4.0
 tags: []
 rules: ''
