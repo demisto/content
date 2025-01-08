@@ -15,7 +15,7 @@ tags:
 - indicator-format
 timeout: '0'
 type: python
-dockerimage: demisto/py3-tools:1.0.0.114656
+dockerimage: demisto/py3-tools:1.0.0.117220
 runas: DBotWeakRole
 tests:
 - ExtractDomainAndFQDNFromUrlAndEmail-Test
