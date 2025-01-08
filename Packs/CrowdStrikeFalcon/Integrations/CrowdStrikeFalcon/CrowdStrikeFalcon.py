@@ -7203,7 +7203,7 @@ def main():
             events, results = get_events_command(args)
             return_results(results)
             if should_push_events:
-                demisto.debug(f'Creating {len(events)} in XSIAM')
+                demisto.debug(f'Creating {len(events)} events in XSIAM')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):

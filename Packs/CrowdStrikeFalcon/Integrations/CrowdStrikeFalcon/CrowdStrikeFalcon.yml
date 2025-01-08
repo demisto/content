@@ -60,7 +60,6 @@ configuration:
   defaultvalue:marketplacev2: '1 min'
   section: Collect
   required: false
-  hidden: false
   hidden:marketplacev2: true
 - display: Max incidents per fetch
   display:marketplacev2: Max events per fetch
@@ -151,7 +150,6 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  hidden: false
   hidden:marketplacev2: true
 - display: 'Trust any certificate (not secure)'
   name: insecure
@@ -173,7 +171,6 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
-  hidden: false
   hidden:marketplacev2: true
 - defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
@@ -183,7 +180,6 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
-  hidden: false
   hidden:marketplacev2: true
 - defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
@@ -218,7 +214,6 @@ configuration:
   - False positive
   - Reopened
   - Ignored
-  hidden: false
   hidden:marketplacev2: true
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
@@ -227,7 +222,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  hidden: false
   hidden:marketplacev2: true
 - additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
@@ -2732,7 +2726,6 @@ script:
   - arguments: []
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported on Cortex XSOAR only.
     name: get-mapping-fields
-    hidden: false
     hidden:marketplacev2: true
   - arguments:
     - description: The remote incident or detection ID.
@@ -2743,19 +2736,16 @@ script:
       name: lastUpdate
     description: Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported on Cortex XSOAR only.
     name: get-remote-data
-    hidden: false
     hidden:marketplacev2: true
   - arguments:
     - description: Date string representing the local time in UTC timestamp in seconds. The incident or detection is only returned if it was modified after the last update time.
       name: lastUpdate
     description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported on Cortex XSOAR only.
     name: get-modified-remote-data
-    hidden: false
     hidden:marketplacev2: true
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported on Cortex XSOAR only.
     name: update-remote-system
-    hidden: false
     hidden:marketplacev2: true
   - arguments:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'.
@@ -5114,12 +5104,11 @@ script:
       required: true
     description: Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events. Note that this command is supported on Cortex XSIAM only.
     name: cs-falcon-get-events
-    hidden: false
     hidden:xsoar: true
   dockerimage: demisto/py3-tools:1.0.0.114656
   # Fetch incidents on XSOAR only
-  isfetch: false
-  isfetch:xsoar: true
+  isfetch: true
+  isfetch:marketplacev2: false
   # Fetch events on XSIAM only
   isfetchevents: false
   isfetchevents:marketplacev2: true
