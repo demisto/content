@@ -22,7 +22,6 @@ To ingest feeds via a URL, you could use one of the following content packs:
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch indicators |  | False |
-| Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Feed Fetch Interval |  | False |

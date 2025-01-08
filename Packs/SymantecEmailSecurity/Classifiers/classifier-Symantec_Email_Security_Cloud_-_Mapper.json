@@ -1,0 +1,202 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Symantec Email Security Cloud - Mapper",
+    "mapping": {
+        "Symantec Email Security Cloud Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "incidents.[0].xMsgRef"
+                },
+                "Country": {
+                    "simple": "emailInfo.country"
+                },
+                "Domain Name": {
+                    "simple": "incidents.[0].addressContexts.[0].domain"
+                },
+                "External Severity": {
+                    "simple": "incidents.[0].severity"
+                },
+                "File Name": {
+                    "simple": "incidents.[].filesAndLinks.[].fileNameOrURL"
+                },
+                "MD5": {
+                    "complex": {
+                        "accessor": "md5",
+                        "filters": [],
+                        "root": "emailInfo.filesAndLinks.[]",
+                        "transformers": []
+                    }
+                },
+                "Policy Actions": {
+                    "simple": "incidents.[0].action"
+                },
+                "SHA256": {
+                    "simple": "emailInfo.filesAndLinks.[].sha256"
+                },
+                "Source IP": {
+                    "simple": "emailInfo.senderIp"
+                },
+                "Source Username": {
+                    "simple": "incidents.[0].addressContexts.[0].name"
+                },
+                "Symantec ESC Detection Method": {
+                    "simple": "incidents.[0].detectionMethod"
+                },
+                "Symantec ESC Email Attachment": {
+                    "complex": {
+                        "accessor": "filesAndLinks",
+                        "filters": [],
+                        "root": "emailInfo",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Symantec ESC Email Direction": {
+                    "complex": {
+                        "accessor": "isOutbound",
+                        "filters": [],
+                        "root": "emailInfo",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "inbound"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "outbound"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Symantec ESC Email Malware Category": {
+                    "simple": "incidents.[].filesAndLinks.[].malwareCategory"
+                },
+                "Symantec ESC Email Malware Name": {
+                    "simple": "incidents.[].filesAndLinks.[].malwareName"
+                },
+                "Symantec ESC Email Recipient": {
+                    "simple": "emailInfo.envTo.[]"
+                },
+                "Symantec ESC Email Sender": {
+                    "simple": "emailInfo.envFrom"
+                },
+                "Symantec ESC Email Subject": {
+                    "simple": "emailInfo.subject"
+                },
+                "Symantec ESC Security Service": {
+                    "simple": "incidents.[0].securityService"
+                },
+                "Verdict": {
+                    "simple": "incidents.[0].verdict"
+                },
+                "occurred": {
+                    "simple": "emailInfo.mailProcessingStartTime"
+                }
+            }
+        },
+        "Symantec Email Security Cloud Quarantine": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "File Name": {
+                    "simple": "metadata.quarantine_info.attachments.[]"
+                },
+                "Source IP": {
+                    "complex": {
+                        "accessor": "x-originating-ip",
+                        "filters": [],
+                        "root": "headers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "["
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "]"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Symantec ESC Email Body": {
+                    "simple": "bodypart.[0].content"
+                },
+                "Symantec ESC Email Direction": {
+                    "simple": "metadata.quarantine_info.direction"
+                },
+                "Symantec ESC Email Recipient": {
+                    "simple": "metadata.master_recipient"
+                },
+                "Symantec ESC Email Sender": {
+                    "simple": "metadata.email_sender"
+                },
+                "Symantec ESC Email Subject": {
+                    "simple": "metadata.email_subject"
+                },
+                "Symantec ESC Quarantine Rule": {
+                    "simple": "metadata.quarantine_info.rules.[]"
+                },
+                "occurred": {
+                    "simple": "metadata.email_date_received"
+                }
+            }
+        }
+    },
+    "name": "Symantec Email Security Cloud - Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

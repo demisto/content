@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Employee_Offboarding_Gather_User_Information](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Gather_User_Information.png)
+![Employee_Offboarding_Gather_User_Information](../doc_files/Employee_Offboarding_-_Gather_User_Information.png)

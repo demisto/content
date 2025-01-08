@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401
@@ -8,7 +7,7 @@ BASE_URL = 'https://console.runzero.com/api/v1.0'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
