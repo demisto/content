@@ -947,10 +947,10 @@ def prepare_context_hr_vm_object_list(response: dict):
             else None,
             "RBS Status": node.get('agentStatus', {}).get('agentStatus', "") if node.get('agentStatus') else None,
             "Source Storage": convert_bytes(
-                node.get('reportSnappable', {}).get('archiveStorage', "") if node.get('reportSnappable')
+                node.get('reportSnappable', {}).get('archiveStorage', "") if node.get('reportSnappable')  # type: ignore[arg-type]
                 else None),
             "Archival Storage": convert_bytes(
-                node.get('reportSnappable', {}).get('physicalBytes', "") if node.get('reportSnappable')
+                node.get('reportSnappable', {}).get('physicalBytes', "") if node.get('reportSnappable')  # type: ignore[arg-type]
                 else None)
         })
         context.append(remove_empty_elements(node))
@@ -1059,7 +1059,7 @@ def prepare_context_hr_vm_object_snapshot(response: dict):
                                            f" {node.get('groupByInfo').get('end')}",
                        SNAPSHOT_IDS: []}
             ids = []
-            for sub_node in sub_nodes:
+            for sub_node in sub_nodes:  # type: ignore[union-attr]
                 ids.append(sub_node.get("id"))
             hr_data[SNAPSHOT_IDS] = ids
             hr.append(hr_data)
