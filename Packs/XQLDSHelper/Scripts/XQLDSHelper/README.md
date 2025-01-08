@@ -1086,7 +1086,7 @@ dataset = panw_ngfw_traffic_raw
       }
     },
     "params": {
-      "layout": "horizontal"
+      "layout": "vertical"
     }
   }
 }
