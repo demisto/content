@@ -2459,7 +2459,7 @@ def form_powershell_command(unescaped_string: str) -> str:
         else:
             escaped_string += char
 
-    return f"powershell -Command '{escaped_string}'"
+    return f"powershell -Command \"{escaped_string}\""
 
 
 def parse_command_injections(commands: list[str] | list | dict[list, list],
