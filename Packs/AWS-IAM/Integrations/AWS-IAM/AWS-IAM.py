@@ -1,3 +1,5 @@
+from requests import Response
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -309,6 +311,7 @@ def list_roles(args, client):  # pragma: no cover
 
 
 def attach_policy(args, client):  # pragma: no cover
+    response = Response()
     if args.get('type') == 'User':
         response = client.attach_user_policy(
             UserName=args.get('entityName'),
@@ -331,6 +334,7 @@ def attach_policy(args, client):  # pragma: no cover
 
 
 def detach_policy(args, client):  # pragma: no cover
+    response = Response()
     if args.get('type') == 'User':
         response = client.detach_user_policy(
             UserName=args.get('entityName'),
