@@ -293,6 +293,7 @@ That is intended to create a number widget from the record set, as shown below, 
 | 1234 |
 
 The widget will be displayed as shown below.
+
 ![Number](../../doc_files/number.png)
 
 The record set must contain at most one record for the number widget entry. An error is raised if it contains more than one record.
@@ -362,6 +363,7 @@ That is intended to create a number-trend widget from the record set, as shown b
 
 
 The widget will be displayed as shown below.
+
 ![Number Trend](../../doc_files/number-trend.png)
 
 The record set must contain at most one record for the number-trend widget entry. An error is raised if it contains more than one record.
@@ -435,6 +437,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample pie chart created using those settings.
+
 ![Dynamic-Pie](../../doc_files/pie-dynamic.png)
 
 
@@ -488,6 +491,7 @@ Each key defined in the `.fields` is plotted as a separate slice in the pie char
 For example, in the above configuration, `total_bytes_sent_mb` will be displayed as the first slice, and `total_bytes_received_mb` will be displayed as the second slice.
 
 This is a sample pie chart created using those settings.
+
 ![Static-Pie](../../doc_files/pie-static.png)
 
 > .params
@@ -646,6 +650,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample line chart created using those settings.
+
 ![Dynamic-Line](../../doc_files/line-dynamic.png)
 
 When specifying `fields` for `.y.group`, it indicates that the values for each field are displayed individually on the Y-axis.
@@ -711,6 +716,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample line chart created using those settings.
+
 ![Static-Line](../../doc_files/line-static.png)
 
 > .params
@@ -802,6 +808,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample single-bar chart created using those settings.
+
 ![Dynamic-Single-Bar](../../doc_files/single-bar-dynamic.png)
 
 
@@ -855,6 +862,7 @@ Each key defined in the `.fields` is plotted as a separate bar in the single-bar
 For example, in the above configuration, `total_bytes_sent_mb` will be displayed as the first bar, and `total_bytes_received_mb` will be displayed as the second bar.
 
 This is a sample single-bar chart created using those settings.
+
 ![Static-Single-Bar](../../doc_files/single-bar-static.png)
 
 > .params
@@ -1016,6 +1024,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample stacked-bar chart created using those settings.
+
 ![Dynamic-Stacked-Bar](../../doc_files/stacked-bar-dynamic.png)
 
 When specifying `fields` for `.y.group`, it indicates that the values for each field are displayed individually on the Y-axis.
@@ -1084,6 +1093,7 @@ dataset = panw_ngfw_traffic_raw
 ```
 
 This is a sample stacked-bar chart created using those settings.
+
 ![Static-Stacked-Bar](../../doc_files/stacked-bar-static.png)
 
 > .params
@@ -1148,6 +1158,7 @@ That is intended to create a number widget from the record set, as shown below, 
 | 86340 |
 
 The widget will be displayed as shown below.
+
 ![Duration](../../doc_files/duration.png)
 
 The record set must contain at most one record for the duration widget entry. An error is raised if it contains more than one record.
