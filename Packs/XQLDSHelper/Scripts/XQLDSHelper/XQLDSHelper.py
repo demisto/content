@@ -117,7 +117,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> Self:
+    ) -> Self:  # type: ignore[valid-type]
         """ Create a ContextData with the new value
 
         :param value: The new value.
