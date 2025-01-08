@@ -63,7 +63,7 @@ def test_main_incorrect_credentials(requests_mock, monkeypatch, capfd, caplog):
 
         }})
     monkeypatch.setattr(mock_command, lambda: "rubrik-sonar-policy-analyzer-groups-list")
-    monkeypatch.setattr('demistomock.args', lambda: {})
+    monkeypatch.setattr('demistomock.args', dict)
     response_data = {
         "code": 401,
         "uri": "/api/session",
@@ -211,7 +211,7 @@ def test_get_api_token_when_not_found_in_integration_context(mocker_get_context,
 
     api_token = client.get_api_token()
 
-    assert api_token == bool(False)
+    assert not api_token
 
 
 @patch('demistomock.getIntegrationContext')

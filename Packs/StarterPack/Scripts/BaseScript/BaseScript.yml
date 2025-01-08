@@ -1,15 +1,15 @@
 args:
-- description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+- description: '[Enter a description of the argument, including any important information users need to know, for example, default values.].'
   name: dummy
   required: true
-comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
+comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.].'
 commonfields:
   id: BaseScript
   version: -1
 name: BaseScript
 outputs:
 - contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
+  description: '[Enter a description of the data returned in this output.].'
   type: String
 script: '-'
 tags:
@@ -17,5 +17,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.11.10.116949
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
