@@ -32,7 +32,7 @@ def test_get_field_command():
     resp_queue.add_response(mock_response)
 
     prefix = SecretsManager.notation_prefix
-    notation = "{}://{}/field/login".format(prefix, mock_record.uid)
+    notation = f"{prefix}://{mock_record.uid}/field/login"
     resp = get_field_command(client, {"notation": notation})
     assert resp.outputs == "My Login 1"
     assert resp.outputs_prefix == "KeeperSecretsManager.Field"

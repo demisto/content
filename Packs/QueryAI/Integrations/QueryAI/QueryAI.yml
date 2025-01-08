@@ -44,22 +44,22 @@ script:
       required: true
     - description: Platform Alias.
       name: alias
-    - description: Connection params as JSON object. Eg- {"platform_alias":{"username":"my_username","password":"my_password"}}
+    - description: Connection params as JSON object. Eg- {"platform_alias":{"username":"my_username","password":"my_password"}}.
       name: connection_params
-    - description: Workflow params as JSON object.(If workflow requires params) Eg- {"param1":"value1","param2":"value2"}
+    - description: Workflow params as JSON object.(If workflow requires params) Eg- {"param1":"value1","param2":"value2"}.
       name: workflow_params
-    - description: Search time period. Eg- "search 1 year ago to now"
+    - description: Search time period. Eg- "search 1 year ago to now".
       name: time_text
     description: Returns response for the query being run on Query.AI.
     name: queryai-run-query
     outputs:
     - contextPath: QueryAI.query.result
-      description: Response after running query
+      description: Response after running query.
       type: Unknown
     - contextPath: QueryAI.query.markdown_string
-      description: Readable Response after running query
+      description: Readable Response after running query.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.11.1940698
   runonce: false
   script: '-'
   subtype: python3
