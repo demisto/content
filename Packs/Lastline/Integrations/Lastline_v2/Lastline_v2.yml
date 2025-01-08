@@ -565,7 +565,7 @@ script:
     - contextPath: Lastline.Submission.Process.process_id
       description: The process ID.
       type: string
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.11.1940698
   runonce: false
   script: '-'
   type: python
