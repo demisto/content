@@ -1,3 +1,4 @@
+import freezegun
 import pytest
 import json
 import GreyNoise
@@ -55,6 +56,7 @@ def test_get_ip_reputation_score(input_data, expected_output):
     assert response == expected_output
 
 
+@freezegun.freeze_time("2024-12-30 00:00:00")
 @pytest.mark.parametrize("api_key, api_response, status_code, expected_output", test_module_data)
 def test_test_module(api_key, api_response, status_code, expected_output, mocker):
     """
