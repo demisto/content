@@ -50,7 +50,7 @@ tasks:
     task:
       id: 0e7b306b-245d-43c9-85fe-cfec167d92cd
       version: -1
-      name: Search for related alerts
+      name: Search for Related Alerts
       description: |-
         Searches for alerts. A summarized version of this script is available with the summarized version argument.
 
@@ -584,7 +584,7 @@ tasks:
     scriptarguments:
       action_id:
         complex:
-          root: Core.ScriptRun
+          root: Core.GetActionStatus.[1]
           accessor: action_id
           transformers:
           - operator: uniq
