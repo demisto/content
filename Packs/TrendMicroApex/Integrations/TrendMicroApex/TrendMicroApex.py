@@ -326,7 +326,7 @@ class Client(BaseClient):
         for result in results_list:
             for time_key in time_keys:
                 if result.get(time_key):
-                    result[time_key] = datetime.fromtimestamp(result.get(time_key), timezone.utc).isoformat()
+                    result[time_key] = datetime.fromtimestamp(result.get(time_key), timezone.UTC).isoformat()
             for status_key in status_keys:
                 if result.get(status_key):
                     result[status_key] = INVESTIGATION_STATUS_NUM_TO_VALUE[result.get(status_key)]
