@@ -930,27 +930,41 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
     demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
 
-    incidents = client.get_multiple_incidents_extra_data(
-        incident_id_list=list(id_to_modification_time.keys()), exclude_artifacts=False
-    )
-    close_xsoar_incident = argToBoolean(client._params.get('close_xsoar_incident', True))
-    updated_incidents: dict = {}
+    updated_incidents_by_id: dict = {}
+    if id_to_modification_time:
+        response = client.get_multiple_incidents_extra_data(
+            incident_id_list=list(id_to_modification_time.keys()), exclude_artifacts=False
+        )
+        close_xsoar_incident = argToBoolean(client._params.get('close_xsoar_incident', True))
+        demisto.debug(f'{response=}')
+        for incident in response:
+            incident_data = incident.get('incident')
+            incident_id = incident_data.get('incident_id')
+            alert_count = incident_data.get('alert_count')
 
-    for incident in incidents:
-        updated_incidents[incident['id']] = get_remote_data_command(incident, close_xsoar_incident)
+            if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
+                demisto.debug(f"using the old call for incident: {incident_id} "
+                              f"since alert_count: {alert_count} > limit: {ALERTS_LIMIT_PER_INCIDENTS}")
+                incident_data = client.get_incident_extra_data(incident_id, 1000)
+                demisto.debug(f'{incident_data=}')
 
-    return updated_incidents, last_run_mirroring_str
+            updated_incidents_by_id[incident_id] = get_remote_data_command(incident_data, close_xsoar_incident)
+
+    return updated_incidents_by_id, last_run_mirroring_str
 
 
-def get_remote_data_command(incident_data: dict, close_xsoar_incident: bool):
+def get_remote_data_command(incident_data, close_xsoar_incident):
     try:
         demisto.debug(f"Updating XDR incident {incident_data.get('incident_id')}")
+
+        incident_data['id'] = incident_data.get('incident_id')
+
         sort_all_list_incident_fields(incident_data)
 
         # deleting creation time as it keeps updating in the system
         del incident_data['creation_time']
 
-        # handle unasignment
+        # handle unassignment
         if incident_data.get('assigned_user_mail') is None:
             handle_incoming_user_unassignment(incident_data)
 
@@ -976,7 +990,7 @@ def get_remote_data_command(incident_data: dict, close_xsoar_incident: bool):
         )
 
     except Exception as e:
-        demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
+        demisto.debug(f"Error in XDR incoming mirror for incident {incident_data.get('incident_id')} \n"
                       f"Error message: {str(e)}")
 
         if "Rate limit exceeded" in str(e):
@@ -991,7 +1005,7 @@ def get_remote_data_command(incident_data: dict, close_xsoar_incident: bool):
 
         else:
             incident_data = {
-                'id': remote_args.remote_incident_id,
+                'id': incident_data.get('incident_id'),
                 'in_mirror_error': str(e)
             }
 
