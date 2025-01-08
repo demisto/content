@@ -15,6 +15,7 @@ import urllib.parse
 from collections import defaultdict
 from collections.abc import Iterable, Hashable
 from typing import Tuple
+from typing_extensions import Self
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
@@ -116,7 +117,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> Any:  # typing.Self
+    ) -> Self:
         """ Create a ContextData with the new value
 
         :param value: The new value.
@@ -1578,7 +1579,7 @@ class EntryBuilder:
         return build_entry(
             self.__formatter.build(
                 template=params,
-                context=self.__context.inherit({  # type: ignore[arg-type]
+                context=self.__context.inherit({
                     'dataset': dataset
                 })
             ),
