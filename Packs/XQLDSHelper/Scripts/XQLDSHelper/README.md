@@ -424,15 +424,15 @@ dataset = panw_ngfw_traffic_raw
 
 ```
 "pie": {
-	"group": "records",
-	"records": {
-		"name-field": "app",
-		"data-field": "count",
-		"sort": {
-			"by": "count",
-			"order": "desc"
-		}
-	}
+  "group": "records",
+  "records": {
+    "name-field": "app",
+    "data-field": "count",
+    "sort": {
+      "by": "count",
+      "order": "desc"
+    }
+  }
 }
 ```
 
@@ -473,17 +473,17 @@ dataset = panw_ngfw_traffic_raw
 
 ```
 "pie": {
-	"group": "fields",
-	"fields": {
-		"total_bytes_sent_mb": {
-			"label": "Total Bytes Sent",
-			"color": "rgb(122, 204, 0)"
-		},
-		"total_bytes_received_mb": {
-			"label": "Total Bytes Received",
-			"color": "rgb(0, 122, 204)"
-		}
-	}
+  "group": "fields",
+  "fields": {
+    "total_bytes_sent_mb": {
+      "label": "Total Bytes Sent",
+      "color": "rgb(122, 204, 0)"
+    },
+    "total_bytes_received_mb": {
+      "label": "Total Bytes Received",
+      "color": "rgb(0, 122, 204)"
+    }
+  }
 }
 ```
 
@@ -525,11 +525,11 @@ dataset = panw_ngfw_traffic_raw
 ```
 ```
 "pie": {
-	"group": "fields",
-	"fields": {
-		"total_bytes_sent_mb": {},
-		"total_bytes_received_mb": {}
-	}
+  "group": "fields",
+  "fields": {
+    "total_bytes_sent_mb": {},
+    "total_bytes_received_mb": {}
+  }
 }
 ```
 
@@ -560,15 +560,15 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 
 ```
 "pie": {
-	"group": "records",
-	"records": {
-		"name-field": "name",
-		"data-field": "value",
-		"sort": {
-			"by": "value",
-			"order": "desc"
-		}
-	}
+  "group": "records",
+  "records": {
+    "name-field": "name",
+    "data-field": "value",
+    "sort": {
+      "by": "value",
+      "order": "desc"
+    }
+  }
 }
 ```
 
@@ -792,18 +792,18 @@ dataset = panw_ngfw_traffic_raw
 
 ```
 "single-bar": {
-	"group": "records",
-	"records": {
-		"name-field": "app",
-		"data-field": "count",
-		"sort": {
-			"by": "count",
-			"order": "desc"
-		}
-	},
-	"params": {
-		"layout": "horizontal"
-	}
+  "group": "records",
+  "records": {
+    "name-field": "app",
+    "data-field": "count",
+    "sort": {
+      "by": "count",
+      "order": "desc"
+    }
+  },
+  "params": {
+    "layout": "horizontal"
+  }
 }
 ```
 
@@ -844,17 +844,17 @@ dataset = panw_ngfw_traffic_raw
 
 ```
 "single-bar": {
-	"group": "fields",
-	"fields": {
-		"total_bytes_sent_mb": {
-			"label": "Total Bytes Sent",
-			"color": "rgb(122, 204, 0)"
-		},
-		"total_bytes_received_mb": {
-			"label": "Total Bytes Received",
-			"color": "rgb(0, 122, 204)"
-		}
-	}
+  "group": "fields",
+  "fields": {
+    "total_bytes_sent_mb": {
+      "label": "Total Bytes Sent",
+      "color": "rgb(122, 204, 0)"
+    },
+    "total_bytes_received_mb": {
+      "label": "Total Bytes Received",
+      "color": "rgb(0, 122, 204)"
+    }
+  }
 }
 ```
 
@@ -896,11 +896,11 @@ dataset = panw_ngfw_traffic_raw
 ```
 ```
 "single-bar": {
-	"group": "fields",
-	"fields": {
-		"total_bytes_sent_mb": {},
-		"total_bytes_received_mb": {}
-	}
+  "group": "fields",
+  "fields": {
+    "total_bytes_sent_mb": {},
+    "total_bytes_received_mb": {}
+  }
 }
 ```
 
@@ -931,15 +931,15 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 
 ```
 "single-bar": {
-	"group": "records",
-	"records": {
-		"name-field": "name",
-		"data-field": "value",
-		"sort": {
-			"by": "value",
-			"order": "desc"
-		}
-	}
+  "group": "records",
+  "records": {
+    "name-field": "name",
+    "data-field": "value",
+    "sort": {
+      "by": "value",
+      "order": "desc"
+    }
+  }
 }
 ```
 
