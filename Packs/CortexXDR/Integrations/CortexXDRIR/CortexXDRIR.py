@@ -930,69 +930,50 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
     demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
 
-    return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
+    incidents = client.get_multiple_incidents_extra_data(
+        incident_id_list=list(id_to_modification_time.keys()), exclude_artifacts=False
+    )
+    close_xsoar_incident = argToBoolean(client._params.get('close_xsoar_incident', True))
+    updated_incidents: dict = {}
+
+    for incident in incidents:
+        updated_incidents[incident['id']] = get_remote_data_command(incident, close_xsoar_incident)
+
+    return updated_incidents, last_run_mirroring_str
 
 
-def get_remote_data_command(client, args):
-    remote_args = GetRemoteDataArgs(args)
-    demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id}')
-
-    incident_data = {}
+def get_remote_data_command(incident_data: dict, close_xsoar_incident: bool):
     try:
-        # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
-        # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
-        return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
+        demisto.debug(f"Updating XDR incident {incident_data.get('incident_id')}")
+        sort_all_list_incident_fields(incident_data)
 
-        incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000,
-                                                                 "return_only_updated_incident": return_only_updated_incident,
-                                                                 "last_update": remote_args.last_update})
-        if 'The incident was not modified' not in incident_data[0]:
-            demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
+        # deleting creation time as it keeps updating in the system
+        del incident_data['creation_time']
 
-            incident_data = incident_data[2].get('incident')
-            incident_data['id'] = incident_data.get('incident_id')
+        # handle unasignment
+        if incident_data.get('assigned_user_mail') is None:
+            handle_incoming_user_unassignment(incident_data)
 
-            sort_all_list_incident_fields(incident_data)
+        else:
+            # handle owner sync
+            sync_incoming_incident_owners(incident_data)
 
-            # deleting creation time as it keeps updating in the system
-            del incident_data['creation_time']
+        # handle closed issue in XDR and handle outgoing error entry
+        entries = []
+        if close_xsoar_incident:
+            entries = [handle_incoming_closing_incident(incident_data)]
 
-            # handle unasignment
-            if incident_data.get('assigned_user_mail') is None:
-                handle_incoming_user_unassignment(incident_data)
+        reformatted_entries = []
+        for entry in entries:
+            if entry:
+                reformatted_entries.append(entry)
 
-            else:
-                # handle owner sync
-                sync_incoming_incident_owners(incident_data)
+        incident_data['in_mirror_error'] = ''
 
-            # handle closed issue in XDR and handle outgoing error entry
-            entries = []
-            if argToBoolean(client._params.get('close_xsoar_incident', True)):
-                entries = [handle_incoming_closing_incident(incident_data)]
-
-            reformatted_entries = []
-            for entry in entries:
-                if entry:
-                    reformatted_entries.append(entry)
-
-            incident_data['in_mirror_error'] = ''
-
-            return GetRemoteDataResponse(
-                mirrored_object=incident_data,
-                entries=reformatted_entries
-            )
-
-        else:  # no need to update this incident
-            incident_data = {
-                'id': remote_args.remote_incident_id,
-                'in_mirror_error': ""
-            }
-
-            return GetRemoteDataResponse(
-                mirrored_object=incident_data,
-                entries=[]
-            )
+        return GetRemoteDataResponse(
+            mirrored_object=incident_data,
+            entries=reformatted_entries
+        )
 
     except Exception as e:
         demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
