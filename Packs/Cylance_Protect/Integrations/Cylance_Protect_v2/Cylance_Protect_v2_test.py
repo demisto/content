@@ -340,8 +340,10 @@ def test_get_device(mocker):
     get_device()
 
     contents = demisto_results.call_args[0][0]
-    assert sorted(EXPECTED_DEVICE.items()) == sorted(
-        contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === obj.ID)').items()
+    assert sorted(list(EXPECTED_DEVICE.items())) == sorted(
+        list(
+            contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === obj.ID)').items()
+        )
     )
 
 
@@ -361,8 +363,8 @@ def test_get_device_by_hostname(mocker):
     get_device_by_hostname()
 
     contents = demisto_results.call_args[0][0]
-    assert sorted(EXPECTED_HOSTNAME.items()) == sorted(
-        contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === ' 'obj.ID)').items())
+    assert sorted(list(EXPECTED_HOSTNAME.items())) == sorted(
+        list(contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === ' 'obj.ID)').items()))
 
 
 def test_update_device(mocker):
@@ -408,8 +410,8 @@ def test_get_device_threats(mocker):
     get_device_threats()
 
     contents = demisto_results.call_args[0][0]
-    assert contents.get('EntryContext').get('File')[0].get('SHA256') == \
-        '0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09'
+    assert '0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09' == \
+           contents.get('EntryContext').get('File')[0].get('SHA256')
 
 
 def test_get_policies(mocker):
@@ -429,8 +431,10 @@ def test_get_policies(mocker):
     get_policies()
 
     contents = demisto_results.call_args[0][0]
-    assert sorted(EXPECTED_POLICIES.items()) == sorted(
-        contents.get('EntryContext').get('CylanceProtect.Policies(val.id && val.id === obj.id)')[0].items()
+    assert sorted(list(EXPECTED_POLICIES.items())) == sorted(
+        list(
+            contents.get('EntryContext').get('CylanceProtect.Policies(val.id && val.id === obj.id)')[0].items()
+        )
     )
 
 
@@ -473,8 +477,8 @@ def test_get_zones(mocker):
     get_zones()
 
     contents = demisto_results.call_args[0][0]
-    assert sorted(EXPECTED_ZONES.items()) == \
-        sorted(contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items())
+    assert sorted(list(EXPECTED_ZONES.items())) == \
+        sorted(list(contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items()))
 
 
 def test_get_zone(mocker):
@@ -494,8 +498,10 @@ def test_get_zone(mocker):
     get_zone()
 
     contents = demisto_results.call_args[0][0]
-    assert sorted(EXPECTED_ZONES.items()) == sorted(
-        contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)').items()
+    assert sorted(list(EXPECTED_ZONES.items())) == sorted(
+        list(
+            contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)').items()
+        )
     )
 
 
@@ -540,8 +546,8 @@ def test_get_threat(mocker):
     get_threat()
 
     contents = demisto_results.call_args[0][0]
-    assert contents.get('EntryContext').get('File')[0].get('SHA256') == \
-        '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'
+    assert '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE' == \
+           contents.get('EntryContext').get('File')[0].get('SHA256')
 
 
 def test_get_threats(mocker):
@@ -561,8 +567,8 @@ def test_get_threats(mocker):
     get_threats()
 
     contents = demisto_results.call_args[0][0]
-    assert contents.get('EntryContext').get(
-        'File')[0].get('SHA256') == '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'
+    assert '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE' == contents.get('EntryContext').get(
+        'File')[0].get('SHA256')
 
 
 def test_get_threat_devices(mocker):
@@ -585,8 +591,9 @@ def test_get_threat_devices(mocker):
     get_threat_devices()
 
     contents = demisto_results.call_args[0][0]
-    assert sorted(EXPECTED_THREAT_DEVICES.items()) == sorted(
-        contents.get('EntryContext').get('File').items())
+    assert sorted(list(EXPECTED_THREAT_DEVICES.items())) == sorted(
+        list(contents.get('EntryContext').get('File').items())
+    )
 
 
 def test_get_list(mocker):
@@ -609,7 +616,7 @@ def test_get_list(mocker):
     get_list()
 
     contents = demisto_results.call_args[0][0]
-    assert contents.get('EntryContext').get('File')[0] == EXPECTED_LIST
+    assert EXPECTED_LIST == contents.get('EntryContext').get('File')[0]
 
 
 def test_get_list_entry_by_hash(mocker):
