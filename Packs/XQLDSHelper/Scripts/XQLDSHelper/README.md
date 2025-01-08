@@ -148,7 +148,7 @@ This node supports [Variable Substitution](#Variable-Substitution) for all param
 ---
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| .test | The markdown text to display. | String |
+| .text | The markdown text to display. | String |
 | .default | [Optional] The default entry applied when no record set is returned. If not specified, an empty string will be applied. | String or Dict |
 
 A sample structure of `markdown` in an entry node is shown below.
