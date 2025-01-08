@@ -437,8 +437,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
         if arg in fields_to_clear:
             if input_arg:
-                raise DemistoException(f'Could not set a value for the argument "{arg}" and add it to the clear_fields. \
-                You can either set or clear the field value.')
+                raise DemistoException(f"Could not set a value for the argument '{arg}' and add it to the clear_fields. \
+                You can either set or clear the field value.")
             ticket_fields[arg] = ""
         elif input_arg:
             if arg in ['impact', 'urgency', 'severity']:
@@ -501,12 +501,12 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
     dic_fields = {}
 
     if fields:
-        if "=" not in fields:
+        if '=' not in fields:
             raise Exception(
-                f'The argument: {fields}.\nmust contain a "=" to specify the keys and values. e.g: key=val.')
+                f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(delimiter)
         for f in arr_fields:
-            field = f.split("=", 1)  # a field might include a '=' sign in the value. thus, splitting only once.
+            field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
             if len(field) > 1:
                 dic_fields[field[0]] = field[1]
 
@@ -1651,8 +1651,8 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
             entries.append({
                 'Type': note.get('type', 1),
                 'Category': note.get('category'),
-                'Contents': f'Type: {note.get("element")}\nCreated By: {note.get("sys_created_by")}\n'
-                            f'Created On: {note.get("sys_created_on")}\n{note.get("value")}',
+                'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
+                            f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
                 'Tags': tags,
                 'Note': True,
@@ -1901,7 +1901,7 @@ def query_computers_command(client: Client, args: dict) -> tuple[Any, dict[Any, 
         'ID': computer.get('sys_id'),
         'AssetTag': computer.get('asset_tag'),
         'Name': computer.get('name'),
-        'DisplayName': f'{computer.get("asset_tag", "")} - {computer.get("name", "")}',
+        'DisplayName': f"{computer.get('asset_tag', '')} - {computer.get('name', '')}",
         'SupportGroup': computer.get('support_group'),
         'OperatingSystem': computer.get('os'),
         'Company': computer.get('company', {}).get('value')
@@ -1909,7 +1909,7 @@ def query_computers_command(client: Client, args: dict) -> tuple[Any, dict[Any, 
         'AssignedTo': computer.get('assigned_to', {}).get('value')
         if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
         'State': computer_statuses.get(computer.get('install_status', ''), computer.get('install_status')),
-        'Cost': f'{computer.get("cost", "").rstrip()} {computer.get("cost_cc", "").rstrip()}',
+        'Cost': f"{computer.get('cost', '').rstrip()} {computer.get('cost_cc', '').rstrip()}",
         'Comments': computer.get('comments')
     } for computer in computers]
 
@@ -2011,7 +2011,7 @@ def query_users_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any]
 
     mapped_users = [{
         'ID': user.get('sys_id'),
-        'Name': f'{user.get("first_name", "").rstrip()} {user.get("last_name", "").rstrip()}',
+        'Name': f"{user.get('first_name', '').rstrip()} {user.get('last_name', '').rstrip()}",
         'UserName': user.get('user_name'),
         'Email': user.get('email'),
         'Created': user.get('sys_created_on'),
@@ -2233,7 +2233,7 @@ def get_ticket_file_attachments(client: Client, ticket: dict) -> list:
         if isinstance(file_entries, list):
             for file_result in file_entries:
                 if file_result['Type'] == entryTypes['error']:
-                    raise Exception(f'Error getting attachment: {str(file_result.get("Contents", ""))}')
+                    raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
                 file_names.append({
                     'path': file_result.get('FileID', ''),
                     'name': file_result.get('File', '')
@@ -2336,8 +2336,8 @@ def fetch_incidents(client: Client) -> list:
     if client.use_display_value:
         query_params['sysparm_display_value'] = "all"
 
-    demisto.debug(f'ServiceNowV2 - Last run: {json.dumps(last_run)}')
-    demisto.debug(f'ServiceNowV2 - Query sent to the server: {str(query_params)}')
+    demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
+    demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
     count = 0
     skipped_incidents = 0
@@ -2357,7 +2357,7 @@ def fetch_incidents(client: Client) -> list:
         ticket.update(get_mirroring())
 
         if client.timestamp_field not in ticket:
-            raise ValueError(f'The timestamp field [{client.timestamp_field}] does not exist in the ticket')
+            raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket")
 
         if count > fetch_limit:
             break
@@ -2366,15 +2366,15 @@ def fetch_incidents(client: Client) -> list:
             if datetime.strptime(ticket[client.timestamp_field], DATE_FORMAT) < snow_time_as_date:
                 skipped_incidents += 1
                 demisto.debug(
-                    f'ServiceNowV2 - -Skipping incident with sys_id={ticket.get("sys_id")} and date='
-                    f'{ticket.get(client.timestamp_field)} because its creation time is smaller than the last fetch.')
+                    f"ServiceNowV2 - -Skipping incident with sys_id={ticket.get('sys_id')} and date="
+                    f"{ticket.get(client.timestamp_field)} because its creation time is smaller than the last fetch.")
                 continue
             parse_dict_ticket_fields(client, ticket)
         except Exception as e:
-            demisto.debug(f'Got the following error: {e}')
+            demisto.debug(f"Got the following error: {e}")
 
         incidents.append({
-            'name': f'ServiceNow Incident {ticket.get(client.incident_name)}',
+            'name': f"ServiceNow Incident {ticket.get(client.incident_name)}",
             'labels': [
                 {'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
                 for _type, value in ticket.items()
@@ -2400,15 +2400,15 @@ def fetch_incidents(client: Client) -> list:
         date_format=DATE_FORMAT
     )
 
-    demisto.debug(f'ServiceNowV2 - Last run after incidents fetching: {json.dumps(last_run)}')
-    demisto.debug(f'ServiceNowV2 - Number of incidents before filtering: {len(tickets_response)}')
-    demisto.debug(f'ServiceNowV2 - Number of incidents after filtering: {len(incidents)}')
-    demisto.debug(f'ServiceNowV2 - Number of incidents skipped: {skipped_incidents}')
+    demisto.debug(f"ServiceNowV2 - Last run after incidents fetching: {json.dumps(last_run)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents before filtering: {len(tickets_response)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents skipped: {skipped_incidents}")
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
         occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
-        ticket['occurred'] = f'{occurred}Z'
+        ticket['occurred'] = f"{occurred}Z"
 
     if demisto.params().get("mirror_notes_for_new_incidents", False):
         store_ids_for_first_mirroring(incidents)
@@ -2427,7 +2427,7 @@ def store_ids_for_first_mirroring(incidents: list):
     """
     int_context = get_integration_context()
     int_context.setdefault("last_fetched_incident_ids", []).extend([incident["sys_id"] for incident in incidents])
-    demisto.debug(f'ServiceNowV2 - Saving the following incident ids in the integration context: {int_context=}')
+    demisto.debug(f"ServiceNowV2 - Saving the following incident ids in the integration context: {int_context=}")
     set_integration_context(int_context)
 
 
@@ -2447,9 +2447,9 @@ def test_instance(client: Client):
         if isinstance(ticket, list):
             ticket = ticket[0]
         if client.timestamp_field not in ticket:
-            raise ValueError(f'The timestamp field [{client.timestamp_field}] does not exist in the ticket.')
+            raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
         if client.incident_name not in ticket:
-            raise ValueError(f'The field [{client.incident_name}] does not exist in the ticket.')
+            raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
 
 
 def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any], bool]:
@@ -2622,7 +2622,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         ticket = format_incidents_response_with_display_values(ticket)[0]
     else:
         timezone_offset = None
-        demisto.debug(f'not ({client.use_display_value=} and {client.display_date_format=}) setting {timezone_offset=}')
+        demisto.debug(f"not ({client.use_display_value=} and {client.display_date_format=}) setting {timezone_offset=}")
 
     ticket_last_update = arg_to_timestamp(
         arg=ticket.get('sys_updated_on'),
@@ -2722,7 +2722,7 @@ def is_new_incident(ticket_id: str) -> bool:
     """
     int_context = get_integration_context()
     last_fetched_ids = int_context.get("last_fetched_incident_ids") or []
-    demisto.debug(f'ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}')
+    demisto.debug(f"ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}")
     if ticket_id_in_last_fetch := ticket_id in last_fetched_ids:
         last_fetched_ids.remove(ticket_id)
         int_context["last_fetched_incident_ids"] = last_fetched_ids
@@ -2800,10 +2800,10 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
     closure_case = get_closure_case(params)
-    demisto.debug(f'closure case= {closure_case}')
+    demisto.debug(f"closure case= {closure_case}")
     is_custom_close = False
     close_custom_state = params.get('close_custom_state', None)
-    demisto.debug(f'state will change to= {parsed_args.data.get("state")}')
+    demisto.debug(f"state will change to= {parsed_args.data.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         if parsed_args.inc_status == IncidentStatus.DONE:
@@ -2821,7 +2821,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 parsed_args.data['state'] = close_custom_state
 
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
-        demisto.debug(f'all fields= {fields}')
+        demisto.debug(f"all fields= {fields}")
         if closure_case:
             # Convert the closing state to the right one if the ticket type is not incident in order to close the
             # ticket/incident via XSOAR
@@ -2860,9 +2860,9 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                         client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
                                            ticket_type)
                     except Exception as e:
-                        demisto.error(f'An attempt to mirror a file has failed. entry_id={entry.get("id")}, {file_name=}\n{e}')
+                        demisto.error(f"An attempt to mirror a file has failed. entry_id={entry.get('id')}, {file_name=}\n{e}")
                         text_for_snow_comment = "An attempt to mirror a file from Cortex XSOAR was failed." \
-                                                f'\nFile name: {file_name}\nError from integration: {e}'
+                                                f"\nFile name: {file_name}\nError from integration: {e}"
                         client.add_comment(ticket_id, ticket_type, 'comments', text_for_snow_comment)
             else:
                 # Mirroring comment and work notes as entries
@@ -2876,9 +2876,9 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 user = entry.get('user', 'dbot') or 'dbot'
                 if str(entry.get('format')) == 'html':
                     contents = str(entry.get('contents', ''))
-                    text = f'({user}): <br/><br/>[code]{contents} <br/><br/>[/code] Mirrored from Cortex XSOAR'
+                    text = f"({user}): <br/><br/>[code]{contents} <br/><br/>[/code] Mirrored from Cortex XSOAR"
                 else:
-                    text = f'({user}): {str(entry.get("contents", ""))}\n\n Mirrored from Cortex XSOAR'
+                    text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
@@ -3181,7 +3181,7 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
     cr_api: bool = argToBoolean(args.get("cr_api", False))
 
     if method.upper() not in methods:
-        return f'{method} method not supported.\nTry something from {", ".join(methods)}'
+        return f"{method} method not supported.\nTry something from {', '.join(methods)}"
 
     response = None
     response = client.generic_request(method=method, path=path, body=body, headers=headers,
@@ -3189,14 +3189,14 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
 
     if response is not None:
         resp = response
-        human_readable: str = f'Request for {method} method is successful'
+        human_readable: str = f"Request for {method} method is successful"
         return CommandResults(
             outputs_prefix="ServiceNow.Generic.Response",
             outputs=resp,
             readable_output=human_readable,
         )
 
-    return f'Request for {method} method is not successful'
+    return f"Request for {method} method is not successful"
 
 
 def main():

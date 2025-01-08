@@ -12649,7 +12649,7 @@ def content_profiler(func):
 
 
 def find_and_remove_sensitive_text(text, pattern):
-    """
+    r"""
     Finds all appearances of sensitive information in a string using regex and adds the sensitive
     information to the list of strings that should not appear in any logs.
     The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
