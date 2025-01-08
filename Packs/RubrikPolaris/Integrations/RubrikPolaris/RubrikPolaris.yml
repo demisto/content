@@ -3396,7 +3396,7 @@ script:
       description: The status of the domain.
       type: Datte
     - contextPath: Domain.NameServers
-      description: (List<String>) Name servers of the domain.  
+      description: (List<String>) Name servers of the domain.
       type: Unknown
     - contextPath: Domain.Organization
       description: The organization of the domain.
