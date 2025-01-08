@@ -1666,7 +1666,7 @@ def is_valid_xml(xml_document: str, blacklisted_tags: list[str] | None = None) -
     except ET.ParseError:
         return False
 
-    return all(not (root.tag == blacklisted_tag or root.find(blacklisted_tag)) for blacklisted_tag in blacklisted_tags)
+    return all(not (root.tag == blacklisted_tag or root.find(blacklisted_tag) is not None) for blacklisted_tag in blacklisted_tags)
 
 
 def search_records_command(client: Client, args: dict[str, str]):

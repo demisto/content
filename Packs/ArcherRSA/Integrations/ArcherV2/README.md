@@ -29,7 +29,7 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
 
 ### Limitations
 
-- The 'XML for fetch filtering' configuration parameter cannot be a "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter. Other types of filtering conditions, such as "TextFilterCondition", are allowed.
+- The XML for fetch filtering configuration parameter cannot be a "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter. Other types of filtering conditions, such as "TextFilterCondition", are allowed.
 
 - Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requires credential based authentication.
 
