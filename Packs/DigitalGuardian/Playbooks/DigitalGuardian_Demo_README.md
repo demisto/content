@@ -33,4 +33,5 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![Digital Guardian Logo](../doc_files/DigitalGuardian_Demo.png)
+<!-- Playbook PNG image comes here -->
+![Digital Guardian Logo](https://github.com/demisto/content/raw/master/Packs/DigitalGuardian/doc_files/DigitalGuardian_image.png)
