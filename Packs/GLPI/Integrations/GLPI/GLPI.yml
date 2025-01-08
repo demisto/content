@@ -699,7 +699,7 @@ script:
     - name: update_fields
       description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
     outputs: []
-  dockerimage: demisto/glpi:1.0.0.87385
+  dockerimage: demisto/glpi:1.0.0.117350
   isfetch: true
   longRunning: true
   subtype: python3
