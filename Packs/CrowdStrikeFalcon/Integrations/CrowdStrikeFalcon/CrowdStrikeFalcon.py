@@ -4650,7 +4650,7 @@ def run_script_command():
     except ValueError as e:
         demisto.error(str(e))
         raise ValueError('Timeout argument should be an integer, for example: 30')
-    full_command = ''
+
     if script_name and raw:
         raise ValueError('Only one of the arguments script_name or raw should be provided, not both.')
     elif not script_name and not raw:
