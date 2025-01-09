@@ -791,7 +791,6 @@ def main():
 
         command = demisto.command()
         args = demisto.args()
-        result = ""
 
         if command == 'test-module':
             result = test_module(sg)
