@@ -312,10 +312,12 @@ class SortableValue(object):
             obj1: Any,
             obj2: Any
         ) -> bool:
-            if (
-                all(isinstance(x, (int, float)) for x in [obj1, obj2])
-                or all(isinstance(x, bool) for x in [obj1, obj2])
-                or all(isinstance(x, str) for x in [obj1, obj2])
+            if any(
+                f(obj1) and f(obj2) for f in [
+                    lambda x:isinstance(x, (int, float)),
+                    lambda x:isinstance(x, bool),
+                    lambda x:isinstance(x, str),
+                ]
             ):
                 return obj1 < obj2  # type: ignore[operator]
             elif obj1 is None or obj2 is None:
@@ -839,7 +841,7 @@ class EntryBuilder:
             ) -> None:
                 self.__records: Records | None = None  # pylint: disable=undefined-variable
                 self.__fields: dict[Hashable, Field] | None = None  # pylint: disable=undefined-variable
-                
+
                 group = template.get('group')
                 if group == 'records':
                     records = template.get(group)
@@ -1907,7 +1909,7 @@ class Main:
             ),
             entry_params=self.__template.get('entry') or {},
         )
-  
+
         res = {
             'QueryParams': {
                 'query_name': self.__query_params.query_name,

@@ -388,7 +388,6 @@ class MainTester:
                 """
                 assert ok
 
-
             # Validate 'QueryParams' - only when results.QueryParams is provided
             returned_qparams = results.get('Contents').get('QueryParams')
             expected_qparams = self.__config.get('results').get('QueryParams')
