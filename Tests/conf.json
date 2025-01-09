@@ -6078,7 +6078,13 @@
         "Netskope_V2_Test": "No instance - developed by Qmasters",
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
-        "BoxV2_TestPlaybook": "CRTX-145174"
+        "BoxV2_TestPlaybook": "CRTX-145174",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "CRTX-147998",
+        "QRadar_v3-test": "CRTX-141972",
+        "QRadar - Get Offense Logs Test": "CRTX-141972",
+        "QRadar Indicator Hunting Test": "CRTX-141972",
+        "Send Investigation Summary Reports - Test ": "CIAC-12371",
+
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
