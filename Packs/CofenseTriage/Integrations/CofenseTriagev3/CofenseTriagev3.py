@@ -1,11 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 import time
-import requests
 import traceback
-from typing import Any, Callable, Dict, Tuple
+from collections.abc import Callable
+from typing import Any
+
+import demistomock as demisto
+import requests
 import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -237,7 +240,7 @@ def retrieve_fields(arg: str) -> str:
     return ",".join([x.strip() for x in arg.split(",") if x.strip()])
 
 
-def validate_filter_by_argument(args: Dict[str, Any], custom_args: List[str]) -> Dict[str, Any]:
+def validate_filter_by_argument(args: dict[str, Any], custom_args: List[str]) -> dict[str, Any]:
     """
     Validate filters in arguments for all list commands, raise ValueError on invalid arguments.
 
@@ -268,7 +271,7 @@ def validate_filter_by_argument(args: Dict[str, Any], custom_args: List[str]) ->
     return params
 
 
-def validate_list_command_args(args: Dict[str, str], field_type: str) -> tuple:
+def validate_list_command_args(args: dict[str, str], field_type: str) -> tuple:
     """
     Validate arguments for all list commands, raise ValueError on invalid arguments.
 
@@ -282,7 +285,7 @@ def validate_list_command_args(args: Dict[str, str], field_type: str) -> tuple:
     :rtype: ``Tuple[Any]``
     """
 
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
     custom_args = []
     page_size = arg_to_number(args.get("page_size"))
     if page_size is not None:
@@ -324,7 +327,7 @@ def validate_fetch_incidents_parameters(params: dict) -> dict:
     :rtype: ``dict``
     return: dictionary containing valid parameters
     """
-    fetch_params: Dict[str, Any] = {}
+    fetch_params: dict[str, Any] = {}
     custom_args = []
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
@@ -368,7 +371,7 @@ def validate_fetch_incidents_parameters(params: dict) -> dict:
     return fetch_params
 
 
-def validate_list_threat_indicator_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_threat_indicator_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-threat-indicator-list command, raise ValueError on invalid arguments.
 
@@ -407,7 +410,7 @@ def validate_list_threat_indicator_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def prepare_hr_for_threat_indicators(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_threat_indicators(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the threat indicators in response into human-readable markdown string.
 
@@ -436,7 +439,7 @@ def prepare_hr_for_threat_indicators(results: List[Dict[str, Any]]) -> str:
                                     "Threat Source", CREATED_AT, UPDATED_AT], removeNull=True)
 
 
-def prepare_hr_for_reports(reports: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_reports(reports: List[dict[str, Any]]) -> str:
     """
     Prepare human readable for list reports command.
     :param reports:The report data.
@@ -463,7 +466,7 @@ def prepare_hr_for_reports(reports: List[Dict[str, Any]]) -> str:
                                                   'MD5', 'SHA256', CREATED_AT], removeNull=True)
 
 
-def prepare_hr_for_categories(categories: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_categories(categories: List[dict[str, Any]]) -> str:
     """
     Prepare human readable for list Categories command.
     :param categories:The category data.
@@ -488,7 +491,7 @@ def prepare_hr_for_categories(categories: List[Dict[str, Any]]) -> str:
                                                    UPDATED_AT], removeNull=True)
 
 
-def prepare_hr_for_clusters(clusters: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_clusters(clusters: List[dict[str, Any]]) -> str:
     """
     Prepare human readable for list clusters command.
     :param clusters:The cluster data.
@@ -519,7 +522,7 @@ def prepare_hr_for_clusters(clusters: List[Dict[str, Any]]) -> str:
                                                    CREATED_AT, UPDATED_AT], removeNull=True)
 
 
-def prepare_hr_for_rules(rules: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_rules(rules: List[dict[str, Any]]) -> str:
     """
     Prepare human readable for list rules command.
     :param rules:The rule data.
@@ -549,7 +552,7 @@ def prepare_hr_for_rules(rules: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def validate_tags_argument(args: Dict[str, str]) -> Dict:
+def validate_tags_argument(args: dict[str, str]) -> dict:
     """
     Validate tags argument.
     :type args: ``Dict[str, str]``
@@ -566,7 +569,7 @@ def validate_tags_argument(args: Dict[str, str]) -> Dict:
     return params
 
 
-def validate_match_priority_argument(args: Dict[str, str]) -> Dict:
+def validate_match_priority_argument(args: dict[str, str]) -> dict:
     """
     Validate match_priority argument.
 
@@ -585,7 +588,7 @@ def validate_match_priority_argument(args: Dict[str, str]) -> Dict:
     return params
 
 
-def validate_list_report_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_report_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-report-list command, raise ValueError on invalid arguments.
 
@@ -625,7 +628,7 @@ def validate_list_report_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def validate_list_category_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_category_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-category-list command, raise ValueError on invalid arguments.
 
@@ -662,7 +665,7 @@ def validate_list_category_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def validate_list_cluster_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_cluster_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-cluster-list command, raise ValueError on invalid arguments.
 
@@ -698,7 +701,7 @@ def validate_list_cluster_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def validate_list_url_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_url_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-url-list command, raise ValueError on invalid arguments.
 
@@ -724,7 +727,7 @@ def validate_list_url_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def prepare_hr_for_urls(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_urls(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the urls in the response into human-readable markdown string.
 
@@ -750,7 +753,7 @@ def prepare_hr_for_urls(results: List[Dict[str, Any]]) -> str:
                            headers=["URL ID", "URL", "Risk Score", CREATED_AT, UPDATED_AT], removeNull=True)
 
 
-def validate_list_rule_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_rule_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-rule-list command, raise ValueError on invalid arguments.
 
@@ -807,7 +810,7 @@ def validate_list_rule_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def validate_create_threat_indicator_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_create_threat_indicator_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-threat-indicator-create command, raise ValueError on invalid arguments.
 
@@ -838,7 +841,7 @@ def validate_create_threat_indicator_args(args: Dict[str, str]) -> Dict[str, Any
     return params
 
 
-def validate_list_reporter_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_reporter_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-reporter-list command, raise ValueError on invalid arguments.
 
@@ -876,7 +879,7 @@ def validate_list_reporter_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def prepare_hr_for_reporters(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_reporters(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the reporters in the response into human-readable markdown string.
 
@@ -906,7 +909,7 @@ def prepare_hr_for_reporters(results: List[Dict[str, Any]]) -> str:
                                     "Last Reported At", CREATED_AT, UPDATED_AT], removeNull=True)
 
 
-def validate_categorize_report_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_categorize_report_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-report-categorize command, raise ValueError on invalid arguments.
 
@@ -924,7 +927,7 @@ def validate_categorize_report_args(args: Dict[str, str]) -> Dict[str, Any]:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("category_id"))
     arg_to_number(args.get("category_id"))
 
-    params: Dict[str, Any] = {"category_id": args["category_id"]}
+    params: dict[str, Any] = {"category_id": args["category_id"]}
 
     categorization_tags = retrieve_fields(args.get("categorization_tags", ""))
     if categorization_tags:
@@ -933,7 +936,7 @@ def validate_categorize_report_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def validate_list_attachment_payload_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_attachment_payload_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-attachment-payload-list command, raise ValueError on invalid arguments.
 
@@ -959,7 +962,7 @@ def validate_list_attachment_payload_args(args: Dict[str, str]) -> Dict[str, Any
     return params
 
 
-def prepare_hr_for_attachment_payloads(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_attachment_payloads(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the attachment payloads in the response into human-readable markdown string.
 
@@ -988,7 +991,7 @@ def prepare_hr_for_attachment_payloads(results: List[Dict[str, Any]]) -> str:
                                     UPDATED_AT], removeNull=True)
 
 
-def prepare_hr_for_report_attachments(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_report_attachments(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the report attachment in the response into human-readable markdown string.
 
@@ -1017,7 +1020,7 @@ def prepare_hr_for_report_attachments(results: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def validate_comment_list_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_comment_list_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-comment-list command, raise ValueError on invalid arguments.
 
@@ -1048,7 +1051,7 @@ def validate_comment_list_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def prepare_hr_for_comments(comments: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_comments(comments: List[dict[str, Any]]) -> str:
     """
     Parse and convert the comments in the response into human-readable markdown string.
 
@@ -1085,7 +1088,7 @@ def prepare_hr_for_comments(comments: List[Dict[str, Any]]) -> str:
                                               'Associated To', 'Associated To ID'], removeNull=True)
 
 
-def validate_get_integration_submission_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_get_integration_submission_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-integration-submission-get command, raise ValueError on invalid arguments.
 
@@ -1122,7 +1125,7 @@ def validate_get_integration_submission_args(args: Dict[str, str]) -> Dict[str, 
     return params
 
 
-def prepare_hr_for_integration_submission(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_integration_submission(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert integration submission in response into human-readable markdown string.
 
@@ -1168,7 +1171,7 @@ def check_fetch_incident_configuration(fetch_params, params):
         raise ValueError(MESSAGES["INVALID_LOCATION_FOR_CATEGORY_ID"])
 
 
-def validate_update_threat_indicator_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_update_threat_indicator_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Validate arguments for cofense-threat-indicator-update command, raise ValueError on invalid arguments.
 
@@ -1217,7 +1220,7 @@ def test_module(client: Client, params: dict) -> str:
     return 'ok'
 
 
-def cofense_threat_indicator_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_threat_indicator_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves the list of threat indicators based on the filter values provided in the command arguments.
 
@@ -1265,7 +1268,7 @@ def cofense_threat_indicator_list_command(client: Client, args: Dict[str, str]) 
                           )
 
 
-def cofense_report_list_command(client, args: Dict[str, str]) -> CommandResults:
+def cofense_report_list_command(client, args: dict[str, str]) -> CommandResults:
     """
     List reports from Cofense Triage.
 
@@ -1318,7 +1321,7 @@ def cofense_report_list_command(client, args: Dict[str, str]) -> CommandResults:
     )
 
 
-def cofense_report_download_command(client: Client, args: Dict[str, str]) -> dict:
+def cofense_report_download_command(client: Client, args: dict[str, str]) -> dict:
     """
     Downloads the raw email for a specific report.
 
@@ -1346,7 +1349,7 @@ def cofense_report_download_command(client: Client, args: Dict[str, str]) -> dic
     return fileResult(filename, data=str(raw_response))
 
 
-def cofense_report_image_download_command(client: Client, args: Dict[str, str]) -> dict:
+def cofense_report_image_download_command(client: Client, args: dict[str, str]) -> dict:
     """
     Downloads the image for a specific report.
 
@@ -1383,7 +1386,7 @@ def cofense_report_image_download_command(client: Client, args: Dict[str, str]) 
     return fileResult(filename, data=raw_response, file_type=entryTypes["image"])
 
 
-def cofense_report_attachment_payload_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_report_attachment_payload_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves report attachment payloads based on the filter values provided in the command arguments.
     Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email attachment.
@@ -1431,7 +1434,7 @@ def cofense_report_attachment_payload_list_command(client: Client, args: Dict[st
                           )
 
 
-def cofense_report_attachment_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_report_attachment_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves report attachment list based on the filter values provided in the command arguments.
     For reported emails that contain attachments, Cofense Triage captures the attachment's filename and size.
@@ -1479,7 +1482,7 @@ def cofense_report_attachment_list_command(client: Client, args: Dict[str, str])
                           )
 
 
-def cofense_report_attachment_download_command(client: Client, args: Dict[str, str]) -> dict:
+def cofense_report_attachment_download_command(client: Client, args: dict[str, str]) -> dict:
     """
     Downloads the attachment for a the specified attachment ID.
 
@@ -1512,7 +1515,7 @@ def cofense_report_attachment_download_command(client: Client, args: Dict[str, s
     return fileResult(file_name, data=response.content)
 
 
-def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict, list]:
+def fetch_incidents(client: Client, last_run: dict, params: dict) -> tuple[dict, list]:
     """Fetches incidents from Cofense API.
 
     :type client: ``Client``
@@ -1580,7 +1583,7 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict,
     return next_run, incidents
 
 
-def cofense_report_categorize_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_report_categorize_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Categorizes a report into a specific category provided by the user.
 
     :type client: ``Client``
@@ -1604,7 +1607,7 @@ def cofense_report_categorize_command(client: Client, args: Dict[str, str]) -> C
     return CommandResults(readable_output=f"Report with ID = {args['id']} is categorized successfully.")
 
 
-def cofense_category_list_command(client, args: Dict[str, str]) -> CommandResults:
+def cofense_category_list_command(client, args: dict[str, str]) -> CommandResults:
     """
     List categories from Cofense Triage.
 
@@ -1643,7 +1646,7 @@ def cofense_category_list_command(client, args: Dict[str, str]) -> CommandResult
     )
 
 
-def cofense_rule_list_command(client, args: Dict[str, str]) -> CommandResults:
+def cofense_rule_list_command(client, args: dict[str, str]) -> CommandResults:
     """
     List rules from Cofense Triage.
 
@@ -1682,7 +1685,7 @@ def cofense_rule_list_command(client, args: Dict[str, str]) -> CommandResults:
     )
 
 
-def cofense_url_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_url_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves URLs based on the filter values provided in the command arguments.
     URLs are the threats (or non-threat)  that are detected in the Reported emails.
@@ -1731,7 +1734,7 @@ def cofense_url_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                           )
 
 
-def cofense_threat_indicator_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_threat_indicator_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Creates a threat indicator based on the values provided in the command arguments.
 
@@ -1773,7 +1776,7 @@ def cofense_threat_indicator_create_command(client: Client, args: Dict[str, str]
                           )
 
 
-def cofense_integration_submission_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_integration_submission_get_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
         Retrieves integration submission based on the filter values provided in the command arguments.
 
@@ -1824,7 +1827,7 @@ def cofense_integration_submission_get_command(client: Client, args: Dict[str, s
                           )
 
 
-def cofense_reporter_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_reporter_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves the reporters that match the provided parameters.
     Reporters are employees of an organization who send, or report, suspicious emails to Cofense Triage.
@@ -1873,7 +1876,7 @@ def cofense_reporter_list_command(client: Client, args: Dict[str, str]) -> Comma
                           )
 
 
-def cofense_attachment_payload_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_attachment_payload_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves attachment payloads based on the filter values provided in the command arguments.
     Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email.
@@ -1922,7 +1925,7 @@ def cofense_attachment_payload_list_command(client: Client, args: Dict[str, str]
                           )
 
 
-def cofense_comment_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_comment_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves comments based on the filter values provided in the command arguments.
 
@@ -1974,7 +1977,7 @@ def cofense_comment_list_command(client: Client, args: Dict[str, str]) -> Comman
     )
 
 
-def cofense_cluster_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_cluster_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     List clusters from Cofense Triage.
 
@@ -2019,7 +2022,7 @@ def cofense_cluster_list_command(client: Client, args: Dict[str, str]) -> Comman
     )
 
 
-def get_remote_data_command(client: Client, args: Dict[str, str]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, str]) -> GetRemoteDataResponse:
     """
     Get the updated incident data
 
@@ -2050,7 +2053,7 @@ def get_remote_data_command(client: Client, args: Dict[str, str]) -> GetRemoteDa
     return GetRemoteDataResponse(result, [])
 
 
-def get_modified_remote_data_command(client: Client, args: Dict[str, str]) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: Client, args: dict[str, str]) -> GetModifiedRemoteDataResponse:
     """
     Queries for incidents that were modified since the last update.
 
@@ -2079,7 +2082,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, str]) -> Ge
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
-def cofense_threat_indicator_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cofense_threat_indicator_update_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Updates a threat indicator based on the values provided in the command arguments.
 
@@ -2130,7 +2133,7 @@ def main() -> None:
     """main function, parses params and runs command functions
     """
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'cofense-report-list': cofense_report_list_command,
         'cofense-threat-indicator-list': cofense_threat_indicator_list_command,
         'cofense-report-download': cofense_report_download_command,
@@ -2206,7 +2209,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{e!s}')
 
 
 ''' ENTRY POINT '''

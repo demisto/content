@@ -1,17 +1,16 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-from io import BytesIO
-from PIL import Image
-from datetime import datetime
-from datetime import timezone
 import functools
 import itertools
 import json
 import math
-import urllib3
+from datetime import datetime, timezone
+from io import BytesIO
 
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
+from PIL import Image
 from urllib3.exceptions import InsecureRequestWarning
+
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
 TERSE_FIELDS = [
@@ -259,7 +258,7 @@ class TriageInboxReports:
                     "page": page_num,
                 },
             )
-            for page_num in range(0, math.ceil(self.max_pages))
+            for page_num in range(math.ceil(self.max_pages))
         ]
 
 
@@ -307,7 +306,7 @@ class TriageReporters:
         return itertools.chain.from_iterable(self.fetch_reporter_pages())
 
     def fetch_reporter_pages(self):
-        for page_num in range(0, math.ceil(self.max_pages)):
+        for page_num in range(math.ceil(self.max_pages)):
             yield self.triage_instance.request(
                 "reporters", params={"email": self.email, "page": page_num}
             )
@@ -661,9 +660,9 @@ def get_report_by_id_command(triage_instance) -> None:
         demisto.results(
             {
                 **report.attachment,
-                **{
+                
                     "HumanReadable": "### Cofense HTML Report:\nHTML report download request has been completed"
-                },
+                ,
             }
         )
         del report_attrs["report_body"]

@@ -1,6 +1,5 @@
 from CommonServerPython import *
 
-
 ''' STANDALONE FUNCTION '''
 
 
@@ -33,7 +32,7 @@ def main():
         return_results(get_threat_indicator_list(demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute CofenseTriageThreatEnrichment. Error: {str(e)}')
+        return_error(f'Failed to execute CofenseTriageThreatEnrichment. Error: {e!s}')
 
 
 ''' ENTRY POINT '''
