@@ -111,71 +111,17 @@ def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: 
         ssl_context.check_hostname = False
         ssl_context.verify_mode = ssl.CERT_NONE
     
-    #proxies, _ = handle_proxy_for_long_running()
-    #proxy = proxies.get("https", "") if is_proxy else None
-    
     try:
-        with connect("wss://"+url+f"/email/siem/v1/websocket?channel={channel}",
-                    additional_headers=extra_headers,
-                    ssl=ssl_context) as ws:
+        with connect("wss://"+url+f"/email/siem/v1/websocket?channel={channel}", additional_headers=extra_headers, ssl=ssl_context) as ws:
             connection = EventConnection(
                 connection=ws,
                 fetch_interval=fetch_interval
-             )
-        # async with aiohttp.ClientSession() as session:
-        #     async with session.ws_connect("wss://"+url+f"/email/siem/v1/websocket?channel={channel}",
-        #                                   headers=extra_headers,
-        #                                   ssl=ssl_context) as ws:
-        #         connection = EventConnection(
-        #              connection=ws,
-        #              fetch_interval=fetch_interval
-        #          )
+            )
             yield connection
-            
+
     except Exception as e:
         raise DemistoException(f"{str(e)}\nAuthentication failed. Please check the URL, channel name and access token.")
 
-        
-# sync def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: str, verify_ssl: bool):
-    
-#     uri = ''
-    
-#     if not verify_ssl:
-#         ssl_context = ssl.create_default_context()
-#         ssl_context.check_hostname = False
-#         ssl_context.verify_mode = ssl.CERT_NONE
-#         if 'http://' in url:
-#             uri = url.replace("http://", "ws://", 1)
-#         elif "wss://" in url:
-#             uri = url.replace("wss://", "ws://", 1)
-
-#     else:
-#         # Use default SSL context
-#         ssl_context = None
-#         if 'https://' in url:
-#             uri = url.replace("https://", "wss://", 1)
-#         elif 'ws://' in url:
-#             uri = url.replace("ws://", "wss://", 1)
-    
-#     if "ws://" not in uri and "wss://" not in uri:
-#         uri = "ws://"+uri if not verify_ssl else "wss://"+uri
-    
-#     extra_headers = {"Authorization": f"Bearer {token_id}"}
-
-#     try:
-#         async with aiohttp.ClientSession() as session:
-#             with session.ws_connect(
-#                         uri= uri+f"/email/siem/v1/websocket?channel={channel}",
-#                         ssl=ssl_context,
-#                         headers = extra_headers
-#                     ) as ws:
-            
-#         # with connect(uri+f"/email/siem/v1/websocket?channel={channel}", additional_headers=extra_headers) as ws:
-#                 connection = EventConnection(
-#                         connection=ws,
-#                         fetch_interval=fetch_interval
-#                     )
-#             yield connection
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     """This function checks if the given interval has passed since the given start time
@@ -238,11 +184,8 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
             time.sleep(FETCH_SLEEP)
 
 def test_module(url, token_id):
-    if not url:
-        raise DemistoException("Missing url parameter.")
-    if not token_id:
-        raise DemistoException("Missing token id parameter.")
-    return 'ok'
+    raise DemistoException("No test option available. Save the configured instance to test the connection. If you encounter an 'Authentication failed' error, check your configuration.")
+
 
 
 def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:

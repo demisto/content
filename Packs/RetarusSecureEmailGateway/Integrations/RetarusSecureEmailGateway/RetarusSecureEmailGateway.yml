@@ -4,7 +4,7 @@ commonfields:
 name: Retarus Secure Email Gateway
 display: Retarus Secure Email Gateway
 category: Email
-description: Collects events for Retarus Secure Email Gateway using the streaming API.
+description: Integrate RetarusSecureEmailGateway to seamlessly fetch events and enhance email security.
 configuration:
 - defaultvalue: events.retarus.com
   display: Server URL
@@ -23,17 +23,19 @@ configuration:
   section: Collect
   name: channel
   type: 0
+- display: Fetch interval in seconds
+  name: fetch_interval
+  type: 0
+  defaultvalue: 60
+  required: true
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Long Running Instance
   hidden: true
   name: longRunning
   type: 8
   section: Connect
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
