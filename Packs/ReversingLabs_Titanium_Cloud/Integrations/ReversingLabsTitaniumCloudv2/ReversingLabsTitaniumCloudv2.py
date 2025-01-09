@@ -1,7 +1,4 @@
 from copy import deepcopy
-
-from requests import Response
-
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
@@ -31,8 +28,6 @@ HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("passwo
 
 
 def format_proxy(addr, username=None, password=None):
-    protocol = ''
-    proxy_name = ''
     if addr.startswith("http://"):
         protocol = addr[:7]
         proxy_name = addr[7:]
@@ -1219,8 +1214,6 @@ def certificate_analytics_output(response_json, thumbprint):
 
 
 def yara_ruleset_command():
-    response = Response()
-    output_key = ''
     yara = YARAHunting(
         host=TICLOUD_URL,
         username=USERNAME,
@@ -1355,8 +1348,6 @@ def yara_matches_feed_output(response_json, time_value):
 
 
 def yara_retro_actions_command():
-    response = Response()
-    output_key = ''
     retro = YARARetroHunting(
         host=TICLOUD_URL,
         username=USERNAME,
