@@ -227,8 +227,11 @@ class MainTester:
     def __get_query_response(
         self,
     ) -> Any:
-        if file_name := demisto.get(self.__config, 'xql.response'):
-            with open(file_name, 'r') as f:
+        response = demisto.get(self.__config, 'xql.response')
+        if isinstance(response, dict):
+            return response
+        elif isinstance(response, str):
+            with open(response, 'r') as f:
                 return json.loads(f.read())
 
         raise RuntimeError((

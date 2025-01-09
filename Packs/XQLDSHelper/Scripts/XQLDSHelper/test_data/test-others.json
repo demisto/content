@@ -1141,5 +1141,231 @@
         "latest_time": "2025-01-01T01:23:45.123+00:00"
       }
     }
+  },
+  "######### variable_substitution - default",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${text}"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "test message"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "test message",
+        "Contents": null
+      }
+    }
+  },
+  "######### variable_substitution - custom enclosure",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "@{text}"
+            }
+          }
+        }
+      },
+      "variable_substitution": "@{,}"
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "test message"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "test message",
+        "Contents": null
+      }
+    }
+  },
+  "######### variable_substitution - no closing marker",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "123 $text 456"
+            }
+          }
+        }
+      },
+      "variable_substitution": "$"
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "test message"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "123 test message 456",
+        "Contents": null
+      }
+    }
+  },
+  "######### variable_substitution - overwritten by settings",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "@{text}"
+            }
+          },
+          "config": {
+            "variable_substitution": {
+              "opening": "@{",
+              "closing": "}"
+            }
+          }
+        }
+      },
+      "variable_substitution": "${,}"
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "test message"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "test message",
+        "Contents": null
+      }
+    }
+  },
+  "######### variable_substitution - overwritten by settings (no config.variable_substitution.closing)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "@{text}"
+            }
+          },
+          "config": {
+            "variable_substitution": {
+              "opening": "@{"
+            }
+          }
+        }
+      },
+      "variable_substitution": "${,}"
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "test message"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "test message",
+        "Contents": null
+      }
+    }
+  },
+  "######### variable_substitution - overwritten by settings (config.variable_substitution.closing = empty)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "123 @text 456"
+            }
+          },
+          "config": {
+            "variable_substitution": {
+              "opening": "@",
+              "closing": ""
+            }
+          }
+        }
+      },
+      "variable_substitution": "${,}"
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "test message"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "123 test message 456",
+        "Contents": null
+      }
+    }
   }
 ]
