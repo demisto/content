@@ -281,13 +281,17 @@ def certificate_reputation_command(args: dict[str, Any]) -> dict[str, Any]:
             certificate_stdcontext = certificate_stdcontext[0] if certificate_stdcontext else {}
         demisto.debug(f"{certificate_stdcontext!r}")
         tags, check_comments, dbot_score = dbot_context(indicator_value, certificate_stdcontext)
+    else:
+        dbot_score = {}
+        check_comments = []
+        demisto.debug(f"Initializing {dbot_score=} {check_comments=}")
 
     standard_context.update(dbot_score)
 
     if update_indicator:
         # we use this because it seems that enrichIndicators is ignoring additional context
         # in the output
-        indicator_set_validation_checks(indicator_value, tags)
+        indicator_set_validation_checks(indicator_value, tags)  # pylint: disable=E0606
 
     readable_output = f"Score for {indicator_value} is {standard_context['DBotScore']['Score']}\n"
     readable_output += "## Notes\n"
