@@ -2,6 +2,11 @@ name: Contribution Form Filled label verification
 on:
   pull_request:
     types: [opened, synchronize, labeled, unlabeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR to perform checks on"
+        required: true
 
 permissions:
   pull-requests: read
@@ -10,7 +15,15 @@ jobs:
   contribution_form_filled_verification:
     runs-on: ubuntu-latest
     # This status check only runs for: forked PRS that don't contain the '[Marketplace Contribution]' in their title and the head branch is not a test branch.
-    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false && contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
+    if: |
+      (
+        github.event_name == 'pull_request' &&
+        github.repository == 'demisto/content' &&
+        github.event.pull_request.head.repo.fork == true &&
+        contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false &&
+        contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
+      ) ||
+      (github.event_name == 'workflow_dispatch')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,7 +36,7 @@ jobs:
           poetry install --with github-actions
       - name: Check if contribution form needs to be filled
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number != '' && github.event.inputs.pr_number || github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Checking if contribution form needs to be filled for PR: $PR_NUMBER"
