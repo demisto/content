@@ -626,7 +626,7 @@ def get_incident_extra_data_command(client, args):
         raise DemistoException(f'Incident {incident_id} is not found')
     if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
-    if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
+    if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS and demisto.command() != 'get-remote-data':
         demisto.debug(f'for incident:{incident_id} using the old call since "\
             "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
             "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
