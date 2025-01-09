@@ -1,11 +1,22 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import requests
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+"""Base Integration for Cortex XSOAR (aka Demisto)
+
+This is an integration to interact with the SilentPush API and provide functionality within XSOAR.
+
+Developer Documentation: https://xsoar.pan.dev/docs/welcome
+Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
+Linting: https://xsoar.pan.dev/docs/integrations/linting
+"""
+
+from CommonServerUserPython import *  # noqa
+
+import urllib3
 from typing import Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 def mock_debug(message):
     """Print debug messages to the XSOAR logs"""
@@ -14,19 +25,20 @@ def mock_debug(message):
 
 demisto.debug = mock_debug
 
-class Client:
-    """
-    Client class to interact with the SilentPush API.
+''' CONSTANTS '''
 
-    This Client handles all interactions with the SilentPush service. It performs API requests, 
-    processes the responses, and provides methods to query information about domains.
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-    Attributes:
-        base_url (str): The base URL for the SilentPush API.
-        api_key (str): API key used for authentication.
-        verify (bool): Flag to determine whether to verify SSL certificates.
-        proxy (bool): Flag to determine whether to use a proxy.
-        _headers (dict): HTTP headers for the requests.
+''' CLIENT CLASS '''
+
+
+class Client(BaseClient):
+    """Client class to interact with the SilentPush API
+
+    This Client implements API calls and does not contain any XSOAR logic.
+    It should only perform requests and return data.
+    It inherits from BaseClient defined in CommonServerPython.
+    Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
@@ -107,6 +119,10 @@ class Client:
         url_suffix = f'explore/domain/domaininfo/{domain}'
         return self._http_request('GET', url_suffix)
 
+
+''' COMMAND FUNCTIONS '''
+
+
 def test_module(client: Client) -> str:
     """
     Tests connectivity to the SilentPush API and checks the authentication status.
@@ -161,6 +177,10 @@ def list_domain_information_command(client: Client, args: dict) -> CommandResult
         raw_response=raw_response
     )
 
+
+''' MAIN FUNCTION '''
+
+
 def main():
     """
     Main function to initialize the client and process the commands.
@@ -205,6 +225,10 @@ def main():
     except Exception as e:
         demisto.error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+''' ENTRY POINT '''
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

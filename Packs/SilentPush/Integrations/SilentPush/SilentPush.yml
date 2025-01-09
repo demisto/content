@@ -4,86 +4,106 @@ commonfields:
   name: SilentPush
   type: python
   subType: python3
-  description: Integration with the SilentPush API to fetch domain information and other related data.
+  description: |
+    This integration allows fetching domain information from the SilentPush API. It includes commands to get domain-related information such as WHOIS data, domain age, and risk scores.
+  tags: []
   enabled: true
-  tags:
-    - "SilentPush"
-    - "Domain Info"
-    - "API"
-  comment: "Integration to fetch domain information from SilentPush API"
-  
-script: 
-  type: python
-  id: SilentPush
-  file: SilentPush.py
-  args: []
-  isArray: false
+  manufacturer: SilentPush
+  comment: ''
+  minVersion: -1
+  dependencies:
+    - CommonServerPython
+    - CommonServerUserPython
+
+scripts:
+  - path: SilentPush.py
+    comment: |
+      Integration for SilentPush that enables fetching domain information, including WHOIS data, domain age, and risk scores.
 
 commands:
-  - name: silentpush-list-domain-information
-    description: Fetches domain information including WHOIS data, domain age, and risk scores.
-    enabled: true
-    hidden: false
-    args:
-      - isArray: false
-        name: domain
-        description: The domain to fetch information for (default is silentpush.com).
-        isOptional: false
-        type: string
-    implements:
-      - get
-    comment: "Fetch domain info, including age, registrar, WHOIS data, and risk scores."
-    outputs:
-      - contextPath: SilentPush.Domain
-        description: "Domain information fetched from SilentPush API."
-        type: dict
-      - contextPath: SilentPush.Domain.domain
-        description: "The domain name."
-        type: string
-    tags:
-      - domain
-      - info
-      - silentpush
-    type: python3
-    command: list_domain_information_command
-    rawResponse: true
-
   - name: test-module
-    description: Test the connection to the SilentPush API and check API Key validity.
-    enabled: true
-    hidden: false
-    args: []
-    implements:
-      - test
-    outputs:
-      - contextPath: SilentPush.Test
-        description: "Returns 'ok' if the API connection is successful."
-        type: string
-    command: test_module
-    rawResponse: false
-
-arguments:
-  - id: domain
-    name: domain
-    description: The domain to fetch information for.
-    type: string
+    description: |
+      Tests the connectivity to the SilentPush API and checks the authentication status.
     isArray: false
-    isOptional: false
-    default: silentpush.com
+    argContext:
+      - id: base_url
+        type: string
+        description: The base URL for the SilentPush API.
+      - id: api_key
+        type: string
+        description: The API key used to authenticate requests.
+      - id: verify_ssl
+        type: boolean
+        description: Flag to determine whether SSL verification is enabled.
+    examples: |
+      !test-module
 
-integrationContext:
-  outputs:
-    SilentPush.Domain:
-      domain: string
-      age: number
-      age_score: number
-      first_seen: number
-      is_new: bool
-      is_new_score: number
-      last_seen: number
-      registrar: string
-      whois_age: number
-      whois_created_date: string
-      zone: string
-    SilentPush.Test:
-      status: string
+  - name: silentpush-list-domain-information
+    description: |
+      Fetches domain information, such as WHOIS data, domain age, and risk scores.
+    isArray: false
+    argContext:
+      - id: domain
+        type: string
+        description: The domain name to fetch information for.
+    examples: |
+      !silentpush-list-domain-information domain=example.com
+
+args:
+  - id: domain
+    isArray: false
+    description: |
+      The domain to fetch information for.
+    type: string
+
+outputs:
+  - id: SilentPush.Domain
+    type: complex
+    description: |
+      The domain information fetched from SilentPush API, including WHOIS data, domain age, and risk scores.
+    contents:
+      - name: domain
+        type: string
+      - name: whois_data
+        type: string
+      - name: domain_age
+        type: integer
+      - name: risk_score
+        type: float
+
+tests:
+  - name: Test SilentPush Integration
+    description: Test the integration with the SilentPush API.
+    steps:
+      - script: test-module
+        name: Test SilentPush API Connectivity
+        args:
+          base_url: https://api.silentpush.com
+          api_key: 'your_api_key'
+
+# Optional: Adding the configuration section for any configuration-related parameters
+configurations:
+  - default: true
+    isArray: false
+    description: The configuration parameters required for connecting to SilentPush API.
+    context:
+      - id: base_url
+        type: string
+        description: The base URL for the SilentPush API.
+      - id: api_key
+        type: string
+        description: The API key used to authenticate requests.
+      - id: verify_ssl
+        type: boolean
+        description: Flag to determine whether SSL verification is enabled.
+      - id: proxy
+        type: boolean
+        description: Flag to determine whether to use a proxy.
+
+errorHandling:
+  - errorCode: 403
+    description: |
+      If an authorization error is encountered, it could indicate an incorrect or expired API key.
+  - errorCode: 400
+    description: |
+      Bad Request error, likely due to incorrect input format or invalid parameters in the request.
