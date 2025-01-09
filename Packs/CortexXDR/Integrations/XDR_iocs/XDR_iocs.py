@@ -73,8 +73,8 @@ def batch_iocs(generator, batch_size=200):
 class Client:
     # All values here are the defaults, which may be changed via params, on main()
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
-    override_severity: bool = True
-    severity: str = ''  # used when override_severity is True
+    override_severity: bool = True  # For backwards compatibility
+    severity: str = ''  # until version 6.3.0 used when override_severity is True, since 6.3.0 used when is not empty
     xsoar_severity_field: str = 'sourceoriginalseverity'  # used when override_severity is False
     xsoar_comments_field: str = 'comments'
     add_link_as_a_comment: bool = False
@@ -661,7 +661,7 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
-    override_severity = Client.override_severity and Client.severity # Client.override_severity for Backwards compatibility
+    override_severity = Client.override_severity and Client.severity  # Client.override_severity for Backwards compatibility
     severity = Client.severity if override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
     comments = _parse_xdr_comments(raw_comment=ioc.get('RULE_COMMENT', ''),
                                    comments_as_tags=Client.comments_as_tags)
@@ -719,7 +719,6 @@ def get_changes(client: Client):
 
 def module_test(client: Client):
     params = demisto.params()
-    print(f"{params=}")
     feed_fetch_interval = arg_to_number(params.get('feedFetchInterval'))
     if (params.get('feed') and feed_fetch_interval and feed_fetch_interval < 15):
         raise DemistoException(f"`Feed Fetch Interval` is set to {feed_fetch_interval}. Setting `Feed Fetch Interval` to less "
