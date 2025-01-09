@@ -186,6 +186,38 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
                                          if direction == XSOAR_TO_XDR else xsoar_statuses))
 
 
+class XDRGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
+    """get-modified-remote-data response parser
+
+    :type modified_incidents_data: list
+    :param modified_incidents_data: The Notables that were modified since the last check.
+
+    :type entries: list 
+    :param entries: The entries you want to add to the war room.
+
+    :return: No data returned
+    :rtype: None
+    """
+
+    def __init__(self, modified_incidents_data):
+        self.modified_incidents_data = modified_incidents_data
+
+    def to_entry(self):
+        """Extracts the response
+
+        :return: List of incident data plus entries.
+        :rtype: list
+        """
+        return [
+            {
+                'EntryContext': {'mirrorRemoteId': data['incident_id']},
+                'Contents': data,
+                'Type': EntryType.NOTE,
+                'ContentsFormat': EntryFormat.JSON,
+            } for data in self.modified_incidents_data
+        ]
+
+
 class Client(CoreClient):
     def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
@@ -930,7 +962,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     id_to_modification_time = {raw.get('incident_id'): raw.get('modification_time') for raw in raw_incidents}
     demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
 
-    updated_incidents_by_id: dict = {}
+    updated_incidents: list = []
     if id_to_modification_time:
         response = client.get_multiple_incidents_extra_data(
             incident_id_list=list(id_to_modification_time.keys()), exclude_artifacts=False
@@ -948,9 +980,9 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
                 incident_data = client.get_incident_extra_data(incident_id, 1000)
                 demisto.debug(f'{incident_data=}')
 
-            updated_incidents_by_id[incident_id] = get_remote_data_command(incident_data, close_xsoar_incident)
+            updated_incidents.extend(get_remote_data_command(incident_data, close_xsoar_incident))
 
-    return updated_incidents_by_id, last_run_mirroring_str
+    return XDRGetModifiedRemoteDataResponse(updated_incidents), last_run_mirroring_str
 
 
 def get_remote_data_command(incident_data, close_xsoar_incident):
