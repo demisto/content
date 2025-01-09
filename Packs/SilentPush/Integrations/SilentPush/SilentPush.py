@@ -57,7 +57,7 @@ class Client:
 
     def list_domain_information(self, domain: str) -> dict:
         """Get domain information with risk score and whois data"""
-        # Updated to match the API structure from documentation
+       
         url_suffix = f'explore/domain/domaininfo/{domain}'
         return self._http_request('GET', url_suffix)
 
