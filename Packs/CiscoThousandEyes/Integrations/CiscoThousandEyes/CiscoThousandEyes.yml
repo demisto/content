@@ -1,0 +1,81 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: CiscoThousandEyes
+  version: -1
+configuration:
+- defaultvalue: https://api.thousandeyes.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: User API Token
+  name: api_token
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- defaultvalue: 5000
+  section: Collect
+  display: The maximum number of audit events per fetch.
+  name: max_events_per_fetch
+  required: false
+  type: 0
+  advanced: true
+- defaultvalue: 2500
+  section: Collect
+  display: The maximum number of alerts per fetch.
+  name: max_alerts_per_fetch
+  required: false
+  type: 0
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: This is the Cisco ThousandEyes event collector integration for Cortex XSIAM.
+display: Cisco ThousandEyes
+name: CiscoThousandEyes
+script:
+  commands:
+  - arguments:
+    - description: The number of events (per event type) to return.
+      name: limit
+      defaultValue: 10
+    - description: The start date from which to filter events.
+      name: start_date
+    - description: The end date to which to filter events.
+      name: end_date
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    description: Gets events from Cisco ThousandEyes.
+    execution: false
+    name: cisco-thousandeyes-get-events
+  dockerimage: demisto/python3:3.11.10.116949
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

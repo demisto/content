@@ -1,0 +1,4 @@
+[INGEST:vendor = "msft", product = "azure", target_dataset = "msft_azure_waf_raw", no_hit = drop]
+filter to_string(timeStamp) ~= "\d{2}:\d{2}:\d{2}" and category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog")
+| alter 
+    _time = timeStamp;

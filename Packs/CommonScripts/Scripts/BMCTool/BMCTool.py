@@ -366,6 +366,9 @@ class BMCContainer(Generic[AnyStr]):
                 while rl > 0:
                     if (k % 8) == 0:
                         m = ord(msk[k // 8:][:1])
+                    else:
+                        m = 0
+                        demisto.debug(f"{k % 8} != 0 -> {m=}")
                     b = m & (0x1 << (k % 8))
                     if len(d_out) < 64 * bbp:
                         if b == 0:
