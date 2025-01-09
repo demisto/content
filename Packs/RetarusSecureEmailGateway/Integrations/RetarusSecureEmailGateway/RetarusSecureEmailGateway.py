@@ -1,45 +1,20 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from CommonServerUserPython import *  # noqa
-import aiohttp
-from aiohttp import ClientWebSocketResponse
 import urllib3
-from typing import Dict, Any
 from websockets import Data
-import websockets
-from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
-from websockets.exceptions import InvalidStatus
 from dateutil import tz
 import traceback
 import threading
 from contextlib import contextmanager
-
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
-
 VENDOR = "Retarus"
 PRODUCT = "Secure Email Gateway"
 FETCH_INTERVAL_IN_SECONDS = 60
@@ -47,12 +22,10 @@ FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 60
 DEFAULT_CHANNEL = "default"
 LOG_PREFIX = "Retarus- My logs"
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
+
 ''' CLIENT CLASS '''
-
-
 class EventConnection:
     def __init__(self, connection:Connection, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
                  idle_timeout: int = SERVER_IDLE_TIMEOUT):
@@ -88,22 +61,30 @@ class EventConnection:
             time.sleep(self.idle_timeout)
 
 
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
 ''' HELPER FUNCTIONS '''
 def push_events(events: list[dict]):
     """
     Push events to XSIAM.
     """
-    demisto.debug(f"{LOG_PREFIX} Pushing {len(events)} to XSIAM")
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
     demisto.debug(f"{LOG_PREFIX} Pushed {len(events)} to XSIAM successfully")
     
 
 @contextmanager
 def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: str, verify_ssl: bool):
-    
+    """
+    Create a connection to the api.
+
+    Args:
+        url (str): host URL for the websocket connection.
+        channel (str): Retarus channel to connect through.
+        token_id (str): Retarus token id.
+        fetch_interval (int): Time between fetch iterations.
+        verify_ssl (bool): Whether to verify ssl when connecting.
+
+    Yields:
+        EventConnection: eventConnection to receive events from.
+    """
     extra_headers = {"Authorization": f"Bearer {token_id}"}
     
     ssl_context = ssl.create_default_context()
@@ -112,7 +93,9 @@ def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: 
         ssl_context.verify_mode = ssl.CERT_NONE
     
     try:
-        with connect("wss://"+url+f"/email/siem/v1/websocket?channel={channel}", additional_headers=extra_headers, ssl=ssl_context) as ws:
+        with connect("wss://"+url+f"/email/siem/v1/websocket?channel={channel}",
+                     additional_headers=extra_headers,
+                     ssl=ssl_context) as ws:
             connection = EventConnection(
                 connection=ws,
                 fetch_interval=fetch_interval
@@ -137,6 +120,13 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
 
 
 def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
+    """
+    Long running loop iteration function. Fetches events from the connection and sends them to XSIAM.
+
+    Args:
+        connection (EventConnection): A connection object to fetch events from.
+        fetch_interval (int): Fetch time for this fetching events cycle.
+    """
     integration_context = demisto.getIntegrationContext()
     events = fetch_events(connection, fetch_interval)
     events.extend(integration_context.get("events", []))
@@ -156,7 +146,7 @@ def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
 
 
 ''' COMMAND FUNCTIONS '''
-def long_running_execution_command(url, token_id, fetch_interval, channel, verify_ssl, is_proxy):
+def long_running_execution_command(url, token_id, fetch_interval, channel, verify_ssl):
     """
     Performs the long running execution loop.
     Opens a connection to Retarus.
@@ -167,6 +157,7 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
         token_id (str): Retarus token_id to connect to.
         channel (str): channel to connect with.
         fetch_interval (int): Total time allocated per fetch cycle.
+        verify_ssl (bool): Whether to verify ssl when opening the connection.
     """
     with websocket_connection(url, token_id, fetch_interval, channel, verify_ssl) as connection:
         demisto.info(f"{LOG_PREFIX} Connected to websocket")
@@ -183,9 +174,9 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
             # sleep for a bit to not throttle the CPU
             time.sleep(FETCH_SLEEP)
 
-def test_module(url, token_id):
-    raise DemistoException("No test option available. Save the configured instance to test the connection. If you encounter an 'Authentication failed' error, check your configuration.")
 
+def test_module():
+    raise DemistoException("No test option available. Save the configured instance to test the connection. If you encounter an 'Authentication failed' error, check your configuration.")
 
 
 def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
@@ -230,9 +221,8 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     demisto.debug(f"{LOG_PREFIX} The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     return events
 
+
 ''' MAIN FUNCTION '''
-
-
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
@@ -240,20 +230,17 @@ def main():  # pragma: no cover
     token_id = params.get("credentials", {}).get("password", "")
     fetch_interval = arg_to_number(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
     verify_ssl = argToBoolean(not params.get("insecure", False))
-    is_proxy = argToBoolean(params.get("proxy", False))
     channel = params.get("channel", DEFAULT_CHANNEL)
 
     try:
         if command == "long-running-execution":
-            return_results(long_running_execution_command(url, token_id, fetch_interval, channel, verify_ssl, is_proxy))
+            return_results(long_running_execution_command(url, token_id, fetch_interval, channel, verify_ssl))
         elif command == "test-module":
-            return_results(test_module(url, token_id))
+            return_results(test_module())
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
         return_error(f'Failed to execute {command} command.\nError:\n{traceback.format_exc()}')
-
-
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
