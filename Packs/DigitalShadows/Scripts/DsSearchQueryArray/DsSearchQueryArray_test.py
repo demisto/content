@@ -136,7 +136,6 @@ TEST_DATA_CVE_SINGLE = {"cve": "CVE-2012-2311"}
 TEST_DATA_CVE_SINGLE_EXPECTED = ["CVE-2012-2311"]
 
 
-
 @pytest.mark.parametrize(
     "query, output",
     [
