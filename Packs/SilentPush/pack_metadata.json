@@ -1,0 +1,23 @@
+{
+    "name": "Silent Push",
+    "description": "The Silent Push platform exposes Indicators of Future Attack (IOFA) by applying unique behavioral fingerprints to attacker activity. By searching our dataset, security teams can identify new impending attacks, rather than relying on known IOCs.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Silent Push",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "IoC",
+        "IoFA"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

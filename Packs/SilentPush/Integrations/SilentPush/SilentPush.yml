@@ -1,0 +1,56 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SilentPush
+  version: -1
+configuration:
+- defaultvalue: https://api.silentpush.com/
+  display: SilentPush API Base URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: SilentPush API Key
+  additionalinfo: The API Key used to authenticate with SilentPush
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: >
+  The SilentPush integration provides domain intelligence, risk scores, and WHOIS
+  information for multiple domains. It supports use cases like domain reputation
+  analysis, threat detection, and enrichment for SOCs.
+display: SilentPush
+name: SilentPush
+script:
+  commands:
+  - arguments:
+    - description: The domain to retrieve information about. For example, "silentpush.com".
+      name: domain
+      required: true
+    description: Retrieves domain information, including risk scores and WHOIS data, for a given domain.
+    name: silentpush-list-domain-information
+    outputs:
+    - contextPath: SilentPush.Domain.Name
+      description: The name of the domain queried.
+      type: String
+    - contextPath: SilentPush.Domain.RiskScore
+      description: The risk score for the queried domain.
+      type: Number
+    - contextPath: SilentPush.Domain.Whois
+      description: WHOIS data for the queried domain.
+      type: String
+  runonce: false
+  script: SilentPush.py
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
