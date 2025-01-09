@@ -386,6 +386,7 @@ company_historical_scores_test_inputs = [
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"})
 ]
 
+
 @pytest.mark.parametrize("args", company_historical_scores_test_inputs)
 def test_get_company_historical_scores(mocker, args):
     """
@@ -431,6 +432,7 @@ company_historical_factor_scores_test_inputs = [
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"})
 ]
 
+
 @pytest.mark.parametrize("args", company_historical_factor_scores_test_inputs)
 def test_get_company_historical_factor_scores(mocker, args):
     """
@@ -465,6 +467,7 @@ def test_get_company_historical_factor_scores(mocker, args):
     factor_scores = cmd_res.outputs
     assert factor_scores == historical_factor_score_mock.get("entries")
 
+
 alert_creation_inputs = [
     ({
         "change_direction": "drops",
@@ -492,6 +495,7 @@ alert_creation_inputs = [
     }),
 ]
 
+
 @pytest.mark.parametrize("args, expected_delivery", zip(alert_creation_inputs, test_data.get("delivery_objects").get("entries")))
 def test_create_grade_alert_subscription_delivery_object(mocker, args, expected_delivery):
     """
@@ -518,6 +522,7 @@ def test_create_grade_alert_subscription_delivery_object(mocker, args, expected_
     assert actual_delivery == expected_delivery
     assert result.outputs == "test_alert_id"
 
+
 # Define the test data for score threshold alert creation tests
 threshold_alert_creation_inputs = [
     {
@@ -535,6 +540,7 @@ threshold_alert_creation_inputs = [
         "portfolio": "1"
     },
 ]
+
 
 @pytest.mark.parametrize(
     "args, expected_delivery",
@@ -560,15 +566,17 @@ def test_create_score_threshold_alert_subscription_delivery_object(mocker, args,
 
     result = alert_score_threshold_create_command(client, args)
     actual_delivery = client.create_alert_subscription.call_args[1]['delivery']
-    
+
     assert actual_delivery == expected_delivery
     assert result.outputs == "test_alert_id"
+
 
 grade_alert_test_input = [
     ({"change_direction": "rises", "score_types": "overall", "target": None, "portfolio": PORTFOLIO_ID}),
     ({"change_direction": "rises", "score_types": "application_security", "target": "my_scorecard", "portfolio": "1"}),
     ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolio": None})
 ]
+
 
 @pytest.mark.parametrize("args", grade_alert_test_input)
 def test_create_grade_change_alert(mocker, args):
@@ -623,6 +631,7 @@ score_alert_test_input = [
         "portfolio": None}),
     ({"change_direction": "rises", "threshold": "A", "score_types": "application_security", "target": None, "portfolio": None}),
 ]
+
 
 @pytest.mark.parametrize("args", score_alert_test_input)
 def test_create_score_change_alert(mocker, args):

@@ -915,7 +915,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
     """Create an alert based on grade change.
     This function creates an alert subscription for grade changes in SecurityScorecard.
     It supports alerts for both overall and factor-specific grade changes.
-    
+
     See POST /subscriptions
 
     Args:
@@ -925,10 +925,10 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
             - score_types (str): The types of scores to monitor (e.g., 'overall', 'network_security').
             - target (str): The target entity for the alert (e.g., 'any_followed_company', 'my_scorecard').
             - portfolio (str): The portfolio ID to monitor.
-    
+
     Returns:
         CommandResults: The results of the command, including the created alert ID.
-    
+
     Raises:
         DemistoException: If both 'portfolio' and 'target' are set, or if neither is set.
     """
@@ -985,12 +985,11 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
         },
     }
 
-
     if portfolio:
         delivery["workflow"]["filters"]["scorecards"]["portfolio_id"] = {
             "value": portfolio
         }
-    
+
     if "overall" not in score_types:
         if "any_factor_score" in score_types:
             delivery["workflow"]["filters"]["changes"]["factor"] = {
@@ -1004,7 +1003,6 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
             delivery["workflow"]["filters"]["changes"]["factor"] = {
                 "value": score_types,
             }
-
 
     response = client.create_alert_subscription(
         event_type="scorecard.changed",
@@ -1043,10 +1041,10 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
             - score_types (List[str]): The types of scores to monitor (e.g., 'overall', 'network_security').
             - target (str): The target for the alert (e.g., 'any_followed_company', 'my_scorecard').
             - portfolio (str): The portfolio ID to monitor.
-    
+
     Returns:
         CommandResults: The results of the command, including the alert ID and raw response from the API.
-    
+
     Raises:
         DemistoException: If both 'portfolio' and 'target' are provided, or if neither is provided.
     """
@@ -1108,12 +1106,11 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
         },
     }
 
-
     if portfolio:
         delivery["workflow"]["filters"]["scorecards"]["portfolio_id"] = {
             "value": portfolio
         }
-    
+
     if "overall" not in score_types:
         if "any_factor_score" in score_types:
             delivery["workflow"]["filters"]["changes"]["factor"] = {
@@ -1199,12 +1196,12 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     for entry in entries:  # type: ignore
         content: Dict[str, str] = {
-            #"Alert ID": entry.get("id"), this is execution id, not useful
+            # "Alert ID": entry.get("id"), this is execution id, not useful
             "company": entry.get("company_name"),
             "domain": entry.get("domain"),
             "datetime": entry.get("created_at"),
-            #"Score date": entry.get("platform_score_date"), #no need for this
-            #"portfolios": entry.get("portfolios"),
+            # "Score date": entry.get("platform_score_date"), #no need for this
+            # "portfolios": entry.get("portfolios"),
         }
 
         change_data = entry.get("change_data")
@@ -1216,7 +1213,7 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
                     content["workflow id"] = change.get("workflow", {}).get("id", "N/A")
                     content["grade"] = change.get("score_change", {}).get("grade", "N/A")
                     content["score"] = change.get("score_change", {}).get("score", "N/A")
-                    
+
                     # Handle additional optional fields
                     content["factors"] = change.get("score_change", {}).get("factors", "N/A")
                     content["issues"] = change.get("score_change", {}).get("issues", "N/A")
