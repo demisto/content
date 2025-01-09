@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: packwise
+  CURRENT_BRANCH_NAME: PackwiseNew
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: packwise
+    ref: PackwiseNew
     project: "${CI_PROJECT_NAMESPACE}/infra"
