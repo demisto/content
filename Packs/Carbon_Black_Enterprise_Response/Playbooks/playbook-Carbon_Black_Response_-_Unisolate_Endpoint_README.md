@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Carbon Black Response - Unisolate Endpoint](https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/Carbon_Black_Enterprise_Response/doc_files/Carbon_Black_Response_-_Unisolate_Endpoint.png)
+![Carbon Black Response - Unisolate Endpoint](../doc_files/Carbon_Black_Response_-_Unisolate_Endpoint.png)

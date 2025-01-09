@@ -3571,7 +3571,7 @@ script:
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.only_protocol
       description: Protocols that were checked. Supports API version 2 only.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.11.1940698
   runonce: false
   script: '-'
   subtype: python3
