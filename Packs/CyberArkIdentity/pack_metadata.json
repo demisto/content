@@ -13,11 +13,11 @@
         "Security",
         "IAM"
     ],
-    "useCases": [
+    "useCases": [],
+    "keywords": [
         "cyberark",
         "identity"
     ],
-    "keywords": [],
     "marketplaces": [
         "marketplacev2"
     ]
