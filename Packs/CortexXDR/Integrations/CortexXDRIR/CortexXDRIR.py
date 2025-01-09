@@ -189,18 +189,16 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
 class XDRGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
     """get-modified-remote-data response parser
 
-    :type modified_incidents_data: list
-    :param modified_incidents_data: The Notables that were modified since the last check.
-
-    :type entries: list 
-    :param entries: The entries you want to add to the war room.
+    :type get_remote_data_response: GetRemoteDataResponse
+    :param get_remote_data_response: The incident data that were modified since the last check.
 
     :return: No data returned
     :rtype: None
     """
 
-    def __init__(self, modified_incidents_data):
-        self.modified_incidents_data = modified_incidents_data
+    def __init__(self, get_remote_data_response: GetRemoteDataResponse):
+        self.modified_incident_data = get_remote_data_response.mirrored_object
+        self.entries = get_remote_data_response.entries
 
     def to_entry(self):
         """Extracts the response
@@ -210,12 +208,12 @@ class XDRGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
         """
         return [
             {
-                'EntryContext': {'mirrorRemoteId': data['incident_id']},
-                'Contents': data,
+                'EntryContext': {'mirrorRemoteId': self.modified_incident_data['incident_id']},
+                'Contents': self.modified_incident_data,
                 'Type': EntryType.NOTE,
                 'ContentsFormat': EntryFormat.JSON,
-            } for data in self.modified_incidents_data
-        ]
+            }
+        ] + self.entries
 
 
 class Client(CoreClient):
@@ -980,9 +978,11 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
                 incident_data = client.get_incident_extra_data(incident_id, 1000)
                 demisto.debug(f'{incident_data=}')
 
-            updated_incidents.extend(get_remote_data_command(incident_data, close_xsoar_incident))
+            updated_incidents.append(
+                XDRGetModifiedRemoteDataResponse(get_remote_data_command(incident_data, close_xsoar_incident))
+            )
 
-    return XDRGetModifiedRemoteDataResponse(updated_incidents), last_run_mirroring_str
+    return updated_incidents, last_run_mirroring_str
 
 
 def get_remote_data_command(incident_data, close_xsoar_incident):
@@ -1019,7 +1019,7 @@ def get_remote_data_command(incident_data, close_xsoar_incident):
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=reformatted_entries
-        ).extract_for_local()
+        )
 
     except Exception as e:
         demisto.debug(f"Error in XDR incoming mirror for incident {incident_data.get('incident_id')} \n"
@@ -1044,7 +1044,7 @@ def get_remote_data_command(incident_data, close_xsoar_incident):
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=[]
-        ).extract_for_local()
+        )
 
 
 def update_remote_system_command(client, args):
