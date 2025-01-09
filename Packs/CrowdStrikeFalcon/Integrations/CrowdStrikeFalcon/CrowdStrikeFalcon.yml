@@ -5116,7 +5116,7 @@ script:
       hidden:marketplacev2: false
     description: Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events. Note that pushing events is supported on Cortex XSIAM only.
     name: cs-falcon-get-events
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.117220
   # Fetch incidents on XSOAR only
   isfetch: true
   isfetch:marketplacev2: false
