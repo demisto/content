@@ -13,7 +13,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
-from typing import Tuple
 import tldextract
 import pytz
 
@@ -361,13 +360,13 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
         sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))  # type: ignore
     top_sentences_indices = np.argsort(sentence_rank)[::-1][:nb_sentences].tolist()
     summary = []
-    for sent_i in sorted(top_sentences_indices):
+    for sent_i in sorted(top_sentences_indices):  # type: ignore[var-annotated]
         sent = corpus[sent_i].strip().replace('\n', ' ')
-        if sent_i == 0 and sent_i + 1 not in top_sentences_indices:
+        if sent_i == 0 and sent_i + 1 not in top_sentences_indices:  # type: ignore[attr-defined]
             sent = sent + ' ...'
-        elif sent_i + 1 == len(corpus) and sent_i - 1 not in top_sentences_indices:
+        elif sent_i + 1 == len(corpus) and sent_i - 1 not in top_sentences_indices:  # type: ignore[attr-defined]
             sent = '... ' + sent
-        elif sent_i - 1 not in top_sentences_indices and sent_i + 1 not in top_sentences_indices:
+        elif sent_i - 1 not in top_sentences_indices and sent_i + 1 not in top_sentences_indices:  # type: ignore[attr-defined]
             sent = '... ' + sent + ' ...'
         summary.append(sent)
     return '\n'.join(summary)
@@ -552,7 +551,7 @@ def analyze_incidents_campaign(incidents, fields_to_display):
         draw_canvas(incidents, indicators_df.head(MAX_INDICATORS_FOR_CANVAS_PLOTTING).to_dict(orient='records'))
 
 
-def split_non_content_entries(response: list) -> Tuple[dict, list]:
+def split_non_content_entries(response: list) -> tuple[dict, list]:
     """
     Args:
         response: A response list from executeCommand.
