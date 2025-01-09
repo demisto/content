@@ -229,7 +229,6 @@ class Client(BaseClient):
                                           params=params,
                                           resp_type='text',
                                           timeout=self.timeout)
-
         return self._parse_response(raw_response)
 
     def get_system_group_path(self, group_id: int) -> str:
