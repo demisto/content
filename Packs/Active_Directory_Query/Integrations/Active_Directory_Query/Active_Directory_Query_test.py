@@ -131,7 +131,7 @@ def test_faulty_server(mocker):
 
 def test_ssl_custom_cert(mocker, request):
     ENV_KEY = 'SSL_CERT_FILE'
-    os.environ[ENV_KEY] = 'cert.pem'
+    os.environ[ENV_KEY] = 'test_data/cert.pem'
 
     def cleanup():
         os.environ.pop(ENV_KEY)
