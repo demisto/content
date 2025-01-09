@@ -120,9 +120,6 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix)
 
 
-''' COMMAND FUNCTIONS '''
-
-
 def test_module(client: Client) -> str:
     """
     Tests connectivity to the SilentPush API and checks the authentication status.
@@ -146,6 +143,10 @@ def test_module(client: Client) -> str:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         raise e
+    
+    
+''' COMMAND FUNCTIONS '''
+
 
 def list_domain_information_command(client: Client, args: dict) -> CommandResults:
     """
