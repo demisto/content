@@ -497,7 +497,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2010
+          "y": 2170
         }
       }
     note: false
@@ -533,8 +533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 1830
+          "x": 900,
+          "y": 2000
         }
       }
     note: false
@@ -562,7 +562,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2170
+          "y": 2330
         }
       }
     note: false
@@ -608,7 +608,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 1480
+          "y": 1490
         }
       }
     note: false
@@ -1213,7 +1213,7 @@ tasks:
       {
         "position": {
           "x": -450,
-          "y": 1860
+          "y": 2000
         }
       }
     note: false
@@ -1514,9 +1514,9 @@ tasks:
       description: ""
     nexttasks:
       Inbox Rule:
-      - "17"
+      - "46"
       Transport Rule:
-      - "45"
+      - "47"
     separatecontext: false
     conditions:
     - label: Inbox Rule
@@ -1634,7 +1634,87 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
+          "x": 1320,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 040c3bcd-4166-4768-847f-e4d09303d1f5
+    type: condition
+    task:
+      id: 040c3bcd-4166-4768-847f-e4d09303d1f5
+      version: -1
+      name: Check if inbox rule name is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a5bf70e3-c221-4511-8166-f205c7ee13b6
+    type: condition
+    task:
+      id: a5bf70e3-c221-4511-8166-f205c7ee13b6
+      version: -1
+      name: Check if transport rule name is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.exchange_transport_rule_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
           "y": 1830
         }
       }
@@ -1649,7 +1729,7 @@ view: |-
   {
     "linkLabelsPosition": {
       "25_14_#default#": 0.17,
-      "25_20_Yes": 0.7,
+      "25_20_Yes": 0.52,
       "25_43_Yes": 0.51,
       "28_3_yes": 0.43,
       "28_6_#default#": 0.25,
@@ -1661,15 +1741,16 @@ view: |-
       "41_32_yes": 0.4,
       "43_14_#default#": 0.24,
       "43_44_yes": 0.47,
-      "44_17_Inbox Rule": 0.51,
-      "44_45_Transport Rule": 0.49,
+      "44_46_Inbox Rule": 0.66,
+      "46_14_#default#": 0.45,
+      "47_14_#default#": 0.22,
       "4_5_yes": 0.38,
       "4_6_#default#": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 2545,
-        "width": 2370,
+        "height": 2705,
+        "width": 2150,
         "x": -450,
         "y": -310
       }

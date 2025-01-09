@@ -3,6 +3,11 @@ This playbook addresses the following alerts:
 - External Exchange inbox forwarding rule configured.
 - Suspicious Exchange inbox forwarding rule configured.
 - Suspicious Exchange email-hiding inbox rule.
+- Possible BEC Exchange email-hiding inbox rule.
+- Exchange email-hiding transport rule based on message keywords.
+- Suspicious Exchange email-hiding transport rule.
+- Exchange transport forwarding rule configured.
+- Suspicious Exchange transport forwarding rule configured.
 
 Playbook Stages:
  
@@ -20,8 +25,8 @@ Investigation:
 
 Containment:
 
-- If at least two suspicious pieces of evidence are found, the playbook executes soft response actions, including signing the user out and deleting the forwarding email address from the user account mailbox. The user will be notified of these actions via email.
-- If more than two pieces of suspicious evidence are found, the playbook will initiate hard response actions. These include disabling the user and removing the forwarding email address from their mailbox. The user will be notified of these actions via email.
+- If at least two suspicious pieces of evidence are found, the playbook executes soft response actions, including signing the user out and disabling the forwarding rule from the user account mailbox. 
+- If more than two pieces of suspicious evidence are found, the playbook will initiate hard response actions. These include disabling the user and the forwarding rule from the user account mailbox. 
 
 Requirements: 
 
@@ -57,18 +62,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * core-get-cloud-original-alerts
 * core-list-risky-users
 * domain
-* ews-remove-rule
+* ews-mail-flow-rule-disable
+* ews-rule-disable
 * ip
 * msgraph-user-account-disable
-* send-mail
 
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| SendNotification | If set to "true," the playbook will send an email notification to the user informing them that the forwarding address was deleted. If "false," no notification will be sent. | true | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
