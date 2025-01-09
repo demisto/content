@@ -228,7 +228,6 @@ repos:
     -  --skip-depth-one-folder
     -  --skip-integration-script-file-name
     -  --skip-markdown
-    -  --skip-suffix
 
   - id: validate-conf-json
     name: validate-conf-json
