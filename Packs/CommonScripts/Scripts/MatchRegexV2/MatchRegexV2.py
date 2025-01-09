@@ -1,8 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-
 import re
 
+import demistomock as demisto
+from CommonServerPython import *
 
 LETTER_TO_REGEX_FLAGS = {
     'i': re.IGNORECASE,

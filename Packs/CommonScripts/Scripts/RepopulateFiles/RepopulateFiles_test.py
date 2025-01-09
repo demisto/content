@@ -1,6 +1,7 @@
-import demistomock as demisto
-from RepopulateFiles import parse_attachment_entries, find_attachment_entry, main
 from unittest import mock
+
+import demistomock as demisto
+from RepopulateFiles import find_attachment_entry, main, parse_attachment_entries
 
 
 class TestRepopulateFiles:

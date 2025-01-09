@@ -42,7 +42,7 @@ def main():
                                           raw_response=ents))
     except Exception as e:
         demisto.debug(traceback.format_exc())
-        return_error(f'Failed to execute GetEntries.\nError:\n{type(e)}, {str(e)}')
+        return_error(f'Failed to execute GetEntries.\nError:\n{type(e)}, {e!s}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

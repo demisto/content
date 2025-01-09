@@ -1,12 +1,12 @@
-from typing import Union
+
 import pytest
-import requests_mock
 import requests
+import requests_mock
 
 MOCK_ADDR = 'mock://'
 
 
-def custom_matcher(request: requests.Request) -> Union[requests.Response, None]:
+def custom_matcher(request: requests.Request) -> requests.Response | None:
     if request.url == f'{MOCK_ADDR}http://example.com':
         first_history = requests.Response()
         first_history.url = 'http://example.com/'
@@ -126,7 +126,7 @@ def test_valid_command_result(history_urls):
         - Validating the structure of the returned result to the user
 
     """
-    from CommonServerPython import (formats, entryTypes, tableToMarkdown)
+    from CommonServerPython import entryTypes, formats, tableToMarkdown
     from HTTPListRedirects import create_command_result
     ec = {'URL(val.Data == obj.Data)': [{'Data': history_url['Data']} for history_url in history_urls]}
     expected_command_result = {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': history_urls,
@@ -156,8 +156,9 @@ def test_environment_variables(params):
         - Validating that the specific environment variables got deleted
 
     """
-    from HTTPListRedirects import delete_environment_variables
     import os
+
+    from HTTPListRedirects import delete_environment_variables
     use_system_proxy = params['use_system_proxy']
     delete_environment_variables(use_system_proxy=use_system_proxy)
     env_variables = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']

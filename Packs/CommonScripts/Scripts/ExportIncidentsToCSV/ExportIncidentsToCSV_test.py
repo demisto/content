@@ -1,6 +1,5 @@
-import pytest
-
 import demistomock as demisto
+import pytest
 from ExportIncidentsToCSV import main
 
 

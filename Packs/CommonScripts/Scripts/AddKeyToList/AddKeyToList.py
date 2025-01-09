@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """AddKeyToList
 Adds/Updates a Key to a JSON-backed List
 """
@@ -87,7 +88,7 @@ def main():
         return_results(add_key_to_list_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute AddKeyToList. Error: {str(ex)}')
+        return_error(f'Failed to execute AddKeyToList. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

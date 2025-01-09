@@ -1,8 +1,8 @@
+import time
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any
-import time
-
 
 STATUS_NEW = 'new'
 STATUS_EXISTING = 'existing'
@@ -54,7 +54,7 @@ def normalize_indicator_value(indicator_value: Any) -> str:
     elif isinstance(indicator_value, str) and indicator_value:
         return indicator_value
     else:
-        raise DemistoException(f'Invalid indicator value: {str(indicator_value)}')
+        raise DemistoException(f'Invalid indicator value: {indicator_value!s}')
 
 
 def add_new_indicator(indicator_value: Any,
@@ -139,7 +139,7 @@ def main():
         ))
     except Exception as e:
         return_error(
-            f'Failed to execute CreateNewIndicatorsOnly.\nError:\n{str(e)}')
+            f'Failed to execute CreateNewIndicatorsOnly.\nError:\n{e!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

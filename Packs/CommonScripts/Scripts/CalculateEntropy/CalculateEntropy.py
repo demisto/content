@@ -1,8 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 import math
 import string
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+
+from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 def calculate_shannon_entropy(data, minimum_entropy):
@@ -20,7 +22,7 @@ def calculate_shannon_entropy(data, minimum_entropy):
         # probability of event X
         p_x = float(data.count(chr(char))) / len(data)
         if p_x > 0:
-            entropy += - p_x * math.log(p_x, 2)
+            entropy += - p_x * math.log2(p_x)
     if entropy >= minimum_entropy:
         human_readable = tableToMarkdown("Entropy results", {'Checked Value': data, 'Entropy': entropy},
                                          headers=['Checked Value', 'Entropy'])
@@ -37,7 +39,7 @@ def main():
 
         return_outputs(*calculate_shannon_entropy(data, minimum_entropy))
     except Exception as ex:
-        return_error(f'Failed to execute calculate entropy script. Error: {str(ex)}')
+        return_error(f'Failed to execute calculate entropy script. Error: {ex!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

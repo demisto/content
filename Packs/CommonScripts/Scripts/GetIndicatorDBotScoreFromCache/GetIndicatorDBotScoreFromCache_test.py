@@ -1,5 +1,5 @@
-import GetIndicatorDBotScoreFromCache
 import demistomock as demisto
+import GetIndicatorDBotScoreFromCache
 import pytest
 
 

@@ -1,8 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
-
 import itertools
 from typing import Any
+
+import demistomock as demisto
+from CommonServerPython import *
 
 
 class Command:
@@ -948,7 +948,7 @@ def main():
             )
         return_results(command_results_list)
     except Exception as e:
-        return_error(f"Failed to execute get-user-data. Error: {str(e)}")
+        return_error(f"Failed to execute get-user-data. Error: {e!s}")
 
 
 """ ENTRY POINT """

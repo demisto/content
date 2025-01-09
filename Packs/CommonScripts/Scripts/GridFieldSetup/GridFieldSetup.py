@@ -61,7 +61,7 @@ def main():
     try:
         return_results(grid_field_setup_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute GridFieldSetup. Error: {str(ex)}')
+        return_error(f'Failed to execute GridFieldSetup. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

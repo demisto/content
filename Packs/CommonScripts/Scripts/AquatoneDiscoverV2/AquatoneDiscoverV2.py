@@ -1,8 +1,9 @@
+from subprocess import PIPE, Popen
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-from subprocess import Popen, PIPE
+from CommonServerUserPython import *
 
 
 def main():

@@ -1,32 +1,30 @@
-from pytest_mock import MockerFixture
-
 import demistomock as demisto
 from CommonServerPython import *
-
 from GetUserData import (
-    Modules,
     Command,
-    is_valid_args,
-    create_account,
-    merge_accounts,
-    enrich_data_with_source,
-    prepare_human_readable,
-    get_output_key,
-    get_outputs,
-    run_execute_command,
-    identityiq_search_identities,
-    identitynow_get_accounts,
+    Modules,
     ad_get_user,
     ad_get_user_manager,
-    pingone_get_user,
-    okta_get_user,
     aws_iam_get_user,
+    create_account,
+    enrich_data_with_source,
+    get_output_key,
+    get_outputs,
+    iam_get_user_command,
+    identityiq_search_identities,
+    identitynow_get_accounts,
+    is_valid_args,
+    main,
+    merge_accounts,
     msgraph_user_get,
     msgraph_user_get_manager,
+    okta_get_user,
+    pingone_get_user,
+    prepare_human_readable,
+    run_execute_command,
     xdr_list_risky_users,
-    iam_get_user_command,
-    main,
 )
+from pytest_mock import MockerFixture
 
 
 def test_modules_init_with_active_brands():

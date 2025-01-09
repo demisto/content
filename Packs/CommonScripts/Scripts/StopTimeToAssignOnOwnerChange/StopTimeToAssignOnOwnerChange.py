@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 
-
 # ##### Help #####
 # This is an example script. The script is used to stop the Time to Assignment SLA field,
 # once an owner was set to an incident. If you want to use this script, you should go to

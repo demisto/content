@@ -1,7 +1,7 @@
-from CommonServerPython import *
-
-from typing import Any
 import traceback
+from typing import Any
+
+from CommonServerPython import *
 
 SERVER_SYSTEM_CONFIG_PATH = '/system/config'
 ''' STANDALONE FUNCTION '''
@@ -59,7 +59,7 @@ def main():
         return_results(edit_server_config(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute EditServerConfig. Error: {str(ex)}')
+        return_error(f'Failed to execute EditServerConfig. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

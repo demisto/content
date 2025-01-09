@@ -1,8 +1,7 @@
-from pytest_mock import MockFixture
-from ExtractEmailFormatting import main, check_tld, extract_email, refang_email, extract_email_from_url_query
-import pytest
 import demistomock as demisto
-
+import pytest
+from ExtractEmailFormatting import check_tld, extract_email, extract_email_from_url_query, main, refang_email
+from pytest_mock import MockFixture
 
 defang_data = [
     ('xsoar@test[.]com', 'xsoar@test.com'),  # disable-secrets-detection

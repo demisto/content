@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import pytest
-from CommonServerPython import *  # noqa: F401
 from BMCTool import BMCContainer, main
+from CommonServerPython import *  # noqa: F401
 
 
 @pytest.mark.parametrize("container, expected_size",

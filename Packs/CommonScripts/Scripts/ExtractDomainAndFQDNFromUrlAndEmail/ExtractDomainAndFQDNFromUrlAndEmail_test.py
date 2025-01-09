@@ -1,7 +1,7 @@
-from pytest_mock import MockFixture
 import demistomock as demisto
-from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn, main
 import pytest
+from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn, main
+from pytest_mock import MockFixture
 
 
 @pytest.mark.parametrize('input,fqdn', [  # noqa: E501 disable-secrets-detection

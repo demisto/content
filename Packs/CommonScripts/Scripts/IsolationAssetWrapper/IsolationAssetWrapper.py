@@ -1,4 +1,3 @@
-from typing import Tuple
 
 from CommonServerPython import *
 
@@ -11,7 +10,7 @@ XDR_ACTIONS = {
     'unisolate': 'xdr-unisolate-endpoint'
 }
 
-MSDE_ACTIONS: Dict[str, Tuple[str, Dict[str, str]]] = {
+MSDE_ACTIONS: Dict[str, tuple[str, Dict[str, str]]] = {
     'isolate': ('microsoft-atp-isolate-machine', {'isolation_type': 'Full'}),
     'unisolate': ('microsoft-atp-unisolate-machine', {})
 }
@@ -81,7 +80,7 @@ def main():  # pragma: no cover
     try:
         return_results(run_isolation_action(device_ids, action))
     except Exception as ex:
-        return_error(f'Failed to execute IsolationAssetWrapper. Error: {str(ex)}')
+        return_error(f'Failed to execute IsolationAssetWrapper. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

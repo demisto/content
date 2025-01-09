@@ -1,8 +1,8 @@
-from pytest_mock import MockerFixture
-import demistomock as demisto
 import os
 
+import demistomock as demisto
 import pytest
+from pytest_mock import MockerFixture
 from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException
 
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
@@ -279,7 +279,7 @@ def test_get_pdf_text_without_encrypted(tmp_path):
 
 def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
-    from ReadPDFFileV2 import get_pdf_htmls_content, get_images_paths_in_path, handling_pdf_credentials
+    from ReadPDFFileV2 import get_images_paths_in_path, get_pdf_htmls_content, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
     dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234',
@@ -297,7 +297,7 @@ def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
 
 
 def test_get_pdf_htmls_content_without_encrypted(tmp_path):
-    from ReadPDFFileV2 import get_pdf_htmls_content, get_images_paths_in_path
+    from ReadPDFFileV2 import get_images_paths_in_path, get_pdf_htmls_content
     try:
         get_pdf_htmls_content(f'{CWD}/encrypted.pdf', tmp_path)
         raise Exception("Incorrect password exception should've been thrown")
@@ -316,7 +316,7 @@ def test_get_urls_from_binary_file():
 
 
 def test_build_readpdf_entry_object_empty_extract(mocker):
-    from ReadPDFFileV2 import build_readpdf_entry_object, DEFAULT_NUM_IMAGES
+    from ReadPDFFileV2 import DEFAULT_NUM_IMAGES, build_readpdf_entry_object
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': ''}])
     res = build_readpdf_entry_object('test', {}, '', [], [], [], DEFAULT_NUM_IMAGES)
     assert res[0]['HumanReadable'] == '### Metadata\n\n### URLs\n\n### Text\n'

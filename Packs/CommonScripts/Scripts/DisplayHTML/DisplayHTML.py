@@ -9,7 +9,7 @@ def main():
 
     note = True if note and note.lower() == "true" else False
     if header:
-        html = "<h1>{0}</h1></br>{1}".format(header, html)
+        html = f"<h1>{header}</h1></br>{html}"
 
     demisto.results({
         'ContentsFormat': formats['html'],

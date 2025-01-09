@@ -1,15 +1,15 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import random
 import string
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 MAX_LENGTH = 10000
 
 
 def set_length(length):
     if length <= 0:
-        return_error("Length must be greater than 0. Maximum value is {}.".format(MAX_LENGTH))
+        return_error(f"Length must be greater than 0. Maximum value is {MAX_LENGTH}.")
 
     return min(length, MAX_LENGTH)
 
@@ -27,7 +27,7 @@ def set_characters(characters: str, digits: bool, lowercase: bool, punctuation: 
 
 def create_password(characters, length):
     password = ""
-    for x in range(0, length):
+    for x in range(length):
         password += random.SystemRandom(random.seed(time.time())).choice(characters)  # type: ignore
 
     entry_context = {'RandomString': password}

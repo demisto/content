@@ -1,7 +1,7 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
-
-import json
 
 
 def load_json(args):

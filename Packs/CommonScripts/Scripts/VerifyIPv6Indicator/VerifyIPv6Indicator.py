@@ -1,6 +1,7 @@
+from ipaddress import IPv6Address
+
 import demistomock as demisto
 from CommonServerPython import *
-from ipaddress import IPv6Address
 
 
 def is_valid_ipv6_address(address):
@@ -21,7 +22,7 @@ def main():
         demisto.info(f'Got IPv6 {item}')
         item = re.sub('[^a-f0-9:%th.]+', '', item)
 
-        demisto.info(f'Changed item to {str(item)}')
+        demisto.info(f'Changed item to {item!s}')
 
         if is_valid_ipv6_address(item):
             entries_list.append(item)

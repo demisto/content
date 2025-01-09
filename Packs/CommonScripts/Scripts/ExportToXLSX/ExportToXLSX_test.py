@@ -1,7 +1,7 @@
-from ExportToXLSX import parse_data
-import pytest
 from unittest.mock import patch
 
+import pytest
+from ExportToXLSX import parse_data
 
 DATA_INPUT_SINGLE_DICT = {"key1": "val1", "key2": "val2"}
 DATA_INPUT_MULTIPLE_DICTS = '{\"key1\":\"val1\",\"key2\":\"val2\"},{\"key1\":\"val3\",\"key2\":\"val4\"}'
@@ -118,8 +118,8 @@ def test_write_data(self):
     Then:
         - Checks that write function was called 4 times.
     """
-    from ExportToXLSX import write_data
     import xlsxwriter
+    from ExportToXLSX import write_data
     workbook = xlsxwriter.Workbook()
     format_arg = xlsxwriter.format.Format()
     write_data("", DATA_INPUT_SINGLE_DICT, None, workbook, format_arg, format_arg)

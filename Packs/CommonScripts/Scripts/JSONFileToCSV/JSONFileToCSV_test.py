@@ -1,8 +1,7 @@
 import os
+
 import demistomock as demisto
-
 from CommonServerPython import entryTypes
-
 
 TEST_DATA_DIR = "test_data"
 

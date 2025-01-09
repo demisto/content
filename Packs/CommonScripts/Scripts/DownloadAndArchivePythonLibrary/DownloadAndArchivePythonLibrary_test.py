@@ -1,8 +1,8 @@
-import unittest
-from unittest.mock import patch, MagicMock, mock_open
-from pathlib import Path
-import zipfile
 import subprocess
+import unittest
+import zipfile
+from pathlib import Path
+from unittest.mock import MagicMock, mock_open, patch
 
 # Import the functions from the script
 from DownloadAndArchivePythonLibrary import installLibrary, main

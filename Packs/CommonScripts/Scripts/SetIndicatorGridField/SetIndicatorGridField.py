@@ -111,7 +111,7 @@ def main() -> None:
                 return_error('Rows must be a list of lists.')
         except Exception as e:
             return_error(
-                f'Invalid format for rows input. Expected format: [[1,2],[3,4]] or a valid dictionary structure. Error: {str(e)}')
+                f'Invalid format for rows input. Expected format: [[1,2],[3,4]] or a valid dictionary structure. Error: {e!s}')
 
     # Validate that headers are a list of strings
     if not all(isinstance(header, str) for header in headers):

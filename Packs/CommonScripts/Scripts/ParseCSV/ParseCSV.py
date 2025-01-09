@@ -148,8 +148,7 @@ def main():
     file_name = res['name']
     if not file_name.lower().endswith('.csv'):
         return_error(
-            '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension'.format(
-                file_name))
+            f'"{file_name}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension')
 
     if parse_all:
         all_csv = []

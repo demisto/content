@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import entryTypes, CommandResults  # noqa: F401
 import GetErrorsFromEntry
 import pytest
+from CommonServerPython import CommandResults, entryTypes  # noqa: F401
 
 ERROR_ENTRY_1 = [{'Contents': 'This is the error message 1', 'Type': entryTypes['error']}]
 ERROR_ENTRY_2 = [{'Contents': 'This is the error message 2', 'Type': entryTypes['error']}]

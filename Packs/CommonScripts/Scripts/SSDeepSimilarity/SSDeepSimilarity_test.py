@@ -1,5 +1,5 @@
-import pytest
 import demistomock as demisto  # noqa: F401
+import pytest
 
 CASE_ANCHOR_EMPTY = {'ssdeep_hash': '',
                      'ssdeep_hashes_to_compare': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C'}

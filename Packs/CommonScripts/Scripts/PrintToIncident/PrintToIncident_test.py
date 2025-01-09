@@ -1,7 +1,7 @@
-import pytest
-from pytest_mock import MockerFixture
 import demistomock as demisto
+import pytest
 from CommonServerPython import EntryType
+from pytest_mock import MockerFixture
 
 
 def test_print_to_incident(mocker: MockerFixture):

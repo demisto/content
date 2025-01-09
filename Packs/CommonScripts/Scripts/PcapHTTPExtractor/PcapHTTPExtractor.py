@@ -1,12 +1,14 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
-import zlib
-import pyshark
-from datetime import datetime
 import re
 import sys
 import traceback
+import zlib
+from datetime import datetime
 from io import StringIO
+
+import pyshark
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 serr = sys.stderr
 sys.stderr = StringIO()
@@ -415,7 +417,7 @@ def main():
                          "EntryContext": {"PcapHTTPFlows": context_output}})
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {str(e)}')
+        return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {e!s}')
     finally:
         sys.stderr = serr
 

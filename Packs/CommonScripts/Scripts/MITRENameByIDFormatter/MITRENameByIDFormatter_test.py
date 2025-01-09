@@ -1,11 +1,10 @@
 from unittest.mock import patch
 
-import pytest
-import MITRENameByIDFormatter
-from MITRENameByIDFormatter import main
-
 import demistomock as demisto  # noqa: F401
+import MITRENameByIDFormatter
+import pytest
 from CommonServerPython import *  # noqa: F401
+from MITRENameByIDFormatter import main
 
 
 @pytest.mark.parametrize('input, expected_response', [

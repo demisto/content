@@ -1,6 +1,6 @@
-from VerdictResult import main
 import demistomock as demisto
 import pytest
+from VerdictResult import main
 
 
 @pytest.mark.parametrize(

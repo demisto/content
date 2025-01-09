@@ -1,5 +1,5 @@
-from LoadJSON import load_json
 import pytest
+from LoadJSON import load_json
 
 
 @pytest.mark.parametrize('inputs, outputs', [
