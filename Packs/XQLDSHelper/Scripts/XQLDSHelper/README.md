@@ -1293,5 +1293,5 @@ You can conveniently download them using the link below.
 
  - [XQLDS_Sample_content-bundle.tar.gz](https://github.com/demisto/content/tree/master/Packs/XQLDSHelper/Scripts/XQLDSHelper/test_data/XQLDS_Sample_content-bundle.tar.gz)
 
-Once you've imported the bundle into your Cortex XSIAM or XSOAR instance, you will see lists starting with `XQLDS_Sample_` in the Lists menu for template data and XQL queries, and automation scripts starting with `XQLDS_Sample_` in the `Scripts` menu for displaying widgets in the General Purpose Dynamic Section.
+Once you've imported the bundle into your Cortex XSIAM or XSOAR instance, you will see lists starting with `XQLDS_Sample_` in the `Lists` menu for template data and XQL queries, and automation scripts starting with `XQLDS_Sample_` in the `Scripts` menu for displaying widgets in the General Purpose Dynamic Section.
 `XQLDS_Sample_Templates` in the `Lists` is the main template used by the automation scripts. You can refer to it to deepen your understanding of the template structure.
