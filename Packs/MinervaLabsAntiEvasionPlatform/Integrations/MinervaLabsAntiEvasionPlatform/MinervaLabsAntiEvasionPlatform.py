@@ -380,7 +380,7 @@ try:
     if demisto.command() == 'fetch-incidents':
         fetch_incidents()
     elif demisto.command() == 'test-module':
-        if minerva_login.status_code == 200:
+        if minerva_login.status_code == 200:  # pylint: disable=E0606
             demisto.results('ok')
         else:
             return_error(f'Failed to log in. More information: {minerva_login.status_code}, {minerva_login.reason}')
