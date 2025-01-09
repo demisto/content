@@ -19,7 +19,6 @@ REQUEST_HEADERS = {
     "Accept": "application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8",
     "Content-Type": "application/json",
 }
-#test
 
 FIELD_TYPE_DICT = {
     1: "Text",
