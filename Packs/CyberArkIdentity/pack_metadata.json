@@ -9,8 +9,14 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Security",
+        "IAM"
+    ],
+    "useCases": [
+        "cyberark",
+        "identity"
+    ],
     "keywords": [],
     "marketplaces": [
         "marketplacev2"
