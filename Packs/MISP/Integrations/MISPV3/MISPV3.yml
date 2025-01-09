@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISP V3
+  id: MISP V3 - DEV (9.01.25)
   version: -1
 configuration:
 - display: MISP server URL (e.g., https://192.168.0.1)
@@ -78,8 +78,8 @@ configuration:
   type: 0
   required: false
 description: Malware information sharing platform and threat sharing.
-display: MISP v3
-name: MISP V3
+display: MISP v3 - DEV (9.01.25)
+name: MISP V3 - DEV (9.01.25)
 script:
   commands:
   - arguments:
