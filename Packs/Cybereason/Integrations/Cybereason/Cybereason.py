@@ -491,7 +491,7 @@ def query_malops_command(client: Client, args: dict):
                                                                  template_context, filters, guid_list=guid_list)
     outputs = []
 
-    data = {}
+    data: dict = {}
     for response in (malop_process_type, malop_loggon_session_type):
         data = response.get('data', {}) if response else {}
         malops_map = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
@@ -1827,7 +1827,7 @@ def fetch_imagefile_guids(client: Client, processes: list) -> dict:
             image_files = ('' if details['elementValues']['imageFile']['elementValues'] is None else details[
                 'elementValues']['imageFile']['elementValues'])
             for image_file in image_files:
-                img_file_guids[image_file['name']] = image_file['guid']
+                img_file_guids[image_file['name']] = image_file['guid']  # type: ignore[index]
     except Exception as e:
         demisto.error(str(e))
     return img_file_guids
