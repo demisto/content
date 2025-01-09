@@ -66,7 +66,7 @@ def StartParagraph(Name, Description):
     if (Description == "[Blank]"):
         Description = ""
 
-    Paragraph = document.add_paragraph(Description)
+    Paragraph = document.add_paragraph(Description)  # type: ignore[assignment]
     Paragraph.paragraph_format.left_indent = Inches(0.25)   # type: ignore
 
 
