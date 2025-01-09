@@ -4271,9 +4271,6 @@ def get_events_command(args: dict[str, str]):
     Returns:
         tuple[list[dict], CommandResults]: A tuple of events and CommandResults with human readable output.
     """
-    if not is_xsiam():
-        raise DemistoException('This command can only be run on Cortex XSIAM tenants.')
-
     fetch_type = args.get('fetch_type')
     _, events = fetch_events(fetch_type)
 

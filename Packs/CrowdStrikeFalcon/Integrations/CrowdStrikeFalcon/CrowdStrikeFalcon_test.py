@@ -7644,8 +7644,6 @@ def test_get_events_command(mocker):
     """
     from CrowdStrikeFalcon import get_events_command, INTEGRATION_NAME
 
-    mocker.patch('CrowdStrikeFalcon.is_xsiam', return_value=True)
-
     expected_events = load_json('test_data/ioa_fetch_incidents.json/ioa_events_page_1_raw_response.json')['resources']['events']
     fetch_events = mocker.patch('CrowdStrikeFalcon.fetch_events', return_value=([], expected_events))
     table_to_markdown = mocker.patch('CrowdStrikeFalcon.tableToMarkdown')

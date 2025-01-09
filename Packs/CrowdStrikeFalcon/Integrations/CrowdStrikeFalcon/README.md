@@ -6539,7 +6539,7 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 ### cs-falcon-get-events
 
 ***
-Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events. Note that this command is supported on Cortex XSIAM only.
+Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events. Note that pushing events is supported on Cortex XSIAM only.
 
 #### Base Command
 
@@ -6550,7 +6550,7 @@ Get events from CrowdStrike Falcon. This command is intended for development and
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | fetch_type | Type of incidents or detections. Note that the "On-Demand Scans Detection" option is not available in the legacy version of the API. | Optional |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. Note that pushing events is supported on Cortex XSIAM only. | Required |
 
 #### Context Output
 
