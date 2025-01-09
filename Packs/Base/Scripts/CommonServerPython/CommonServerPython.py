@@ -8843,7 +8843,8 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username",
+                          "password", "Key", "identifier", "credential", "client"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
@@ -8855,8 +8856,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
