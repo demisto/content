@@ -24,7 +24,7 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 
 ### Timestamp Ingestion
 Timestamp parsing is conducted according to the **WhenOccurred** field, in the format **/Date(EpochMillis>)/**.
-E.g. /Date(1677206879107)/ (MILLIS - 13 Digits).
+E.g. /Date(1677206879107)/ (Millis - 13 Digits).
 
 ## Commands
 You can execute these commands from the Cortex XSIAM Alerts War Room as part of an automation, or in a playbook.
