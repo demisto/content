@@ -313,11 +313,8 @@ class SortableValue(object):
             obj2: Any
         ) -> bool:
             if any(
-                f(obj1) and f(obj2) for f in [
-                    lambda x:isinstance(x, (int, float)),
-                    lambda x:isinstance(x, bool),
-                    lambda x:isinstance(x, str),
-                ]
+                isinstance(obj1, x) and isinstance(obj2, x)
+                for x in [(int, float), bool, str]
             ):
                 return obj1 < obj2  # type: ignore[operator]
             elif obj1 is None or obj2 is None:
