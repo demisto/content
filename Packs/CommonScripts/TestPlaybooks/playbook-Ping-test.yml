@@ -401,3 +401,4 @@ outputs: []
 marketplaces:
   - xsoar_on_prem
 fromversion: 5.0.0
+
