@@ -4,29 +4,23 @@ In order to configure this integration you must have a FireEye customer ID. Your
 
 The API key can be found and generated in the **API KEYS** section. You can navigate to it from your FireEye Helix app home page by clicking on the **user icon** on the top right, and choosing **HELIX Settings**. You'll be redirected to the **HELIX Settings** page, where API KEYS can be found.
 
-## Configure FireEyeHelix on Cortex XSOAR
+## Configure FireEyeHelix in Cortex
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for FireEyeHelix.
-3. Click __Add instance__ to create and configure a new integration instance.
+| **Parameter** | **Description** | **Example** |
+| ---------             | -----------           | -------            |
+| Name | A meaningful name for the integration instance. | FireEyeHelix_instance_1 |
+| Server URL | The URL to the FireEye server, including the scheme. | https:/<span></span>/apps.fireeye<span></span>.com |
+| Customer ID | The ID used by the customer to gain access to the integration. | N/A |
+| API Token  | The private token granting access to the integration. | N/A  |
+| First Fetch Timestamp | The time period for which to fetch incidents in \&lt;number&gt; \&lt;time unit&gt; format. | 12 hours, 7 days, 3 months, 1 year |
+| Fetch Incident Query | Whether to fetch the incidents or not.  | N/A |
+| Incident Type  | The type of incident to select.  |  Phishing |
+| Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
+| Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
 
-   | **Parameter** | **Description** | **Example** |
-   | ---------             | -----------           | -------            |
-   | Name | A meaningful name for the integration instance. | FireEyeHelix_instance_1 |
-   | Server URL | The URL to the FireEye server, including the scheme. | https:/<span></span>/apps.fireeye<span></span>.com |
-   | Customer ID | The ID used by the customer to gain access to the integration. | N/A |
-   | API Token  | The private token granting access to the integration. | N/A  |
-   | First Fetch Timestamp | The time period for which to fetch incidents in \&lt;number&gt; \&lt;time unit&gt; format. | 12 hours, 7 days, 3 months, 1 year |
-   | Fetch Incident Query | Whether to fetch the incidents or not.  | N/A |
-   | Incident Type  | The type of incident to select.  |  Phishing |
-   | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
-
-
-4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get all alerts
