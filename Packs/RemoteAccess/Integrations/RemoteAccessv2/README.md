@@ -13,7 +13,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Default Hostname or IP Address | If not provided, "host" or "system" should be provided in the command's arguments. | False |
 | User | For example, "root". | False |
 | Password | The password of the remote machine. | False |
-| sshKey | The private RSA key used to authenticate with the remote machine should be configured in the *Credentials* tab under *Settings > Integrations > Credentials*. See [here](https://xsoar.pan.dev/docs/reference/articles/managing-credentials#:~:text=Cortex%20XSOAR%20Credentials%20enables%20you%20to%20centrally%20manage%20credentials%2C%20which%20include%20a%20unique%20name%20for%20the%20credential%2C%20username%2C%20password%2C%20and%20certificate.%20You%20can%20then%20select%20the%20credential%20name%20when%20configuring%20an%20integration%20instance.) for more information. | False
+| sshKey | The private RSA key used to authenticate with the remote machine should be configured in the *Credentials* tab under *Settings > Integrations > Credentials*. See [here](https://xsoar.pan.dev/docs/reference/articles/managing-credentials) for more information. | False
 | Additional Password | Requires an additional password as an argument to run any command of this module. | False |
 | Ciphers | A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned. | False |
 | Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error message specifying the supported key algorithms is returned. | False |
