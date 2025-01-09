@@ -65,7 +65,44 @@ class MockConnection(Connection):
     def pong(self):
         self.pongs += 1
         
+           
+def test_handle_failures_of_send_events(mocker, capfd):
+    """
+    Given:
+        - A connection to the websocket, and events are fetched from the socket
+
+    When:
+        - Sending events to XSIAM are failing.
+
+    Then:
+        - Add the failing events to the context, and try again in the next run.
+    """
+    def fetch_events_mock(connection: EventConnection, fetch_interval: int):
+        return EVENTS
+
+    def sends_events_to_xsiam_mock(events, **kwargs):
+        raise DemistoException("Message")
+
+    mocker.patch.object(RetarusSecureEmailGateway, "fetch_events", side_effect=fetch_events_mock)
+    mocker.patch.object(RetarusSecureEmailGateway, "send_events_to_xsiam", side_effect=sends_events_to_xsiam_mock)
+    with capfd.disabled():
+        perform_long_running_loop(EventConnection(MockConnection()), 60)
+
+    context = demisto.getIntegrationContext()
+    assert context["events"] == EVENTS
+
+    second_try_send_events_mock = mocker.patch.object(RetarusSecureEmailGateway, "send_events_to_xsiam")
+    with capfd.disabled():
+        perform_long_running_loop(EventConnection(MockConnection()), 60)
         
+    context = demisto.getIntegrationContext()
+    # check the the context is cleared
+    assert not context
+    # check that the events failed events were sent to xsiam
+    for event in EVENTS:
+        assert event in second_try_send_events_mock.call_args_list[0][0][0]
+
+
 def test_heartbeat(mocker, connection):
     """
     Given:
@@ -78,7 +115,6 @@ def test_heartbeat(mocker, connection):
         - Periodic keep-alive messages (pongs) are sent to the websocket connection to prevent it from closing.
 
     """
-    from RetarusSecureEmailGateway import long_running_execution_command
     idle_timeout = 3
 
     @contextmanager

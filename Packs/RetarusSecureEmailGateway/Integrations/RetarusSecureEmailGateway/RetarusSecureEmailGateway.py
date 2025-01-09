@@ -116,7 +116,7 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     Returns:
         bool: True if the interval has passed, False otherwise
     """
-    return fetch_start_time + timedelta(seconds=fetch_interval) < datetime.utcnow()
+    return fetch_start_time + timedelta(seconds=fetch_interval) < datetime.now().astimezone(timezone.utc)
 
 
 def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
@@ -193,7 +193,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     """
     events: list[dict] = []
     event_ids = set()
-    fetch_start_time = datetime.utcnow()
+    fetch_start_time = datetime.now().astimezone(timezone.utc)
     demisto.debug(f'{LOG_PREFIX} Starting to fetch events at {fetch_start_time}')
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
@@ -206,14 +206,14 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         if not event_ts:
             # if timestamp is not in the response, use the current time
             demisto.debug(f"{LOG_PREFIX} Event {event_id} does not have a timestamp, using current time")
-            event_ts = datetime.utcnow().isoformat()
+            event_ts = datetime.now().isoformat()
         date = dateparser.parse(event_ts)
         if not date:
             demisto.debug(f"{LOG_PREFIX} Event {event_id} has an invalid timestamp, using current time")
             # if timestamp is not in correct format, use the current time
-            date = datetime.utcnow()
+            date = datetime.now()
         event["id"] = event_id  # TODO not sure I am supposed to do it, maybe it's for @bavly
-        event["_time"] = date.astimezone(tz.tzutc()).isoformat()
+        event["_time"] = date.astimezone(timezone.utc).isoformat()
         event["event_type"] = event.get("type")
         events.append(event)
         event_ids.add(event_id)
