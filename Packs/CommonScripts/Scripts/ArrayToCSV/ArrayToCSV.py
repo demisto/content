@@ -1,6 +1,7 @@
+from traceback import format_exc
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from traceback import format_exc
 
 
 def arr_to_csv_command(array: list[str] | str) -> str:

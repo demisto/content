@@ -1,10 +1,11 @@
+import zipfile
+from xml.etree.ElementTree import XML
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from docx import Document
-from docx.opc.exceptions import PackageNotFoundError
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
-import zipfile
-from xml.etree.ElementTree import XML
+from docx.opc.exceptions import PackageNotFoundError
 
 
 def extract_urls_xml(file_path):

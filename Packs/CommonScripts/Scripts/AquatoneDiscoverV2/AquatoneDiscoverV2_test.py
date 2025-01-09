@@ -1,7 +1,8 @@
-from unittest.mock import patch, MagicMock, call
-import demistomock as demisto
 import json
 from subprocess import PIPE
+from unittest.mock import MagicMock, call, patch
+
+import demistomock as demisto
 
 MOCK_DOMAIN = 'test.com'
 expected_entry_result = {'Contents': 'hosts_json_test',

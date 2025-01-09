@@ -1,7 +1,8 @@
-from CommonServerPython import *
-from typing import Any
 from collections.abc import Callable
 from itertools import zip_longest
+from typing import Any
+
+from CommonServerPython import *
 
 
 class Command:
@@ -878,7 +879,7 @@ def main():
         return_results(command_results_list)
 
     except Exception as e:
-        return_error(f"Failed to execute get-endpoint-data. Error: {str(e)}")
+        return_error(f"Failed to execute get-endpoint-data. Error: {e!s}")
 
 
 """ ENTRY POINT """

@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import re
-import xlrd
 import csv
-import tldextract
+import re
 import traceback
+
+import demistomock as demisto
+import tldextract
+import xlrd
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 
 def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col, limit, offset):
@@ -265,7 +266,7 @@ def main():
     try:
         return_outputs(*fetch_indicators_from_file(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute Fetch Indicators From File. Error: {str(ex)}',
+        return_error(f'Failed to execute Fetch Indicators From File. Error: {ex!s}',
                      error=traceback.format_exc())
 
 

@@ -1,6 +1,7 @@
-from DumpJSON import main
-import demistomock as demisto
 import json
+
+import demistomock as demisto
+from DumpJSON import main
 
 
 def test_dump_json(mocker):

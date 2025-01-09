@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
 import GetServerURL
+from CommonServerPython import *
 
 
 def test_get_url(mocker):

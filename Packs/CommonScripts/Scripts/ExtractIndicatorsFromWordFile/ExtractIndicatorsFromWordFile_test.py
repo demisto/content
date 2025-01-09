@@ -1,9 +1,10 @@
-import pytest
 import os
 import shutil
-from ExtractIndicatorsFromWordFile import WordParser, main
-import demistomock as demisto
 from unittest.mock import MagicMock
+
+import demistomock as demisto
+import pytest
+from ExtractIndicatorsFromWordFile import WordParser, main
 
 expected_partial_all_data = 'Lorem ipsum dolor sit amet, an quas nostro posidonium mei, pro choro vocent pericula et'
 

@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 from FormatURLApiModule import *  # noqa: E402
 
 
@@ -20,7 +19,7 @@ def main():
 
     except Exception as e:
         return_error(
-            f'Failed to execute the automation. Error: \n{str(e)}'
+            f'Failed to execute the automation. Error: \n{e!s}'
         )
 
 

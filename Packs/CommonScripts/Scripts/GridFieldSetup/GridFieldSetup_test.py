@@ -1,5 +1,5 @@
-from GridFieldSetup import *
 import pytest
+from GridFieldSetup import *
 
 incident_contains_field_in_root = {
     'field_name': 'Test',

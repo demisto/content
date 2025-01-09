@@ -1,9 +1,10 @@
+import re
+from urllib.parse import parse_qs, unquote, urlparse
+
 import demistomock as demisto
 from CommonServerPython import *
 from tld import get_fld
 from validate_email import validate_email
-from urllib.parse import urlparse, parse_qs, unquote
-import re
 
 # ============================================================================================================== #
 # This script is highly similar to 'ExtractFQDNFromUrlAndEmail', they are not unified due to run time performance.

@@ -1,7 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
 import ipaddress
 
+import demistomock as demisto
+from CommonServerPython import *
 
 ''' STANDALONE FUNCTION '''
 
@@ -36,7 +36,7 @@ def main():
             return_results('')
 
     except Exception as e:
-        return_error(f'Failed to execute VerifyCIDR. Error: {str(e)}')
+        return_error(f'Failed to execute VerifyCIDR. Error: {e!s}')
 
 
 ''' ENTRY POINT '''

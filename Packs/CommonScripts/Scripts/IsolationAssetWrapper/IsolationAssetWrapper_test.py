@@ -19,8 +19,7 @@ def test_create_command_executers(mocker, action):
         Ensure the right commands wrappers are being returned.
 
     """
-    from IsolationAssetWrapper import demisto, create_commands, MSDE_ACTIONS, XDR_ACTIONS, \
-        CROWDSTRIKE_ACTIONS
+    from IsolationAssetWrapper import CROWDSTRIKE_ACTIONS, MSDE_ACTIONS, XDR_ACTIONS, create_commands, demisto
     device_ids = ['device1',
                   'device2',
                   'device3']

@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 UNSUPPORTED_COMMAND_MSG = "Unsupported Command : getEntriesByIDs"
 
 
@@ -65,7 +64,7 @@ def main():
             raw_response=error_messages,
         ))
     except Exception as e:
-        return_error(f'Failed to fetch errors for the given entry id(s). Problem: {str(e)}')
+        return_error(f'Failed to fetch errors for the given entry id(s). Problem: {e!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

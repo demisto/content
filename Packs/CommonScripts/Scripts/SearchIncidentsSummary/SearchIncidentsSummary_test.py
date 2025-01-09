@@ -1,4 +1,4 @@
-from SearchIncidentsSummary import check_if_found_incident, is_valid_args, apply_filters, add_incidents_link
+from SearchIncidentsSummary import add_incidents_link, apply_filters, check_if_found_incident, is_valid_args
 
 
 def test_check_if_found_incident():

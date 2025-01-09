@@ -1,12 +1,13 @@
+import zipfile
+
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import openpyxl
+import pandas as pd
+from CommonServerPython import *  # noqa: F401
 from docx import Document
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
-import zipfile
-import pandas as pd
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 
 def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
@@ -100,7 +101,7 @@ def main():  # pragma: no cover
         os.rename(f'./{file_path}', file_name)
         return_results(extract_hyperlink_by_file_type(file_name=file_name, file_path=os.path.realpath(file_name)))
     except Exception as ex:
-        return_error(f'Failed to execute ExtractHyperlinksFromOfficeFiles. Error: {str(ex)}')
+        return_error(f'Failed to execute ExtractHyperlinksFromOfficeFiles. Error: {ex!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

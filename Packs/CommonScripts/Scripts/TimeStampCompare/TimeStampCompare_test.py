@@ -1,4 +1,4 @@
-from TimeStampCompare import compare_times, time_stamp_compare_command, EQUAL, BEFORE, AFTER, DT_STRING, dateparser
+from TimeStampCompare import AFTER, BEFORE, DT_STRING, EQUAL, compare_times, dateparser, time_stamp_compare_command
 
 
 def test_compare_times():

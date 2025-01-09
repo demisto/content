@@ -1,8 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-import requests
 import os
+
+import demistomock as demisto
+import requests
 import urllib3
+from CommonServerPython import *
 
 urllib3.disable_warnings()
 
@@ -52,7 +53,7 @@ def main():
         demisto.results(create_command_result(history_urls=history_urls))
 
     except Exception as e:
-        return_error(f'Failed to execute script. Error:\n{str(e)}')
+        return_error(f'Failed to execute script. Error:\n{e!s}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

@@ -1,5 +1,5 @@
-from IsInternalDomainName import check_sub_domains_in_domain, is_sub_domain_contained
 import pytest
+from IsInternalDomainName import check_sub_domains_in_domain, is_sub_domain_contained
 
 
 @pytest.mark.parametrize('domain_name, domain_to_check,  expected_output', [

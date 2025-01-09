@@ -28,8 +28,9 @@ def test_dig_result(mocker):
     Then:
         - validate the output is as expected
     """
-    import Dig
     import subprocess
+
+    import Dig
     from Dig import dig_result
     mocker.patch.object(Dig, 'regex_result', return_value=(['0.0.0.0'], '1.1.1.1'))
     mocker.patch.object(subprocess, 'check_output', return_value="OK")
@@ -46,8 +47,9 @@ def test_reverse_dig_result(mocker):
     Then:
         - validate the output is as expected
     """
-    import Dig
     import subprocess
+
+    import Dig
     from Dig import reverse_dig_result
     mocker.patch.object(Dig, 'regex_result', return_value=(['0.0.0.0'], '1.1.1.1'))
     mocker.patch.object(subprocess, 'check_output', return_value="OK")

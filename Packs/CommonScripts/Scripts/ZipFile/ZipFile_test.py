@@ -1,8 +1,9 @@
 import os
+import tempfile
+
 import pytest
 import pyzipper
-from ZipFile import escape_illegal_characters_in_file_name, compress_multiple
-import tempfile
+from ZipFile import compress_multiple, escape_illegal_characters_in_file_name
 
 ESCAPE_CHARACTERS_PACK = [
     ('/Users/user/Downloads/b/a/testingfile.txt', '-Users-user-Downloads-b-a-testingfile.txt'),

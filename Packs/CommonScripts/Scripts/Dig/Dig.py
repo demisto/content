@@ -1,10 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import re
 import subprocess
 import traceback
 from typing import Any
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' STANDALONE FUNCTION '''
 
@@ -165,7 +165,7 @@ def main():  # pragma: no cover
         return_results(dig_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute Dig. Error: {str(ex)}')
+        return_error(f'Failed to execute Dig. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

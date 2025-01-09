@@ -1,10 +1,12 @@
+import subprocess
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-import subprocess
 from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.opc.exceptions import PackageNotFoundError
+
+from CommonServerUserPython import *
 
 
 class WordParser:
@@ -38,7 +40,7 @@ class WordParser:
         output = subprocess.check_output(
             ['soffice', '--headless', '-env:UserInstallation=file:///tmp/.config/extractindicators', '--convert-to',
              'docx', self.file_path], stderr=subprocess.STDOUT)
-        demisto.debug(f"soffice output: [{str(output)}]")
+        demisto.debug(f"soffice output: [{output!s}]")
         # Requires office-utils docker image
         output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
         self.file_path = self.file_path + ".docx"

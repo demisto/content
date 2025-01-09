@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """RemoveKeyFromList
 Removes a Key from a JSON-backed List
 """
@@ -68,7 +69,7 @@ def main():
         return_results(remove_key_from_list_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute RemoveKeyFromList. Error: {str(ex)}')
+        return_error(f'Failed to execute RemoveKeyFromList. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

@@ -1,9 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import csv
 import io
 import json
 from datetime import date, timedelta
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def get_audit_logs(res: Dict):

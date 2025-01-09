@@ -1,7 +1,8 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import re
 import string
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def strings(args):
@@ -14,11 +15,11 @@ def strings(args):
         size = int(args['size'])
     regex = None
     if 'filter' in args:
-        regex = re.compile(args['filter'], re.I)
+        regex = re.compile(args['filter'], re.IGNORECASE)
     fEntry = demisto.executeCommand('getFilePath', {'id': args['entry']})[0]
     if not isError(fEntry):
         matches = []
-        with open(demisto.get(fEntry, 'Contents.path'), 'r', 1024 * 1024, errors='ignore') as f:
+        with open(demisto.get(fEntry, 'Contents.path'), 1024 * 1024, errors='ignore') as f:
             buff = ''
             c = f.read(1)
             while c != '':

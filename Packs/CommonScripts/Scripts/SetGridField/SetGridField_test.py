@@ -1,6 +1,7 @@
 import json
-import pytest
+
 import demistomock as demisto
+import pytest
 
 
 def util_load_json(path):
@@ -82,8 +83,8 @@ def test_build_grid(mocker, keys: list, columns: list, dt_response_json: str, ex
     Then
     - Validate that the grid was created with the correct column names
     """
-    import SetGridField
     import pandas as pd
+    import SetGridField
 
     mocker.patch.object(SetGridField, 'demisto')
     SetGridField.demisto.dt.return_value = util_load_json(dt_response_json)
@@ -115,6 +116,7 @@ def test_build_grid_command(mocker, keys: list[str], columns: list[str], unpack_
     - Validate that the grid was created with the correct column names
     """
     import json
+
     import SetGridField
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'demisto')
@@ -146,6 +148,7 @@ def test_build_grid_command_with_sort_by(mocker, keys: list[str], columns: list[
     - Validate that the grid was created with the correct column names and sorted correctly
     """
     import json
+
     import SetGridField
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'demisto')
@@ -179,6 +182,7 @@ def test_build_grid_command_with_multi_sort_by(mocker, keys: list[str], columns:
     - Validate that the grid was created with the correct column names and sorted correctly
     """
     import json
+
     import SetGridField
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'demisto')

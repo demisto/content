@@ -1,7 +1,8 @@
-from RemoveKeyFromList import remove_key_from_list_command
-import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import Any
 import json
+from typing import Any
+
+import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+from RemoveKeyFromList import remove_key_from_list_command
 
 MOCK_LIST_NAME = "TestList"
 MOCK_KEY_NAME = "TestKey"

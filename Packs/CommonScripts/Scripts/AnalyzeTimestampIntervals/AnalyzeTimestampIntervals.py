@@ -1,6 +1,7 @@
+import statistics
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import statistics
 
 
 def calculate_interval_differences(timestamps):
@@ -127,7 +128,7 @@ def main():  # pragma: no cover
         return_results(command_results)
 
     except Exception as e:
-        return_error(f"An error occurred: {str(e)}")
+        return_error(f"An error occurred: {e!s}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

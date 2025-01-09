@@ -1,12 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
-
-import dateparser
 from datetime import timedelta
 from enum import Enum
 from typing import Any
 
+import dateparser
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Threshold defining "long expiration". When validity_not_after - validity_not_before is greater than
 # this value the certificate will be marked as Long Expiration
@@ -317,7 +317,7 @@ def main():
     try:
         return_results(certificate_reputation_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute CertificateReputation. Error: {str(ex)}')
+        return_error(f'Failed to execute CertificateReputation. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

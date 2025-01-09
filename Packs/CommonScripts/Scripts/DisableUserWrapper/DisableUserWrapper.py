@@ -1,7 +1,7 @@
+import traceback
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-import traceback
 
 
 def create_commands(username: str) -> List[CommandRunner.Command]:
@@ -63,7 +63,7 @@ def main():  # pragma: no cover
     try:
         return_results(disable_user(demisto.args()))
     except Exception as e:
-        error_msg = f'Failed to execute DisableUserWrapper. Error: {str(e)}\n {traceback.format_exc()}'
+        error_msg = f'Failed to execute DisableUserWrapper. Error: {e!s}\n {traceback.format_exc()}'
         if 'The commands that run are not supported in this Instance' in str(e):
             error_msg = 'No disable-user supported integrations were found in this instance.'
 

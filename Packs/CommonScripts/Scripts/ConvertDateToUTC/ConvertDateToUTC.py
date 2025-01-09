@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import pytz
-
+from CommonServerPython import *  # noqa: F401
 
 ''' MAIN FUNCTION '''
 
@@ -38,7 +37,7 @@ def main():
 
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute ConvertDateToUTC. Error: {str(exc)}')
+        return_error(f'Failed to execute ConvertDateToUTC. Error: {exc!s}')
 
 
 ''' ENTRY POINT '''

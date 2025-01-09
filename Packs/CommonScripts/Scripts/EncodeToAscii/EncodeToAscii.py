@@ -12,7 +12,7 @@ def main():
     try:
         encoded_data = data.encode('ascii', 'ignore').decode("utf-8")
     except Exception as e:
-        return_error(f'There was an error encoding the data.\nError:\n{str(e)}')
+        return_error(f'There was an error encoding the data.\nError:\n{e!s}')
 
     # Output the data and add results to war room
     return_results(CommandResults(

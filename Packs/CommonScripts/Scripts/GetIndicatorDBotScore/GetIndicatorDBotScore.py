@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 CONTEXT_PATH = 'DBotScore'
@@ -40,7 +41,7 @@ def iterate_indicator_entry(indicator, entry):
             source = DEFAULT_SOURCE
         dbot_score = get_dbot_score_data(indicator, indicator_type, source, data.get('score', entry["score"]))
         command_results = CommandResults(
-            readable_output=tableToMarkdown('Indicator DBot Score: {}'.format(indicator), dbot_score),
+            readable_output=tableToMarkdown(f'Indicator DBot Score: {indicator}', dbot_score),
             outputs={CONTEXT_PATH: dbot_score}
         ).to_context()
         context_entry_results = command_results.pop('EntryContext')[CONTEXT_PATH]
@@ -61,7 +62,7 @@ def main():
             data = resp[0].get("Contents")
 
             if not data:
-                demisto.results("No results found for indicator {} .".format(indicator))
+                demisto.results(f"No results found for indicator {indicator} .")
                 continue
 
             dbot_scores = []

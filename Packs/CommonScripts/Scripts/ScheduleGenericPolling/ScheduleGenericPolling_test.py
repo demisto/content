@@ -1,9 +1,15 @@
 
 import demistomock as demisto
-from freezegun import freeze_time
 import pytest
-from ScheduleGenericPolling import calculate_end_time, get_command_string, is_command_sanitized, is_value_sanitized, main, \
-    parseIds
+from freezegun import freeze_time
+from ScheduleGenericPolling import (
+    calculate_end_time,
+    get_command_string,
+    is_command_sanitized,
+    is_value_sanitized,
+    main,
+    parseIds,
+)
 
 
 @pytest.mark.parametrize('value, expected_result',

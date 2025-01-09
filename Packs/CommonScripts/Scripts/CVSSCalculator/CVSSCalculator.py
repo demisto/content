@@ -1,8 +1,8 @@
+import math
+from typing import Any
+
 import demistomock as demisto
 from CommonServerPython import *
-
-import math
-from typing import Dict, Any
 
 
 def round_up(n):
@@ -20,7 +20,7 @@ def main():
     version = args.get('version', '3.1')
     vector_string = f"CVSS:{version}/"
 
-    values_map_options: Dict[str, Dict[str, Dict[str, Any]]] = {
+    values_map_options: dict[str, dict[str, dict[str, Any]]] = {
         "3.0": {
             "AV": {
                 "X": None,
@@ -237,7 +237,7 @@ def main():
             if scope_changed:
                 multiplier = 1.08
             calculated_value = multiplier * (impact + exploitability)
-            base_score = calculated_value if calculated_value < 10.0 else 10.0
+            base_score = min(10.0, calculated_value)
             base_score = round_up(base_score)
 
     ###########################################
@@ -259,8 +259,7 @@ def main():
                 * (1 - availability_requirement * modified_availability)
             )
         )
-        modified_impact_sub_score = calculatedmodified_impact_sub_score if calculatedmodified_impact_sub_score < 0.915\
-            else 0.915
+        modified_impact_sub_score = min(0.915, calculatedmodified_impact_sub_score)
 
     if version in ['3.0', '3.1']:
         if modified_scope_changed:
@@ -284,7 +283,7 @@ def main():
             if modified_scope_changed:
                 exponential = 1.08
             calculated_value = exponential * (modified_impact + modified_exploitability)
-            calculated_value = calculated_value if calculated_value < 10 else 10
+            calculated_value = min(10, calculated_value)
             calculated_value = round_up(calculated_value)
             environmental_score = calculated_value * exploit_code_maturity * remediation_level * report_confidence
             environmental_score = round_up(environmental_score)

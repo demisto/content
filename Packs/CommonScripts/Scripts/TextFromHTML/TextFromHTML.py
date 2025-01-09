@@ -1,14 +1,13 @@
+import re
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-import re
 
 
 def get_plain_text(html: str, replace_line_breaks: bool, trim_result: bool):
     data = ''
     if html:
-        data = re.sub(r'<\/?br\s?\/?>', '\n', html, flags=re.I) if replace_line_breaks else html
+        data = re.sub(r'<\/?br\s?\/?>', '\n', html, flags=re.IGNORECASE) if replace_line_breaks else html
 
         data = re.sub(r'<.*?>', '', data)
         entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
@@ -25,7 +24,7 @@ def get_plain_text(html: str, replace_line_breaks: bool, trim_result: bool):
 
 def get_body(html: str, html_tag: str, allow_fallback: bool = False):
     if html and html_tag:
-        body = re.search(fr'<{html_tag}.*/{html_tag}>', html, re.M + re.S + re.I + re.U)
+        body = re.search(fr'<{html_tag}.*/{html_tag}>', html, re.MULTILINE + re.DOTALL + re.IGNORECASE + re.UNICODE)
 
         if body and body.group(0):
             return body.group(0)

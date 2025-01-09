@@ -1,6 +1,7 @@
 
-from CommonServerPython import *
 import math
+
+from CommonServerPython import *
 
 
 def get_color(cvss: int | float) -> str:

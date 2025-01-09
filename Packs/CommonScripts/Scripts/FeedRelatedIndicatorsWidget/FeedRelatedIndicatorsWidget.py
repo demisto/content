@@ -69,7 +69,7 @@ def main(args):
     try:
         return_results(feed_related_indicator(args))
     except Exception as e:
-        return_error(f'Failed to execute FeedRelatedIndicatorsWidget. Error: {str(e)}')
+        return_error(f'Failed to execute FeedRelatedIndicatorsWidget. Error: {e!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
