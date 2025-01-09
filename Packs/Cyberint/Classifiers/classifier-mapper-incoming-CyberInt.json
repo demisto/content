@@ -18,7 +18,7 @@
                 "Cyberint Alert ID": {
                     "simple": "ref_id"
                 },
-                "Cyberint Attachments": {
+                "CyberInt Attachments": {
                     "complex": {
                         "filters": [],
                         "root": "attachments",
@@ -28,19 +28,19 @@
                 "Cyberint Closure reason": {
                     "simple": "closure_reason"
                 },
-                "Cyberint Closure reason Description": {
+                "CyberInt Closure reason Description": {
                     "simple": "closure_reason_description"
                 },
                 "Cyberint Confidence": {
                     "simple": "confidence"
                 },
-                "Cyberint Created by": {
+                "CyberInt Created by": {
                     "simple": "created_by.email"
                 },
-                "Cyberint Created date": {
+                "CyberInt Created date": {
                     "simple": "created_date"
                 },
-                "Cyberint Credentials Exposed CSV": {
+                "CyberInt Credentials Exposed CSV": {
                     "complex": {
                         "accessor": "content",
                         "filters": [],
@@ -59,13 +59,13 @@
                         ]
                     }
                 },
-                "Cyberint Expert Analysis": {
+                "CyberInt Expert Analysis": {
                     "simple": "analysis_report.name"
                 },
                 "Cyberint File Type": {
                     "simple": "attachments.mimetype"
                 },
-                "Cyberint Impact": {
+                "CyberInt Impact": {
                     "complex": {
                         "filters": [],
                         "root": "impacts",
@@ -83,42 +83,42 @@
                         ]
                     }
                 },
-                "Cyberint Payment Card Exposed CSV": {
+                "CyberInt Payment Card Exposed CSV": {
                     "simple": "attachments.content"
                 },
-                "Cyberint Recommendation": {
+                "CyberInt Recommendation": {
                     "complex": {
                         "filters": [],
                         "root": "recommendation",
                         "transformers": []
                     }
                 },
-                "Cyberint Related IOCs": {
+                "CyberInt Related IOCs": {
                     "simple": "iocs"
                 },
-                "Cyberint Related entities": {
+                "CyberInt Related entities": {
                     "simple": "related_entities"
                 },
-                "Cyberint Source": {
+                "CyberInt Source": {
                     "simple": "source"
                 },
-                "Cyberint Source category": {
+                "CyberInt Source category": {
                     "simple": "source_category"
                 },
-                "Cyberint Status": {
+                "CyberInt Status": {
                     "simple": "status"
                 },
                 "Cyberint Tags": {
                     "simple": "tags"
                 },
-                "Cyberint Targeted Brand": {
+                "CyberInt Targeted Brand": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_brands",
                         "transformers": []
                     }
                 },
-                "Cyberint Targeted Vector": {
+                "CyberInt Targeted Vector": {
                     "simple": "targeted_vectors"
                 },
                 "Cyberint Threat Actor": {
@@ -311,7 +311,7 @@
                 "Cyberint Source category": {
                     "simple": "source_category"
                 },
-                "CyberInt Status": {
+                "Cyberint Status": {
                     "simple": "status"
                 },
                 "Cyberint Tags": {

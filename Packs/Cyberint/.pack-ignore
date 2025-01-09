@@ -10,6 +10,18 @@ ignore=IF100
 [file:incidentfield-Cyberint_CyberInt_Vulnerable_CName_Record.json]
 ignore=BA116
 
+[file:incidentfield-Cyberint_CyberInt_ID.json]
+ignore=IF115,IF106,BA116
+
+[file:classifier-mapper-incoming-CyberInt.json]
+ignore=BC105,BC113
+
+[file:classifier-mapper-outgoing-CyberInt.json]
+ignore=BC105
+
+[file:Cyberint.yml]
+ignore=BC112
+
 [known_words]
 Cyberint
 

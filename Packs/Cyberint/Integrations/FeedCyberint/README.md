@@ -1,5 +1,4 @@
 Use the Cyberint Feed integration to get indicators from the feed.
-This integration was integrated and tested with version 1 of Cyberint Feed.
 
 ## Configure Cyberint Feed on Cortex XSOAR
 

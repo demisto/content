@@ -1,12 +1,11 @@
 {
-	"brands": null,
 	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "46139b6e-d1e4-4f17-88bb-cf3b4bb5b6df",
+	"id": "Cyberint Outgoing (mapper)",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
