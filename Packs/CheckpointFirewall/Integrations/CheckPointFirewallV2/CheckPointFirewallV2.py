@@ -1739,8 +1739,8 @@ def checkpoint_show_threat_protection_command(client: Client, args):
     readable_output = ''
     uid = args.get('uid', '')
     name = args.get('name')
-    properties = False if args.get('properties') == 'false' else True
-    profiles = False if args.get('profiles') == 'false' else True
+    properties = args.get('properties') != 'false'
+    profiles = args.get('profiles') != 'false'
     result = client.show_threat_protection(uid, name, properties, profiles)
 
     if result:
@@ -1834,6 +1834,8 @@ def checkpoint_delete_threat_protections_command(client: Client, args):
 
         readable_output = tableToMarkdown('CheckPoint data for delete threat protections command:',
                                           result)
+    else:
+        readable_output = 'No result was found.'
     command_results = CommandResults(
         outputs_prefix='CheckPoint.DeletedThreatProtections',
         outputs_key_field='task-id',
