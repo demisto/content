@@ -464,12 +464,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "EwsExtension",
-            "playbookID": "playbook-EWS_O365_Extension_test",
-            "fromversion": "6.0.0",
-            "timeout": 500
-        },
-        {
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
@@ -1649,18 +1643,6 @@
             "playbookID": "GRR Test"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "virusTotal-test-playbook",
-            "timeout": 1400
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_preferred_vendors",
-            "playbookID": "virusTotaI-test-preferred-vendors",
-            "timeout": 1400
-        },
-        {
             "integrations": [
                 "Gmail Single User",
                 "Gmail"
@@ -1981,10 +1963,6 @@
             "is_mockable": false
         },
         {
-            "integrations": "ipinfo",
-            "playbookID": "IPInfoTest"
-        },
-        {
             "integrations": "ipinfo_v2",
             "playbookID": "IPInfo_v2Test",
             "fromversion": "5.5.0"
@@ -2208,20 +2186,6 @@
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "timeout": 1400,
             "pid_threshold": 12
-        },
-        {
-            "integrations": [
-                "VirusTotal - Private API",
-                "VirusTotal"
-            ],
-            "playbookID": "vt-detonate test",
-            "instance_names": [
-                "virus_total_private_api_general",
-                "virus_total_general"
-            ],
-            "timeout": 1400,
-            "fromversion": "5.5.0",
-            "is_mockable": false
         },
         {
             "integrations": "Cisco ASA",
@@ -3315,15 +3279,6 @@
         {
             "playbookID": "Request Debugging - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Test Convert file hash to corresponding hashes",
-            "fromversion": "4.5.0",
-            "integrations": [
-                "VirusTotal",
-                "Zimperium"
-            ],
-            "instance_names": "virus_total_general"
         },
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
@@ -6217,7 +6172,9 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
         "DSPM": "No instance",
-        "Symantec Email Security Cloud": "No instance"
+        "Symantec Email Security Cloud": "No instance",
+        "ipinfo" : "Integration is deprecated.",
+        "epo": "Integration is deprecated."
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
