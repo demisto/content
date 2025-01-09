@@ -11,7 +11,7 @@ def mock_debug(message):
     """Print debug messages to the XSOAR logs"""
     print(f"DEBUG: {message}")
 
-# Assign the mock debug function to demisto.debug for logging
+
 demisto.debug = mock_debug
 
 class Client:
