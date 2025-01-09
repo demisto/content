@@ -754,6 +754,7 @@ def main():
         args = demisto.args()
 
         LOG(f'Command being called is {command}.')
+        result = ""
         if command == 'test-module':
             result = test_module(client)
 
