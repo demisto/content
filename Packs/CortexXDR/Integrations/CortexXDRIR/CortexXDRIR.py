@@ -987,7 +987,7 @@ def get_remote_data_command(incident_data, close_xsoar_incident):
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=reformatted_entries
-        )
+        ).extract_for_local()
 
     except Exception as e:
         demisto.debug(f"Error in XDR incoming mirror for incident {incident_data.get('incident_id')} \n"
@@ -1012,7 +1012,7 @@ def get_remote_data_command(incident_data, close_xsoar_incident):
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=[]
-        )
+        ).extract_for_local()
 
 
 def update_remote_system_command(client, args):
