@@ -108,11 +108,7 @@ def pass_sources_list_filter(incident, sources_list):
     if len(sources_list) == 0:
         return True
 
-    for source in sources_list:
-        if source in incident.get("event_sources"):
-            return True
-
-    return False
+    return any(source in incident.get('event_sources') for source in sources_list)
 
 
 def pass_abuse_disposition_filter(incident, abuse_disposition_values):
@@ -129,9 +125,8 @@ def pass_abuse_disposition_filter(incident, abuse_disposition_values):
         return True
 
     for incident_field in incident.get('incident_field_values', []):
-        if incident_field['name'] == 'Abuse Disposition':
-            if incident_field['value'] in abuse_disposition_values:
-                return True
+        if incident_field['name'] == 'Abuse Disposition' and incident_field['value'] in abuse_disposition_values:
+            return True
 
     return False
 
@@ -378,7 +373,7 @@ def main():  # pragma: no cover
     fetch_delta = params.get('fetch_delta', '6 hours')
     incidents_states = argToList(params.get('states', ['new', 'open', 'assigned', 'closed', 'ignored']))
 
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.debug(f'Command being called is {command}')
 
     try:
         headers = {
