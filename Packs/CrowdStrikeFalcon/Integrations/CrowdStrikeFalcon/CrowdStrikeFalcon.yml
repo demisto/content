@@ -60,7 +60,8 @@ configuration:
   defaultvalue:marketplacev2: '1 min'
   section: Collect
   required: false
-  hidden:marketplacev2: true
+  hidden:
+  - marketplacev2
 - display: Max incidents per fetch
   display:marketplacev2: Max events per fetch
   name: incidents_per_fetch
@@ -150,7 +151,8 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  hidden:marketplacev2: true
+  hidden:
+  - marketplacev2
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
@@ -171,7 +173,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
-  hidden:marketplacev2: true
+  hidden:
+  - marketplacev2
 - defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
@@ -180,7 +183,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
-  hidden:marketplacev2: true
+  hidden:
+  - marketplacev2
 - defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
@@ -214,7 +218,8 @@ configuration:
   - False positive
   - Reopened
   - Ignored
-  hidden:marketplacev2: true
+  hidden:
+  - marketplacev2
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -222,7 +227,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  hidden:marketplacev2: true
+  hidden:
+  - marketplacev2
 - additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
