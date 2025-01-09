@@ -193,15 +193,15 @@ def test_address_list_create_command(requests_mock, net_quest_omx_client):
     """
     Given:
         - A mocked client
-        - A name for the new list
+        - A name and a value for the new list
     When:
         - Executing netquest-address-list-create command
     Then:
         - Ensure command is not failed and the readable_output as expected
     """
-    name = "TEST"
+    name, value = "TEST", "0.0.0.0/24"
     requests_mock.post(f'{BASE_URL}Systems/Filters/ListImport/Config/Install', json={})
-    result = address_list_create_command(client=net_quest_omx_client, args={"name": name})
+    result = address_list_create_command(client=net_quest_omx_client, args={"name": name, "value": value})
     assert result.readable_output == f"Successfully created a new instance of {name}"
 
 
@@ -210,15 +210,16 @@ def test_address_list_rename_command(requests_mock, net_quest_omx_client):
     Given:
         - A mocked client
         - The name of the list to rename
-        - A new name for the list
+        - A new name and a new value for the list
     When:
         - Executing netquest-address-list-rename command
     Then:
         - Ensure command is not failed and the readable_output as expected
     """
-    new_name, existing_name = "NEW_TEST", "TEST"
+    new_name, new_value, existing_name = "NEW_TEST", "0.0.0.0/24", "TEST"
     requests_mock.put(f'{BASE_URL}Systems/Filters/ListImport/ListName/{existing_name}/Config/Install', json={})
-    result = address_list_rename_command(client=net_quest_omx_client, args={"new_name": new_name, "existing_name": existing_name})
+    result = address_list_rename_command(client=net_quest_omx_client,
+                                         args={"new_name": new_name, "new_value": new_value, "existing_name": existing_name})
     assert result.readable_output == f"Successfully renamed {existing_name} to {new_name}"
 
 

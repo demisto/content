@@ -87,11 +87,17 @@ script:
     - description: 'What to name the new address list.'
       name: name
       required: true
+    - description: 'The value for the new address list.'
+      name: value
+      required: true
     description: "This replaces the old list entity and overrides it."
     name: netquest-address-list-create
   - arguments:
     - description: 'The new name for an existing address list.'
       name: new_name
+      required: true
+    - description: 'The new value for an existing address list.'
+      name: new_value
       required: true
     - description: 'The existing list name of the address list that we want to modify.'
       name: existing_name
