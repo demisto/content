@@ -11,7 +11,7 @@ Example `!epo-help` outputs with permission information:
 * `!epo-help command="repository.findPackages"`:
 ![](../../doc_files/epo-help-find-pkg.png)
 * `!epo-help command="repository.deletePackage"`:
-![](../../doc_files/epo-help-delete-pkg.png)
+![](../../doc_files/epo-help-delete-pkg..png)
 
 ## Configure McAfee ePO v2 in Cortex
 
