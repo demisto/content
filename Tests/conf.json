@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+        "integrations": "qualys_fim",
+        "playbookID": "QualysFIM-Playbook"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
         },
