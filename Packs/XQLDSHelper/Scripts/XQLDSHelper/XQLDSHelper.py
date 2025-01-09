@@ -98,11 +98,14 @@ class ContextData:
                 k = key[len(prefix):]
                 if key.startswith(prefix) and k[:1] in ('', '.', '(', '='):
                     if prefix == 'lists':
-                        m = re.split('[.(=]', k[1:], maxsplit=1)
-                        if m[0]:
+                        if list_name := re.split('[.(=]', k[1:], maxsplit=1)[0]:
                             dx = {
                                 prefix: {
-                                    m[0]: execute_command('getList', {'listName': m[0]})
+                                    list_name: execute_command(
+                                        'getList', {
+                                            'listName': list_name
+                                        }
+                                    )
                                 }
                             }
                             break
