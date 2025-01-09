@@ -4,7 +4,7 @@ import json
 import re
 import traceback
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import quote_plus
 import urllib3
 import copy
@@ -82,6 +82,9 @@ class Client(BaseClient):
             items_count = len(response.json()['page']['items'])
             quotient = limit // items_count
             reminder = limit % items_count
+        else:
+            reminder = 0
+            demisto.debug(f"{limit=} -> {reminder=}")
         paged_results = response.json()['page']['items']
 
         while "next" in response.json()['links'] and len(response.json()['page']['items']) > 0:
@@ -444,27 +447,27 @@ class Client(BaseClient):
             logs_attributes['credentialType'] = response['details']['credentialType']
         elif 'credentials' in response['details']:
             logs_attributes['credentialType'] = response['details']['credentials'][0]['type']
-        if 'resultText' in response['details'].keys():
+        if 'resultText' in response['details']:
             logs_attributes['resultText'] = response['details']['resultText']
-        if 'actionText' in response['details'].keys():
+        if 'actionText' in response['details']:
             logs_attributes['actionText'] = response['details']['actionText']
-        if 'applicationName' in response['context'].keys():
+        if 'applicationName' in response['context']:
             logs_attributes['applicationName'] = response['context']['applicationName']
-        if 'policyName' in response['context'].keys():
+        if 'policyName' in response['context']:
             logs_attributes['policyName'] = response['context']['policyName']
-        if 'state' in response['details'].keys():
+        if 'state' in response['details']:
             logs_attributes['state'] = response['details']['state']
-        if 'operationType' in response['details'].keys():
+        if 'operationType' in response['details']:
             logs_attributes['operationType'] = response['details']['operationType']
-        if 'operationObjectType' in response['details'].keys():
+        if 'operationObjectType' in response['details']:
             logs_attributes['operationObjectType'] = response['details']['operationObjectType']
-        if 'operationObjectName' in response['details'].keys():
+        if 'operationObjectName' in response['details']:
             logs_attributes['operationObjectName'] = response['details']['operationObjectName']
-        if 'message' in response['details'].keys():
+        if 'message' in response['details']:
             logs_attributes['message'] = response['details']['message']
-        elif 'description' in response['details'].keys():
+        elif 'description' in response['details']:
             logs_attributes['message'] = response['details']['description']
-        if 'serial' in response['details'].keys():
+        if 'serial' in response['details']:
             logs_attributes['serial'] = response['details']['serial']
 
         return logs_attributes
@@ -476,18 +479,17 @@ class Client(BaseClient):
             logs_items = []
         if userName:
             for response in total_items:
-                if 'principalId' in response['context'].keys():
-                    if response['context']['principalId'] == userName:
-                        if limit:
-                            if limit >= count:
-                                count = count + 1
-                            else:
-                                break
-                        logs_items.append(self.logs_attributes_sta(response=response))
+                if 'principalId' in response['context'] and response['context']['principalId'] == userName:
+                    if limit:
+                        if limit >= count:
+                            count = count + 1
+                        else:
+                            break
+                    logs_items.append(self.logs_attributes_sta(response=response))
 
         else:
             for response in total_items:
-                if 'principalId' in response['context'].keys():
+                if 'principalId' in response['context']:
                     if limit:
                         if limit >= count:
                             count = count + 1
@@ -508,9 +510,8 @@ class Client(BaseClient):
             query_params['since'] = self.validate_date_sta(datestring=since)
         if until:
             query_params['until'] = self.validate_date_sta(datestring=until)
-        if since and until:
-            if until <= since:
-                raise Exception("Until argument's date and time must be greater than since.")
+        if since and until and until <= since:
+            raise Exception("Until argument's date and time must be greater than since.")
         if not since and until:
             raise Exception("Use until argument only while using since.")
 
@@ -747,7 +748,7 @@ def test_module(client, args):
     return 'ok'
 
 
-def get_userlist_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_userlist_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-list command. Get list of all the users in the tenant. """
 
     response = client.get_userlist_sta(limit=args.get('limit'))
@@ -767,7 +768,7 @@ def get_userlist_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_info_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-info command. Get profile information of a specific user."""
 
     response = client.get_user_info_sta(userName=args.get('userName'))
@@ -789,7 +790,7 @@ def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_user_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-create-user command. Create a new user in the tenant. """
 
     response = client.create_user_sta(args=args)
@@ -810,7 +811,7 @@ def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_user_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-update-user-info command. Update profile of a specific user. """
 
     response = client.update_user_sta(args=args)
@@ -831,7 +832,7 @@ def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_user_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-user command. Delete user from the tenant. """
 
     response = client.delete_user_sta(userName=args.get('userName'))
@@ -847,7 +848,7 @@ def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_groups_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-groups command. Get all the groups associated with a specific user. """
 
     response, output_data = client.user_groups_data(userName=args.get('userName'), limit=args.get('limit'))
@@ -866,7 +867,7 @@ def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_group_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_group_list_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-group-list command. Get list of all the groups in the tenant. """
 
     response = client.get_group_list_sta(limit=args.get('limit'))
@@ -884,7 +885,7 @@ def get_group_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_group_info_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-group-info command. Get information of a specific group. """
 
     response = client.get_group_info_sta(groupName=args.get('groupName'))
@@ -902,7 +903,7 @@ def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_group_members_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-group-members command. Get list of users in a specific group. """
 
     response, output_data = client.group_members_data(groupName=args.get('groupName'), limit=args.get('limit'))
@@ -921,7 +922,7 @@ def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-create-group command. Create a new group in the tenant. """
 
     response = client.create_group_sta(args=args)
@@ -940,7 +941,7 @@ def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-group command. Delete group from the tenant. """
 
     response = client.delete_group_sta(groupName=args.get('groupName'))
@@ -956,7 +957,7 @@ def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def update_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-update-group-info command. Update information of a specific group. """
 
     response = client.update_group_sta(args=args)
@@ -974,7 +975,7 @@ def update_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def user_exist_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def user_exist_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-user-exist-group command. Checks if a user is a member of a specific group."""
 
     response = client.user_exist_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
@@ -992,7 +993,7 @@ def user_exist_group_sta_command(client: Client, args: Dict[str, Any]) -> Comman
         )
 
 
-def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_user_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-add-user-group command. Add user to a specific group. """
 
     response = client.add_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
@@ -1009,7 +1010,7 @@ def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_user_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-remove-user-group command. Remove user from a specific group. """
 
     response = client.remove_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
@@ -1026,7 +1027,7 @@ def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def get_logs_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_logs_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-logs command. Get user's logs. """
 
     response = client.get_logs_sta(userName=args.get('userName'), since=args.get('since'),
@@ -1047,7 +1048,7 @@ def get_logs_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def validate_tenant_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def validate_tenant_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-validate-tenant command. Validate key and permissions. """
 
     client.validate_tenant_sta()
@@ -1058,7 +1059,7 @@ def validate_tenant_sta_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_application_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_application_list_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-application-list command. Get list of all the applications in the tenant. """
 
     response = client.get_application_list_sta(limit=args.get('limit'))
@@ -1076,7 +1077,7 @@ def get_application_list_sta_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def get_application_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_application_info_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-application-info command. Get profile information of a specific application."""
 
     readable_output, context_data = client.get_application_info_sta(applicationName=args.get('applicationName'))
@@ -1097,7 +1098,7 @@ def get_application_info_sta_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def get_user_applications_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_applications_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-applications. Get all the applications associated with a specific user. """
 
     response, output_data = client.user_applications_data(userName=args.get('userName'), limit=args.get('limit'))
@@ -1116,7 +1117,7 @@ def get_user_applications_sta_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def get_user_sessions_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_sessions_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-sessions command. Get all the sessions associated with a specific user. """
 
     response, output_data = client.user_sessions_data(userName=args.get('userName'))
@@ -1137,7 +1138,7 @@ def get_user_sessions_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def delete_user_sessions_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_user_sessions_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-user-sessions command. Delete all the IDP sessions associated with a specific user. """
 
     response = client.delete_sessions_sta(userName=args.get('userName'))
