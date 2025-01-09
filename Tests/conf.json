@@ -3263,7 +3263,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "fromversion": "4.5.0",
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "Flashpoint",
@@ -6082,9 +6083,7 @@
         "PaloAltoNetworks_PrismaCloudCompute-Test": "CRTX-147998",
         "QRadar_v3-test": "CRTX-141972",
         "QRadar - Get Offense Logs Test": "CRTX-141972",
-        "QRadar Indicator Hunting Test": "CRTX-141972",
-        "Send Investigation Summary Reports - Test ": "CIAC-12371",
-
+        "QRadar Indicator Hunting Test": "CRTX-141972"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
