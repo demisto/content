@@ -2,7 +2,7 @@
     "name": "Microsoft Exchange On-Premise",
     "description": "Exchange Web Services",
     "support": "xsoar",
-    "currentVersion": "2.1.20",
+    "currentVersion": "2.1.21",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
