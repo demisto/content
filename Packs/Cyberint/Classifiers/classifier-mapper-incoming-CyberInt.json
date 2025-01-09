@@ -6,7 +6,7 @@
         "Cyberint Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alert URL ID": {
+                "CyberInt Alert URL ID": {
                     "simple": "id"
                 },
                 "Alert ID": {
@@ -226,7 +226,7 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alert URL ID": {
+                "CyberInt Alert URL ID": {
                     "simple": "id"
                 },
                 "Alert ID": {

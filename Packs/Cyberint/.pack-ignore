@@ -11,7 +11,7 @@ ignore=IF100
 ignore=BA116
 
 [file:incidentfield-Cyberint_CyberInt_ID.json]
-ignore=IF115,IF106,BA116
+ignore=IF115,IF106,BA116,IF113
 
 [file:classifier-mapper-incoming-CyberInt.json]
 ignore=BC105,BC113
