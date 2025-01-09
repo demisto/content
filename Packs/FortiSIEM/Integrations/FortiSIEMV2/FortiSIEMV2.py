@@ -1061,7 +1061,7 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
     last_incident_create_time = last_run.get('create_time')
     time_from = last_incident_create_time or first_fetch_epoch
 
-    relevant_incidents = fetch_relevant_incidents(client, numeric_status_list, time_from,
+    relevant_incidents = fetch_relevant_incidents(client, numeric_status_list, time_from,  # type: ignore[arg-type]
                                                   date_to_timestamp(datetime.now()), last_run, max_fetch)
     formatted_incidents = format_incidents(relevant_incidents)  # for Layout
 
