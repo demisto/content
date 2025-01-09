@@ -1288,7 +1288,7 @@ dataset = panw_ngfw_traffic_raw
 
 ## Sample Content Bundle
 
-To assist you more effectively, we’ve provided sample automation scripts with List data, including XQL query strings, in a content bundle.
+To assist you more effectively, we’ve provided sample automation scripts with List data, including template data and XQL query strings, in a content bundle.
 You can conveniently download them using the link below.
 
  - [XQLDS_Sample_content-bundle.tar.gz](https://github.com/demisto/content/tree/master/Packs/XQLDSHelper/Scripts/XQLDSHelper/test_data/XQLDS_Sample_content-bundle.tar.gz)
