@@ -109,7 +109,7 @@ TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonl
 REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
 COMMANDS_REQUIRED_PERMISSIONS = {
-    'send-notification' : {'Application': ['Group.ReadWrite.All'], 'Delegated': []},
+    'send-notification' : {'Application': ['Group.ReadWrite.All'], 'Delegated': ['GroupMember.Read.All']},
     'mirror-investigation' : {'Application': ['Group.ReadWrite.All'], 'Delegated': []},
     'close-channel': {'Application': ['Group.ReadWrite.All'], 'Delegated': []},
     'microsoft-teams-ring-user': {'Application': ['Calls.Initiate.All', 'Calls.InitiateGroupCall.All'], 'Delegated': []},
@@ -842,9 +842,16 @@ def http_request(
             params=params,
         )
 
-        # if not response.ok:
-        #     error: str = error_parser(response, api)
-        #     raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
+        if not response.ok:
+            error: str = error_parser(response, api)
+            if response.status_code == 403 and ('Authorization_RequestDenied' or 'Insufficient privilege' or
+                                                'Missing scope permissions') in error:
+                print('in condition')
+                detailed_error_message = insufficient_permissions_error_handler()
+                if detailed_error_message:
+                    error = f'{detailed_error_message}\nOriginal Error:\n{error}' 
+            
+            raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error} command -{demisto.command()}')
 
         if response.status_code in {202, 204}:
             # Delete channel or remove user from channel return 204 if successful
@@ -858,7 +865,7 @@ def http_request(
         try:
             return response.json()
         except ValueError:
-            raise ValueError(f'Error in API call to Microsoft Teams: {response.text}')
+            raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {response.text}')
     except requests.exceptions.ConnectTimeout:
         error_message = 'Connection Timeout Error - potential reason may be that Microsoft Teams is not ' \
                         'accessible from your host.'
@@ -871,6 +878,7 @@ def http_request(
         error_message = 'Proxy Error - if \'Use system proxy settings\' in the integration configuration has been ' \
                         'selected, try deselecting it.'
         raise ConnectionError(error_message)
+    
 
 
 def integration_health():
@@ -2811,8 +2819,6 @@ def get_token_permissions(access_token: str) -> list[str]:
     :return: A list of the token's API permission roles.
     """
     decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-    print(f'AUTH_TYPE is: {AUTH_TYPE}')
-    print(f'decoded_token is: {decoded_token}')
 
     if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
         roles = decoded_token.get('roles', [])
@@ -2842,8 +2848,8 @@ def token_permissions_list_command():
         roles = get_token_permissions(access_token)
 
         if roles:
-            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})',
-                                 sorted(roles), headers=['Permission'])
+            hr = tableToMarkdown(f'The current API permissions in the Teams application are: ({len(roles)})\n'
+                                 f'Authorization type is: {AUTH_TYPE}', sorted(roles), headers=['Permission'])
         else:
             hr = 'No permissions obtained for the used graph access token.'
 
@@ -3028,9 +3034,11 @@ def auth_type_switch_handling():
         integration_context['current_auth_type'] = AUTH_TYPE
         set_integration_context(integration_context)
         
-def insufficient_permissions_error_handler(command: str):
+def insufficient_permissions_error_handler():
     """
     """
+    print('in insufficient_permissions_error_handler')
+    command: str = demisto.command()
     error_message = f'To run the {command} command using the {AUTH_TYPE} Flow, the following API permissions are required:\n'
     demisto.debug(f"Authentication type is: {AUTH_TYPE}")
     missing_permissions = []
@@ -3073,20 +3081,6 @@ def insufficient_permissions_error_handler(command: str):
             error_message += "According to our check, your graph access token has all the required Delegated API permissions. Ensure your application has all the required Application API permissions mentioned above. If yes, the issue might be related to an API scope issue, or a change in the Microsoft Teams API."
             
     return error_message
-        
-    
-            
-            
-            
-                
-            
-    
-    
-    
-    
-    
-    
-    return ''
 
 
 def main():   # pragma: no cover
@@ -3146,13 +3140,12 @@ def main():   # pragma: no cover
             raise NotImplementedError(f"command {command} is not implemented.")
     # Log exceptions
     except Exception as e:
-        error_message = str(e)
-        if ('Authorization_ReqeustDenied' or 'Insufficient privilege') in error_message:
-            insufficient_permissions_error_message = insufficient_permissions_error_handler(command)
-            if insufficient_permissions_error_message:
-                error_message = f'{insufficient_permissions_error_message}\nOriginal Error:\n{error_message}' 
-        return_error(f'Failed to execute {command} command.\nError:\n{error_message}')
-
+        # error_message = str(e)
+        # if ('Authorization_RequestDenied' or 'Insufficient privilege') in error_message:
+        #     insufficient_permissions_error_message = insufficient_permissions_error_handler(command)
+        #     if insufficient_permissions_error_message:
+        #         error_message = f'{insufficient_permissions_error_message}\nOriginal Error:\n{error_message}' 
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
