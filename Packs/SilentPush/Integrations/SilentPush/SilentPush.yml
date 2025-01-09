@@ -1,56 +1,89 @@
-category: Data Enrichment & Threat Intelligence
 commonfields:
   id: SilentPush
   version: -1
-configuration:
-- defaultvalue: https://api.silentpush.com/
-  display: SilentPush API Base URL
-  name: url
-  required: true
-  type: 0
-- displaypassword: SilentPush API Key
-  additionalinfo: The API Key used to authenticate with SilentPush
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-description: >
-  The SilentPush integration provides domain intelligence, risk scores, and WHOIS
-  information for multiple domains. It supports use cases like domain reputation
-  analysis, threat detection, and enrichment for SOCs.
-display: SilentPush
-name: SilentPush
-script:
-  commands:
-  - arguments:
-    - description: The domain to retrieve information about. For example, "silentpush.com".
-      name: domain
-      required: true
-    description: Retrieves domain information, including risk scores and WHOIS data, for a given domain.
-    name: silentpush-list-domain-information
-    outputs:
-    - contextPath: SilentPush.Domain.Name
-      description: The name of the domain queried.
-      type: String
-    - contextPath: SilentPush.Domain.RiskScore
-      description: The risk score for the queried domain.
-      type: Number
-    - contextPath: SilentPush.Domain.Whois
-      description: WHOIS data for the queried domain.
-      type: String
-  runonce: false
-  script: SilentPush.py
+  name: SilentPush
   type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
-fromversion: 5.5.0
-tests:
-- No tests (auto formatted)
+  subType: python3
+  description: Integration with the SilentPush API to fetch domain information and other related data.
+  enabled: true
+  tags:
+    - "SilentPush"
+    - "Domain Info"
+    - "API"
+  comment: "Integration to fetch domain information from SilentPush API"
+  
+script: 
+  type: python
+  id: SilentPush
+  file: SilentPush.py
+  args: []
+  isArray: false
+
+commands:
+  - name: silentpush-list-domain-information
+    description: Fetches domain information including WHOIS data, domain age, and risk scores.
+    enabled: true
+    hidden: false
+    args:
+      - isArray: false
+        name: domain
+        description: The domain to fetch information for (default is silentpush.com).
+        isOptional: false
+        type: string
+    implements:
+      - get
+    comment: "Fetch domain info, including age, registrar, WHOIS data, and risk scores."
+    outputs:
+      - contextPath: SilentPush.Domain
+        description: "Domain information fetched from SilentPush API."
+        type: dict
+      - contextPath: SilentPush.Domain.domain
+        description: "The domain name."
+        type: string
+    tags:
+      - domain
+      - info
+      - silentpush
+    type: python3
+    command: list_domain_information_command
+    rawResponse: true
+
+  - name: test-module
+    description: Test the connection to the SilentPush API and check API Key validity.
+    enabled: true
+    hidden: false
+    args: []
+    implements:
+      - test
+    outputs:
+      - contextPath: SilentPush.Test
+        description: "Returns 'ok' if the API connection is successful."
+        type: string
+    command: test_module
+    rawResponse: false
+
+arguments:
+  - id: domain
+    name: domain
+    description: The domain to fetch information for.
+    type: string
+    isArray: false
+    isOptional: false
+    default: silentpush.com
+
+integrationContext:
+  outputs:
+    SilentPush.Domain:
+      domain: string
+      age: number
+      age_score: number
+      first_seen: number
+      is_new: bool
+      is_new_score: number
+      last_seen: number
+      registrar: string
+      whois_age: number
+      whois_created_date: string
+      zone: string
+    SilentPush.Test:
+      status: string
