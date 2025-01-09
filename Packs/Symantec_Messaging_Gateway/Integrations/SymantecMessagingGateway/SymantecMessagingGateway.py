@@ -50,7 +50,6 @@ def login():
 
     soup = BeautifulSoup(login_do_response.text, "lxml")
     hidden_tags = soup.find_all("input", type="hidden")  # Parse <input type=hidden>
-    last_login = ""
     for tag in hidden_tags:
         name = tag.attrs.get('name', None)
         if name == 'lastlogin':
@@ -58,7 +57,6 @@ def login():
     cookies = {
         'JSESSIONID': login_jsession
     }
-    demisto.debug(f"{last_login=}")
     data = {
         'lastlogin': last_login,
         'username': USERNAME,
