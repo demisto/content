@@ -381,7 +381,7 @@ def remediate_asset_command(client: Client, args: dict) -> CommandResults:
     remove_inherited_sharing = argToBoolean(
         args.get('remove_inherited_sharing', False)) if remediation_type == 'remove_public_sharing' else None
 
-    client.remediate_asset(asset_id, remediation_type, remove_inherited_sharing)
+    client.remediate_asset(asset_id, remediation_type, remove_inherited_sharing)  # type: ignore[arg-type]
     outputs = {
         'asset_id': asset_id,
         'remediation_type': remediation_type,
