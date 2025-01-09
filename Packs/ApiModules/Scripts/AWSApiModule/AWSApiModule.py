@@ -2,6 +2,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import boto3
 from botocore.config import Config
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 
 STS_ENDPOINTS = {
     "us-gov-west-1": "https://sts.us-gov-west-1.amazonaws.com",
@@ -31,6 +33,62 @@ def extract_session_from_secret(secret_key, session_token):
         return secret_key.split('@@@')[0], secret_key.split('@@@')[1]
     else:
         return secret_key, session_token
+
+
+def run_on_all_accounts(func: Callable[[dict], CommandResults]):
+    """Decorator that runs the given command function on all AWS accounts configured in the params.
+
+    Args:
+        func (callable): The command function to run on each account.
+            Must accept the args dict and an AWSClient as arguments.
+            Must return a CommandResults object.
+
+    Returns:
+        callable: If a role name is configured in the params, returns a function
+        that handles running on all accounts.
+        If no role exists, returns the passed in func unchanged.
+
+    This decorator handles setting up the proper roleArn, roleSessionName,
+    roleSessionDuration for accessing each account before calling the function
+    and adds the account details to the result.
+    """
+    params = demisto.params()
+    max_workers = arg_to_number(params.get('max_workers'))
+    role_name: str = params.get('access_role_name', '')
+    is_arn_provided = bool(demisto.getArg('roleArn'))
+
+    def account_runner(args: dict) -> list[CommandResults]:
+        suffix_role_name = role_name.removeprefix('role/')
+        accounts = argToList(params.get('accounts_to_access'))
+
+        def run_command(account_id: str) -> CommandResults:
+            new_args = args | {
+                #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
+                'roleArn': f'arn:aws:iam::{account_id}:role/{suffix_role_name}',
+                'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
+                'roleSessionDuration': args.get('roleSessionDuration', 900),
+            }
+            try:
+                result = func(new_args)
+                result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
+                if isinstance(result.outputs, list):
+                    for obj in result.outputs:
+                        obj['AccountId'] = account_id
+                elif isinstance(result.outputs, dict):
+                    result.outputs['AccountId'] = account_id
+                return result
+            except Exception as e:  # catch any errors raised from "func" to be tagged with the account ID and displayed
+                return CommandResults(
+                    readable_output=f'#### Error in command call for account `{account_id}`\n{e}',
+                    entry_type=EntryType.ERROR,
+                    content_format=EntryFormat.MARKDOWN,
+                )
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            results = executor.map(run_command, accounts)
+        return list(results)
+
+    return account_runner if (role_name and not is_arn_provided) else func
 
 
 class AWSClient:
