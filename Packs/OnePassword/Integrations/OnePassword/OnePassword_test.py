@@ -84,10 +84,9 @@ def test_add_fields_event():
     Assert:
         - Ensure the '_time' and 'SOURCE_LOG_TYPE' fields are added and correctly set.
     """
-    from OnePassword import add_fields_to_event, arg_to_datetime, DATE_FORMAT
+    from OnePassword import add_fields_to_event, arg_to_datetime, EVENT_DATE_FORMAT, FILTER_DATE_FORMAT
 
     event_timestamp = '2024-12-02T11:54:19.710457472Z'
-    expected_event_time = arg_to_datetime(event_timestamp).strftime(DATE_FORMAT)
 
     event_type = 'audit event'
     raw_event = {
@@ -98,7 +97,8 @@ def test_add_fields_event():
     }
     add_fields_to_event(raw_event, event_type)
 
-    assert raw_event['_time'] == expected_event_time
+    assert raw_event['_time'] == arg_to_datetime(event_timestamp).strftime(EVENT_DATE_FORMAT)
+    assert raw_event['timestamp_ms'] == arg_to_datetime(event_timestamp).strftime(FILTER_DATE_FORMAT)
     assert raw_event['SOURCE_LOG_TYPE'] == event_type.upper()
 
 
@@ -125,7 +125,7 @@ def test_create_get_events_request_body_invalid_inputs():
         pytest.param(
             datetime(2024, 12, 2, 11, 50),
             None,
-            {'limit': 1000, 'start_time': '2024-12-02T11:50:00Z'},
+            {'limit': 1000, 'start_time': '2024-12-02T11:50:00.000000Z'},
             id='Reset cursor (date filter)',
         ),
         pytest.param(
@@ -254,7 +254,7 @@ def test_set_next_run(mocker: MockerFixture):
 
     demisto_set_last_run = mocker.patch('OnePassword.demisto.setLastRun')
 
-    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:21Z', 'ids': ['second (and last) event']}}
+    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:20.710457Z', 'ids': ['second (and last) event']}}
     set_next_run(next_run)
 
     assert demisto_set_last_run.call_count == 1
@@ -280,7 +280,7 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
     from_date = '2024-12-02T11:54:11Z'
 
     # Expected outputs
-    expected_type_next_run = {'from_date': '2024-12-02T11:55:20Z', 'ids': ['second (and last) event']}
+    expected_type_next_run = {'from_date': '2024-12-02T11:55:20.710457Z', 'ids': ['second (and last) event']}
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
     get_events_from_client = mocker.patch('OnePassword.get_events_from_client', return_value=expected_events)

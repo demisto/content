@@ -23,6 +23,7 @@
         },
         "actor_type": "user",
         "_time": "2024-12-02T11:54:19Z",
+        "timestamp_ms": "2024-12-02T11:54:19.710457Z",
         "SOURCE_LOG_TYPE": "AUDIT EVENTS"
     },
     {
@@ -49,6 +50,7 @@
         },
         "actor_type": "user",
         "_time": "2024-12-02T11:55:20Z",
+        "timestamp_ms": "2024-12-02T11:55:20.710457Z",
         "SOURCE_LOG_TYPE": "AUDIT EVENTS"
     }
 ]

@@ -10,7 +10,8 @@ from datetime import datetime, timedelta, UTC
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC
+EVENT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # For XSIAM events - second precision
+FILTER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # For 1Password date filter - microsecond precision
 VENDOR = '1Password'
 PRODUCT = '1Password'
 
@@ -106,22 +107,25 @@ def create_get_events_request_body(
         return {'cursor': pagination_cursor}
 
     if from_date:
-        formatted_from_date: str = from_date.strftime(DATE_FORMAT)
+        formatted_from_date: str = from_date.strftime(FILTER_DATE_FORMAT)
         return {'limit': results_per_page, 'start_time': formatted_from_date}
 
     raise ValueError("Either a 'pagination_cursor' or a 'from_date' need to be specified.")
 
 
 def add_fields_to_event(event: dict[str, Any], event_type: str):
-    """Sets the '_time' and 'SOURCE_LOG_TYPE' fields to an event.
+    """Sets the '_time', 'SOURCE_LOG_TYPE', and 'timestamp_ms' fields in the event dictionary.
 
     Args:
         event (dict): Event dictionary with the new fields.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
     """
     event_time = arg_to_datetime(event['timestamp'], required=True)
-    event['_time'] = event_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    # Required by XSIAM
     event['SOURCE_LOG_TYPE'] = event_type.upper()
+    event['_time'] = event_time.strftime(EVENT_DATE_FORMAT)  # type: ignore[union-attr]
+    # Matches precision of date filter - ensures correct and accurate list of already fetched IDs
+    event['timestamp_ms'] = event_time.strftime(FILTER_DATE_FORMAT)  # type: ignore[union-attr]
 
 
 def get_events_from_client(
@@ -212,10 +216,10 @@ def set_next_run(next_run: dict[str, Any]) -> None:
     """Sets next run for all event features. Should be called after events are successfully sent to XSIAM.
 
     Args:
-        next_run (dict): Next run dictionary containing `from_date` in `DATE_FORMAT` and `ids` list per event feature.
+        next_run (dict): Next run dictionary containing `from_date` in `FILTER_DATE_FORMAT` and `ids` list per event feature.
 
     Example:
-        >>> set_next_run({"auditevents": {"from_date": "2024-12-02T11:54:19Z", "ids": []}, "itemusages": ...})
+        >>> set_next_run({"auditevents": {"from_date": "2024-12-02T11:54:19.710457Z", "ids": []}, "itemusages": ...})
     """
     demisto.debug(f'Setting next run to {next_run}.')
     demisto.setLastRun(next_run)
@@ -244,7 +248,7 @@ def fetch_events(
     last_run_ids_to_skip = set(event_type_last_run.get('ids') or [])
     from_date = arg_to_datetime(event_type_last_run.get('from_date')) or DEFAULT_FETCH_FROM_DATE
 
-    demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.strftime(DATE_FORMAT)}')
+    demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.strftime(FILTER_DATE_FORMAT)}')
 
     event_type_events = get_events_from_client(
         client=client,
@@ -255,12 +259,13 @@ def fetch_events(
     )
 
     if event_type_events:
-        last_event_time = max(event_type_events, key=itemgetter('_time'))['_time']  # '_time' has format consistent with filter
-        next_run_ids_to_skip = {event['uuid'] for event in event_type_events if event['_time'] == last_event_time}
+        # Use event 'timestamp_ms' since it is consistent with FILTER_DATE_FORMAT
+        last_event_time = max(event_type_events, key=itemgetter('timestamp_ms'))['timestamp_ms']
+        next_run_ids_to_skip = {event['uuid'] for event in event_type_events if event['timestamp_ms'] == last_event_time}
         event_type_next_run = {'from_date': last_event_time, 'ids': list(next_run_ids_to_skip)}
     else:
         last_event_time = None
-        event_type_next_run = {'from_date': from_date.strftime(DATE_FORMAT), 'ids': list(last_run_ids_to_skip)}
+        event_type_next_run = {'from_date': from_date.strftime(FILTER_DATE_FORMAT), 'ids': list(last_run_ids_to_skip)}
 
     demisto.debug(
         f'Fetched {len(event_type_events)} events of type: {event_type} out of a maximum of {event_type_max_results}. '
