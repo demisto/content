@@ -181,7 +181,7 @@ def main():
     request = IntegrationHTTPRequest(**demisto_params)
     request.params = AlibabaParams.model_validate(params)  # type: ignore
 
-    options = IntegrationOptions.model_validate(demisto_params)
+    options = IntegrationOptions.model_validate(demisto_params)  # type: ignore
 
     client = AlibabaEventsClient(request, options, access_key=access_key,
                                  access_key_id=access_key_id, logstore_name=logstore_name)
