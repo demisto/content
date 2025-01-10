@@ -614,6 +614,16 @@ class OwnerFeaturizationPipeline():
         return X
 
 
+def write_output_to_context_key(final_owners: list[dict[str, str]], owner_related_field: str, platform_tenant: str):
+    stringify_platform_tenant = str(platform_tenant)
+    set_alert_issue_map = {"True": "setIssue", "False": "setAlert"}
+    if final_owners and owner_related_field:
+        demisto.executeCommand(set_alert_issue_map[stringify_platform_tenant], {owner_related_field: final_owners})
+        return_results(CommandResults(readable_output=f"Service owners ranked and written to {owner_related_field}"))
+    else:
+        return_results(CommandResults(readable_output='No service owners found'))
+
+
 def main():
     try:
         # parse inputs
@@ -622,19 +632,14 @@ def main():
             unranked = [unranked]
         asm_system_ids = demisto.args().get("asmsystemids", [])
         owner_related_field = demisto.args().get("ownerrelatedfield", "asmserviceowner")
+        platform_tenant_usage = demisto.args().get("platformtenantusage", False)
         # deduplicate/normalize, score, and rank owners
         normalized = aggregate(canonicalize(unranked))
         final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
 
-        # write output to context
-        if final_owners and owner_related_field == "asmserviceowner":
-            demisto.executeCommand("setAlert", {"asmserviceowner": final_owners})
-            return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
-        elif final_owners and owner_related_field != "asmserviceowner":
-            demisto.executeCommand("setAlert", {owner_related_field: final_owners})
-            return_results(CommandResults(readable_output=f"Service owners ranked and written to {owner_related_field}"))
-        else:
-            return_results(CommandResults(readable_output='No service owners found'))
+        write_output_to_context_key(final_owners=final_owners,
+                                    owner_related_field=owner_related_field,
+                                    platform_tenant=platform_tenant_usage)
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
