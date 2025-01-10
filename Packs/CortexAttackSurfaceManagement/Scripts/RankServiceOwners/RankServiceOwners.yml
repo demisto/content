@@ -9,6 +9,10 @@ args:
   isArray: false
   name: ownerrelatedfield
   defaultValue: "asmserviceowner"
+- description: False will use !setAlert, True will use !setIssue.
+  isArray: false
+  name: tenantcommand
+  defaultValue: True
 comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
   id: RankServiceOwners
