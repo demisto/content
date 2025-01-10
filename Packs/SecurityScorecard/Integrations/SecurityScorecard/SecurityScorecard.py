@@ -1204,7 +1204,7 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
             "domain": entry.get("domain"),
             "datetime": entry.get("created_at"),
             # "Score date": entry.get("platform_score_date"), #no need for this
-            # "portfolios": entry.get("portfolios"),
+            "portfolio": entry.get("portfolios"), #old alerts system had the possibility of multiple portfolios
         }
 
         change_data = entry.get("change_data")
