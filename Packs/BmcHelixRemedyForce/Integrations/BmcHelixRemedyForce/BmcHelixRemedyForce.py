@@ -2,7 +2,8 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
 from datetime import datetime
-from typing import Dict, Callable, Any, List, Tuple, Union, Optional
+from typing import Any
+from collections.abc import Callable
 from requests import Response
 from requests.exceptions import MissingSchema, InvalidSchema
 import urllib3
@@ -34,7 +35,7 @@ VALIDATE_JSON = r"(\w+=[^;=]+;( )?)*\w+=[^;=]+"
 DATE_AND_TIME = 'Date & Time [UTC]'
 HEADER_SECTION_TYPE = 'header section'
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'TRACEBACK_MESSAGE': 'Error when calling {} - ',
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data. Reason: {}',
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured Username and Password instance parameters.',
@@ -87,7 +88,7 @@ MESSAGES: Dict[str, str] = {
 
 POSSIBLE_CATEGORY_TYPES = ["All", "Service Request", "Incident"]
 
-HR_MESSAGES: Dict[str, str] = {
+HR_MESSAGES: dict[str, str] = {
     'NOTE_CREATE_SUCCESS': 'The service request/incident {} is successfully updated with the note.',
     'GET_COMMAND_DETAILS_SUCCESS': 'Total retrieved {}: {}',
     'SERVICE_REQUEST_CREATE_SUCCESS': 'The service request {} is successfully created.',
@@ -109,7 +110,7 @@ HR_MESSAGES: Dict[str, str] = {
     'NO_SERVICE_REQUEST_DETAILS_FOUND': 'No service request(s) found for the given argument(s).'
 }
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'TEST_MODULE': f'/services/apexrest/BMCServiceDesk/{BMC_API_VERSION}/ServiceUtil/UserDetail',
     'GET_SERVICE_REQUEST_DEFINITION': f'/services/apexrest/BMCServiceDesk/{BMC_API_VERSION}/ServiceRequestDefinition',
     'CREATE_NOTE_COMMAND': '/services/apexrest/BMCServiceDesk/{}/ServiceRequest/{}/clientnote',
@@ -129,7 +130,7 @@ PRIORITY_TO_SEVERITY_MAP = {
     '1': 4
 
 }
-OUTPUT_PREFIX: Dict[str, str] = {
+OUTPUT_PREFIX: dict[str, str] = {
     'SERVICE_REQUEST': 'BmcRemedyforce.ServiceRequest',
     # Using this in return_warning for setting context.
     'SERVICE_REQUEST_WARNING': 'BmcRemedyforce.ServiceRequest(val.Number === obj.Number)',
@@ -151,7 +152,7 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'BROADCAST': 'BmcRemedyforce.Broadcast'
 }
 
-SALESFORCE_QUERIES: Dict[str, str] = {
+SALESFORCE_QUERIES: dict[str, str] = {
     'SERVICE_REQUEST_DEF_NAME': 'select id,name from BMCServiceDesk__SRM_RequestDefinition__c where name=\'{}\'',
     'GET_ID_FROM_NAME': 'select id from BMCServiceDesk__Incident__c where name=\'{}\'',
     'GET_TEMPLATE_DETAILS': 'select id,name,BMCServiceDesk__description__c,'
@@ -270,14 +271,14 @@ AVAILABLE_FIELD_LIST = ["category_id", "queue_id", "staff_id", "status_id", "urg
 DEFAULT_INCIDENT_ARGUMENTS = ['client_id', 'description', 'open_datetime', 'due_datetime', 'queue_id', 'template_id',
                               'category_id', 'urgency_id', 'status_id', 'staff_id', 'impact_id']
 
-ALL_INSTANCE_TYPE: Dict[str, str] = {
+ALL_INSTANCE_TYPE: dict[str, str] = {
     'all_classes': 'All Classes',
     'asset_classes': 'Asset Classes',
     'ci_classes': 'CI Classes'
 }
 SERVICE_REQUEST_CATEGORY_OBJECT = "BMCServiceDesk__AvailableForServiceCatalog__c"
 INCIDENT_CATEGORY_OBJECT = "BMCServiceDesk__AvailableForIncidents__c"
-MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS: Dict[str, str] = {
+MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS: dict[str, str] = {
     "client_id": "BMCServiceDesk__FKClient__c",
     "template_id": "BMCServiceDesk__FKTemplate__c",
     "service_request_definition_id": "BMCServiceDesk__FKRequestDefinition__c",
@@ -533,9 +534,9 @@ def handle_error_response(response: Response) -> None:
 
     error_message = ''
     try:
-        if isinstance(response.json(), Dict):
+        if isinstance(response.json(), dict):
             error_message = response.json().get('message', MESSAGES['UNEXPECTED_ERROR'])
-        elif isinstance(response.json(), list) and isinstance(response.json()[0], Dict):
+        elif isinstance(response.json(), list) and isinstance(response.json()[0], dict):
             error_message = response.json()[0].get('message', MESSAGES['UNEXPECTED_ERROR'])
     except ValueError:  # ignoring json parsing errors
         pass
@@ -549,7 +550,7 @@ def handle_error_response(response: Response) -> None:
     }
 
     if response.status_code in status_code_messages:
-        LOG('Response Code: {}, Reason: {}'.format(response.status_code, status_code_messages[response.status_code]))
+        LOG(f'Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}')
         raise DemistoException(status_code_messages[response.status_code])
     else:
         response.raise_for_status()
@@ -632,7 +633,7 @@ def validate_max_incidents(max_incidents: str) -> None:
         raise ValueError(MESSAGES['INVALID_MAX_INCIDENT_ERROR'])
 
 
-def prepare_query_for_fetch_incidents(params: Dict[str, str], start_time: int) -> str:
+def prepare_query_for_fetch_incidents(params: dict[str, str], start_time: int) -> str:
     """
     Prepares a query for fetch-incidents.
 
@@ -652,13 +653,12 @@ def prepare_query_for_fetch_incidents(params: Dict[str, str], start_time: int) -
         elif where_count == 0:
             if query.count('from'):
                 from_search_end = re.search(pattern='from \\w+', string=query).end()  # type: ignore
-                return query[:from_search_end] + ' where LastModifiedDate > {}' \
-                    .format(start_time) + query[from_search_end:]
+                return query[:from_search_end] + f' where LastModifiedDate > {start_time}' \
+                    + query[from_search_end:]
             raise ValueError(MESSAGES['INVALID_FETCH_INCIDENT_QUERY_ERROR'])
 
         where_search_end = re.search(pattern='where', string=query).end()  # type: ignore
-        return query[:where_search_end] + ' LastModifiedDate > {} and'.format(
-            start_time) + query[where_search_end:]
+        return query[:where_search_end] + f' LastModifiedDate > {start_time} and' + query[where_search_end:]
 
     max_incidents = params.get('max_fetch', '10')
     validate_max_incidents(max_incidents)
@@ -671,7 +671,7 @@ def prepare_query_for_fetch_incidents(params: Dict[str, str], start_time: int) -
     fields = ''
     for param_key, param_val in params.items():
         if param_key in ['category', 'impact', 'urgency', 'status', 'queue'] and param_val:
-            fields += '{0}=\'{1}\''.format(MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS[param_key], param_val)
+            fields += f'{MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS[param_key]}=\'{param_val}\''
             fields += SALESFORCE_QUERIES['QUERY_AND']
 
     return SALESFORCE_QUERIES['FETCH_INCIDENT_QUERY'].format(fields, *fetch_type,
@@ -692,7 +692,7 @@ def prepare_iso_date_string(date_string: str) -> str:
     return ''
 
 
-def prepare_date_or_markdown_fields_for_fetch_incidents(fields: Dict[str, Any]) -> None:
+def prepare_date_or_markdown_fields_for_fetch_incidents(fields: dict[str, Any]) -> None:
     """
     Prepares the date and markdown fields for incident or service request.
 
@@ -722,7 +722,7 @@ def prepare_date_or_markdown_fields_for_fetch_incidents(fields: Dict[str, Any]) 
     remove_nulls_from_dictionary(fields)
 
 
-def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
+def validate_params_for_fetch_incidents(params: dict[str, Any]) -> None:
     """
     Validates parameters for fetch-incidents command.
 
@@ -743,7 +743,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
                 raise ValueError(MESSAGES['PARAMETER_TYPE_EMPTY_ERROR'])
 
 
-def prepare_incident_for_fetch_incidents(record: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_incident_for_fetch_incidents(record: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
     """
     Prepares incident dictionary as per demisto standard.
 
@@ -773,8 +773,8 @@ def prepare_incident_for_fetch_incidents(record: Dict[str, Any], params: Dict[st
     return incident
 
 
-def prepare_outputs_for_categories(records: List[Dict[str, Any]]) -> \
-        Tuple[List[Dict[str, Optional[Any]]], List[Dict[str, Optional[Any]]]]:
+def prepare_outputs_for_categories(records: list[dict[str, Any]]) -> \
+        tuple[list[dict[str, Any | None]], list[dict[str, Any | None]]]:
     """
     Prepares human readables and context output for 'bmc-remedy-category-details-get' command.
 
@@ -794,7 +794,7 @@ def prepare_outputs_for_categories(records: List[Dict[str, Any]]) -> \
     return hr_output, outputs
 
 
-def prepare_broadcast_details_get_output(broadcast_records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def prepare_broadcast_details_get_output(broadcast_records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Prepares context output for broadcast_details_get command.
 
@@ -812,7 +812,7 @@ def prepare_broadcast_details_get_output(broadcast_records: List[Dict[str, Any]]
              } for record in broadcast_records]
 
 
-def prepare_query_for_queue_details_get(args: Dict[str, Any]) -> str:
+def prepare_query_for_queue_details_get(args: dict[str, Any]) -> str:
     """
     Prepares query for bmc-remedyforce-queue-details-get-command.
 
@@ -822,15 +822,15 @@ def prepare_query_for_queue_details_get(args: Dict[str, Any]) -> str:
     queue_name = args.get('queue_name', '')
     queue_type = args.get('type', '')
     if queue_type:
-        queue_name = ' and queue.name = \'{}\''.format(queue_name) if queue_name else ''
+        queue_name = f' and queue.name = \'{queue_name}\'' if queue_name else ''
         return SALESFORCE_QUERIES['GET_QUEUE_DETAIL_FOR_SPECIFIC_TYPE'].format(
             QUEUE_TYPES.get(queue_type, queue_type)) + queue_name
 
-    queue_name = ' and name = \'{}\''.format(queue_name) if queue_name else ''
+    queue_name = f' and name = \'{queue_name}\'' if queue_name else ''
     return SALESFORCE_QUERIES['GET_QUEUE_DETAIL'].format(queue_name)
 
 
-def prepare_queue_details_get_output(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def prepare_queue_details_get_output(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Prepares context output for queue_details_get command.
 
@@ -946,13 +946,13 @@ def get_service_request_def_id_from_name(name, client) -> str:
 
     query = SALESFORCE_QUERIES['SERVICE_REQUEST_DEF_NAME'].format(name.strip())
     query_response = client.http_request(method="GET", url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': query})
-    if len(query_response.get('records', [])) > 0 and isinstance(query_response.get('records', [])[0], Dict):
+    if len(query_response.get('records', [])) > 0 and isinstance(query_response.get('records', [])[0], dict):
         return query_response.get('records', [])[0].get('Id', 0)
     else:
         return ''
 
 
-def get_id_from_incident_number(client: Client, request_number: str, incident_type: Optional[str] = None):
+def get_id_from_incident_number(client: Client, request_number: str, incident_type: str | None = None):
     """
     Retrieve id of input request_number
 
@@ -991,7 +991,7 @@ def get_id_from_incident_number(client: Client, request_number: str, incident_ty
     return ids[0].get('Id', '')
 
 
-def input_data_create_note(summary: str, notes: str) -> Dict:
+def input_data_create_note(summary: str, notes: str) -> dict:
     """
     Format input data for create note.
 
@@ -1009,7 +1009,7 @@ def input_data_create_note(summary: str, notes: str) -> Dict:
     }
 
 
-def get_request_params(data: Dict[str, str], params: Dict[str, Any]) -> Dict[str, Any]:
+def get_request_params(data: dict[str, str], params: dict[str, Any]) -> dict[str, Any]:
     """
     Generate request params from given data.
 
@@ -1022,13 +1022,13 @@ def get_request_params(data: Dict[str, str], params: Dict[str, Any]) -> Dict[str
     :return: Dictionary having data in combinations of additional_fields and rest of the arguments.
     :rtype: ``dict``
     """
-    for each_field in data.keys():
+    for each_field in data:
         if data.get(each_field):
             params[each_field] = data.get(each_field)
     return params
 
 
-def generate_params(param: str, param_object: str, body: Dict[str, str]) -> Dict[str, str]:
+def generate_params(param: str, param_object: str, body: dict[str, str]) -> dict[str, str]:
     """
     Generate Dictionary having key as Mapping object of field mentioned in "param_object" and value as param.
 
@@ -1050,7 +1050,7 @@ def generate_params(param: str, param_object: str, body: Dict[str, str]) -> Dict
     return body
 
 
-def get_valid_arguments(data: str, field: str) -> Tuple[Any, List[str]]:
+def get_valid_arguments(data: str, field: str) -> tuple[Any, list[str]]:
     """
     Get dictionary structure
 
@@ -1067,7 +1067,7 @@ def get_valid_arguments(data: str, field: str) -> Tuple[Any, List[str]]:
     """
     excluded_fields = list()
     temp = dict()
-    regex_to_validate_json = re.compile(r"{}".format(VALIDATE_JSON))
+    regex_to_validate_json = re.compile(rf"{VALIDATE_JSON}")
     if data:
         if regex_to_validate_json.fullmatch(data):
             fields = data.split(FIELD_DELIMITER)
@@ -1105,9 +1105,9 @@ def remove_prefix(prefix: str, field: str) -> str:
     return field
 
 
-def create_service_request(client: Client, service_request_definition: str, answers: List[Dict[str, Any]],
-                           excluded_fields: List[str], additional_fields: Optional[Dict[str, Any]],
-                           default_args: Dict[str, Any]) -> None:
+def create_service_request(client: Client, service_request_definition: str, answers: list[dict[str, Any]],
+                           excluded_fields: list[str], additional_fields: dict[str, Any] | None,
+                           default_args: dict[str, Any]) -> None:
     """
     Create service request and update rest of the fields in that service request and also update context output.
 
@@ -1213,8 +1213,8 @@ def create_service_request(client: Client, service_request_definition: str, answ
         raise DemistoException(response.get("ErrorMessage", MESSAGES["UNEXPECTED_ERROR"]))
 
 
-def update_service_request(client: Client, service_request_number: str, excluded_fields: List[str],
-                           additional_fields: Optional[Dict[str, str]], default_args: Dict[str, str]) -> None:
+def update_service_request(client: Client, service_request_number: str, excluded_fields: list[str],
+                           additional_fields: dict[str, str] | None, default_args: dict[str, str]) -> None:
     """
     Fetch respective id from given service request number and update service request and
     return valid context output.
@@ -1324,7 +1324,7 @@ def update_service_request(client: Client, service_request_number: str, excluded
             ))
 
 
-def update_incident(client: Client, incident_id: str, params: Dict[str, Any]) -> Dict[str, Any]:
+def update_incident(client: Client, incident_id: str, params: dict[str, Any]) -> dict[str, Any]:
     """
     Common method to update incident/service request.
 
@@ -1340,7 +1340,7 @@ def update_incident(client: Client, incident_id: str, params: Dict[str, Any]) ->
     :return: Dictionary containing context output and error messages.
     :rtype: ``dict``
     """
-    body: Dict[str, str] = {}
+    body: dict[str, str] = {}
     outputs = {}
     endpoint = "{}/{}".format(URL_SUFFIX["UPDATE_INCIDENT"], incident_id)
     params = remove_empty_elements(params)
@@ -1365,7 +1365,7 @@ def update_incident(client: Client, incident_id: str, params: Dict[str, Any]) ->
         }
 
 
-def create_template_output(result: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def create_template_output(result: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Prepares data for context and human readable
 
@@ -1400,7 +1400,7 @@ def create_hr_context_output(result: list) -> list:
     return hr_context_output_list
 
 
-def get_update_incident_payload(args: Dict[str, str]) -> Tuple[Dict[str, Any], List[str]]:
+def get_update_incident_payload(args: dict[str, str]) -> tuple[dict[str, Any], list[str]]:
     """
     Processes command arguments for update incident api call payload
     :param args: Command arguments
@@ -1410,7 +1410,7 @@ def get_update_incident_payload(args: Dict[str, str]) -> Tuple[Dict[str, Any], L
     # Update request body for default arguments
     update_request_body = \
         {MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS[key]: value for (key, value) in args.items() if
-         len(value.strip()) > 0 and key in MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.keys()
+         len(value.strip()) > 0 and key in MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS
          and key != 'additional_fields'}
 
     # List of user friendly fields list
@@ -1423,7 +1423,7 @@ def get_update_incident_payload(args: Dict[str, str]) -> Tuple[Dict[str, Any], L
 
     additional_fields_body = {
         (MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS[key] if
-         key in MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.keys() else key): value for (key, value) in
+         key in MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS else key): value for (key, value) in
         additional_fields.items()
     }
 
@@ -1441,7 +1441,7 @@ def get_update_incident_payload(args: Dict[str, str]) -> Tuple[Dict[str, Any], L
     return update_request_body, fields
 
 
-def validate_and_get_date_argument(args: Dict[str, Any], key: str, field_name: str) -> Optional[datetime]:
+def validate_and_get_date_argument(args: dict[str, Any], key: str, field_name: str) -> datetime | None:
     """
     Validates and gets a key as per one of the ALLOWED_DATE_FORMATs from the arguments, if exists.
 
@@ -1468,7 +1468,7 @@ def validate_and_get_date_argument(args: Dict[str, Any], key: str, field_name: s
     return None
 
 
-def validate_incident_update_payload(payload: Dict[str, Any]) -> None:
+def validate_incident_update_payload(payload: dict[str, Any]) -> None:
     """
     Validates incident update payload.
 
@@ -1495,7 +1495,7 @@ def validate_incident_update_payload(payload: Dict[str, Any]) -> None:
         raise ValueError(MESSAGES['DATE_VALIDATION_ERROR'].format('outage_end', 'outage_start'))
 
 
-def remove_extra_space_from_args(args: Dict[str, str]) -> Dict[str, str]:
+def remove_extra_space_from_args(args: dict[str, str]) -> dict[str, str]:
     """
     Remove leading and trailing spaces from all the arguments and remove empty arguments
     :param args: Dictionary of arguments
@@ -1504,7 +1504,7 @@ def remove_extra_space_from_args(args: Dict[str, str]) -> Dict[str, str]:
     return {key: value.strip() for (key, value) in args.items() if value and len(value.strip()) > 0}
 
 
-def create_asset_output(result: List[Dict[str, Any]], output_type: str) -> List[Dict[str, str]]:
+def create_asset_output(result: list[dict[str, Any]], output_type: str) -> list[dict[str, str]]:
     """
     Prepares data for context and human readable
 
@@ -1555,12 +1555,12 @@ def create_asset_query(asset_name: str, instance_type: str) -> str:
     elif instance_type == ALL_INSTANCE_TYPE['ci_classes']:
         append_query = append_query + SALESFORCE_QUERIES['FILTER_CI_CLASSES']
     elif instance_type and instance_type != "All Classes":
-        append_query = append_query + 'and BMCServiceDesk__InstanceType__c=\'{}\' '.format(instance_type)
+        append_query = append_query + f'and BMCServiceDesk__InstanceType__c=\'{instance_type}\' '
 
     return append_query
 
 
-def prepare_query_for_user_details_get(args: Dict[str, Any]) -> str:
+def prepare_query_for_user_details_get(args: dict[str, Any]) -> str:
     """
     Prepares query for bmc-remedyforce-user-details-get-command.
 
@@ -1572,21 +1572,18 @@ def prepare_query_for_user_details_get(args: Dict[str, Any]) -> str:
         if arg_val:
             query += SALESFORCE_QUERIES['QUERY_AND'] if query else ''
             if arg_key in ['email', 'username', 'account_name']:
-                query += '{0}=\'{1}\''.format(
-                    MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.get(arg_key, arg_key),
-                    arg_val.lower())
+                query += f'{MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.get(arg_key, arg_key)}=\'{arg_val.lower()}\''
             elif arg_key == 'queue_name':
                 query += SALESFORCE_QUERIES['GET_USER_DETAILS_USING_QUEUE'].format(arg_val)
             elif arg_key == 'is_staff':
-                query += '{0}={1}'.format(MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.get(arg_key, arg_key),
-                                          arg_val.lower())
+                query += f'{MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.get(arg_key, arg_key)}={arg_val.lower()}'
 
     query = SALESFORCE_QUERIES['QUERY_AND'] + query if query else ''
 
     return SALESFORCE_QUERIES['GET_USER_DETAILS'] + query
 
 
-def prepare_user_details_get_output(users_records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def prepare_user_details_get_output(users_records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Prepares context output for user_details_get command.
 
@@ -1609,7 +1606,7 @@ def prepare_user_details_get_output(users_records: List[Dict[str, Any]]) -> List
              } for record in users_records]
 
 
-def prepare_note_create_output(record: Dict) -> Dict:
+def prepare_note_create_output(record: dict) -> dict:
     """
     Prepares context output for user_details_get command.
 
@@ -1629,14 +1626,14 @@ def prepare_note_create_output(record: Dict) -> Dict:
     }
 
 
-def get_service_request_details(client: Client, service_request_id: str) -> Dict[str, str]:
+def get_service_request_details(client: Client, service_request_id: str) -> dict[str, str]:
     """
     Get service request details for given service_request_id
     :param client: Instance of Client class.
     :param service_request_id: service_request id
     :return: Processed details of service request
     """
-    service_request_details: Dict[str, str] = {}
+    service_request_details: dict[str, str] = {}
     if not service_request_id or len(service_request_id.strip()) < 1:
         return service_request_details
     response = client.http_request('GET', url_suffix="{}/{}".format(URL_SUFFIX["SERVICE_REQUEST"], service_request_id))
@@ -1650,7 +1647,7 @@ def get_service_request_details(client: Client, service_request_id: str) -> Dict
     return service_request_details
 
 
-def process_attachment_record(record: Dict[str, Any]) -> Dict[str, Any]:
+def process_attachment_record(record: dict[str, Any]) -> dict[str, Any]:
     """
     Processes single record of attachment to convert as per the custom incident layout
     :param record: attachment record
@@ -1670,14 +1667,14 @@ def process_attachment_record(record: Dict[str, Any]) -> Dict[str, Any]:
     return attachment
 
 
-def get_attachments_for_incident(client: Client, incident_id: str) -> List[Dict[str, Any]]:
+def get_attachments_for_incident(client: Client, incident_id: str) -> list[dict[str, Any]]:
     """
     Get attachments for the given incident/service request id
     :param client: Instance of Client class.
     :param incident_id: incident/service_request id
     :return: Processed list of attachments
     """
-    attachments: List[Dict] = []
+    attachments: list[dict] = []
     if not incident_id or len(incident_id.strip()) < 1:
         return attachments
 
@@ -1689,7 +1686,7 @@ def get_attachments_for_incident(client: Client, incident_id: str) -> List[Dict[
     return [process_attachment_record(record) for record in records]
 
 
-def process_notes_record(record: Dict[str, Any]) -> Dict[str, str]:
+def process_notes_record(record: dict[str, Any]) -> dict[str, str]:
     """
     Process Note(s) record.
 
@@ -1713,7 +1710,7 @@ def process_notes_record(record: Dict[str, Any]) -> Dict[str, str]:
     return notes
 
 
-def get_notes_for_incident(client: Client, incident_number: str) -> List[Dict[str, Any]]:
+def get_notes_for_incident(client: Client, incident_number: str) -> list[dict[str, Any]]:
     """
     Gets Note(s) from incident or service request.
 
@@ -1725,7 +1722,7 @@ def get_notes_for_incident(client: Client, incident_number: str) -> List[Dict[st
 
     :return: list
     """
-    notes: List[Dict] = []
+    notes: list[dict] = []
     if not incident_number or len(incident_number.strip()) < 1:
         return notes
     response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'],
@@ -1779,18 +1776,18 @@ def create_output_for_incident(result: list) -> list:
     return hr_output_list
 
 
-def prepare_outputs_for_get_service_request(records: List[Dict]) -> Tuple[List, List]:
+def prepare_outputs_for_get_service_request(records: list[dict]) -> tuple[list, list]:
     """
     Prepares context output and human readable output for service_requests_get command.
 
     :param records: List containing dictionaries of records.
     :return: tuple containing context output and human readable output.
     """
-    outputs: List[Dict] = []
-    hr_outputs: List[Dict] = []
+    outputs: list[dict] = []
+    hr_outputs: list[dict] = []
     for each_record in records:
-        context_dict: Dict[str, str] = {}
-        hr_dict: Dict[str, str] = {}
+        context_dict: dict[str, str] = {}
+        hr_dict: dict[str, str] = {}
         for each_field in FIELD_MAPPING_FOR_GET_INCIDENTS:
             if each_record.get(each_field):
                 if isinstance(each_record[each_field], dict):
@@ -1829,8 +1826,8 @@ def test_module(client: Client) -> None:
 
 
 @logger
-def fetch_incidents(client: Client, params: Dict[str, Any], last_run: Dict[str, Any], first_fetch: int) -> \
-        Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+def fetch_incidents(client: Client, params: dict[str, Any], last_run: dict[str, Any], first_fetch: int) -> \
+        tuple[dict[str, Any], list[dict[str, Any]]]:
     """
     This function retrieves new incidents every interval.
 
@@ -1845,7 +1842,7 @@ def fetch_incidents(client: Client, params: Dict[str, Any], last_run: Dict[str, 
     start_time = last_run.get('start_time', None)
     start_time = int(start_time) if start_time else first_fetch
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     query = prepare_query_for_fetch_incidents(params, start_time)
     response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': query})
@@ -1872,7 +1869,7 @@ def fetch_incidents(client: Client, params: Dict[str, Any], last_run: Dict[str, 
 
 
 @logger
-def bmc_remedy_update_service_request_command(client: Client, args: Dict[str, str]) -> None:
+def bmc_remedy_update_service_request_command(client: Client, args: dict[str, str]) -> None:
     """
     To update a service request.
 
@@ -1905,7 +1902,7 @@ def bmc_remedy_update_service_request_command(client: Client, args: Dict[str, st
 
 
 @logger
-def bmc_remedy_create_service_request_command(client: Client, args: Dict[str, str]) -> None:
+def bmc_remedy_create_service_request_command(client: Client, args: dict[str, str]) -> None:
     """
     To create a service request.
 
@@ -1928,7 +1925,7 @@ def bmc_remedy_create_service_request_command(client: Client, args: Dict[str, st
     additional_fields, excluded_fields = get_valid_arguments(args.get("additional_fields", ""), "additional_fields")
     if answers and isinstance(safe_load_json(answers), dict):
         for each_answer in answers:
-            temp: Dict[str, Any] = dict()
+            temp: dict[str, Any] = dict()
             temp["Values"] = list()
             temp["QuestionId"] = each_answer
             temp["Values"].append(answers[each_answer])
@@ -1953,7 +1950,7 @@ def bmc_remedy_create_service_request_command(client: Client, args: Dict[str, st
 
 
 @logger
-def bmc_remedy_incident_create_command(client: Client, args: Dict[str, str]) -> None:
+def bmc_remedy_incident_create_command(client: Client, args: dict[str, str]) -> None:
     """
     Creates an incident.
 
@@ -2017,7 +2014,7 @@ def bmc_remedy_incident_create_command(client: Client, args: Dict[str, str]) -> 
 
 
 @logger
-def bmc_remedy_incident_update_command(client: Client, args: Dict[str, str]) -> None:
+def bmc_remedy_incident_update_command(client: Client, args: dict[str, str]) -> None:
     args = remove_extra_space_from_args(args)
     incident_number = args.pop('incident_number', '')
     incident_number = incident_number[2:] if incident_number.startswith("IN") else incident_number
@@ -2045,7 +2042,7 @@ def bmc_remedy_incident_update_command(client: Client, args: Dict[str, str]) -> 
         "Number": incident_number
     }
 
-    id_suffix = '/{}'.format(incident_id)
+    id_suffix = f'/{incident_id}'
     update_api_response = client.http_request('PATCH', URL_SUFFIX['UPDATE_INCIDENT'] + id_suffix,
                                               json_data=update_payload)
     context_output["LastUpdatedDate"] = datetime.now().strftime(DATE_FORMAT)
@@ -2063,7 +2060,7 @@ def bmc_remedy_incident_update_command(client: Client, args: Dict[str, str]) -> 
 
 
 @logger
-def bmc_remedy_note_create_command(client: Client, args: Dict[str, str]) -> Optional[CommandResults]:
+def bmc_remedy_note_create_command(client: Client, args: dict[str, str]) -> CommandResults | None:
     """
     Create a note for incident or service request.
 
@@ -2105,7 +2102,7 @@ def bmc_remedy_note_create_command(client: Client, args: Dict[str, str]) -> Opti
 
 
 @logger
-def bmc_remedy_service_request_definition_get_command(client: Client, args: Dict[str, str]) -> Optional[CommandResults]:
+def bmc_remedy_service_request_definition_get_command(client: Client, args: dict[str, str]) -> CommandResults | None:
     """
     Gets service request definitions.
 
@@ -2162,7 +2159,7 @@ def bmc_remedy_service_request_definition_get_command(client: Client, args: Dict
 
 
 @logger
-def bmc_remedy_template_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
+def bmc_remedy_template_details_get_command(client: Client, args: dict[str, str]) -> CommandResults | str | None:
     """
     Gets template details.
 
@@ -2211,7 +2208,7 @@ def bmc_remedy_template_details_get_command(client: Client, args: Dict[str, str]
 
 
 @logger
-def bmc_remedy_service_offering_details_get_command(client: Client, args: Dict) -> Union[CommandResults, str, None]:
+def bmc_remedy_service_offering_details_get_command(client: Client, args: dict) -> CommandResults | str | None:
     """
     Gets service offering details
 
@@ -2259,7 +2256,7 @@ def bmc_remedy_service_offering_details_get_command(client: Client, args: Dict) 
 
 
 @logger
-def bmc_remedy_asset_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
+def bmc_remedy_asset_details_get_command(client: Client, args: dict[str, str]) -> CommandResults | str | None:
     """
     Gets asset details.
 
@@ -2306,8 +2303,8 @@ def bmc_remedy_asset_details_get_command(client: Client, args: Dict[str, str]) -
 
 
 @logger
-def bmc_remedy_impact_details_get_command(client: Client, args: Dict[str, str]) \
-        -> Optional[Union[CommandResults, str, None]]:
+def bmc_remedy_impact_details_get_command(client: Client, args: dict[str, str]) \
+        -> CommandResults | str | None | None:
     """
     To get details of impact.
 
@@ -2325,7 +2322,7 @@ def bmc_remedy_impact_details_get_command(client: Client, args: Dict[str, str]) 
     impact_name = args.get("impact_name")
     if impact_name:
         impact_name = impact_name.strip()
-        endpoint_to_get_impacts = "{} and name='{}'".format(endpoint_to_get_impacts, impact_name)
+        endpoint_to_get_impacts = f"{endpoint_to_get_impacts} and name='{impact_name}'"
 
     api_response = client.http_request('GET', url_suffix=URL_SUFFIX["SALESFORCE_QUERY"],
                                        params={'q': endpoint_to_get_impacts})
@@ -2356,7 +2353,7 @@ def bmc_remedy_impact_details_get_command(client: Client, args: Dict[str, str]) 
 
 
 @logger
-def bmc_remedy_account_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
+def bmc_remedy_account_details_get_command(client: Client, args: dict[str, str]) -> CommandResults | str | None:
     """
     Gets account details.
 
@@ -2368,7 +2365,7 @@ def bmc_remedy_account_details_get_command(client: Client, args: Dict[str, str])
     account_name = args.get('account_name', '')
     query = SALESFORCE_QUERIES.get('GET_ACCOUNT_DETAILS', '')
     if account_name:
-        query = query + ' and name =\'{}\''.format(account_name)
+        query = query + f' and name =\'{account_name}\''
 
     url_suffix = URL_SUFFIX.get('SALESFORCE_QUERY', '')
     params = {
@@ -2401,7 +2398,7 @@ def bmc_remedy_account_details_get_command(client: Client, args: Dict[str, str])
 
 
 @logger
-def bmc_remedy_status_details_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def bmc_remedy_status_details_get_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Get status details.
 
@@ -2436,7 +2433,7 @@ def bmc_remedy_status_details_get_command(client: Client, args: Dict[str, str]) 
 
 
 @logger
-def bmc_remedy_urgency_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
+def bmc_remedy_urgency_details_get_command(client: Client, args: dict[str, str]) -> CommandResults | str | None:
     """
     Gets urgency details.
 
@@ -2483,8 +2480,8 @@ def bmc_remedy_urgency_details_get_command(client: Client, args: Dict[str, str])
 
 
 @logger
-def bmc_remedy_category_details_get_command(client: Client, args: Dict[str, str]) \
-        -> Optional[Union[CommandResults, str, None]]:
+def bmc_remedy_category_details_get_command(client: Client, args: dict[str, str]) \
+        -> CommandResults | str | None | None:
     """
     To get details of categories.
 
@@ -2503,18 +2500,13 @@ def bmc_remedy_category_details_get_command(client: Client, args: Dict[str, str]
     endpoint_to_get_category = SALESFORCE_QUERIES["GET_CATEGORIES"]
     error_message = MESSAGES['NO_ENTITY_FOUND'].format('category')
     if category_name:
-        endpoint_to_get_category = "{} and name=\'{}\'".format(
-            endpoint_to_get_category, category_name)
+        endpoint_to_get_category = f"{endpoint_to_get_category} and name=\'{category_name}\'"
         error_message = HR_MESSAGES['NOT_FOUND_FOR_ARGUMENTS'].format('category')
     if category_type in POSSIBLE_CATEGORY_TYPES:
         if category_type == "Service Request":
-            endpoint_to_get_category = "{} and {}= true".format(
-                endpoint_to_get_category, SERVICE_REQUEST_CATEGORY_OBJECT
-            )
+            endpoint_to_get_category = f"{endpoint_to_get_category} and {SERVICE_REQUEST_CATEGORY_OBJECT}= true"
         elif category_type == "Incident":
-            endpoint_to_get_category = "{} and {}= true".format(
-                endpoint_to_get_category, INCIDENT_CATEGORY_OBJECT
-            )
+            endpoint_to_get_category = f"{endpoint_to_get_category} and {INCIDENT_CATEGORY_OBJECT}= true"
     elif category_type:
         raise ValueError("{}".format(
             MESSAGES["INVALID_TYPE_FOR_CATEGORIES"]).format("type", "type", ", ".join(POSSIBLE_CATEGORY_TYPES)))
@@ -2539,7 +2531,7 @@ def bmc_remedy_category_details_get_command(client: Client, args: Dict[str, str]
 
 
 @logger
-def bmc_remedy_queue_details_get_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
+def bmc_remedy_queue_details_get_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     Get queue(s) details.
 
@@ -2565,7 +2557,7 @@ def bmc_remedy_queue_details_get_command(client: Client, args: Dict[str, Any]) -
 
 
 @logger
-def bmc_remedy_user_details_get_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
+def bmc_remedy_user_details_get_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     Get user details.
 
@@ -2593,7 +2585,7 @@ def bmc_remedy_user_details_get_command(client: Client, args: Dict[str, Any]) ->
 
 
 @logger
-def bmc_remedy_broadcast_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
+def bmc_remedy_broadcast_details_get_command(client: Client, args: dict[str, str]) -> CommandResults | str | None:
     """
     Get broadcast details.
 
@@ -2641,7 +2633,7 @@ def bmc_remedy_broadcast_details_get_command(client: Client, args: Dict[str, str
 
 
 @logger
-def bmc_remedy_incident_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
+def bmc_remedy_incident_get_command(client: Client, args: dict[str, str]) -> CommandResults | str | None:
     """
     Gets Incident details.
 
@@ -2669,7 +2661,7 @@ def bmc_remedy_incident_get_command(client: Client, args: Dict[str, str]) -> Uni
             raise ValueError(MESSAGES['MAX_INCIDENT_LIMIT'].format('maximum_incident'))
         if not (1 <= int(maximum_incident_int) <= 500):
             raise ValueError(MESSAGES['MAX_INCIDENT_LIMIT'].format('maximum_incident'))
-        final_query = final_query + ' LIMIT {}'.format(maximum_incident_int)
+        final_query = final_query + f' LIMIT {maximum_incident_int}'
 
     response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
 
@@ -2696,7 +2688,7 @@ def bmc_remedy_incident_get_command(client: Client, args: Dict[str, str]) -> Uni
         return HR_MESSAGES["NO_INCIDENT_DETAILS_FOUND"]
 
 
-def bmc_remedy_service_request_get_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str, None]:
+def bmc_remedy_service_request_get_command(client: Client, args: dict[str, Any]) -> CommandResults | str | None:
     """
     Get service request details.
 
@@ -2728,7 +2720,7 @@ def bmc_remedy_service_request_get_command(client: Client, args: Dict[str, Any])
             raise ValueError(MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request'))
         if not (1 <= maximum_service_request_int <= 500):
             raise ValueError(MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request'))
-        final_query = '{} LIMIT {}'.format(final_query, maximum_service_request_int)
+        final_query = f'{final_query} LIMIT {maximum_service_request_int}'
 
     response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
 
@@ -2769,7 +2761,7 @@ def main():
     """
     global SOAP_LOGIN_URL
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'bmc-remedy-service-request-definition-get': bmc_remedy_service_request_definition_get_command,
         'bmc-remedy-note-create': bmc_remedy_note_create_command,
         'bmc-remedy-service-offering-details-get': bmc_remedy_service_offering_details_get_command,
@@ -2787,7 +2779,7 @@ def main():
         'bmc-remedy-service-request-get': bmc_remedy_service_request_get_command
     }
 
-    commands_without_return_result: Dict[str, Callable] = {
+    commands_without_return_result: dict[str, Callable] = {
         "bmc-remedy-service-request-create": bmc_remedy_create_service_request_command,
         "bmc-remedy-service-request-update": bmc_remedy_update_service_request_command,
         "bmc-remedy-incident-create": bmc_remedy_incident_create_command,

@@ -808,6 +808,7 @@ Returns the members list for the specified group.
 |-------------------|------------------------------------------|--------------|
 | group_id          | The Mimecast ID of the group to return.  | Required     | 
 | limit             | The maximum number of results to return. | Optional     | 
+| all_results       | Whether to retrieve all results.         | Optional     |
 
 #### Context Output
 

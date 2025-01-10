@@ -958,7 +958,7 @@ class Client(BaseClient):
         error_map = {"ERROR": "errors", "WARNING": "warnings"}
         log = {}
         preference = demisto.args().get("error_type") if demisto else None
-        preference = error_map.get(preference, "")
+        preference = error_map.get(preference, "")  # type: ignore[arg-type]
         connector_map = self.get_integration_details()
         for connector in error_logs:
             # if preference is empty means we need to fetch both the errors and warnings.
@@ -1622,7 +1622,7 @@ class Client(BaseClient):
 
     def rerun_test_or_simulation(self):
         account_id = self.account_id
-
+        test_data: dict
         if demisto.command() == "safebreach-rerun-test":
             test_data = {
                 "testId": demisto.args().get("test_id"),
@@ -1651,6 +1651,9 @@ class Client(BaseClient):
                     }
                 ],
             }
+        else:
+            test_data = {}
+            demisto.debug(f"{demisto.command()=} didn't match any condition. {test_data=}")
         method = "POST"
         url = f"/orch/v3/accounts/{account_id}/queue"
         tests_data = self.get_response(

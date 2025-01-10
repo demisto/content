@@ -73,3 +73,4 @@ ignore=BA124
 # GR103 is temporary, see CIAC-11705
 [file:incidentfield-bclscore.json]
 ignore=GR103
+

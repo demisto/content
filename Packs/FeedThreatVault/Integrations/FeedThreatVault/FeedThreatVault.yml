@@ -1,0 +1,172 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Palo Alto Networks Threat Vault v2 Feed
+  version: -1
+name: Palo Alto Networks Threat Vault v2 Feed
+display: Palo Alto Networks Threat Vault v2 Feed
+description: Retrieve Threat Vault predefined EDL content for Malicious IP, Known IP, TOR and Bulletproof hosting.
+configuration:
+- display: Fetch indicators
+  name: feed
+  type: 8
+  defaultvalue: 'true'
+  required: false
+- display: URL
+  name: url
+  defaultvalue: https://api.threatvault.paloaltonetworks.com/
+  type: 0
+  required: true
+  section: Connect
+- display: API Key
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: Which EDL to pull indicators from
+  name: name
+  type: 15
+  required: true
+  options:
+  - panw-known-ip-list
+  - panw-highrisk-ip-list
+  - panw-torexit-ip-list
+  - panw-bulletproof-ip-list
+  section: Connect
+- display: Response Format
+  name: list_format
+  type: 15
+  required: true
+  options:
+  - Array
+  defaultvalue: 'Array'
+  additionalinfo: Only "array" is supported by the API for now.
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Tags
+  name: feedTags
+  type: 0
+  required: false
+  additionalinfo: Supports CSV values.
+  section: Collect
+- display: Indicator Reputation
+  name: feedReputation
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
+- name: feedExpirationPolicy
+  display: ''
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+- name: feedExpirationInterval
+  display: ''
+  defaultvalue: '20160'
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: '240'
+  type: 19
+  required: false
+  section: Collect
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  section: Collect
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- display: Traffic Light Protocol Color
+  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  section: Collect
+script:
+  script: ''
+  type: python
+  commands:
+  - name: threatvault-get-indicators
+    arguments:
+    - name: name
+      description: The name of the predefined EDL to retrieve.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - panw-known-ip-list
+      - panw-highrisk-ip-list
+      - panw-torexit-ip-list
+      - panw-bulletproof-ip-list
+    - name: version
+      description: The version of the EDL to retrieve.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - latest
+      defaultValue: latest
+    outputs:
+    - contextPath: ThreatVault.EDL.ipaddr
+      description: EDL indicators.
+      type: String
+    - contextPath: ThreatVault.EDL.name
+      description: EDL name.
+      type: string
+    - contextPath: ThreatVault.EDL.content_version
+      description: Content version number.
+      type: number
+    - contextPath: ThreatVault.EDL.count
+      description: Count of entries.
+      type: number
+    description: Retrieves indicators from Threat Vault.
+  dockerimage: demisto/python3:3.11.10.116949
+  feed: true
+  runonce: false
+  subtype: python3
+  isFetchSamples: true
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 """Main file for BitSightForSecurityPerformanceManagement Integration."""
 import requests
 import urllib3
@@ -61,9 +63,14 @@ RISK_VECTOR_MAPPING = {
     'spf': 'SPF',
     'ssl certificates': 'ssl_certificates',
     'ssl configurations': 'ssl_configurations',
-    'unsolicited communications': 'unsolicited_comm'
-}
+    'unsolicited communications': 'unsolicited_comm',
+    'web application security': 'web_appsec',
+    'dmarc': 'dmarc'
 
+}
+PACK_VERSION = get_pack_version(pack_name='Bitsight') or '1.1.22'
+CALLING_PLATFORM_VERSION = 'XSOAR'
+CONNECTOR_NAME_VERSION = f'Bitsight - {PACK_VERSION}'
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -225,7 +232,8 @@ def prepare_and_validate_fetch_findings_args(client, args):
     severity = args.get('findings_min_severity', None)
     if severity:
         severity = severity.lower()
-    grade = args.get('findings_grade', None)
+    grade_list = args.get('findings_grade', None)
+    grade = ','.join(grade_list)
     asset_category = args.get('findings_min_asset_category', None)
     if asset_category:
         asset_category = asset_category.lower()
@@ -519,7 +527,11 @@ def main():
         verify=verify_certificate,
         proxy=proxy,
         ok_codes=[200],
-        auth=requests.auth.HTTPBasicAuth(api_key, '')
+        auth=requests.auth.HTTPBasicAuth(api_key, ''),
+        headers={
+            "X-BITSIGHT-CALLING-PLATFORM_VERSION": CALLING_PLATFORM_VERSION,
+            "X-BITSIGHT-CONNECTOR-NAME-VERSION": CONNECTOR_NAME_VERSION,
+        },
     )
 
     try:

@@ -41,6 +41,7 @@ from exchangelib.errors import (
     RateLimitError,
     ResponseMessageError,
     TransportError,
+    ErrorCannotOpenFileAttachment,
 )
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, FaultTolerance, Protocol
@@ -1099,9 +1100,9 @@ def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, bytes):
-        return email.message_from_bytes(mime_content, policy=email_policy)
+        return email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
     else:
-        return email.message_from_string(mime_content, policy=email_policy)
+        return email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
 
 
 def parse_incident_from_item(item, is_fetch):  # pragma: no cover
@@ -1182,6 +1183,11 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
                                 raise
+                            continue
+                        except ErrorCannotOpenFileAttachment as e:
+                            if str(e) != "The attachment could not be opened.":
+                                raise
+                            demisto.error(f"Skipped attachment: {attachment.name} - {e}")
                             continue
                     else:
                         # other item attachment
@@ -1605,7 +1611,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
 def delete_items(item_ids, delete_type, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     deleted_items = []
-    if type(item_ids) != list:
+    if type(item_ids) is not list:
         item_ids = item_ids.split(",")
     items = get_items_from_mailbox(account, item_ids)
     delete_type = delete_type.lower()
@@ -1721,7 +1727,7 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
     is_public = is_default_folder(target_folder_path, is_public)
     target_folder = get_folder_by_path(account, target_folder_path, is_public)
     recovered_messages = []
-    if type(message_ids) != list:
+    if type(message_ids) is not list:
         message_ids = message_ids.split(",")
     items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
         message_id__in=message_ids).all()  # pylint: disable=E1101
@@ -1885,7 +1891,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
 
 def get_items(item_ids, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    if type(item_ids) != list:
+    if type(item_ids) is not list:
         item_ids = item_ids.split(",")
 
     items = get_items_from_mailbox(account, item_ids)

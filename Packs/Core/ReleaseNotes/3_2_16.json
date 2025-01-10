@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Playbooks from 'Core - Investigation & Response' have been migrated to the 'Cortex Response And Remediation' pack. Please install the new pack before updating."
+}
