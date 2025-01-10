@@ -13,6 +13,10 @@
         "Breach",
         "Threat Intelligence"
     ],
+    "itemPrefix": [
+        "USTA",
+        "PRODAFT"
+    ],
     "useCases": [
         "Threat Intelligence Management",
         "Malware",
