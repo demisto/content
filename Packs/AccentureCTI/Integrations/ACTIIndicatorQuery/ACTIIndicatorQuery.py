@@ -1,5 +1,4 @@
 import urllib3
-
 from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -32,10 +31,10 @@ class Client(BaseClient):
             'auth-token': api_key,
             "User-Agent": f"AccentureCTI Pack/{PACK_VERSION} Palo Alto XSOAR/{DEMISTO_VERSION}"
         }
-        super().__init__(base_url=base_url,
-                         verify=verify_certificate,
-                         headers=headers,
-                         proxy=proxy)
+        super(Client, self).__init__(base_url=base_url,
+                                     verify=verify_certificate,
+                                     headers=headers,
+                                     proxy=proxy)
 
     def threat_indicator_search(self, url_suffix: str, data: dict = {}) -> dict:
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)
@@ -52,8 +51,9 @@ def _validate_args(indicator_type: str, values: list) -> None:
         if indicator_type == 'IP':
             if not re.match(ipv4Regex, value):
                 raise DemistoException("Received wrong IP value. Please check values again.")
-        elif indicator_type == 'URL' and not re.match(urlRegex, value):
-            raise DemistoException("Received wrong URL value. Please check values again.")
+        elif indicator_type == 'URL':
+            if not re.match(urlRegex, value):
+                raise DemistoException("Received wrong URL value. Please check values again.")
 
 
 def _calculate_dbot_score(severity: int) -> int:
@@ -456,9 +456,6 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability,
 
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         context = iair_to_context(analysis_info)
-    else:
-        context = {}
-        demisto.debug(f"There is no {res=} -> {context=}")
 
     return CommandResults(indicator=indicator,
                           outputs=context,

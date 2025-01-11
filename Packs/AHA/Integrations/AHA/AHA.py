@@ -2,6 +2,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
+from typing import Dict
 from enum import Enum
 
 
@@ -70,7 +71,7 @@ class Client(BaseClient):
             fields: str,
             from_date: str,
             page: str,
-            per_page: str) -> dict:
+            per_page: str) -> Dict:
         """
         Retrieves a list of features/ideas from AHA
         Args:
@@ -92,7 +93,7 @@ class Client(BaseClient):
                                   url_suffix=f'{self.url}{aha_type.get_url_suffix()}{name}',
                                   headers=headers, params=params, resp_type='json')
 
-    def edit(self, aha_object_name: str, aha_type: AHA_TYPE, fields: dict) -> dict:
+    def edit(self, aha_object_name: str, aha_type: AHA_TYPE, fields: Dict) -> Dict:
         """
         Updates fields in a feature/idea from AHA
         Args:
@@ -110,8 +111,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS'''
 
 
-def build_edit_feature_req_payload(fields: dict):
-    payload: dict = {'feature': {}}
+def build_edit_feature_req_payload(fields: Dict):
+    payload: Dict = {'feature': {}}
     for field in fields:
         feature = payload.get('feature', {})
         if field == 'status':
@@ -123,7 +124,7 @@ def build_edit_feature_req_payload(fields: dict):
 
 
 def build_edit_idea_req_payload():
-    payload: dict = {'idea': {}}
+    payload: Dict = {'idea': {}}
     idea = payload.get('idea', {})
     idea['workflow_status'] = "Shipped"
     return payload
@@ -200,10 +201,6 @@ def get_command(client: Client,
         human_readable = tableToMarkdown(f'Aha! get {aha_type.get_type_plural()}',
                                          message,
                                          removeNull=True)
-    else:
-        human_readable = ''
-        demisto.debug(f"{response=} -> {human_readable=}")
-
     return CommandResults(
         outputs_prefix=f'AHA.{aha_type.get_type_for_outputs()}',
         outputs_key_field='id',
@@ -225,10 +222,6 @@ def edit_command(client: Client,
         human_readable = tableToMarkdown(f'Aha! edit {aha_type.get_type_singular()}',
                                          message,
                                          removeNull=True)
-    else:
-        human_readable = ''
-        demisto.debug(f"{response=} -> {human_readable=}")
-
     return CommandResults(
         outputs_prefix=f'AHA.{aha_type.get_type_for_outputs()}',
         outputs_key_field='id',
@@ -252,7 +245,7 @@ def main() -> None:
     verify = not params.get('insecure', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: dict = {'Authorization': f'Bearer {api_key}'}
+        headers: Dict = {'Authorization': f'Bearer {api_key}'}
         client = Client(
             headers=headers,
             base_url=base_url,
