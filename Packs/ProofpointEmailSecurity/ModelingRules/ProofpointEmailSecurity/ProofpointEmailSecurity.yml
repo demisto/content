@@ -1,5 +1,5 @@
 fromversion: 8.3.0
-id: ProofpointEmailSecurity_ModelingRule
+id: proofpoint_email_security_ModelingRule
 name: Proofpoint Email Security Modeling Rule
 rules: ''
 schema: ''
