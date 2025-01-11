@@ -241,6 +241,9 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
         script_extention = 'js'
     elif script_type == 'powershell':
         script_extention = 'ps1'
+    else:
+        script_extention = ''
+        demisto.debug(f"{script_type=} didn't match any condition. {script_extention=}")
 
     with redirect_stdout(output_capture), redirect_stderr(output_capture):
         yml_splitter.extract_to_package_format()
