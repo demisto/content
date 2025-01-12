@@ -322,7 +322,7 @@ def build_generic_object(template_name: str, args: list[dict]) -> GenericObjectG
 def build_custom_object(template_name: str, args: list[dict]):
     obj = PYMISP.object_templates()
     for entry in obj:
-        if str(entry.get('ObjectTemplate', {}).get('name')).lower() == template_name:
+        if str(entry.get('ObjectTemplate', {}).get('name')).lower() == template_name:  # type: ignore[union-attr]
 
             custom_obj = PYMISP.get_raw_object_template(template_name)
 
@@ -578,7 +578,7 @@ def get_new_misp_event_object(args):
         event.threat_level_id = THREAT_LEVELS_TO_ID[threat_level_id_arg]
 
     analysis_arg = args.get('analysis')
-    event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
+    event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg, analysis_arg)
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
     event.date = datetime.strptime(args.get('creation_date'), "%Y-%m-%d") if args.get('creation_date') else datetime.today()
     event.published = argToBoolean(args.get('published', 'False'))
@@ -638,8 +638,8 @@ def get_organizations_info():
     organizations = PYMISP.organisations()
     org_info = []
     for organization in organizations:
-        org_id = organization.get('Organisation', {}).get('id')
-        org_name = organization.get('Organisation', {}).get('name')
+        org_id = organization.get('Organisation', {}).get('id')  # type: ignore[union-attr]
+        org_name = organization.get('Organisation', {}).get('name')  # type: ignore[union-attr]
         if org_id and org_name:
             org_info.append({'name': org_name, 'id': org_id})
     if org_info:
@@ -661,8 +661,8 @@ def get_role_info():
     roles = PYMISP.roles()
     role_info = []
     for role in roles:
-        role_name = role.get('Role', {}).get('name')
-        role_id = role.get('Role', {}).get('id')
+        role_name = role.get('Role', {}).get('name')  # type: ignore[union-attr]
+        role_id = role.get('Role', {}).get('id')  # type: ignore[union-attr]
         if role_name and role_id:
             role_info.append({'name': role_name, 'id': role_id})
     if role_info:
@@ -714,7 +714,7 @@ def add_attribute(
         if not response:
             raise DemistoException(
                 f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again")
-        new_event = response[0]  # type: ignore[assignment]
+        new_event = response[0]  # type: ignore[assignment,index]
         # response[0] is MISP event
 
     if not isinstance(new_event, MISPEvent):
@@ -825,11 +825,13 @@ def get_indicator_results(
     if not is_indicator_found:
         demisto.debug(f"{is_indicator_found=}")
     if is_indicator_found:
-        outputs, score, found_tag, found_related_events = parse_response_reputation_command(misp_response,
-                                                                                            malicious_tag_ids,
-                                                                                            suspicious_tag_ids,
-                                                                                            benign_tag_ids,
-                                                                                            attributes_limit)
+        outputs, score, found_tag, found_related_events = parse_response_reputation_command(
+            misp_response,  # type: ignore[arg-type]
+            malicious_tag_ids,
+            suspicious_tag_ids,
+            benign_tag_ids,
+            attributes_limit
+        )
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
@@ -1444,7 +1446,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
     tag = demisto_args['tag']
     try:
         response = PYMISP.untag(uuid, tag)
-        if response and response.get('errors'):
+        if response and response.get('errors'):  # type: ignore[union-attr]
             raise DemistoException(f'Error in `{demisto.command()}` command: {response}')
     except PyMISPError:
         raise DemistoException("Removing the required tag was failed. Please make sure the UUID and tag exist.")
@@ -1456,7 +1458,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
             readable_output=human_readable,
             outputs_prefix='MISP.Attribute',
             outputs_key_field='ID',
-            outputs=build_attributes_search_response(response),
+            outputs=build_attributes_search_response(response),  # type: ignore[arg-type]
             raw_response=response
         )
     # event's uuid
@@ -1466,7 +1468,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='ID',
-        outputs=build_events_search_response(response),
+        outputs=build_events_search_response(response),  # type: ignore[arg-type]
         raw_response=response
     )
 
@@ -1869,7 +1871,7 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
             readable_output="No value is on a MISP warning list!",
             raw_response=response,
         )
-    for value, lists in response.items():
+    for value, lists in response.items():  # type: ignore[union-attr]
         if len(lists) > 0:
             res.append(
                 {
