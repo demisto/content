@@ -167,7 +167,6 @@ def build_and_authenticate(googleservice):
     elif googleservice == 'cloudasset':
         ASSET = discovery.build(googleservice, API_VERSION, credentials=service_credentials)
         return ASSET
-    return None
 
 
 def wait_for_zone_operation(args):
@@ -375,7 +374,7 @@ def create_instance(args):
         config['tags'][0].update({'items': parse_resource_ids(tags)})
 
     if args.get('canIpForward'):
-        can_ip_forward = args.get('canIpForward') == 'true'
+        can_ip_forward = True if args.get('canIpForward') == 'true' else False
         config.update({'canIpForward': can_ip_forward})
 
     if args.get('tagsFingerprint'):
@@ -418,7 +417,7 @@ def create_instance(args):
 
     if args.get('externalInternetAccess'):
         external_network = (
-            args.get('externalInternetAccess') == 'true'
+            True if args.get('externalInternetAccess') == 'true' else False
         )
         if external_network:
             if 'networkInterfaces' not in config.keys():
@@ -439,7 +438,7 @@ def create_instance(args):
         config['networkInterfaces'][0]['accessConfigs'][0].update({'natIP': nat_ip})
 
     if args.get('setPublicPtr'):
-        set_public_ptr = args.get('setPublicPtr') == 'true'
+        set_public_ptr = True if args.get('setPublicPtr') == 'true' else False
         if 'networkInterfaces' not in config.keys():
             config.update({'networkInterfaces': [{}]})
         if 'accessConfigs' not in config['networkInterfaces'][0].keys():
@@ -518,7 +517,7 @@ def create_instance(args):
         config['disks'][0].update({'deviceName': disk_device_name})
 
     if args.get('diskBoot') is not None:
-        disk_boot = args.get('diskBoot') == 'true'
+        disk_boot = True if args.get('diskBoot') == 'true' else False
         if 'disks' not in config.keys():
             config.update({'disks': [{}]})
         config['disks'][0].update({'boot': disk_boot})
@@ -620,7 +619,7 @@ def create_instance(args):
         )
 
     if args.get('diskAutodelete'):
-        disk_auto_delete = args.get('diskAutodelete') == 'true'
+        disk_auto_delete = True if args.get('diskAutodelete') == 'true' else False
         if 'disks' not in config.keys():
             config.update({'disks': [{}]})
         config['disks'][0].update({'autoDelete': disk_auto_delete})
@@ -690,7 +689,7 @@ def create_instance(args):
 
     if args.get('schedulingAutomaticRestart'):
         scheduling_automatic_restart = (
-            args.get('schedulingAutomaticRestart') == 'true'
+            True if args.get('schedulingAutomaticRestart') == 'true' else False
         )
         if 'scheduling' not in config.keys():
             config.update({'scheduling': {}})
@@ -698,7 +697,7 @@ def create_instance(args):
 
     if args.get('schedulingPreemptible'):
         scheduling_preemptible = (
-            args.get('schedulingPreemptible') == 'true'
+            True if args.get('schedulingPreemptible') == 'true' else False
         )
         if 'scheduling' not in config.keys():
             config.update({'scheduling': {}})
@@ -738,7 +737,7 @@ def create_instance(args):
 
     if args.get('deletionProtection'):
         deletion_protection = (
-            args.get('deletionProtection') == 'true'
+            True if args.get('deletionProtection') == 'true' else False
         )
         config.update({'deletionProtection': deletion_protection})
 
@@ -801,7 +800,7 @@ def list_instances(args):
     data_res = []
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for instance in response['items']:
                 output.append(instance)
                 data_res_item = {
@@ -855,8 +854,8 @@ def aggregated_list_instances(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
-            for _name, instances_scoped_list in response['items'].items():
+        if 'items' in response.keys():
+            for name, instances_scoped_list in response['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
                     for inst in instances_scoped_list.get('instances', []):
                         output.append(inst)
@@ -1271,7 +1270,7 @@ def list_images(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for image in response['items']:
                 output.append(image)
                 data_res_item = {'id': image.get('id'), 'name': image.get('name')}
@@ -1370,7 +1369,7 @@ def insert_image(args):
 
     force_create = False
     if args.get('forceCreate'):
-        force_create = args.get('forceCreate') == 'true'
+        force_create = True if args.get('forceCreate') == 'true' else False
 
     if args.get('description'):
         description = args.get('description')
@@ -1556,7 +1555,7 @@ def networks_add_peering(args):
         config.update({'peerNetwork': peer_network})
 
     if args.get('autoCreateRoutes'):
-        auto_create_routes = args.get('autoCreateRoutes') == 'true'
+        auto_create_routes = True if args.get('autoCreateRoutes') == 'true' else False
         config.update({'autoCreateRoutes': auto_create_routes})
 
     if args.get('networkPeeringName'):
@@ -1572,7 +1571,7 @@ def networks_add_peering(args):
 
     if args.get('networkPeeringExchangeSubnetRoutes'):
         network_peering_exchange_subnet_routes = (
-            args.get('networkPeeringExchangeSubnetRoutes') == 'True'
+            True if args.get('networkPeeringExchangeSubnetRoutes') == 'True' else False
         )
         if 'networkPeering' not in config.keys():
             config.update({'networkPeering': {}})
@@ -1674,7 +1673,7 @@ def insert_network(args):
 
     if args.get('autoCreateSubnetworks'):
         auto_create_sub_networks = (
-            args.get('autoCreateSubnetworks') == 'true'
+            True if args.get('autoCreateSubnetworks') == 'true' else False
         )
         config.update({'autoCreateSubnetworks': auto_create_sub_networks})
 
@@ -1732,7 +1731,7 @@ def list_networks(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
                 data_res_item = {'name': item.get('name'), 'id': item.get('id')}
@@ -1922,7 +1921,7 @@ def list_zone_operation(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for operation in response['items']:
                 output.append(operation)
                 data_res_item = {
@@ -2003,7 +2002,7 @@ def list_region_operation(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for operation in response['items']:
                 output.append(operation)
                 data_res_item = {
@@ -2080,7 +2079,7 @@ def list_global_operation(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for operation in response['items']:
                 output.append(operation)
                 data_res_item = {
@@ -2146,8 +2145,8 @@ def aggregated_list_addresses(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
-            for _name, instances_scoped_list in response['items'].items():
+        if 'items' in response.keys():
+            for name, instances_scoped_list in response['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
                     for addr in instances_scoped_list.get('addresses'):
                         output.append(addr)
@@ -2335,7 +2334,7 @@ def list_addresses(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for address in response['items']:
                 output.append(address)
                 data_res_item = {
@@ -2510,7 +2509,7 @@ def list_global_addresses(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for address in response['items']:
                 output.append(address)
                 data_res_item = {
@@ -2563,8 +2562,8 @@ def aggregated_list_disks(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
-            for _name, instances_scoped_list in response['items'].items():
+        if 'items' in response.keys():
+            for name, instances_scoped_list in response['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
                     for disk in instances_scoped_list.get('disks', []):
                         output.append(disk)
@@ -2748,9 +2747,6 @@ def insert_disk(args):
 
     if args.get('zone'):
         zone = args.get('zone')
-    else:
-        zone = None
-        demisto.debug(f"{args.get('zone')=}")
 
     if args.get('disktype'):
         disk_type = args.get('disktype')
@@ -2904,7 +2900,7 @@ def list_disks(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for disk in response['items']:
                 output.append(disk)
                 data_res_item = {
@@ -2990,14 +2986,14 @@ def set_disk_labels(args):
     disk = args.get('disk')
     zone = args.get('zone')
     labels = args.get('labels')
+    if args.get('labelFingerprint'):
+        label_fingerprint = args.get('labelFingerprint')
 
     labels = parse_labels(labels)
     body = {'labels': labels}
 
-    if args.get('labelFingerprint'):
-        label_fingerprint = args.get('labelFingerprint')
-        if label_fingerprint is not None:
-            body.update({'labelFingerprint': label_fingerprint})
+    if args.get('labelFingerprint') is not None:
+        body.update({'labelFingerprint': label_fingerprint})
 
     request = get_compute().disks().setLabels(
         project=project, zone=zone, resource=disk, body=body
@@ -3052,8 +3048,8 @@ def aggregated_list_disk_types(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
-            for _name, instances_scoped_list in response['items'].items():
+        if 'items' in response.keys():
+            for name, instances_scoped_list in response['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
                     for disktype in instances_scoped_list.get('diskTypes', []):
                         output.append(disktype)
@@ -3134,7 +3130,7 @@ def list_disks_types(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for disktype in response['items']:
                 output.append(disktype)
                 data_res_item = {
@@ -3234,8 +3230,8 @@ def aggregated_list_instance_groups(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
-            for _name, instances_scoped_list in response['items'].items():
+        if 'items' in response.keys():
+            for name, instances_scoped_list in response['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
                     for item in instances_scoped_list.get('instanceGroups', []):
                         output.append(item)
@@ -3421,7 +3417,7 @@ def list_instance_groups(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
 
@@ -3481,7 +3477,7 @@ def list_instance_groups_instances(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
                 data_res_item = {
@@ -3658,7 +3654,7 @@ def list_regions(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
                 data_res_item = {
@@ -3741,7 +3737,7 @@ def list_zones(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
                 data_res_item = {
@@ -3795,8 +3791,8 @@ def aggregated_list_machine_types(args):
         pageToken=page_token
     )
     response = request.execute()
-    if 'items' in response:
-        for _name, instances_scoped_list in response['items'].items():
+    if 'items' in response.keys():
+        for name, instances_scoped_list in response['items'].items():
             if 'warning' not in instances_scoped_list.keys():
                 for item in instances_scoped_list.get('machineTypes', []):
                     output.append(item)
@@ -3890,7 +3886,7 @@ def list_machine_types(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
                 data_res_item = {
@@ -3978,7 +3974,7 @@ def insert_firewall(args):
         config.update({'direction': args.get('direction')})
 
     if args.get('logConfigEnable'):
-        log_config_enable = args.get('logConfigEnable') == 'true'
+        log_config_enable = True if args.get('logConfigEnable') == 'true' else False
         config.update({'logConfig': {'enable': log_config_enable}})
 
     if args.get('disabled'):
@@ -4015,9 +4011,6 @@ def patch_firewall(args):
     if args.get('name'):
         name = args.get('name')
         config.update({'name': args.get('name')})
-    else:
-        name = None
-        demisto.debug(f"{args.get('name')=} -> {name=}")
 
     if args.get('description'):
         config.update({'description': args.get('description')})
@@ -4070,11 +4063,11 @@ def patch_firewall(args):
         config.update({'direction': args.get('direction')})
 
     if args.get('logConfigEnable'):
-        log_config_enable = args.get('logConfigEnable') == 'true'
+        log_config_enable = True if args.get('logConfigEnable') == 'true' else False
         config.update({'logConfig': {'enable': log_config_enable}})
 
     if args.get('disabled'):
-        disabled = args.get('disabled') == 'true'
+        disabled = True if args.get('disabled') == 'true' else False
         config.update({'disabled': disabled})
 
     request = get_compute().firewalls().patch(project=project, firewall=name, body=config)
@@ -4130,7 +4123,7 @@ def list_firewalls(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
                 data_res_item = {
@@ -4293,7 +4286,7 @@ def list_snapshots(args):
     )
     while request:
         response = request.execute()
-        if 'items' in response:
+        if 'items' in response.keys():
             for item in response['items']:
                 output.append(item)
                 data_res_item = {
@@ -4432,7 +4425,7 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
         )
         while request_comp:
             response_comp = request_comp.execute()
-            if 'items' in response_comp:
+            if 'items' in response_comp.keys():
                 for _, instances_scoped_list in response_comp['items'].items():
                     if 'warning' not in instances_scoped_list.keys():
                         for inst in instances_scoped_list.get('instances', []):
@@ -4790,7 +4783,7 @@ def main():
             response = response['error']
             status_code = response.get('code')
             err_message = response.get('message')
-            full_err_msg = f'error code: {status_code}\n{err_message}'
+            full_err_msg = 'error code: {}\n{}'.format(status_code, err_message)
             return_error(full_err_msg)
         except AttributeError:
             return_error(str(e))
