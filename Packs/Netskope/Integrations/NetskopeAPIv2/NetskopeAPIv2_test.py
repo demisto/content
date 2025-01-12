@@ -791,21 +791,11 @@ def test_fetch_incidents_no_event_type(client, requests_mock):
             "id": "7a30814339c73cf437653b22",
             "time": 1688577293,
         },
-        "application": {
-            "date": "01-01-2023 15:00",
-            "id": "c4a0ad0684b73c3746e205a0",
-            "time": 1688577293,
-        },
         "dlp_incident": {
             "date": "11-09-2024 08:00",
             "id": "01",
             "time": 1726041600,
-        },
-        "page": {
-            "date": "01-01-2023 15:00",
-            "id": "c4a0ad0684b73c3746e205a0",
-            "time": 1688577293,
-        },
+        }
     }
 
 
