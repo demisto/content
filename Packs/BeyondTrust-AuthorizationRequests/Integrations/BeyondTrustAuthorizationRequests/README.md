@@ -1,5 +1,5 @@
 Use this integration to handle Beyond Trust authorization requests through XSOAR.
-This integration was integrated and tested with version xx of BeyondTrust - Authorization Requests.
+This integration was integrated and tested with version 2 of BeyondTrust - Authorization Requests.
 
 ## Configure BeyondTrust - Authorization Requests in Cortex
 
