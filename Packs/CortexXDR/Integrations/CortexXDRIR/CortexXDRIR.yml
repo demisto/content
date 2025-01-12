@@ -174,7 +174,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Removes duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid).
+  additionalinfo: Recommended to select. Removes duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid).
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
