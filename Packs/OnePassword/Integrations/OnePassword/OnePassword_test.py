@@ -185,7 +185,7 @@ def test_client_get_events(authenticated_client: Client, mocker: MockerFixture):
     assert client_http_request_kwargs['raise_on_status'] is True
 
 
-def test_get_events_from_client(authenticated_client: Client, mocker: MockerFixture):
+def test_get_events_from_client_no_skip(authenticated_client: Client, mocker: MockerFixture):
     """
     Given:
         - A 1Password event type, from date, and the maximum number of events.
@@ -211,6 +211,39 @@ def test_get_events_from_client(authenticated_client: Client, mocker: MockerFixt
 
     assert client_get_events.call_count == 2
     assert events == expected_events
+
+
+def test_get_events_from_client_skip_ids(authenticated_client: Client, mocker: MockerFixture):
+    """
+    Given:
+        - A 1Password event type, from date, and the maximum number of events.
+
+    When:
+        - Calling get_events_from_client (which calls Client.get_events).
+
+    Assert:
+        - Ensure Client.get_events is called once (because response['has_more'] is False).
+        - Ensure no events are returned (because the event ID in the response should be skipped).
+    """
+    from OnePassword import get_events_from_client
+
+    event_type = 'audit events'
+    from_date = datetime(2024, 12, 2, 11, 50)
+    max_events = 2
+
+    response = util_load_json('test_data/auditevents_response_2.json')
+    already_fetched_ids_to_skip = {'last event'}
+    client_get_events = mocker.patch.object(authenticated_client, 'get_events', return_value=response)
+
+    events = get_events_from_client(
+        authenticated_client,
+        event_type=event_type,
+        from_date=from_date,
+        max_events=max_events,
+        already_fetched_ids_to_skip=already_fetched_ids_to_skip)
+
+    assert client_get_events.called_once
+    assert events == []  # No new events because event ID in response has already been fetched and should be skipped
 
 
 def test_push_events(mocker: MockerFixture):
@@ -254,7 +287,7 @@ def test_set_next_run(mocker: MockerFixture):
 
     demisto_set_last_run = mocker.patch('OnePassword.demisto.setLastRun')
 
-    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:20.710457Z', 'ids': ['second (and last) event']}}
+    next_run = {'auditevents': {'from_date': '2024-12-02T11:55:20.710457Z', 'ids': ['last event']}}
     set_next_run(next_run)
 
     assert demisto_set_last_run.call_count == 1
@@ -280,7 +313,7 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
     from_date = '2024-12-02T11:54:11Z'
 
     # Expected outputs
-    expected_type_next_run = {'from_date': '2024-12-02T11:55:20.710457Z', 'ids': ['second (and last) event']}
+    expected_type_next_run = {'from_date': '2024-12-02T11:55:20.710457Z', 'ids': ['middle event', 'last event']}
     expected_events = util_load_json('test_data/auditevents_expected_events.json')
 
     get_events_from_client = mocker.patch('OnePassword.get_events_from_client', return_value=expected_events)
@@ -298,7 +331,8 @@ def test_fetch_events(authenticated_client: Client, mocker: MockerFixture):
     assert get_events_from_client_kwargs['from_date'] == dateparser.parse(from_date)
 
     # Assert correct outputs
-    assert type_next_run == expected_type_next_run
+    assert type_next_run['from_date'] == expected_type_next_run['from_date']
+    assert sorted(type_next_run['ids']) == sorted(expected_type_next_run['ids'])
     assert events == expected_events
 
 

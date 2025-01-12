@@ -3,7 +3,7 @@
     "has_more": false,
     "items": [
         {
-            "uuid": "second (and last) event",
+            "uuid": "last event",
             "timestamp": "2024-12-02T11:55:20.710457472Z",
             "actor_details": {
                 "name": "Jenny Bee",
