@@ -466,7 +466,6 @@ def prepare_attributes_array_to_context_data(attributes_list):
     if not attributes_list:
         return None
     for attribute in attributes_list:
-        demisto.debug(f"{attribute=}")
         attribute.pop("RelatedAttribute")  # get rid of this useless list
         event = attribute.get('Event')
         convert_timestamp_to_readable(attribute, event)
@@ -474,20 +473,12 @@ def prepare_attributes_array_to_context_data(attributes_list):
                                                  "Threat Level ID": event.get('threat_level_id'),
                                                  "Event ID": event.get("id")}
         if event.get('Tag'):
-            demisto.debug(f"{event=}")
             limit_tag_output, tag_ids = limit_tag_output_to_id_and_name(event, True)
             event['Tag'] = limit_tag_output
-            demisto.debug(f"event['Tag']={event['Tag']}, {tag_ids=}")
-            for tag_id in tag_ids:
-                demisto.debug(f"The {tag_id} tag id is {type(tag_id)} type")
             event_tag_ids.update(tag_ids)
         if attribute.get('Tag'):
-            demisto.debug(f"{attribute=}")
             limit_tag_output, tag_ids = limit_tag_output_to_id_and_name(attribute, False)
             attribute['Tag'] = limit_tag_output
-            demisto.debug(f"attribute['Tag']={attribute['Tag']}, {tag_ids=}")
-            for tag_id in tag_ids:
-                demisto.debug(f"The {tag_id} tag id is {type(tag_id)} type")
             attributes_tag_ids.update(tag_ids)
     return found_related_events, attributes_tag_ids, event_tag_ids
 
@@ -522,32 +513,26 @@ def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_
     - Attributes tags (both malicious and suspicious) are stronger than events' tags.
     """
     found_tag = None
-    demisto.debug(f"get_score function (attribute) - {attribute_tags_ids} *** {malicious_tag_ids=}")
     is_attribute_tag_malicious = any((found_tag := tag) in attribute_tags_ids for tag in malicious_tag_ids)
     if is_attribute_tag_malicious:
         return Common.DBotScore.BAD, found_tag
 
-    demisto.debug(f"get_score function (attribute) - {attribute_tags_ids} *** {suspicious_tag_ids=}")
     is_attribute_tag_suspicious = any((found_tag := tag) in attribute_tags_ids for tag in suspicious_tag_ids)
     if is_attribute_tag_suspicious:
         return Common.DBotScore.SUSPICIOUS, found_tag
 
-    demisto.debug(f"get_score function (attribute) - {attribute_tags_ids} *** {benign_tag_ids=}")
     is_attribute_tag_benign = any((found_tag := tag) in attribute_tags_ids for tag in benign_tag_ids)
     if is_attribute_tag_benign:
         return Common.DBotScore.GOOD, found_tag
 
-    demisto.debug(f"get_score function (event) - {event_tags_ids} *** {malicious_tag_ids=}")
     is_event_tag_malicious = any((found_tag := tag) in event_tags_ids for tag in malicious_tag_ids)
     if is_event_tag_malicious:
         return Common.DBotScore.BAD, found_tag
 
-    demisto.debug(f"get_score function (event) - {event_tags_ids} *** {suspicious_tag_ids=}")
     is_event_tag_suspicious = any((found_tag := tag) in event_tags_ids for tag in suspicious_tag_ids)
     if is_event_tag_suspicious:
         return Common.DBotScore.SUSPICIOUS, found_tag
 
-    demisto.debug(f"get_score function (event) - {event_tags_ids} *** {benign_tag_ids=}")
     is_event_tag_benign = any((found_tag := tag) in event_tags_ids for tag in benign_tag_ids)
     if is_event_tag_benign:
         return Common.DBotScore.GOOD, found_tag
@@ -791,7 +776,6 @@ def get_indicator_results(
     """
     reputation_value_validation(value, dbot_type)
     # if ALLOWED_ORGS is empty, then it equals to any. When specified, then it filters out all other orgs that are not requested
-    demisto.debug(f"TO_IDS={TO_IDS}")
     if TO_IDS:
         # to_ids flag represents whether the attribute is meant to be actionable
         # Actionable defined attributes can be used in automated processes as a pattern for detection
@@ -822,8 +806,6 @@ def get_indicator_results(
 
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')  # type: ignore[union-attr]
-    if not is_indicator_found:
-        demisto.debug(f"{is_indicator_found=}")
     if is_indicator_found:
         outputs, score, found_tag, found_related_events = parse_response_reputation_command(
             misp_response,  # type: ignore[arg-type]
@@ -849,7 +831,6 @@ def get_indicator_results(
                               readable_output=readable_output)
 
     else:
-        demisto.debug("No indicator found")
         if search_warninglists:
             res: list = []
             human_readable: str = ""
@@ -942,7 +923,6 @@ def search_events_with_scored_tag(object_data_dict, found_tag, event_name):
     object_tags_list = object_data_dict.get('Tag', [])
     for tag in object_tags_list:
         if (tag_id := tag.get('ID')) and str(tag_id) == found_tag:
-            demisto.debug(f"search_events_with_scored_tag function {tag_id=}-{type(tag_id)}, {found_tag=}-{type(found_tag)}")
             event_id = get_event_id(object_data_dict)
             tag_name = tag.get('Name')
             related_events.append({'Event_ID': event_id, 'Event_Name': event_name,
@@ -1897,8 +1877,6 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
 def main():
     params = demisto.params()
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
-    # DEBUG
-    demisto.debug(f"A: {malicious_tag_ids=}")
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
     benign_tag_ids = argToList(params.get('benign_tag_ids'))
     search_warninglists: bool = argToBoolean(params.get('search_warninglists', False))
@@ -1916,19 +1894,6 @@ def main():
 
         malicious_tag_ids, suspicious_tag_ids, benign_tag_ids = handle_tag_duplication_ids(
             malicious_tag_ids, suspicious_tag_ids, benign_tag_ids)
-
-        # DEBUG
-        demisto.debug(f"B: {malicious_tag_ids=}")
-        demisto.debug(f"{suspicious_tag_ids=}")
-        demisto.debug(f"{benign_tag_ids=}")
-        if isinstance(malicious_tag_ids, list):
-            # DEBUG
-            for id_ in malicious_tag_ids:
-                if isinstance(id_, str):
-                    demisto.debug(f"len id - {id_}: {len(id_)}")
-                else:
-                    demisto.debug(f"type of the id: {id_} is {type(id_)}")
-
         if command == 'test-module':
             return_results(test(malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
                                 attributes_limit=attributes_limit))
