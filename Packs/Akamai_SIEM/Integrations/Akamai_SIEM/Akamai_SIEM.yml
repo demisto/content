@@ -81,6 +81,7 @@ configuration:
   additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80k. Note that if your API has higher ingestion rate, the integration will be able to detect it and immediately starts the next run in order to fetch events quicker.
   hidden:
   - xsoar
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -128,20 +129,23 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- display: Beta Page Size 
-  name: beta_page_size
-  type: 0
-  defaultvalue: '200000'
-  required: false
-  additionalinfo: The number of events to fetch per request to akamai Default is 200k, maximum is 600k as per Akamai documentation.
-  section: Collect
 - display: Long running instance
   name: longRunning
+  additionalinfo: This is a beta feature for testing new mechanism for fetch events. Use this param only if advised by CS.
   type: 8
   required: false
   hidden:
   - xsoar
   section: Collect
+- display: Long running Page Size 
+  name: beta_page_size
+  type: 0
+  defaultvalue: '200000'
+  required: false
+  additionalinfo: The number of events to fetch per request to akamai Default is 200k, maximum is 600k as per Akamai documentation. Use this only when using the long running beta feature.
+  section: Collect
+  hidden:
+  - xsoar
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM

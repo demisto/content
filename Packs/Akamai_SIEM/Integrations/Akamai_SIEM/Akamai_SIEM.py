@@ -561,59 +561,53 @@ EVENTS_LS = ""
 MAX_ALLOWED_TASKS_SIZE = (10 ** 10)  # 10 GB
 
 
-    async def get_events_with_offset_aiohttp(
-        self,
-        config_ids: str,
-        offset: str | None = '',
-        limit: int = 20,
-        from_epoch: str = '',
-        counter: int = 0
-    ) -> tuple[list[str], str | None]:
-        params: dict[str, int | str] = {
-            'limit': limit
-        }
-        if offset:
-            demisto.info(f"received {offset=} will run an offset based request.")
-            params["offset"] = offset
-        else:
-            from_param = int(from_epoch)
-            params["from"] = from_param
-            demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
-        
-        
-        # new part
-        url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
+async def get_events_with_offset_aiohttp(
+    self,
+    config_ids: str,
+    offset: str | None = '',
+    limit: int = 20,
+    from_epoch: str = '',
+    counter: int = 0
+) -> tuple[list[str], str | None]:
+    params: dict[str, int | str] = {
+        'limit': limit
+    }
+    if offset:
+        demisto.info(f"received {offset=} will run an offset based request.")
+        params["offset"] = offset
+    else:
+        from_param = int(from_epoch)
+        params["from"] = from_param
+        demisto.info(f"did not receive an offset. will run a time based request with {from_param=}")
 
-        headers = {
-        'Authorization': 'Basic YTph',
-        }
-        demisto.info(f"Init session and sending request for the {counter} time.")
-        
-        # async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
-        #                                                                                         params=params) as response:
-        #     try:
-        #         response.raise_for_status()  # Check for any HTTP errors
-        #         raw_response = await response.text()
-        #     except aiohttp.ClientError as e:
-        #         demisto.info(f"Error occurred: {e}")
-        #         raw_response = ''
-        events_task = generate_events()
-        raw_response = await events_task
-        demisto.info(f"Finished executing request to Akamai for the {counter} time, processing")
-        # End of new part.
-        
-        events: list[str] = raw_response.split('\n')
-        offset = None
-        try:
-            offset_context = events.pop()
-            loaded_offset_context = json.loads(offset_context)
-            offset = loaded_offset_context.get("offset")
-        except Exception as e:
-            demisto.error(f"couldn't decode offset with {offset_context=}, reason {e}")
-        return events, offset
+    url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
+    headers = {
+    'Authorization': 'Basic YTph',
+    }
+    demisto.info(f"Init session and sending request for the {counter} time.")
+    
+    # async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
+    #                                                                                         params=params) as response:
+    #     try:
+    #         response.raise_for_status()  # Check for any HTTP errors
+    #         raw_response = await response.text()
+    #     except aiohttp.ClientError as e:
+    #         demisto.info(f"Error occurred: {e}")
+    #         raw_response = ''
+    events_task = generate_events()
+    raw_response = await events_task
+    demisto.info(f"Finished executing request to Akamai for the {counter} time, processing")
+    events: list[str] = raw_response.split('\n')
+    offset = None
+    try:
+        offset_context = events.pop()
+        loaded_offset_context = json.loads(offset_context)
+        offset = loaded_offset_context.get("offset")
+    except Exception as e:
+        demisto.error(f"couldn't decode offset with {offset_context=}, reason {e}")
+    return events, offset
 
 
-'''HELPER FUNCIONS'''
 async def generate_events() -> str:
     global EVENTS_LS
     if not EVENTS_LS:
@@ -714,68 +708,6 @@ def get_tasks_total_size() -> int:
     return total_size
 
 
-def get_events_command(client: Client, config_ids: str, offset: str | None = None, limit: str | None = None,
-                       from_epoch: str | None = None, to_epoch: str | None = None, time_stamp: str | None = None) \
-        -> tuple[object, dict, list | dict]:
-    """
-        Get security events from Akamai WAF service
-        Allowed query parameters combinations:
-            1. offset - Since a prior request.
-            2. offset, limit - Since a prior request, limited.
-            3. from - Since a point in time.
-            4. from, limit - Since a point in time, limited.
-            5. from, to - Over a range of time.
-            6. from, to, limit - Over a range of time, limited.
-    Args:
-        client: Client object
-        config_ids: Unique identifier for each security configuration. To report on more than one configuration, separate
-                  integer identifiers with semicolons, e.g. 12892;29182;82912.
-        offset: This token denotes the last message. If specified, this operation fetches only security events that have
-                occurred from offset. This is a required parameter for offset mode and you can’t use it in time-based requests.
-        limit: Defines the approximate maximum number of security events each fetch returns, in both offset and
-               time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
-               security events than you set in the limit parameter, because data is stored in different buckets.
-        from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
-                    This is a required parameter to get time-based results for a set time_stamp, and you can’t use it in
-                    offset mode.
-        to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can’t use this parameter in
-                  offset mode and it’s an optional parameter in time-based mode. If omitted, the value defaults to the
-                  current time.
-        time_stamp: timestamp (<number> <time unit>, e.g., 12 hours, 7 days of events
-
-    Returns:
-        Human readable, entry context, raw response
-    """
-    if time_stamp:
-        from_epoch, to_epoch = parse_date_range(date_range=time_stamp,
-                                                date_format="%s")
-    raw_response, offset = client.get_events(config_ids=config_ids,
-                                             offset=offset,
-                                             limit=limit,
-                                             from_epoch=from_epoch,
-                                             to_epoch=to_epoch)
-    if raw_response:
-        events_ec, ip_ec, events_human_readable = events_to_ec(raw_response)
-        entry_context = {
-            "Akamai.SIEM(val.HttpMessage.RequestId && val.HttpMessage.RequestId == obj.HttpMessage.RequestId)": events_ec,
-            outputPaths.get('ip'): ip_ec
-        }
-        title = f'{INTEGRATION_NAME} - Attacks data'
-
-        human_readable = tableToMarkdown(name=title,
-                                         t=events_human_readable,
-                                         removeNull=True)
-
-        return human_readable, entry_context, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-
-
-def reset_offset_command(client: Client):  # pragma: no cover
-    set_integration_context({})
-    return 'Offset was reset successfully.', {}, {}
-
-
 async def update_module_health(events_amount, offset):
     async with LOCKED_UPDATES_LOCK:
         demisto.info("Updating module health")
@@ -837,8 +769,7 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
     demisto.info(f"Finished gathering all tasks for the {COUNTER} time.")
     COUNTER += 1
     demisto.info("Starting to update module health")
-    # await update_module_health(len(processed_events), offset)  # noqa: RUF006
-    # asyncio.create_task(update_module_health(len(processed_events), offset))  # noqa: RUF006
+    asyncio.create_task(update_module_health(len(processed_events), offset))  # noqa: RUF006
     demisto.info("Finished updating module health")
 
 
@@ -851,7 +782,7 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
             demisto.info("Testing for possible wait condition according to tasks data overflow.")
             await wait_until_tasks_load_decrees()
             demisto.info("Finished testing for possible wait condition according to tasks data overflow.")
-            get_events_task = client.get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter)
+            get_events_task = get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter)
             counter += 1
             events, offset = None, None
             events, offset = await get_events_task
