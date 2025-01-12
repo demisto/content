@@ -1651,6 +1651,9 @@ class Client(BaseClient):
                     }
                 ],
             }
+        else:
+            test_data = {}
+            demisto.debug(f"{demisto.command()=} didn't match any condition. {test_data=}")
         method = "POST"
         url = f"/orch/v3/accounts/{account_id}/queue"
         tests_data = self.get_response(
