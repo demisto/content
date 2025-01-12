@@ -6089,6 +6089,7 @@
         "QRadar Indicator Hunting Test": "CRTX-141972"
     },
     "skipped_integrations": {
+        "qualys_fim": "No Instance",
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
         "RedCanary": "No instance",
