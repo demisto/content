@@ -111,7 +111,7 @@ The summary of the template structure in the templates is provided below.
 | .query.xql | The XQL query string to retrieve the record set to create an entry. [Variable Substitution](#variable-substitution) is supported. | String |
 | .query.command.using | [Optional] The name of the integration instance to execute the XQL query command. It overrides `xql_query_instance` in the argument parameters. | String |
 | .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. It overrides `round_time` in the argument parameters. | String or Number |
-| .query.conditions | [Optional] Conditions for executing XQL: it will be executed if all conditions evaluate to true or are not specified. Null, false, empty string, empty list, and empty dictionary will be treated as false; all other values will be treated as true. If the conditions evaluate to false, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | String or List[String] |
+| .query.conditions | [Optional] Conditions for executing XQL: it will be executed if all conditions evaluate to true or are not specified. null, false, empty string, empty list, empty dictionary, and a list a list where all elements are those values will be treated as false; all other values will be treated as true. If the conditions evaluate to false, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | String or List[String] |
 
 
 ### Node: entry

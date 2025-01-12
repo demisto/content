@@ -1867,6 +1867,8 @@ class Main:
                     return False
                 elif isinstance(val, bool):
                     return val
+                elif isinstance(val, (int, float)):
+                    return val != 0.0
                 elif isinstance(val, str):
                     return val.lower() not in ('', 'false')
                 else:
