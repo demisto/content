@@ -22,8 +22,12 @@ ignore=BC105
 [file:Cyberint.yml]
 ignore=BC112
 
+[file:classifier-mapper-incoming-CyberInt.json]
+ignore=GR103
+
 [known_words]
 Cyberint
+CyberInt
 
 
 
