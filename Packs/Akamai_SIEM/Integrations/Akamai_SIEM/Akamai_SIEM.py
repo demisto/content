@@ -44,8 +44,8 @@ EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
 LOCKED_UPDATES_LOCK = None
-EVENTS = []
 COUNTER = 0
+EVENTS_LS = ""
 MAX_ALLOWED_TASKS_SIZE = (10 ** 10)  # 10 GB
 
 # Disable insecure warnings
@@ -132,14 +132,16 @@ class Client(BaseClient):
         }
         demisto.info(f"Init session and sending request for the {counter} time.")
         
-        async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
-                                                                                                params=params) as response:
-            try:
-                response.raise_for_status()  # Check for any HTTP errors
-                raw_response = await response.text()
-            except aiohttp.ClientError as e:
-                demisto.info(f"Error occurred: {e}")
-                raw_response = ''
+        # async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
+        #                                                                                         params=params) as response:
+        #     try:
+        #         response.raise_for_status()  # Check for any HTTP errors
+        #         raw_response = await response.text()
+        #     except aiohttp.ClientError as e:
+        #         demisto.info(f"Error occurred: {e}")
+        #         raw_response = ''
+        events_task = generate_events()
+        raw_response = await events_task
         demisto.info(f"Finished executing request to Akamai for the {counter} time, processing")
         # End of new part.
         
@@ -155,6 +157,85 @@ class Client(BaseClient):
 
 
 '''HELPER FUNCIONS'''
+async def generate_events() -> str:
+    global EVENTS_LS
+    if not EVENTS_LS:
+        events = []
+        original_dict = {
+        "attackData": {
+            "clientIP": "192.0.2.82",
+            "configId": "14227",
+            "policyId": "qik1_26545",
+            "ruleActions": "YWxlcnQ%3d%3bYWxlcnQ%3d%3bZGVueQ%3d%3d",
+            "ruleData": "dGVsbmV0LmV4ZQ%3d%3d%3bdGVsbmV0LmV4ZQ%3d%3d%3bVmVjdG9yIFNjb3JlOiAxMCwgREVOWSB0aHJlc2hvbGQ6IDksIEFsZXJ0IFJ1bGVzOiA5NTAwMDI6OTUwMDA2LCBEZW55IFJ1bGU6ICwgTGFzdCBNYXRjaGVkIE1lc3NhZ2U6IFN5c3RlbSBDb21tYW5kIEluamVjdGlvbg%3d%3d",
+            "ruleMessages": "U3lzdGVtIENvbW1hbmQgQWNjZXNz%3bU3lzdGVtIENvbW1hbmQgSW5qZWN0aW9u%3bQW5vbWFseSBTY29yZSBFeGNlZWRlZCBmb3IgQ29tbWFuZCBJbmplY3Rpb24%3d",
+            "ruleSelectors": "QVJHUzpvcHRpb24%3d%3bQVJHUzpvcHRpb24%3d%3b",
+            "ruleTags": "T1dBU1BfQ1JTL1dFQl9BVFRBQ0svRklMRV9JTkpFQ1RJT04%3d%3bT1dBU1BfQ1JTL1dFQl9BVFRBQ0svQ09NTUFORF9JTkpFQ1RJT04%3d%3bQUtBTUFJL1BPTElDWS9DTURfSU5KRUNUSU9OX0FOT01BTFk%3d",
+            "ruleVersions": "NA%3d%3d%3bNA%3d%3d%3bMQ%3d%3d",
+            "rules": "OTUwMDAy%3bOTUwMDA2%3bQ01ELUlOSkVDVElPTi1BTk9NQUxZ"
+        },
+        "botData": {
+            "botScore": "100",
+            "responseSegment": "3"
+        },
+        "clientData": {
+            "appBundleId": "com.mydomain.myapp",
+            "appVersion": "1.23",
+            "sdkVersion": "4.7.1",
+            "telemetryType": "2"
+        },
+        "format": "json",
+        "geo": {
+            "asn": "14618",
+            "city": "ASHBURN",
+            "continent": "288",
+            "country": "US",
+            "regionCode": "VA"
+        },
+        "httpMessage": {
+            "bytes": "266",
+            "host": "www.hmapi.com",
+            "method": "GET",
+            "path": "/",
+            "port": "80",
+            "protocol": "HTTP/1.1",
+            "query": "option=com_jce%20telnet.exe",
+            "requestHeaders": "User-Agent%3a%20BOT%2f0.1%20(BOT%20for%20JCE)%0d%0aAccept%3a%20text%2fhtml,application%2fxhtml+xml,application%2fxml%3bq%3d0.9,*%2f*%3bq%3d0.8%0d%0auniqueID%3a%20CR_H8%0d%0aAccept-Language%3a%20en-US,en%3bq%3d0.5%0d%0aAccept-Encoding%3a%20gzip,%20deflate%0d%0aConnection%3a%20keep-alive%0d%0aHost%3a%20www.hmapi.com%0d%0aContent-Length%3a%200%0d%0a",
+            "requestId": "1158db1758e37bfe67b7c09",
+            "responseHeaders": "Server%3a%20AkamaiGHost%0d%0aMime-Version%3a%201.0%0d%0aContent-Type%3a%20text%2fhtml%0d%0aContent-Length%3a%20266%0d%0aExpires%3a%20Tue,%2004%20Apr%202017%2010%3a57%3a02%20GMT%0d%0aDate%3a%20Tue,%2004%20Apr%202017%2010%3a57%3a02%20GMT%0d%0aConnection%3a%20close%0d%0aSet-Cookie%3a%20ak_bmsc%3dAFE4B6D8CEEDBD286FB10F37AC7B256617DB580D417F0000FE7BE3580429E23D%7epluPrgNmaBdJqOLZFwxqQLSkGGMy4zGMNXrpRIc1Md4qtsDfgjLCojg1hs2HC8JqaaB97QwQRR3YS1ulk+6e9Dbto0YASJAM909Ujbo6Qfyh1XpG0MniBzVbPMUV8oKhBLLPVSNCp0xXMnH8iXGZUHlUsHqWONt3+EGSbWUU320h4GKiGCJkig5r+hc6V1pi3tt7u3LglG3DloEilchdo8D7iu4lrvvAEzyYQI8Hao8M0%3d%3b%20expires%3dTue,%2004%20Apr%202017%2012%3a57%3a02%20GMT%3b%20max-age%3d7200%3b%20path%3d%2f%3b%20domain%3d.hmapi.com%3b%20HttpOnly%0d%0a",
+            "start": f"{int(time.time())}",
+            "status": "200"
+        },
+        "type": "akamai_siem",
+        "userRiskData": {
+            "allow": "0",
+            "general": "duc_1h:10|duc_1d:30",
+            "originUserId": "jsmith007",
+            "risk": "udfp:1325gdg4g4343g/M|unp:74256/H",
+            "score": "75",
+            "status": "0",
+            "trust": "ugp:US",
+            "username": "jsmith@example.com",
+            "uuid": "964d54b7-0821-413a-a4d6-8131770ec8d5"
+        },
+        "version": "1.0"
+        }
+        import copy
+        for i in range(300000):
+            duplicated_dict = copy.deepcopy(original_dict)
+            duplicated_dict["unique_id"] = i
+            events.append(json.dumps(duplicated_dict))
+        events.append(json.dumps({
+            "total": 300000,
+            "offset": "Hayun offset",
+            "limit": 300000
+        }))
+        EVENTS_LS = "\n".join(events)
+    else:
+        demisto.info("Skipping creating new events, going to sleep for 5 seconds.")
+        await asyncio.sleep(5)
+        demisto.info("Woke up after 5 seconds, continue running.")
+    return EVENTS_LS
 
 
 def date_format_converter(from_format: str, date_before: str, readable_format: str = '%Y-%m-%dT%H:%M:%SZ%Z') -> str:
@@ -318,12 +399,10 @@ def test_module_command(client: Client) -> tuple[None, None, str]:
 
 
 async def wait_until_tasks_load_decrees():
-    demisto.info("[test] checking...")
     while (current_tasks_total_size := get_tasks_total_size()) > MAX_ALLOWED_TASKS_SIZE:
-        demisto.info(f"[test] current tasks total size = {current_tasks_total_size} is larger than the max allowed tasks size"
+        demisto.info(f"current tasks total size = {current_tasks_total_size} is larger than the max allowed tasks size"
                      f"{MAX_ALLOWED_TASKS_SIZE}. sleeping for 60 seconds to let other tasks finish.")
         await asyncio.sleep(60)
-    demisto.info("[test] finished checking...")
 
 
 def get_tasks_total_size() -> int:
@@ -331,7 +410,7 @@ def get_tasks_total_size() -> int:
     total_size = 0
     for task in tasks:
         total_size += sys.getsizeof(task)
-    demisto.info(f"current tasks total size = {total_size}")
+    demisto.info(f"[test] current tasks total size = {total_size}")
     return total_size
 
 @logger
@@ -523,7 +602,7 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
             finally:
                 processed_events.append(event)
     demisto.info(f"Sending {len(processed_events)} events to xsiam for the {COUNTER} time.")
-    tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
+    tasks = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True, url_key="host",
                                     data_format="json", data_size_expected_to_split_evenly=True)
     demisto.info(f"Finished executing send_events_to_xsiam for the {COUNTER} time, waiting for tasks to end.")
@@ -542,9 +621,9 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
         from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
         demisto.info(f"Preparing to get events with {offset=}, and {page_size=}")
         try:
-            demisto.info(f"[test] testing for possible wait condition")
+            demisto.info("Testing for possible wait condition according to tasks data overflow.")
             await wait_until_tasks_load_decrees()
-            demisto.info(f"[test] finished testing for possible wait condition")
+            demisto.info("Finished testing for possible wait condition according to tasks data overflow.")
             get_events_task = client.get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter)
             counter += 1
             events, offset = None, None
@@ -592,366 +671,6 @@ def decode_url(headers: str) -> dict:
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-
-
-
-############## copied from CSP
-
-
-def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, send_events_asynchronously=False,
-                       data_size_expected_to_split_evenly=False):
-    """
-    Send the supported fetched data types into the XDR data-collector private api.
-
-    :type data: ``Union[str, list]``
-    :param data: The data to send to XSIAM server. Should be of the following:
-        1. List of strings or dicts where each string or dict represents an event or asset.
-        2. String containing raw events separated by a new line.
-
-    :type vendor: ``str``
-    :param vendor: The vendor corresponding to the integration that originated the data.
-
-    :type product: ``str``
-    :param product: The product corresponding to the integration that originated the data.
-
-    :type data_format: ``str``
-    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
-        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
-
-    :type url_key: ``str``
-    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
-
-    :type num_of_attempts: ``int``
-    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
-
-    :type chunk_size: ``int``
-    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
-
-    :type data_type: ``str``
-    :param data_type: Type of data to send to Xsiam, events or assets.
-
-    :type should_update_health_module: ``bool``
-    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
-        This can be useful when using send_data_to_xsiam in batches for the same fetch.
-
-    :type add_proxy_to_request: ``bool``
-    :param add_proxy_to_request: whether to add proxy to the send evnets request.
-
-    :type snapshot_id: ``str``
-    :param snapshot_id: the snapshot id.
-
-    :type items_count: ``str``
-    :param items_count: the asset snapshot items count.
-
-    :type send_events_asynchronously: ``bool``
-    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the updateModuleHealth should be done from the integration itself.
-
-    :type data_size_expected_to_split_evenly: ``bool``
-    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
-    Use this to split data to chunks faster.
-
-    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
-    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
-    await asyncio.gather(*tasks)
-    :rtype: ``List[Task]`` or ``None``
-    """
-    data_size = 0
-    params = demisto.params()
-    url = params.get(url_key)
-    calling_context = demisto.callingContext.get('context', {})
-    instance_name = calling_context.get('IntegrationInstance', '')
-    collector_name = calling_context.get('IntegrationBrand', '')
-    if not items_count:
-        items_count = len(data) if isinstance(data, list) else 1
-    if data_type not in DATA_TYPES:
-        demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
-        return
-
-    if not data:
-        demisto.debug('send_data_to_xsiam function received no {data_type}, '
-                      'skipping the API call to send {data} to XSIAM'.format(data_type=data_type, data=data_type))
-        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-        return
-
-    # only in case we have data to send to XSIAM we continue with this flow.
-    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
-    if isinstance(data, list):
-        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        demisto.debug("Sending {size} {data_type} to XSIAM".format(size=len(data), data_type=data_type))
-        if isinstance(data[0], dict):
-            data = [json.dumps(item) for item in data]
-            data_format = 'json'
-        # Separating each event with a new line
-        data = '\n'.join(data)
-    elif not isinstance(data, str):
-        raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
-                               ' Should be a string or list.'.format(data=type(data), data_type=data_type))
-    if not data_format:
-        data_format = 'text'
-
-    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
-    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
-    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
-    headers = remove_empty_elements({
-        'authorization': xsiam_api_token,
-        'format': data_format,
-        'product': product,
-        'vendor': vendor,
-        'content-encoding': 'gzip',
-        'collector-name': collector_name,
-        'instance-name': instance_name,
-        'final-reporting-device': url,
-        'collector-type': ASSETS if data_type == ASSETS else EVENTS
-    })
-    if data_type == ASSETS:
-        if not snapshot_id:
-            snapshot_id = str(round(time.time() * 1000))
-
-        # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
-        # alphabetical order such that first_snapshot < second_snapshot etc.
-        headers['snapshot-id'] = snapshot_id + instance_name
-        headers['total-items-count'] = str(items_count)
-
-    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
-
-    def data_error_handler(res):
-        """
-        Internal function to parse the XSIAM API errors
-        """
-        try:
-            response = res.json()
-            error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
-                error += ": " + xsiam_server_err_msg
-
-        except ValueError:
-            if res.text:
-                error = '\n{}'.format(res.text)
-            else:
-                error = "Received empty response from the server"
-
-        api_call_info = (
-            'Parameters used:\n'
-            '\tURL: {xsiam_url}\n'
-            '\tHeaders: {headers}\n\n'
-            'Response status code: {status_code}\n'
-            'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
-
-        demisto.error(header_msg + api_call_info)
-        raise DemistoException(header_msg + error, DemistoException)
-
-    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-    if data_size_expected_to_split_evenly:
-        data_chunks = split_data_to_chunks_evenly(data, chunk_size)
-    else:
-        data_chunks = split_data_to_chunks(data, chunk_size)
-
-    def send_events(data_chunk):
-        chunk_size = len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
-        return chunk_size
-
-
-    async def send_events_async(data_chunk):
-        chunk_size = len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        _ = await xsiam_api_call_async_with_retries(events_error_handler=data_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, data_type=data_type,
-                                    proxy=add_proxy_to_request)
-        return chunk_size
-
-
-    if send_events_asynchronously:
-        demisto.info("Sending events to xsiam asynchronously.")
-        all_chunks = list(data_chunks)
-        demisto.info("Finished appending all data_chunks to a list.")
-        support_multithreading()
-        # tasks = [loop.run_in_executor(None, send_events_async, chunk) for chunk in all_chunks]
-        tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
-
-        demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
-        return tasks
-    else:
-        demisto.info("Sending events to xsiam synchronously.")
-        for chunk in data_chunks:
-            data_size += send_events(chunk)
-
-        if should_update_health_module:
-            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-    return
-
-
-def split_data_to_chunks_evenly(data, target_chunk_size):
-    """
-    Splits a string of data into chunks of an approximately specified size.
-    The actual size can be lower.
-
-    :type data: ``list`` or a ``string``
-    :param data: A list of data or a string delimited with \n  to split to chunks.
-    :type target_chunk_size: ``int``
-    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
-
-    :return: An iterable of lists where each list contains events with approx size of chunk size.
-    :rtype: ``collections.Iterable[list]``
-    """
-    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
-    if isinstance(data, str):
-        data = data.split('\n')
-    entry_size = sys.getsizeof(data[0])
-    num_of_entries_per_chunk = target_chunk_size // entry_size
-    for i in range(0, len(data), num_of_entries_per_chunk):
-        chunk = data[i:i+num_of_entries_per_chunk]
-        yield chunk
-
-
-def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, send_events_asynchronously=False, data_size_expected_to_split_evenly=False):
-    """
-    Send the fetched events into the XDR data-collector private api.
-
-    :type events: ``Union[str, list]``
-    :param events: The events to send to XSIAM server. Should be of the following:
-        1. List of strings or dicts where each string or dict represents an event.
-        2. String containing raw events separated by a new line.
-
-    :type vendor: ``str``
-    :param vendor: The vendor corresponding to the integration that originated the events.
-
-    :type product: ``str``
-    :param product: The product corresponding to the integration that originated the events.
-
-    :type data_format: ``str``
-    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
-        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
-
-    :type url_key: ``str``
-    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
-
-    :type num_of_attempts: ``int``
-    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
-
-    :type chunk_size: ``int``
-    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
-
-    :type should_update_health_module: ``bool``
-    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
-
-    :type add_proxy_to_request :``bool``
-    :param add_proxy_to_request: whether to add proxy to the send evnets request.
-
-    :type send_events_asynchronously: ``bool``
-    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the updateModuleHealth should be done from the integration itself.
-
-    :type data_size_expected_to_split_evenly: ``bool``
-    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
-    Use this to split data to chunks faster.
-
-    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
-    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
-    await asyncio.gather(*tasks)
-    :rtype: ``List[Task]`` or ``None``
-    """
-    return akamai_send_data_to_xsiam(
-        events,
-        vendor,
-        product,
-        data_format,
-        url_key,
-        num_of_attempts,
-        chunk_size,
-        data_type="events",
-        should_update_health_module=should_update_health_module,
-        add_proxy_to_request=add_proxy_to_request,
-        send_events_asynchronously=send_events_asynchronously,
-        data_size_expected_to_split_evenly=data_size_expected_to_split_evenly
-    )
-
-
-
-async def xsiam_api_call_async_with_retries(
-    xsiam_url,
-    zipped_data,
-    headers,
-    num_of_attempts,
-    events_error_handler=None,
-    error_msg='',
-    data_type=EVENTS,
-    proxy=None
-):  # pragma: no cover
-    """
-    Send the fetched events or assests into the XDR data-collector private api.
-
-    :type client: ``BaseClient``
-    :param client: base client containing the XSIAM url.
-
-    :type xsiam_url: ``str``
-    :param xsiam_url: The URL of XSIAM to send the api request.
-
-    :type zipped_data: ``bytes``
-    :param zipped_data: encoded events
-
-    :type headers: ``dict``
-    :param headers: headers for the request
-
-    :type error_msg: ``str``
-    :param error_msg: The error message prefix in case of an error.
-
-    :type num_of_attempts: ``int``
-    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
-
-    :type events_error_handler: ``callable``
-    :param events_error_handler: error handler function
-
-    :type data_type: ``str``
-    :param data_type: events or assets
-
-    :return: Response object or DemistoException
-    :rtype: ``requests.Response`` or ``DemistoException``
-    """
-    # retry mechanism in case there is a rate limit (429) from xsiam.
-    status_code = None
-    attempt_num = 1
-    response = None
-    while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
-            data_type=data_type, attempt_num=attempt_num))
-        # in the last try we should raise an exception if any error occurred, including 429
-        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        async with aiohttp.ClientSession() as session:
-            async with session.post(urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data, headers=headers) as response:
-                try:
-                    response.raise_for_status()  # This raises an exception for non-2xx status codes
-                    status_code = response.status
-                    if ok_codes and not status_code in ok_codes:
-                        events_error_handler(response)
-                except aiohttp.ClientResponseError as e:
-                    raise DemistoException(f"{error_msg} {e}")
-                
-        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
-        if status_code == 429:
-            await asyncio.sleep(1)
-        attempt_num += 1
-    return response
-
-
-
-
 
 
 def main():  # pragma: no cover
