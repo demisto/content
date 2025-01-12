@@ -544,6 +544,9 @@ def main():
         # Initialize Broker client only if required, allowing the Portal commands to still function if the Broker
         # connection is down or unwanted.
         broker_instance = BrokerClient(host=broker_url, api_key=API_KEY)
+    else:
+        demisto.debug("No condition was met. Initializing BrokerClient")
+        broker_instance = BrokerClient(host=broker_url, api_key=API_KEY)
 
     try:
         if command == 'test-module':
