@@ -943,6 +943,12 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
         return_error('The \'New Email Body\' field has not been set. Please set it and try again')
 
     try:
+        reply_recipients = ""
+        reply_mailbox = ""
+        reply_to_message_id = ""
+        thread_cc = ""
+        thread_bcc = ""
+        reply_code = ""
         incident_email_threads = get_email_threads(incident_id)
         if not incident_email_threads:
             return_error('Failed to retrieve email thread entries - reply not sent!')
