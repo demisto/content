@@ -292,6 +292,9 @@ def fetch_indicators(client: Client):
     last_run = demisto.getLastRun()
     if isinstance(last_run, dict):
         last_fetch_time = last_run.get(f'lastRun_{client.collection_name}', None)
+    else:
+        last_fetch_time = ''
+        demisto.debug(f"{last_run=} isn't of type dict. {last_fetch_time=}")
 
     if last_fetch_time:
         args['begin'] = str(parser.parse(last_fetch_time).replace(tzinfo=pytz.UTC))
@@ -325,18 +328,16 @@ def validate_input(args: Dict[str, Any]):
             raise ValueError(f"Limit should be positive, limit: {args.get('limit')}")
 
         try:
-            if args.get('begin', None):
-                _start_date = parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)
-            if args.get('end', None):
-                _end_date = parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)
+            _start_date = parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC) if args.get('begin', None) else None
+            _end_date = parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC) if args.get('end', None) else None
         except Exception as e:
             raise ValueError(f"Invalid date format received, [{e}]")
 
-        if args.get('begin', None) and _start_date > datetime.now(timezone.utc):
+        if _start_date and _start_date > datetime.now(timezone.utc):
             raise ValueError("Start date must be a date before or equal to current")
-        if args.get('end', None) and _end_date > datetime.now(timezone.utc):
+        if _end_date and _end_date > datetime.now(timezone.utc):
             raise ValueError("End date must be a date before or equal to current")
-        if args.get('begin', None) and args.get('end', None) and _start_date > _end_date:
+        if _start_date and _end_date and _start_date > _end_date:
             raise ValueError("Start date cannot be after end date")
 
         if not args.get('collection', False):
