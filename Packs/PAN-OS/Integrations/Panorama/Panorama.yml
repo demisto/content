@@ -335,7 +335,7 @@ script:
       description: The SHA512 hash of the file.
       type: string
     - contextPath: File.SSDeep
-      description: The SSDeep hash of the file.
+      description: The SSDeep hash of the file test.
       type: string
   - arguments:
     - description: The commit description.

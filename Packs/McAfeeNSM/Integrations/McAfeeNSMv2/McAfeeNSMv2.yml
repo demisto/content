@@ -326,7 +326,7 @@ script:
       description: The rule description.
     - name: response
       auto: PREDEFINED
-      description: Action to be performed if the traffic matches this rule.
+      description: Action to be performed if the traffic matches this rule test.
       predefined:
       - Scan
       - Drop
