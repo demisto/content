@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
-import datetime
+from datetime import datetime
 
 # disable insecure warnings
 import urllib3
@@ -78,7 +78,7 @@ def get_ticket_data(client: Client):
         response = client.make_api_request(endpoint, method='GET')
         return response
     except Exception as e:
-        return f"Could not find ticket with system id {sys_id}. Error: {str(e)}"
+        raise Exception(f"Could not find ticket with system id {sys_id}. Error: {str(e)}") from e
 
 
 def get_ticket(client: Client):
@@ -113,7 +113,7 @@ def get_ticket(client: Client):
 
         return results
     except Exception as e:
-        return f"Could not find ticket with system id {sys_id}. Error: {str(e)}"
+        raise Exception(f"Could not find ticket with system id {sys_id}. Error: {str(e)}") from e
 
 
 def action_ticket(client, args):
@@ -132,7 +132,7 @@ def action_ticket(client, args):
     decision = str(args.get("decision"))
     duration = str(args.get("duration"))
     user = str(args.get("user"))
-    current_time = datetime.datetime.now()
+    current_time = datetime.now()
     time = current_time.strftime('%Y-%m-%d %H:%M:%S')
 
     ticket_data = get_ticket_data(client)
@@ -169,9 +169,9 @@ def action_ticket(client, args):
     try:
         response = client.make_api_request('/AuthorizationRequest/notification', method='POST', data=body)
         if response.get("status_code") == 200:
-            return f"Ticket was {decision}"
+            return CommandResults(readable_output=f"Ticket was {decision}")
     except Exception as e:
-        return f"Could not make POST API request. Error: {str(e)}"
+        raise Exception(f"Could not make POST API request. Error: {str(e)}") from e
 
 
 def main():
