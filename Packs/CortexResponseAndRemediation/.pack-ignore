@@ -9,6 +9,10 @@ ignore=RM104,RM106
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
+[file:playbook-Suspicious_Local_Administrator_Login.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
 [file:playbook-Excessive_User_Account_Lockouts.yml]
 ignore=GR103
 
