@@ -109,8 +109,8 @@ def test_get_all_rules(requests_mock):
     command_results = list_rules_command(client, args)
 
     # Assert that the rules  are exported as expected (in the outputs)
-    assert '1090940913' == command_results.outputs[0].get("ID")
-    assert '123456789' == command_results.outputs[1].get("ID")
+    assert command_results.outputs[0].get("ID") == '1090940913'
+    assert command_results.outputs[1].get("ID") == '123456789'
 
     empty_mock = {
         "selfLink": "https://example.com/api/access/out",
@@ -145,7 +145,7 @@ def test_rule_by_id(requests_mock):
     command_results = rule_by_id_command(client, args)
 
     # Assert that the rule is exported as expected (in the outputs)
-    assert '123456789' == command_results.outputs[0].get("ID")
+    assert command_results.outputs[0].get("ID") == '123456789'
 
 
 def test_create_rule(requests_mock):
@@ -176,7 +176,7 @@ def test_create_rule(requests_mock):
 def test_raw_to_rules():
     from CiscoASA import raw_to_rules
     rules = raw_to_rules(MOCK_RULES_GLOBAL.get("items"))
-    assert RULES == rules
+    assert rules == RULES
 
 
 BASE_URL = 'https://example.com'
@@ -211,7 +211,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r') as mock_file:
+    with open(f'test_data/{file_name}') as mock_file:
         return json.loads(mock_file.read())
 
 
