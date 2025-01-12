@@ -14,8 +14,8 @@ Containment:
  
 - Provide a manual task for an analyst to review the findings and decide the next steps.
 - Possible actions:
- - Disable User.
- - Take no action.
+  - Disable user.
+  - Take no action.
  
 Requirements: 
 
