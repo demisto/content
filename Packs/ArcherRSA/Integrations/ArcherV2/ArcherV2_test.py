@@ -1265,7 +1265,6 @@ class TestArcherV2:
         operator_logic = construct_operator_logic(logical_operator, conditions_count)
         assert operator_logic == expected_operator_logic
 
-
     def test_upload_and_associate_command_record_has_attachments(self, mocker):
         """
         Given: A record with existing attachments and multiple files to upload
