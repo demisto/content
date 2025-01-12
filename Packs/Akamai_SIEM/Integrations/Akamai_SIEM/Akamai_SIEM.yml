@@ -70,10 +70,8 @@ configuration:
   type: 0
   defaultvalue: '20'
   required: false
-  additionalinfo: Limit on the number of incidents retrieved in a single fetch.
+  additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
   section: Collect
-  hidden:
-  - marketplacev2
 - display: Akamai Page size
   name: page_size
   type: 0
@@ -106,13 +104,6 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
-- display: Long running instance
-  name: longRunning
-  type: 8
-  required: false
-  hidden:
-  - xsoar
-  section: Collect
 - display: Events Fetch Interval
   name: eventFetchInterval
   type: 19	
@@ -122,7 +113,7 @@ configuration:
   - xsoar	
   defaultvalue: '1'	
   advanced: true
-- display: Fetch Events	
+- display: Fetch Events
   name: isFetchEvents
   type: 8
   required: false
@@ -137,6 +128,20 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+- display: Beta Page Size 
+  name: beta_page_size
+  type: 0
+  defaultvalue: '200000'
+  required: false
+  additionalinfo: The number of events to fetch per request to akamai Default is 200k, maximum is 600k as per Akamai documentation.
+  section: Collect
+- display: Long running instance
+  name: longRunning
+  type: 8
+  required: false
+  hidden:
+  - xsoar
+  section: Collect
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM

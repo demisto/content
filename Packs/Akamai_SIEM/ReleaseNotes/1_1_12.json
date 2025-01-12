@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Removed the **fetch-events** integration parameter. To fetch events, use the **long-running** integration param."
-}

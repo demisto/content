@@ -554,7 +554,7 @@ def decode_url(headers: str) -> dict:
 
 
 ############################################## Beginning of beta part ##############################################
-FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
+BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
 LOCKED_UPDATES_LOCK = None
 COUNTER = 0
 EVENTS_LS = ""
@@ -1302,12 +1302,11 @@ def main():  # pragma: no cover
                 demisto.info(f"Got less than {limit} events this interval - will not trigger next run automatically.")
             demisto.setLastRun(next_run)
         elif command == "long-running-execution":
-            page_size = min(int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE)), FETCH_EVENTS_MAX_PAGE_SIZE)
+            page_size = min(int(params.get("beta_page_size", BETA_FETCH_EVENTS_MAX_PAGE_SIZE)), BETA_FETCH_EVENTS_MAX_PAGE_SIZE)
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             global LOCKED_UPDATES_LOCK
             LOCKED_UPDATES_LOCK = asyncio.Lock()
             demisto.info("Starting long-running execution.")
-            support_multithreading()
             asyncio.run(fetch_events_long_running_command(client,
                                                           from_time=params.get('fetchTime', '5 minutes'),
                                                           page_size=page_size,
