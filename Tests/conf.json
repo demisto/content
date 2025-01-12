@@ -3263,7 +3263,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "fromversion": "4.5.0",
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "Flashpoint",
@@ -6029,7 +6030,6 @@
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
-        "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode - Test": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
@@ -6078,7 +6078,11 @@
         "Netskope_V2_Test": "No instance - developed by Qmasters",
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
-        "BoxV2_TestPlaybook": "CRTX-145174"
+        "BoxV2_TestPlaybook": "CRTX-145174",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "CRTX-147998",
+        "QRadar_v3-test": "CRTX-141972",
+        "QRadar - Get Offense Logs Test": "CRTX-141972",
+        "QRadar Indicator Hunting Test": "CRTX-141972"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
