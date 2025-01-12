@@ -16,20 +16,20 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'OSV (Open Source Vulnerability) is a vulnerability database for open source projects. For each vulnerability, it perform bisects to figure out the exact commit that introduces the bug, as well the exact commit that fixes it. This is cross referenced against upstream repositories to figure out the affected tags and commit ranges '
+description: 'OSV (Open Source Vulnerability) is a vulnerability database for open source projects. For each vulnerability, it perform bisects to figure out the exact commit that introduces the bug, as well the exact commit that fixes it. This is cross referenced against upstream repositories to figure out the affected tags and commit ranges.'
 display: OSV
 name: OSV
 script:
   commands:
   - arguments:
-    - description: 'The `id` field is a unique identifier for the vulnerability entry. For example: OSV-2020-111'
+    - description: 'The `id` field is a unique identifier for the vulnerability entry. For example: OSV-2020-111.'
       name: id_
       required: true
     description: Return a `Vulnerability` object for a given OSV ID. All list of vulnerabilities can be found at https://osv.dev/list
     name: osv-get-vuln-by-id
     outputs:
     - contextPath: OSV.Vulnerability.id
-      description: The `id` field is a unique identifier for the vulnerability entry
+      description: The `id` field is a unique identifier for the vulnerability entry.
       type: String
     - contextPath: OSV.Vulnerability.published
       description: The RFC3339 timestamp indicating when this entry was published.
@@ -62,10 +62,10 @@ script:
       description: Reference URL for more details.
       type: String
   - arguments:
-    - description: The commit hash to query for. E.g 6879efc2c1596d11a6a6ad296f80063b558d5e0f
+    - description: The commit hash to query for. E.g 6879efc2c1596d11a6a6ad296f80063b558d5e0f.
       name: commit
       required: true
-    description: Query vulnerabilities for a particular project at a given commit
+    description: Query vulnerabilities for a particular project at a given commit.
     name: osv-query-affected-by-commit
     outputs:
     - contextPath: OSV.VulnerabilityList.vulns.id
@@ -102,15 +102,15 @@ script:
       description: Reference URL for more details.
       type: String
   - arguments:
-    - description: ' The version string to query for. A fuzzy match is done against upstream versions. Eg. 3.3.0'
+    - description: 'The version string to query for. A fuzzy match is done against upstream versions. Eg. 3.3.0.'
       name: version
       required: true
-    - description: The name of the package/project to query for. Eg. django-tinymce
+    - description: The name of the package/project to query for. Eg. django-tinymce.
       name: packageName
       required: true
-    - description: The ecosystem of the package. Eg. PyPI
+    - description: The ecosystem of the package. Eg. PyPI.
       name: ecosystem
-    description: Query vulnerabilities for a particular project based on package name and verion
+    description: Query vulnerabilities for a particular project based on package name and verion.
     name: osv-query-affected-by-package
     outputs:
     - contextPath: OSV.VulnerabilityList.vulns.id
@@ -146,7 +146,7 @@ script:
     - contextPath: OSV.VulnerabilityList.vulns.references.url
       description: Reference URL for more details.
       type: string
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   script: ''
   subtype: python3
   type: python

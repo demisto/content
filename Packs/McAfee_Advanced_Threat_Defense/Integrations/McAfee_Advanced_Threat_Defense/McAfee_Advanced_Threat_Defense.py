@@ -78,7 +78,7 @@ def http_request(uri, method, headers=None, body=None, params=None, files=None):
     Makes an API call with the supplied uri, method, headers, body
     """
     LOG('running request with url=%s' % uri)
-    url = '%s/%s' % (BASE_URL, uri)
+    url = f'{BASE_URL}/{uri}'
     res = requests.request(
         method,
         url,
@@ -465,6 +465,9 @@ def file_upload(submit_type, sample, vm_profile_list,
         result_obj = file_upload_raw(body, file_entry_id, filename_to_upload)
     elif submit_type in SUBMIT_TYPE_WITH_URL:
         result_obj = url_upload_raw(body)
+    else:
+        result_obj = b''
+        demisto.debug(f"{submit_type=} doesn't match the conditions, {result_obj=}")
     return {
         'taskId': result_obj['results'][0]['taskId'],
         'resultObj': result_obj
@@ -616,7 +619,7 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
         else:  # detonation did not return any data
             # retrieve submission url by the task ID, if exist
             submission_dt = demisto.dt(
-                demisto.context(), 'ATD.Task(val.taskId === "{}")'.format(task_id))
+                demisto.context(), f'ATD.Task(val.taskId === "{task_id}")')
             if isinstance(submission_dt, list):
                 submission = submission_dt[0]
             else:
@@ -798,7 +801,7 @@ def logout():
 
 
 def main():     # pragma: no cover
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'command is {demisto.command()}')
     handle_proxy()  # Remove proxy if not set to true in params
     global API_HEADERS
     API_HEADERS = get_headers()
