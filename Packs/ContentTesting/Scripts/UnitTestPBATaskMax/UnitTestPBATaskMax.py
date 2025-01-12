@@ -24,6 +24,9 @@ def NewWidgetStat(name: str, color: str, label: str, data: list) -> dict:
 def NewWidget(formatt: str, layout: str, wstat: list) -> dict:
     if formatt in FORMATS and layout in LAYOUTS:
         widget = {'Type': 17, 'ContentsFormat': formatt, 'Contents': {'stats': wstat, 'params': {'layout': layout}}}
+    else:
+        widget = {}
+        demisto.debug(f"{format=} and {layout=} don't match any condition. {widget=}")
     return widget
 
 
@@ -38,7 +41,7 @@ def main():
         wstats: list = []
         length = len(COLORS)
         i = length
-        for key, val in stats.items():
+        for _key, val in stats.items():
             if val[STATFIELD] == 0:
                 continue
             newstat = NewWidgetStat("", COLORS[i % length], val['name'], val[STATFIELD])
