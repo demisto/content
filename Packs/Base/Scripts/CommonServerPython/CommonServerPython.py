@@ -8843,8 +8843,7 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username",
-                          "password", "Key", "identifier", "credential", "client"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
@@ -8856,8 +8855,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -12148,28 +12147,6 @@ def split_data_to_chunks(data, target_chunk_size):
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
 
-
-def split_data_to_chunks_evenly(data, target_chunk_size):
-    """
-    Splits a string of data into chunks of an approximately specified size.
-    The actual size can be lower.
-
-    :type data: ``list`` or a ``string``
-    :param data: A list of data or a string delimited with \n  to split to chunks.
-    :type target_chunk_size: ``int``
-    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
-
-    :return: An iterable of lists where each list contains events with approx size of chunk size.
-    :rtype: ``collections.Iterable[list]``
-    """
-    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
-    if isinstance(data, str):
-        data = data.split('\n')
-    entry_size = sys.getsizeof(data[0])
-    num_of_entries_per_chunk = target_chunk_size // entry_size
-    for i in range(0, len(data), num_of_entries_per_chunk):
-        chunk = data[i:i+num_of_entries_per_chunk]
-        yield chunk
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
