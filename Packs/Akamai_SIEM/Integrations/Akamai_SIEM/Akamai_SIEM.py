@@ -556,7 +556,6 @@ def decode_url(headers: str) -> dict:
 ############################################## Beginning of beta part ##############################################
 BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
 LOCKED_UPDATES_LOCK = None
-COUNTER = 0
 EVENTS_LS = ""
 MAX_ALLOWED_TASKS_SIZE = (10 ** 10)  # 10 GB
 
@@ -704,7 +703,7 @@ def get_tasks_total_size() -> int:
     total_size = 0
     for task in tasks:
         total_size += sys.getsizeof(task)
-    demisto.info(f"[test] current tasks total size = {total_size}")
+    demisto.info(f"current tasks total size = {total_size}")
     return total_size
 
 
@@ -729,14 +728,13 @@ async def fetch_events_long_running_command(client: Client,
 
     """
     offset = ctx.get("offset")
-    async for events in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
+    async for events, counter in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
         # await process_and_send_events_to_xsiam(events, should_skip_decode_events, offset)  # noqa: RUF006
-        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset))  # noqa: RUF006
+        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter))  # noqa: RUF006
 
 
-async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset):
-    global COUNTER
-    demisto.info(f"got {len(events)} events, moving to processing events data for the {COUNTER} time.")
+async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter):
+    demisto.info(f"got {len(events)} events, moving to processing events data for the {counter} time.")
     processed_events = []
     if should_skip_decode_events:
         demisto.info("Skipping decode events.")
@@ -760,14 +758,13 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
                 demisto.debug(f"Couldn't decode {event=}, reason: {e}")
             finally:
                 processed_events.append(event)
-    demisto.info(f"Sending {len(processed_events)} events to xsiam for the {COUNTER} time.")
+    demisto.info(f"Sending {len(processed_events)} events to xsiam for the {counter} time.")
     tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
                                     chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True, url_key="host",
                                     data_format="json", data_size_expected_to_split_evenly=True)
-    demisto.info(f"Finished executing send_events_to_xsiam for the {COUNTER} time, waiting for tasks to end.")
+    demisto.info(f"Finished executing send_events_to_xsiam for the {counter} time, waiting for tasks to end.")
     await asyncio.gather(*tasks)
-    demisto.info(f"Finished gathering all tasks for the {COUNTER} time.")
-    COUNTER += 1
+    demisto.info(f"Finished gathering all tasks for the {counter} time.")
     demisto.info("Starting to update module health")
     asyncio.create_task(update_module_health(len(processed_events), offset))  # noqa: RUF006
     demisto.info("Finished updating module health")
@@ -801,7 +798,7 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
             await asyncio.sleep(60)
             demisto.info("Done sleeping 60 seconds.")
         if events:
-            yield events
+            yield events, counter
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             demisto.info(f"got {len(events)} events which is less than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}," \
                             "going to sleep for 60 seconds.")
@@ -983,8 +980,7 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
         _ = await xsiam_api_call_async_with_retries(events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, data_type=data_type,
-                                    proxy=add_proxy_to_request)
+                                    zipped_data=zipped_data, data_type=data_type)
         return chunk_size
 
 
@@ -992,7 +988,8 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
         demisto.info("Sending events to xsiam asynchronously.")
         all_chunks = list(data_chunks)
         demisto.info("Finished appending all data_chunks to a list.")
-        await asyncio.gather(*[asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks])
+        # await asyncio.gather(*[asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks])
+        tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
 
         demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
     else:
