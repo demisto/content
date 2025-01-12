@@ -4721,6 +4721,10 @@ def test_get_mapping_fields_command():
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
     assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection'
     assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[2].type_name =='CrowdStrike Falcon OFP Detection'
+    assert result.scheme_types_mappings[2].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[3].type_name =='CrowdStrike Falcon On-Demand Scans Detection'
+    assert result.scheme_types_mappings[3].fields.keys() == {'status'}
 
 
 def test_error_in_get_detections_by_behaviors(mocker):
