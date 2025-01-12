@@ -722,6 +722,7 @@ def main():
         users_ids = argToList(args.get("user_id", []))
         users_names = argToList(args.get("user_name", []))
         users_emails = argToList(args.get("user_email", []))
+        attributes = args.get("attributes")
         domain = args.get("domain", "")
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", []))
@@ -771,7 +772,7 @@ def main():
                 ad_get_user_command = Command(
                     brand="Active Directory Query v2",
                     name="ad-get-user",
-                    args={"username": user_name, "email": user_email},
+                    args={"username": user_name, "email": user_email, "attributes": attributes},
                 )
                 if modules.is_brand_available(ad_get_user_command) and is_valid_args(
                     ad_get_user_command

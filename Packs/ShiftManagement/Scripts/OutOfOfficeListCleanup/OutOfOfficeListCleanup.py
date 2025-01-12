@@ -17,7 +17,7 @@ def main():
 
     # check if the list exists, if not create it:
     if any(ele in ooo_list for ele in ["Item not found", 'null']):
-        demisto.executeCommand("createList", {"listName": list_name, "listData": []})
+        demisto.executeCommand("createList", {"listName": list_name, "listData": "[]"})
         result = demisto.executeCommand("getList", {"listName": list_name})
         if result and isinstance(result, list):
             ooo_list = result[0]["Contents"]

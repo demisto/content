@@ -1,0 +1,1130 @@
+id: Remote WMI Process Execution
+version: -1
+name: Remote WMI Process Execution
+description: |-
+  This playbook addresses the following alerts:
+
+  * Remote WMI process execution
+  * Suspicious remote WMI process execution
+
+  **Playbook Stages:**
+
+  **Enrichment:**
+
+  * Enrich the attacker’s IP address to identify any known malicious activity.
+
+  * Retrieve all incident-related alerts to consolidate context for further analysis.
+
+  **Investigation:**
+
+  * Analyze command-line activity to assess risks based on suspicious patterns.
+
+  * Check for high-confidence evidence, such as malicious IP addresses or suspicious command-line activity, to determine the next course of action.
+
+  * Evaluate medium-confidence detections and request analyst approval for further containment if required.
+
+  **Containment:**
+
+  * Attempt to terminate the malicious process tree using its causality ID.
+
+  * Provide guidance for manual process termination if the automated action fails.
+
+  * Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
+tags:
+- 'T1021 - Remote Services '
+- TA0008 - Lateral Movement
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d0d9e83a-eb37-4c5e-8669-4610c07f402f
+    type: start
+    task:
+      id: d0d9e83a-eb37-4c5e-8669-4610c07f402f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 27f140ff-b937-4377-8fe3-d26f76d8942e
+    type: regular
+    task:
+      id: 27f140ff-b937-4377-8fe3-d26f76d8942e
+      version: -1
+      name: Enrich attacker's IP address
+      description: Checks the specified IP address against the AbuseIP database.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        simple: ${Core.OriginalAlert.event.actor_remote_ip}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b6c5e8f1-54fa-4924-8ad4-a65fdfb76818
+    type: regular
+    task:
+      id: b6c5e8f1-54fa-4924-8ad4-a65fdfb76818
+      version: -1
+      name: Analyze command line
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      command_line:
+        simple: ${Core.OriginalAlert.event.action_process_image_command_line}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2bc56cd9-7962-499b-8b89-2c1019c24e51
+    type: title
+    task:
+      id: 2bc56cd9-7962-499b-8b89-2c1019c24e51
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d0a04858-443a-4a4c-8ac2-5ddb45a55041
+    type: condition
+    task:
+      id: d0a04858-443a-4a4c-8ac2-5ddb45a55041
+      version: -1
+      name: Check for high-confidence evidence or malicious IP address
+      description: |-
+        This task evaluates the command line analysis results and checks if the profile matches one or more high-risk categories or if the overall score indicates a critical risk.
+
+        **Conditions:**
+
+        - A profile matches one or more of the following categories: **mixed case PowerShell, reversed command, PowerShell suspicious patterns, credential dumping, double encoding, AMSI techniques, or malicious commands.**
+        - OR the score is **greater than or equal to 30**.
+        - OR an **IP address** involved in the incident is flagged as **malicious**.
+
+        If any condition is met, mark the result as **Malicious**.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Malicious:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: CommandLineAnalysis.findings
+            iscontext: true
+          right:
+            value:
+              simple: mixed case powershell, reversed command, powershell suspicious patterns, credential dumping, double encoding, amsi techniques, malicious commands
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d8651cb0-32f4-4f7f-8c14-f9404dcf2c52
+    type: regular
+    task:
+      id: d8651cb0-32f4-4f7f-8c14-f9404dcf2c52
+      version: -1
+      name: Retrieve all incident alerts
+      description: |-
+        Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+
+        For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+
+        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+
+        For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d5387b4c-0757-45ad-8915-0b127bbc64c0
+    type: condition
+    task:
+      id: d5387b4c-0757-45ad-8915-0b127bbc64c0
+      version: -1
+      name: Check for medium-confidence threshold with a prevention alert
+      description: |
+        This task identifies the risk level by considering the score and whether a prevention rule is present in the same incident.
+
+        **Conditions:**
+
+        - If Score is **greater than or equal to 10** AND a **prevention rule exists** in the same incident, classify the result as **Malicious**.
+        - Else, if Score is **less than 10** AND a **prevention rule exists** in the same incident, classify the result as **Suspicious**.
+
+        High-risk behavior with prevention rule: **Malicious**.
+        Low-risk behavior with prevention rule: **Suspicious**.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      Malicious:
+      - "11"
+      Medium Confidence:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    - label: Medium Confidence
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f75ed630-b4ed-418a-8f72-f92b03afc587
+    type: condition
+    task:
+      id: f75ed630-b4ed-418a-8f72-f92b03afc587
+      version: -1
+      name: Check for medium-confidence and request remediation approval
+      description: |-
+        This task identifies medium-risk cases based on the score received from the command line analysis script.
+
+        **Conditions:**
+
+        If the score is in the range of **10–29**, mark the result as **Suspicious**.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: 10,29
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4e38f883-6900-4666-8e91-0f3946227843
+    type: condition
+    task:
+      id: 4e38f883-6900-4666-8e91-0f3946227843
+      version: -1
+      name: 'Approval Required: Medium Confidence Detection'
+      description: |-
+        **Approval Required: Suspicious Activity Detection**
+
+        The detection does not meet the thresholds for a definitive malicious verdict. It falls into a suspicious category based on the following conditions:
+
+        **Matched Verdicts:**
+        * The command line analysis score between 10 and 30 with medium confidence suggests a suspicious activity.
+        * The command line analysis score is below 10 with a prevention rule found in the same incident, suggesting potential risk.
+
+        **Unmatched Verdicts:**
+        * No matches for high-risk command line analysis profiles.
+        * No malicious IP address detected.
+        * The command line analysis score is below 30 without high-confidence indicators.
+
+        Analyst approval is required to proceed with further containment or escalation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      Approved:
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0a1c5a5b-8df2-4b95-8fbe-d1d655f55346
+    type: title
+    task:
+      id: 0a1c5a5b-8df2-4b95-8fbe-d1d655f55346
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: de7cb93b-9a47-4ed6-8182-17ae24e3e585
+    type: regular
+    task:
+      id: de7cb93b-9a47-4ed6-8182-17ae24e3e585
+      version: -1
+      name: Terminate Causality
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "13"
+      '#none#':
+      - "20"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${Core.OriginalAlert.event.action_process_instance_id}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: be6e0678-b817-46a9-8a0d-f6b2ac546436
+    type: regular
+    task:
+      id: be6e0678-b817-46a9-8a0d-f6b2ac546436
+      version: -1
+      name: Terminate Process Manually
+      description: |-
+        Dear Analyst,
+
+        During the containment phase, the playbook couldn’t terminate the process: ${Core.OriginalAlert.event.action_process_image_name}
+
+        Please terminate the process manually if possible.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 560830fb-458a-40dc-8542-668748d5d5c5
+    type: regular
+    task:
+      id: 560830fb-458a-40dc-8542-668748d5d5c5
+      version: -1
+      name: Close the Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a True Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Remote WMI Process Execution" as True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7f02a14e-8ff0-4bb6-860b-17d2471ce868
+    type: title
+    task:
+      id: 7f02a14e-8ff0-4bb6-860b-17d2471ce868
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 033bca88-f784-423c-8795-135a9bfe88a1
+    type: regular
+    task:
+      id: 033bca88-f784-423c-8795-135a9bfe88a1
+      version: -1
+      name: Close the Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a False Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Remote WMI Process Execution" as False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c2b18800-ab04-4323-8962-209698d7d91e
+    type: condition
+    task:
+      id: c2b18800-ab04-4323-8962-209698d7d91e
+      version: -1
+      name: Approval Required – Malicious Activity Detected
+      description: |-
+        **Recommendation: Isolation Required – Malicious Activity Detected**
+
+        The detection meets high-confidence criteria for malicious activity based on the following conditions:
+
+        **Matched Verdicts:**
+        * Matches for high-risk command line analysis profiles: mixed_case_powershell, double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.
+
+        * Malicious IP address detected.
+        Score >= 30, indicating high confidence probability for malicious behavior.
+
+        * Score >= 10 with a prevention rule detected in the same incident, correlating to malicious activity.
+
+        **Action Required:**
+
+        * Isolate the remote host: ${Endpoint.Hostname}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      Isolate:
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Isolate
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7df12c62-a960-428c-8e0f-dccf404b63e0
+    type: regular
+    task:
+      id: 7df12c62-a960-428c-8e0f-dccf404b63e0
+      version: -1
+      name: Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      endpoint_id:
+        simple: ${Endpoint.ID}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f4474c65-78f5-4acd-8954-1ed6559bc89e
+    type: condition
+    task:
+      id: f4474c65-78f5-4acd-8954-1ed6559bc89e
+      version: -1
+      name: Should proceed to isolate the remote endpoint?
+      description: If the condition "Check for high-confidence evidence or malicious IP address" was matched and the remote endpoint ID is available, an endpoint isolation is suggested.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "Yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: CommandLineAnalysis.findings
+            iscontext: true
+          right:
+            value:
+              simple: mixed case powershell, reversed command, powershell suspicious patterns, credential dumping, double encoding, amsi techniques, malicious commands
+          ignorecase: true
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b93c8d2f-f8f3-41a0-8d5e-3505f27a0ce5
+    type: regular
+    task:
+      id: b93c8d2f-f8f3-41a0-8d5e-3505f27a0ce5
+      version: -1
+      name: Search for the attacker's agent ID
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of the endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      ip_list:
+        simple: ${Core.OriginalAlert.event.actor_remote_ip}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 0c30d0e2-4703-413a-8bc0-2e5c223d443d
+    type: regular
+    task:
+      id: 0c30d0e2-4703-413a-8bc0-2e5c223d443d
+      version: -1
+      name: Get the attacker's remote host IP address
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "1"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
+    type: title
+    task:
+      id: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c5470fce-c24b-4768-844b-ce10abd9c6ba
+    type: condition
+    task:
+      id: c5470fce-c24b-4768-844b-ce10abd9c6ba
+      version: -1
+      name: Check if the endpoint is workstation or a server
+      description: Checks whether the endpoint is a workstation or a server.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      WORKSTATION:
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: WORKSTATION
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: dc9a785d-392b-4233-89ad-b308d3412477
+    type: regular
+    task:
+      id: dc9a785d-392b-4233-89ad-b308d3412477
+      version: -1
+      name: Manual remediation actions for a server or a disconnected endpoint
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook didn't isolate the following host: ${Endpoint.Hostname} \n\nThis is due to one of the following reasons:\n- The device disconnected.\n- The device has been identified as a server.\n\nPlease take manual action to contain the attack and prevent the attacker from executing lateral movement before closing this alert."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_Approved": 0.38,
+      "10_16_#default#": 0.1,
+      "12_13_#error#": 0.51,
+      "17_14_#default#": 0.43,
+      "17_18_Isolate": 0.4,
+      "19_14_#default#": 0.21,
+      "19_23_Yes": 0.37,
+      "23_17_WORKSTATION": 0.46,
+      "23_24_#default#": 0.62,
+      "5_11_Malicious": 0.46,
+      "5_8_#default#": 0.42,
+      "8_11_Malicious": 0.22,
+      "8_9_#default#": 0.58,
+      "9_10_yes": 0.32,
+      "9_16_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3335,
+        "width": 1340,
+        "x": 180,
+        "y": -170
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.0.0
+marketplaces:
+- marketplacev2
