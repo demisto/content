@@ -1,9 +1,11 @@
 import json
 import io
+from unittest.mock import Mock, patch
 import uuid
 import pytest
 from contextlib import contextmanager
-
+import RetarusSecureEmailGateway
+import CommonServerPython
 from RetarusSecureEmailGateway import (
     fetch_events,
     json,
@@ -17,14 +19,14 @@ from RetarusSecureEmailGateway import (
     EventConnection,
     long_running_execution_command,
 )
-import RetarusSecureEmailGateway
+from CommonServerPython import *
 
 CURRENT_TIME: datetime | None = None
 
 EVENTS = [
-    {"ts": "2023-08-16T13:24:12.147573+0100", "type": "type_1", "_id": "1"},
-    {"ts": "2023-08-14T13:24:12.147573+0200", "type": "type_2", "_id": "2"},
-    {"ts": "2023-08-12T13:24:11.147573+0000", "type": "type_3", "_id": "3"}
+    {"ts": "2023-08-16T13:24:12.147573+0100", "_id": "1"},
+    {"ts": "2023-08-14T13:24:12.147573+0200", "_id": "2"},
+    {"ts": "2023-08-12T13:24:11.147573+0000", "_id": "3"}
 ]
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -32,6 +34,7 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     if not CURRENT_TIME:
         CURRENT_TIME = fetch_start_time
     return fetch_start_time + timedelta(seconds=fetch_interval) < CURRENT_TIME
+
 
 @pytest.fixture
 def connection():
@@ -140,3 +143,32 @@ def test_heartbeat(mocker, connection):
 
     assert connection.pongs > 0
 
+
+def test_fetch_events(mocker, connection):
+    """
+    Given:
+        A connection to the websocket
+
+    When:
+        Calling fetch_events function to get events from the websocket connection
+
+    Then:
+        - Ensure that the function returns the events from the websocket connection
+        - Ensure that the function converts the timestamp to UTC
+        - Ensure that the function returns the events collected in the interval.
+    """
+
+    # We set fetch_interval to 7 to get this first two events (as we "wait" 4 seconds between each event)
+    fetch_interval = 7
+    event_connection = EventConnection(connection=connection)
+    mocker.patch.object(RetarusSecureEmailGateway, "is_interval_passed", side_effect=is_interval_passed)
+    debug_logs = mocker.patch.object(demisto, "debug")
+    events = fetch_events(connection=event_connection, fetch_interval=fetch_interval)
+
+    assert len(events) == 2
+    assert events[0]["_time"] == "2023-08-16T12:24:12.147573+00:00"
+    assert events[0]["id"] == "1"
+    assert events[1]["_time"] == "2023-08-14T11:24:12.147573+00:00"
+    assert events[1]["id"] == "2"
+    
+    debug_logs.assert_any_call("Retarus-logs Fetched 2 events")

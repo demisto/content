@@ -21,7 +21,7 @@ FETCH_INTERVAL_IN_SECONDS = 60
 FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 60
 DEFAULT_CHANNEL = "default"
-LOG_PREFIX = "Retarus- My logs"
+LOG_PREFIX = "Retarus-logs"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
@@ -33,6 +33,7 @@ class EventConnection:
         self.lock = threading.Lock()
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
+
 
     def recv(self, timeout: float | None = None) -> Data:
         """
