@@ -62,9 +62,6 @@ validation_config.toml @YuvHayun
 /Packs/Core/Integrations/ @maimorag
 /Packs/ApiModules/Scripts/CoreIRApiModule/* @maimorag
 
-# Dependencies
-poetry.lock @dorschw
-
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
 

@@ -114,6 +114,12 @@ configuration:
   section: Collect
   required: false
   advanced: true
+- display: OFP Detection fetch query
+  name: ofp_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -181,6 +187,7 @@ configuration:
   - Indicator of Attack
   - Mobile Detection
   - On-Demand Scans Detection
+  - OFP Detection
 - additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
   display: 'Reopen Statuses'
