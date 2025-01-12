@@ -628,6 +628,11 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
 
         placeholder = 15
         optional_order = ["asm_service_owner", "asm_private_ip", "asm_cloud", "asm_tags", "asm_system_ids"]
+    else:
+        placeholder = 0
+        optional_order = []
+        template = []
+        demisto.debug(f"No condition was met -> {placeholder=} {optional_order=} {template=}")
 
     optional_template = optional_report_fields(placeholder, optional_order, args)
     template.extend(optional_template)
