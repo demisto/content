@@ -113,6 +113,22 @@ configuration:
   hidden:
   - xsoar
   section: Collect
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19	
+  required: false	
+  section: Collect	
+  hidden:	
+  - xsoar	
+  defaultvalue: '1'	
+  advanced: true
+- display: Fetch Events	
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 - display: Skip events decoding
   name: should_skip_decode_events
   additionalinfo: Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate.
@@ -221,6 +237,8 @@ script:
   dockerimage: devdemisto/auth-utils:1.0.0.1885815
   isfetch: true
   isfetch:marketplacev2: false
+  isfetchevents: true
+  isfetchevents:xsoar: false
   longRunning: true
   longRunning:xsoar: false
   runonce: false
