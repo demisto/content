@@ -542,40 +542,41 @@ class Cache:
         return entry if isinstance(entry, dict) else None
 
 
-class Query:
+class XQLQuery:
     """
-    This class allows you to get the query results.
+    This class executes XQL queries.
     """
-
     def __init__(
         self,
-        query_params: QueryParams,
-        cache: Cache | None,
         xql_query_instance: str | None = None,
         polling_interval: int = DEFAULT_POLLING_INTERVAL,
         retry_interval: int = DEFAULT_RETRY_INTERVAL,
         retry_max: int = DEFAULT_RETRY_MAX,
     ) -> None:
-        self.__query_params = query_params
-        self.__cache = cache
         self.__xql_query_instance = xql_query_instance
         self.__polling_interval = polling_interval
         self.__retry_interval = retry_interval
         self.__retry_max = max(retry_max, 0)
 
-    def __query_xql(
+    def query(
         self,
+        query_params: QueryParams,
     ) -> list[dict[Hashable, Any]]:
-        time_frame = f'between {self.__query_params.earliest_time_iso} and {self.__query_params.latest_time_iso}'
-        demisto.debug(f'Run XQL: {self.__query_params.query_name} {time_frame}: {self.__query_params.query_string}')
+        """ Execute an XQL query and get results
+
+        :param query_params: The query parameters.
+        :return: List of fields retrieved.
+        """
+        time_frame = f'between {query_params.earliest_time_iso} and {query_params.latest_time_iso}'
+        demisto.debug(f'Run XQL: {query_params.query_name} {time_frame}: {query_params.query_string}')
 
         for retry_count in range(self.__retry_max + 1):
             try:
                 contents = execute_command(
                     'xdr-xql-generic-query',
                     assign_params(
-                        query_name=self.__query_params.query_name,
-                        query=self.__query_params.query_string,
+                        query_name=query_params.query_name,
+                        query=query_params.query_string,
                         time_frame=time_frame,
                         using=self.__xql_query_instance,
                     ),
@@ -605,17 +606,36 @@ class Query:
             else:
                 raise DemistoException(f'Failed to get query results - {contents}')
 
+
+class Query:
+    """
+    This class allows you to get the query results.
+    """
+    def __init__(
+        self,
+        query_params: QueryParams,
+        xql_query: XQLQuery | None,
+        cache: Cache | None,
+    ) -> None:
+        self.__query_params = query_params
+        self.__xql_query = xql_query
+        self.__cache = cache
+
     def query(
         self,
     ) -> list[dict[Hashable, Any]]:
         if self.__cache:
             dataset = self.__cache.load_dataset(self.__query_params.query_hash())
-            if dataset is None:
-                dataset = self.__query_xql()
-                self.__cache.save_dataset(self.__query_params, dataset)
-            return dataset
         else:
-            return self.__query_xql()
+            dataset = None
+
+        if dataset is None:
+            if self.__xql_query:
+                dataset = self.__xql_query.query(self.__query_params)
+                if self.__cache:
+                    self.__cache.save_dataset(self.__query_params, dataset)
+
+        return dataset or []
 
 
 class EntryBuilder:
@@ -1560,7 +1580,7 @@ class EntryBuilder:
 
     def build(
         self,
-        query: Query,
+        query: Query | None,
         entry_params: dict[Hashable, Any],
     ) -> dict[Hashable, Any]:
         entry_type = entry_params.get('type')
@@ -1613,7 +1633,7 @@ class EntryBuilder:
         if not build_entry:
             raise DemistoException(f'Invalid type - {entry_type}')
 
-        dataset = query.query()
+        dataset = query.query() if query else []
         return build_entry(
             self.__formatter.build(
                 template=params,
@@ -1722,10 +1742,10 @@ class Main:
             raise DemistoException(f'Error with input date / time - {e}')
 
     @staticmethod
-    def __create_formatter(
+    def __get_variable_substitution(
         args: dict[Hashable, Any],
         template: dict[Hashable, Any],
-    ) -> Formatter:
+    ) -> Tuple[str, str]:
         vs = args.get('variable_substitution') or '${,}'
         if isinstance(vs, str):
             vs = vs.split(',', maxsplit=1)
@@ -1761,10 +1781,7 @@ class Main:
         else:
             var_closing = vs[1]
 
-        return Formatter(
-            variable_substitution=(str(var_opening), str(var_closing)),
-            keep_symbol_to_null=True,
-        )
+        return str(var_opening), str(var_closing)
 
     @staticmethod
     def __build_query_params(
@@ -1837,6 +1854,50 @@ class Main:
         else:
             raise DemistoException(f'Invalid {name} - {arg}')
 
+    def __is_query_executable(
+        self,
+    ) -> bool:
+        def __evaluate(
+            val: Any,
+        ) -> bool:
+            def __eval(
+                val: Any
+            ) -> bool:
+                if val is None:
+                    return False
+                elif isinstance(val, bool):
+                    return val
+                elif isinstance(val, str):
+                    return val.lower() not in ('', 'false')
+                else:
+                    return bool(val)
+
+            val = val if isinstance(val, list) else [val]
+            return any(__eval(v) for v in val)
+
+
+        conditions = demisto.get(self.__template, 'query.conditions')
+        if conditions is None:
+            # Executable when 'conditions' is not specified or is null
+            return True
+
+        assert isinstance(conditions, (str, list)), (
+            f"'query.conditions' must be of type str or list - {conditions}"
+        )
+        formatter = Formatter(
+            variable_substitution=self.__variable_substitution,
+            keep_symbol_to_null=False,
+        )
+        conditions = conditions if isinstance(conditions, list) else [conditions]
+        return all(
+            __evaluate(
+                formatter.build(
+                    template=condition,
+                    context=self.__context,
+                )
+            ) for condition in conditions
+        )
+
     def __init__(
         self,
         args: dict[Hashable, Any],
@@ -1853,7 +1914,9 @@ class Main:
             incident=None if is_xsiam() else fields,
         )
         self.__template_name, self.__template = self.__get_template(args)
-        self.__formatter = self.__create_formatter(args, self.__template)
+        self.__variable_substitution = self.__get_variable_substitution(
+            args, self.__template
+        )
         self.__cache_type: str = args.get('cache_type') or CacheType.DATASET
         if self.__cache_type not in [x.value for x in list(CacheType)]:
             raise DemistoException('Invalid cache_type - {self.__cache_type}')
@@ -1874,13 +1937,6 @@ class Main:
             demisto.get(self.__template, 'query.command.using')
             or args.get('xql_query_instance')
         )
-        self.__query_params = self.__build_query_params(
-            args=args,
-            query_name=self.__template_name,
-            template=self.__template,
-            formatter=self.__formatter,
-            context=self.__context,
-        )
 
     def create(
         self,
@@ -1889,39 +1945,52 @@ class Main:
 
         :return: The command results.
         """
+        formatter = Formatter(
+            variable_substitution=self.__variable_substitution,
+            keep_symbol_to_null=True,
+        )
+        query_params = self.__build_query_params(
+            args=self.__args,
+            query_name=self.__template_name,
+            template=self.__template,
+            formatter=formatter,
+            context=self.__context,
+        )
         cache = Cache(self.__template_name)
         if self.__cache_type == CacheType.ENTRY:
-            cache_entry = cache.load_entry(self.__query_params.query_hash())
+            cache_entry = cache.load_entry(query_params.query_hash())
         else:
             cache_entry = None
 
         entry = cache_entry or EntryBuilder(
-            formatter=self.__formatter,
+            formatter=formatter,
             context=self.__context,
         ).build(
             query=Query(
-                query_params=self.__query_params,
+                query_params=query_params,
+                xql_query=XQLQuery(
+                    xql_query_instance=self.__xql_query_instance,
+                    polling_interval=self.__polling_interval,
+                    retry_interval=self.__retry_interval,
+                    retry_max=self.__max_retries,
+                ) if self.__is_query_executable() else None,
                 cache=cache if self.__cache_type != CacheType.NONE else None,
-                xql_query_instance=self.__xql_query_instance,
-                polling_interval=self.__polling_interval,
-                retry_interval=self.__retry_interval,
-                retry_max=self.__max_retries,
             ),
             entry_params=self.__template.get('entry') or {},
         )
 
         res = {
             'QueryParams': {
-                'query_name': self.__query_params.query_name,
-                'query_string': self.__query_params.query_string,
-                'earliest_time': self.__query_params.earliest_time_iso,
-                'latest_time': self.__query_params.latest_time_iso,
+                'query_name': query_params.query_name,
+                'query_string': query_params.query_string,
+                'earliest_time': query_params.earliest_time_iso,
+                'latest_time': query_params.latest_time_iso,
             },
-            'QueryHash': self.__query_params.query_hash(),
+            'QueryHash': query_params.query_hash(),
             'Entry': entry
         }
         if not cache_entry and self.__cache_type == CacheType.ENTRY:
-            cache.save_entry(self.__query_params, entry)
+            cache.save_entry(query_params, entry)
 
         return CommandResults(
             readable_output='Done.',

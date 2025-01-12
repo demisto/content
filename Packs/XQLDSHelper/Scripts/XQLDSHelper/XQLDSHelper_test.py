@@ -251,7 +251,7 @@ class MainTester:
         dt: str,
     ) -> Any:
         path, _, func = dt.partition('=')
-        val = demisto.get(obj, path)
+        val = obj if path == '.' else demisto.get(obj, path)
 
         if not func:
             return val
@@ -297,6 +297,13 @@ class MainTester:
         var = '>val ? val[0] : "255.255.255.255"'
         if var == func:
             return val[0] if val else '255.255.255.255'
+
+        var = 'val.sourceip && val.destip'
+        if var == func:
+            return val.get('sourceip') and val.get('destip')
+
+        if m := re.fullmatch(r'^val\.(\w+)$', func):
+            return val.get(m[1])
 
         if func:
             raise RuntimeError(f'Not implemented - {dt}')
@@ -384,11 +391,9 @@ class MainTester:
                     expected_entry,
                     skip_keys=skip_keys,
                 )
-                """
                 if not ok:
                     print(json.dumps(self.__config, indent=2))
                     print(json.dumps(returned_entry, indent=2))
-                """
                 assert ok
 
             # Validate 'QueryParams' - only when results.QueryParams is provided
