@@ -25,7 +25,7 @@ sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.33.2" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
+demisto-sdk = "1.33.4" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
@@ -116,7 +116,6 @@ select = [
     "E742", # ambiguous-class-name
     "E743", # ambiguous-function-name
     "E902", # io-error
-    "E999", # syntax-error
 
     "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
@@ -304,7 +303,6 @@ select = [
     "SIM223", # expr-and-false
     "SIM300", # yoda-conditions
     "SIM401", # if-else-block-instead-of-dict-get
-    "SIM910", # dict-get-with-none-default
 
     "T201", # print
     "T203", # p-print
@@ -335,7 +333,6 @@ select = [
     "UP024", # os-error-alias
     "UP025", # unicode-kind-prefix
     "UP026", # deprecated-mock-import
-    "UP027", # unpacked-list-comprehension
     "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
     "UP030", # format-literals

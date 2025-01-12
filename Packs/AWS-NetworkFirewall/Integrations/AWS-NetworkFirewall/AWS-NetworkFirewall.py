@@ -85,6 +85,7 @@ def parse_tag_field(tags_str):
 
 def aws_session(service='network-firewall', region=None, roleArn=None, roleSessionName=None,
                 roleSessionDuration=None, rolePolicy=None):
+    client = None
     kwargs = {}
     if roleArn and roleSessionName is not None:
         kwargs.update({
@@ -1047,6 +1048,7 @@ def main():  # pragma: no cover
     args = demisto.args()
     human_readable = None
     outputs = None
+    response = None
     try:
         LOG('Command being called is {command}'.format(
             command=demisto.command()))

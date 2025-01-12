@@ -2,7 +2,7 @@
     "name": "Symantec Endpoint Protection",
     "description": "Query the Symantec Endpoint Protection Manager using the official REST API.",
     "support": "xsoar",
-    "currentVersion": "1.1.14",
+    "currentVersion": "1.1.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,16 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Symantec",
+        "Endpoint Protection",
+        "EP"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
