@@ -23,8 +23,8 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
     | Maximum number of incidents to pull per fetch | Default is 10. | False |
     | First fetch timestamp | Time from which to begin fetching incidents in the `<number> <time unit>` format. For example: 12 hours, 7 days, 3 months, 1 year. | False |
     | List of fields from the application to get into the incident | A comma-separated list of application field names. For example: `Field A,Field B`. | False |
-    | XML for fetch filtering | XML condition element which can be appended to the fetch date filter conditions. For example: "TextFilterCondition" XML element. This cannot be a "DateComparisonFilterCondition" element since it would interfere with the existing fetch filter. | False |
-    | Fetch filtering logic operator | Logic operator used for building the "OperatorLogic" XML element for filtering. For example: Inputting "AND" results in `<OperatorLogic>1 AND 2 AND 3 ... AND N</OperatorLogic>`, where `N` is the number of filtering conditions. This cannot be "OR" since it would result in the fetching of duplicate incidents. | False |
+    | XML for fetch filtering | An XML condition element which can be used in conjunction with the fetch date filter condition. For example: "TextFilterCondition" XML element. This cannot be a "DateComparisonFilterCondition" element since it would interfere with the existing fetch filter. | False |
+    | Fetch filtering logic operator | A boolean logic operator to combine the existing fetch date filter condition with the custom "XML for fetch filtering" condition. For example: "AND". This cannot be "OR" since it would result in the fetching of duplicate incidents. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
