@@ -2,7 +2,7 @@
     "name": "Azure Storage Queue",
     "description": "Create and Manage Azure Storage Queues and Messages.",
     "support": "xsoar",
-    "currentVersion": "1.0.21",
+    "currentVersion": "1.0.22",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
