@@ -129,7 +129,7 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- display: Long running instance
+- display: Long running Beta
   name: longRunning
   additionalinfo: This is a beta feature for testing new mechanism for fetch events. Use this param only if advised by CS.
   type: 8

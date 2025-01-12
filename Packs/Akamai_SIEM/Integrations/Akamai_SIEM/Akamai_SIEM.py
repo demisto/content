@@ -1036,7 +1036,6 @@ async def xsiam_api_call_async_with_retries(
     events_error_handler=None,
     error_msg='',
     data_type=EVENTS,
-    proxy=None
 ):  # pragma: no cover
     """
     Send the fetched events or assets into the XDR data-collector private api.
@@ -1073,10 +1072,23 @@ async def xsiam_api_call_async_with_retries(
                 try:
                     response.raise_for_status()  # This raises an exception for non-2xx status codes
                     status_code = response.status
-                    if ok_codes and status_code not in ok_codes:
-                        events_error_handler(response)
                 except aiohttp.ClientResponseError as e:
-                    raise DemistoException(f"Encountered an error when sending events to xsiam: {error_msg} {e}.")
+                    if e.status in ok_codes:
+                        continue
+                    else:
+                        header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
+                        api_call_info = (
+                            'Parameters used:\n'
+                            '\tURL: {xsiam_url}\n'
+                            '\tHeaders: {headers}\n\n'
+                            'Response status code: {status_code}\n'
+                            'Error received:\n\t{error}\n'
+                            'additional request info: \n\t{additional_info}'
+                        ).format(xsiam_url=xsiam_url, headers=json.dumps(e.headers, indent=8), status_code=e.status,
+                                 error=e.message, additional_info=e.request_info)
+
+                        demisto.error(header_msg + api_call_info)
+                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
 
         demisto.debug('received status code: {status_code}'.format(status_code=status_code))
         if status_code == 429:
