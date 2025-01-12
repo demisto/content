@@ -47,7 +47,6 @@ _MODULES_LINE_MAPPING = {
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
-MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
 # So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
@@ -56,7 +55,9 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
+NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
+MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -236,7 +237,7 @@ PROFILING_DUMP_ROWS_LIMIT = 20
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
-    import asyncio
+    import concurrent.futures
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
@@ -8843,7 +8844,8 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username",
+                          "password", "Key", "identifier", "credential", "client"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
@@ -8855,8 +8857,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -12048,72 +12050,6 @@ def xsiam_api_call_with_retries(
     return response
 
 
-async def xsiam_api_call_async_with_retries(
-    xsiam_url,
-    zipped_data,
-    headers,
-    num_of_attempts,
-    events_error_handler=None,
-    error_msg='',
-    data_type=EVENTS,
-    proxy=None
-):  # pragma: no cover
-    """
-    Send the fetched events or assets into the XDR data-collector private api.
-
-    :type client: ``BaseClient``
-    :param client: base client containing the XSIAM url.
-
-    :type xsiam_url: ``str``
-    :param xsiam_url: The URL of XSIAM to send the api request.
-
-    :type zipped_data: ``bytes``
-    :param zipped_data: encoded events
-
-    :type headers: ``dict``
-    :param headers: headers for the request
-
-    :type error_msg: ``str``
-    :param error_msg: The error message prefix in case of an error.
-
-    :type num_of_attempts: ``int``
-    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
-
-    :type events_error_handler: ``callable``
-    :param events_error_handler: error handler function
-
-    :type data_type: ``str``
-    :param data_type: events or assets
-
-    :return: Response object or DemistoException
-    :rtype: ``requests.Response`` or ``DemistoException``
-    """
-    # retry mechanism in case there is a rate limit (429) from xsiam.
-    status_code = None
-    attempt_num = 1
-    response = None
-    while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
-            data_type=data_type, attempt_num=attempt_num))
-        # in the last try we should raise an exception if any error occurred, including 429
-        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        async with aiohttp.ClientSession() as session:
-            async with session.post(urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data, headers=headers) as response:
-                try:
-                    response.raise_for_status()  # This raises an exception for non-2xx status codes
-                    status_code = response.status
-                    if ok_codes and status_code not in ok_codes:
-                        events_error_handler(response)
-                except aiohttp.ClientResponseError as e:
-                    raise DemistoException(f"Encountered an error when sending events to xsiam: {error_msg} {e}.")
-                
-        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
-        if status_code == 429:
-            await asyncio.sleep(1)
-        attempt_num += 1
-    return response
-
-
 def split_data_to_chunks(data, target_chunk_size):
     """
     Splits a string of data into chunks of an approximately specified size.
@@ -12141,6 +12077,7 @@ def split_data_to_chunks(data, target_chunk_size):
         if (data_part_size := sys.getsizeof(data_part)) >= MAX_ALLOWED_ENTRY_SIZE:
             demisto.error("entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
                                                                                                   MAX_ALLOWED_ENTRY_SIZE))
+            continue
         chunk.append(data_part)
         chunk_size += data_part_size
     if chunk_size != 0:
@@ -12148,10 +12085,9 @@ def split_data_to_chunks(data, target_chunk_size):
         yield chunk
 
 
-
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, send_events_asynchronously=False, data_size_expected_to_split_evenly=False):
+                         add_proxy_to_request=False, multiple_threads=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12185,18 +12121,14 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type add_proxy_to_request :``bool``
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
-    :type send_events_asynchronously: ``bool``
-    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the updateModuleHealth should be done from the integration itself.
+    :type multiple_threads: ``bool``
+    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
-    :type data_size_expected_to_split_evenly: ``bool``
-    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
-    Use this to split data to chunks faster.
-
-    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
-    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
-    await asyncio.gather(*tasks)
-    :rtype: ``List[Task]`` or ``None``
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None``
     """
     return send_data_to_xsiam(
         events,
@@ -12209,8 +12141,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        send_events_asynchronously=send_events_asynchronously,
-        data_size_expected_to_split_evenly=data_size_expected_to_split_evenly
+        multiple_threads=multiple_threads
     )
 
 
@@ -12323,8 +12254,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, send_events_asynchronously=False,
-                       data_size_expected_to_split_evenly=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12368,18 +12298,15 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type items_count: ``str``
     :param items_count: the asset snapshot items count.
 
-    :type send_events_asynchronously: ``bool``
-    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the updateModuleHealth should be done from the integration itself.
+    :type multiple_threads: ``bool``
+    :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+    Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
 
-    :type data_size_expected_to_split_evenly: ``bool``
-    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
-    Use this to split data to chunks faster.
-
-    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
-    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
-    await asyncio.gather(*tasks)
-    :rtype: ``List[Task]`` or ``None``
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None```
     """
     data_size = 0
     params = demisto.params()
@@ -12418,7 +12345,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
     xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
     xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
-    headers = remove_empty_elements({
+    headers = {
         'authorization': xsiam_api_token,
         'format': data_format,
         'product': product,
@@ -12428,7 +12355,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         'instance-name': instance_name,
         'final-reporting-device': url,
         'collector-type': ASSETS if data_type == ASSETS else EVENTS
-    })
+    }
     if data_type == ASSETS:
         if not snapshot_id:
             snapshot_id = str(round(time.time() * 1000))
@@ -12469,10 +12396,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-    if data_size_expected_to_split_evenly:
-        data_chunks = split_data_to_chunks_evenly(data, chunk_size)
-    else:
-        data_chunks = split_data_to_chunks(data, chunk_size)
+    data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
         chunk_size = len(data_chunk)
@@ -12484,29 +12408,21 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
         return chunk_size
 
-
-    async def send_events_async(data_chunk):
-        chunk_size = len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        _ = await xsiam_api_call_async_with_retries(events_error_handler=data_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, data_type=data_type,
-                                    proxy=add_proxy_to_request)
-        return chunk_size
-
-
-    if send_events_asynchronously:
-        demisto.info("Sending events to xsiam asynchronously.")
-        all_chunks = list(data_chunks)
+    if multiple_threads:
+        demisto.info("Sending events to xsiam with multiple threads.")
+        all_chunks = [chunk for chunk in data_chunks]
         demisto.info("Finished appending all data_chunks to a list.")
-        # await asyncio.gather(*[asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks])
-        tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
+        support_multithreading()
+        futures = []
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+        for chunk in all_chunks:
+            future = executor.submit(send_events, chunk)
+            futures.append(future)
 
-        demisto.info('Finished submiting {} tasks.'.format(len(tasks)))
+        demisto.info('Finished submiting {} Futures.'.format(len(futures)))
+        return futures
     else:
-        demisto.info("Sending events to xsiam synchronously.")
+        demisto.info("Sending events to xsiam with a single thread.")
         for chunk in data_chunks:
             data_size += send_events(chunk)
 
