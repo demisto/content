@@ -400,320 +400,320 @@ script:
   - name: reversinglabs-a1000-user-tags
     description: Perform user tag actions for a sample - Get existing tags, create new tags or delete existing tags.
     arguments:
-      - name: action
-        description: Which tag action to perform - GET, CREATE or DELETE.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'GET'
-          - 'CREATE'
-          - 'DELETE'
-      - name: hash
-        description: Hash of the desired sample.
-        required: true
-        default: true
-      - name: tags
-        description: Comma-separated list of tags.
+    - name: action
+      description: Which tag action to perform - GET, CREATE or DELETE.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'GET'
+      - 'CREATE'
+      - 'DELETE'
+    - name: hash
+      description: Hash of the desired sample.
+      required: true
+      default: true
+    - name: tags
+      description: Comma-separated list of tags.
     outputs:
-      - contextPath: ReversingLabs.a1000_user_tags
-        description: Actions for managing user tags on samples.
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_user_tags
+      description: Actions for managing user tags on samples.
+      type: Unknown
   - name: reversinglabs-a1000-file-analysis-status
     description: Check the analysis status of submitted files.
     arguments:
-      - name: hashes
-        description: Comma-separated list of file hashes. Should be written without spaces and all hashes should be of the same type.
-        default: true
-        required: true
-      - name: analysis_status
-        description: Check only files with this analysis status. Available values are 'processed' and 'not_found'.
+    - name: hashes
+      description: Comma-separated list of file hashes. Should be written without spaces and all hashes should be of the same type.
+      default: true
+      required: true
+    - name: analysis_status
+      description: Check only files with this analysis status. Available values are 'processed' and 'not_found'.
     outputs:
-      - contextPath: ReversingLabs.a1000_file_analysis_status
-        description: Analysis status of requested files.
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_file_analysis_status
+      description: Analysis status of requested files.
+      type: Unknown
   - name: reversinglabs-a1000-pdf-report
     description: Perform PDF report actions for a sample - create a report, check the status of a report and download a report.
     arguments:
-      - name: hash
-        description: Sample hash.
-        default: true
-        required: true
-      - name: action
-        description: Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'CREATE REPORT'
-          - 'CHECK STATUS'
-          - 'DOWNLOAD REPORT'
+    - name: hash
+      description: Sample hash.
+      default: true
+      required: true
+    - name: action
+      description: Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'CREATE REPORT'
+      - 'CHECK STATUS'
+      - 'DOWNLOAD REPORT'
     outputs:
-      - contextPath: ReversingLabs.a1000_pdf_report
-        description: Actions for creating and downloading PDF reports.
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_pdf_report
+      description: Actions for creating and downloading PDF reports.
+      type: Unknown
   - name: reversinglabs-a1000-static-analysis-report
     description: Retrieve the static analysis report for a local sample.
     arguments:
-      - name: hash
-        description: Sample hash.
-        default: true
-        required: true
+    - name: hash
+      description: Sample hash.
+      default: true
+      required: true
     outputs:
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: MD5 hash of the file.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: Reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: ReversingLabs.a1000_static_analysis_report
-        description: The static analysis report.
-        type: Unknown
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: ReversingLabs.a1000_static_analysis_report
+      description: The static analysis report.
+      type: Unknown
   - name: reversinglabs-a1000-dynamic-analysis-report
     description: Perform dynamic analysis report actions for a sample - create a report, check the status of a report and download a report.
     arguments:
-      - name: hash
-        description: Sample hash.
-        default: true
-        required: true
-      - name: action
-        description: Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'CREATE REPORT'
-          - 'CHECK STATUS'
-          - 'DOWNLOAD REPORT'
-      - name: report_format
-        description: Dynamic analysis report format.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'pdf'
-          - 'html'
-        defaultValue: 'pdf'
+    - name: hash
+      description: Sample hash.
+      default: true
+      required: true
+    - name: action
+      description: Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'CREATE REPORT'
+      - 'CHECK STATUS'
+      - 'DOWNLOAD REPORT'
+    - name: report_format
+      description: Dynamic analysis report format.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'pdf'
+      - 'html'
+      defaultValue: 'pdf'
     outputs:
-      - contextPath: ReversingLabs.a1000_dynamic_analysis_report
-        description: Actions for creating and downloading dynamic analysis reports.
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_dynamic_analysis_report
+      description: Actions for creating and downloading dynamic analysis reports.
+      type: Unknown
   - name: reversinglabs-a1000-sample-classification
     description: Perform sample classification actions - get sample classification, set sample classification or delete sample classification.
     arguments:
-      - name: hash
-        description: Sample hash.
-        default: true
-        required: true
-      - name: action
-        description: Which classification action to perform - GET CLASSIFICATION, SET CLASSIFICATION or DELETE CLASSIFICATION.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'GET CLASSIFICATION'
-          - 'SET CLASSIFICATION'
-          - 'DELETE CLASSIFICATION'
-      - name: system
-        description: Local or TitaniumCloud.
-        auto: PREDEFINED
-        predefined:
-          - 'local'
-          - 'ticloud'
-      - name: local_only
-        description: Return only local samples without querying TitaniumCloud.
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-      - name: av_scanners
-        description: Return return AV scanner results.
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-      - name: classification
-        description: goodware, suspicious or malicious.
-        auto: PREDEFINED
-        predefined:
-          - 'goodware'
-          - 'suspicious'
-          - 'malicious'
-      - name: risk_score
-        description: If specified, it must be within range for the specified classification. If not specified, a default value is used. Goodware - 0, Suspicious - 6, Malicious - 10.
-      - name: threat_platform
-        description: If specified, it must be on the supported list (platforms and subplatforms - see official API docs). If not specified, the default value is 'Win32'.
-      - name: threat_type
-        description: If specified, it must be on the supported list (malware types - see official API docs). If not specified, the default value is 'Malware'.
-      - name: threat_name
-        description: If specified, must be an alphanumeric string not longer than 32 characters. If not specified, the default value is 'Generic'.
+    - name: hash
+      description: Sample hash.
+      default: true
+      required: true
+    - name: action
+      description: Which classification action to perform - GET CLASSIFICATION, SET CLASSIFICATION or DELETE CLASSIFICATION.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'GET CLASSIFICATION'
+      - 'SET CLASSIFICATION'
+      - 'DELETE CLASSIFICATION'
+    - name: system
+      description: Local or TitaniumCloud.
+      auto: PREDEFINED
+      predefined:
+      - 'local'
+      - 'ticloud'
+    - name: local_only
+      description: Return only local samples without querying TitaniumCloud.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: av_scanners
+      description: Return return AV scanner results.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: classification
+      description: goodware, suspicious or malicious.
+      auto: PREDEFINED
+      predefined:
+      - 'goodware'
+      - 'suspicious'
+      - 'malicious'
+    - name: risk_score
+      description: If specified, it must be within range for the specified classification. If not specified, a default value is used. Goodware - 0, Suspicious - 6, Malicious - 10.
+    - name: threat_platform
+      description: If specified, it must be on the supported list (platforms and subplatforms - see official API docs). If not specified, the default value is 'Win32'.
+    - name: threat_type
+      description: If specified, it must be on the supported list (malware types - see official API docs). If not specified, the default value is 'Malware'.
+    - name: threat_name
+      description: If specified, must be an alphanumeric string not longer than 32 characters. If not specified, the default value is 'Generic'.
     outputs:
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: MD5 hash of the file.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: Reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: ReversingLabs.a1000_sample_classification
-        description: Sample classification actions.
-        type: Unknown
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: ReversingLabs.a1000_sample_classification
+      description: Sample classification actions.
+      type: Unknown
   - name: reversinglabs-a1000-yara
     description: Perform A1000 YARA actions.
     arguments:
-      - name: action
-        description: Which YARA action to perform.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'GET RULESETS'
-          - 'GET CONTENTS'
-          - 'GET MATCHES'
-          - 'UPDATE RULESET'
-          - 'DELETE RULESET'
-          - 'ENABLE RULESET'
-          - 'DISABLE RULESET'
-          - 'GET SYNCHRONIZATION TIME'
-          - 'UPDATE SYNCHRONIZATION TIME'
-      - name: ruleset_name
-        description: Ruleset name.
-      - name: ruleset_content
-        description: Ruleset content.
-      - name: publish
-        description: Publish the ruleset.
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-      - name: sync_time
-        description: Desired ruleset synchronization time.
+    - name: action
+      description: Which YARA action to perform.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'GET RULESETS'
+      - 'GET CONTENTS'
+      - 'GET MATCHES'
+      - 'UPDATE RULESET'
+      - 'DELETE RULESET'
+      - 'ENABLE RULESET'
+      - 'DISABLE RULESET'
+      - 'GET SYNCHRONIZATION TIME'
+      - 'UPDATE SYNCHRONIZATION TIME'
+    - name: ruleset_name
+      description: Ruleset name.
+    - name: ruleset_content
+      description: Ruleset content.
+    - name: publish
+      description: Publish the ruleset.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: sync_time
+      description: Desired ruleset synchronization time.
     outputs:
-      - contextPath: ReversingLabs.a1000_yara
-        description: YARA actions.
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_yara
+      description: YARA actions.
+      type: Unknown
   - name: reversinglabs-a1000-yara-retro
     description: Perform A1000 YARA Retroactive Hunt actions.
     arguments:
-      - name: action
-        description: Which YARA Retro action to perform.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'MANAGE LOCAL SCAN'
-          - 'LOCAL SCAN STATUS'
-          - 'MANAGE CLOUD SCAN'
-          - 'CLOUD SCAN STATUS'
-      - name: ruleset_name
-        description: Ruleset name.
-      - name: operation
-        description: Select a ruleset operation.
-        auto: PREDEFINED
-        predefined:
-          - 'START'
-          - 'STOP'
-          - 'CLEAR'
+    - name: action
+      description: Which YARA Retro action to perform.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'MANAGE LOCAL SCAN'
+      - 'LOCAL SCAN STATUS'
+      - 'MANAGE CLOUD SCAN'
+      - 'CLOUD SCAN STATUS'
+    - name: ruleset_name
+      description: Ruleset name.
+    - name: operation
+      description: Select a ruleset operation.
+      auto: PREDEFINED
+      predefined:
+      - 'START'
+      - 'STOP'
+      - 'CLEAR'
     outputs:
-      - contextPath: ReversingLabs.a1000_yara_retro
-        description: YARA Retro actions.
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_yara_retro
+      description: YARA Retro actions.
+      type: Unknown
   - name: reversinglabs-a1000-list-containers
     description: Get a list of all top-level containers from which the requested samples have been extracted during analysis.
     arguments:
-      - name: sample_hashes
-        description: Comma-separated list of sample hashes. No whitespaces are allowed.
-        required: true
-        default: true
+    - name: sample_hashes
+      description: Comma-separated list of sample hashes. No whitespaces are allowed.
+      required: true
+      default: true
     outputs:
-      - contextPath: ReversingLabs.a1000_list_containers
-        description: A10000 list top-level containers.
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_list_containers
+      description: A10000 list top-level containers.
+      type: Unknown
   - name: reversinglabs-a1000-upload-from-url-actions
     description: Actions for uploading a sample from a URL and fetching the analysis results.
     arguments:
-      - name: action
-        description: Which action to perform. Upload a sample from URL, get the report for an sample or both actions combined.
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - 'UPLOAD'
-          - 'GET REPORT'
-          - 'UPLOAD AND GET REPORT'
-          - 'CHECK ANALYSIS STATUS'
-      - name: file_url
-        description: URL to the file you want to submit for analysis. Used in UPLOAD and UPLOAD AND GET REPORT.
-      - name: crawler
-        description: Which crawler to use - local or cloud. Used in UPLOAD and UPLOAD AND GET REPORT.
-        auto: PREDEFINED
-        predefined:
-          - 'local'
-          - 'cloud'
-      - name: archive_password
-        description: Required if the sample is an archive and it has a password. Used in UPLOAD and UPLOAD AND GET REPORT.
-      - name: sandbox_platform
-        description: Which sandbox platform to use. Check the A1000 documentation to see the current list of supported platforms. Used in UPLOAD and UPLOAD AND GET REPORT.
-      - name: task_id
-        description: ID of the URL processing task. Used in GET REPORT.
-      - name: retry
-        description: Utilize the retry mechanism for fetching the report. Used in GET REPORT and UPLOAD AND GET REPORT.
+    - name: action
+      description: Which action to perform. Upload a sample from URL, get the report for an sample or both actions combined.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'UPLOAD'
+      - 'GET REPORT'
+      - 'UPLOAD AND GET REPORT'
+      - 'CHECK ANALYSIS STATUS'
+    - name: file_url
+      description: URL to the file you want to submit for analysis. Used in UPLOAD and UPLOAD AND GET REPORT.
+    - name: crawler
+      description: Which crawler to use - local or cloud. Used in UPLOAD and UPLOAD AND GET REPORT.
+      auto: PREDEFINED
+      predefined:
+      - 'local'
+      - 'cloud'
+    - name: archive_password
+      description: Required if the sample is an archive and it has a password. Used in UPLOAD and UPLOAD AND GET REPORT.
+    - name: sandbox_platform
+      description: Which sandbox platform to use. Check the A1000 documentation to see the current list of supported platforms. Used in UPLOAD and UPLOAD AND GET REPORT.
+    - name: task_id
+      description: ID of the URL processing task. Used in GET REPORT.
+    - name: retry
+      description: Utilize the retry mechanism for fetching the report. Used in GET REPORT and UPLOAD AND GET REPORT.
     outputs:
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: MD5 hash of the file.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Reliability
-        description: Reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: ReversingLabs.a1000_upload_from_url_actions
-        description: Actions for uploading a sample from a URL and fetching the analysis results.
-        type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.98754
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: ReversingLabs.a1000_upload_from_url_actions
+      description: Actions for uploading a sample from a URL and fetching the analysis results.
+      type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.1872154
   runonce: false
   script: '-'
   subtype: python3

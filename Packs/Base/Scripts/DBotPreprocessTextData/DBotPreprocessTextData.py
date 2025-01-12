@@ -225,6 +225,7 @@ tokenizer = None
 
 def read_file(input_data, input_type):
     data = []  # type: ignore
+    file_path, file_content = '', ''
     if not input_data:
         return data
     if input_type.endswith("string"):
@@ -469,7 +470,7 @@ def main():
 
     if output_original_text_fields:
         for field in text_fields:
-            whitelist_fields += [x.strip() for x in field.split('|')]
+            whitelist_fields += [x.strip() for x in field.split('|')]  # type: ignore[operator]
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
         data = whitelist_dict_fields(data, whitelist_fields)
@@ -478,6 +479,7 @@ def main():
     # output
     file_name = str(uuid.uuid4())
     output_format = demisto.args()['outputFormat']
+    data_encoded = None
     if output_format == 'pickle':
         data_encoded = pickle.dumps(data, protocol=2)
     elif output_format == 'json':
