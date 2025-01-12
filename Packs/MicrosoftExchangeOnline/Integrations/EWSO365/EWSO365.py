@@ -2165,7 +2165,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
     2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
     If no necessary changes identified the original 'message_id' argument value is returned.
     """
-    if re.search("\<\[.*\]\>", message_id):
+    if re.search(r"\<\[.*\]\>", message_id):
         # find and replace "<[" with "<" and "]>" with ">"
         fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
         demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
