@@ -21,6 +21,8 @@ The query parameter `$filter` is not supported when using the `search` parameter
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
+**Note** - The credentials (created by the Cortex XSOAR application) are valid for a single instance only.
+
 
 ## Email Attachments Limitations
 
