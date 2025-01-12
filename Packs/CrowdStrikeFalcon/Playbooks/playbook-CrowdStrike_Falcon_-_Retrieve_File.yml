@@ -393,3 +393,6 @@ outputs:
   type: string
 tests:
 - Test Playbook - CrowdStrike Falcon - Retrieve File
+marketplaces:
+- xsoar
+# Should not appear in marketplacev2
