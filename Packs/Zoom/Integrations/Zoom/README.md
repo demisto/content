@@ -68,18 +68,18 @@ In the Team Chat Subscription section under BOT endpoint URL, add:
    | User |   View all user information /user:read:user:admin |
 ![enter image description here](../../doc_files/scope-premissions.png)
 
-1. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
+3. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
    
  ![enter image description here](../../doc_files/test-zoom-app.gif)
 
 4. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
 
-    **Endpoint URL Requirements:**
+**Endpoint URL Requirements:**
    
-      To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:   
-      * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
-      * Be able to accept HTTP POST requests.
-      * Be able to respond with a 200 or 204 HTTP Status Code.
+    To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:   
+    * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
+    * Be able to accept HTTP POST requests.
+    * Be able to respond with a 200 or 204 HTTP Status Code.
     ---
     1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
     ![enter image description here](../../doc_files/zoom-token.png)
