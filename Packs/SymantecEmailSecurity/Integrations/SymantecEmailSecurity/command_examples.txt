@@ -1,0 +1,15 @@
+!symantec-email-security-ioc-list
+!symantec-email-security-ioc-action action=add ioc_type=subject ioc_value=Test123 description=test email_direction=inbound remediation_action=block_and_delete
+!symantec-email-security-ioc-renew
+!symantec-email-security-data-list
+!symantec-email-security-email-queue-list
+!symantec-email-security-quarantine-email-list
+!symantec-email-security-quarantine-email-preview message_id=000
+!symantec-email-security-quarantine-email-release message_ids=000
+!symantec-email-security-quarantine-email-delete message_ids=000
+!symantec-email-security-item-allow-list
+!symantec-email-security-item-allow-list-update suduls_user=lior description=sb email_or_domain=lior.sb item_id=000
+!symantec-email-security-item-allow-list-delete item_id=000
+!symantec-email-security-item-block-list
+!symantec-email-security-item-block-list-update suduls_user=lior description=sb email_or_domain=lior.sb item_id=000
+!symantec-email-security-item-block-list-delete item_id=000

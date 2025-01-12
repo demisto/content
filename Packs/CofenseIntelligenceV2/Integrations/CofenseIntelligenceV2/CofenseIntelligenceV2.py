@@ -1,7 +1,7 @@
 """Main integration script."""
 import base64
 import traceback
-from typing import Any, Dict, List
+from typing import Any
 
 import urllib3
 from requests import Response
@@ -60,7 +60,7 @@ class Client(BaseClient):
             for mapping in mappings:
                 if mapping:
                     attr = [score.strip() for score in mapping.split(":") if score.strip()]
-                    if len(attr) == 2 and attr[0] in severity_score.keys():
+                    if len(attr) == 2 and attr[0] in severity_score:
                         severity_score[attr[0]] = int(attr[1])
 
         return severity_score
@@ -100,7 +100,7 @@ class Client(BaseClient):
 
         return self._http_request(method='POST', url_suffix='/apiv1/threat/search', params=params)
 
-    def search_cofense(self, params: Dict) -> Dict:
+    def search_cofense(self, params: dict) -> dict:
         """
         Perform the API call to the threats-search endpoint with the requested query param.
 
@@ -166,7 +166,7 @@ def get_n_days_back_epoch(days_back: int):
     return int((today - d).timestamp())
 
 
-def create_threat_md_row(threat: Dict, severity_level: int = None):
+def create_threat_md_row(threat: dict, severity_level: int = None):
     """
     Generate dict representing a single row in the human readable markdown format.
 
@@ -191,7 +191,7 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
     return threat_row
 
 
-def create_hr_for_cofense_search(threat: Dict):
+def create_hr_for_cofense_search(threat: dict):
     """
     Generate dict representing a single row in the human readable markdown format.
 
@@ -240,7 +240,7 @@ def extract_indicator_from_block(block: dict, command: str) -> str:
     return data
 
 
-def threats_analysis(severity_score: dict, threats: List, indicator: str, threshold: str, command: str):
+def threats_analysis(severity_score: dict, threats: list, indicator: str, threshold: str, command: str):
     """
     Process raw response data and generate dbot score and human readable results.
 
@@ -288,7 +288,7 @@ def threats_analysis(severity_score: dict, threats: List, indicator: str, thresh
     return md_data, dbot_score
 
 
-def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, dbot_score_obj):
+def ip_threats_analysis(severity_score, threats: list, ip: str, threshold: str, dbot_score_obj):
     """
     Process raw response data and generate dbot score ,human readable results, ip indicator object.
 
@@ -337,7 +337,7 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
     return md_data, dbot_score, ip_indicator
 
 
-def file_threats_analysis(severity_score, threats: List, file: str, threshold: str, dbot_score_obj):
+def file_threats_analysis(severity_score, threats: list, file: str, threshold: str, dbot_score_obj):
     """
     Process raw response data and generate dbot score ,human readable results, file indicator object.
 
@@ -405,7 +405,7 @@ def check_indicator_type(indicator_value) -> str:
         return auto_detect_indicator_type(indicator_value)
 
 
-def create_relationship(client: Client, indicator: str, threats: List, entity_a_type: str) -> List:
+def create_relationship(client: Client, indicator: str, threats: list, entity_a_type: str) -> list:
     """
     Create relationships between indicators as part of enrichment.
 
@@ -475,7 +475,7 @@ def connectivity_testing(client: Client) -> str:
     return message
 
 
-def search_url_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def search_url_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given url.
 
@@ -522,7 +522,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> List[Com
     return results_list
 
 
-def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_ip_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given ip.
 
@@ -578,7 +578,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[Comma
     return results_list
 
 
-def check_email_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_email_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given email.
 
@@ -630,7 +630,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
     return results_list
 
 
-def check_file_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_file_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given file hash.
 
@@ -679,7 +679,7 @@ def check_file_command(client: Client, args: Dict[str, Any], params) -> List[Com
     return results_list
 
 
-def extracted_string(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def extracted_string(client: Client, args: dict[str, Any], params) -> CommandResults:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given string.
 
@@ -733,7 +733,7 @@ def extracted_string(client: Client, args: Dict[str, Any], params) -> CommandRes
                                                  'Threat Report']))
 
 
-def check_domain_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_domain_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given domain.
 
@@ -796,7 +796,7 @@ def validate_threat_report_command_args(report_id: str, report_format: str):
         raise DemistoException("Argument 'report_format' accepts only 'html' or 'pdf' as input.")
 
 
-def threat_report_command(client: Client, args: Dict[str, Any]):
+def threat_report_command(client: Client, args: dict[str, Any]):
     """
     Download threat report provided by cofense intelligence of an indicator for the given unique report id.
 
@@ -831,7 +831,7 @@ def main() -> None:
     score_mapping = params.get('scoreMapping', "None:0, Minor:1, Moderate:2, Major:3")
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: Dict = {
+        headers: dict = {
             "Authorization": f"Basic {base64.b64encode(':'.join([username, password]).encode()).decode().strip()}"
         }
 

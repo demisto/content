@@ -16,7 +16,6 @@ This integration was integrated and tested with version August 2024 of Hoxhunt.
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Query Filter | Input a query filter for incidents to be fetched | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -220,6 +219,7 @@ Updates Incident state.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Hoxhunt corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

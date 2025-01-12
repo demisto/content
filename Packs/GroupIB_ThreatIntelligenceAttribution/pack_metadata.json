@@ -2,7 +2,7 @@
     "name": "Group-IB Threat Intelligence",
     "description": "Group-IB Threat Intelligence is a system for analyzing and attributing cyberattacks, threat hunting, and protecting network infrastructure based on data relating to adversary tactics, tools, and activity. Use this pack to fast receive incidents related to you, attribute them to adversaries to do instant response, enrich your security with an enormous IOCs collection, and provide possibilities for manual investigation through Group-IB data via Cortex XSOAR interface.",
     "support": "partner",
-    "currentVersion": "1.4.4",
+    "currentVersion": "1.4.8",
     "author": "Group-IB",
     "url": "https://www.group-ib.com/",
     "email": "integration@group-ib.com",
