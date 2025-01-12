@@ -41,17 +41,18 @@ XSOAR endpoint URL-
 
 
 ## Create Zoom ChatBOT app
-1. Navigate to https://marketplace.zoom.us/.
-2. Click **Develop** > **Build Team** > **Team Chat Apps**.
-3. Enter the **App Name**.
+1. Log onto the Zoom App Marketplace https://marketplace.zoom.us/.
+2. Click **Develop** > **Build App**.
+3. Choose **General App**.
 4. Click **Create**.
 
 ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/create-team-chat-app.gif)
 ### Configure App Settings
-Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
 
-
-1. Click **Feature** > **Team Chat**.
+1. Update your app’s name. By default, the build flow generates a generic name for your app. To change your app's name, select the edit icon (pencil) and update the name. To save your changes, click anywhere outside of the app name field.
+2. Under the section "Select how the app is managed" select on "Admin-managed".
+3. Enter your Cortex XSOAR endpoint URL in the **OAuth Redirect URL**.
+4. Click **Feature** > **Surface** > **Team Chat**.
 In the Team Chat Subscription section under BOT endpoint URL, add:
    - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
    - For Cortex XSOAR 8.x / XSIAM you need to run using external engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
@@ -65,7 +66,7 @@ In the Team Chat Subscription section under BOT endpoint URL, add:
    | Team Chat |  Enable Chatbot within Zoom Team Chat Client /imchat:bot |
    | Team Chat |  Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:admin |
    | Team Chat |  View and manage all users' team chat channels /chat_channel:write:admin |
-   | User |   View all user information /user:read:admin |
+   | User |   View all user information /user:read:user:admin |
 ![enter image description here](../../doc_files/scope-premissions.png)
 
 3. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
@@ -84,7 +85,7 @@ In the Team Chat Subscription section under BOT endpoint URL, add:
     1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
     ![enter image description here](../../doc_files/zoom-token.png)
     2. Configure Event Subscriptions. 
-        1. In the "Feature" page under the "General Features" section, enable "Event Subscriptions".
+        1. In the "Feature" section under "Access" in the "General Features" section, enable "Event Subscriptions".
         2. Click **+Add New Event Subscription**.
         3. Enter the following information:
             - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
