@@ -263,7 +263,7 @@ class NetscoutClient(BaseClient):
 
         # We calculate the page size to query, by performing an incidents query with page size = 1, the amount of
         # returned pages will equal to amount of incidents
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(timezone.UTC).isoformat()
         amount_of_incidents = self.calculate_amount_of_incidents(start_time=last_start_time, params_dict=params_dict)
         incidents: list = []
 
