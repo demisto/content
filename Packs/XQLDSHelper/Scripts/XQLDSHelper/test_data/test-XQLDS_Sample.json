@@ -6852,7 +6852,7 @@
       "is_xsiam": true
     },
     "alert": {
-      "remote_ip": "dummy"
+      "remoteip": "dummy"
     },
     "results": {
       "Entry": {
