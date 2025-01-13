@@ -638,7 +638,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
 
 
-def test_parse_incident_from_item_with_attachments():
+def test_parse_incident_from_item_with_attachments(mocker):
     """
     Given:
         - Message item with attachment that contains email attachments
@@ -659,14 +659,18 @@ def test_parse_incident_from_item_with_attachments():
         to_recipients=[],
         attachments=[
             ItemAttachment(
+                name='test_attachment.eml',
                 item=Item(mime_content=content, headers=[]),
                 attachment_id=AttachmentId(),
                 last_modified_time=EWSDate(year=2021, month=1, day=25),
             ),
         ],
     )
+    mock_file_result = mocker.patch('EWSO365.fileResult')
     incident = parse_incident_from_item(message)
+
     assert incident['attachment']
+    assert mock_file_result.called_once_with('test_attachment.eml', content)
 
 
 def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
