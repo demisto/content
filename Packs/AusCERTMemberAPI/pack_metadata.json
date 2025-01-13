@@ -1,0 +1,21 @@
+{
+    "name": "AusCERT Member API",
+    "description": "This content pack enables integration with the AusCERT API to retrieve Member Security Incident Notifications (MSINs) as well as pull the threat intelligence feeds.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Daniel Wilson",
+    "url": "",
+    "email": "",
+    "created": "2025-01-13T03:07:31Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "danielwilson161"
+    ]
+}
