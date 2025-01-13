@@ -1,7 +1,7 @@
 id: Exchange forwarding rule configured
 version: -1
 name: Exchange forwarding rule configured
-description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Suspicious Exchange email-hiding inbox rule.\n- Possible BEC Exchange email-hiding inbox rule.\n- Exchange email-hiding transport rule based on message keywords.\n- Suspicious Exchange email-hiding transport rule.\n- Exchange transport forwarding rule configured.\n- Suspicious Exchange transport forwarding rule configured.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\n- If at least two suspicious pieces of evidence are found, the playbook executes soft response actions, including signing the user out and disabling the forwarding rule from the user account mailbox. \n- If more than two pieces of suspicious evidence are found, the playbook will initiate hard response actions. These include disabling the user and the forwarding rule from the user account mailbox. \n\nRequirements: \n\nFor any response action, you need the following integrations:\n- EWS Extension Online Powershell v3 integration.\n- Azure Active Directory Users."
+description: "This playbook addresses the following alerts:\n\n- External Exchange inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule configured.\n- Suspicious Exchange email-hiding inbox rule.\n- Possible BEC Exchange email-hiding inbox rule.\n- Exchange email-hiding transport rule based on message keywords.\n- Suspicious Exchange email-hiding transport rule.\n- Exchange transport forwarding rule configured.\n- Suspicious Exchange transport forwarding rule configured.\n\nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook checks if the IP or domain of the forwarding email address is malicious. If so, it suggests blocking the IP using PAN-OS while continuing the investigation in parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors, including whether an Exchange admin created the rule outside of working hours, from unusual geolocation, or if the user who created the rule has a high-risk score. It then aggregates all evidence collected during the investigation.\n\nContainment:\n\nSoft Response Actions: If at least two suspicious pieces of evidence are identified, the playbook will execute soft response actions. These actions include signing the user out and disabling the forwarding rule configured in the user's account mailbox.\n- Hard Response Actions: If more than two suspicious pieces of evidence are identified, the playbook will escalate to hard response actions. These actions include disabling the user account and removing the forwarding rule from the user's account mailbox.\n\nRequirements: \n\nFor any response action, you need the following integrations:\n- EWS Extension Online Powershell v3 integration.\n- Azure Active Directory Users."
 tags:
 - TA0009 - Collection
 - TA0010 - Exfiltration
@@ -1061,7 +1061,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
+          "x": 40,
           "y": 1470
         }
       }
@@ -1136,7 +1136,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
+          "x": 40,
           "y": 1830
         }
       }
@@ -1181,7 +1181,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
+          "x": 40,
           "y": 1660
         }
       }
@@ -1213,7 +1213,7 @@ tasks:
       {
         "position": {
           "x": -450,
-          "y": 2000
+          "y": 2015
         }
       }
     note: false
@@ -1426,7 +1426,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -170,
           "y": 1275
         }
       }
@@ -1489,8 +1489,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 1470
+          "x": 1070,
+          "y": 1490
         }
       }
     note: false
@@ -1599,7 +1599,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
+          "x": 1070,
           "y": 1660
         }
       }
@@ -1634,7 +1634,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
+          "x": 1280,
           "y": 2000
         }
       }
@@ -1674,7 +1674,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 860,
           "y": 1830
         }
       }
@@ -1714,7 +1714,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
+          "x": 1280,
           "y": 1830
         }
       }
@@ -1733,15 +1733,16 @@ view: |-
       "25_43_Yes": 0.51,
       "28_3_yes": 0.43,
       "28_6_#default#": 0.25,
-      "30_14_#default#": 0.15,
+      "30_14_#default#": 0.1,
       "30_32_yes": 0.43,
-      "34_14_#default#": 0.51,
+      "34_14_#default#": 0.32,
       "34_33_yes": 0.55,
       "41_14_#default#": 0.16,
       "41_32_yes": 0.4,
       "43_14_#default#": 0.24,
       "43_44_yes": 0.47,
-      "44_46_Inbox Rule": 0.66,
+      "44_46_Inbox Rule": 0.45,
+      "44_47_Transport Rule": 0.53,
       "46_14_#default#": 0.45,
       "47_14_#default#": 0.22,
       "4_5_yes": 0.38,
@@ -1750,7 +1751,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2705,
-        "width": 2150,
+        "width": 2110,
         "x": -450,
         "y": -310
       }
