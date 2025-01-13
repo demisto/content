@@ -25,6 +25,7 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
+
     def __init__(self, base_url, verify: bool, api_key: str) -> None:
         self.api_key = api_key
         super().__init__(base_url=base_url, verify=verify)
@@ -51,7 +52,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_and_parse_date(event: dict) -> str:
+def get_and_parse_date(event: dict) -> str | None:
     """
     Parses the date string from an event dictionary and formats it according to the specified date format.
 
@@ -141,7 +142,7 @@ def initialize_args_to_get_events(args: dict) -> tuple:
     """
     start = args.get('start_date')
     end = args.get('end_date')
-    ids = set()
+    ids: set = set()
 
     return start, end, ids
 
@@ -175,7 +176,7 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
     Returns:
         list: A list of sorted and deduplicated events.
     """
-    events: list = client.get_events(start, end).get('data')
+    events: list = client.get_events(start, end).get('data', [])
     events = sort_events_by_date(events)
     remove_duplicate_events(start, ids, events)
     return events
@@ -206,7 +207,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
-    output = []
+    output: list = []
     if get_events_args:  # handle get_event command
         start, end, ids = initialize_args_to_get_events(get_events_args)
     else:  # handle fetch_events case
@@ -230,7 +231,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
             if start != current_start_date:
                 current_start_date = start
-                ids = set()
+                ids: set = set()
             hashed_id = hash_user_name_and_url(event)
             ids.add(hashed_id)
 
@@ -255,7 +256,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     start_date = args.get('start_date')
     end_date = args.get('end_date')
-    limit = arg_to_number(args.get('limit'))
+    limit = arg_to_number(args.get('limit', DEFAULT_FETCH_LIMIT))
 
     output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
 
@@ -317,7 +318,7 @@ def main() -> None:
                 demisto.debug(f'Sending {len(events)} events to Cortex XSIAM')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         elif command == 'proofpoint-isolation-get-events':
-            events, command_results = get_events(client, fetch_limit, args)
+            events, command_results = get_events(client, args)
             if events and argToBoolean(args.get('should_push_events')):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)

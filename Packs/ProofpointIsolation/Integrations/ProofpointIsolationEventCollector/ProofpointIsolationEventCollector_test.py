@@ -113,7 +113,7 @@ def test_remove_duplicate_events():
     Then: Ensure the number of events is reduced by the expected amount,
      and verify that no event with the same ID and start date remains after duplicates are removed.
     """
-    from ProofpointIsolationEventCollector import (remove_duplicate_events,sort_events_by_date,
+    from ProofpointIsolationEventCollector import (remove_duplicate_events, sort_events_by_date,
                                                    hash_user_name_and_url, get_and_parse_date)
     mocked_events = util_load_json('test_data/get_events_raw_response.json')
 
@@ -229,4 +229,3 @@ def test_first_time_fetch(mocker):
     assert 'ids' in new_last_run
     assert new_last_run['ids'] == []
     assert 'start_date' in new_last_run
-
