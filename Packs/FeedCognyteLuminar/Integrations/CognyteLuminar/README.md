@@ -11,32 +11,28 @@ uncover malicious activity in its earliest stages on all layers of the Web.
 
 This connector allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar.
 
-## Configure Luminar IOCs & leaked credentials on Cortex XSOAR
+## Configure Luminar IOCs & leaked credentials in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Luminar IOCs & leaked credentials.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Luminar Base URL | Luminar Base URL | True |
-    | Luminar API Account ID | Luminar API Account ID | True |
-    | Luminar API Client ID | Luminar API Client ID | True |
-    | Luminar API Client Secret | Luminar API Secret | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
-    | Use system proxy settings | Use system proxy settings | False |
-    | Fetch indicators | Fetch indicators | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Feed Expiration Policy | Feed Expiration Policy | False |
-    | Feed Fetch Interval | Feed Fetch Interval | False |
-    | Tags | Supports CSV values. | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Luminar Base URL | Luminar Base URL | True |
+| Luminar API Account ID | Luminar API Account ID | True |
+| Luminar API Client ID | Luminar API Client ID | True |
+| Luminar API Client Secret | Luminar API Secret | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
+| Use system proxy settings | Use system proxy settings | False |
+| Fetch indicators | Fetch indicators | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Feed Expiration Policy | Feed Expiration Policy | False |
+| Feed Fetch Interval | Feed Fetch Interval | False |
+| Tags | Supports CSV values. | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### luminar-get-indicators
 ***

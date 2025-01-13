@@ -1,22 +1,18 @@
 Aruba ClearPass Policy Manager provides role and device-based network access control for employees, contractors, and guests across any multi-vendor wired, wireless, and VPN infrastructure.
 This integration was integrated and tested with version 6.9 of HPE Aruba ClearPass.
-## Configure HPE Aruba ClearPass on Cortex XSOAR
+## Configure HPE Aruba ClearPass in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HPEArubaClearPass.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL (e.g., https://example.net) |  | True |
-    | Client ID | HPE Aruba ClearPass client identifier. | True |
-    | Client Secret | HPE Aruba ClearPass client secret. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL (e.g., https://example.net) |  | True |
+| Client ID | HPE Aruba ClearPass client identifier. | True |
+| Client Secret | HPE Aruba ClearPass client secret. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aruba-clearpass-endpoints-list
 ***
@@ -644,7 +640,6 @@ Disconnect active session.
 
 #### Command Example
 ```!aruba-clearpass-active-session-disconnect session_id=123```
-
 
 
 

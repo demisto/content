@@ -117,7 +117,7 @@ script:
       required: true
     description: 'Resolve Triggered Alarms.'
     name: veeam-vone-resolve-triggered-alarms
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.11.1940698
   isFetchSamples: true
   isfetch: true
   runonce: false

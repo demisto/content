@@ -105,7 +105,7 @@ tags:
 - endpoint
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No Test
 dependson:

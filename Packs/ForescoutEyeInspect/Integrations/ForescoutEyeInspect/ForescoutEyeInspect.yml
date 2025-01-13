@@ -1113,7 +1113,7 @@ script:
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_mac_addresses
       description: The MAC addresses associated to the host.
       type: String
-  dockerimage: demisto/python3:3.11.9.105369
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: "-"

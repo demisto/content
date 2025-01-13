@@ -847,7 +847,7 @@ There is no context output for this command.
 
 ### ews-mark-item-as-junk
 
-Marks an item as junk. This is commonly used to block an email address. For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
+Marks an item as junk. This is used to block an email address (meaning all future emails from this sender will be sent to the junk folder). For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
 
 #### Permissions
 

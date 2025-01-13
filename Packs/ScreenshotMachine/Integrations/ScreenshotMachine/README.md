@@ -1,17 +1,13 @@
 Uses screenshot machine to get a screenshot
-## Configure Screenshot Machine on Cortex XSOAR
+## Configure Screenshot Machine in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Screenshot Machine.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Api Key | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Api Key | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### screenshot
 ***
@@ -41,5 +37,4 @@ There is no context output for this command.
 ``` ```
 
 #### Human Readable Output
-
 

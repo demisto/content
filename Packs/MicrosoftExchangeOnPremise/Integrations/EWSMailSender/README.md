@@ -1,30 +1,26 @@
 Exchange Web Services and Office 365 Email sender.
-## Configure EWS Mail Sender on Cortex XSOAR
+## Configure EWS Mail Sender in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS Mail Sender.
-3. Click **Add instance** to create and configure a new integration instance.
     
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | ewsServer | Exchange URL or Server IP address | True |
-    | credentials | Authentication: Email address \(for Office 365\) or DOMAIN\\USERNAME \(e.g. XSOAR.INT\\admin\) | True |
-    | defaultServerVersion | Server Version \(2007, 2010, 2010_SP2, 2013, or 2016\) | True |
-    | authType | Authentication Type \(NTLM, Basic, or Digest\). For Office 365 use Basic. | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | impersonation | Has impersonation rights | False |
-    | mailbox | Sender Mailbox | False |
-    | Single engine | If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc.  that prevent the Cortex XSOAR server from accessing the remote networks. For more information on Cortex XSOAR engines see: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines| False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| ewsServer | Exchange URL or Server IP address | True |
+| credentials | Authentication: Email address \(for Office 365\) or DOMAIN\\USERNAME \(e.g. XSOAR.INT\\admin\) | True |
+| defaultServerVersion | Server Version \(2007, 2010, 2010_SP2, 2013, or 2016\) | True |
+| authType | Authentication Type \(NTLM, Basic, or Digest\). For Office 365 use Basic. | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| impersonation | Has impersonation rights | False |
+| mailbox | Sender Mailbox | False |
+| Single engine | If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc.  that prevent the Cortex XSOAR server from accessing the remote networks. For more information on Cortex XSOAR engines see:<br><a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Engines">Cortex XSOAR 6.13 - Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines">Cortex XSOAR 8 Cloud- Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Engines">Cortex XSOAR 8.7 On-prem - Engines</a><br>| False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Top Use-cases:
 - Send notifications to external users.
 - Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://xsoar.pan.dev/docs/reference/scripts/email-ask-user)
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### send-mail
 ***
@@ -102,4 +98,3 @@ There is no context output for this command.
 >|attachments|from|subject|to|
 >|---|---|---|---|
 >|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
-

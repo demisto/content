@@ -2,7 +2,7 @@
     "name": "McAfee Advanced Threat Defense",
     "description": "Integrated advanced threat detection: Enhancing protection from network edge to endpoint",
     "support": "xsoar",
-    "currentVersion": "1.0.28",
+    "currentVersion": "1.0.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

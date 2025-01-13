@@ -2,7 +2,7 @@
     "name": "Gmail Single User",
     "description": "Gmail API using OAuth 2.0.",
     "support": "xsoar",
-    "currentVersion": "1.4.8",
+    "currentVersion": "1.4.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

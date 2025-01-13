@@ -2,7 +2,7 @@
     "name": "CSCDomainManager",
     "description": "CSCDomainManager is the world's first multilingual domain management tool, available in English, French, and German. It uses rules-based technology, customizable reporting, granular user management, and more to enable you to manage your domain.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "CSC",
     "url": "https://www.cscdbs.com",
     "email": "domain_api_support@cscglobal.com",

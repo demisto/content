@@ -2,35 +2,31 @@ HarfangLab EDR Connector,
 Compatible version 2.13.7+
 This integration was integrated and tested with version 2.13.7+ of Hurukai
 
-## Configure HarfangLab EDR on Cortex XSOAR
+## Configure HarfangLab EDR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HarfangLab EDR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API URL |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | API Key |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
-    | Minimum severity of alerts to fetch |  | True |
-    | Fetch alerts with status (ACTIVE, CLOSED) |  | False |
-    | Maximum number of incidents to fetch per call | Fetch maximum &lt;max_fetch&gt; security events and/or threats per call \(leave empty if unlimited\). | False |
-    | First fetch time | Start fetching alerts and/or threats whose creation date is higher than now minus &lt;first_fetch&gt; days. | True |
-    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from HarfangLab EDR to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to HarfangLab EDR\), or Incoming and Outgoing \(to/from HarfangLab EDR and Cortex XSOAR\). | False |
-    | Fetch types |  | True |
-    | Close Mirrored security event or threat in the XSOAR | When selected, closes the XSOAR incident, which is mirrored from the HarfangLab EDR. | False |
-    | Close Mirrored security event or threat in HarfangLab EDR | When selected, closes the HarfangLab EDR security event or threat in the HarfangLab EDR. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API URL |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| API Key |  | False |
+| Incidents Fetch Interval |  | False |
+| Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
+| Minimum severity of alerts to fetch |  | True |
+| Fetch alerts with status (ACTIVE, CLOSED) |  | False |
+| Maximum number of incidents to fetch per call | Fetch maximum &lt;max_fetch&gt; security events and/or threats per call \(leave empty if unlimited\). | False |
+| First fetch time | Start fetching alerts and/or threats whose creation date is higher than now minus &lt;first_fetch&gt; days. | True |
+| Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from HarfangLab EDR to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to HarfangLab EDR\), or Incoming and Outgoing \(to/from HarfangLab EDR and Cortex XSOAR\). | False |
+| Fetch types |  | True |
+| Close Mirrored security event or threat in the XSOAR | When selected, closes the XSOAR incident, which is mirrored from the HarfangLab EDR. | False |
+| Close Mirrored security event or threat in HarfangLab EDR | When selected, closes the HarfangLab EDR security event or threat in the HarfangLab EDR. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### fetch-incidents
@@ -10180,4 +10176,3 @@ Search for endpoint information from a hostname
 | Harfanglab.Agent | unknown | Agent information | 
 | Harfanglab.Agent.id | string | agent id \(DEPRECATED\) | 
 | Harfanglab.status | string | Status \(DEPRECATED\) | 
-

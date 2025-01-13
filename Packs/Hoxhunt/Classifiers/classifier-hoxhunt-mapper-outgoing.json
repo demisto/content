@@ -1,0 +1,197 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Hoxhunt-mapper-outgoing",
+    "mapping": {
+        "Hoxhunt Campaign": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "xsoarCloseNotes": {
+                    "complex": null,
+                    "simple": "closeNotes"
+                },
+                "state": {
+                    "complex": null,
+                    "simple": "hoxstate"
+                },
+                "socClassification": {
+                    "complex": null,
+                    "simple": "hoxexternalclassification"
+                },
+                "isSensitive": {
+                    "complex": null,
+                    "simple": "hoxhassensitiveinformation"
+                },
+                "shouldSendFeedback": {
+                    "complex": null,
+                    "simple": "hoxsendfeedback"
+                },
+                "feedbackReportedAtLimit": {
+                    "complex": {
+                        "filters": [],
+                        "root": "hoxreportedatlimit",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " ago"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "variation": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "hoxreportedatlimit"
+                                        }
+                                    }
+                                },
+                                "operator": "ModifyDateTime"
+                            }
+                        ]
+                    }
+                },
+                "socMessage": {
+                    "complex": null,
+                    "simple": "hoxmessagetousers"
+                }
+            }
+        },
+        "Hoxhunt BEC": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "xsoarCloseNotes": {
+                    "complex": null,
+                    "simple": "closeNotes"
+                },
+                "state": {
+                    "complex": null,
+                    "simple": "hoxstate"
+                },
+                "socClassification": {
+                    "complex": null,
+                    "simple": "hoxexternalclassification"
+                },
+                "isSensitive": {
+                    "complex": null,
+                    "simple": "hoxhassensitiveinformation"
+                },
+                "shouldSendFeedback": {
+                    "complex": null,
+                    "simple": "hoxsendfeedback"
+                },
+                "feedbackReportedAtLimit": {
+                    "complex": {
+                        "filters": [],
+                        "root": "hoxreportedatlimit",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " ago"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "variation": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "hoxreportedatlimit"
+                                        }
+                                    }
+                                },
+                                "operator": "ModifyDateTime"
+                            }
+                        ]
+                    }
+                },
+                "socMessage": {
+                    "complex": null,
+                    "simple": "hoxmessagetousers"
+                }
+            }
+        },
+        "Hoxhunt User Acted": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "xsoarCloseNotes": {
+                    "complex": null,
+                    "simple": "closeNotes"
+                },
+                "state": {
+                    "complex": null,
+                    "simple": "hoxstate"
+                },
+                "socClassification": {
+                    "complex": null,
+                    "simple": "hoxexternalclassification"
+                },
+                "isSensitive": {
+                    "complex": null,
+                    "simple": "hoxhassensitiveinformation"
+                },
+                "shouldSendFeedback": {
+                    "complex": null,
+                    "simple": "hoxsendfeedback"
+                },
+                "feedbackReportedAtLimit": {
+                    "complex": {
+                        "filters": [],
+                        "root": "hoxreportedatlimit",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " ago"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "variation": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "hoxreportedatlimit"
+                                        }
+                                    }
+                                },
+                                "operator": "ModifyDateTime"
+                            }
+                        ]
+                    }
+                },
+                "socMessage": {
+                    "complex": null,
+                    "simple": "hoxmessagetousers"
+                }
+            }
+        }
+    },
+    "name": "Hoxhunt-mapper-outgoing",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

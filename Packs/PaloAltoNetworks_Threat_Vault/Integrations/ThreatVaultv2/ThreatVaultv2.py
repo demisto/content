@@ -114,6 +114,15 @@ class Client(BaseClient):
         self.name = "ThreatVault"
         self.reliability = reliability
 
+    def ip_feed_get_request(self, arg: str, value: str) -> dict:    # pragma: no cover
+        suffix = "ip-feed"
+        return self._http_request(method="GET", url_suffix=suffix, params={arg: value})
+
+    def ip_feed_batch_post_request(self, arg: str, value: str) -> dict:    # pragma: no cover
+        suffix = "ip-feed"
+        payload = json.dumps({"ipaddr": value})
+        return self._http_request(method="POST", url_suffix=suffix, data=payload)
+
     def antivirus_signature_get_request(self, arg: str, value: str) -> dict:    # pragma: no cover
 
         suffix = "threats"
@@ -187,7 +196,7 @@ def validate_arguments_search_command(
 
     if sum(1 for x in (cve, vendor, name) if x) > 1:
         raise ValueError(
-            "Only one of the following can be used at a time: " "cve, vendor, name"
+            "Only one of the following can be used at a time: cve, vendor, name"
         )
 
     if sum(1 for x in (from_release_date, to_release_date) if x) == 1:
@@ -467,6 +476,84 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
 """
 COMMANDS
 """
+
+
+def ip_command(client: Client, args: dict) -> List[CommandResults]:
+    """Retrieve information about the inputted IP from ThreatVault
+
+    Args:
+        client (Client): An instance of the client to call the GET commands.
+        args (dict): The arguments inputted by the user.
+
+    Returns:
+        List[CommandResults]: A list of CommandResults objects to be returned to XSOAR.
+    """
+
+    def headers_transform(header):
+        headers = {"ipaddr": "IP",
+                   "geo": "Country",
+                   "asn": "ASN",
+                   "name": "Feed Name"}
+        return headers[header]
+
+    ips = argToList(args["ip"])
+    command_results_list: List[CommandResults] = []
+    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
+        client.reliability
+    )
+
+    try:
+        if len(ips) == 1:
+            # Call single IP info
+            response = client.ip_feed_get_request(arg="ipaddr", value=ips[0])
+
+        else:
+            # Call batch command
+            response = client.ip_feed_batch_post_request(arg="ipaddr", value=ips)
+
+    except DemistoException:
+        raise
+
+    if response:
+        for data in response["data"]:
+            ip_type = FeedIndicatorType.ip_to_indicator_type(data["ipaddr"])
+
+            dbot_score = Common.DBotScore(
+                indicator=data["ipaddr"],
+                indicator_type=DBotScoreType.IP,
+                integration_name=client.name,
+                score=3 if data["status"] == "released" else 0,
+                reliability=dbot_reliability,
+            )
+
+            ip = Common.IP(
+                ip_type=ip_type,
+                ip=data["ipaddr"],
+                asn=data["asn"].split(" ")[0],
+                as_owner=re.sub("[()]", "", data["asn"].split(" ")[1]),
+                geo_country=data["geo"].split(" ")[0],
+                geo_description=re.sub("[()]", "", data["geo"].split(" ")[1]),
+                dbot_score=dbot_score,
+            )
+
+            readable_output = tableToMarkdown(
+                name="IP Feed Information",
+                t=data,
+                headers=["ipaddr", "geo", "asn", "name"],
+                headerTransform=headers_transform,
+                removeNull=True,
+            )
+
+            command_results = CommandResults(
+                readable_output=readable_output,
+                outputs=data,
+                outputs_prefix="ThreatVault.IP",
+                indicator=ip,
+            )
+
+            command_results_list.append(command_results)
+
+    return command_results_list
 
 
 def file_command(client: Client, args: Dict) -> List[CommandResults]:
@@ -1041,6 +1128,7 @@ def main():
         commands = {
             "file": file_command,
             "cve": cve_command,
+            "ip": ip_command,
             "threatvault-threat-signature-get": threat_signature_get_command,
             "threatvault-release-note-get": release_note_get_command,
             "threatvault-threat-batch-search": threat_batch_search_command,
@@ -1048,6 +1136,7 @@ def main():
             "threatvault-atp-batch-report-get": atp_batch_report_command,
             "threatvault-atp-report-pcap-get": atp_report_pcap_command,
         }
+
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
@@ -1063,7 +1152,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{str(err)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

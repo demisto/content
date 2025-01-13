@@ -5,23 +5,19 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 **Note:** This integration was integrated and tested on a remote machine with Centos-7 operating system. It does not work with Windows operation system.
 
-## Configure RemoteAccess v2 on Cortex XSOAR
+## Configure RemoteAccess v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RemoteAccess v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Default Hostname or IP Address | If not provided, "host" or "system" should be provided in the command's arguments. | False |
-    | User | For example, "root". | False |
-    | Password | The password of the remote machine. | False |
-    | sshKey | The private RSA key to authenticate to the remote machine, should be configured within the credentials object. | False
-    | Additional Password | Requires an additional password as an argument to run any command of this module. | False |
-    | Ciphers | A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned. | False |
-    | Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error message specifying the supported key algorithms is returned. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Default Hostname or IP Address | If not provided, "host" or "system" should be provided in the command's arguments. | False |
+| User | For example, "root". | False |
+| Password | The password of the remote machine. | False |
+| sshKey | The private RSA key used to authenticate with the remote machine should be configured in the *Credentials* tab under *Settings > Integrations > Credentials*. See [here](https://xsoar.pan.dev/docs/reference/articles/managing-credentials) for more information. | False
+| Additional Password | Requires an additional password as an argument to run any command of this module. | False |
+| Ciphers | A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned. | False |
+| Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error message specifying the supported key algorithms is returned. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Configure SSH From Remote
 For login using root:
@@ -35,7 +31,7 @@ Currently, the only type of certificate that is supported is RSA private keys (.
 In case access is required to an instance in the cloud, use the PEM file provided by the cloud provider.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ssh
 ***

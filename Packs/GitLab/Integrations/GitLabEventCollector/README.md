@@ -2,11 +2,8 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 
 [Audit events API documentation](https://docs.gitlab.com/ee/api/audit_events.html)  
 [Events API documentation](https://docs.gitlab.com/ee/api/events.html)
-## Configure Gitlab Event Collector on Cortex XSIAM
+## Configure Gitlab Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Gitlab Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 |-------|-----------|-------|
@@ -19,7 +16,6 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 | Trust any certificate (not secure) | Use SSL secure connection or ‘None’.  | False  |
 | User system proxy settings  | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False  |
 
-4. Click **Test** to validate the URLs, tokens, and connection.
 ## Commands
 You can execute the following command from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 

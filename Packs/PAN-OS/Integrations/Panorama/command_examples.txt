@@ -153,3 +153,6 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-list-profile-exception profile_name="test1" profile_type="Vulnerability Protection Profile"
 !pan-os-edit-profile-exception profile_name="test1" threat="10002" action="Drop"
 !pan-os-delete-profile-exception profile_name="test2" threat="10005" profile_type="Vulnerability Protection Profile"
+!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992
+!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992
+!pan-os-get-master-key-details

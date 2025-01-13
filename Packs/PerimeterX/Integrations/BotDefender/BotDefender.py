@@ -1,4 +1,3 @@
-from typing import Dict
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -13,7 +12,7 @@ class pXScoring:
     """
 
     @staticmethod
-    def dbotscore_from_risk(risk_score: int, thresholds: Dict[str, Any]) -> int:
+    def dbotscore_from_risk(risk_score: int, thresholds: dict[str, Any]) -> int:
         """
         Create the DBotScore structure first using the Common.DBotScore class.
 
@@ -39,7 +38,7 @@ class pXScoring:
         return dbot_score
 
     @staticmethod
-    def get_ip_score(ip_address: str, risk_score: int, thresholds: Dict[str, Any]):
+    def get_ip_score(ip_address: str, risk_score: int, thresholds: dict[str, Any]):
         """
         Create the DBotScore structure first using the Common.DBotScore class.
 
@@ -79,7 +78,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def test_api_connection(self, api_key: str) -> Dict[str, Any]:
+    def test_api_connection(self, api_key: str) -> dict[str, Any]:
         """
         Makes a call to the status API path to confirm the proper URL and Authorization token were provided
         """
@@ -95,7 +94,7 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def post_investigate_by_ip(self, ip_type: str, ip_address: str, api_key: str) -> Dict[str, Any]:
+    def post_investigate_by_ip(self, ip_type: str, ip_address: str, api_key: str) -> dict[str, Any]:
         """
         Query the PerimeterX API to get the relevant details regarding the provided IP within a particular customer's own data
 
@@ -113,7 +112,7 @@ class Client(BaseClient):
             'Content-Type': 'application/json'
         }
 
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if ip_type:
             request_params['ip_type'] = ip_type
@@ -127,7 +126,7 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def post_investigate_by_name(self, name_type: str, name: str) -> Dict[str, Any]:
+    def post_investigate_by_name(self, name_type: str, name: str) -> dict[str, Any]:
         """
         THIS IS NOT CURRENTLY IMPLEMENTED
         Query the PerimeterX API to get the relevant details regarding the provided name within a particular customer's own data
@@ -142,7 +141,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if name_type:
             request_params['name_type'] = name_type
@@ -177,8 +176,8 @@ def test_module(client: Client, api_key):
         return 'Connection to api failed with exception: ' + de.message
 
 
-def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
-                                       thresholds: Dict[str, Any], api_key: str) -> CommandResults:
+def perimeterx_get_investigate_details(client: Client, args: dict[str, Any],
+                                       thresholds: dict[str, Any], api_key: str) -> CommandResults:
     """
     Collect the required details to query the PerimeterX API to get the relevant details regarding the provided
     search term within a particular customer's own data
@@ -245,7 +244,7 @@ def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
     )
 
 
-def ip(client: Client, args, thresholds: Dict[str, Any], api_key):
+def ip(client: Client, args, thresholds: dict[str, Any], api_key):
     """
     Collect the details to run an IP Reputation query against the PerimeterX API
 

@@ -2592,6 +2592,85 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
+  - arguments:
+      - description: The ID of the mobile device.
+        name: id
+        required: true
+    name: jamf-get-mobile-configuration-profiles-by-id
+    description: Returns the configuration profiles subset for a specific mobile device according to the given arguments.
+    outputs:
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.id
+        description: The ID of the configuration profile.
+        type: Number
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.name
+        description: The name of the configuration profile.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.description
+        description: The mobile device configuration description.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.level
+        description: Level of the configuration profile (System or User).
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.site
+        description: Site of the configuration profile.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.category
+        description: Category of the configuration profile.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.uuid
+        description: Unique identifier of the mobile profile configuration.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.deployment_method
+        description: Install Automatically or Make Available in Self Service.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.general.payloads
+        description: Payloads of the configuration profile for Mobile device.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.scope
+        description: Scope object of the configuration profile.
+        type: String
+      - contextPath: JAMF.Mobile.ProfileConfiguration.self_service
+        description: Self-service object of the configuration profile.
+        type: String
+  - arguments:
+      - description: The ID of the mobile device.
+        name: id
+        required: true
+    name: jamf-get-computer-configuration-profiles-by-id
+    description: Returns the configuration profiles subset for a specific mobile device according to the given arguments.
+    outputs:
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.id
+        description: The ID of the configuration profile.
+        type: Number
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.name
+        description: The name of the configuration profile.
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.description
+        description: The mobile device configuration description.
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.level
+        description: Level of the configuration profile (System or User).
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.site
+        description: Site of the configuration profile.
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.category
+        description: Category of the configuration profile.
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.uuid
+        description: Unique identifier of the mobile profile configuration.
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.distribution_method
+        description: Install Automatically or Make Available in Self Service.
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.general.payloads
+        description: Payloads of the configuration profile for OSX device.
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.scope
+        description: Scope object of the configuration profile.
+        type: String
+      - contextPath: JAMF.OSX.ProfileConfiguration.self_service
+        description: Self-service object of the configuration profile.
+        type: String
   dockerimage: demisto/btfl-soup:1.0.1.115405
   runonce: false
   script: '-'
