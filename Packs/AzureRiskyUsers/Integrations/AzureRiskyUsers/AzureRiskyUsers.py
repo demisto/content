@@ -12,7 +12,7 @@ CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
 MAX_ITEMS_PER_REQUEST = 500
 
-
+#test
 class Client:
     """
     API Client to communicate with AzureRiskyUsers.
