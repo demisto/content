@@ -155,8 +155,8 @@ def initialize_args_to_fetch_events() -> tuple:
     """
     # global last_run
     last_run = demisto.getLastRun() or {}
-    # start = last_run.get('start_date')
-    start = "2025-01-09T11:27:08"
+    start = last_run.get('start_date')
+    # start = "2025-01-09T11:27:08"
     ids = set(last_run.get('ids', []))
     end = get_current_time().strftime(DATE_FORMAT)
     return start, end, ids
@@ -242,13 +242,12 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     return output, new_last_run
 
 
-def get_events(client: Client, fetch_limit: int, args: dict) -> tuple[list, CommandResults]:
+def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     Fetches events within the specified date range and returns them.
 
     Args:
         client (Client): The client to fetch events from.
-        fetch_limit (int): The maximum number of events to fetch.
         args (dict): A dictionary containing the start and end dates for the query.
 
     Returns:
@@ -263,6 +262,7 @@ def get_events(client: Client, fetch_limit: int, args: dict) -> tuple[list, Comm
     filtered_events = []
     for event in output:
         filtered_event = {'User ID': event.get('userId'),
+                          'User Name': event.get('userName'),
                           'URL': event.get('url'),
                           'Date': event.get('date')
                           }
@@ -317,9 +317,10 @@ def main() -> None:
                 demisto.debug(f'Sending {len(events)} events to Cortex XSIAM')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         elif command == 'proofpoint-isolation-get-events':
-            events = get_events(client, fetch_limit, args)
+            events, command_results = get_events(client, fetch_limit, args)
             if events and argToBoolean(args.get('should_push_events')):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
