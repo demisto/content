@@ -2,9 +2,9 @@
 NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic.
 Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible. 
 Key product capabilities include:
-Streaming Network Sensor (SNS) - converts traffic to standard or L7-enriched IPFIX flow data
-Packet Services Broker (PSB) - classifies & optimizes packet flows sent to security tools
-WAN Signals Probe (WSP) - auto-discovers & targets traffic in OTN/SDH/SONET links
+- Streaming Network Sensor (SNS) - converts traffic to standard or L7-enriched IPFIX flow data.
+- Packet Services Broker (PSB) - classifies and optimizes packet flows sent to security tools.
+- WAN Signals Probe (WSP) - auto-discovers and targets traffic in OTN/SDH/SONET links.
 
 ## What does this pack do?
 Using the NetQuest OMX integration you can:
