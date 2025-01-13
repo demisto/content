@@ -35,7 +35,7 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY, gateway_
     Authenticate to the docker service. Return an authentication token if authentication is required.
     """
     res = requests.get(
-        'https://{}/v2/'.format(registry),
+        f'https://{registry}/v2/',
         headers=ACCEPT_HEADER,
         timeout=TIMEOUT,
         verify=verify_ssl
@@ -51,15 +51,15 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY, gateway_
             if parse_auth:
                 realm, service = parse_auth
             else:
-                demisto.info('Failed parsing www-authenticate header: {}'.format(www_auth))
+                demisto.info(f'Failed parsing www-authenticate header: {www_auth}')
         else:
             demisto.info('Failed extracting www-authenticate header from registry: {}, final url: {}'.format(
                 registry, res.url))
         headers = ACCEPT_HEADER.copy()
         if gateway_creds and registry != DEFAULT_REGISTRY:
-            headers['Authorization'] = "Basic {}".format(gateway_creds)
+            headers['Authorization'] = f"Basic {gateway_creds}"
         res = requests.get(
-            '{}?scope=repository:{}:pull&service={}'.format(realm, image_name, service),
+            f'{realm}?scope=repository:{image_name}:pull&service={service}',
             headers=headers,
             timeout=TIMEOUT,
             verify=verify_ssl
@@ -155,7 +155,7 @@ def main():
         auth_token = docker_auth(image_name, verify_ssl, registry, gateway_creds)
         headers = ACCEPT_HEADER.copy()
         if auth_token:
-            headers['Authorization'] = "Bearer {}".format(auth_token)
+            headers['Authorization'] = f"Bearer {auth_token}"
 
         # first try to get the docker image tags using normal http request
         res = requests.get(
@@ -167,12 +167,15 @@ def main():
             # if http request successful find the latest tag by date in the response
             if tags:
                 tag = find_latest_tag_by_date(tags)
+            else:
+                tag = ''
+                demisto.debug(f"No tags, {tag=}")
 
         else:
             # if http request did not successed than get tags using the API.
             # See: https://docs.docker.com/registry/spec/api/#listing-image-tags
             res = requests.get(
-                'https://{}/v2/{}/tags/list'.format(registry, image_name),
+                f'https://{registry}/v2/{image_name}/tags/list',
                 headers=headers,
                 timeout=TIMEOUT,
                 verify=verify_ssl
@@ -182,10 +185,13 @@ def main():
             tags = res.json().get('tags', [])
             if tags:
                 tag = lexical_find_latest_tag(tags)
+            else:
+                tag = ''
+                demisto.debug(f"No tags, {tag=}")
 
         demisto.results(tag)
     except Exception as ex:
-        return_error("Failed getting tag for: {}. Err: {}".format(docker_full_name, str(ex)))
+        return_error(f"Failed getting tag for: {docker_full_name}. Err: {str(ex)}")
 
 
 # python2 uses __builtin__ python3 uses builtins
