@@ -1,8 +1,8 @@
-## BaseIntegration Help
+## Proofpoint Isolarion Event Collector Help
 
-Markdown file for integration configuration  help snippet. In this file add:
+### How to Access Reporting API
+1. Navigate to Product Settings > Reporting API 
+2. Isolation’s Reporting API tools and documentation display in the Console’s main viewing panel.
+3. Copy the reporting API key.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
