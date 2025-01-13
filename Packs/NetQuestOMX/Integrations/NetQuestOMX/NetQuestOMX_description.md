@@ -8,7 +8,7 @@ This integration was integrated and tested with version 3.7.5a of NetQuest OMX.
 
  - ***Name*** - Integration instance name
  - ***Server URL*** - The IP of the 5G device which using NetQuestOMX , formatted as https://X.X.X.X
- - ***Username*** - Username & Password (The credentials)
+ - ***Username*** - Username and password (the credentials).
  - ***slot number*** - Target NetQuest device slot number.
  - ***Port number*** - Target NetQuest device port number
  - ***Fetch Events*** - If fetching is needed, check the box.
