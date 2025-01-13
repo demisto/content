@@ -2183,6 +2183,7 @@ def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock
 
     fetch_incidents(mock_client, first_fetch_time=first_fetch_time,
                     integration_instance=integration_instance, last_run=last_run,
+                    exclude_artifacts=False,
                     max_fetch=max_fetch, statuses=statuses,
                     starred=starred, starred_incidents_fetch_window=starred_incidents_fetch_window,
                     excluded_alert_fields=excluded_alert_fields, remove_nulls_from_alerts=remove_nulls_from_alerts)
@@ -2235,6 +2236,7 @@ def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
     mock_get_incident_extra_data = mocker.patch.object(Client, 'get_incident_extra_data', return_value=raw_incident)
     fetch_incidents(client, first_fetch_time=first_fetch_time,
                     integration_instance=integration_instance, last_run=last_run,
+                    exclude_artifacts=False,
                     max_fetch=max_fetch, statuses=statuses,
                     starred=starred, starred_incidents_fetch_window=starred_incidents_fetch_window,
                     excluded_alert_fields=excluded_alert_fields, remove_nulls_from_alerts=remove_nulls_from_alerts)
