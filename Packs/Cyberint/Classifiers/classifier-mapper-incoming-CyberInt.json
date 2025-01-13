@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "abcd-5678",
+    "id": "Cyberint incoming (mapper)",
     "mapping": {
         "Cyberint Incident": {
             "dontMapEventToLabels": false,
@@ -9,13 +9,10 @@
                 "CyberInt Alert URL ID": {
                     "simple": "id"
                 },
-                "Alert ID": {
-                    "simple": "ref_id"
-                },
-                "Alert Name": {
+                "Cyberint Alert Name": {
                     "simple": "title"
                 },
-                "Cyberint Alert ID": {
+                "CyberInt Alert ID": {
                     "simple": "ref_id"
                 },
                 "CyberInt Attachments": {
@@ -25,13 +22,13 @@
                         "transformers": []
                     }
                 },
-                "Cyberint Closure reason": {
+                "CyberInt Closure reason": {
                     "simple": "closure_reason"
                 },
                 "CyberInt Closure reason Description": {
                     "simple": "closure_reason_description"
                 },
-                "Cyberint Confidence": {
+                "CyberInt Confidence": {
                     "simple": "confidence"
                 },
                 "CyberInt Created by": {
@@ -48,7 +45,7 @@
                         "transformers": []
                     }
                 },
-                "Cyberint Description": {
+                "CyberInt Description": {
                     "complex": {
                         "filters": [],
                         "root": "description",
@@ -108,7 +105,7 @@
                 "CyberInt Status": {
                     "simple": "status"
                 },
-                "Cyberint Tags": {
+                "CyberInt Tags": {
                     "simple": "tags"
                 },
                 "CyberInt Targeted Brand": {
@@ -121,19 +118,19 @@
                 "CyberInt Targeted Vector": {
                     "simple": "targeted_vectors"
                 },
-                "Cyberint Threat Actor": {
+                "CyberInt Threat Actor": {
                     "simple": "threat_actor"
                 },
-                "Cyberint Ticket ID": {
+                "CyberInt Ticket ID": {
                     "simple": "ticket_id"
                 },
-                "Cyberint Title": {
+                "CyberInt Title": {
                     "simple": "title"
                 },
-                "Cyberint Type": {
+                "CyberInt Type": {
                     "simple": "type"
                 },
-                "Cyberint Category": {
+                "CyberInt Category": {
                     "simple": "category"
                 },
                 "Description": {
@@ -229,10 +226,7 @@
                 "CyberInt Alert URL ID": {
                     "simple": "id"
                 },
-                "Alert ID": {
-                    "simple": "ref_id"
-                },
-                "Alert Name": {
+                "Cyberint Alert Name": {
                     "simple": "title"
                 },
                 "CyberInt Alert ID": {
@@ -247,6 +241,9 @@
                 },
                 "CyberInt Closure reason": {
                     "simple": "closure_reason"
+                },
+                "CyberInt Closure reason Description": {
+                    "simple": "closure_reason_description"
                 },
                 "CyberInt Confidence": {
                     "simple": "confidence"
@@ -355,9 +352,6 @@
                 "CyberInt Type": {
                     "simple": "type"
                 },
-                "CyberInt Vulnerable CName Record": {
-                    "simple": "alert_data.vulnerable_cname_record"
-                },
                 "CyberInt Category": {
                     "simple": "category"
                 },
@@ -458,7 +452,8 @@
             }
         }
     },
-    "name": "Cyberint (mapper)",
+    "name": "Cyberint incoming (mapper)",
+    "nameRaw": "Cyberint incoming (mapper)",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

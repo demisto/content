@@ -15,7 +15,7 @@ configuration:
   additionalinfo: Cyberint API access token.
 - display: Cyberint API URL
   additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)
-  name: url
+  name: environment
   required: true
   type: 0
 - display: Create an incident per CSV record

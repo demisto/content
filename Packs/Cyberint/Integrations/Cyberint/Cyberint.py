@@ -920,7 +920,7 @@ def main():
     params = demisto.params()
     command = demisto.command()
     access_token = params.get("access_token")
-    url = params.get("url")
+    url = params.get("environment")
 
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
