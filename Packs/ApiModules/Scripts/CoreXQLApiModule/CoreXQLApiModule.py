@@ -712,7 +712,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         command_results.readable_output = 'Query is still running, it may take a little while...'
         return command_results
 
-    demisto.debug(f"Returned status {outputs.get('status')} for {args.get('query_id', '')}.")
+    demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
     results_to_format = outputs.pop('results')
     # create Human Readable output
     query = args.get('query', '')
