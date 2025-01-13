@@ -734,11 +734,13 @@ def mirror_investigation():
     private = argToBoolean(demisto.args().get('private', 'false'))
 
     investigation = demisto.investigation()
+    demisto.debug(f'SlackV3 integration: This is the investigation - {investigation}')
 
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
         return_error('Can not perform this action in playground.')
 
     integration_context = get_integration_context(SYNC_CONTEXT)
+    demisto.debug(f'SlackV3 integration: This is the integration context - {integration_context}')
 
     if not integration_context or not integration_context.get('mirrors', []):
         mirrors: list = []
@@ -751,6 +753,8 @@ def mirror_investigation():
     channel_filter: list = []
     if channel_name:
         channel_filter = list(filter(lambda m: m['channel_name'] == channel_name, mirrors))
+        demisto.debug(f'SlackV3 integration: This is the channel filter - {channel_filter}')
+
     if not current_mirror:
         channel_name = channel_name or f'incident-{investigation_id}'
 
