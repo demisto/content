@@ -50,4 +50,4 @@ This playbook does not use any commands.
 <!-- Playbook PNG image comes here -->
 ## Playbook Image
 ---
-![AutoFocusPolling](https://github.com/demisto/content/raw/cc9fb76a907ec5e86d6cdac7a8820d1828c52e02/Packs/AutoFocus/doc_files/AutoFocusPolling.png)
+![AutoFocusPolling](../doc_files/AutoFocusPolling.png)

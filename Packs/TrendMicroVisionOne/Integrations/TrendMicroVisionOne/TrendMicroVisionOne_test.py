@@ -112,7 +112,7 @@ def test_quarantine_email_message(mocker):
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "messageId": (
-            "<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
+            "<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" + "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
         ),
         "mailBox": "kjshdfjksahd@trendenablement.com",
         "messageDeliveryTime": "2021-12-09T14:00:12.000Z",
@@ -137,7 +137,7 @@ def test_delete_email_message(mocker):
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "messageId": (
-            "<CANUJTKTqmuCT12v7mpbxZih_crrP" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
+            "<CANUJTKTqmuCT12v7mpbxZih_crrP" + "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
         ),
         "mailBox": "kjshdfjksahd@trendenablement.com",
         "messageDeliveryTime": "2021-12-09T14:00:55.000Z",
