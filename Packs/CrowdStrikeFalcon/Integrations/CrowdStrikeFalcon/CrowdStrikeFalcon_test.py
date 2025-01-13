@@ -4746,16 +4746,17 @@ def test_remote_incident_handle_tags(mocker, tags, action_name):
         assert mock_update_incident_request.call_args_list[0].kwargs['json']['action_parameters'][0]['name'] == action_name
 
 
-def test_get_mapping_fields_command():
+def test_get_mapping_fields_command(mocker):
     """
     Given
         - nothing
     When
-        - running get_mapping_fields_command
+        - running get_mapping_fields_command on the new version of the API
     Then
         - the result fits the expected mapping scheme
     """
     from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     result = get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
@@ -4765,6 +4766,25 @@ def test_get_mapping_fields_command():
     assert result.scheme_types_mappings[2].fields.keys() == {'status'}
     assert result.scheme_types_mappings[3].type_name =='CrowdStrike Falcon On-Demand Scans Detection'
     assert result.scheme_types_mappings[3].fields.keys() == {'status'}
+    
+    
+def test_get_mapping_fields_command__legacy(mocker):
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command on the legacy version of the API
+    Then
+        - the result fits the expected mapping scheme
+    """
+    from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
+    result = get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
+    assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
+    assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection - LAGACY'
+    assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert len (result.scheme_types_mappings) == 2
 
 
 def test_error_in_get_detections_by_behaviors(mocker):
