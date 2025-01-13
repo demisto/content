@@ -12,4 +12,4 @@ This integration was integrated and tested with version 3.7.5a of NetQuest OMX.
  - ***slot number*** - Target NetQuest device slot number.
  - ***Port number*** - Target NetQuest device port number
  - ***Fetch Events*** - If fetching is needed, check the box.
- - ***Statistic types to fetch*** - Four types are available, it's a multiselect.
+ - ***Statistic types to fetch*** - Metering Stats, Export Stats, Export Peaks FPS, Optimization Stats. You can select multiple types.
