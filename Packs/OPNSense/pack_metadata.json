@@ -2,7 +2,7 @@
     "name": "OPNSense",
     "description": "Manage OPNsense Firewall",
     "support": "partner",
-    "currentVersion": "1.0.25",
+    "currentVersion": "1.0.26",
     "author": "SecInfra",
     "url": "http://secinfra.fr",
     "email": "support@secinfra.fr",

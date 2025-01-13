@@ -98,7 +98,7 @@ script:
     - contextPath: LogsignSiem.Count
       description: Count number returned as the result of the query.
       type: Number
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

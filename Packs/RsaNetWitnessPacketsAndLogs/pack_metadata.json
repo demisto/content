@@ -1,8 +1,8 @@
 {
     "name": "RSA NetWitness Packets and Logs",
     "description": "RSA NetWitness Logs and Packets decoders are responsible for the real-time collection of network data. The decode captures data in real time and can normalize and reconstruct data for full session analysis. In addition, the decoder can collect flow and endpoint data.",
-    "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "support": "partner",
+    "currentVersion": "1.0.9",
     "author": "Netwitness",
     "url": "https://www.netwitness.com/services/technical-support/",
     "email": "nw.paloalto.support@netwitness.com",

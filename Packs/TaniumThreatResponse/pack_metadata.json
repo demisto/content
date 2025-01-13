@@ -2,7 +2,7 @@
     "name": "Tanium Threat Response",
     "description": "Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections.",
     "support": "xsoar",
-    "currentVersion": "2.2.17",
+    "currentVersion": "2.2.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

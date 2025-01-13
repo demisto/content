@@ -18,7 +18,7 @@ outputs:
 scripttarget: 0
 timeout: 1h0m0s
 runonce: true
-dockerimage: demisto/aquatone:2.0.0.108439
+dockerimage: demisto/aquatone:2.0.0.117469
 comment: 'aquatone-discover will find the targets nameservers and shuffle DNS lookups between them. Should a lookup fail on the target domains nameservers, aquatone-discover will fall back to using Google public DNS servers to maximize discovery.'
 fromversion: 6.5.0
 tests:

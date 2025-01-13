@@ -37,7 +37,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
 
 ## Known Limitations
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
-* After you run `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
+* After running `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
 * URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
 * If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
    * [pan-os-get-url-category](#pan-os-get-url-category)
@@ -48,7 +48,11 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
+   * [pan-os-get-master-key-details](#pan-os-get-master-key-details)
+   * [pan-os-create-master-key](#pan-os-create-master-key)
+   * [pan-os-update-master-key](#pan-os-update-master-key)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
+* Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 ## Fetch Incidents
 The Panorama integration now supports fetch incidents.
@@ -9355,3 +9359,139 @@ Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
 #### Context Output
 
 There is no context output for this command.
+
+### pan-os-create-master-key
+
+***
+Create a default master key that encrypts all the private keys and passwords in the configuration.
+
+**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
+
+#### Base Command
+
+`pan-os-create-master-key`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| master_key | The encryption master key. Must be exactly 16 characters. | Required |
+| lifetime_in_hours | The lifetime of the key in hours. | Required |
+| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
+
+#### Limitations
+
+* All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+
+* The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
+
+#### Command example
+```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 1234.
+>
+>⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
+
+### pan-os-update-master-key
+
+***
+Update the default master key that encrypts all the private keys and passwords in the configuration. 
+
+**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
+
+#### Base Command
+
+`pan-os-update-master-key`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| current_master_key | The current encryption master key. | Required |
+| new_master_key | The new encryption master key. Must be exactly 16 characters. | Required |
+| lifetime_in_hours | The lifetime of the key in hours. | Required |
+| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
+
+#### Limitations
+
+* All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+
+* The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
+
+#### Command example
+```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 2468.
+>
+>⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
+
+### pan-os-get-master-key-details
+
+***
+Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
+
+#### Base Command
+
+`pan-os-get-master-key-details`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Command example
+```!pan-os-get-master-key-details```
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.MasterKey.auto-renew-mkey | String | Whether the master key will be automatically renewed on expiry. |
+| Panorama.MasterKey.expire-at | String | The date and time when the key is set to expire. |
+| Panorama.MasterKey.hours-to-expiry | String | The number of hours remaining before the key expires. |
+| Panorama.MasterKey.hours-to-reminder | String | The number of hours remaining before being notified that the key is set to expire. |
+| Panorama.MasterKey.minutes-to-expiry | String | The number of minutes remaining before the key expires. |
+| Panorama.MasterKey.minutes-to-reminder | String | The number of minutes remaining before being notified that the key is set to expire. |
+| Panorama.MasterKey.on-hsm | String | Whether the master key is encrypted using a key stored on a Hardware Security Module (HSM). |
+| Panorama.MasterKey.remind-at | String | The date and time when to be notified that the key is set to expire. |
+| Panorama.MasterKey.seconds-to-expiry | String | The number of seconds remaining before the key expires. |
+| Panorama.MasterKey.seconds-to-reminder | String | The number of seconds remaining before being notified that the key is set to expire. |
+
+#### Context Example
+
+```json
+{
+    "Panorama": {
+        "MasterKey": {
+            "auto-renew-mkey": "0",
+            "expire-at": "2025/02/18 04:26:05",
+            "hours-to-expiry": "2138",
+            "hours-to-reminder": "1992",
+            "minutes-to-expiry": "128288",
+            "minutes-to-reminder": "119520",
+            "on-hsm": "no",
+            "remind-at": "2024/11/27 04:26:05",
+            "seconds-to-expiry": "7697336",
+            "seconds-to-reminder": "7171200"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Master Key Details
+>| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
+>| --- | --- | --- | --- |
+>| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |

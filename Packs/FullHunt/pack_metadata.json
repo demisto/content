@@ -2,7 +2,7 @@
     "name": "FullHunt",
     "description": "Integration with FullHunt, the attack surface database of the internet.\nFullHunt enables companies to discover all of their attack surfaces, monitor them for exposure, and continuously scan them for the latest security vulnerabilities.",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "@sam0x90",
     "url": "https://fullhunt.io/",
     "email": "",

@@ -8,6 +8,11 @@ configuration:
   name: console_url
   required: true
   type: 0
+- defaultvalue: api.us.code42.com
+  display: API Gateway URL for your Code42 environment
+  name: api_url
+  required: true
+  type: 0
 - display: API Client ID
   name: credentials
   required: true
@@ -50,171 +55,11 @@ configuration:
   defaultvalue: '3'
   type: 19
   required: false
-- name: v2_events
-  display: Use v2 file events
-  defaultvalue: 'false'
-  type: 8
-  required: false
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
 script:
   commands:
-  - arguments:
-    - description: JSON query payload using Code42 query syntax.
-      name: json
-    - description: MD5 or SHA256 hash of the file to search for.
-      name: hash
-    - description: Username to search for.
-      name: username
-    - description: Hostname to search for.
-      name: hostname
-    - auto: PREDEFINED
-      description: (v1 events only) Exposure types to search for. Values can be "All", "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains". When "All" is specified with other types, other types would be ignored and filter rule for all types would be applied.
-      isArray: true
-      name: exposure
-      predefined:
-      - All
-      - RemovableMedia
-      - ApplicationRead
-      - CloudStorage
-      - IsPublic
-      - SharedViaLink
-      - SharedViaDomain
-      - OutsideTrustedDomains
-    - defaultValue: '100'
-      description: The number of results to return. The default is 100.
-      name: results
-    deprecated: true
-    description: Searches for file events by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
-    name: code42-securitydata-search
-    outputs:
-    - contextPath: Code42.SecurityData.EventTimestamp
-      description: Timestamp for the event.
-      type: date
-    - contextPath: Code42.SecurityData.FileCreated
-      description: File creation date.
-      type: date
-    - contextPath: Code42.SecurityData.EndpointID
-      description: Code42 device ID.
-      type: string
-    - contextPath: Code42.SecurityData.DeviceUsername
-      description: The username that the device is associated with in Code42.
-      type: string
-    - contextPath: Code42.SecurityData.EmailFrom
-      description: The sender email address for email exfiltration events.
-      type: string
-    - contextPath: Code42.SecurityData.EmailTo
-      description: The recipient email address for email exfiltration events.
-      type: string
-    - contextPath: Code42.SecurityData.EmailSubject
-      description: The email subject line for email exfiltration events.
-      type: string
-    - contextPath: Code42.SecurityData.EventID
-      description: The Security Data event ID.
-      type: string
-    - contextPath: Code42.SecurityData.EventType
-      description: The type of Security Data event.
-      type: string
-    - contextPath: Code42.SecurityData.FileCategory
-      description: The file type, as determined by Code42 engine.
-      type: string
-    - contextPath: Code42.SecurityData.FileOwner
-      description: The owner of the file.
-      type: string
-    - contextPath: Code42.SecurityData.FileName
-      description: The file name.
-      type: string
-    - contextPath: Code42.SecurityData.FilePath
-      description: The path to file.
-      type: string
-    - contextPath: Code42.SecurityData.FileSize
-      description: The size of the file (in bytes).
-      type: number
-    - contextPath: Code42.SecurityData.FileModified
-      description: The date the file was last modified.
-      type: date
-    - contextPath: Code42.SecurityData.FileMD5
-      description: MD5 hash of the file.
-      type: string
-    - contextPath: Code42.SecurityData.FileHostname
-      description: Hostname where the file event was captured.
-      type: string
-    - contextPath: Code42.SecurityData.DevicePrivateIPAddress
-      description: Private IP addresses of the device where the event was captured.
-      type: string
-    - contextPath: Code42.SecurityData.DevicePublicIPAddress
-      description: Public IP address of the device where the event was captured.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaType
-      description: Type of removable media.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaCapacity
-      description: Total capacity of removable media (in bytes).
-      type: number
-    - contextPath: Code42.SecurityData.RemovableMediaMediaName
-      description: The full name of the removable media.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaName
-      description: The name of the removable media.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaSerialNumber
-      description: The serial number for the removable medial device.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaVendor
-      description: The vendor name for removable device.
-      type: string
-    - contextPath: Code42.SecurityData.FileSHA256
-      description: The SHA256 hash of the file.
-      type: string
-    - contextPath: Code42.SecurityData.FileShared
-      description: Whether the file is shared using a cloud file service.
-      type: boolean
-    - contextPath: Code42.SecurityData.FileSharedWith
-      description: Accounts that the file is shared with on a cloud file service.
-      type: string
-    - contextPath: Code42.SecurityData.Source
-      description: The source of the file event. Can be "Cloud" or "Endpoint".
-      type: string
-    - contextPath: Code42.SecurityData.ApplicationTabURL
-      description: The URL associated with the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.ProcessName
-      description: The process name for the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.ProcessOwner
-      description: The process owner for the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.WindowTitle
-      description: The process name for the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.FileURL
-      description: The URL of the file on a cloud file service.
-      type: string
-    - contextPath: Code42.SecurityData.Exposure
-      description: The event exposure type.
-      type: string
-    - contextPath: Code42.SecurityData.SharingTypeAdded
-      description: The type of sharing added to the file.
-      type: string
-    - contextPath: File.Name
-      description: The file name.
-      type: string
-    - contextPath: File.Path
-      description: The file path.
-      type: string
-    - contextPath: File.Size
-      description: The file size (in bytes).
-      type: number
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: string
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: string
-    - contextPath: File.Hostname
-      description: The hostname where the file event was captured.
-      type: string
   - arguments:
     - description: Add results to context at 'Code42.FileEvents'. If 'false', the search will only display results as a markdown table.
       name: add-to-context
@@ -258,7 +103,7 @@ script:
     - contextPath: Code42.FileEvents.source
       description: Info about the origin of a file involved in the event (if any).
   - arguments:
-    - description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
+    - description: The alert session ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
       name: id
       required: true
     description: Retrieve alert details by alert ID.
@@ -268,235 +113,52 @@ script:
       description: The username associated with the alert.
       type: string
     - contextPath: Code42.SecurityAlert.Occurred
-      description: The timestamp when the alert occurred.
+      description: The timestamp when the session began.
       type: date
     - contextPath: Code42.SecurityAlert.Description
-      description: The description of the alert.
+      description: The rule names of the alerts included in the session.
       type: string
     - contextPath: Code42.SecurityAlert.ID
-      description: The alert ID.
+      description: The alert session ID.
       type: string
     - contextPath: Code42.SecurityAlert.Name
-      description: The alert rule name that generated the alert.
+      description: The description of the events that comprise the session.
       type: string
     - contextPath: Code42.SecurityAlert.State
-      description: The alert state.
-      type: string
-    - contextPath: Code42.SecurityAlert.Type
-      description: The alert type.
+      description: The alert session state.
       type: string
     - contextPath: Code42.SecurityAlert.Severity
-      description: The severity of the alert.
+      description: The severity of the alerts in the session.
       type: string
   - arguments:
-    - description: The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
+    - description: The alert session ID to resolve. Alert session IDs are associated with alerts that are fetched via fetch-incidents.
       name: id
       required: true
-    description: Resolves a Code42 Security alert.
-    name: code42-alert-resolve
+    - description: The desired state for the alert session. Possible states are OPEN, CLOSED_TP (true positive), CLOSED_FP (false positive).
+      name: state
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - CLOSED_TP
+      - CLOSED_FP
+      required: true
+    description: Changes the state of an Incydr alert session.
+    name: code42-alert-update
     outputs:
     - contextPath: Code42.SecurityAlert.ID
       description: The alert ID of the resolved alert.
       type: string
   - arguments:
-    - description: The username to add to the Departing Employee List.
-      name: username
+    - description: The alert session ID to resolve. Alert session IDs are associated with alerts that are fetched via fetch-incidents.
+      name: id
       required: true
-    - description: The departure date for the employee, in the format YYYY-MM-DD.
-      name: departuredate
-    - description: Note to attach to the Departing Employee.
-      name: note
-    description: Adds a user to the Departing Employee List.
-    name: code42-departingemployee-add
-    outputs:
-    - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
-      type: string
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Note
-      description: Note associated with the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.DepartureDate
-      description: The departure date for the Departing Employee.
-      type: Unknown
+    description: DEPRECATED. Use code42-alert-update instead.
     deprecated: true
-  - arguments:
-    - description: The username to remove from the Departing Employee List.
-      name: username
-    description: Removes a user from the Departing Employee List.
-    name: code42-departingemployee-remove
+    name: code42-alert-resolve
     outputs:
-    - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
+    - contextPath: Code42.SecurityAlert.ID
+      description: The alert ID of the resolved alert.
       type: string
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    deprecated: true
-  - arguments:
-    - description: The number of items to return.
-      name: results
-    - default: true
-      description: Filters the results based on specific filters.
-      name: filtertype
-      auto: PREDEFINED
-      defaultValue: OPEN
-      predefined:
-      - EXFILTRATION_30_DAYS
-      - EXFILTRATION_24_HOURS
-      - OPEN
-      - LEAVING_TODAY
-    description: Get all employees on the Departing Employee List.
-    name: code42-departingemployee-get-all
-    outputs:
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Note
-      description: Note associated with the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.DepartureDate
-      description: The departure date for the Departing Employee.
-      type: Unknown
-    deprecated: true
-  - arguments:
-    - description: The username to add to the High Risk Employee List.
-      name: username
-      required: true
-    - description: Note to attach to the High Risk Employee.
-      name: note
-    description: Adds a user to the High Risk Employee List.
-    name: code42-highriskemployee-add
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Note
-      description: Note associated with the High Risk Employee.
-      type: string
-    deprecated: true
-  - arguments:
-    - description: The username to remove from the High Risk Employee List.
-      name: username
-      required: true
-    description: Removes a user from the High Risk Employee List.
-    name: code42-highriskemployee-remove
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-      type: Unknown
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: Unknown
-    deprecated: true
-  - arguments:
-    - description: To filter results by employees who have these risk tags. Comma delimited.
-      name: risktags
-      auto: PREDEFINED
-      predefined:
-      - PERFORMANCE_CONCERNS
-      - PERFORMANCE_CONCERNS
-      - POOR_SECURITY_PRACTICES
-      - HIGH_IMPACT_EMPLOYEE
-      - ELEVATED_ACCESS_PRIVILEGES
-      - FLIGHT_RISK
-      - CONTRACT_EMPLOYEE
-    - description: The number of items to return.
-      name: results
-    - auto: PREDEFINED
-      default: true
-      defaultValue: OPEN
-      description: Filters the results based on specific filters.
-      name: filtertype
-      predefined:
-      - EXFILTRATION_30_DAYS
-      - EXFILTRATION_24_HOURS
-      - OPEN
-    description: Get all employees on the High Risk Employee List.
-    name: code42-highriskemployee-get-all
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Note
-      description: Note associated with the High Risk Employee.
-      type: string
-    deprecated: true
-  - arguments:
-    - description: The username of the High Risk Employee.
-      name: username
-      required: true
-    - auto: PREDEFINED
-      description: Comma-delimited risk tags to associate with the High Risk Employee.
-      name: risktags
-      predefined:
-      - PERFORMANCE_CONCERNS
-      - PERFORMANCE_CONCERNS
-      - POOR_SECURITY_PRACTICES
-      - HIGH_IMPACT_EMPLOYEE
-      - ELEVATED_ACCESS_PRIVILEGES
-      - FLIGHT_RISK
-      - CONTRACT_EMPLOYEE
-      required: true
-    description: Associates risk tags with the employee with the given username.
-    name: code42-highriskemployee-add-risk-tags
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.RiskTags
-      description: Risk tags to associate with the High Risk Employee.
-      type: Unknown
-    deprecated: true
-  - arguments:
-    - description: The username of the High Risk Employee.
-      name: username
-      required: true
-    - description: Comma-delimited risk tags to disassociate from the High Risk Employee.
-      name: risktags
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - PERFORMANCE_CONCERNS
-      - PERFORMANCE_CONCERNS
-      - POOR_SECURITY_PRACTICES
-      - HIGH_IMPACT_EMPLOYEE
-      - ELEVATED_ACCESS_PRIVILEGES
-      - FLIGHT_RISK
-      - CONTRACT_EMPLOYEE
-    description: Disassociates risk tags from the user with the given username.
-    name: code42-highriskemployee-remove-risk-tags
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.RiskTags
-      description: Risk tags to disassociate from the High Risk Employee.
-      type: Unknown
-    deprecated: true
   - arguments:
     - description: The name of the Code42 organization from which to add the user.
       name: orgname
@@ -643,43 +305,6 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  - arguments:
-    - description: Email id of the user.
-      name: username
-      required: true
-    description: Retrieve high risk employee details.
-    name: code42-highriskemployee-get
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Note
-      description: Note associated with the High Risk Employee.
-      type: string
-    deprecated: true
-  - name: code42-departingemployee-get
-    description: Retrieve departing employee details.
-    outputs:
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Note
-      description: Note associated with the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.DepartureDate
-      description: The departure date for the Departing Employee.
-      type: Unknown
-    arguments:
-    - description: Email id of the departing employee.
-      name: username
-      required: true
-    deprecated: true
   - name: code42-watchlists-list
     description: List all existing watchlists in your environment.
     outputs:
