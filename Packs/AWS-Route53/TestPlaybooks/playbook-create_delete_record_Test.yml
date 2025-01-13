@@ -54,7 +54,7 @@ tasks:
       - "9"
     scriptarguments:
       hostedZoneId:
-        simple: ${AWS.Route53.HostedZones.Id}
+        simple: ${AWS.Route53.HostedZones.[0].Id}
       source:
         simple: ${dns_record_name}
       target:
@@ -170,7 +170,7 @@ tasks:
       - "14"
     scriptarguments:
       hostedZoneId:
-        simple: ${AWS.Route53.HostedZones.Id}
+        simple: ${AWS.Route53.HostedZones.[0].Id}
       source:
         simple: ${dns_record_name}
       target:
