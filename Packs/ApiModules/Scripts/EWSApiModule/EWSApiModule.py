@@ -143,7 +143,6 @@ class EWSClient:
         azure_cloud: Optional[AzureCloud] = None,
         tenant_id: str = '',
         self_deployed: bool = True,
-        manual_username: Optional[str] = None,
         log_memory: bool = False,
         app_name: str = 'EWS',
         insecure: bool = True,
@@ -274,30 +273,32 @@ class EWSClient:
         BaseProtocol.HTTP_ADAPTER_CLS = InsecureSSLAdapter if self.insecure else HTTPAdapter
 
         if self.auto_discover:
+            # Discover the server params using the exchange auto discovery mechanism
+            # The discovered config params will be cached in the integration context for subsequent runs
             credentials = Credentials(username=self.client_id, password=self.client_secret)
             self.ews_server, server_build = self.get_autodiscover_server_params(credentials)
             return None, credentials, server_build
 
-        if urlparse(self.ews_server.lower()).hostname == 'outlook.office365.com':
+        # Check params and set defaults where necessary
+        if urlparse(self.ews_server.lower()).hostname == 'outlook.office365.com':  # Legacy O365 logic
             if not self.auth_type:
                 self.auth_type = BASIC
             self.version = '2016'
-        else:
-            if not self.auth_type:
-                self.auth_type = NTLM
-            if not self.version:
-                return_error('Exchange Server Version is required for on-premise Exchange Servers.')
 
-        version = get_on_prem_version(self.version)
+        if not self.auth_type:
+            self.auth_type = NTLM
+
+        if not self.version:
+            return_error('Exchange Server Version is required for on-premise Exchange Servers.')
+
+        # Configure the on-prem Exchange Server connection
         credentials = Credentials(username=self.client_id, password=self.client_secret)
         config_args = {
             'credentials': credentials,
             'auth_type': self.auth_type,
-            'version': version
+            'version': get_on_prem_version(self.version)
         }
-        if not self.ews_server:
-            return_error('Exchange Server Hostname or IP Address is required for manual configuration.')
-        elif 'http' in self.ews_server.lower():
+        if 'http' in self.ews_server.lower():
             config_args['service_endpoint'] = self.ews_server
         else:
             config_args['server'] = self.ews_server
@@ -438,7 +439,9 @@ class EWSClient:
         result = list(account.fetch(ids=items))
         result = [x for x in result if not (isinstance(x, ErrorItemNotFound | ErrorInvalidIdMalformed))]
         if len(result) != len(item_ids):
-            raise Exception('One or more items were not found/malformed. Check the input item ids')
+            result_ids = {item.id for item in result}
+            missing_ids = set(item_ids) - result_ids
+            raise Exception(f'One or more items were not found/malformed. Could not find the following IDs: {missing_ids}')
         return result
 
     def get_item_from_mailbox(self, account: Optional[Union[Account, str]], item_id):
@@ -451,8 +454,6 @@ class EWSClient:
         :return: exchangelib Item
         """
         result = self.get_items_from_mailbox(account, [item_id])
-        if len(result) == 0:
-            raise Exception(f'ItemId {str(item_id)} not found')
         return result[0]
 
     def get_attachments_for_item(self, item_id, account: Optional[Union[Account, str]], attachment_ids: list = []):
@@ -478,7 +479,9 @@ class EWSClient:
                 attachments.append(attachment)
 
         if attachment_ids and len(attachments) < len(attachment_ids):
-            raise DemistoException(f'Some attachment id was not found for message: {str(attachment_ids)}')
+            found_ids = {attachment.attachment_id.id for attachment in attachments}
+            missing_ids = set(attachment_ids) - found_ids
+            raise DemistoException(f'Some attachment ids were not found for the given message id: {missing_ids}')
 
         return attachments
 
