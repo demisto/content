@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import json
 import shutil
-from typing import Dict, List
 
 import urllib3
 import requests
@@ -137,7 +136,7 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
     if errors_dict:
         for error_num, (key, lst) in enumerate(errors_dict.items(), 1):
             curr_error_string = '\n'.join(lst) + '\n\n'
-            errors_string += 'Error #{0}. In \'{1}\':\n{2}'.format(error_num, key, curr_error_string)
+            errors_string += f'Error #{error_num}. In \'{key}\':\n{curr_error_string}'
         return errors_string
 
     # Second form
@@ -145,13 +144,13 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
     if errors_list:
         for error_num, error in enumerate(errors_list, 1):
             if isinstance(error, str):
-                errors_string += 'Error #{0}: {1}\n'.format(error_num, error)
+                errors_string += f'Error #{error_num}: {error}\n'
             else:  # error is a list
                 for i in range(len(error)):
-                    errors_string += 'Error #{0}.{1}: {2}\n'.format(error_num, i, error[i])
+                    errors_string += f'Error #{error_num}.{i}: {error[i]}\n'
         return errors_string
 
-    return str()  # Service did not provide any errors.
+    return ''  # Service did not provide any errors.
 
 
 def get_tlp_from_indicator(sources):
@@ -206,7 +205,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
 
     if response.status_code >= 400:
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
-        error_message = 'Received an error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
+        error_message = f'Received an error - status code [{response.status_code}].\n{errors_string}'
         return_error(error_message)
 
     if retrieve_entire_response:
@@ -247,7 +246,7 @@ def get_access_token():
 
 
 def make_create_object_request(obj_type, params):
-    url_suffix = '/{0}'.format(OBJ_DIRECTORY[obj_type])
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}'
     res = tq_request('POST', url_suffix, params)
 
     # For some reason, only while creating an indicator, the response data is a list of dicts with size 1.
@@ -257,7 +256,7 @@ def make_create_object_request(obj_type, params):
 
     entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
-    readable_title = '{0} was successfully created.'.format(obj_type.title())
+    readable_title = f'{obj_type.title()} was successfully created.'
     readable = build_readable(readable_title, obj_type, data)
 
     return_outputs(readable, entry_context, res)
@@ -267,7 +266,7 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
     # Remove items with empty values.
     params = {k: v for k, v in params.items() if v is not None}
 
-    url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}?with=attributes,sources'
     if obj_type == 'indicator':
         url_suffix += ',score'
 
@@ -276,7 +275,7 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
     data = data_to_demisto_format(res['data'], obj_type)
     entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
-    readable_title = 'Successfully edited {0} with ID {1}'.format(obj_type, obj_id)
+    readable_title = f'Successfully edited {obj_type} with ID {obj_id}'
     readable = build_readable(readable_title, obj_type, data)
 
     return_outputs(readable, entry_context, res)
@@ -297,6 +296,9 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         elif value.startswith('https://'):
             value_without_proto = value.replace('https://', '')
             is_httpx = True
+        else:
+            value_without_proto = value
+            demisto.debug("value doesn't start with either prefixes. Initializing value_without_proto to value.")
 
         if is_httpx:
             body = {"criteria": {"+or": [{"value": value}, {"value": value_without_proto}]},
@@ -331,7 +333,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         params=body
     )
 
-    indicators: List[Dict] = []
+    indicators: list[dict] = []
     for obj in res.get('data', []):
         if 'id' in obj:
             # Search for detailed information about the indicator
@@ -496,7 +498,8 @@ def parse_date(text):
             return str(datetime.strptime(text, fmt))
         except ValueError:
             pass
-    return_error('Time data \'{0}\' does not match any valid format.'.format(text))
+    return_error(f'Time data \'{text}\' does not match any valid format.')
+    return None
 
 
 def data_to_demisto_format(data, obj_type):
@@ -508,6 +511,7 @@ def data_to_demisto_format(data, obj_type):
         return adversary_data_to_demisto_format(data)
     elif obj_type == 'attachment':
         return file_data_to_demisto_format(data)
+    return None
 
 
 def indicator_data_to_demisto_format(data):
@@ -518,7 +522,7 @@ def indicator_data_to_demisto_format(data):
         'Value': data.get('value'),
         'Status': status_id_to_status(data.get('status_id')),
         'Type': type_id_to_indicator_type(data.get('type_id')),
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{}/indicators/{}/details'.format(SERVER_URL, data.get('id')),
         'TQScore': get_tq_score_from_response(data.get('score')),
         'Description': clean_html_from_string(data.get('description')),
         'Source': sources_to_demisto_format(data.get('sources')),
@@ -533,7 +537,7 @@ def adversary_data_to_demisto_format(data):
         'UpdatedAt': data.get('updated_at'),
         'CreatedAt': data.get('created_at'),
         'Name': data.get('name'),
-        'URL': '{0}/adversaries/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{}/adversaries/{}/details'.format(SERVER_URL, data.get('id')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
@@ -548,7 +552,7 @@ def event_data_to_demisto_format(data):
         'Title': data.get('title'),
         'Occurred': data.get('happened_at'),
         'Type': type_id_to_event_type(data.get('type_id')),
-        'URL': '{0}/events/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{}/events/{}/details'.format(SERVER_URL, data.get('id')),
         'Description': clean_html_from_string(data.get('description')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
@@ -564,7 +568,7 @@ def file_data_to_demisto_format(data):
         'Size': data.get('file_size'),
         'MD5': data.get('hash'),
         'Type': type_id_to_file_type(data.get('type_id')),
-        'URL': '{0}/files/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{}/files/{}/details'.format(SERVER_URL, data.get('id')),
         'Name': data.get('name'),
         'Title': data.get('title'),
         'Description': data.get('description'),
@@ -580,21 +584,21 @@ def file_data_to_demisto_format(data):
 def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
     # A pivot id represents a connection between two objects.
 
-    url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
+    url_suffix = f'/{OBJ_DIRECTORY[obj1_type]}/{obj1_id}/{OBJ_DIRECTORY[obj2_type]}'
     res = tq_request('GET', url_suffix)
 
     for related_object in res['data']:  # res['data'] contains all the related objects of obj_id1
         if int(related_object.get('id')) == int(obj2_id):
             return int(related_object['pivot']['id'])
-    else:
-        return_error('Command failed - objects are not related.')
+    return_error('Command failed - objects are not related.')
+    return None
 
 
 def get_malicious_data(tq_score):
     malicious_data = {
         'Malicious': {
             'Vendor': 'ThreatQ v2',
-            'Description': 'Score from ThreatQ is {0}'.format(tq_score)
+            'Description': f'Score from ThreatQ is {tq_score}'
         }
     }
     return malicious_data
@@ -664,7 +668,7 @@ def build_readable(readable_title, obj_type, data, metadata=None):
                 metadata=metadata
             )
         if 'URL' in data:
-            url_in_markdown_format = '[{0}]({1})'.format(data['URL'], data['URL'])
+            url_in_markdown_format = '[{}]({})'.format(data['URL'], data['URL'])
             readable = readable.replace(data['URL'], url_in_markdown_format)
 
     else:  # 'data' is a list of objects
@@ -679,7 +683,7 @@ def build_readable(readable_title, obj_type, data, metadata=None):
             metadata=metadata
         )
         for elem in data:
-            url_in_markdown_format = '[{0}]({1})'.format(elem['URL'], elem['URL'])
+            url_in_markdown_format = '[{}]({})'.format(elem['URL'], elem['URL'])
             readable = readable.replace(elem['URL'], url_in_markdown_format)
 
     return readable
@@ -725,7 +729,7 @@ def aggregate_search_results(indicators, default_indicator_type, generic_context
             generic_context=generic_context
         ))
 
-    aggregated: Dict = {}
+    aggregated: dict = {}
     for entry in entry_context:
         for key, value in entry.items():
             if key in aggregated:
@@ -781,7 +785,7 @@ def advance_search_command():
     if not isinstance(search_results, list):
         search_results = [search_results]
 
-    indicators: List[Dict] = []
+    indicators: list[dict] = []
     for obj in search_results:
         # Search for detailed information about the indicator
         url_suffix = f"/indicators/{obj.get('id')}?with=attributes,sources,score,type"
@@ -808,7 +812,7 @@ def search_by_name_command():
     if limit and isinstance(limit, str) and not limit.isdigit():
         return_error('limit argument must be an integer.')
 
-    url_suffix = '/search?query={0}&limit={1}'.format(name, limit)
+    url_suffix = f'/search?query={name}&limit={limit}'
     res = tq_request('GET', url_suffix)
 
     indicator_context = [{'ID': e['id'], 'Value': e['value']} for e in res['data'] if e['object'] == 'indicator']
@@ -840,7 +844,7 @@ def search_by_id_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('obj_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}?with=attributes,sources'
     if obj_type == 'indicator':
         url_suffix += ',score,type'
 
@@ -854,7 +858,7 @@ def search_by_id_command():
         if indicator_type is not None:
             ec['DBotScore'] = create_dbot_context(data['Value'], indicator_type, data.get('TQScore', -1))
 
-    readable_title = 'Search results for {0} with ID {1}'.format(obj_type, obj_id)
+    readable_title = f'Search results for {obj_type} with ID {obj_id}'
     readable = build_readable(readable_title, obj_type, data)
 
     return_outputs(readable, ec, res)
@@ -979,9 +983,9 @@ def delete_object_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('obj_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}'.format(OBJ_DIRECTORY[obj_type], obj_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}'
     tq_request('DELETE', url_suffix)
-    demisto.results('Successfully deleted {0} with ID {1}.'.format(obj_type, obj_id))
+    demisto.results(f'Successfully deleted {obj_type} with ID {obj_id}.')
 
 
 def get_related_objs_command(related_type):
@@ -992,7 +996,7 @@ def get_related_objs_command(related_type):
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('obj_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}/{2}?with=sources'.format(OBJ_DIRECTORY[obj_type], obj_id, OBJ_DIRECTORY[related_type])
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}/{OBJ_DIRECTORY[related_type]}?with=sources'
     if related_type == 'indicator':
         url_suffix += ',score'
     res = tq_request('GET', url_suffix)
@@ -1005,7 +1009,7 @@ def get_related_objs_command(related_type):
     }
     ec = {CONTEXT_PATH[obj_type]: data} if info else {}
 
-    readable_title = 'Related {0} type objects of {1} with ID {2}'.format(related_type, obj_type, obj_id)
+    readable_title = f'Related {related_type} type objects of {obj_type} with ID {obj_id}'
     readable = build_readable(readable_title, related_type, data[RELATED_KEY[related_type]])
 
     return_outputs(readable, ec, res)
@@ -1024,13 +1028,13 @@ def link_objects_command():
     if obj1_type == obj2_type and obj1_id == obj2_id:
         return_error('Cannot link an object to itself.')
 
-    url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
+    url_suffix = f'/{OBJ_DIRECTORY[obj1_type]}/{obj1_id}/{OBJ_DIRECTORY[obj2_type]}'
     params = {
         'id': obj2_id
     }
     tq_request('POST', url_suffix, params)
     demisto.results(
-        'Successfully linked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
+        f'Successfully linked {obj1_type} with ID {obj1_id} and {obj2_type} with ID {obj2_id}.')
 
 
 def unlink_objects_command():
@@ -1047,10 +1051,10 @@ def unlink_objects_command():
         return_error('An object cannot be linked to itself.')
 
     p_id = get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id)
-    url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
+    url_suffix = f'/{OBJ_DIRECTORY[obj1_type]}/{obj1_id}/{OBJ_DIRECTORY[obj2_type]}'
     tq_request('DELETE', url_suffix, params=[p_id])
     demisto.results(
-        'Successfully unlinked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
+        f'Successfully unlinked {obj1_type} with ID {obj1_id} and {obj2_type} with ID {obj2_id}.')
 
 
 def update_score_command():
@@ -1067,7 +1071,7 @@ def update_score_command():
     else:
         manual_score = int(score)
 
-    url_suffix = '/indicator/{0}/scores'.format(indicator_id)
+    url_suffix = f'/indicator/{indicator_id}/scores'
     params = {'manual_score': manual_score}
 
     res = tq_request('PUT', url_suffix, params)
@@ -1079,7 +1083,7 @@ def update_score_command():
 
     ec = {CONTEXT_PATH['indicator']: data}
 
-    readable = 'Successfully updated score of indicator with ID {0} to {1}. ' \
+    readable = 'Successfully updated score of indicator with ID {} to {}. ' \
                'Notice that final score is the maximum between ' \
                'manual and generated scores.'.format(indicator_id, int(data['TQScore']))
 
@@ -1095,13 +1099,13 @@ def add_source_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('obj_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}/sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}/sources'
     params = {
         'name': source
     }
 
     tq_request('POST', url_suffix, params)
-    demisto.results('Successfully added source {0} to {1} with ID {2}.'.format(source, obj_type, obj_id))
+    demisto.results(f'Successfully added source {source} to {obj_type} with ID {obj_id}.')
 
 
 def delete_source_command():
@@ -1115,10 +1119,10 @@ def delete_source_command():
     if isinstance(source_id, str) and not source_id.isdigit():
         return_error('source_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}/sources/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, source_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}/sources/{source_id}'
 
     tq_request('DELETE', url_suffix)
-    demisto.results('Successfully deleted source #{0} from {1} with ID {2}.'.format(source_id, obj_type, obj_id))
+    demisto.results(f'Successfully deleted source #{source_id} from {obj_type} with ID {obj_id}.')
 
 
 def add_attribute_command():
@@ -1131,14 +1135,14 @@ def add_attribute_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('obj_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}/attributes'.format(OBJ_DIRECTORY[obj_type], obj_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}/attributes'
     params = {
         'name': attribute_name,
         'value': attribute_value
     }
 
     tq_request('POST', url_suffix, params)
-    demisto.results('Successfully added attribute to {0} with ID {1}.'.format(obj_type, obj_id))
+    demisto.results(f'Successfully added attribute to {obj_type} with ID {obj_id}.')
 
 
 def modify_attribute_command():
@@ -1153,12 +1157,12 @@ def modify_attribute_command():
     if isinstance(attribute_id, str) and not attribute_id.isdigit():
         return_error('attribute_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attribute_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}/attributes/{attribute_id}'
     params = {'value': attribute_value}
 
     tq_request('PUT', url_suffix, params)
 
-    demisto.results('Successfully modified attribute #{0} of {1} with ID {2}.'.format(attribute_id, obj_type, obj_id))
+    demisto.results(f'Successfully modified attribute #{attribute_id} of {obj_type} with ID {obj_id}.')
 
 
 def delete_attribute_command():
@@ -1172,10 +1176,10 @@ def delete_attribute_command():
     if isinstance(attribute_id, str) and not attribute_id.isdigit():
         return_error('attribute_id argument must be an integer.')
 
-    url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attribute_id)
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}/{obj_id}/attributes/{attribute_id}'
 
     tq_request('DELETE', url_suffix)
-    demisto.results('Successfully deleted attribute #{0} from {1} with ID {2}.'.format(attribute_id, obj_type, obj_id))
+    demisto.results(f'Successfully deleted attribute #{attribute_id} from {obj_type} with ID {obj_id}.')
 
 
 def update_status_command():
@@ -1186,7 +1190,7 @@ def update_status_command():
     if isinstance(indicator_id, str) and not indicator_id.isdigit():
         return_error('id argument must be an integer.')
 
-    url_suffix = '/indicators/{0}'.format(indicator_id)
+    url_suffix = f'/indicators/{indicator_id}'
     params = {'status': status}
 
     res = tq_request('PUT', url_suffix, params)
@@ -1198,7 +1202,7 @@ def update_status_command():
 
     ec = {CONTEXT_PATH['indicator']: data}
 
-    readable = 'Successfully updated status of indicator with ID {0} to {1}.'.format(indicator_id, status)
+    readable = f'Successfully updated status of indicator with ID {indicator_id} to {status}.'
 
     return_outputs(readable, ec, res)
 
@@ -1225,7 +1229,7 @@ def upload_file_command():
     try:
         shutil.copy(file_info['path'], file_info['name'])
     except Exception as e:
-        return_error('Failed to prepare file for upload. Error message: {0}'.format(str(e)))
+        return_error(f'Failed to prepare file for upload. Error message: {str(e)}')
 
     try:
         with open(file_info['name'], 'rb') as f:
@@ -1239,7 +1243,7 @@ def upload_file_command():
 
     ec = {CONTEXT_PATH['attachment']: data}
 
-    readable_title = 'Successfully uploaded file {0}.'.format(file_info['name'])
+    readable_title = 'Successfully uploaded file {}.'.format(file_info['name'])
     readable = build_readable(readable_title, 'attachment', data)
 
     return_outputs(readable, ec, res)
@@ -1252,13 +1256,13 @@ def download_file_command():
     if isinstance(file_id, str) and not file_id.isdigit():
         return_error('id argument must be an integer.')
 
-    url_suffix = '/attachments/{0}/download'.format(file_id)
+    url_suffix = f'/attachments/{file_id}/download'
 
     res = tq_request('GET', url_suffix, retrieve_entire_response=True)
 
     # 'Content-Disposition' value is of the form: attachment; filename="filename.txt"
     # Since we don't have the file name anywhere else in the response object, we parse it from this entry.
-    filename = res.headers.get('Content-Disposition', str()).split('\"')[1]
+    filename = res.headers.get('Content-Disposition', '').split('\"')[1]
     content = res.content
 
     demisto.results(fileResult(filename, content))
@@ -1271,7 +1275,7 @@ def get_all_objs_command(obj_type):
     if limit > 200:
         limit = 200
 
-    url_suffix = '/{0}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type])
+    url_suffix = f'/{OBJ_DIRECTORY[obj_type]}?with=attributes,sources'
     if obj_type == 'indicator':
         url_suffix += ',score'
     res = tq_request('GET', url_suffix)
@@ -1282,8 +1286,8 @@ def get_all_objs_command(obj_type):
     data = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
     ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)} if data else {}
 
-    readable_title = 'List of all objects of type {0} - {1}-{2}'.format(obj_type, from_index, to_index - 1)
-    metadata = 'Total number of objects is {0}'.format(len(res['data']))
+    readable_title = f'List of all objects of type {obj_type} - {from_index}-{to_index - 1}'
+    metadata = 'Total number of objects is {}'.format(len(res['data']))
     readable = build_readable(readable_title, obj_type, data, metadata=metadata)
 
     return_outputs(readable, ec, res)
@@ -1295,7 +1299,7 @@ def get_ip_reputation():
 
     for ip in ips:
         if not is_ip_valid(ip, accept_v6_ips=True):
-            return_error('{0} is not a valid IP address.'.format(ip))
+            return_error(f'{ip} is not a valid IP address.')
 
         generic_context = {'Address': ip}
 
@@ -1308,7 +1312,7 @@ def get_url_reputation():
 
     for url in urls:
         if not REGEX_MAP['url'].match(url):
-            return_error('{0} is not a valid URL.'.format(url))
+            return_error(f'{url} is not a valid URL.')
 
         generic_context = {'Data': url}
 
@@ -1321,7 +1325,7 @@ def get_email_reputation():
 
     for email in emails:
         if not REGEX_MAP['email'].match(email):
-            return_error('{0} is not a valid email address.'.format(email))
+            return_error(f'{email} is not a valid email address.')
 
         generic_context = {'Address': email}
 
@@ -1346,7 +1350,7 @@ def get_file_reputation():
             if REGEX_MAP[fmt].match(file):
                 break
         else:
-            return_error('{0} is not a valid file format.'.format(file))
+            return_error(f'{file} is not a valid file format.')
 
     generic_context = createContext({
         'MD5': file if fmt == 'md5' else None,
@@ -1359,7 +1363,7 @@ def get_file_reputation():
 
 ''' EXECUTION CODE '''
 command = demisto.command()
-LOG('command is {0}'.format(demisto.command()))
+LOG(f'command is {demisto.command()}')
 try:
     handle_proxy()
     if command == 'test-module':
