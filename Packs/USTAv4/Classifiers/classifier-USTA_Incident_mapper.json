@@ -36,7 +36,7 @@
 				"USTA Account Takeover Prevention Victim Details Computer Name": {
 					"simple": "content.victim_detail.computer_name"
 				},
-                "ustaaccounttakeoverpreventionvictimdetailscomputerusername": {
+                "USTA Account Takeover Prevention Victim Details Computer Username": {
                     "simple": "content.victim_detail.username"
                 },
 				"USTA Account Takeover Prevention Victim Details Country": {

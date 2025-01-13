@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ---
 
-![USTA Account Takeover Prevention Employee Credential Playbook](../doc_files/playbook-USTA_Account_Takeover_Prevention_Employee_Credential_Playbook.png)
+![USTA Account Takeover Prevention Employee Credential Playbook](../doc_files/USTA_Account_Takeover_Prevention_Employee_Credential_Playbook.png)

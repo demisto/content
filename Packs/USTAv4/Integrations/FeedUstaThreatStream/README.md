@@ -1,5 +1,5 @@
 This integration fetches indicators from the USTA Threat Stream feed. The indicators can be of type malicious URLs or malware hashes.
-This integration was integrated and tested with version xx of FeedUstaThreatStream.
+This integration was integrated and tested with version 4.1.0 of FeedUstaThreatStream.
 
 ## Configure USTA Threat Stream IOC Feed on Cortex XSOAR
 
@@ -120,7 +120,7 @@ Search malicious URL indicators from the feed.
 
 ### Command Example
 
-```!usta-tsa-search-malicious-url url=http://115.55.137.12:38082/i```
+```!usta-tsa-search-malicious-url url=http://192.168.100.1:38082/i```
 
 ### Context Example
 
@@ -131,11 +131,11 @@ Search malicious URL indicators from the feed.
         "ThreatStreamMaliciousUrls":[
              {
                 "id": "28cffb9a-add5-480c-8968-539863695770",
-                "url": "http://115.55.137.12:38082/i",
-                "host": "115.55.137.12",
+                "url": "http://192.168.100.1:38082/i",
+                "host": "192.168.100.1",
                 "is_domain": false,
                 "ip_addresses": [
-                    "115.55.137.12"
+                    "192.168.100.1"
                 ],
                 "tags": [
                     "elf.mozi"
@@ -177,7 +177,7 @@ Search malicious URL indicators from the feed.
 
 ### Command Example
 
-```!usta-tsa-search-phishing-site url=americanexpress```
+```!usta-tsa-search-phishing-site url=example.com```
 
 ### Context Example
 
@@ -187,11 +187,11 @@ Search malicious URL indicators from the feed.
         "ThreatStreamMaliciousUrls":[
             {
                 "id": 219286,
-                "url": "https://americanexpressllc.org",
-                "host": "americanexpressllc.org",
+                "url": "https://example.com",
+                "host": "example.com",
                 "is_domain": true,
                 "ip_addresses": [
-                    "162.159.140.42"
+                    "192.168.100.1"
                 ],
                 "country": null,
                 "created": "2024-02-05T15:23:11.646011Z"
