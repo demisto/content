@@ -370,7 +370,11 @@ class MainTester:
                 XQLDSHelper.main()
         else:
             # Test for success
-            XQLDSHelper.main()
+            try:
+                XQLDSHelper.main()
+            except:
+                print(json.dumps(self.__config, indent=2))
+                raise
 
             # Validate Results
             assert demisto.results.call_count == 1
@@ -391,11 +395,9 @@ class MainTester:
                     expected_entry,
                     skip_keys=skip_keys,
                 )
-                """
                 if not ok:
                     print(json.dumps(self.__config, indent=2))
                     print(json.dumps(returned_entry, indent=2))
-                """
                 assert ok
 
             # Validate 'QueryParams' - only when results.QueryParams is provided

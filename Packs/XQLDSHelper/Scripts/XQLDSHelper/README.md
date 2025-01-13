@@ -111,7 +111,46 @@ The summary of the template structure in the templates is provided below.
 | .query.xql | The XQL query string to retrieve the record set to create an entry. [Variable Substitution](#variable-substitution) is supported. | String |
 | .query.command.using | [Optional] The name of the integration instance to execute the XQL query command. It overrides `xql_query_instance` in the argument parameters. | String |
 | .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. It overrides `round_time` in the argument parameters. | String or Number |
-| .query.conditions | [Optional] Conditions for executing XQL: it will be executed if all conditions evaluate to true or are not specified. null, false, 0 of type integer, empty string, empty list, empty dictionary, and a list a list where all elements are those values will be treated as false; all other values will be treated as true. If the conditions evaluate to false, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | String or List[String] |
+| .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | Any |
+
+
+#### Note: .query.conditions
+The `.query.conditions` are evaluated as either true or false. The values of the conditions can be of any type in JSON (null, boolean, number, string, list, or dictionary).
+`null`, `false` (of type boolean or string), `0` (of type number), and an empty string (i.e., a string with 0 length) will be treated as false. All other values will be treated as true for primitive data types.
+
+A list or dictionary can represent a logical expression.
+- **A list represents an `OR` condition**, where each element in the list is treated as a separate condition.
+  For example, the list `[X, Y, Z]` is evaluated as `X OR Y OR Z`.
+  If any of the elements are true, the entire expression is considered true.
+  If the list is empty, it is treated as false.
+
+- **A dictionary represents a logical expression combining `AND` and `OR` conditions**.
+  Each **key-value pair** in the dictionary is treated as an `AND` condition.
+  The dictionary as a whole is evaluated as a combination of these `AND` conditions, connected by `OR`.
+  For example, consider the following dictionary:
+
+```
+{
+  Condition-A: Condition-B,
+  Condition-X: Condition-Y
+}
+```
+This dictionary is evaluated as `(Condition-A AND Condition-B) OR (Condition-X AND Condition-Y)`.
+If any of the individual `AND` conditions evaluate to true, the entire dictionary expression will be true.
+If the dictionary is empty, it is treated as false.
+
+In addition, a dictionary can be nested. For example, consider the following dictionary:
+```
+{
+  Condition-A: {
+    Condition-B: [
+      Condition-X,
+      Condition-Y
+    ]
+  }
+}
+```
+This dictionary is evaluated as `Condition-A AND Condition-B AND (Condition-X OR Condition-Y)`.
 
 
 ### Node: entry

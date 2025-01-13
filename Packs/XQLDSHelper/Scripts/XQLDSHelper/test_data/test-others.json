@@ -1368,7 +1368,7 @@
       }
     }
   },
-  "######### xql.conditions(str): false",
+  "######### xql.conditions: vars=false (str)",
   {
     "args": {
       "templates_type": "raw",
@@ -1398,7 +1398,7 @@
       }
     }
   },
-  "######### xql.conditions(str): true",
+  "######### xql.conditions: vars=true (str)",
   {
     "args": {
       "templates_type": "raw",
@@ -1435,7 +1435,7 @@
       }
     }
   },
-  "######### xql.conditions(list): vars=false",
+  "######### xql.conditions: vars=true (dict:key)",
   {
     "args": {
       "templates_type": "raw",
@@ -1444,47 +1444,9 @@
         "test": {
           "query": {
             "xql": "Dummy XQL",
-            "conditions": [
-              "${.=val.sourceip && val.destip}",
-              false
-            ]
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
+            "conditions": {
+              "${.=val.sourceip && val.destip}": true
             }
-          }
-        }
-      }
-    },
-    "context": {
-      "sourceip": "255.255.255.255",
-      "destip": "255.255.255.255"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 0
-        }
-      }
-    }
-  },
-  "######### xql.conditions(list): vars=true",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL",
-            "conditions": [
-              "${.=val.sourceip && val.destip}",
-              true
-            ]
           },
           "entry": {
             "type": "duration",
@@ -1512,7 +1474,114 @@
       }
     }
   },
-  "######### xql.conditions(list): false: bool=false",
+  "######### xql.conditions: vars=false (dict:key)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": {
+              "${.=val.sourceip && val.destip}": true
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### xql.conditions: vars=true (dict:value)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": {
+              "${.=val.sourceip && val.destip}": "${.=val.sourceip && val.destip}"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "sourceip": "255.255.255.255",
+      "destip": "255.255.255.255"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### xql.conditions: vars=false (dict:value)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": {
+              "${.=val.sourceip && val.destip}": "${no_value}"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "context": {
+      "sourceip": "255.255.255.255",
+      "destip": "255.255.255.255"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### xql.conditions: vars=true (list)",
   {
     "args": {
       "templates_type": "raw",
@@ -1522,8 +1591,46 @@
           "query": {
             "xql": "Dummy XQL",
             "conditions": [
-              true,
-              false
+              "${.=val.sourceip && val.destip}"
+            ]
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "sourceip": "255.255.255.255",
+      "destip": "255.255.255.255"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### xql.conditions: vars=false (list)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": [
+              "${no_value}"
             ]
           },
           "entry": {
@@ -1545,7 +1652,291 @@
       }
     }
   },
-  "######### xql.conditions(list): false: int=0",
+  "######### xql.conditions: bool=false",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### xql.conditions: bool=true",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": true
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### xql.conditions: int=0",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": 0
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### xql.conditions: int!=0",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": 1
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### xql.conditions: str=''",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": ""
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### xql.conditions: str!=''",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": "a"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### xql.conditions: dict={}",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": {}
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### xql.conditions: dict!={}",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": {
+              "true": true
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "response": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### xql.conditions: list=[]",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": []
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### xql.conditions: list=[null, null]",
   {
     "args": {
       "templates_type": "raw",
@@ -1555,8 +1946,10 @@
           "query": {
             "xql": "Dummy XQL",
             "conditions": [
-              true,
-              0
+              [
+                null,
+                null
+              ]
             ]
           },
           "entry": {
@@ -1578,7 +1971,7 @@
       }
     }
   },
-  "######### xql.conditions(list): true: int!=0",
+  "######### xql.conditions: list=[true]",
   {
     "args": {
       "templates_type": "raw",
@@ -1588,8 +1981,9 @@
           "query": {
             "xql": "Dummy XQL",
             "conditions": [
-              true,
-              1
+              [
+                true
+              ]
             ]
           },
           "entry": {
@@ -1614,7 +2008,7 @@
       }
     }
   },
-  "######### xql.conditions(list): false: str=''",
+  "######### xql.conditions: logical operations: (true & (false | true)) | false",
   {
     "args": {
       "templates_type": "raw",
@@ -1624,112 +2018,13 @@
           "query": {
             "xql": "Dummy XQL",
             "conditions": [
-              true,
-              ""
-            ]
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
-            }
-          }
-        }
-      }
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 0
-        }
-      }
-    }
-  },
-  "######### xql.conditions(list): true: str!=''",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL",
-            "conditions": [
-              true,
-              "a"
-            ]
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_duration.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 1234
-        }
-      }
-    }
-  },
-  "######### xql.conditions(list): false: dict={}",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL",
-            "conditions": [
-              true,
-              {}
-            ]
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
-            }
-          }
-        }
-      }
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 0
-        }
-      }
-    }
-  },
-  "######### xql.conditions(list): true: dict!={}",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL",
-            "conditions": [
-              true,
               {
-                "a": ""
-              }
+                "${sourceip}": [
+                  false,
+                  "${destip}"
+                ]
+              },
+              false
             ]
           },
           "entry": {
@@ -1744,115 +2039,16 @@
     "xql": {
       "response": "./test_data/qr_duration.json"
     },
+    "context": {
+      "sourceip": "255.255.255.255",
+      "destip": "255.255.255.255"
+    },
     "results": {
       "Entry": {
         "Type": 17,
         "ContentsFormat": "duration",
         "Contents": {
           "stats": 1234
-        }
-      }
-    }
-  },
-  "######### xql.conditions(list): false: list=[]",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL",
-            "conditions": [
-              true,
-              []
-            ]
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
-            }
-          }
-        }
-      }
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 0
-        }
-      }
-    }
-  },
-  "######### xql.conditions(list): false: list=[null]",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL",
-            "conditions": [
-              true,
-              [
-                null
-              ]
-            ]
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
-            }
-          }
-        }
-      }
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 0
-        }
-      }
-    }
-  },
-  "######### xql.conditions(list): false: list=[null, null]",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL",
-            "conditions": [
-              true,
-              [
-                null
-              ]
-            ]
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
-            }
-          }
-        }
-      }
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 0
         }
       }
     }

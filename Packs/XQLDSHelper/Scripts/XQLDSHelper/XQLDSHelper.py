@@ -1857,48 +1857,57 @@ class Main:
     def __is_query_executable(
         self,
     ) -> bool:
-        def __evaluate(
-            val: Any,
-        ) -> bool:
-            def __eval(
-                val: Any
+        class Evaluation:
+            def __init__(
+                self,
+                formatter: Formatter,
+                context: ContextData,
+            ) -> None:
+                self.__formatter = formatter
+                self.__context = context
+
+            def evaluate(
+                self,
+                conds: Any,
             ) -> bool:
-                if val is None:
+                if isinstance(conds, str):
+                    conds = self.__formatter.build(
+                        template=conds,
+                        context=self.__context,
+                    )
+
+                if isinstance(conds, dict):
+                    return any(
+                        self.evaluate(k) and self.evaluate(v)
+                        for k, v in conds.items()
+                    )
+                elif isinstance(conds, list):
+                    return any(self.evaluate(v) for v in conds)
+                elif conds is None:
                     return False
-                elif isinstance(val, bool):
-                    return val
-                elif isinstance(val, (int, float)):
-                    return val != 0.0
-                elif isinstance(val, str):
-                    return val.lower() not in ('', 'false')
+                elif isinstance(conds, bool):
+                    return conds
+                elif isinstance(conds, (int, float)):
+                    return conds != 0.0
+                elif isinstance(conds, str):
+                    return conds.lower() not in ('', 'false')
                 else:
-                    return bool(val)
+                    return bool(conds)
 
-            val = val if isinstance(val, list) else [val]
-            return any(__eval(v) for v in val)
-
-
-        conditions = demisto.get(self.__template, 'query.conditions')
-        if conditions is None:
-            # Executable when 'conditions' is not specified or is null
+        query = self.__template.get('query') or {}
+        if 'conditions' not in query:
+            # Queries are executable when 'query.conditions' is not specified
             return True
+        else:
+            conditions = query.get('conditions')
 
-        assert isinstance(conditions, (str, list)), (
-            f"'query.conditions' must be of type str or list - {conditions}"
-        )
-        formatter = Formatter(
-            variable_substitution=self.__variable_substitution,
-            keep_symbol_to_null=False,
-        )
-        conditions = conditions if isinstance(conditions, list) else [conditions]
-        return all(
-            __evaluate(
-                formatter.build(
-                    template=condition,
-                    context=self.__context,
-                )
-            ) for condition in conditions
-        )
+            return Evaluation(
+                formatter=Formatter(
+                    variable_substitution=self.__variable_substitution,
+                    keep_symbol_to_null=False,
+                ),
+                context=self.__context,
+            ).evaluate(conditions)
 
     def __init__(
         self,
