@@ -1456,7 +1456,8 @@
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Block IP - Generic V3_Test",
