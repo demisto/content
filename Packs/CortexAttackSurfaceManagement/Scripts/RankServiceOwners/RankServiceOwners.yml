@@ -8,9 +8,13 @@ args:
 - defaultValue: asmserviceowner
   description: The field of the alert or issue that owners should be stored.
   name: ownerrelatedfield
-- defaultValue: False
+- defaultValue: "False"
   description: False will use !setAlert, True will use !setIssue.
   name: tenantcommand
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
 comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
   id: RankServiceOwners

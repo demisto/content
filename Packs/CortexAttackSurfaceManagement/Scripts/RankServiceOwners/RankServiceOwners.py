@@ -633,7 +633,7 @@ def main():
             unranked = [unranked]
         asm_system_ids = demisto.args().get("asmsystemids", [])
         owner_related_field = demisto.args().get("ownerrelatedfield", "asmserviceowner")
-        platform_tenant_usage = demisto.args().get("tenantcommand", False)
+        platform_tenant_usage = demisto.args().get("tenantcommand", "False")
         # deduplicate/normalize, score, and rank owners
         normalized = aggregate(canonicalize(unranked))
         final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
