@@ -102,7 +102,7 @@ script:
     - description: 'The name of the address list to delete.'
       name: name
       required: true
-    description: "This command deletes the list by the given address."
+    description: Delete the address list of the name provided.
     name: netquest-address-list-delete
   - arguments:
     - auto: PREDEFINED
