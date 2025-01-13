@@ -170,9 +170,7 @@ def test_client_configure_oauth(mocker):
     assert config.service_endpoint == 'https://outlook.office365.com/EWS/Exchange.asmx'
 
 
-@pytest.mark.parametrize('manual_username, expected_username', [(None, CLIENT_ID),
-                                                                ('test_manual_username', 'test_manual_username')])
-def test_client_configure_onprem(mocker, manual_username, expected_username):
+def test_client_configure_onprem(mocker):
     """
     Given:
         - EWSClient configured with auth_type other than OAUTH2
@@ -193,7 +191,6 @@ def test_client_configure_onprem(mocker, manual_username, expected_username):
         max_fetch=MAX_FETCH,
         auth_type=AUTH_TYPE,
         version=VERSION_STR,
-        manual_username=manual_username,
     )
 
     assert not client.auto_discover
@@ -201,7 +198,7 @@ def test_client_configure_onprem(mocker, manual_username, expected_username):
     assert client.server_build == exchangelib.version.EXCHANGE_2013
     credentials = client.credentials
     assert isinstance(credentials, exchangelib.Credentials)
-    assert credentials.username == expected_username
+    assert credentials.username == CLIENT_ID
     assert credentials.password == CLIENT_SECRET
 
     config = client.config

@@ -166,12 +166,11 @@ class EWSClient:
         :param mark_as_read: Whether to mark fetched incidents as read
         :param legacy_name: Whether to use the legacy naming convention for attachments
         :param incident_filter: The type of time filter to use for incidents (modified or received time)
-        :param azure_cloud: The Azure cloud environment for authentication to O365 services.
-        :param tenant_id: Tenant id used for O365 authentication.
-        :param self_deployed: Whether the Azure app is self-deployed or part of a managed service.
-        :param manual_username: Username to use for the EWS connection (instead of client_id).
-        :param log_memory: Whether to log memory usage
-        :param app_name: The name of the app (e.g. EWSv2 or EWSO365)
+        :param azure_cloud: (O365 only) The Azure cloud environment for authentication to O365 services
+        :param tenant_id: (O365 only) Tenant id used for O365 authentication
+        :param self_deployed: (O365 only) Whether the Azure app is self-deployed or part of a managed service
+        :param log_memory: Whether to enable memory usage logging for various commands
+        :param app_name: The name of the app. (Used for logging purposes only)
         :param insecure: Trust any certificate (not secure)
         :param proxy: Whether to use a proxy for the connection
         """
@@ -195,7 +194,6 @@ class EWSClient:
         self.mark_as_read = mark_as_read
         self.legacy_name = legacy_name
         self.incident_filter = incident_filter
-        self.manual_username = manual_username
         self.azure_cloud = azure_cloud
         self.tenant_id = tenant_id
         self.self_deployed = self_deployed
@@ -285,8 +283,6 @@ class EWSClient:
                 self.auth_type = BASIC
             self.version = '2016'
         else:
-            if self.manual_username:
-                self.client_id = self.manual_username
             if not self.auth_type:
                 self.auth_type = NTLM
             if not self.version:
