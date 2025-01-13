@@ -4515,7 +4515,6 @@ def test_run_polling_command_values_raise_error(mocker):
     """
     Given -
         - run_polling_command arguments.
-        -
 
     When -
         - Running the run_polling_command
@@ -4536,6 +4535,7 @@ def test_run_polling_command_values_raise_error(mocker):
     mock_command_results.raw_response = {"status": "TIMEOUT"}
     mock_command_results.return_value = mock_command_results
     client.get_command_results.return_value = mock_command_results
+    mocker.patch('CoreIRApiModule.return_results')
 
     with pytest.raises(DemistoException) as e:
         run_polling_command(client=client,
