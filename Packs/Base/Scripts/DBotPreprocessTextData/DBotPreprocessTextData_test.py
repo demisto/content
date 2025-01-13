@@ -342,7 +342,7 @@ I have 3 dogs
         args[tested_arg] = True
         t1 = Tokenizer(**args)
         res1 = t1.word_tokenize(text)
-        assert res1['tokenizedText'] == 'my email is {}'.format(t1.email_pattern)
+        assert res1['tokenizedText'] == f'my email is {t1.email_pattern}'
 
     def test_replace_urls(self):
         tested_arg = 'replace_urls'
@@ -356,7 +356,7 @@ I have 3 dogs
         args[tested_arg] = True
         t1 = Tokenizer(**args)
         res1 = t1.word_tokenize(text)
-        assert res1['tokenizedText'] == 'my url is {}'.format(t1.url_pattern)
+        assert res1['tokenizedText'] == f'my url is {t1.url_pattern}'
 
     def test_replace_numbers(self):
         tested_arg = 'replace_numbers'
@@ -370,7 +370,7 @@ I have 3 dogs
         args[tested_arg] = True
         t1 = Tokenizer(**args)
         res1 = t1.word_tokenize(text)
-        assert res1['tokenizedText'] == 'i am {} years old'.format(t1.number_pattern)
+        assert res1['tokenizedText'] == f'i am {t1.number_pattern} years old'
 
     def test_lemma(self):
         tested_arg = 'lemma'
@@ -430,7 +430,7 @@ def test_read_file(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     obj = read_file('231342@343', 'json')
     assert len(obj) >= 1
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         obj = read_file(f.read(), 'json_string')
         assert len(obj) >= 1
 
@@ -441,7 +441,7 @@ def test_read_file(mocker):
     assert len(obj_from_pickle) >= 1
 
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         obj = read_file(f.read(), 'json_string')
         df = pd.DataFrame.from_dict(obj)
         df.to_csv("./TestData/test.csv", index=False)
@@ -449,7 +449,7 @@ def test_read_file(mocker):
         obj2 = read_file('231342@343', 'csv')
         assert len(obj2) == len(obj)
 
-    with open('./TestData/input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test') as f:
         b64_input = base64.b64encode(f.read().encode('utf-8'))
         obj = read_file(b64_input, 'json_b64_string')
         assert len(obj) >= 1
