@@ -12074,9 +12074,10 @@ def split_data_to_chunks(data, target_chunk_size):
             yield chunk
             chunk = []
             chunk_size = 0
-        if (data_part_size := sys.getsizeof(data_part)) >= MAX_ALLOWED_ENTRY_SIZE:
+        data_part_size = sys.getsizeof(data_part)
+        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
             demisto.error("entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
-                                                                                                  MAX_ALLOWED_ENTRY_SIZE))
+                                                                                                                       MAX_ALLOWED_ENTRY_SIZE))
             continue
         chunk.append(data_part)
         chunk_size += data_part_size
