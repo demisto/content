@@ -43,4 +43,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing Alerts - Check Severity](https://raw.githubusercontent.com/demisto/content/f49c8d86d18876948cd50ba32befb4f575420024/Packs/PhishingAlerts/doc_files/Phishing_Alerts_-_Check_Severity.png)
+![Phishing Alerts - Check Severity](../doc_files/Phishing_Alerts_-_Check_Severity.png)
