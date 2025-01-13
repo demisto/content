@@ -204,19 +204,15 @@ def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> 
 
 
 class Client(CoreClient):
-    def __init__(self, base_url, proxy, verify, timeout, params=None, remove_additional_data: bool = False):
+    def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
             params = {}
         self._params = params
-        self._remove_additional_data = remove_additional_data
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout)
 
     @property
     def headers(self):
         return get_headers(self._params)
-
-    def remove_additional_data(self):
-        return self._remove_additional_data
 
     def test_module(self, first_fetch_time):
         """
