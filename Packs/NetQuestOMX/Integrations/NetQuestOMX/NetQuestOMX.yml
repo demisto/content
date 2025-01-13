@@ -57,7 +57,7 @@ name: NetQuestOMX
 script:
   commands:
   - arguments:
-    - description: 'The entry ID of the file to upload.'
+    - description: The entry ID of the file to upload.
       name: entry_id
       required: true
     description: "Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file."
