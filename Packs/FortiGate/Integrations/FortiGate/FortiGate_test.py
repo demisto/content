@@ -1,7 +1,7 @@
 import json
 import os
 from typing import Any, Callable
-
+from pytest_mock import MockerFixture
 import CommonServerPython
 import FortiGate
 import pytest
@@ -1827,3 +1827,51 @@ def test_list_firewall_policies_return_all_policy_name(mock_client: FortiGate.Cl
     command_results = FortiGate.list_firewall_policies_command(mock_client, args)
 
     assert len(command_results.outputs) == 0
+
+
+@pytest.mark.parametrize(
+    "args, expected_value",
+    [
+        (
+            {
+                "name": "test",
+                "type_": "test",
+                "members": [],
+            },
+            {
+                "name": "test",
+                "type": "test",
+                "member": [],
+            },
+        ),
+        (
+            {
+                "name": "test",
+                "type_": "test",
+                "excluded_members": [],
+            },
+            {
+                "name": "test",
+                "type": "test",
+                "excluded-member": [],
+            },
+        ),
+        (
+            {
+                "name": "test",
+                "type_": "test",
+                "excluded_members": None,
+            },
+            {
+                "name": "test",
+                "type": "test",
+            },
+        )
+    ]
+)
+def test_update_firewall_address_ipv4_group_client_method(
+    mocker: MockerFixture, mock_client: FortiGate.Client, args: dict[str, str | list], expected_value: dict[str, str | list]
+):
+    mock_http_request = mocker.patch.object(mock_client, "_http_request")
+    mock_client.update_firewall_address_ipv4_group(**args)
+    assert mock_http_request.call_args[1]["json_data"] == expected_value
