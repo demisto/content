@@ -791,7 +791,7 @@ script:
     - contextPath: GreyNoise.Timeline.ip_address
       description: Timeline IP address.
       type: string
-  dockerimage: demisto/greynoise:1.0.0.108019
+  dockerimage: demisto/greynoise:1.0.0.117184
   runonce: false
   script: '-'
   subtype: python3
