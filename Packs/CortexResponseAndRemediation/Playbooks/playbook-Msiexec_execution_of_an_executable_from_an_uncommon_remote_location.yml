@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd2494f6-12f9-4541-8cd7-bbf184263e1b
+    taskid: 4ac8c300-a0ba-4b0f-8816-e8f4a9e451df
     type: start
     task:
-      id: cd2494f6-12f9-4541-8cd7-bbf184263e1b
+      id: 4ac8c300-a0ba-4b0f-8816-e8f4a9e451df
       version: -1
       name: ""
       iscommand: false
@@ -26,8 +26,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": -980
+          "x": 960,
+          "y": -1110
         }
       }
     note: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c0c88ef1-cb18-48af-850a-aef47a5b5474
+    taskid: 95e1f313-a103-47b7-8d45-7c458de2dc48
     type: condition
     task:
-      id: c0c88ef1-cb18-48af-850a-aef47a5b5474
+      id: 95e1f313-a103-47b7-8d45-7c458de2dc48
       version: -1
       name: Check extracted remote URL's reputation
       description: Check reputation of the remote URL from which the MSI was downloaded and installed.
@@ -92,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": -300
+          "x": 750,
+          "y": -280
         }
       }
     note: false
@@ -105,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 00aafd29-ac40-49fa-8ebe-1e3f26315edf
+    taskid: 08dd5d27-1e08-4e7e-8661-8b8801ab0883
     type: title
     task:
-      id: 00aafd29-ac40-49fa-8ebe-1e3f26315edf
+      id: 08dd5d27-1e08-4e7e-8661-8b8801ab0883
       version: -1
       name: Investigation
       type: title
@@ -123,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 240
+          "x": 940,
+          "y": 270
         }
       }
     note: false
@@ -136,10 +136,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e9fdefa1-20ae-41a5-8f5f-4c851c8debef
+    taskid: fed458b4-5680-4956-8bcf-34690533738e
     type: title
     task:
-      id: e9fdefa1-20ae-41a5-8f5f-4c851c8debef
+      id: fed458b4-5680-4956-8bcf-34690533738e
       version: -1
       name: Analysis
       type: title
@@ -148,14 +148,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+      - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": -835
+          "x": 960,
+          "y": -965
         }
       }
     note: false
@@ -167,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9b97ae73-b40a-4bb7-82c2-91d75c2fe5f4
+    taskid: a3147fef-e6c8-4e38-8248-1accf3ac738d
     type: condition
     task:
-      id: 9b97ae73-b40a-4bb7-82c2-91d75c2fe5f4
+      id: a3147fef-e6c8-4e38-8248-1accf3ac738d
       version: -1
       name: 'Check if related alerts OR defense evasion techniques exist '
       description: Check if there are any related alerts that indicate malicious msiexec activity or if the command line analysis indicates high risk.
@@ -207,8 +207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1240
+          "x": 940,
+          "y": 1220
         }
       }
     note: false
@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6a4a0ee9-4305-4a97-849c-8feba6e79a82
+    taskid: fd751959-f8ae-4ef0-8735-aaca8b0ee92b
     type: regular
     task:
-      id: 6a4a0ee9-4305-4a97-849c-8feba6e79a82
+      id: fd751959-f8ae-4ef0-8735-aaca8b0ee92b
       version: -1
       name: Check domain prevalence
       description: Get the prevalence of a domain, identified by domain_name.
@@ -242,8 +242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 70
+          "x": 530,
+          "y": 100
         }
       }
     note: false
@@ -255,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: be959527-8e01-49ec-8a34-31c2fedf3866
+    taskid: c6614547-d98f-4f0c-84ec-7466f1b8ac41
     type: title
     task:
-      id: be959527-8e01-49ec-8a34-31c2fedf3866
+      id: c6614547-d98f-4f0c-84ec-7466f1b8ac41
       version: -1
       name: Done
       type: title
@@ -270,8 +270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 2570
+          "x": 1300,
+          "y": 2550
         }
       }
     note: false
@@ -283,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3da98ab3-8606-4a33-8194-07e171f819d3
+    taskid: 62f69c52-5b95-41c1-83e5-a7b0822cc82d
     type: regular
     task:
-      id: 3da98ab3-8606-4a33-8194-07e171f819d3
+      id: 62f69c52-5b95-41c1-83e5-a7b0822cc82d
       version: -1
       name: Search for suspicious-related alerts by MITRE Technique
       description: |-
@@ -329,7 +329,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 940,
           "y": 660
         }
       }
@@ -342,10 +342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 9e6685f2-f7be-46c9-877f-5abdc54d7ec8
+    taskid: ee22533d-2819-4162-88a0-15379051d139
     type: regular
     task:
-      id: 9e6685f2-f7be-46c9-877f-5abdc54d7ec8
+      id: ee22533d-2819-4162-88a0-15379051d139
       version: -1
       name: Close Alert - True Positive
       description: Close the current alert.
@@ -368,8 +368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 2400
+          "x": 640,
+          "y": 2380
         }
       }
     note: false
@@ -381,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 6f92ded5-f34d-4bcb-8d2f-59c5b838701a
+    taskid: b4037b3b-bc13-46d6-8bbf-3883cac5b0e5
     type: condition
     task:
-      id: 6f92ded5-f34d-4bcb-8d2f-59c5b838701a
+      id: b4037b3b-bc13-46d6-8bbf-3883cac5b0e5
       version: -1
       name: Check if domain is not prevalent AND CGO process is unsigned
       description: This condition checks if the domain prevalence is not False (i.e., the domain is prevalent) and if the causality process is signed. If both conditions are met, the task is considered malicious.
@@ -434,7 +434,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 940,
           "y": 430
         }
       }
@@ -447,10 +447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 080e2a8d-7273-4d3d-8655-f1a52a31bd75
+    taskid: 4366472d-cc91-4059-894c-59066b6611a1
     type: title
     task:
-      id: 080e2a8d-7273-4d3d-8655-f1a52a31bd75
+      id: 4366472d-cc91-4059-894c-59066b6611a1
       version: -1
       name: Inconclusive
       type: title
@@ -465,8 +465,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 1410
+          "x": 1300,
+          "y": 1390
         }
       }
     note: false
@@ -478,10 +478,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 64934030-e04d-4d60-8a12-e989f351da76
+    taskid: f999a637-3507-4144-8eb8-3f0d871d4fb1
     type: regular
     task:
-      id: 64934030-e04d-4d60-8a12-e989f351da76
+      id: f999a637-3507-4144-8eb8-3f0d871d4fb1
       version: -1
       name: Get Wildfire Verdict for URL
       description: Returns a verdict for a hash.
@@ -500,8 +500,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": -460
+          "x": 750,
+          "y": -440
         }
       }
     note: false
@@ -513,10 +513,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 6f69c73d-5b82-4af3-8fe1-a1560dba336a
+    taskid: 036d604c-7aac-4e5a-8d47-399ea4ca6934
     type: title
     task:
-      id: 6f69c73d-5b82-4af3-8fe1-a1560dba336a
+      id: 036d604c-7aac-4e5a-8d47-399ea4ca6934
       version: -1
       name: Analyze CGO Commandline
       type: title
@@ -531,8 +531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 860
+          "x": 940,
+          "y": 840
         }
       }
     note: false
@@ -544,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 58cdbc01-81fe-49c8-8433-7e36ca15e313
+    taskid: 0f6a3195-3710-4629-86cd-b810f988f805
     type: regular
     task:
-      id: 58cdbc01-81fe-49c8-8433-7e36ca15e313
+      id: 0f6a3195-3710-4629-86cd-b810f988f805
       version: -1
       name: Isolate endpoint
       description: Isolates the specified endpoint.
@@ -579,8 +579,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 2230
+          "x": 410,
+          "y": 2210
         }
       }
     note: false
@@ -592,10 +592,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 0fc8aac8-7679-4282-856d-4d6b17608cf2
+    taskid: 738a3bfd-5567-4eeb-8377-64b943a6186f
     type: regular
     task:
-      id: 0fc8aac8-7679-4282-856d-4d6b17608cf2
+      id: 738a3bfd-5567-4eeb-8377-64b943a6186f
       version: -1
       name: Check CGO command for defense evasion techniques
       description: |-
@@ -642,8 +642,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1030
+          "x": 940,
+          "y": 1010
         }
       }
     note: false
@@ -655,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 088f28c7-deb0-40fb-85d6-ba08c6f203e8
+    taskid: 497e729b-f1d9-4ac3-8479-c00dd0325696
     type: title
     task:
-      id: 088f28c7-deb0-40fb-85d6-ba08c6f203e8
+      id: 497e729b-f1d9-4ac3-8479-c00dd0325696
       version: -1
       name: Remediation
       type: title
@@ -673,8 +673,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": -90
+          "x": 320,
+          "y": 250
         }
       }
     note: false
@@ -686,10 +686,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 567ba8e5-5ded-41ab-839e-0540e4f66b6e
+    taskid: 2e180059-7e3a-4f31-869c-66b4ec03fc91
     type: regular
     task:
-      id: 567ba8e5-5ded-41ab-839e-0540e4f66b6e
+      id: 2e180059-7e3a-4f31-869c-66b4ec03fc91
       version: -1
       name: Terminate Causality (CGO)
       description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
@@ -713,8 +713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 1555
+          "x": 640,
+          "y": 1535
         }
       }
     note: false
@@ -726,10 +726,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: d0198671-058b-412b-8123-b001002e70a0
+    taskid: e5fcf078-e4af-4da3-8da7-023395712e5d
     type: collection
     task:
-      id: d0198671-058b-412b-8123-b001002e70a0
+      id: e5fcf078-e4af-4da3-8da7-023395712e5d
       version: -1
       name: Approve the endpoint isolation & Block URL
       description: |-
@@ -747,8 +747,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 1750
+          "x": 640,
+          "y": 1730
         }
       }
     note: false
@@ -821,10 +821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 03e0a0dd-44c7-424b-8ef9-c5d0df157e4c
+    taskid: d77bfbd9-13b0-4b7e-81e1-62d5095b9223
     type: condition
     task:
-      id: 03e0a0dd-44c7-424b-8ef9-c5d0df157e4c
+      id: d77bfbd9-13b0-4b7e-81e1-62d5095b9223
       version: -1
       name: Check analyst answers
       description: Check the analyst's answers to the early containment approval form and execute the appropriate actions based on the responses.
@@ -893,8 +893,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 1910
+          "x": 640,
+          "y": 1890
         }
       }
     note: false
@@ -906,10 +906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: b16957fa-f969-4b68-8569-73c0e78ea777
+    taskid: 0375f467-db5e-4c75-8ffc-6752e828f353
     type: title
     task:
-      id: b16957fa-f969-4b68-8569-73c0e78ea777
+      id: 0375f467-db5e-4c75-8ffc-6752e828f353
       version: -1
       name: Isolate & Block
       type: title
@@ -925,8 +925,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 2085
+          "x": 640,
+          "y": 2065
         }
       }
     note: false
@@ -938,10 +938,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 86e54bbc-debd-46b9-83b3-0d7a83c38db8
+    taskid: 56b8e1bc-bac8-4e9e-8fdb-32f0785a68e2
     type: title
     task:
-      id: 86e54bbc-debd-46b9-83b3-0d7a83c38db8
+      id: 56b8e1bc-bac8-4e9e-8fdb-32f0785a68e2
       version: -1
       name: Isolate Only
       type: title
@@ -956,8 +956,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -550,
-          "y": 2085
+          "x": 210,
+          "y": 2065
         }
       }
     note: false
@@ -969,10 +969,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: ee66e3e0-e30b-4c97-84a2-018a2a613b5d
+    taskid: ee85b3d2-ed9b-4a21-85f6-371f18d69a99
     type: title
     task:
-      id: ee66e3e0-e30b-4c97-84a2-018a2a613b5d
+      id: ee85b3d2-ed9b-4a21-85f6-371f18d69a99
       version: -1
       name: Block URL Only
       type: title
@@ -987,8 +987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 2085
+          "x": 1070,
+          "y": 2065
         }
       }
     note: false
@@ -1000,10 +1000,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 6bf635df-5cbe-4739-8636-ccb6d6223d0a
+    taskid: 49b5b231-bb99-4eec-8674-20d72e089a98
     type: playbook
     task:
-      id: 6bf635df-5cbe-4739-8636-ccb6d6223d0a
+      id: 49b5b231-bb99-4eec-8674-20d72e089a98
       version: -1
       name: PAN-OS - Block URL - Custom URL Category
       description: |-
@@ -1059,8 +1059,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 2230
+          "x": 850,
+          "y": 2210
         }
       }
     note: false
@@ -1072,10 +1072,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: e4ee9331-4b4f-4037-8f9c-54fc1a8948bf
+    taskid: 8b97b44e-6986-471d-8bba-9d011c66e3aa
     type: title
     task:
-      id: e4ee9331-4b4f-4037-8f9c-54fc1a8948bf
+      id: 8b97b44e-6986-471d-8bba-9d011c66e3aa
       version: -1
       name: Remediation
       type: title
@@ -1090,8 +1090,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 1410
+          "x": 640,
+          "y": 1390
         }
       }
     note: false
@@ -1103,10 +1103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 17bb4e87-2659-420f-869d-ce63a8bd5b8d
+    taskid: e33ea6f9-a566-42b0-808d-e7364394f1d9
     type: condition
     task:
-      id: 17bb4e87-2659-420f-869d-ce63a8bd5b8d
+      id: e33ea6f9-a566-42b0-808d-e7364394f1d9
       version: -1
       name: Check If prevalence can be run on
       description: Check if prevalence information is available for the detected indicators
@@ -1149,8 +1149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": -105
+          "x": 750,
+          "y": -75
         }
       }
     note: false
@@ -1162,10 +1162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: bb15c39c-7d80-43d3-80ee-bb32ec6ce30f
+    taskid: 64a6d8a0-3ee8-4fec-8895-500c6d003d13
     type: regular
     task:
-      id: bb15c39c-7d80-43d3-80ee-bb32ec6ce30f
+      id: 64a6d8a0-3ee8-4fec-8895-500c6d003d13
       version: -1
       name: Check IP prevalence
       description: Get the prevalence of an IP, identified by ip_address.
@@ -1195,8 +1195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 70
+          "x": 940,
+          "y": 100
         }
       }
     note: false
@@ -1208,10 +1208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: f8e02716-f9c2-4bb7-8464-8ff01abf0056
+    taskid: 859e2ebb-410a-4f07-8711-75f7db2f8a0c
     type: condition
     task:
-      id: f8e02716-f9c2-4bb7-8464-8ff01abf0056
+      id: 859e2ebb-410a-4f07-8711-75f7db2f8a0c
       version: -1
       name: Check if URL exist
       description: Check if URL exist
@@ -1236,8 +1236,44 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": -680
+          "x": 960,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 96eb6f8e-c262-48c1-8266-d485dcd2f86b
+    type: regular
+    task:
+      id: 96eb6f8e-c262-48c1-8266-d485dcd2f86b
+      version: -1
+      name: Extract Indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      text:
+        simple: ${alert.targetprocesscmd}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": -790
         }
       }
     note: false
@@ -1253,16 +1289,16 @@ view: |-
       "1_43_#default#": 0.64,
       "21_13_#default#": 0.54,
       "45_25_yes": 0.52,
-      "45_3_#default#": 0.34,
+      "45_3_#default#": 0.19,
       "8_22_#default#": 0.51,
       "8_42_Malicious": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 3615,
-        "width": 1750,
-        "x": -550,
-        "y": -980
+        "height": 3725,
+        "width": 1470,
+        "x": 210,
+        "y": -1110
       }
     }
   }
