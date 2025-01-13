@@ -103,7 +103,7 @@ There is no context output for this command.
 ### netquest-address-list-delete
 
 ***
-This command deletes the list by the given address.
+Delete the address list of the name provided.
 
 #### Base Command
 
