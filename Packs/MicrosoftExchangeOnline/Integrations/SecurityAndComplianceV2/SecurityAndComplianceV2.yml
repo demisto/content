@@ -41,8 +41,14 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-  hidden: false
+  hidden: true
   required: false
+- display: The application ID from the Azure portal
+  name: app_id_cred
+  required: false
+  type: 9
+  displaypassword: Password
+  hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -56,12 +62,29 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  hidden: true
+- display: App Secret
+  name: app_secret_cred
+  required: false
+  type: 9
+  displaypassword: App Secret
+  hiddenusername: true
+  section: Connect
+  advanced: true
 - display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
   required: false
+- display: Tenant ID
+  name: tenant_id_cred
+  required: false
+  type: 9
+  displaypassword: Password
+  hiddenpassword: true
+  section: Connect
+  advanced: true
 - display: Connection URI
   name: connection_uri
   type: 0
