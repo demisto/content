@@ -95,7 +95,7 @@ Rename an address list. This is only meant to change the name of the list. If yo
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | new_name | The new name for an existing address list. | Required | 
-| existing_name | The existing list name of the address list that we want to modify. | Required | 
+| existing_name | The name of the address list that you want to modify. | Required | 
 
 #### Context Output
 
