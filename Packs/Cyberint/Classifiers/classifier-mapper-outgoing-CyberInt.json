@@ -3,10 +3,7 @@
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"id": "Cyberint Outgoing (mapper)",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 5,
+	"id": "CyberInt Outgoing (mapper)",
 	"mapping": {
 		"Cyberint Incident": {
 			"dontMapEventToLabels": true,
@@ -32,19 +29,9 @@
 			}
 		}
 	},
-	"name": "Cyberint Outgoing (mapper)",
-	"nameRaw": "Cyberint Outgoing (mapper)",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
+	"name": "CyberInt Outgoing (mapper)",
 	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
 	"version": -1,
     "fromVersion": "6.0.0"
 }
