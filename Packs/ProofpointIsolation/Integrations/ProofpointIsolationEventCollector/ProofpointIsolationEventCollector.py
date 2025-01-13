@@ -16,7 +16,7 @@ PRODUCT = 'Isolation'
 DEFAULT_FETCH_LIMIT = 50000
 ITEMS_PER_PAGE = 10000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-last_run = {}
+# last_run = {}
 
 ''' CLIENT CLASS '''
 
@@ -129,6 +129,58 @@ def remove_duplicate_events(start_date, ids: set, events: list) -> None:
             events.remove(event)
 
 
+def initialize_args_to_get_events(args: dict) -> tuple:
+    """
+    Initializes the arguments required to fetch events.
+
+    Args:
+        args (dict): A dictionary containing the input arguments for fetching events.
+
+    Returns:
+        tuple: A tuple containing: start (str), end (str), ids (set)
+    """
+    start = args.get('start_date')
+    end = args.get('end_date')
+    ids = set()
+
+    return start, end, ids
+
+
+def initialize_args_to_fetch_events() -> tuple:
+    """
+    Initializes the arguments required to fetch events based on the last run.
+
+    Returns:
+        tuple: A tuple containing start (str), end (str), ids (set).
+    """
+    # global last_run
+    last_run = demisto.getLastRun() or {}
+    # start = last_run.get('start_date')
+    start = "2025-01-09T11:27:08"
+    ids = set(last_run.get('ids', []))
+    end = get_current_time().strftime(DATE_FORMAT)
+    return start, end, ids
+
+
+def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) -> list:
+    """
+    Fetches events, sorts them by date, and removes duplicates.
+
+    Args:
+        client (Client): The client to fetch events from.
+        start (str): The start date for fetching events.
+        end (str): The end date for fetching events.
+        ids (set): A set of already processed event IDs to filter out duplicates.
+
+    Returns:
+        list: A list of sorted and deduplicated events.
+    """
+    events: list = client.get_events(start, end).get('data')
+    events = sort_events_by_date(events)
+    remove_duplicate_events(start, ids, events)
+    return events
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -155,30 +207,19 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
     output = []
-
-    if get_events_args:  # in case this is a get_event command
-        start = get_events_args.get('start_date')
-        end = get_events_args.get('end_date')
-        ids = set()
-    else:  # a fetch_events case
-        global last_run
-        # last_run = demisto.getLastRun() or {}
-        start = last_run.get('start_date')
-        # start = "2025-01-09T11:27:08"
+    if get_events_args:  # handle get_event command
+        start, end, ids = initialize_args_to_get_events(get_events_args)
+    else:  # handle fetch_events case
+        start, end, ids = initialize_args_to_fetch_events()
         if not start:
             # start = get_current_time().strftime(DATE_FORMAT)
             start = "2025-01-11T11:27:08"
             new_last_run = {'start_date': start, 'ids': []}
             return output, new_last_run
-        ids = set(last_run.get('ids', []))
-        end = get_current_time().strftime(DATE_FORMAT)
 
     current_start_date = start
-
     while True:
-        events: list = client.get_events(start, end).get('data')
-        events = sort_events_by_date(events)
-        remove_duplicate_events(start, ids, events)
+        events = get_and_reorganize_events(client, start, end, ids)
         if not events:
             break
 
@@ -202,6 +243,17 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
 
 def get_events(client: Client, fetch_limit: int, args: dict) -> list:
+    """
+    Fetches events within the specified date range and returns them.
+
+    Args:
+        client (Client): The client to fetch events from.
+        fetch_limit (int): The maximum number of events to fetch.
+        args (dict): A dictionary containing the start and end dates for the query.
+
+    Returns:
+        list: A list of events fetched within the specified date range.
+    """
     start_date = args.get('start_date')
     end_date = args.get('end_date')
 
@@ -239,11 +291,11 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif command == 'fetch-events':
-            while True:
-                events, new_last_run_dict = fetch_events(client, fetch_limit)
-                # demisto.setLastRun(new_last_run_dict)
-                global last_run
-                last_run = new_last_run_dict
+            # while True:
+            events, new_last_run_dict = fetch_events(client, fetch_limit)
+            demisto.setLastRun(new_last_run_dict)
+            # global last_run
+            # last_run = new_last_run_dict
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
             if events:
                 demisto.debug(f'Sending {len(events)} events to Cortex XSIAM')
