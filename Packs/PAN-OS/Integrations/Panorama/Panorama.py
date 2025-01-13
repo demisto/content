@@ -4282,12 +4282,7 @@ def panorama_custom_block_rule_command(args: dict):
     tags = argToList(args['tags']) if 'tags' in args else None
     where = args.get('where', 'bottom')
     dst = args.get('dst')
-<<<<<<< HEAD
-    result = None
-
-=======
     result: Any
->>>>>>> 6e1b5f18843dc9c202619b759651a3131dd675ad
     if not DEVICE_GROUP:
         if target:
             raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
