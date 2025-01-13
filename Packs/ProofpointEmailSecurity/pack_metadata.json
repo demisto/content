@@ -9,7 +9,11 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Alerts",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "On Demand",
