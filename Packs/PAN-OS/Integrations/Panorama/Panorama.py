@@ -2222,6 +2222,11 @@ def panorama_edit_address_group_command(args: dict):
     element_to_remove = argToList(
         args['element_to_remove']) if 'element_to_remove' in args else None
 
+    match_path: str
+    match_param: str
+    addresses_param: str
+    addresses_path: str
+    result: Any
     addresses = []
     if type_ == 'dynamic':
         if not match:
