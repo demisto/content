@@ -128,11 +128,11 @@ class Client(BaseClient):
 
         return response_json
 
-    def address_list_create_request(self, name: str, value: str):
+    def address_list_create_request(self, name: str):
         try:
             self._http_request(
                 method="POST", url_suffix="/api/Systems/Filters/ListImport/Config/Install",
-                json_data={"Name": name, "Value": value},
+                json_data={"Name": name},
                 ok_codes=(200,)
             )
         except Exception as e:
@@ -140,11 +140,11 @@ class Client(BaseClient):
                 "An error was occurred when creating the list of IPs."
             ) from e
 
-    def address_list_rename_request(self, new_name: str, new_value: str, existing_name: str):
+    def address_list_rename_request(self, new_name: str, existing_name: str):
         try:
             self._http_request(
                 method="PUT", url_suffix=f"/api/Systems/Filters/ListImport/ListName/{existing_name}/Config/Install",
-                json_data={"Name": new_name, "Value": new_value},
+                json_data={"Name": new_name},
                 ok_codes=(200,)
             )
         except Exception as e:
@@ -285,9 +285,8 @@ def address_list_create_command(client: Client, args: dict) -> CommandResults:
         A CommandResults containing a success indication or a DemistoException.
     """
     name = args["name"]  # a required argument - The name of the address list to create
-    value = args["value"]  # a required argument - The name of the address list to create
     try:
-        client.address_list_create_request(name, value)
+        client.address_list_create_request(name)
     except Exception as e:
         raise DemistoException(
             f"An error was occurred when creating an IP list with {name=}."
@@ -306,11 +305,10 @@ def address_list_rename_command(client: Client, args: dict) -> CommandResults:
         A CommandResults containing a success indication or a DemistoException.
     """
     new_name = args["new_name"]  # a required argument - The new name for an existing address list
-    new_value = args["new_value"]  # a required argument - The new value for an existing address list
     existing_name = args["existing_name"]  # a required argument - Name of the existing address list that we want to modify
 
     try:
-        client.address_list_rename_request(new_name, new_value, existing_name)
+        client.address_list_rename_request(new_name, existing_name)
     except Exception as e:
         raise DemistoException(
             f"An error was occurred when renaming {existing_name} IPs list to {new_name}."
