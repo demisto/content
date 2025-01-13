@@ -277,7 +277,7 @@ API_POINTS_TABLE = CommandResults(
 
 ''' CLIENT CLASS '''
 
-#test
+
 class Client(BaseClient):
     def __init__(self, url: str, verify: bool = True, proxy: bool = False):
         super().__init__(base_url=url, verify=verify, proxy=proxy)
