@@ -35,7 +35,7 @@ s.mount("https://", HTTPAdapter(max_retries=retries))
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-XSOAR_SEVERITY_BY_TRACEABLE_SEVERITY = {v
+XSOAR_SEVERITY_BY_TRACEABLE_SEVERITY = {
     "LOW": IncidentSeverity.LOW,
     "MEDIUM": IncidentSeverity.MEDIUM,
     "HIGH": IncidentSeverity.HIGH,
@@ -1063,8 +1063,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time.replace(
-            tzinfo=timezone.UTC
-        ) > latest_created_time.replace(tzinfo=timezone.UTC):
+            tzinfo=timezone.utc
+        ) > latest_created_time.replace(tzinfo=timezone.utc):
             latest_created_time = incident_created_time
 
     next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
