@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 
 ''' STANDALONE FUNCTION '''
@@ -17,15 +17,17 @@ def find_field_from_labels(labels: list, type_name: str) -> Any:
 ''' COMMAND FUNCTION '''
 
 
-def link_incidents_command(args: Dict[str, Any]) -> CommandResults:
+def link_incidents_command(args: dict[str, Any]) -> CommandResults:
     """Find and link the Signal incidents to the current Insight incident.
 
     :param args
     :return: Result of link action
     :rtype: CommandResults
     """
+    result: dict = {}
+    demisto.debug(f"Initializing {result=}")
 
-    if not ('id' in demisto.args()):
+    if 'id' not in demisto.args():
         cur_incident = demisto.incident()
     else:
         incident_id = demisto.args()['id']

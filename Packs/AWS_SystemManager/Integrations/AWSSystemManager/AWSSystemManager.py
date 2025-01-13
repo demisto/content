@@ -512,7 +512,7 @@ def list_inventory_command(
                 )
         return parsed_entities
 
-    kwargs: "GetInventoryRequestRequestTypeDef" = {
+    kwargs: GetInventoryRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
         "Filters": [
             {"Key": "AWS:InstanceInformation.InstanceStatus", "Values": ["active"]}
@@ -669,7 +669,7 @@ def list_associations_command(
             for association in associations
         ]
 
-    kwargs: "ListAssociationsRequestRequestTypeDef" = {
+    kwargs: ListAssociationsRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
 
@@ -880,7 +880,7 @@ def list_documents_command(
             for document in documents
         ]
 
-    kwargs: "ListDocumentsRequestRequestTypeDef" = {
+    kwargs: ListDocumentsRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
 
@@ -1031,7 +1031,7 @@ def list_automation_executions_command(
         list[CommandResults]: A list of objects containing the results of the command.
         If next_token provide in the response, the first CommandResults in the list will contain the next token.
     """
-    kwargs: "DescribeAutomationExecutionsRequestRequestTypeDef" = {
+    kwargs: DescribeAutomationExecutionsRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
