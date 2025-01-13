@@ -29,3 +29,6 @@ ignore=BA101
 
 [file:Packs/CrowdStrikeFalcon/ReleaseNotes/1_11_1.md]
 ignore=RN115
+
+[file:incidentfield-Grand_Parent_Process.json]
+ignore=IF113
