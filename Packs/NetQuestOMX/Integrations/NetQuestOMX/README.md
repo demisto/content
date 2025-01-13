@@ -42,7 +42,7 @@ There is no context output for this command.
 ### netquest-address-list-optimize
 
 ***
-Optimize Updated Address List - If the traffic elements are IP addresses, the integration should optimize the list by compressing IP addresses into CIDR groups.
+Optimize the updated address list. If the traffic elements are IP addresses, the integration will optimize the list by compressing IP addresses into CIDR groups.
 
 #### Base Command
 
