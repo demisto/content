@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Added the *Minimize Alert Information* parameter. Default value: null_values. This parameter will filter out the specified fields from the Cortex XDR alerts. If null_values is specified, will remove all None values from the alerts data (appears under incident.xdralerts)."
+    "breakingChangesNotes": "Added the *Minimize Alert Information* parameter. Default value: null_values. This parameter will filter out the specified fields from the Cortex XDR alerts. If null_values is specified, will remove all None values from the alerts data."
 }
