@@ -97,7 +97,7 @@ args:
   predefined:
   - 'True'
   - 'False'
-comment: Sends a HTTP request with advanced capabilities
+comment: Sends a HTTP request with advanced capabilities.
 commonfields:
   id: HttpV2
   version: -1
