@@ -66,7 +66,7 @@ There are no input arguments for this command.
 ### netquest-address-list-create
 
 ***
-This replaces the old list entity and overrides it.
+Create a new address list.  This list will replace and override the old list entity.
 
 #### Base Command
 
