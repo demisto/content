@@ -14,4 +14,4 @@ Using the NetQuest OMX integration you can:
 - Create a new address list.
 - Changing the name of an exists list.  
 - Delete an exists list.
-- Fetch events every period of time. Available just in XSIAM.
+- Fetch events every period of time. Available only in Cortex XSIAM.
