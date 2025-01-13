@@ -2222,11 +2222,6 @@ def panorama_edit_address_group_command(args: dict):
     element_to_remove = argToList(
         args['element_to_remove']) if 'element_to_remove' in args else None
 
-    match_path: str
-    match_param: str
-    addresses_param: str
-    addresses_path: str
-    result: Any
     if type_ == 'dynamic':
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
@@ -2245,7 +2240,7 @@ def panorama_edit_address_group_command(args: dict):
         if element_to_add:
             addresses = list(set(element_to_add + address_group_list))
         else:
-            addresses = [item for item in address_group_list if item not in element_to_remove]  # type: ignore[operator]
+            addresses = [item for item in address_group_list if item not in element_to_remove]
             if not addresses:
                 raise DemistoException(
                     f'cannot remove {address_group_list} addresses from address group {address_group_name}, '
@@ -2723,7 +2718,7 @@ def panorama_create_service_group_command(args: dict):
     services = argToList(args['services'])
     tags = argToList(args['tags']) if 'tags' in args else None
 
-    result = panorama_create_service_group(service_group_name, services, tags)  # type: ignore[arg-type]
+    result = panorama_create_service_group(service_group_name, services, tags)
 
     service_group_output = {
         'Name': service_group_name,
@@ -2795,7 +2790,7 @@ def panorama_edit_service_group(service_group_name: str, services: List[str], ta
         'element': '',
         'key': API_KEY,
     }
-    result: Any
+
     if services:
         services_xpath = XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']/members"
         services_element = '<members>' + add_argument_list(services, 'member', False) + '</members>'
@@ -2844,12 +2839,12 @@ def panorama_edit_service_group_command(args: dict):
         if services_to_add:
             services = list(set(services_to_add + service_group_list))
         else:
-            services = [item for item in service_group_list if item not in services_to_remove]  # type: ignore[operator]
+            services = [item for item in service_group_list if item not in services_to_remove]
 
         if len(services) == 0:
             raise Exception('A Service group must have at least one service.')
 
-    result = panorama_edit_service_group(service_group_name, services, tag)  # type: ignore[arg-type]
+    result = panorama_edit_service_group(service_group_name, services, tag)
 
     service_group_output = {'Name': service_group_name}
     if DEVICE_GROUP:
@@ -4273,7 +4268,7 @@ def panorama_custom_block_rule_command(args: dict):
     tags = argToList(args['tags']) if 'tags' in args else None
     where = args.get('where', 'bottom')
     dst = args.get('dst')
-    result: Any
+
     if not DEVICE_GROUP:
         if target:
             raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
@@ -14322,7 +14317,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
     ip_duration_sec = args.get('ip_duration_sec', '')
     exception_id = ""
     exception_name = ""
-    params: dict
+
     if xpath_action == 'block-ip' and (not ip_track_by or not ip_duration_sec):
         raise DemistoException(
             "ip_track_by and ip_duration_sec are required when action is 'Block IP'."

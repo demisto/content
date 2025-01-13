@@ -215,7 +215,6 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        payload = ""
         if key_algorithm == "RSA":
             payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
                 ' \"keyAlgorithm\":\"RSA\",' \
@@ -574,10 +573,6 @@ class Client(BaseClient):
                     }
 
                 )
-        else:
-            staticRRSets = []
-            trafficTargets = []
-            demisto.debug(f"{property_type} -> initialized {staticRRSets=} {trafficTargets=}")
 
         body = {
             "balanceByDownloadScore": False,
@@ -736,9 +731,6 @@ class Client(BaseClient):
             Type = raw_response.get('type')
 
         else:
-            SyncPoint = None
-            Name = None
-            Type = None
             demisto.results("Could not get the Sync Point...")
 
         body = {
@@ -3096,7 +3088,6 @@ def update_cps_enrollment_schedule_ec(raw_response: dict) -> tuple[list, list]:
             changeId = change.split('/')[6]
         else:
             changeId = ""
-            enrollmentId = ""
         entry_context.append(assign_params(**{
             "id": enrollmentId,
             "changeId": changeId,
@@ -3985,8 +3976,6 @@ def clone_papi_property_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    title = ""
-    human_readable_ec: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_property_bygroup(contract_id=contract_id, group_id=group_id)
@@ -4154,8 +4143,6 @@ def new_papi_edgehostname_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    title = ""
-    human_readable_ec: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_edgehostname_bygroup(contract_id=contract_id,
@@ -4256,8 +4243,6 @@ def new_papi_cpcode_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    title = ""
-    human_readable_ec: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_cpcodeid_bygroup(contract_id=contract_id, group_id=group_id)
