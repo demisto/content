@@ -296,6 +296,52 @@ def test_module_command(client: Client) -> tuple[None, None, str]:
     raise DemistoException(f'Test module failed, {events}')
 
 
+async def get_mock_events_with_offset_aiohttp(
+    config_ids: str,
+    offset: str | None = '',
+    limit: int = 200000,
+    from_epoch: str = '',
+    counter: int = 0
+) -> tuple[list[str], str | None]:
+    params: dict[str, int | str] = {
+        'limit': limit
+    }
+    if offset:
+        demisto.info(f"received {offset=} will run an offset based request for the {counter} time.")
+        params["offset"] = offset
+    else:
+        from_param = int(from_epoch)
+        params["from"] = from_param
+        demisto.info(f"did not receive an offset. will run a time based request with {from_param=} for the {counter} time.")
+
+    url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
+    headers = {
+    'Authorization': 'Basic YTph',
+    }
+    demisto.info(f"Init session and sending request for the {counter} time.")
+    
+    # async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
+    #                                                                                         params=params) as response:
+    #     try:
+    #         response.raise_for_status()  # Check for any HTTP errors
+    #         raw_response = await response.text()
+    #     except aiohttp.ClientError as e:
+    #         demisto.info(f"Error occurred in the {counter} time: {e}")
+    #         raw_response = ''
+    events_task = generate_events()
+    raw_response = await events_task
+    demisto.info(f"Finished executing request to Akamai for the {counter} time, processing")
+    events: list[str] = raw_response.split('\n')
+    offset = None
+    try:
+        offset_context = events.pop()
+        loaded_offset_context = json.loads(offset_context)
+        offset = loaded_offset_context.get("offset")
+    except Exception as e:
+        demisto.error(f"couldn't decode offset with {offset_context=} in the {counter} time, reason {e}")
+    return events, offset
+
+
 @logger
 def fetch_incidents_command(
         client: Client,
