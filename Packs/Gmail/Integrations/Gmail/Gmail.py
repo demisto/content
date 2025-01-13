@@ -35,7 +35,7 @@ from apiclient import discovery
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 
-''' GLOBAL VARS '''
+''' GLOBAL VARS  '''
 
 ADMIN_EMAIL = ''  # set from params later on
 PRIVATE_KEY_CONTENT = None
