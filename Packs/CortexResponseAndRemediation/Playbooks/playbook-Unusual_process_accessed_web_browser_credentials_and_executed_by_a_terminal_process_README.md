@@ -1,4 +1,4 @@
-This playbook handles "Unusual process accessed web browser credentials using terminal" alerts.
+This playbook handles "Unusual process accessed web browser credentials and executed by a terminal process" alerts.
 
 Playbook Stages:
 
@@ -38,7 +38,7 @@ This playbook does not use any integrations.
 ### Scripts
 
 * MatchRegexV2
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 
@@ -62,4 +62,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Unusual process accessed web browser credentials using terminal](../doc_files/Unusual_process_accessed_web_browser_credentials_using_terminal.png)
+![Unusual process accessed web browser credentials and executed by a terminal process](../doc_files/Unusual_process_accessed_web_browser_credentials_and_executed_by_a_terminal_process.png)
