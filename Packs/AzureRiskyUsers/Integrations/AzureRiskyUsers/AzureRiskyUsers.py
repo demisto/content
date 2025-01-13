@@ -7,7 +7,7 @@ from urllib.parse import parse_qs
 from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
 import urllib3
-#test
+
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
 MAX_ITEMS_PER_REQUEST = 500
