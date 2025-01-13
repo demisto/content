@@ -4063,6 +4063,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         if "Rate limit exceeded" in str(e):
             return_error("API rate limit")
 
+        incident_update = {}
         if updated_incident:
             updated_incident['in_mirror_error'] = str(e)
         else:
