@@ -90,10 +90,10 @@ script:
     description: "This replaces the old list entity and overrides it."
     name: netquest-address-list-create
   - arguments:
-    - description: 'The new name for an existing address list.'
+    - description: The new name for an existing address list.
       name: new_name
       required: true
-    - description: 'The existing list name of the address list that we want to modify.'
+    - description: The name of the address list that you want to modify.
       name: existing_name
       required: true
     description: "This is only meant to change the name of the list. Nothing else. If we try to give as a new_name, an existing list name, it will fail and we’ll get an error."
