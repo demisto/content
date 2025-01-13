@@ -2103,26 +2103,6 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
     return http_request('PATCH', url, data=data)
 
 
-def resolve_idp_or_mobile_detection(ids, status):
-    """
-        Send a request to update IDP/Mobile detection status.
-        :type ids: ``list``
-        :param ids: The list of ids to update.
-        :type status: ``str``
-        :param status: The new status to set.
-        :return: The response.
-        :rtype ``dict``
-    """
-    data = {
-        "action_parameters": [{"name": "update_status", "value": status}],
-        "ids": ids
-    }
-    #url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "'/alerts/entities/alerts/v2'"
-    #TODO debug it, and check also the detections above
-    url ='/alerts/entities/alerts/v2'
-    return http_request('PATCH', url, data=json.dumps(data))
-
-
 def contain_host(ids):
     """
         Contains host(s) with matching ids
@@ -2272,7 +2252,7 @@ def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
     if status not in STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES}')
-    return resolve_idp_or_mobile_detection(ids=ids, status=status)
+    return resolve_detections_request(ids=ids, update_status=status)
 
 
 def list_host_groups(filter: str | None, limit: str | None, offset: str | None) -> dict:
