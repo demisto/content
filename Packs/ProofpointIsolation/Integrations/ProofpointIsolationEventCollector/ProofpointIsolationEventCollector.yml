@@ -4,6 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://proofpointisolation.com
+  additionalinfo: The endpoint URL.
   display: Server URL
   name: base_url
   required: true
