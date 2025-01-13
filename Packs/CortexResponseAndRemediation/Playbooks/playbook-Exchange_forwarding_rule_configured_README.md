@@ -25,8 +25,8 @@ Investigation:
 
 Containment:
 
-Soft Response Actions: If at least two suspicious pieces of evidence are identified, the playbook will execute soft response actions. These actions include signing the user out and disabling the forwarding rule configured in the user's account mailbox.
-- Hard Response Actions: If more than two suspicious pieces of evidence are identified, the playbook will escalate to hard response actions. These actions include disabling the user account and removing the forwarding rule from the user's account mailbox.
+- Soft Response Actions: If at least two suspicious pieces of evidence are identified, the playbook will execute soft response actions. These actions include signing the user out and disabling the forwarding rule configured in the user's account mailbox.
+- Hard Response Actions: If more than two suspicious pieces of evidence are identified, the playbook escalates to hard response actions. These actions include disabling the user account upon analyst decision and removing the forwarding rule from the user's account mailbox.
 
 Requirements: 
 
