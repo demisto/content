@@ -199,6 +199,8 @@ def fetch_indicators_command(client: Client, last_run: dict, params: Dict[str, A
         if indicators:
             all_indicators[ioc_type] = indicators
 
+        demisto.debug(f"Found {len(indicators)} indicators for feed type {ioc_type}")
+
     # process indicators and skip if indicator id in last_run
     for feed in all_indicators:
         indicators = all_indicators[feed]
@@ -301,6 +303,7 @@ def main():
                 last_run=demisto.getLastRun(),
                 params=params
             )
+            demisto.debug(f"All fetching is done. Total found {len(indicators)} indicators.")
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
             demisto.setLastRun(next_run)

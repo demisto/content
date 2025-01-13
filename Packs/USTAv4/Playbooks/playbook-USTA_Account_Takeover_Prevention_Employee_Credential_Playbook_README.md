@@ -16,10 +16,6 @@ This playbook does not use any integrations.
 
 * StringLength
 
-### Commands
-
-* setIncident
-
 ## Playbook Inputs
 
 ---
