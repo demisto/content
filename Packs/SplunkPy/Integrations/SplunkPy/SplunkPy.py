@@ -2500,7 +2500,10 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     total_parsed_results: list[dict[str, Any]] = []
     dbot_scores: list[dict[str, Any]] = []
 
-    while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
+    while (
+        len(total_parsed_results) < int(num_of_results_from_query)  # type: ignore[arg-type]
+        and len(total_parsed_results) < results_limit
+    ):
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
         max_results_to_add = results_limit - len(total_parsed_results)
         parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,

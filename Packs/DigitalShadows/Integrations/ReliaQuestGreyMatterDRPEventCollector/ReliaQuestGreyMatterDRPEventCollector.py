@@ -444,7 +444,8 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         demisto.info(f'now: {now}, retry-after: {retry_after}')
         if retry_after_datetime and now < retry_after_datetime:
             demisto.info(
-                f'Waiting for the api to recover from rate-limit, need to wait {(retry_after - now).total_seconds()} seconds'
+                'Waiting for the api to recover from rate-limit,'
+                f' need to wait {(retry_after - now).total_seconds()} seconds'  # type: ignore[operator]
             )
             return
         for events, largest_event in client.list_triage_item_events(
