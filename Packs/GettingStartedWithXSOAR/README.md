@@ -17,7 +17,7 @@ For manual configuration, it is recommended to configure your integration instan
 - Primary Playbook: **Case Management - Generic v2**
 - Primary Incident Type: **Case**
 
-![image](https://raw.githubusercontent.com/joe-cosgrove/content/gettingstartedwithxsoarwizard/Packs/GettingStartedWithXSOAR/doc_files/image.png)
+![image](doc_files/image.png)
 
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/index).
 
