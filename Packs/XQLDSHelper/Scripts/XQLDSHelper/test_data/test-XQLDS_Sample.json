@@ -24,7 +24,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
     },
     "results": {
       "Entry": {
@@ -60,7 +60,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
     },
     "config": {
       "validation": {
@@ -173,7 +173,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
     },
     "results": {
       "Entry": {
@@ -281,7 +281,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
     },
     "config": {
       "skip-color": true
@@ -392,7 +392,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_TransferBytes.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytes.json"
     },
     "results": {
       "Entry": {
@@ -444,7 +444,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByType.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByType.json"
     },
     "results": {
       "Entry": {
@@ -496,7 +496,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_SessionsByHour.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_SessionsByHour.json"
     },
     "results": {
       "Entry": {
@@ -825,7 +825,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10AppSessionsByHour.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10AppSessionsByHour.json"
     },
     "results": {
       "Entry": {
@@ -3170,7 +3170,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByHour.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByHour.json"
     },
     "results": {
       "Entry": {
@@ -3667,7 +3667,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
     },
     "config": {
       "validation": {
@@ -3783,7 +3783,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
     },
     "results": {
       "Entry": {
@@ -3894,7 +3894,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_TransferBytes.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytes.json"
     },
     "results": {
       "Entry": {
@@ -3949,7 +3949,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByType.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByType.json"
     },
     "results": {
       "Entry": {
@@ -4004,7 +4004,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Top10AppSessionsByHour.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10AppSessionsByHour.json"
     },
     "results": {
       "Entry": {
@@ -6349,7 +6349,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByHour.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByHour.json"
     },
     "results": {
       "Entry": {
@@ -6846,7 +6846,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Duration_LongestToDestIP.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Duration_LongestToDestIP.json"
     },
     "config": {
       "is_xsiam": true
@@ -6889,7 +6889,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Number.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Number.json"
     },
     "results": {
       "Entry": {
@@ -6944,7 +6944,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_NumberTrend.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_NumberTrend.json"
     },
     "results": {
       "Entry": {
@@ -7002,7 +7002,7 @@
       ]
     },
     "xql": {
-      "response": "./test_data/qr_XQLDS_Sample_XQL_Markdown.json"
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Markdown.json"
     },
     "results": {
       "Entry": {

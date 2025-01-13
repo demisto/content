@@ -58,6 +58,10 @@ class MainTester:
 
         self.__frozen_now = now
         self.__freezer_now = None
+        
+        self.__xql_responses = demisto.get(ent, 'xql.responses')
+        self.__xql_last_resp = None
+        self.__xql_resp_iter = None
 
         incident = {
             'id': '1'
@@ -219,31 +223,53 @@ class MainTester:
 
             f = t.extractfile(file_path)
             if not f:
-                raise RuntimeError('No file - {file_path}')
+                raise RuntimeError(f'No file - {file_path}')
 
             list_data = json.loads(f.read())
             return list_data.get('data')
 
-    def __get_query_response(
+    def __next_query_response(
         self,
     ) -> Any:
-        response = demisto.get(self.__config, 'xql.response')
-        if isinstance(response, dict):
-            return response
-        elif isinstance(response, str):
-            with open(response, 'r') as f:
-                return json.loads(f.read())
+        if self.__xql_responses is None:
+            raise RuntimeError((
+                "xql.response is not configured."
+                " This test case may have been expected to hit the cache, but it didn't."
+            ))
 
-        raise RuntimeError((
-            "xql.response is not configured."
-            " This test case may have been expected to hit the cache, but it didn't."
-        ))
+        if self.__xql_resp_iter is None:
+            self.__xql_resp_iter = iter(to_list(self.__xql_responses))
+
+        conf = next(self.__xql_resp_iter)
+        if isinstance(conf, str):
+            conf = {
+                'type': 'file',
+                'path': conf
+            }
+
+        if isinstance(conf, dict):
+            _type = conf.get('type')
+            if _type == 'file':
+                with open(conf.get('path'), 'r') as f:
+                    self.__xql_last_resp = json.loads(f.read())
+            elif _type == 'data':
+                self.__xql_last_resp = conf.get('data')
+            elif _type == 'error':
+                raise RuntimeError(conf.get('message'))
+            else:
+                raise ValueError(f'Invalid XQL response config - {conf}')
+        else:
+            raise ValueError(f'Invalid XQL response config - {conf}')
+
+        return self.__xql_last_resp
 
     def __get_query_results(
         self,
     ) -> list:
-        resp = self.__get_query_response()
-        return resp['results']
+        if self.__xql_last_resp:
+            return self.__xql_last_resp['results']
+        else:
+            return []
 
     def __demisto_dt(
         self,
@@ -341,7 +367,10 @@ class MainTester:
                 raise RuntimeError('No List - {list_name}')
 
             case 'xdr-xql-generic-query':
-                return self.__get_query_response()
+                return self.__next_query_response()
+
+            case 'xdr-xql-get-query-results':
+                return self.__next_query_response()
 
             case _:
                 raise RuntimeError(f'Not implemented - {command}')
@@ -370,11 +399,7 @@ class MainTester:
                 XQLDSHelper.main()
         else:
             # Test for success
-            try:
-                XQLDSHelper.main()
-            except:
-                print(json.dumps(self.__config, indent=2))
-                raise
+            XQLDSHelper.main()
 
             # Validate Results
             assert demisto.results.call_count == 1
@@ -395,9 +420,11 @@ class MainTester:
                     expected_entry,
                     skip_keys=skip_keys,
                 )
+                """
                 if not ok:
                     print(json.dumps(self.__config, indent=2))
                     print(json.dumps(returned_entry, indent=2))
+                """
                 assert ok
 
             # Validate 'QueryParams' - only when results.QueryParams is provided
@@ -435,6 +462,7 @@ class TestXQLDSHelper:
     ) -> None:
         test_files = [
             './test_data/test-XQLDS_Sample.json',
+            './test_data/test-entry-types.json',
             './test_data/test-others.json',
             './test_data/test-errors.json',
         ]

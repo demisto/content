@@ -33,7 +33,7 @@
       "latest_time": "2024-12-31T23:59:59.000+00:00"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "errors": {
       "messages": "*latest_time (*) must be equal to or later than earliest_time*"

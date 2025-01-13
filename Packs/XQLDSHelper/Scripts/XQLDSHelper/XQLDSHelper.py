@@ -384,26 +384,12 @@ class QueryParams:
     ) -> str:
         return self.__query_string
 
-    @property
-    def earliest_time(
-        self,
-    ) -> datetime:
-        return self.__earliest_time
-
-    @property
-    def latest_time(
-        self,
-    ) -> datetime:
-        return self.__latest_time
-
-    @property
-    def earliest_time_iso(
+    def get_earliest_time_iso(
         self,
     ) -> str:
         return self.__earliest_time.isoformat(timespec='milliseconds')
 
-    @property
-    def latest_time_iso(
+    def get_latest_time_iso(
         self,
     ) -> str:
         return self.__latest_time.isoformat(timespec='milliseconds')
@@ -415,8 +401,8 @@ class QueryParams:
         return hashlib.sha256(
             json.dumps({
                 'query_string': self.query_string,
-                'earliest_time': self.earliest_time_iso,
-                'latest_time': self.latest_time_iso,
+                'earliest_time': self.get_earliest_time_iso(),
+                'latest_time': self.get_latest_time_iso(),
             }).encode()
         ).hexdigest()
 
@@ -438,8 +424,8 @@ class Cache:
         return {
             'query_name': query_params.query_name,
             'query_string': Cache.__compress(query_params.query_string),
-            'earliest_time': query_params.earliest_time_iso,
-            'latest_time': query_params.latest_time_iso,
+            'earliest_time': query_params.get_earliest_time_iso(),
+            'latest_time': query_params.get_latest_time_iso(),
         }
 
     def __load_data(
@@ -567,7 +553,7 @@ class XQLQuery:
         :param query_params: The query parameters.
         :return: List of fields retrieved.
         """
-        time_frame = f'between {query_params.earliest_time_iso} and {query_params.latest_time_iso}'
+        time_frame = f'between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}'
         demisto.debug(f'Run XQL: {query_params.query_name} {time_frame}: {query_params.query_string}')
 
         for retry_count in range(self.__retry_max + 1):
@@ -676,18 +662,20 @@ class EntryBuilder:
         dataset: list[dict[Hashable, Any]],
         sum_field: str,
         group_by: str,
+        order_asc: bool,
     ) -> dict[Hashable, float]:
         """ Sum field values by a field
 
         :param dataset: The list of fields.
         :param sum_field: The field name of the value to be summed.
         :param group_by: The field name to group the fields.
-        :return: Mapping of field name with the sum value in descending order by the sum.
+        :param order_asc: Set to True for ascending order, and False for descending order.
+        :return: Mapping of field name with the sum value in order by the sum.
         """
         d: dict[Hashable, float] = defaultdict(float)
         for fields in dataset:
             d[fields.get(group_by)] += to_float(fields.get(sum_field))
-        return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}
+        return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=not order_asc)}
 
     @staticmethod
     def __make_color_palette(
@@ -743,7 +731,6 @@ class EntryBuilder:
                             f'sort.by must be of type str or null - {type(by)}'
                         )
                         self.__by = by or default_by
-
                         self.__asc = EntryBuilder.to_sort_order(sort.get('order') or 'asc')
 
                     @property
@@ -898,10 +885,13 @@ class EntryBuilder:
 
         template = Template(params)
         if records := template.records:
+            sort: Template.Records.Sort = records.sort
+
             names = EntryBuilder.__sum_by(
                 dataset=dataset,
                 sum_field=records.data_field,
                 group_by=records.name_field,
+                order_asc=sort.asc,
             )
             # Create color mapping
             colors = EntryBuilder.__make_color_palette(
@@ -909,7 +899,6 @@ class EntryBuilder:
                 colors=records.colors,
             )
             # Build stats
-            sort: Template.Records.Sort = records.sort
             stats = [
                 assign_params(
                     name=to_str(name),
@@ -1151,6 +1140,7 @@ class EntryBuilder:
                 dataset=dataset,
                 sum_field=records.data_field,
                 group_by=records.name_field,
+                order_asc=False,
             )
             # Create color mapping
             ycolors = EntryBuilder.__make_color_palette(
@@ -1994,8 +1984,8 @@ class Main:
             'QueryParams': {
                 'query_name': query_params.query_name,
                 'query_string': query_params.query_string,
-                'earliest_time': query_params.earliest_time_iso,
-                'latest_time': query_params.latest_time_iso,
+                'earliest_time': query_params.get_earliest_time_iso(),
+                'latest_time': query_params.get_latest_time_iso(),
             },
             'QueryHash': query_params.query_hash(),
             'Entry': entry

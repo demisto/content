@@ -19,7 +19,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "Entry": {
@@ -74,6 +74,52 @@
       }
     }
   },
+  "######### cache_type: dataset - no hit",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = panw_ngfw_traffic_raw| limit 1| alter _duration = 1234| fields _duration"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "dataset"
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheDataset": {
+            "data": "ABzY8#`t?@0{@GyR*Fw4ElMoO%+FJ@QZO_!HmQvT0KfN@nH2y400",
+            "type": "gz+b85"
+          },
+          "QueryHash": "xxxx"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
   "######### cache_type: entry - hit",
   {
     "args": {
@@ -117,6 +163,144 @@
       }
     }
   },
+  "######### cache_type: entry - no hit",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = panw_ngfw_traffic_raw| limit 1| alter _duration = 1234| fields _duration"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "entry"
+    },
+    "xql": {
+      "responses": "./test_data/qr_empty_list.json"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheEntry": {
+            "data": "ABzY8K>2%T0{^R43aKneRkBhrG}lp3a?Z~yNzE%McFQlyO)LS5Dy5VbC6;97=P4n{0>!J9ic1o~EJGt>liFGUUY5T3M*si-",
+            "type": "gz+b85"
+          },
+          "QueryHash": "xxxx"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 0
+        }
+      }
+    }
+  },
+  "######### cache_type: dataset - invalid",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = panw_ngfw_traffic_raw| limit 1| alter _duration = 1234| fields _duration"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "dataset"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheDataset": {
+            "data": "XXX",
+            "type": "gz+b85"
+          },
+          "QueryHash": "663b242503dc8fe5a3e4b76f5b35d669a236c0346d60d878d8e357e6ad04a44d"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### cache_type: entry - invalid",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = panw_ngfw_traffic_raw| limit 1| alter _duration = 1234| fields _duration"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "entry"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheEntry": {
+            "data": "XXXX",
+            "type": "gz+b85"
+          },
+          "QueryHash": "663b242503dc8fe5a3e4b76f5b35d669a236c0346d60d878d8e357e6ad04a44d"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
   "######### earliest_time/latest_time - default",
   {
     "args": {
@@ -139,7 +323,7 @@
       "round_time": "0"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "QueryParams": {
@@ -174,7 +358,7 @@
       "latest_time": "2025-01-23T12:34:56+09:00"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "QueryParams": {
@@ -209,7 +393,7 @@
       "latest_time": "1767225600"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "QueryParams": {
@@ -244,7 +428,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "QueryParams": {
@@ -279,7 +463,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "QueryParams": {
@@ -314,7 +498,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "QueryParams": {
@@ -322,592 +506,6 @@
         "query_string": "Dummy XQL",
         "earliest_time": "2024-12-31T01:00:00.000+00:00",
         "latest_time": "2025-01-01T01:00:00.000+00:00"
-      }
-    }
-  },
-  "######### empty response & minimum entry settings: markdown",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "markdown"
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 1,
-        "ContentsFormat": "markdown",
-        "HumanReadable": "",
-        "Contents": null
-      }
-    }
-  },
-  "######### empty response: markdown - default text",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "markdown",
-            "markdown": {
-              "default": "## No data"
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 1,
-        "ContentsFormat": "markdown",
-        "HumanReadable": "## No data",
-        "Contents": null
-      }
-    }
-  },
-  "######### empty response: markdown - default entry",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "markdown",
-            "markdown": {
-              "default": {
-                "Type": 1,
-                "ContentsFormat": "markdown",
-                "HumanReadable": "**No entries.**",
-                "Contents": null
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 1,
-        "ContentsFormat": "markdown",
-        "HumanReadable": "**No entries.**",
-        "Contents": null
-      }
-    }
-  },
-  "######### empty response & minimum entry settings: markdown-table",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "markdown-table"
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 1,
-        "ContentsFormat": "markdown",
-        "HumanReadable": "",
-        "Contents": null
-      }
-    }
-  },
-  "######### empty response: markdown-table - default text",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "markdown-table",
-            "markdown-table": {
-              "default": "## No data"
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 1,
-        "ContentsFormat": "markdown",
-        "HumanReadable": "## No data",
-        "Contents": null
-      }
-    }
-  },
-  "######### empty response: markdown-table - default entry",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "markdown-table",
-            "markdown-table": {
-              "default": {
-                "Type": 1,
-                "ContentsFormat": "markdown",
-                "HumanReadable": "**No entries.**",
-                "Contents": null
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 1,
-        "ContentsFormat": "markdown",
-        "HumanReadable": "**No entries.**",
-        "Contents": null
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: number",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "number",
-            "number": {
-              "field": "n"
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "number",
-        "Contents": {
-          "stats": 0
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: number-trend",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "number-trend",
-            "number-trend": {
-              "prev-field": "last_n",
-              "curr-field": "curr_n"
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "number",
-        "Contents": {
-          "stats": {
-            "prevSum": 0,
-            "currSum": 0
-          }
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: pie - records",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "pie",
-            "pie": {
-              "group": "records",
-              "records": {
-                "name-field": "app",
-                "data-field": "count"
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "pie",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: pie - fields",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "pie",
-            "pie": {
-              "group": "fields",
-              "fields": {}
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "pie",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: line - records",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "line",
-            "line": {
-              "x": {
-                "by": "time_ymd"
-              },
-              "y": {
-                "group": "records",
-                "records": {
-                  "name-field": "app",
-                  "data-field": "count"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "line",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: line - fields",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "line",
-            "line": {
-              "x": {
-                "by": "time_ymd"
-              },
-              "y": {
-                "group": "fields",
-                "fields": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "line",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: single-bar - records",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "single-bar",
-            "single-bar": {
-              "group": "records",
-              "records": {
-                "name-field": "app",
-                "data-field": "count"
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "bar",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: single-bar - fields",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "single-bar",
-            "single-bar": {
-              "group": "fields",
-              "fields": {}
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "bar",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: stacked-bar - records",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "stacked-bar",
-            "stacked-bar": {
-              "x": {
-                "by": "time_ymd"
-              },
-              "y": {
-                "group": "records",
-                "records": {
-                  "name-field": "app",
-                  "data-field": "count"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "bar",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: stacked-bar - fields",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "stacked-bar",
-            "stacked-bar": {
-              "x": {
-                "by": "time_ymd"
-              },
-              "y": {
-                "group": "fields",
-                "fields": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "bar",
-        "Contents": {
-          "stats": []
-        }
-      }
-    }
-  },
-  "######### empty response  & minimum entry settings: duration",
-  {
-    "args": {
-      "templates_type": "raw",
-      "template_name": "test",
-      "templates": {
-        "test": {
-          "query": {
-            "xql": "Dummy XQL"
-          },
-          "entry": {
-            "type": "duration",
-            "duration": {
-              "field": "_duration"
-            }
-          }
-        }
-      }
-    },
-    "xql": {
-      "response": "./test_data/qr_empty_list.json"
-    },
-    "results": {
-      "Entry": {
-        "Type": 17,
-        "ContentsFormat": "duration",
-        "Contents": {
-          "stats": 0
-        }
       }
     }
   },
@@ -935,7 +533,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_different_data_types.json"
+      "responses": "./test_data/qr_different_data_types.json"
     },
     "results": {
       "Entry": {
@@ -968,7 +566,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "config": {
       "is_xsiam": true
@@ -1008,7 +606,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "config": {
       "is_xsiam": true
@@ -1048,7 +646,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "config": {
       "is_xsiam": false
@@ -1088,7 +686,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "config": {
       "is_xsiam": false
@@ -1128,7 +726,7 @@
       "latest_time": "0 seconds ago"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "config": {
       "now": "2025-01-01T01:23:45.123+00:00"
@@ -1162,7 +760,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "text": "test message"
@@ -1197,7 +795,7 @@
       "variable_substitution": "@{,}"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "text": "test message"
@@ -1232,7 +830,7 @@
       "variable_substitution": "$"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "text": "test message"
@@ -1273,7 +871,7 @@
       "variable_substitution": "${,}"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "text": "test message"
@@ -1313,7 +911,7 @@
       "variable_substitution": "${,}"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "text": "test message"
@@ -1354,7 +952,7 @@
       "variable_substitution": "${,}"
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "text": "test message"
@@ -1364,6 +962,37 @@
         "Type": 1,
         "ContentsFormat": "markdown",
         "HumanReadable": "123 test message 456",
+        "Contents": null
+      }
+    }
+  },
+  "######### variable_substitution - evaluated as null",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${text}"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "${text}",
         "Contents": null
       }
     }
@@ -1419,7 +1048,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "sourceip": "255.255.255.255",
@@ -1458,7 +1087,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "sourceip": "255.255.255.255",
@@ -1529,7 +1158,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "sourceip": "255.255.255.255",
@@ -1604,7 +1233,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "sourceip": "255.255.255.255",
@@ -1703,7 +1332,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "Entry": {
@@ -1766,7 +1395,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "Entry": {
@@ -1829,7 +1458,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "Entry": {
@@ -1894,7 +1523,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "Entry": {
@@ -1996,7 +1625,7 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "results": {
       "Entry": {
@@ -2037,11 +1666,119 @@
       }
     },
     "xql": {
-      "response": "./test_data/qr_duration.json"
+      "responses": "./test_data/qr_duration.json"
     },
     "context": {
       "sourceip": "255.255.255.255",
       "destip": "255.255.255.255"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### XQL response: pending > success",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": [
+        {
+          "type": "data",
+          "data": {
+            "execution_id": "xxxxxxxxx",
+            "number_of_results": 1,
+            "query_name": "",
+            "status": "PENDING"
+          }
+        },
+        {
+          "type": "data",
+          "data": {
+            "execution_id": "xxxxxxxxx",
+            "number_of_results": 1,
+            "query_name": "",
+            "results": [
+              {
+                "_duration": 1234
+              }
+            ],
+            "status": "SUCCESS"
+          }
+        }
+      ]
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+
+  "######### XQL response: reached max allowed amount of parallel running queries > success",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": [
+        {
+          "type": "error",
+          "message": "xxxx reached max allowed amount of parallel running queries xxxx"
+        },
+        {
+          "type": "data",
+          "data": {
+            "execution_id": "xxxxxxxxx",
+            "number_of_results": 1,
+            "query_name": "",
+            "results": [
+              {
+                "_duration": 1234
+              }
+            ],
+            "status": "SUCCESS"
+          }
+        }
+      ]
     },
     "results": {
       "Entry": {
