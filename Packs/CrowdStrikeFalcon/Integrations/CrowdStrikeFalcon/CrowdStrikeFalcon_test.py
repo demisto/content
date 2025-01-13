@@ -4524,7 +4524,7 @@ def test_update_detection_request_good__legacy(mocker, status):
     update_detection_request([input_data.remote_detection_id], status)
     assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
     assert mock_resolve_detection.call_args[1]['status'] == status
-    
+
 
 @pytest.mark.parametrize('status',
                          ['new', 'in_progress', 'closed', 'reopened'])
@@ -4561,7 +4561,7 @@ def test_update_detection_request_bad__lagacy(status):
     with pytest.raises(DemistoException) as de:
         update_detection_request([input_data.remote_detection_id], status)
     assert 'CrowdStrike Falcon Error' in str(de.value)
-    
+
 
 @pytest.mark.parametrize('status', ['true_positive', ''])
 def test_update_detection_request_bad(status, mocker):
@@ -4762,12 +4762,12 @@ def test_get_mapping_fields_command(mocker):
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
     assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection'
     assert result.scheme_types_mappings[1].fields.keys() == {'status'}
-    assert result.scheme_types_mappings[2].type_name =='CrowdStrike Falcon OFP Detection'
+    assert result.scheme_types_mappings[2].type_name == 'CrowdStrike Falcon OFP Detection'
     assert result.scheme_types_mappings[2].fields.keys() == {'status'}
-    assert result.scheme_types_mappings[3].type_name =='CrowdStrike Falcon On-Demand Scans Detection'
+    assert result.scheme_types_mappings[3].type_name == 'CrowdStrike Falcon On-Demand Scans Detection'
     assert result.scheme_types_mappings[3].fields.keys() == {'status'}
-    
-    
+
+
 def test_get_mapping_fields_command__legacy(mocker):
     """
     Given
@@ -4784,7 +4784,7 @@ def test_get_mapping_fields_command__legacy(mocker):
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
     assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection - LAGACY'
     assert result.scheme_types_mappings[1].fields.keys() == {'status'}
-    assert len (result.scheme_types_mappings) == 2
+    assert len(result.scheme_types_mappings) == 2
 
 
 def test_error_in_get_detections_by_behaviors(mocker):

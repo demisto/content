@@ -274,7 +274,8 @@ LEGACY_DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positiv
 STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES = {'new', 'in_progress', 'closed', 'reopened'}
 LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(LEGACY_DETECTION_STATUS)}'}
 
-CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES)}'}
+CS_FALCON_DETECTION_OUTGOING_ARGS = {
+    'status': f'Updated detection status, one of {"/".join(STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES)}'}
 
 CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
@@ -2233,7 +2234,7 @@ def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
 
 def update_detection_request(ids: list[str], status: str) -> dict:
     list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
-    if status not in  list_of_stats:
+    if status not in list_of_stats:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {list_of_stats}')
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
@@ -2867,7 +2868,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     for argument, description in CS_FALCON_INCIDENT_OUTGOING_ARGS.items():
         incident_type_scheme.add_field(name=argument, description=description)
     mapping_response.add_scheme_type(incident_type_scheme)
-    
+
     if LEGACY_VERSION:
         legacy_detection_type_scheme = SchemeTypeMapping(type_name='CrowdStrike Falcon Detection - LAGACY')
         for argument, description in LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS.items():
@@ -2875,12 +2876,12 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         mapping_response.add_scheme_type(legacy_detection_type_scheme)
 
         return mapping_response
-    
+
     # Supported only in the new version (Raptor) and not in the legacy version
     detection_types = [
-    'CrowdStrike Falcon Detection',
-    'CrowdStrike Falcon OFP Detection',
-    'CrowdStrike Falcon On-Demand Scans Detection']
+        'CrowdStrike Falcon Detection',
+        'CrowdStrike Falcon OFP Detection',
+        'CrowdStrike Falcon On-Demand Scans Detection']
 
     for detection_type in detection_types:
         detection_type_scheme = SchemeTypeMapping(type_name=detection_type)
@@ -2888,8 +2889,6 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
             detection_type_scheme.add_field(name=argument, description=description)
         mapping_response.add_scheme_type(detection_type_scheme)
     return mapping_response
-        
-
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -7219,7 +7218,7 @@ def main():
 
         elif command == 'cs-falcon-rtr-list-network-stats':
             host_id = args.get('host_id')
-            
+
             offline = argToBoolean(args.get('queue_offline', False))
             timeout = arg_to_number(args.get('timeout'))
             return_results(
