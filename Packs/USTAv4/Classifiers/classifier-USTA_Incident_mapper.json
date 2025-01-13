@@ -71,16 +71,16 @@
         "USTA Stolen Credit Card": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "ustastolencreditcardscreated": {
+                "Usta Stolen Credit Cards Created": {
                     "simple": "created"
                 },
-                "ustastolencreditcardsexpiredate": {
+                "Usta Stolen Credit Cards Expire Date": {
                     "simple": "content.expiration_date"
                 },
-                "ustastolencreditcardscardnumber": {
+                "Usta Stolen Credit Cards Card Number": {
                     "simple": "content.number"
                 },
-                "ustastolencreditcardsid": {
+                "Usta Stolen Credit Cards Id": {
                     "simple": "id"
                 }
             }
