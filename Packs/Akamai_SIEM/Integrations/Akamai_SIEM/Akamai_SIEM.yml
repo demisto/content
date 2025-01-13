@@ -121,6 +121,7 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  additionalinfo: Make sure this feature is not used with long running configured in the integration params and that there's no config ID used for 2 different instances / features.
 - display: Skip events decoding
   name: should_skip_decode_events
   additionalinfo: Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate.
@@ -131,7 +132,7 @@ configuration:
   - xsoar
 - display: Long running Beta
   name: longRunning
-  additionalinfo: This is a beta feature for testing new mechanism for fetch events. Use this param only if advised by CS.
+  additionalinfo: This is a beta feature for testing new mechanism for fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features. 
   type: 8
   required: false
   hidden:
@@ -243,7 +244,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: devdemisto/auth-utils:1.0.0.1885815
+  dockerimage: demisto/auth-utils:1.0.0.1968974
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true
