@@ -84,7 +84,7 @@ There is no context output for this command.
 ### netquest-address-list-rename
 
 ***
-This is only meant to change the name of the list. Nothing else. If we try to give as a new_name, an existing list name, it will fail and we’ll get an error.
+Rename an address list. This is only meant to change the name of the list. If you try to give the value of the new_name argument to an existing address list, the command will fail.
 
 #### Base Command
 
