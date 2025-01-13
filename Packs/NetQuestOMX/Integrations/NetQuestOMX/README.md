@@ -76,7 +76,7 @@ Create a new address list.  This list will replace and override the old list ent
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | What to name the new address list. | Required | 
+| name | The name for the new address list. | Required | 
 
 #### Context Output
 
