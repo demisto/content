@@ -24,7 +24,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### netquest-address-list-upload
 
 ***
-Address List-Upload - uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
+Uploads a .txt file with the address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
 
 #### Base Command
 
