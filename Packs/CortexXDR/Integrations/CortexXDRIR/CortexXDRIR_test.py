@@ -2193,6 +2193,7 @@ def test_fetch_incidents_multiple_incidents_extra_data_with_excluded_fields(mock
         limit=max_fetch + len(last_run['dedup_incidents']),
         starred=starred,
         starred_incidents_fetch_window=None,
+        exclude_artifacts=False,
         excluded_alert_fields=excluded_alert_fields,
         remove_nulls_from_alerts=remove_nulls_from_alerts
     )
