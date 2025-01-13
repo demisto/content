@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-USTA_API_PREFIX = 'api/threat-stream/v4/security-intelligence/ioc/'
+USTA_API_PREFIX = 'api/threat-stream/v4/'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
@@ -34,7 +34,12 @@ class Client(BaseClient):
 
     def build_iterator(self, ioc_feed_type: str, start_time: str, limit: int = 0) -> list:
         params = assign_params(start=start_time, size=limit)
-        res = self._http_request('GET', ioc_feed_type, params=params, headers=self._headers)
+        res = self._http_request(
+            'GET',
+            f'security-intelligence/ioc/{ioc_feed_type}',
+            params=params,
+            headers=self._headers
+        )
         next_url = res.get('next', None)
         results = res.get('results', [])
 
@@ -52,7 +57,12 @@ class Client(BaseClient):
 
     def search_iterator_without_pagination(self, ioc_feed_type: str, **kwargs) -> dict:
         params = assign_params(**kwargs)
-        return self._http_request('GET', ioc_feed_type, params=params, headers=self._headers)
+        return self._http_request(
+            'GET',
+            f'security-intelligence/ioc/{ioc_feed_type}',
+            params=params,
+            headers=self._headers
+        )
 
     @staticmethod
     def _http_error_handler(response):
@@ -63,12 +73,12 @@ class Client(BaseClient):
             raise DemistoException('Rate limit exceeded. Please try again later..!')
 
 
-def check_module(client: Client) -> str:
+def check_module(client: Client):
     try:
         client.check_auth()
     except DemistoException as e:
         if 'Connection Timeout Error' in str(e):
-            return 'Connection error. Unable to connect to the USTA API! Make sure that your IP is whitelisted in the USTA.'
+            return ValueError('Unable to connect to the USTA API! Make sure that your IP is whitelisted in the USTA.')
         raise e
     return 'ok'
 

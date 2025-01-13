@@ -76,12 +76,12 @@ class Client(BaseClient):
             raise DemistoException('Rate limit exceeded. Please try again later..!')
 
 
-def check_module(client: Client) -> str:
+def check_module(client: Client):
     try:
         client.check_auth()
     except DemistoException as e:
         if 'Connection Timeout Error' in str(e):
-            return 'Connection error. Unable to connect to the USTA API! Make sure that your IP is whitelisted in the USTA.'
+            return ValueError('Unable to connect to the USTA API! Make sure that your IP is whitelisted in the USTA.')
         raise e
     return 'ok'
 
@@ -247,8 +247,8 @@ def main() -> None:
                 first_fetch_time=datetime.strftime(first_fetch_time, DATE_FORMAT),
                 status=status
             )
-            demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+            demisto.setLastRun(next_run)
         elif cmd in commands:
             return_results(commands[cmd](client, args))
 
