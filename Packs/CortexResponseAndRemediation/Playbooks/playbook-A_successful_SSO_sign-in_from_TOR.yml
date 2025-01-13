@@ -3,6 +3,8 @@ version: -1
 name: A successful SSO sign-in from TOR
 description: "This playbook is designed to handle the following alerts:\n- A successful SSO sign-in from TOR\n- A successful SSO sign-in from TOR via a mobile device\n\nThe playbook executes the following stages:\n\nEarly Containment:\n- The playbooks will perform early containment actions by clearing\\revoking user sessions and enforcing re-authentication to terminate the connection from the Tor exit node and verify the user's identity. \nDepending on the alert source, the playbook will use either\nAzure Active Directory Users or Okta v2 integrations to clear the user sessions.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks the user's risk score.\n- Search for suspicious user agent usage within the alert.\n- Search for related XDR alerts using the following MITRE techniques to identify any malicious activity:\nT1566 - Phishing \nT1621 - Multi-Factor Authentication Request Generation\n T1110 - Brute Force\n T1556 - Modify Authentication Process\n\nRemediation:\n- Remediation actions will be taken if the user’s risk score is high, a suspicious user agent is detected, or a related alert is found. In such cases, the playbook will disable the account.\nBy default, account disabling requires analyst approval.\n\nRequires: \nFor any response action, you will need one of the following integrations: Azure Active Directory Users / Okta v2."
 tags:
+- TA0011 - Command and Control
+- T1090 - Proxy
 - TA0001 - Initial Access
 - T1078 - Valid Accounts
 starttaskid: "0"
