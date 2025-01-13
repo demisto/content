@@ -242,7 +242,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     return output, new_last_run
 
 
-def get_events(client: Client, fetch_limit: int, args: dict) -> list:
+def get_events(client: Client, fetch_limit: int, args: dict) -> tuple[list, CommandResults]:
     """
     Fetches events within the specified date range and returns them.
 
@@ -256,9 +256,25 @@ def get_events(client: Client, fetch_limit: int, args: dict) -> list:
     """
     start_date = args.get('start_date')
     end_date = args.get('end_date')
+    limit = arg_to_number(args.get('limit'))
 
-    output, _ = fetch_events(client, fetch_limit, {"start_date": start_date, "end_date": end_date})
-    return output
+    output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
+
+    filtered_events = []
+    for event in output:
+        filtered_event = {'User ID': event.get('userId'),
+                          'URL': event.get('url'),
+                          'Date': event.get('date')
+                          }
+        filtered_events.append(filtered_event)
+
+    human_readable = tableToMarkdown(name='Proofpoint Isolation Events', t=filtered_events, removeNull=True)
+    command_results = CommandResults(
+        readable_output=human_readable,
+        outputs=output,
+        outputs_prefix='ProofpointIsolationEventCollector',
+    )
+    return output, command_results
 
 
 ''' MAIN FUNCTION '''
