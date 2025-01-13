@@ -221,10 +221,7 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-folder
-    -  --skip-integration-script-file-name
-    -  --skip-markdown
-
+    
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
