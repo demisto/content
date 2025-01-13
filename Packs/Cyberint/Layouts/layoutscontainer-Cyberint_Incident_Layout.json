@@ -675,7 +675,7 @@
                             },
                             {
                                 "endCol": 1,
-                                "fieldId": "id",
+                                "fieldId": "cyberintalertid",
                                 "height": 53,
                                 "id": "83547ae0-7c04-11eb-be8b-1b6b5950a0fc",
                                 "index": 8,

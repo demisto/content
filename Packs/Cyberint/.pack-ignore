@@ -25,6 +25,12 @@ ignore=BC112
 [file:classifier-mapper-incoming-CyberInt.json]
 ignore=GR103
 
+[file:Packs/Cyberint/ReleaseNotes/1_1_4.md]
+ignore=RN115
+
+[file:Packs/Cyberint/ReleaseNotes/1_1_5.md]
+ignore=RN115
+
 [known_words]
 Cyberint
 CyberInt
