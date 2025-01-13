@@ -62,7 +62,7 @@ script:
       required: true
     description: Uploads a .txt file with the address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
     name: netquest-address-list-upload
-  - description: "Optimize Updated Address List - If the traffic elements are IP addresses, the integration should optimize the list by compressing IP addresses into CIDR groups."
+  - description: Optimize the updated address list. If the traffic elements are IP addresses, the integration will optimize the list by compressing IP addresses into CIDR groups.
     name: netquest-address-list-optimize
     outputs:
     - contextPath: NetQuest.AddressList.OverlappingAddresses
