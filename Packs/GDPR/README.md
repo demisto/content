@@ -17,4 +17,4 @@ As part of this pack, you will also get out-of-the-box malware incident type vie
 
 _For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/gdpr-breach-notification)_
 
-![GDPR_Breach_Notification](https://github.com/demisto/content/raw/e1e515a16cafef00c456eea273454ce605c23933/Packs/GDPR/doc_files/GDPR_Breach_Notification.png)
+![GDPR_Breach_Notification](doc_files/GDPR_Breach_Notification.png)
