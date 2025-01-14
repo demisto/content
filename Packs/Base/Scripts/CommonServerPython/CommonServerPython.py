@@ -6794,7 +6794,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
             ms = ms / 1000.0
 
         if is_utc:
-            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+            return datetime.fromtimestamp(ms, tz=timezone.utc)
         else:
             return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
@@ -12656,7 +12656,7 @@ def content_profiler(func):
 
 
 def find_and_remove_sensitive_text(text, pattern):
-    """
+    r"""
     Finds all appearances of sensitive information in a string using regex and adds the sensitive
     information to the list of strings that should not appear in any logs.
     The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
