@@ -6,7 +6,7 @@ args:
   isArray: true
   name: asmsystemids
 - defaultValue: asmserviceowner
-  description: The field of the alert or issue that owners should be stored.
+  description: The field of the alert or issue in which the owners should be stored.
   name: ownerrelatedfield
 - defaultValue: "False"
   description: False will use !setAlert, True will use !setIssue.
