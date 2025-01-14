@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # TODO: Add description to the integration in <root>/Packs/Coralogix/Integrations/Coralogix/Coralogix_description.md
+from datetime import datetime
 
 from CommonServerUserPython import *
 ''' IMPORTS '''
