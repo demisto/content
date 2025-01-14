@@ -560,10 +560,7 @@ def decode_url(headers: str) -> dict:
 
 ############################################## Beginning of beta part ##############################################
 BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
-EVENTS_LS = ""
 MAX_ALLOWED_CONCURRENT_TASKS = 10000
-PROCESS_POOL = None
-MAX_WORKERS = 4
 
 
 async def get_mock_events_with_offset_aiohttp(
@@ -584,20 +581,19 @@ async def get_mock_events_with_offset_aiohttp(
         params["from"] = from_param
         demisto.info(f"Running in interval = {counter}. didn't receive offset. will run time based request with {from_param=}.")
 
-    demisto.info(f"Running in interval = {counter}. Init session and sending request.")
-    # url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
-    # headers = {
-    #     'Authorization': 'Basic YTph',
-    # }
-    # async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=config_ids,
-    #                                                                                         params=params) as response:
-    #     try:
-    #         response.raise_for_status()  # Check for any HTTP errors
-    #         raw_response = await response.text()
-    #     except aiohttp.ClientError as e:
-    #         raise DemistoException(f"Error occurred in the {counter} time: {e.message}")
-    events_task = generate_events()
-    raw_response = await events_task
+    demisto.info(f"Running in interval = {counter}. Init session and sending request to Akamai.")
+    url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
+    headers = {
+        'Authorization': 'Basic YTph',
+    }
+    async with aiohttp.ClientSession(base_url=url, headers=headers,
+                                     trust_env=True) as session, session.get(url=config_ids, params=params) as response:
+        try:
+            response.raise_for_status()  # Check for any HTTP errors
+            raw_response = await response.text()
+        except aiohttp.ClientResponseError as e:
+            raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e.message}")
+
     demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
     events: list[str] = raw_response.split('\n')
     offset = None
@@ -618,6 +614,19 @@ async def get_events_with_offset_aiohttp(
     from_epoch: str = '',
     counter: int = 0
 ) -> tuple[list[str], str | None]:
+    """Send request to get events from Akamai.
+
+    Args:
+        client: Client object with request.
+        config_ids (str): security configuration ids to fetch, e.g. `51000;56080`.
+        offset (str | None): The offset (hash) to use for offset based mechanism.
+        limit (int, optional): The number of events to limit for every request.
+        from_epoch (str): From when to fetch if first time.
+        counter (int, optional): The execution number.
+
+    Returns:
+        tuple[list[str], str | None]: The events and offset obtained from last request.
+    """
     params: dict[str, int | str] = {
         'limit': limit
     }
@@ -634,137 +643,82 @@ async def get_events_with_offset_aiohttp(
 
     async with aiohttp.ClientSession(base_url=url,
                                      trust_env=True) as session, session.get(url=config_ids,
-                                                                           params=params,
-                                                                           auth=client._auth,
-                                                                           ssl=client._verify) as response:
+                                                                             params=params,
+                                                                             auth=client._auth,
+                                                                             ssl=client._verify) as response:
         try:
             response.raise_for_status()  # Check for any HTTP errors
-            raw_response = await response.text()
-        except aiohttp.ClientError as e:
-            demisto.info(f"Running in interval = {counter}. Error occurred when sending request to akamai: {e}")
-            raw_response = ''
+            raw_response = await response.read()
+        except aiohttp.ClientResponseError as e:
+            raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e}")
     demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
     events: list[str] = raw_response.split('\n')
-    offset = None
+    new_offset = None
     try:
         offset_context = events.pop()
         loaded_offset_context = json.loads(offset_context)
-        offset = loaded_offset_context.get("offset")
+        new_offset = loaded_offset_context.get("offset")
     except Exception as e:
         demisto.error(f"Running in interval = {counter}. Couldn't decode offset with {offset_context=}, reason {e}")
-    return events, offset
-
-
-async def generate_events() -> str:
-    global EVENTS_LS
-    if not EVENTS_LS:
-        events = []
-        original_dict = {
-            "attackData": {
-                "clientIP": "192.0.2.82",
-                "configId": "14227",
-                "policyId": "qik1_26545",
-                "ruleActions": "YWxlcnQ%3d%3bYWxlcnQ%3d%3bZGVueQ%3d%3d",
-                "ruleData": "dGVsbmV0LmV4ZQ%3d%3d%3bdGVsbmV0LmV4ZQ%3d%3d%3bVmVjdG9yIFNjb3JlOiAxMCwgREVOWSB0aHJlc2hvbGQ6IDksIEFsZXJ0IFJ1bGVzOiA5NTAwMDI6OTUwMDA2LCBEZW55IFJ1bGU6ICwgTGFzdCBNYXRjaGVkIE1lc3NhZ2U6IFN5c3RlbSBDb21tYW5kIEluamVjdGlvbg%3d%3d",
-                "ruleMessages": "U3lzdGVtIENvbW1hbmQgQWNjZXNz%3bU3lzdGVtIENvbW1hbmQgSW5qZWN0aW9u%3bQW5vbWFseSBTY29yZSBFeGNlZWRlZCBmb3IgQ29tbWFuZCBJbmplY3Rpb24%3d",
-                "ruleSelectors": "QVJHUzpvcHRpb24%3d%3bQVJHUzpvcHRpb24%3d%3b",
-                "ruleTags": "T1dBU1BfQ1JTL1dFQl9BVFRBQ0svRklMRV9JTkpFQ1RJT04%3d%3bT1dBU1BfQ1JTL1dFQl9BVFRBQ0svQ09NTUFORF9JTkpFQ1RJT04%3d%3bQUtBTUFJL1BPTElDWS9DTURfSU5KRUNUSU9OX0FOT01BTFk%3d",
-                "ruleVersions": "NA%3d%3d%3bNA%3d%3d%3bMQ%3d%3d",
-                "rules": "OTUwMDAy%3bOTUwMDA2%3bQ01ELUlOSkVDVElPTi1BTk9NQUxZ"
-            },
-            "botData": {
-                "botScore": "100",
-                "responseSegment": "3"
-            },
-            "clientData": {
-                "appBundleId": "com.mydomain.myapp",
-                "appVersion": "1.23",
-                "sdkVersion": "4.7.1",
-                "telemetryType": "2"
-            },
-            "format": "json",
-            "geo": {
-                "asn": "14618",
-                "city": "ASHBURN",
-                "continent": "288",
-                "country": "US",
-                "regionCode": "VA"
-            },
-            "httpMessage": {
-                "bytes": "266",
-                "host": "www.hmapi.com",
-                "method": "GET",
-                "path": "/",
-                "port": "80",
-                "protocol": "HTTP/1.1",
-                "query": "option=com_jce%20telnet.exe",
-                "requestHeaders": "User-Agent%3a%20BOT%2f0.1%20(BOT%20for%20JCE)%0d%0aAccept%3a%20text%2fhtml,application%2fxhtml+xml,application%2fxml%3bq%3d0.9,*%2f*%3bq%3d0.8%0d%0auniqueID%3a%20CR_H8%0d%0aAccept-Language%3a%20en-US,en%3bq%3d0.5%0d%0aAccept-Encoding%3a%20gzip,%20deflate%0d%0aConnection%3a%20keep-alive%0d%0aHost%3a%20www.hmapi.com%0d%0aContent-Length%3a%200%0d%0a",
-                "requestId": "1158db1758e37bfe67b7c09",
-                "responseHeaders": "Server%3a%20AkamaiGHost%0d%0aMime-Version%3a%201.0%0d%0aContent-Type%3a%20text%2fhtml%0d%0aContent-Length%3a%20266%0d%0aExpires%3a%20Tue,%2004%20Apr%202017%2010%3a57%3a02%20GMT%0d%0aDate%3a%20Tue,%2004%20Apr%202017%2010%3a57%3a02%20GMT%0d%0aConnection%3a%20close%0d%0aSet-Cookie%3a%20ak_bmsc%3dAFE4B6D8CEEDBD286FB10F37AC7B256617DB580D417F0000FE7BE3580429E23D%7epluPrgNmaBdJqOLZFwxqQLSkGGMy4zGMNXrpRIc1Md4qtsDfgjLCojg1hs2HC8JqaaB97QwQRR3YS1ulk+6e9Dbto0YASJAM909Ujbo6Qfyh1XpG0MniBzVbPMUV8oKhBLLPVSNCp0xXMnH8iXGZUHlUsHqWONt3+EGSbWUU320h4GKiGCJkig5r+hc6V1pi3tt7u3LglG3DloEilchdo8D7iu4lrvvAEzyYQI8Hao8M0%3d%3b%20expires%3dTue,%2004%20Apr%202017%2012%3a57%3a02%20GMT%3b%20max-age%3d7200%3b%20path%3d%2f%3b%20domain%3d.hmapi.com%3b%20HttpOnly%0d%0a",
-                "start": f"{int(time.time())}",
-                "status": "200"
-            },
-            "type": "akamai_siem",
-            "userRiskData": {
-                "allow": "0",
-                "general": "duc_1h:10|duc_1d:30",
-                "originUserId": "jsmith007",
-                "risk": "udfp:1325gdg4g4343g/M|unp:74256/H",
-                "score": "75",
-                "status": "0",
-                "trust": "ugp:US",
-                "username": "jsmith@example.com",
-                "uuid": "964d54b7-0821-413a-a4d6-8131770ec8d5"
-            },
-            "version": "1.0"
-        }
-        import copy
-        for i in range(300000):
-            duplicated_dict = copy.deepcopy(original_dict)
-            duplicated_dict["unique_id"] = i
-            events.append(json.dumps(duplicated_dict))
-        events.append(json.dumps({
-            "total": 300000,
-            "offset": "Hayun offset",
-            "limit": 300000
-        }))
-        EVENTS_LS = "\n".join(events)
-    else:
-        demisto.info("Skipping creating new events, going to sleep for 5 seconds.")
-        await asyncio.sleep(5)
-        demisto.info("Woke up after 5 seconds, continue running.")
-    return EVENTS_LS
+        new_offset = offset
+    return events, new_offset
 
 
 ''' COMMANDS '''
 
 
-async def wait_until_tasks_load_decrease(counter):
-    while (num_of_tasks := len(asyncio.all_tasks())) > MAX_ALLOWED_CONCURRENT_TASKS:
-        demisto.info(f"Running in interval = {counter}. current tasks total size = {num_of_tasks} is larger than the max allowed number of tasks"
-                     f"{MAX_ALLOWED_CONCURRENT_TASKS}. sleeping for 60 seconds to let other tasks finish.")
-        await asyncio.sleep(60)
+async def wait_until_tasks_load_decrease(counter: int, max_concurrent_tasks: int):
+    """Testing if there's a tasks load. If so, will go to sleep for 30 seconds so execution can catch up.
+
+    Args:
+        counter (int): The current execution number.
+        max_concurrent_tasks (int): The maximum number of tasks allowed to run concurrently.
+    """
+    while (num_of_tasks := len(asyncio.all_tasks())) > max_concurrent_tasks:
+        demisto.info(f"Running in interval = {counter}. current tasks total size = {num_of_tasks} is larger than the max allowed"
+                     f" number of tasks {max_concurrent_tasks}. sleeping for 30 seconds to let other tasks finish.")
+        await asyncio.sleep(30)
 
 
 @logger
 async def fetch_events_long_running_command(client: Client,
-                                            from_time,
-                                            page_size,
-                                            config_ids,
-                                            ctx,
-                                            should_skip_decode_events):
+                                            from_time: str,
+                                            page_size: int,
+                                            config_ids: str,
+                                            ctx: dict,
+                                            should_skip_decode_events: bool,
+                                            max_concurrent_tasks: int):
     """Asynchronously gathers events from Akamai SIEM. Decode them, and send them to xsiam.
 
     Args:
-        client: Client object with request
+        client: Client object with request.
+        from_time (str): From when to fetch if first time, e.g. `3 days`.
+        page_size (int): The number of events to limit for every request.
+        config_ids (str): security configuration ids to fetch, e.g. `51000;56080`.
+        ctx (dict): The integration context.
+        should_skip_decode_events (bool): Whether we should skip serializing and decoding events or not.
+        max_concurrent_tasks (int): The maximum number of tasks allowed to run concurrently.
 
     """
     offset = ctx.get("offset")
-    async for events, counter in get_events_from_akamai(client, config_ids, from_time, page_size, offset):
-        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter))  # noqa: RUF006
+    async for events, counter, last_offset in get_events_from_akamai(client, config_ids, from_time, page_size,
+                                                                     offset, max_concurrent_tasks):
+        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events,  # noqa: RUF006
+                                                             last_offset, counter))
+        offset = last_offset
 
+        
+async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode_events: bool, offset: str | None, counter: int):
+    """Process the event if should_skip_decode_events=False (json serialize and decode).
+    Send the events to CSP's send_events_to_xsiam.
+    save the offset after the execution is done and update the module health.
 
-async def process_and_send_events_to_xsiam(events, should_skip_decode_events, offset, counter):
+    Args:
+        events (list[str]): The list of json serialized events.
+        should_skip_decode_events (bool): Whether we should skip serializing and decoding events or not.
+        offset (str | None): The offset hash.
+        counter (int): The current execution number.
+    """
     demisto.info(f"Running in interval = {counter}. got {len(events)} events, moving to processing events data.")
     processed_events = []
     if should_skip_decode_events:
@@ -772,25 +726,27 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
         processed_events = events
     else:
         demisto.info(f"Running in interval = {counter}. decoding events.")
+        processed_events = []
         for event in events:
             try:
                 event = json.loads(event)
                 if "attackData" in event:
                     for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
                                             'ruleActions', 'ruleVersions']:
-                        event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
-                                                                                                              ""))
+                        event['attackData'][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
+                            event.get('attackData',  # type: ignore[attr-defined]
+                                      {}).get(attack_data_key, ""))
                 if "httpMessage" in event:
-                    event['httpMessage']['requestHeaders'] = decode_url(
-                        event.get('httpMessage', {}).get('requestHeaders', ""))
-                    event['httpMessage']['responseHeaders'] = decode_url(
-                        event.get('httpMessage', {}).get('responseHeaders', ""))
+                    event['httpMessage']['requestHeaders'] = decode_url(  # type: ignore[index]
+                        event.get('httpMessage', {}).get('requestHeaders', ""))  # type: ignore[attr-defined]
+                    event['httpMessage']['responseHeaders'] = decode_url(  # type: ignore[index]
+                        event.get('httpMessage', {}).get('responseHeaders', ""))  # type: ignore[attr-defined]
             except Exception as e:
                 demisto.debug(f"Couldn't decode {event=}, reason: {e}")
             finally:
                 processed_events.append(event)
     demisto.info(f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam.")
-    tasks = send_events_to_xsiam_akamai(events, VENDOR, PRODUCT, should_update_health_module=False,
+    tasks = send_events_to_xsiam_akamai(processed_events, VENDOR, PRODUCT, should_update_health_module=False,
                                         chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True,
                                         url_key="host", data_format="json", data_size_expected_to_split_evenly=True,
                                         counter=counter)
@@ -803,7 +759,26 @@ async def process_and_send_events_to_xsiam(events, should_skip_decode_events, of
     demisto.info(f"Running in interval = {counter}. Finished updating module health.")
 
 
-async def get_events_from_akamai(client: Client, config_ids, from_time, page_size, offset):
+async def get_events_from_akamai(client: Client,
+                                 config_ids: str,
+                                 from_time: str,
+                                 page_size: int,
+                                 offset: str | None,
+                                 max_concurrent_tasks: int):
+    """Iteratively checks for condition where the loop should wait due to multiple reasons
+    and then gathers events from Akamai SIEM.
+
+    Args:
+        client: Client object with request.
+        config_ids (str): security configuration ids to fetch, e.g. `51000;56080`.
+        from_time (str): From when to fetch if first time, e.g. `3 days`.
+        page_size: The number of events to limit for every request.
+        offset (str | None): The offset (hash) to use for offset based mechanism.
+        max_concurrent_tasks (int): The maximum number of tasks allowed to run concurrently.
+
+    Yields:
+        (list[str], int, str): events (not serialized), counter (the current execution number), and the new offset.
+    """
     counter = 0
     while True:
         if counter > 100_000:
@@ -814,7 +789,7 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
         demisto.info(f"Running in interval = {counter}. Preparing to get events with {offset=}, and {page_size=}.")
         try:
             demisto.info(f"Running in interval = {counter}. Testing for possible tasks qt overflow.")
-            await wait_until_tasks_load_decrease(counter)
+            await wait_until_tasks_load_decrease(counter, max_concurrent_tasks)
             demisto.info(f"Running in interval = {counter}. Finished testing for possible tasks qt overflow.")
             get_events_task = get_mock_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
             # get_events_task = get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
@@ -836,11 +811,11 @@ async def get_events_from_akamai(client: Client, config_ids, from_time, page_siz
             await asyncio.sleep(60)
             demisto.info(f"Running in interval = {counter}. Done sleeping 60 seconds.")
         if events:
-            yield events, counter
+            yield events, counter, offset
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             if not events:
                 demisto.debug(f"Running in interval = {counter}. No events were received from Akamai,"
-                               "going to sleep for 60 seconds.")
+                              "going to sleep for 60 seconds.")
             else:
                 demisto.info(f"Running in interval = {counter}. got {len(events)} events which is less"
                              f"than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}, going to sleep for 60 seconds.")
@@ -1043,8 +1018,8 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
 
 def split_data_to_chunks_evenly(data, target_chunk_size):
     """
-    Splits a string of data into chunks of an approximately specified size.
-    The actual size can be lower.
+    Splits a string/list of data into chunks of an approximately specified size.
+    The actual size can be lower. the slicing is based on the assumption that all entries have the same size.
 
     :type data: ``list`` or a ``string``
     :param data: A list of data or a string delimited with \n  to split to chunks.
@@ -1277,15 +1252,16 @@ def main():  # pragma: no cover
         elif command == "long-running-execution":
             page_size = min(int(params.get("beta_page_size", BETA_FETCH_EVENTS_MAX_PAGE_SIZE)), BETA_FETCH_EVENTS_MAX_PAGE_SIZE)
             should_skip_decode_events = params.get("should_skip_decode_events", False)
-            global PROCESS_POOL
-            PROCESS_POOL = concurrent.futures.ProcessPoolExecutor(max_workers=MAX_WORKERS)
+            max_concurrent_tasks = min(int(params.get("max_concurrent_tasks", 100)), MAX_ALLOWED_CONCURRENT_TASKS)
             demisto.info("Starting long-running execution.")
+
             asyncio.run(fetch_events_long_running_command(client,
                                                           from_time=params.get('fetchTime', '5 minutes'),
                                                           page_size=page_size,
                                                           config_ids=params.get("configIds", ""),
                                                           ctx=get_integration_context() or {},
-                                                          should_skip_decode_events=should_skip_decode_events))
+                                                          should_skip_decode_events=should_skip_decode_events,
+                                                          max_concurrent_tasks=max_concurrent_tasks))
 
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())

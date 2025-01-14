@@ -45,6 +45,7 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
     | Skip events decoding | False | Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate. |
     | Long running instance | False | This is a beta feature for testing new mechanism for fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features.  |
     | Beta Page Size | False | The number of events to fetch per request to akamai Default is 200k, maximum is 600k as per Akamai documentation. Use this only when using the long running beta feature. |
+    | Max allowed concurrent tasks | False | The number of tasks that can run concurrently - the higher the number, the bigger the gap between the ingested events and the events pulled from akamai can be. Maximum is 10k. Use this only when using the long running beta feature. |
     | Trust any certificate (not secure) | False | |
     | Use system proxy settings | False | |
 

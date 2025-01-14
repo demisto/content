@@ -147,6 +147,15 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+- display: Max allowed concurrent tasks 
+  name: max_concurrent_tasks
+  type: 0
+  defaultvalue: '100'
+  required: false
+  additionalinfo: The number of tasks that can run concurrently - the higher the number, the bigger the gap between the ingested events and the events pulled from akamai can be. Maximum is 10k. Use this only when using the long running beta feature.
+  section: Collect
+  hidden:
+  - xsoar
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
