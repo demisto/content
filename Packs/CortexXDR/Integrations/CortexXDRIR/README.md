@@ -31,7 +31,7 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Prevent Only Mode | Whether the Cortex XDR tenant mode is prevent only. | False |
     | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
     | Minimize Incident Information | Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information. | False |
-    | Minimize Alert Information | Whether to remove the additional data field (incident.additionaldata in the context data), Relevant for incidents of type- XDR incident Lite, Malware Investigation and Response. This elimination is highly recommended.| False|
+    | Minimize Alert Information | Whether to remove the additional data field (incident.additionaldata in the context data). Relevant for incidents of type- XDR incident Lite, Malware Investigation and Response. This minimization is highly recommended.| False|
     | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
