@@ -1961,7 +1961,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
     result = []
     for action_id in action_id_list:
         reply = client.action_status_get(action_id)
-        data = reply.get('data')
+        data = reply.get('data') or {}
         error_reasons = reply.get('errorReasons', {})
 
         for endpoint_id, status in data.items():
