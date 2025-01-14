@@ -44,7 +44,7 @@ configuration:
   hidden: true
   required: false
 - display: The application ID from the Azure portal
-  name: app_id_cred
+  name: credentials_app_id
   required: false
   type: 9
   displaypassword: Password
@@ -64,7 +64,7 @@ configuration:
   required: false
   hidden: true
 - display: App Secret
-  name: app_secret_cred
+  name: credentials_app_secret
   required: false
   type: 9
   displaypassword: App Secret
@@ -78,7 +78,7 @@ configuration:
   advanced: true
   required: false
 - display: Tenant ID
-  name: tenant_id_cred
+  name: credentials_tenant_id
   required: false
   type: 9
   displaypassword: Password
