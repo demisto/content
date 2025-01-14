@@ -109,12 +109,12 @@ ATTACHMENT_TYPE = 'attachmentType'
 TOIS_PATH = '/root/Top of Information Store/'
 
 ENTRY_CONTEXT = "EntryContext"
-CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,
-                                                                                                               MESSAGE_ID)
+CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items(val.{ITEM_ID} == obj.{ITEM_ID} || (val.{MESSAGE_ID} &&" \
+                          f"obj.{MESSAGE_ID} && val.{MESSAGE_ID} == obj.{MESSAGE_ID}))"
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
-CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
-CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
-CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
+CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FILE_ATTACHMENT = f".FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FOLDER = f"EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})"
 
 LAST_RUN_TIME = "lastRunTime"
 LAST_RUN_IDS = "ids"
@@ -129,6 +129,8 @@ LAST_RUN_IDS_QUEUE_SIZE = 500
 
 # NOTE: Same method used in EWSMailSender
 # If you are modifying this probably also need to modify in the other file
+
+
 def exchangelib_cleanup():  # pragma: no cover
     try:
         exchangelib.close_connections()
@@ -301,7 +303,7 @@ class MarkAsJunk(EWSAccountService):
         return "Success"
 
     def get_payload(self, item_id, move_item):  # pragma: no cover
-        junk = create_element('m:%s' % self.SERVICE_NAME,
+        junk = create_element(f'm:{self.SERVICE_NAME}',
                               {"IsJunk": "true",
                                "MoveItem": ("true" if move_item else "false")})
 
@@ -361,34 +363,6 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
-def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
-    """
-    Extract all data-url content from within the html and return as separate attachments.
-    Due to security implications, we support only images here
-    We might not have Beautiful Soup so just do regex search
-    """
-    attachments = []
-    clean_body = ''
-    last_index = 0
-    for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
-        name = f'image{i}'
-        cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
-        attachment = {
-            'data': b64_decode(m.group(3)),
-            'name': name
-        }
-        attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
-        last_index = m.end() - 1
-        new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                        content_id=attachment.get('cid'), is_inline=True)
-        attachments.append(new_attachment)
-
-    clean_body += html_body[last_index:]
-    return clean_body, attachments
-
-
 def get_message_for_body_type(body, body_type, html_body):
     """
     Compatibility with Data Collection - where body_type is not provided, we will use the html_body if it exists.
@@ -413,32 +387,32 @@ def get_message_for_body_type(body, body_type, html_body):
 
 class GetSearchableMailboxes(EWSService):  # pragma: no cover
     SERVICE_NAME = 'GetSearchableMailboxes'
-    element_container_name = '{%s}SearchableMailboxes' % MNS
+    element_container_name = f'{{{MNS}}}SearchableMailboxes'
 
     @staticmethod
     def parse_element(element):
         return {
-            MAILBOX: element.find("{%s}PrimarySmtpAddress" % TNS).text if element.find(
-                "{%s}PrimarySmtpAddress" % TNS) is not None else None,
-            MAILBOX_ID: element.find("{%s}ReferenceId" % TNS).text if element.find(
-                "{%s}ReferenceId" % TNS) is not None else None,
-            'displayName': element.find("{%s}DisplayName" % TNS).text if element.find(
-                "{%s}DisplayName" % TNS) is not None else None,
-            'isExternal': element.find("{%s}IsExternalMailbox" % TNS).text if element.find(
-                "{%s}IsExternalMailbox" % TNS) is not None else None,
-            'externalEmailAddress': element.find("{%s}ExternalEmailAddress" % TNS).text if element.find(
-                "{%s}ExternalEmailAddress" % TNS) is not None else None
+            MAILBOX: element.find(f"{{{TNS}}}PrimarySmtpAddress").text if element.find(
+                f"{{{TNS}}}PrimarySmtpAddress") is not None else None,
+            MAILBOX_ID: element.find(f"{{{TNS}}}ReferenceId").text if element.find(
+                f"{{{TNS}}}ReferenceId") is not None else None,
+            'displayName': element.find(f"{{{TNS}}}DisplayName").text if element.find(
+                f"{{{TNS}}}DisplayName") is not None else None,
+            'isExternal': element.find(f"{{{TNS}}}IsExternalMailbox").text if element.find(
+                f"{{{TNS}}}IsExternalMailbox") is not None else None,
+            'externalEmailAddress': element.find(f"{{{TNS}}}ExternalEmailAddress").text if element.find(
+                f"{{{TNS}}}ExternalEmailAddress") is not None else None
         }
 
     def call(self):
         if self.protocol.version.build < EXCHANGE_2013:
-            raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
+            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later')
         elements = self._get_elements(payload=self.get_payload())
         return [self.parse_element(e) for e in elements]
 
     def get_payload(self):
         element = create_element(
-            'm:%s' % self.SERVICE_NAME,
+            f'm:{self.SERVICE_NAME}',
         )
         return element
 
@@ -454,31 +428,31 @@ class SearchMailboxes(EWSService):
 
     @staticmethod
     def parse_element(element):  # pragma: no cover
-        to_recipients = element.find('{%s}ToRecipients' % TNS)
+        to_recipients = element.find(f'{{{TNS}}}ToRecipients')
         if to_recipients:
             to_recipients = [x.text if x is not None else None for x in to_recipients]
 
         result = {
-            ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'] if element.find('{%s}Id' % TNS) is not None else None,
+            ITEM_ID: element.find(f'{{{TNS}}}Id').attrib['Id'] if element.find(f'{{{TNS}}}Id') is not None else None,
             MAILBOX: element.find(f'{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress').text if element.find(
                 f'{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress') is not None else None,
-            'subject': element.find("{%s}Subject" % TNS).text if element.find(
-                "{%s}Subject" % TNS) is not None else None,
+            'subject': element.find(f"{{{TNS}}}Subject").text if element.find(
+                f"{{{TNS}}}Subject") is not None else None,
             'toRecipients': to_recipients,
-            'sender': element.find("{%s}Sender" % TNS).text if element.find("{%s}Sender" % TNS) is not None else None,
-            'hasAttachments': element.find("{%s}HasAttachment" % TNS).text if element.find(
-                "{%s}HasAttachment" % TNS) is not None else None,
-            'datetimeSent': element.find("{%s}SentTime" % TNS).text if element.find(
-                "{%s}SentTime" % TNS) is not None else None,
-            'datetimeReceived': element.find("{%s}ReceivedTime" % TNS).text if element.find(
-                "{%s}ReceivedTime" % TNS) is not None else None
+            'sender': element.find(f"{{{TNS}}}Sender").text if element.find(f"{{{TNS}}}Sender") is not None else None,
+            'hasAttachments': element.find(f"{{{TNS}}}HasAttachment").text if element.find(
+                f"{{{TNS}}}HasAttachment") is not None else None,
+            'datetimeSent': element.find(f"{{{TNS}}}SentTime").text if element.find(
+                f"{{{TNS}}}SentTime") is not None else None,
+            'datetimeReceived': element.find(f"{{{TNS}}}ReceivedTime").text if element.find(
+                f"{{{TNS}}}ReceivedTime") is not None else None
         }
 
         return result
 
     def call(self, query, mailboxes):  # pragma: no cover
         if self.protocol.version.build < EXCHANGE_2013:
-            raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
+            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later')
         elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
         return [self.parse_element(x) for x in elements]
 
@@ -496,7 +470,7 @@ class SearchMailboxes(EWSService):
             mailboxes_scopes.append(get_mailbox_search_scope(mailbox))
         add_xml_child(mailbox_query_element, "t:MailboxSearchScopes", mailboxes_scopes)
 
-        element = create_element('m:%s' % self.SERVICE_NAME)
+        element = create_element(f'm:{self.SERVICE_NAME}')
         add_xml_child(element, "m:SearchQueries", mailbox_query_element)
         add_xml_child(element, "m:ResultType", "PreviewOnly")
         add_xml_child(element, "m:PageSize", str(self.limit))
@@ -506,21 +480,21 @@ class SearchMailboxes(EWSService):
 
 class ExpandGroup(EWSService):
     SERVICE_NAME = 'ExpandDL'
-    element_container_name = '{%s}DLExpansion' % MNS
+    element_container_name = f'{{{MNS}}}DLExpansion'
 
     @staticmethod
     def parse_element(element):  # pragma: no cover
         return {
-            MAILBOX: element.find("{%s}EmailAddress" % TNS).text if element.find(
-                "{%s}EmailAddress" % TNS) is not None else None,
-            'displayName': element.find("{%s}Name" % TNS).text if element.find("{%s}Name" % TNS) is not None else None,
-            'mailboxType': element.find("{%s}MailboxType" % TNS).text if element.find(
-                "{%s}MailboxType" % TNS) is not None else None
+            MAILBOX: element.find(f"{{{TNS}}}EmailAddress").text if element.find(
+                f"{{{TNS}}}EmailAddress") is not None else None,
+            'displayName': element.find(f"{{{TNS}}}Name").text if element.find(f"{{{TNS}}}Name") is not None else None,
+            'mailboxType': element.find(f"{{{TNS}}}MailboxType").text if element.find(
+                f"{{{TNS}}}MailboxType") is not None else None
         }
 
     def call(self, email_address, recursive_expansion=False):  # pragma: no cover
         if self.protocol.version.build < EXCHANGE_2010:
-            raise NotImplementedError('%s is only supported for Exchange 2010 servers and later' % self.SERVICE_NAME)
+            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2010 servers and later')
         try:
             if recursive_expansion == 'True':
                 group_members = {}  # type: dict
@@ -533,7 +507,7 @@ class ExpandGroup(EWSService):
             sys.exit()
 
     def get_payload(self, email_address):  # pragma: no cover
-        element = create_element('m:%s' % self.SERVICE_NAME, )
+        element = create_element(f'm:{self.SERVICE_NAME}', )
         mailbox_element = create_element('m:Mailbox')
         add_xml_child(mailbox_element, 't:EmailAddress', email_address)
         element.append(mailbox_element)
@@ -665,8 +639,8 @@ def fetch_last_emails(client: EWSClient, folder_name='Inbox', since_datetime=Non
 
     for item in qs:
         try:
-            demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
-                item.subject, item.message_id, item.datetime_created, item.datetime_received))
+            demisto.debug(f'Looking on subject={item.subject}, message_id={item.message_id}, '
+                          f'created={item.datetime_created}, received={item.datetime_received}')
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
                 demisto.debug(f'Appending {item.subject}, {item.message_id}.')
@@ -1027,8 +1001,7 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                 if item.subject and len(item.subject) > 255:
                     demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
                                   "cutting the subject.")
-                    sub_subject = "Length of subject greater than 255 characters. " \
-                                  "Partial subject: {}".format(item.subject[:180])
+                    sub_subject = f"Length of subject greater than 255 characters. Partial subject: {item.subject[:180]}"
                     item.subject = sub_subject
                     item.save()
                 else:
@@ -1047,12 +1020,14 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, skip_unparsable_emails: bool = False, fetch_all_history = False, fetch_time = '10 minutes') -> list[dict]:
+def fetch_emails_as_incidents(client: EWSClient, skip_unparsable_emails: bool = False,
+                              fetch_all_history=False, fetch_time='10 minutes') -> list[dict]:
     last_run = get_last_run(client)
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
 
     try:
-        last_emails = fetch_last_emails(client, client.folder_name, last_run.get(LAST_RUN_TIME), excluded_ids, fetch_all_history, fetch_time)
+        last_emails = fetch_last_emails(client, client.folder_name, last_run.get(
+            LAST_RUN_TIME), excluded_ids, fetch_all_history, fetch_time)
 
         incidents = []
         incident = {}  # type: Dict[Any, Any]
@@ -1216,7 +1191,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
                                 dict_result)
 
 
-def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str]=None, attachment_ids=None):  # pragma: no cover
+def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str] = None,
+                                   attachment_ids=None):  # pragma: no cover
     account = client.get_account(target_mailbox or client.account_email)
     attachment_ids = argToList(attachment_ids)
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
@@ -1248,7 +1224,8 @@ def delete_attachments_for_message(client: EWSClient, item_id: str, target_mailb
     return entries
 
 
-def fetch_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str] = None, attachment_ids = [], identifiers_filter='') -> list:  # pragma: no cover
+def fetch_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str] = None,
+                                  attachment_ids=[], identifiers_filter='') -> list:  # pragma: no cover
     identifiers_filter = argToList(identifiers_filter)
     account = client.get_account(target_mailbox or client.account_email)
     attachment_ids = argToList(attachment_ids)
@@ -1340,14 +1317,14 @@ def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):
         elif delete_type == 'hard':
             item.delete()
         else:
-            raise Exception('invalid delete type: %s. Use "trash" \\ "soft" \\ "hard"' % delete_type)
+            raise Exception(f'Invalid delete type: {delete_type}. Use "trash" \\ "soft" \\ "hard"')
         deleted_items.append({
             ITEM_ID: item_id,
             MESSAGE_ID: item.message_id,
-            ACTION: '%s-deleted' % delete_type
+            ACTION: f'{delete_type}-deleted'
         })
 
-    return get_entry_for_object('Deleted items (%s delete type)' % delete_type,
+    return get_entry_for_object(f'Deleted items ({delete_type} delete type)',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 deleted_items)
 
@@ -1432,12 +1409,13 @@ def get_out_of_office_state(client: EWSClient, target_mailbox=None):  # pragma: 
         'externalReply': getattr(oof, 'external_replay', None),
         MAILBOX: account.primary_smtp_address
     }
-    return get_entry_for_object("Out of office state for %s" % account.primary_smtp_address,
+    return get_entry_for_object(f"Out of office state for {account.primary_smtp_address}",
                                 f'Account.Email(val.Address == obj.{MAILBOX}).OutOfOffice',
                                 oof_dict)
 
 
-def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path="Inbox", target_mailbox=None, is_public=None):  # pragma: no cover
+def recover_soft_delete_item(client: EWSClient, message_ids, target_folder_path="Inbox", target_mailbox=None,
+                             is_public=None):  # pragma: no cover
     account = client.get_account(target_mailbox or client.account_email)
     is_public = client.is_default_folder(target_folder_path, is_public)
     target_folder = client.get_folder_by_path(target_folder_path, account, is_public)
@@ -1519,14 +1497,14 @@ def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbo
     full_path = f"{folder_path}\\{new_folder_name}"
     try:
         if client.get_folder_by_path(full_path, account):
-            return "Folder %s already exists" % full_path
+            return f"Folder {full_path} already exists"
     except Exception:
         pass
     parent_folder = client.get_folder_by_path(folder_path, account)
     f = Folder(parent=parent_folder, name=new_folder_name)
     f.save()
     client.get_folder_by_path(full_path, account)
-    return "Folder %s created successfully" % full_path
+    return f"Folder {full_path} created successfully"
 
 
 def find_folders(client: EWSClient, target_mailbox=None, is_public=None):  # pragma: no cover
@@ -1787,7 +1765,7 @@ def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_a
                 file_info = demisto.getFilePath(att_id_inline)
             except Exception as ex:
                 demisto.info(f"EWS error from getFilePath: {ex}")
-                raise Exception("entry %s does not contain a file" % att_id_inline)
+                raise Exception(f"entry {att_id_inline} does not contain a file")
             att_name_inline = file_info["name"]
             with open(file_info["path"], 'rb') as f:
                 attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
@@ -1866,7 +1844,7 @@ def reply_email(client: EWSClient, args):  # pragma: no cover
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
     client.reply_email(args.get('inReplyTo', ''), to, args.get('body', ''), subject, bcc, cc, args.get('htmlBody'),
-                                attachments, args.get('from'), account)
+                       attachments, args.get('from'), account)
     result_object = {
         'from': args.get('from') or account.primary_smtp_address,
         'to': to,
@@ -1905,34 +1883,35 @@ def test_module(client: EWSClient):  # pragma: no cover
 def encode_and_submit_results(obj):  # pragma: no cover
     demisto.results(obj)
 
+
 def get_client_from_params(params: dict):
     """
     Constructs an EWSClient instance from the provided integration parameters.
-    
+
     :param params: The dictionary received from demisto.params()
-    
+
     :return: An EWSClient instance for interacting with the Exchange server.
     """
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
-    access_type = IMPERSONATION if demisto.params().get('impersonation', False) else DELEGATE
+    access_type = IMPERSONATION if params.get('impersonation', False) else DELEGATE
     account_email = params.get('defaultTargetMailbox', '')
-    max_fetch = min(50, int(demisto.params().get('maxFetch', 50)))
+    max_fetch = min(50, int(params.get('maxFetch', 50)))
     ews_server = params.get('ewsServer', '')
-    auth_type = demisto.params().get('authType', '')
+    auth_type = params.get('authType', '')
     if auth_type:
         auth_type = parse_auth_type(auth_type)
-    version = demisto.params().get('defaultServerVersion', '')
-    folder = demisto.params().get('folder', 'Inbox')
-    is_public_folder = demisto.params().get('isPublicFolder', False)
-    request_timeout = int(demisto.params().get('requestTimeout', 120))
-    mark_as_read = demisto.params().get('markAsRead', False)
-    manual_username = demisto.params().get('domainAndUserman', '')
-    insecure = demisto.params().get('insecure', True)
-    
+    version = params.get('defaultServerVersion', '')
+    folder = params.get('folder', 'Inbox')
+    is_public_folder = params.get('isPublicFolder', False)
+    request_timeout = int(params.get('requestTimeout', 120))
+    mark_as_read = params.get('markAsRead', False)
+    manual_username = params.get('domainAndUserman', '')
+    insecure = params.get('insecure', True)
+
     if ews_server and manual_username:
         username = manual_username
-    
+
     return EWSClient(
         client_id=username,
         client_secret=password,
@@ -1950,7 +1929,7 @@ def get_client_from_params(params: dict):
         app_name=APP_NAME,
         insecure=insecure,
     )
-    
+
 
 def sub_main():  # pragma: no cover
     params = demisto.params()
@@ -2032,7 +2011,8 @@ def sub_main():  # pragma: no cover
         error_message = ""
 
         # Office365 regular maintenance case
-        if (isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)) and 'outlook.office365.com' in client.ews_server:
+        if (isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)
+                and 'outlook.office365.com' in client.ews_server):
             log_message = "Office365 is undergoing load balancing operations. " \
                           "As a result, the service is temporarily unavailable."
             if demisto.command() == 'fetch-incidents':
@@ -2047,7 +2027,7 @@ def sub_main():  # pragma: no cover
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
                                    "Verify that the Hostname or IP address is correct.\n\n" \
-                                   "Additional information: {}".format(str(e))
+                                   f"Additional information: {str(e)}"
         if isinstance(e, ErrorInvalidPropertyRequest):
             error_message_simple = "Verify that the Exchange version is correct."
         else:
