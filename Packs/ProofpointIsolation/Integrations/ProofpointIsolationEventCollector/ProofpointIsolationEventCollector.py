@@ -3,8 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
-from datetime import datetime, timezone
+from datetime import datetime
 
 urllib3.disable_warnings()
 
@@ -70,7 +69,7 @@ def get_and_parse_date(event: dict) -> str | None:
         start = parse_date_string(date_str, DATE_FORMAT)
         return start.strftime(DATE_FORMAT)
     except ValueError:
-        print('Got invalid date')
+        raise ValueError('Invalid date format')
 
 
 def sort_events_by_date(events: list) -> list:
@@ -208,13 +207,14 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
     output: list = []
+
     if get_events_args:  # handle get_event command
         start, end, ids = initialize_args_to_get_events(get_events_args)
     else:  # handle fetch_events case
         start, end, ids = initialize_args_to_fetch_events()
         if not start:
             # start = get_current_time().strftime(DATE_FORMAT)
-            start = "2025-01-11T11:27:08"
+            start = "2025-01-01T11:27:08"
             new_last_run = {'start_date': start, 'ids': []}
             return output, new_last_run
 
