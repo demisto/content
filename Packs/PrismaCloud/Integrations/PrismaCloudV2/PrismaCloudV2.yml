@@ -3229,6 +3229,115 @@ script:
       - LAYER
     description: Returns detailed information for the asset vulnerabilities with the given id.
     name: prisma-cloud-asset-vulnerabilities-get
+    outputs:
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.status.statusCode
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.status.reasonPhrase
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.detail
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.instance
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.parameters
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.AssetVulnerabilities.accountId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.count
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.createdOn
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.customerId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.cveId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.description
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.externalId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.id
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.normalizedName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.normalizedNames
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.nvdUrl
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.link
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.rawData
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.regionId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.resourceCloudId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.resourceId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.resourceUrl
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.riskFactors
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.rlUpdatedOn
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.scanId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.score
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.severity
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.source
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.sourceData
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.AssetVulnerabilities.status
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.packageName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.updatedOn
+      description: ''
+      type: Number
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
       name: asset_id
