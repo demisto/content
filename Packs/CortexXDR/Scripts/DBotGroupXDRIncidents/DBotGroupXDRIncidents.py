@@ -6,7 +6,7 @@ from CommonServerPython import *
 def get_group_incidents(args: dict) -> dict:
     model_name = 'xdr_clustering'
     field_for_grouping = 'xdralerts'
-    field_for_name = 'xdralerts.causalityactorprocessimagename'
+    field_for_name = 'xdralerts.causality_actor_process_image_name'
 
     return_type = args['returnWidgetType']
     demisto.debug(f'DBotGroupXDRIncidents: {return_type=}')

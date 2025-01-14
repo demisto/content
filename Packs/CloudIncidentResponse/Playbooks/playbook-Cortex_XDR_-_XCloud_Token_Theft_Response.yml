@@ -185,13 +185,13 @@ tasks:
       cloudProvider:
         complex:
           root: incident.xdralerts
-          accessor: cloudprovider
+          accessor: cloud_provider
           transformers:
           - operator: uniq
       username:
         complex:
           root: incident.xdralerts
-          accessor: username
+          accessor: user_name
           transformers:
           - operator: uniq
     separatecontext: true
@@ -375,13 +375,13 @@ tasks:
       cloudProvider:
         complex:
           root: incident.xdralerts
-          accessor: cloudprovider
+          accessor: cloud_provider
           transformers:
           - operator: uniq
       username:
         complex:
           root: incident.xdralerts
-          accessor: username
+          accessor: user_name
           transformers:
           - operator: uniq
     separatecontext: false
@@ -761,7 +761,7 @@ tasks:
       cloudProvider:
         complex:
           root: incident.xdralerts
-          accessor: cloudprovider
+          accessor: cloud_provider
           transformers:
           - operator: uniq
       region:
@@ -1055,7 +1055,7 @@ tasks:
                   simple: inputs.alert_id
                 iscontext: true
               ignorecase: true
-          accessor: hostip
+          accessor: host_ip
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1233,7 +1233,7 @@ tasks:
       cloudProvider:
         complex:
           root: incident.xdralerts
-          accessor: cloudprovider
+          accessor: cloud_provider
           transformers:
           - operator: uniq
       region:
@@ -1245,7 +1245,7 @@ tasks:
       username:
         complex:
           root: incident.xdralerts
-          accessor: username
+          accessor: user_name
           transformers:
           - operator: uniq
     separatecontext: false
@@ -1401,7 +1401,7 @@ tasks:
       cloudProvider:
         complex:
           root: incident.xdralerts
-          accessor: cloudprovider
+          accessor: cloud_provider
           transformers:
           - operator: uniq
       instanceName:
@@ -1572,7 +1572,7 @@ tasks:
       cloudProvider:
         complex:
           root: incident.xdralerts
-          accessor: cloudprovider
+          accessor: cloud_provider
           transformers:
           - operator: uniq
       username:

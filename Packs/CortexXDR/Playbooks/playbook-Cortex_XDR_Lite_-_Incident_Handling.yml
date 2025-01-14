@@ -1511,7 +1511,7 @@ tasks:
         simple: ${PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_command_line}
     - incidentfield: XDR Alerts
       output:
-        simple: ${incident.xdralerts(val.detectiontimestamp=convertEpoch(val.detectiontimestamp); function convertEpoch(et){if (et < 10000000000) {et *= 1000 };var d=new Date(Number(et));return String(d.toISOString())})}
+        simple: ${incident.xdralerts(val.detection_timestamp=convertEpoch(val.detection_timestamp); function convertEpoch(et){if (et < 10000000000) {et *= 1000 };var d=new Date(Number(et));return String(d.toISOString())})}
     skipunavailable: false
     quietmode: 0
     isoversize: false

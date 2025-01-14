@@ -198,7 +198,7 @@ tasks:
       ip:
         complex:
           root: incident.xdralerts
-          accessor: hostip
+          accessor: host_ip
           transformers:
           - operator: uniq
     separatecontext: false

@@ -873,12 +873,12 @@ tasks:
     scriptarguments:
       Hostname:
         complex:
-          root: foundIncidents.CustomFields.xdralerts.hostname
+          root: foundIncidents.CustomFields.xdralerts.host_name
           filters:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: foundIncidents.CustomFields.xdralerts.hostname
+                  simple: foundIncidents.CustomFields.xdralerts.host_name
                 iscontext: true
               right:
                 value:
@@ -1051,7 +1051,7 @@ tasks:
             value:
               complex:
                 root: foundIncidents.CustomFields.xdralerts
-                accessor: hostname
+                accessor: host_name
             iscontext: true
     view: |-
       {

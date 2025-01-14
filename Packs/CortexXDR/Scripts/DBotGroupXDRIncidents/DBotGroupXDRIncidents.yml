@@ -30,7 +30,7 @@ args:
   predefined:
   - 'True'
   - 'False'
-- defaultValue: xdralerts.osactorprocesscommandline,xdralerts.actionprocessimagecommandline,xdralerts.causalityactorprocesscommandline,xdralerts.actorprocesscommandline,xdralerts.description
+- defaultValue: xdralerts.os_actor_process_command_line,xdralerts.action_process_image_command_line,xdralerts.causality_actor_process_command_line,xdralerts.actor_process_command_line,xdralerts.description
   description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
   name: fieldsToDisplay
 comment: Train clustering model on Cortex XDR incident type.
