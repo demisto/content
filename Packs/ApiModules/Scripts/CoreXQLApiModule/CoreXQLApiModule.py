@@ -648,6 +648,7 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
         raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
     if execution_id == 'FAILURE':
+        demisto.debug("Did not succeed to start query, retrying.")
         # the 'start_xql_query' function failed because it reached the maximum allowed number of parallel running queries.
         # running the command again using polling with an interval of 'interval_in_secs' seconds.
         command_results = CommandResults()
@@ -661,6 +662,7 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
 
     if not execution_id:
         raise DemistoException('Failed to start query\n')
+    demisto.debug(f"Succeeded to start query with {execution_id=}.")
     args['query_id'] = execution_id
     args['command_name'] = demisto.command()
 
@@ -703,12 +705,14 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
 
     # if status is pending, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
+        demisto.debug(f"Returned status 'PENDING' for {args.get('query_id', '')}.")
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = 'Query is still running, it may take a little while...'
         return command_results
 
+    demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
     results_to_format = outputs.pop('results')
     # create Human Readable output
     query = args.get('query', '')
