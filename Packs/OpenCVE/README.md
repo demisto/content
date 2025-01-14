@@ -17,7 +17,7 @@ OpenCVE uses the [JSON feed](https://nvd.nist.gov/vuln/data-feeds#JSON_FEED) pro
 
 After an initial import, a background task is regularly executed to synchronize the local copy with the NVD feed. If a new CVE is added, or if a change is detected, the subscribers of the related vendors and products are alerted.
 
-![How it works](https://docs.opencve.io/images/how-it-works.png)
+![How it works](doc_files/how-it-works.png)
 
 > **Note:** It is recommended to run this integration and [OpenCVE](https://www.opencve.io) on an XSOAR engine.
 
