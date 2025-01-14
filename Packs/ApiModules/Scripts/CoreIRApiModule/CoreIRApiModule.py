@@ -1720,6 +1720,9 @@ def run_polling_command(client: CoreClient,
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     timeout_in_seconds = int(args.get('timeout_in_seconds', 600))
+    do_not_poll = argToBoolean(args.get('do_not_poll', False))
+    if do_not_poll:
+        return command_function(client, args)
     if command_decision_field not in args:
         # create new command run
         command_results = command_function(client, args)
