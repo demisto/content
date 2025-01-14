@@ -1127,7 +1127,7 @@ def update_related_alerts(client: Client, args: dict):
     if not new_status:
         raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
                                "no status found")
-    incident_extra_data = client.get_incident_extra_data(incident_id)
+    incident_extra_data = client.get_incident_extra_data(incident_id=incident_id)
     if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
         alerts_array = incident_extra_data['alerts']['data']
         related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
@@ -1196,6 +1196,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
                               "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id,
+                                                               exclude_artifacts=exclude_artifacts,
                                                                excluded_alert_fields=excluded_alert_fields,
                                                                remove_nulls_from_alerts=remove_nulls_from_alerts)
                 incident_data = sort_incident_data(raw_incident_)
