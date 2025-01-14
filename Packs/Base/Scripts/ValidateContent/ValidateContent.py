@@ -320,11 +320,16 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
     pack_name = 'TmpPack'
     pack_path = os.path.join(packs_path, pack_name)
     demisto.debug(f'Pack name: {pack_name}')
-    # create pack_metadata.json file in TmpPack
+
     contrib_converter = ContributionConverter(
         name=pack_name, pack_dir_name=pack_name, contribution=pack_name
     )
+    # create pack_metadata.json file in TmpPack
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
+    # Create base files.
+    contrib_converter.create_pack_base_files = types.MethodType(_create_pack_base_files, contrib_converter)
+    contrib_converter.create_pack_base_files()
+
     # Determine entity type by filename prefix.
     file_name_prefix = '-'.join(file_name.split('-')[:-1])
     containing_dir = os.path.join(pack_path, ENTITY_TYPE_TO_DIR.get(file_name_prefix, 'Integrations'))
