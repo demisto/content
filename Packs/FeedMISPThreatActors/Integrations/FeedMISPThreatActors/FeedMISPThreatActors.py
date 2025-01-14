@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
+SINGLE_WORD = 1
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 LOG_LINE = 'FeedMISPThreatActors -'
 COUNTRIES = {
@@ -280,7 +281,7 @@ class Client(BaseClient):
         super().__init__(
             base_url=base_url,
             verify=verify,
-            proxy=proxy
+            proxy=proxy,
         )
 
         self.name = 'MISPThreatActors'
@@ -413,8 +414,6 @@ def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> 
     demisto.debug(f'{LOG_LINE} - Fetched MISP threat actor galaxy version "{version}"')
     latest_version = demisto.getLastRun().get('version', 0)
 
-    demisto.debug(f'{LOG_LINE} - last run "{demisto.getLastRun()}"')
-
     demisto.debug(f'{LOG_LINE} - Latest saved version is "{latest_version}"')
 
     if int(version) <= int(latest_version):
@@ -428,7 +427,7 @@ def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> 
         meta = threat_actor.get('meta', {})
         value = threat_actor['value']
 
-        if len(value.split(" ")) >= 2:
+        if len(value.split(" ")) > SINGLE_WORD:
             value = value.title()
         indicator = {
             'value': value,
@@ -497,8 +496,6 @@ def main():
             reliability=reliability,
         )
 
-        commands: dict[str, Any] = {}
-
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = client.test_module()
@@ -517,18 +514,13 @@ def main():
 
             demisto.setLastRun({'version': f'{version}'})
 
-        elif command in commands:
-            return_results(commands[command](client, demisto.args()))
-        else:
-            raise NotImplementedError(f'Command "{command}" was not implemented.')
-
     except NotImplementedError:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command. The command not implemented')
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Error runnning integration - {err}')
+        return_error(f'Error running integration - {err}')
 
 
 ''' ENTRY POINT '''

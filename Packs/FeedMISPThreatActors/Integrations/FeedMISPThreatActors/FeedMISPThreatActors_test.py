@@ -21,8 +21,16 @@ def _open_json_file(path):
 def test_parse_refs():
     """Tests the parse_refs function.
 
-    Checks the output of the parse_refs function with
-    the expected output.
+    Scenario: Parsing reference links for an IOC
+
+    Given:
+        A list of reference links.
+
+    When:
+        Calling the parse_refs function with an original IOC and the list of references.
+
+    Then:
+        Ensure the function returns a list of parsed references with the correct structure.
     """
     refs = ['link1', 'link2']
     parsed_refs = parse_refs('original_ioc', refs)
@@ -35,8 +43,16 @@ def test_parse_refs():
 def test_build_relationship():
     """Tests the build_relationships function.
 
-    Checks the output of the build_relationships function with
-    the expected output.
+    Scenario: Building relationships between IOCs
+
+    Given:
+        An original IOC, a list of related IOCs, their type, and a relationship name.
+
+    When:
+        Calling the build_relationships function with these parameters.
+
+    Then:
+        Ensure the function returns a list of correctly structured relationships.
     """
     original_ioc = "original_ioc"
     related_iocs = ["related_ioc1", "related_ioc2"]
@@ -59,22 +75,19 @@ def test_build_relationship():
 
 
 def test_fetch_indicators_command(mocker):
+    """Tests the fetch_indicators_command function.
+
+    Scenario: Fetching indicators from MISP Threat Actors feed
+
+    Given:
+        A mocked CLIENT object with a predefined response for get_threat_actors_galaxy_file.
+
+    When:
+        Calling the fetch_indicators_command function with the mocked CLIENT.
+
+    Then:
+        Ensure the function returns indicators matching the expected output in structure and content.
     """
-    Test the fetch_indicators_command function.
-
-    This test mocks the get_threat_actors_galaxy_file method of the CLIENT object
-    to return predefined test data. It then calls fetch_indicators_command and
-    compares the results with expected output.
-
-    Args:
-        mocker: pytest mocker fixture for mocking objects
-
-    The test checks if:
-    1. The value of the first indicator matches the expected value
-    2. The type of the first indicator matches the expected type
-    3. The description field of the first indicator matches the expected description
-    """
-
     data = _open_json_file("test_data/misp_threat_actor_galaxy_example.json")
     expected = _open_json_file("test_data/fetch_indicator_results.json")
 
@@ -87,24 +100,20 @@ def test_fetch_indicators_command(mocker):
 
 
 def test_feedmispthreatactors_main_command_success(mocker):
-    """
-    Test the main function of FeedMISPThreatActors for successful execution.
+    """Tests the main function of FeedMISPThreatActors for successful execution.
 
-    This test mocks various objects and methods to simulate a successful run of the main function.
-    It checks if the createIndicators method is called, which indicates that the function
-    has successfully processed and attempted to create indicators.
+    Scenario: Running the main function of FeedMISPThreatActors
 
-    Args:
-        mocker: pytest mocker fixture for mocking objects
+    Given:
+        Mocked objects for demisto.params, CLIENT.get_threat_actors_galaxy_file,
+        demisto.command, and FeedMISPThreatActors.fetch_indicators_command.
 
-    The test performs the following steps:
-    1. Mocks the demisto.params to return a dictionary with configuration parameters.
-    2. Mocks the CLIENT.get_threat_actors_galaxy_file to return a predefined raw response.
-    3. Mocks the demisto.command to return "fetch-indicators".
-    4. Mocks the FeedMISPThreatActors.fetch_indicators_command to return a tuple of version and indicators.
-    5. Mocks the demisto.createIndicators method.
-    6. Calls the main function.
-    7. Asserts that the createIndicators method was called.
+    When:
+        Calling the main function.
+
+    Then:
+        Ensure that the createIndicators method is called, indicating successful
+        processing and creation of indicators.
     """
     raw_response = _open_json_file("test_data/misp_threat_actor_galaxy_example.json")
 
