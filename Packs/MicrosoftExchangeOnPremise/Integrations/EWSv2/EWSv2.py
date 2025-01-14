@@ -1930,6 +1930,9 @@ def get_client_from_params(params: dict):
     manual_username = demisto.params().get('domainAndUserman', '')
     insecure = demisto.params().get('insecure', True)
     
+    if ews_server and manual_username:
+        username = manual_username
+    
     return EWSClient(
         client_id=username,
         client_secret=password,
@@ -1944,7 +1947,6 @@ def get_client_from_params(params: dict):
         request_timeout=request_timeout,
         mark_as_read=mark_as_read,
         incident_filter=IncidentFilter.RECEIVED_FILTER,
-        manual_username=manual_username,
         app_name=APP_NAME,
         insecure=insecure,
     )
