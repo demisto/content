@@ -5,23 +5,23 @@ Playbook Stages:
 Analysis:
 During the analysis, the playbook will perform the following:
 
-- Checks the Initiator file path for any suspicious locations.
-- Check the initiator process reputation.
+- Checks the initiator file path for any suspicious locations.
+- Checks the initiator process reputation.
 
 The playbook determines the appropriate verdict based on the initiator file's reputation. If the file is malicious, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
 
 Investigation:
 During the alert investigation, the playbook will perform the following:
 
-- Searches for related XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE technique to identify malicious activity:  T1555.001 - Credentials from Password Stores: Keychain.
+- Searches for related Cortex XSIAM alerts and insights on the endpoint by specific alert names or by the following MITRE technique to identify malicious activity:  T1555.001 - Credentials from Password Stores: Keychain.
 
 The playbook determines the appropriate verdict. If related alerts or insights are found, it proceeds to remediation actions; otherwise, it closes the alert with the message "No indication of malicious activity was found.
 
 Remediation:
 
 - Automatically terminate the causality process.
-- Quarantine the Initiator file (requires analyst approval).
-- Automatically Close the alert.
+- Quarantine the initiator file (requires analyst approval).
+- Automatically close the alert.
 
 ## Dependencies
 
