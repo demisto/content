@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR disconnected endpoints](https://raw.githubusercontent.com/demisto/content/eef4d1c2706bf41afa522d6cec8d092bc2e3e562/Packs/CortexXDR/doc_files/Cortex_XDR_disconnected_endpoints.png)
+![Cortex XDR disconnected endpoints](../doc_files/Cortex_XDR_disconnected_endpoints.png)

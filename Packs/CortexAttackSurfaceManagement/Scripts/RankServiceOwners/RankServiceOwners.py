@@ -248,7 +248,7 @@ def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
             if key.lower() not in {'name', 'email', 'source', 'timestamp', 'canonicalization'}:
                 other_keys.append(key)
         for other in other_keys:
-            if keys_to_types[other] == str:
+            if keys_to_types[other] is str:
                 # union over strings
                 owner[other] = STRING_DELIMITER.join(sorted(
                     {owner.get(other, '') for owner in duplicates if owner.get(other, '')}

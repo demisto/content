@@ -68,4 +68,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_File_Cuckoo](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Cuckoo.png)
+![Detonate_File_Cuckoo](../doc_files/Detonate_File_-_Cuckoo.png)

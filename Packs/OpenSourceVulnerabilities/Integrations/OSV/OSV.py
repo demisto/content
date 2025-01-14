@@ -45,6 +45,7 @@ def osv_get_vuln_by_id_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def osv_query_affected_by_commit_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    command_results = CommandResults()
     v1query_commit = str(args.get('commit', ''))
 
     response = client.osv_query_affected_by_commit_request(v1query_commit)
@@ -61,6 +62,7 @@ def osv_query_affected_by_commit_command(client: Client, args: Dict[str, Any]) -
 
 
 def osv_query_affected_by_package_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    command_results = CommandResults()
     v1query_version = str(args.get('version', ''))
     v1query_package = str(args.get('packageName', ''))
     v1query_ecosystem = str(args.get('ecosystem', ''))
