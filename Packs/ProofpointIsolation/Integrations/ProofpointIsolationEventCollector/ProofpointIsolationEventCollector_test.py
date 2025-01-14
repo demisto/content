@@ -150,6 +150,57 @@ def test_get_and_parse_date():
     assert parsed_date == "2025-01-01T19:44:35Z"
 
 
+def test_hash_user_name_and_url():
+    """
+    Given: A dictionary containing event data with 'url' and 'userName' fields.
+    When: The function hash_user_name_and_url is called.
+    Then: Ensure the output matches the expected '<url>&<userName>' format.
+    """
+    from ProofpointIsolationEventCollector import hash_user_name_and_url
+
+    event = {'url': 'example.com', 'userName': 'testUser', 'extraField': 'extraValue'}
+    result = hash_user_name_and_url(event)
+    assert result == 'example.com&testUser'
+
+
+def test_add_time_to_event():
+    """
+    Given: A dictionary containing event data with or without a 'date' field.
+    When: The function is called to add a '_TIME' field.
+    Then: Ensure the '_TIME' field is correctly added, using the value from 'date',
+          or remains empty if 'date' is not present.
+    """
+    from ProofpointIsolationEventCollector import add_time_to_event
+
+    event = {'date': '2025-01-14T12:00:00', 'userName': 'testUser'}
+    add_time_to_event(event)
+    assert event['_TIME'] == '2025-01-14T12:00:00'
+
+
+def test_sort_events_by_date(mocker):
+    """
+    Given: A list of events, each containing a 'date' field in ISO 8601 format.
+    When: The function is called to sort the events by their 'date' field.
+    Then: Ensure the events are sorted in ascending order by date.
+    """
+    from datetime import datetime
+    from ProofpointIsolationEventCollector import sort_events_by_date
+
+    events = [
+        {'date': '2025-01-14T12:00:00.000+0000', 'event_id': 1},
+        {'date': '2025-01-13T12:00:00.000+0000', 'event_id': 2},
+        {'date': '2025-01-15T12:00:00.000+0000', 'event_id': 3},
+    ]
+    sorted_events = sort_events_by_date(events)
+    assert sorted_events[0]['event_id'] == 2
+    assert sorted_events[1]['event_id'] == 1
+    assert sorted_events[2]['event_id'] == 3
+
+    events = []
+    sorted_events = sort_events_by_date(events)
+    assert sorted_events == []
+
+
 def test_no_more_events_after_second_call(mocker):
     """
     Given: A mock Proofpoint client with event data and a last run timestamp.
