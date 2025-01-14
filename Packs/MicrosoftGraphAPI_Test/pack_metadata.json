@@ -1,0 +1,21 @@
+{
+    "name": "Microsoft Graph API_Test",
+    "description": "This adds the consistency:eventual header and the permissions for querying users by their alias. The permissions are set in the advanced section of the integration configuration under scopes. You need User.Read, User.Read.All, Directory.Read.all",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Anthony Cicalla",
+    "url": "",
+    "email": "",
+    "created": "2025-01-14T17:39:32Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "acicalla-ampere"
+    ]
+}

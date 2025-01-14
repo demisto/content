@@ -1,9 +1,10 @@
-import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
+
 # pylint: disable=E9010, E9011
 import traceback
 
-from CommonServerUserPython import *
+
 import requests
 import re
 import base64
@@ -12,6 +13,8 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
+    graph = 'https://graph.microsoft.com/Directory.Read.All'
+    graph = 'https://graph.microsoft.com/User.Read.All'
     security_center = 'https://api.securitycenter.windows.com/.default'
     security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
     management_azure = 'https://management.azure.com/.default'  # resource_manager
@@ -769,7 +772,7 @@ class MicrosoftClient(BaseClient):
         return True
 
     def http_request(
-            self, *args, resp_type='json', headers=None,
+            self, *args, resp_type='json', headers={'ConsistencyLevel': 'eventual'},
             return_empty_response=False, scope: str | None = None,
             resource: str = '', overwrite_rate_limit_retry=False, **kwargs):
         """
@@ -791,7 +794,8 @@ class MicrosoftClient(BaseClient):
         default_headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'ConsistencyLevel': 'eventual'
         }
 
         if headers:
