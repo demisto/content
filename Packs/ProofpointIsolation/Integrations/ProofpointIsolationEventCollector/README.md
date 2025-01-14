@@ -47,3 +47,6 @@ Retrieves a list of events from the Proofpoint Isolation instance.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ProofpointIsolationEventCollector | List | The list of the events. | 
+
+#### Command example
+```!proofpoint-isolation-get-events should_push_events=false limit=10 end_date=2025-01-12 start_date=2025-01-11T11:27:08```

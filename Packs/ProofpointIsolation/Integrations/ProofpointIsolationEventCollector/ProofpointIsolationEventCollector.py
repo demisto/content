@@ -231,7 +231,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
             if start != current_start_date:
                 current_start_date = start
-                ids: set = set()
+                ids = set()
             hashed_id = hash_user_name_and_url(event)
             ids.add(hashed_id)
 
@@ -256,7 +256,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     start_date = args.get('start_date')
     end_date = args.get('end_date')
-    limit = arg_to_number(args.get('limit', DEFAULT_FETCH_LIMIT))
+    limit: int = arg_to_number(args.get('limit', DEFAULT_FETCH_LIMIT))
 
     output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
 
@@ -281,7 +281,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None: # pragma: no cover
     """main function, parses params and runs command functions"""
     params = demisto.params()
     command = demisto.command()
