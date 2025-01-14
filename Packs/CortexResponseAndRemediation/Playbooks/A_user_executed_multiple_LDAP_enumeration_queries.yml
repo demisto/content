@@ -1,6 +1,5 @@
-id: e8e8f38b-9d2f-4964-8d36-36ab42cb5d9e
-version: 137
-vcShouldKeepItemLegacyProdMachine: false
+id: A user executed multiple LDAP enumeration queries
+version: -1
 name: A user executed multiple LDAP enumeration queries
 description: |-
   This playbook addresses the following alerts:
@@ -38,7 +37,7 @@ description: |-
   For any response action, you need the following integrations:
 
   - Core - IR
-  - Active Directory Query v2
+  - Active Directory Query v2.
 tags:
 - T1087 - Account Discovery
 starttaskid: "0"
@@ -53,6 +52,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -83,6 +83,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -111,8 +112,7 @@ tasks:
       id: 0fae3ce0-fba3-4cb0-83a0-1f44ad73b628
       version: -1
       name: Search for additional discovery alerts in the incident
-      description: Searches for additional alerts in the incident that may further
-        indicate user attempts to enumerate Active Directory.
+      description: Searches for additional alerts in the incident that may further indicate user attempts to enumerate Active Directory.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -147,9 +147,7 @@ tasks:
                   simple: 'caseid:'
               suffix:
                 value:
-                  simple: ' and (mitreattcktechnique:*T1083* or mitreattcktechnique:*T1087*
-                    or mitreattcktechnique:*T1615* or mitreattcktechnique:*T1016*)
-                    and -id:'
+                  simple: ' and (mitreattcktechnique:*T1083* or mitreattcktechnique:*T1087* or mitreattcktechnique:*T1615* or mitreattcktechnique:*T1016*) and -id:'
           - operator: concat
             args:
               prefix: {}
@@ -181,8 +179,7 @@ tasks:
       id: fa4fa8c6-d34a-4357-8924-d1b2adafa8ce
       version: -1
       name: Get additional event information
-      description: Returns detailed information about the LDAP searches executed by
-        the user.
+      description: Returns detailed information about the LDAP searches executed by the user.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -219,8 +216,7 @@ tasks:
       id: afca0c65-ed01-44ea-89ca-49f6975302cb
       version: -1
       name: Search for recent malware alerts on client IP
-      description: Searches for alerts that happened in the past day with Malware
-        category where the host IP is the client IP of the current alert.
+      description: Searches for alerts that happened in the past day with Malware category where the host IP is the client IP of the current alert.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -275,6 +271,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -303,8 +300,7 @@ tasks:
       id: 7b8ea3cf-e9d9-4845-86a3-bd8c1b7e86ad
       version: -1
       name: Ensure that a single client IP exists
-      description: Ensures that the alert contains only 1 client IP. LDAP enumeration
-        query alerts containing multiple IPs are not supported by the playbook.
+      description: Ensures that the alert contains only 1 client IP. LDAP enumeration query alerts containing multiple IPs are not supported by the playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -370,8 +366,7 @@ tasks:
       id: 0b55bb54-fc93-480f-8a81-ce7ddafdca90
       version: -1
       name: Get endpoint information for the client IP
-      description: Retrieves the endpoint name, agent ID and more information about
-        the IP used by the client in which the LDAP queries were executed.
+      description: Retrieves the endpoint name, agent ID and more information about the IP used by the client in which the LDAP queries were executed.
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -410,8 +405,7 @@ tasks:
       id: db861fe7-0529-4a7b-8f6d-02981b115a2c
       version: -1
       name: Ensure client is not DC or server
-      description: Ensures that the client that executed the LDAP queries is not a
-        server or the domain controller.
+      description: Ensures that the client that executed the LDAP queries is not a server or the domain controller.
       type: condition
       iscommand: false
       brand: ""
@@ -526,9 +520,8 @@ tasks:
       id: 195d4c3b-da80-4a02-857f-718b0936492a
       version: -1
       name: Enrich the user that executed the queries
-      description: This script gathers user data from multiple integrations and returns
-        an Account entity with consolidated information to the context.
-      scriptName: get-user-data_test
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
       type: regular
       iscommand: false
       brand: ""
@@ -570,6 +563,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -598,9 +592,7 @@ tasks:
       id: 62a40ca6-091f-4d32-8c76-97dc2f09690c
       version: -1
       name: Check preconditions for continuing investigation
-      description: Checks if investigation and remediation can be done based on pre-conditions
-        signifying high probability of a true positive alert and inherently malicious
-        behavior.
+      description: Checks if investigation and remediation can be done based on pre-conditions signifying high probability of a true positive alert and inherently malicious behavior.
       type: condition
       iscommand: false
       brand: ""
@@ -671,6 +663,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -698,8 +691,7 @@ tasks:
       id: 3c54f48e-e472-4e72-8812-9b817dc93076
       version: -1
       name: Check host analysis results
-      description: Checks whether any host-related anomalies were found in the investigation
-        (the host is risky or malware alerts occurred on the host in the past 1 day).
+      description: Checks whether any host-related anomalies were found in the investigation (the host is risky or malware alerts occurred on the host in the past 1 day).
       type: condition
       iscommand: false
       brand: ""
@@ -750,6 +742,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -780,6 +773,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -807,8 +801,7 @@ tasks:
       id: 2401b4b4-4b02-4a09-8e38-d5c4c9d4847f
       version: -1
       name: Check user querying frequency
-      description: Checks if the user executes LDAP queries on a regular basis from
-        one or from multiple hosts, daily.
+      description: Checks if the user executes LDAP queries on a regular basis from one or from multiple hosts, daily.
       type: condition
       iscommand: false
       brand: ""
@@ -860,8 +853,7 @@ tasks:
       id: 2bd4c400-fe9b-4c83-83b3-1b3ad6a69cf5
       version: -1
       name: Save result - user does not regularly query
-      description: Saves a context key indicating the user doesn't regularly execute
-        LDAP queries (from one or more hosts).
+      description: Saves a context key indicating the user doesn't regularly execute LDAP queries (from one or more hosts).
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -941,8 +933,7 @@ tasks:
       id: 2d9d8c8c-d7c3-4532-890b-42da3b8a45f5
       version: -1
       name: Convert user creation date to epoch
-      description: Converts the user creation date to epoch to find relative time
-        of creation.
+      description: Converts the user creation date to epoch to find relative time of creation.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -983,8 +974,7 @@ tasks:
       id: e80bf475-a26d-4342-8b39-d594d53dea4f
       version: -1
       name: Check if user was created recently
-      description: Checks if the user's creation date in AD happened 24 hours or less
-        since the time that this alert occurred.
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
       type: condition
       iscommand: false
       brand: ""
@@ -1074,8 +1064,7 @@ tasks:
       id: 0d1e00a6-7822-426b-8275-936806d30216
       version: -1
       name: Check user groups and roles
-      description: Checks if the user is part of built-in privileged Active Directory
-        groups.
+      description: Checks if the user is part of built-in privileged Active Directory groups.
       type: condition
       iscommand: false
       brand: ""
@@ -1184,8 +1173,7 @@ tasks:
       id: 542f9bee-9efa-4c60-8233-0a29661f7aa3
       version: -1
       name: Save result - user is unprivileged
-      description: Saves a context key indicating the user does not belong to default
-        privileged AD groups.
+      description: Saves a context key indicating the user does not belong to default privileged AD groups.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1277,8 +1265,7 @@ tasks:
       id: f5d85e85-980f-4473-846b-fd85b47c626f
       version: -1
       name: Save risky host result
-      description: Saves a context key indicating that the client host's risk level
-        is high.
+      description: Saves a context key indicating that the client host's risk level is high.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1501,13 +1488,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body: {}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1577,13 +1564,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body: {}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1637,8 +1624,7 @@ tasks:
       id: 7742d059-9e60-413e-8705-1623a13943cb
       version: -1
       name: Disable user in AD
-      description: Disables the user that executed the LDAP enumeration queries in
-        Active Directory.
+      description: Disables the user that executed the LDAP enumeration queries in Active Directory.
       script: '|||ad-disable-account'
       type: regular
       iscommand: true
@@ -1673,8 +1659,7 @@ tasks:
       id: b61c0b34-61fe-4d6f-8f5a-e103b9bab4ca
       version: -1
       name: Ensure client is not the DC or a server, and runs Windows
-      description: Ensures that the client is not a server, not the domain controller,
-        and runs the Windows operating system (required for automatic remediation).
+      description: Ensures that the client is not a server, not the domain controller, and runs the Windows operating system (required for automatic remediation).
       type: condition
       iscommand: false
       brand: ""
@@ -1802,8 +1787,7 @@ tasks:
                   simple: Powershell -Command $EncodedScript ="
               suffix:
                 value:
-                  simple: '"; $DecodedScript = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($EncodedScript));
-                    Invoke-Expression $DecodedScript'
+                  simple: '"; $DecodedScript = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($EncodedScript)); Invoke-Expression $DecodedScript'
       endpoint_ids:
         simple: ${Core.Endpoint.endpoint_id}
       is_raw_command:
@@ -1968,6 +1952,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -1995,13 +1980,7 @@ tasks:
       id: 88adb952-1975-4fb3-89b1-ab03193a94fb
       version: -1
       name: Manually remediate server / DC / non-Windows machine
-      description: "The following host is a domain controller, a server, or not a
-        Windows machine. This means automatic remediation cannot be executed. \n\nPlease
-        review the information below and manually remediate the alert.\nEndpoint name:
-        ${Core.Endpoint.endpoint_name}\n\nFindings of the investigation:\n\n---\n\n####
-        Malware Alerts on Host:\n`${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length
-        > 0 ? \"True\" : \"False\"}`\n\n---\n\n#### Host is Risky:\n`${.=val.HostIsRisky
-        ? \"True\" : \"False\"}`\n"
+      description: "The following host is a domain controller, a server, or not a Windows machine. This means automatic remediation cannot be executed. \n\nPlease review the information below and manually remediate the alert.\nEndpoint name: ${Core.Endpoint.endpoint_name}\n\nFindings of the investigation:\n\n---\n\n#### Malware Alerts on Host:\n`${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length > 0 ? \"True\" : \"False\"}`\n\n---\n\n#### Host is Risky:\n`${.=val.HostIsRisky ? \"True\" : \"False\"}`\n"
       type: regular
       iscommand: false
       brand: ""
@@ -2032,8 +2011,7 @@ tasks:
       id: 34ec36c5-ded9-445c-8775-dbda0c8b6b39
       version: -1
       name: Check if user is logged in
-      description: Initiates code execution on the client host to check if the user
-        is currently logged in to the host.
+      description: Initiates code execution on the client host to check if the user is currently logged in to the host.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -2072,8 +2050,7 @@ tasks:
       id: c2cf68fd-1b81-44d4-8a2d-84c9370c263e
       version: -1
       name: Get log in check result
-      description: Retrieves results from the "quser" command for the user - which
-        can be used to tell if the user is currently logged in.
+      description: Retrieves results from the "quser" command for the user - which can be used to tell if the user is currently logged in.
       script: '|||core-get-script-execution-results'
       type: regular
       iscommand: true
@@ -2108,8 +2085,7 @@ tasks:
       id: 8248f214-4cab-477c-8e43-2ed3386cb07a
       version: -1
       name: Check for active session of the user
-      description: Checks if the execution results show that there is currently an
-        active session for the user - which means the user is currently logged in.
+      description: Checks if the execution results show that there is currently an active session for the user - which means the user is currently logged in.
       type: condition
       iscommand: false
       brand: ""
@@ -2254,3 +2230,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
