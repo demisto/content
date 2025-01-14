@@ -1,12 +1,12 @@
-id: IP Enrichment - Internal - Generic v2 - try
+id: IP Enrichment - Internal - Generic v2
 version: -1
-name: IP Enrichment - Internal - Generic v2 - try
+name: IP Enrichment - Internal - Generic v2
 description: |-
   Enrich Internal IP addresses using one or more integrations.
 
   - Resolve IP address to hostname (DNS)
   - Separate internal and external IP addresses
-  - Get host information for IP addresses.
+  - Get host information for test IP addresses.
 starttaskid: "0"
 tasks:
   "0":
