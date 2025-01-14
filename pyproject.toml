@@ -199,7 +199,6 @@ select = [
     "PD015", # pandas-use-of-pd-merge
 
     "S307", # eval
-    "G010", # deprecated-log-warn
 
     "PIE790", # unnecessary-pass
     "PIE794", # duplicate-class-field-definition
