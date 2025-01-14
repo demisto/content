@@ -419,7 +419,7 @@ class EWSClient:
 
         return account
 
-    def get_items_from_mailbox(self, account: Optional[Union[Account, str]], item_ids):
+    def get_items_from_mailbox(self, account: Optional[Union[Account, str]], item_ids) -> list[Item]:
         """
         Request specific items from a mailbox associated with an account
 
@@ -444,7 +444,7 @@ class EWSClient:
             raise Exception(f'One or more items were not found/malformed. Could not find the following IDs: {missing_ids}')
         return result
 
-    def get_item_from_mailbox(self, account: Optional[Union[Account, str]], item_id):
+    def get_item_from_mailbox(self, account: Optional[Union[Account, str]], item_id) -> Item:
         """
         Request a single item from a mailbox associated with an account
 
