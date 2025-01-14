@@ -3006,6 +3006,115 @@ script:
       - LAYER
     description: Returns detailed information for the asset findings with the given id.
     name: prisma-cloud-asset-findings-get
+    outputs:
+    - contextPath: PrismaCloud.AssetFindings.problem.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.status.statusCode
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.problem.status.reasonPhrase
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.detail
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.instance
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.parameters
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.AssetFindings.accountId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.count
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.createdOn
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.customerId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.cveId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.description
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.externalId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.id
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.normalizedName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.normalizedNames
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.nvdUrl
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.link
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.rawData
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.regionId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.resourceCloudId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.resourceId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.resourceUrl
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.riskFactors
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.rlUpdatedOn
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.scanId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.score
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.severity
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.source
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.sourceData
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.AssetFindings.status
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.packageName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.updatedOn
+      description: ''
+      type: Number
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
       name: asset_id
