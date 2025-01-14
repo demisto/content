@@ -2614,6 +2614,136 @@ script:
       - LAYER
     description: Returns detailed information for the asset with the given id.
     name: prisma-cloud-asset-get
+    outputs:
+    - contextPath: PrismaCloud.Asset.problem.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.status.statusCode
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.Asset.problem.status.reasonPhrase
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.detail
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.instance
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.parameters
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.id
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.prismaId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.appName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.externalAssetId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.assetTypeId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.Asset.cloudType
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.createdTs
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.Asset.insertTs
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.Asset.data
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.dynamicData
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.riskGrade
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.stateId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.name
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.regionId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.regionName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.altAssetId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.url
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.vpcId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.vpcExternalAssetId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.vpcName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.tags
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.relationshipCounts
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.Asset.vulnerabilityCounts
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.accountName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.assetType
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.serviceName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.resourceType
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.deleted
+      description: ''
+      type: Boolean
+    - contextPath: PrismaCloud.Asset.assetClassId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.assetClass
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.attributes
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.alertsCount.severity
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.alertsCount.count
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.Asset.ipAddresses
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.trueInternetExposure
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.Asset.dataSecurity
+      description: ''
+      type: Unknown
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
       name: asset_id
