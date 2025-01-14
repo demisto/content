@@ -865,9 +865,7 @@ view: |-
       }
     }
   }
-tests:
-- Microsoft Defender Advanced Threat Protection - Test
-- Microsoft Defender - ATP - Indicators SC Test
+tests: []
 fromversion: 6.5.0
 marketplaces:
 - xsoar
