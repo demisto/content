@@ -10,7 +10,6 @@ STYLES_DICT = {
     'gray': 'Disabled',
 }
 
-
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
