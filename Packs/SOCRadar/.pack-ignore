@@ -10,5 +10,3 @@ ignore=RM108
 # GR103 is temporary, see CIAC-11656
 [file:layoutscontainer-SOCRadar_Incident.json]
 ignore=GR103
-
-
