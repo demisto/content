@@ -108,6 +108,7 @@ class Client(BaseClient):
         Returns:
             A list of objects, containing the indicators.
         """
+        demisto.debug('start build iterator')
 
         results: list = []
         if is_get_command:
@@ -116,8 +117,10 @@ class Client(BaseClient):
             page_num = 0
         else:
             integration_context = get_integration_context()
+            demisto.debug(f'{integration_context=}')
             # if so, than this is the first fetch
             if not integration_context:
+                demisto.debug('integration context is empty')
                 page_num = 0
                 time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
                 set_integration_context({'time_of_first_fetch': time_of_first_fetch})
@@ -129,10 +132,13 @@ class Client(BaseClient):
             'sortBy': 'created_at'
         })
         tags = get_tags_response.get('tags', [])
+        demisto.debug(f'{tags=}')
+
         # when finishing the "first level fetch" (getting all the tags from the feed), the next call to the api
         # will be with a page num greater than the total pages, and the api should return an empty tags list.
         if not tags:
             # now the fetch will retrieve only tags that has been updated after the last fetch time
+            demisto.debug('no tags was returned')
             return incremental_level_fetch(self)
         # this is the "first level fetch" logic. Every fetch returns at most PAGE_SIZE indicators from the feed.
         for tag in tags:
@@ -145,6 +151,7 @@ class Client(BaseClient):
             page_num += 1
             context = get_integration_context()
             context['page_num'] = page_num
+            demisto.debug(f'set integration context: {context}')
             set_integration_context(context)
         return results
 
@@ -227,6 +234,7 @@ def get_all_updated_tags_since_last_fetch(client: Client,
 
     page_num = 0
     has_updates = True
+    demisto.debug('re-fetch tags from last fetch time')
     while has_updates:
         response = client.get_tags({
             'pageNum': page_num,
@@ -361,6 +369,7 @@ def update_integration_context_with_indicator_data(public_tag_name: str, tag_nam
     seen_tags = integration_context.get('seen_tags', {})
     seen_tags[public_tag_name] = {'tag_name': tag_name, 'tag_type': tag_type}
     integration_context['seen_tags'] = seen_tags
+    demisto.debug(f'update integration context with {integration_context}')
     set_integration_context(integration_context)
 
 
@@ -467,6 +476,8 @@ def fetch_indicators(client: Client,
     iterator = client.build_iterator(is_get_command, limit)
     indicators = []
     for tag_details in iterator:
+        demisto.debug(f'creating indicator from tag: {tag_details}')
+
         tag_dict = tag_details.get('tag', {})
         public_tag_name = tag_dict.get('public_tag_name', '')
         tag_name = tag_dict.get('tag_name', '')
@@ -474,6 +485,7 @@ def fetch_indicators(client: Client,
         source = tag_dict.get('source', '')
         tag_type = get_tag_class(tag_class, source)
         if not tag_type:
+            demisto.debug('no tag_type was found - skipping')
             continue
         raw_data = {
             'value': tag_name,
@@ -556,12 +568,14 @@ def fetch_indicators_command(client: Client, params: dict[str, Any]) -> list[dic
     feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
     create_relationships = params.get('create_relationships', True)
+    demisto.debug('start fetch indicators')
     indicators = fetch_indicators(client=client,
                                   is_get_command=False,
                                   tlp_color=tlp_color,
                                   feed_tags=feed_tags,
                                   create_relationships=create_relationships,
                                   )
+    demisto.debug(f'created {len(indicators)} indicators')
     return indicators
 
 
@@ -612,6 +626,7 @@ def main():  # pragma: no cover
             # that will be executed at the specified feed fetch interval.
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
+                demisto.debug(f'sending {len(iter_)} indecetors')
                 demisto.createIndicators(iter_)
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
