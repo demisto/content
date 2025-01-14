@@ -256,7 +256,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     start_date = args.get('start_date')
     end_date = args.get('end_date')
-    limit: int = arg_to_number(args.get('limit', DEFAULT_FETCH_LIMIT))
+    limit: int = arg_to_number(args.get('limit')) or DEFAULT_FETCH_LIMIT
 
     output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
 

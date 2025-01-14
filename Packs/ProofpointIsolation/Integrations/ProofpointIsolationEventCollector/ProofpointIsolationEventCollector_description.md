@@ -1,4 +1,4 @@
-## Proofpoint Isolarion Event Collector Help
+## Proofpoint Isolation Event Collector Help
 
 ### How to Access Reporting API
 1. Navigate to Product Settings > Reporting API 
