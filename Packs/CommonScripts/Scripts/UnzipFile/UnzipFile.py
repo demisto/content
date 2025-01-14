@@ -142,6 +142,9 @@ def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
         cmd = f'tar -xzvf {file_path} -C {dir_path}'
     elif file_name.endswith('.tar'):
         cmd = f'tar -xf {file_path} -C {dir_path}'
+    else:
+        cmd = ''
+        demisto.debug(f"{file_name=} didn't match any condition. {cmd=}")
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
