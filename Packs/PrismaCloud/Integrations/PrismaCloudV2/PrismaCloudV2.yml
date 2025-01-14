@@ -3452,6 +3452,52 @@ script:
       - LAYER
     description: Returns detailed information for the asset alerts with the given id.
     name: prisma-cloud-asset-alerts-get
+    outputs:
+    - contextPath: PrismaCloud.AssetAlerts.problem.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.status.statusCode
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetAlerts.problem.status.reasonPhrase
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.detail
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.instance
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.parameters
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.AssetAlerts.id
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.severity
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.policyId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.isHyperionPolicy
+      description: ''
+      type: Boolean
+    - contextPath: PrismaCloud.AssetAlerts.policyType
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.policyName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.policyDescription
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.alertTime
+      description: ''
+      type: Number
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
       name: asset_id
@@ -3566,6 +3612,82 @@ script:
       - LAYER
     description: Returns detailed information for the asset relationships with the given id.
     name: prisma-cloud-asset-relationships-get
+    outputs:
+    - contextPath: PrismaCloud.AssetRelationships.assetId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.relationshipType
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetTypeId
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.assetType
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.externalAssetId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.cloudId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.cloudName
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.pseudoAsset
+      description: ''
+      type: Boolean
+    - contextPath: PrismaCloud.AssetRelationships.region
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.cloudAccountId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetClassId
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetClass
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.alertsCount.severity
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.alertsCount.count
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.severity
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.count
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.vulnerabilityCounts
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.AssetRelationships.problem.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.status.statusCode
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.problem.status.reasonPhrase
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.detail
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.instance
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.parameters
+      description: ''
+      type: Unknown
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
       name: asset_id
@@ -3680,6 +3802,49 @@ script:
       - LAYER
     description: Returns detailed information for the asset network with the given id.
     name: prisma-cloud-asset-network-get
+    outputs:
+    - contextPath: PrismaCloud.AssetNetwork.problem.title
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.status.statusCode
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetNetwork.problem.status.reasonPhrase
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.detail
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.instance
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.type
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.parameters
+      description: ''
+      type: Unknown
+    - contextPath: PrismaCloud.AssetNetwork.id
+      description: ''
+      type: Number
+    - contextPath: PrismaCloud.AssetNetwork.access
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.direction
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.ips
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.ports
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.protocol
+      description: ''
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.priority
+      description: ''
+      type: Number
   runonce: false
 tests:
 - Prisma Cloud V2 Test
