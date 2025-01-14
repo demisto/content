@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import requests
 import dateutil.parser
 import urllib3
@@ -145,7 +145,7 @@ def poll_blobs():
     if demisto.args().get('timestamp'):
         timestamp = dateutil.parser.parse(demisto.args().get('timestamp'))
         now = dateutil.parser.parse(datetime.utcnow().isoformat())
-        diff = now.replace(tzinfo=datetime.UTC) - timestamp.replace(tzinfo=datetime.UTC)
+        diff = now.replace(tzinfo=UTC) - timestamp.replace(tzinfo=UTC)
 
         # We need to wait three minutes from the time of the event since pcap
         #  are sent little later to make sure we record most of the triggered traffic
