@@ -15,7 +15,6 @@ PRODUCT = 'Isolation'
 DEFAULT_FETCH_LIMIT = 50000
 ITEMS_PER_PAGE = 10000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-# last_run = {}
 
 ''' CLIENT CLASS '''
 
@@ -142,7 +141,6 @@ def initialize_args_to_get_events(args: dict) -> tuple:
     start = args.get('start_date')
     end = args.get('end_date')
     ids: set = set()
-
     return start, end, ids
 
 
@@ -153,10 +151,8 @@ def initialize_args_to_fetch_events() -> tuple:
     Returns:
         tuple: A tuple containing start (str), end (str), ids (set).
     """
-    # global last_run
     last_run = demisto.getLastRun() or {}
     start = last_run.get('start_date')
-    # start = "2025-01-09T11:27:08"
     ids = set(last_run.get('ids', []))
     end = get_current_time().strftime(DATE_FORMAT)
     return start, end, ids
@@ -213,8 +209,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     else:  # handle fetch_events case
         start, end, ids = initialize_args_to_fetch_events()
         if not start:
-            # start = get_current_time().strftime(DATE_FORMAT)
-            start = "2025-01-01T11:27:08"
+            start = get_current_time().strftime(DATE_FORMAT)
             new_last_run = {'start_date': start, 'ids': []}
             return output, new_last_run
 
@@ -304,11 +299,8 @@ def main() -> None:  # pragma: no cover
             result = test_module(client)
             return_results(result)
         elif command == 'fetch-events':
-            # while True:
             events, new_last_run_dict = fetch_events(client, fetch_limit)
             demisto.setLastRun(new_last_run_dict)
-            # global last_run
-            # last_run = new_last_run_dict
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
             if events:
                 demisto.debug(f'Sending {len(events)} events to Cortex XSIAM')
