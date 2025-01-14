@@ -31,6 +31,13 @@ configuration:
   name: credentials
   displaypassword: Client Secret
   required: false
+- display: Personal Access Token
+  displaypassword: Personal Access Token
+  name: pat_credential
+  type: 9
+  required: false
+  hiddenusername: true
+  additionalinfo: Use Personal Access Token for API Authentication
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
   additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
