@@ -233,7 +233,6 @@ select = [
     "PLR0133", # comparison-of-constant
     "PLR0206", # property-with-parameters
     "PLR0402", # manual-from-import
-    "SIM101", # repeated-isinstance-calls
     "PLR1711", # useless-return
     "PLR1722", # sys-exit-alias
 
