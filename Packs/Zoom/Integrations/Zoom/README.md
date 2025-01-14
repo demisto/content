@@ -80,26 +80,26 @@ In the Team Chat Subscription section under BOT endpoint URL, add:
 4. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
 
 **Endpoint URL Requirements:**
-   
-    To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:   
-    * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
-    * Be able to accept HTTP POST requests.
-    * Be able to respond with a 200 or 204 HTTP Status Code.
-    ---
-    1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
+
+&emsp; &emsp; To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:   
+&emsp; &emsp; * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
+&emsp; &emsp; * Be able to accept HTTP POST requests.
+&emsp; &emsp; * Be able to respond with a 200 or 204 HTTP Status Code.
+&emsp; &emsp; ---
+&emsp; &emsp; 1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
     ![enter image description here](../../doc_files/zoom-token.png)
-    2. Configure Event Subscriptions. 
-        1. In the "Feature" section under "Access" in the "General Features" section, enable "Event Subscriptions".
-        2. Click **+Add New Event Subscription**.
-        3. Enter the following information:
-            - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
-            - Authentication Header Option - 
-              1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
+&emsp; &emsp; 2. Configure Event Subscriptions. 
+&emsp; &emsp; &emsp; 1. In the "Feature" section under "Access" in the "General Features" section, enable "Event Subscriptions".
+&emsp; &emsp; &emsp; 2. Click **+Add New Event Subscription**.
+&emsp; &emsp; &emsp; 3. Enter the following information:
+&emsp; &emsp; &emsp; &emsp; - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
+&emsp; &emsp; &emsp; &emsp; - Authentication Header Option - 
+&emsp; &emsp; &emsp; &emsp; &emsp; 1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
               ![enter image description here](../../doc_files/verification.png)
-              2. **Basic Authentication Option** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. 
+&emsp; &emsp; &emsp; &emsp; &emsp; 2. **Basic Authentication Option** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. 
               ![enter image description here](../../doc_files/authentication_header.png)
-            - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
-            - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
+&emsp; &emsp; &emsp; &emsp; - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
+&emsp; &emsp; &emsp; &emsp; - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
 ![enter image description here](../../doc_files/add-event.gif)
 
 
@@ -1947,7 +1947,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Message
->User SSO token for user usetobe@myself.com is deleted
+>User SSO token for user useremail@myself.com is deleted
 
 ### send-notification
 
