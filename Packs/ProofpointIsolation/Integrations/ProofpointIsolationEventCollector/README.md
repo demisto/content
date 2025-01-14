@@ -17,7 +17,7 @@ This integration was integrated and tested with version V2 of ProofpointIsolatio
 2. Isolation’s Reporting API tools and documentation display in the Console’s main viewing panel.
 3. Copy the reporting API key.
 
-[image]("../../doc_files/readme_image.png")
+![image](../../doc_files/readme_image.png)
 
 ## Commands
 

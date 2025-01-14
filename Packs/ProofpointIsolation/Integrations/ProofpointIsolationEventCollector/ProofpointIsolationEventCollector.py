@@ -282,11 +282,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
+    """main function, parses params and runs command functions"""
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
