@@ -64,11 +64,16 @@ In the Team Chat Subscription section under BOT endpoint URL, add:
    | Scope Type | Scope Name | 
    | --- |  --- | 
    | Team Chat |  Enable Chatbot within Zoom Team Chat Client /imchat:bot |
-   | Team Chat |  View and manage all users' team chat channels /chat_channel:write:admin |
+   | Team Chat |  View a user's chat message /team_chat:read:user_message:admin |
+   | Team Chat |  View a user's chat sessions /team_chat:read:list_user_sessions:admin |
+   | Team Chat |  View a user's chat messages /team_chat:read:list_user_messages:admin |
+   | Team Chat |  Create a chat channel for a user /team_chat:write:user_channel:admin |
+   | Team Chat |  Add members to a chat channel /team_chat:write:members:admin |
+   | Team Chat |  Update a user's chat channel /team_chat:update:user_channel:admin |
    | User |   View all user information /user:read:user:admin |
 ![enter image description here](../../doc_files/scope-premissions.png)
 
-3. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
+1. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
    
  ![enter image description here](../../doc_files/test-zoom-app.gif)
 
