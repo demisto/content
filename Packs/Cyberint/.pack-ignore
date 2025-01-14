@@ -1,5 +1,8 @@
 [file:classifier-mapper-incoming-CyberInt.json]
-ignore=BA101
+ignore=BA101,BC105,BC113,GR103
+
+[file:classifier-mapper-outgoing-CyberInt.json]
+ignore=BC105
 
 [file:incidentfield-Cyberint_CyberInt_Alert_ID.json]
 ignore=IF100
@@ -13,17 +16,8 @@ ignore=BA116
 [file:incidentfield-Cyberint_CyberInt_ID.json]
 ignore=IF115,IF106,BA116,IF113
 
-[file:classifier-mapper-incoming-CyberInt.json]
-ignore=BC105,BC113
-
-[file:classifier-mapper-outgoing-CyberInt.json]
-ignore=BC105
-
 [file:Cyberint.yml]
 ignore=BC112
-
-[file:classifier-mapper-incoming-CyberInt.json]
-ignore=GR103
 
 [file:Packs/Cyberint/ReleaseNotes/1_1_4.md]
 ignore=RN115
@@ -33,7 +27,6 @@ ignore=RN115
 
 [known_words]
 Cyberint
-CyberInt
 
 
 
