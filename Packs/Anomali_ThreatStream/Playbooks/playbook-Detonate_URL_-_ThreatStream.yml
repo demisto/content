@@ -348,7 +348,7 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "120"
+    simple: "10"
   required: false
   description: The duration after which to stop polling and to resume the playbook (in minutes).
   playbookInputQuery:
