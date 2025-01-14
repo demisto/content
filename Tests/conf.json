@@ -1297,41 +1297,47 @@
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "6.1.0",
             "timeout": 1500,
-            "nightly": true
+            "nightly": true,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 2400
+            "timeout": 2400,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
@@ -1350,7 +1356,8 @@
             "integrations": "Panorama",
             "instance_names": "panorama_instance_best_practice",
             "playbookID": "Panorama Best Practise - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Tenable.io",
@@ -1413,7 +1420,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Test_EDL",
@@ -2996,7 +3004,8 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1500
+            "timeout": 1500,
+            "memory_threshold": 200
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
@@ -3005,7 +3014,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "timeout": 300
+            "timeout": 300,
+            "memory_threshold": 200
         },
         {
             "integrations": "Snowflake",
@@ -3334,7 +3344,8 @@
             "fromversion": "5.5.0",
             "timeout": 1500,
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama"
+            "instance_names": "palo_alto_panorama",
+            "memory_threshold": 200
         },
         {
             "integrations": "Elasticsearch v2",
@@ -5686,7 +5697,8 @@
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
-            "fromversion": "6.9.0"
+            "fromversion": "6.9.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Secneurx Analysis",
