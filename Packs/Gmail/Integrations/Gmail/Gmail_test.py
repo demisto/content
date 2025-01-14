@@ -3,7 +3,8 @@ from freezegun import freeze_time
 import demistomock as demisto
 import pytest
 from test_data import input_data
-from datetime import datetime, UTC
+import datetime
+from datetime import UTC
 
 MOCK_MAIL_NO_LABELS = {
     'internalDate': '1572251535000',
