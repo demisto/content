@@ -7,8 +7,8 @@ from freezegun import freeze_time
 
 import demistomock as demisto
 from CommonServerPython import CommandResults, urljoin, DemistoException
-from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR, XSOAR_RESOLVED_STATUS_TO_XDR, XDR_OPEN_STATUS_TO_XSOAR
-from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR, get_xsoar_close_reasons
+from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR, XSOAR_RESOLVED_STATUS_TO_XDR
+from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR, get_xsoar_close_reasons, XDR_OPEN_STATUS_TO_XSOAR
 
 XDR_URL = 'https://api.xdrurl.com'
 
