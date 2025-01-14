@@ -160,7 +160,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     def get_access_token(self) -> str:
         # CONFLUENCE Explain the process of saving and retrieving the access token from the integration's context
         """This function is in charge of returning the access token stored in the integration's context. If the access token
-        has expired, we try to retrieve another access token using a refresh token that is configured in the integration's context.
+        has expired, we try to retrieve another access token using a refresh token that is configured in the integration's context
 
         If a personal access token is configured use it instead.
 
@@ -4450,9 +4450,10 @@ def validate_auth_params(
 
     if (not is_basic_auth) and (not is_oauth2) and (not is_pat_auth):
         raise DemistoException("The required parameters were not provided. See the help window for more information.")
-    if is_basic_auth and is_oauth2 or is_basic_auth and is_pat_auth or is_oauth2 and is_pat_auth:
-        raise DemistoException("The `User name`, `API key` or `Personal Access Token` parameters cannot be provided together"
-                               " with the `Client ID` or `Client Secret` parameters. See the help window for more information.")
+    if sum([is_basic_auth, is_oauth2, is_pat_auth]) > 1:
+        raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
+                               " with the `Client ID` or `Client Secret` parameters"
+                               " or with the `Personal Access Token` parameters. See the help window for more information.")
     if is_basic_auth and not (username and api_key):
         raise DemistoException(
             "To use basic authentication, the 'User name' and 'API key' parameters are mandatory."
