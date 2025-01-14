@@ -9,11 +9,18 @@ you are implementing with your integration
 """
 
 import json
+from datetime import datetime, timedelta, UTC
+from unittest.mock import patch
 
 import pytest
 
 import demistomock as demisto
-from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main
+from CommonServerPython import EntryType
+from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
+    get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries
+
+MOCK_MAX_ENTRIES = 2
+COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
 
 
 def util_load_json(path):
@@ -62,7 +69,7 @@ def test_microsoft_365_defender_incident_update_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incident_update_command
     client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
     args = {'id': '263', 'tags': 'test1,test2', 'status': 'Active', 'classification': 'Unknown',
-            'determination': 'Other', 'assigned_to': ""}
+            'determination': 'NotAvailable', 'assigned_to': ""}
     results = microsoft_365_defender_incident_update_command(client, args)
     check_api_response(results, util_load_json('./test_data/incident_update_results.json'))
 
@@ -85,12 +92,13 @@ def test_microsoft_365_defender_advanced_hunting_command(mocker):
 
 def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_results):
     mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
-    results = fetch_incidents(client, first_fetch_time, fetch_limit)
+    mirroring_fields = {"mirror_direction": "Incoming", "mirror_instance": "1234"}
+    results = fetch_incidents(client, mirroring_fields, first_fetch_time, fetch_limit)
     assert len(results) == len(mock_results)
     for incident, mock_incident in zip(results, mock_results):
         assert incident['name'] == mock_incident['name']
         assert incident['occurred'] == mock_incident['occurred']
-        assert incident['rawJSON'] == mock_incident['rawJSON']
+        assert json.loads(incident['rawJSON']) == json.loads(mock_incident['rawJSON'])
 
 
 def test_fetch_incidents(mocker):
@@ -185,3 +193,176 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.security]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+class MockMicrosoft365DefenderClient(Client):
+    def __init__(self, mocker, response_data: dict,
+                 app_id='app_id',
+                 verify=False,
+                 proxy=False):
+        super().__init__(app_id, verify, proxy)
+        self.response_data = response_data
+
+    def incidents_list(self, *args, **kwargs) -> dict:
+        skip = kwargs.get("skip", 0)
+        batch = self.response_data["value"][skip:skip + MOCK_MAX_ENTRIES]
+        return {
+            "@odata.context": self.response_data["@odata.context"],
+            "value": batch
+        }
+
+
+# Test case
+@patch("Microsoft365Defender.MAX_ENTRIES", MOCK_MAX_ENTRIES)
+def test_fetch_modified_incident_ids(mocker):
+    mock_responses = [util_load_json("./test_data/incidents_list_response.json"),
+                      util_load_json("./test_data/incidents_empty_list_response.json")]
+    for mock_response in mock_responses:
+        client = MockMicrosoft365DefenderClient(mocker, mock_response)
+        result = fetch_modified_incident_ids(client, last_update_time="2021-03-01T00:00:00Z")
+        expected_incidents = [str(incident["incidentId"]) for incident in mock_response["value"]]
+        assert result == expected_incidents
+
+
+def test_get_modified_remote_data_command(mocker):
+    import Microsoft365Defender
+    mock_args = {"lastUpdate": "2023-01-01T12:00:00Z"}
+    mocker.patch.object(Microsoft365Defender, 'fetch_modified_incident_ids', return_value=["123", "456"])
+    response = get_modified_remote_data_command(mock_client(mocker), mock_args)
+    assert response.modified_incident_ids == ["123", "456"]
+
+
+def test_get_modified_remote_data_command_invalid_last_update(mocker):
+    import Microsoft365Defender
+    mock_args = {"lastUpdate": "invalid_date_string"}
+    mocker.patch.object(Microsoft365Defender, 'fetch_modified_incident_ids', return_value=[])
+
+    with pytest.raises(AssertionError, match="could not parse invalid_date_string"):
+        get_modified_remote_data_command(mock_client(mocker), mock_args)
+
+
+@pytest.fixture
+def resolved_incidents():
+    """Fixture for resolved incidents."""
+    return [
+        {'incidentId': '1234', 'status': 'Resolved', 'classification': 'TruePositive'},
+        {'incidentId': '5678', 'status': 'Resolved', 'classification': 'Unknown'},
+        {'incidentId': '9012', 'status': 'Resolved', 'classification': 'FalsePositive'},
+        {'incidentId': '3456', 'status': 'Resolved', 'classification': 'InformationalExpectedActivity'}
+    ]
+
+
+@pytest.fixture
+def unresolved_incidents():
+    """Fixture for unresolved incidents."""
+    return [
+        {'incidentId': '1234', 'status': 'Active'},
+        {'incidentId': '5678', 'status': 'InProgress'}
+    ]
+
+
+def test_get_modified_incidents_close_entries(mocker, resolved_incidents):
+    """
+    Test when close_incident is True and incidents are Resolved.
+    """
+    result = get_modified_incidents_close_or_repopen_entries(resolved_incidents, close_incident=True)
+
+    assert len(result) == 4
+    assert result[0]['Type'] == EntryType.NOTE
+    assert result[0]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'Resolved',
+    }
+    assert result[1]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'Other',
+    }
+    assert result[2]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'False Positive',
+    }
+    assert result[3]['Contents'] == {
+        'dbotIncidentClose': True,
+        'closeReason': 'Resolved',
+    }
+
+
+def test_get_modified_incidents_reopen_entries(mocker, unresolved_incidents):
+    """
+    Test when close_incident is True and incidents are not Resolved.
+    """
+    result = get_modified_incidents_close_or_repopen_entries(unresolved_incidents, close_incident=True)
+    assert len(result) == 2
+    assert result[0] == {'dbotIncidentReopen': True}
+    assert result[1] == {'dbotIncidentReopen': True}
+
+
+def test_get_modified_incidents_close_incident_false(mocker, resolved_incidents):
+    """
+    Test when close_incident is False.
+    """
+    result = get_modified_incidents_close_or_repopen_entries(resolved_incidents, close_incident=False)
+    assert result == []
+
+
+def test_get_modified_incidents_empty_list(mocker):
+    """
+    Test when modified_incidents is an empty list.
+    """
+    result = get_modified_incidents_close_or_repopen_entries([], close_incident=True)
+    assert result == []
+
+
+def test_get_entries_for_comments_new_incident():
+    from Microsoft365Defender import get_entries_for_comments
+
+    comments = [
+        {"comment": "Test comment 1", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
+        {"comment": "Test comment 2", "createdBy": "User2@gmail.com", "createdTime": "2024-01-02T12:00:00.8404534Z"}
+    ]
+    last_update = datetime.utcnow() - timedelta(days=1)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, True)
+
+    assert len(result) == 2
+    assert result[0]["Contents"].startswith("Created By: User1@gmail.com")
+    assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
+    assert result[0]["Note"] is True
+
+
+def test_get_entries_for_comments_filter_by_last_update():
+    from Microsoft365Defender import get_entries_for_comments
+
+    comments = [
+        {"comment": "Old comment", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
+        {"comment": "New comment", "createdBy": "User2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+    ]
+    last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
+
+    assert len(result) == 1
+    assert result[0]["Contents"].startswith("Created By: User2@gmail.com")
+    assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
+
+
+def test_get_entries_for_comments_ignores_mirrored_comments():
+    from Microsoft365Defender import get_entries_for_comments, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
+
+    comments = [
+        {"comment": f"Ignored comment {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}",
+         "createdBy": "User1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+    ]
+
+    last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
+
+    assert len(result) == 0
+
+
+def test_get_entries_for_comments_empty_comments():
+    from Microsoft365Defender import get_entries_for_comments
+
+    comments = []
+    last_update = datetime.utcnow() - timedelta(days=1)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
+
+    assert len(result) == 0
