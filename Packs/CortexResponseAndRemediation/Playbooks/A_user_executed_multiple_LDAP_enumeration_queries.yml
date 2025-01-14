@@ -1,10 +1,11 @@
-id: A user executed multiple LDAP enumeration queries
-version: -1
+id: e8e8f38b-9d2f-4964-8d36-36ab42cb5d9e
+version: 142
+vcShouldKeepItemLegacyProdMachine: false
 name: A user executed multiple LDAP enumeration queries
 description: |-
   This playbook addresses the following alerts:
 
-  A user executed suspicious LDAP enumeration queries
+  - A user executed suspicious LDAP enumeration queries
 
   Playbook Stages:
 
@@ -37,22 +38,21 @@ description: |-
   For any response action, you need the following integrations:
 
   - Core - IR
-  - Active Directory Query v2.
+  - Active Directory Query v2
 tags:
 - T1087 - Account Discovery
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7308935a-89fa-4f86-8eea-f7e70225e6b5
+    taskid: b3cdd99f-2cb2-48cf-82a2-83496b582087
     type: start
     task:
-      id: 7308935a-89fa-4f86-8eea-f7e70225e6b5
+      id: b3cdd99f-2cb2-48cf-82a2-83496b582087
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -74,16 +74,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3d03db79-7109-4499-8351-c3098a5bd510
+    taskid: 3b45073c-b0d9-4d5a-852c-df4e74dc0779
     type: title
     task:
-      id: 3d03db79-7109-4499-8351-c3098a5bd510
+      id: 3b45073c-b0d9-4d5a-852c-df4e74dc0779
       version: -1
       name: Triage
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -106,13 +105,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0fae3ce0-fba3-4cb0-83a0-1f44ad73b628
+    taskid: 2b12deed-65f6-4e1d-8b5e-175f07cb4c84
     type: regular
     task:
-      id: 0fae3ce0-fba3-4cb0-83a0-1f44ad73b628
+      id: 2b12deed-65f6-4e1d-8b5e-175f07cb4c84
       version: -1
       name: Search for additional discovery alerts in the incident
-      description: Searches for additional alerts in the incident that may further indicate user attempts to enumerate Active Directory.
+      description: Searches for additional alerts in the incident that may further
+        indicate user attempts to enumerate Active Directory.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -147,7 +147,9 @@ tasks:
                   simple: 'caseid:'
               suffix:
                 value:
-                  simple: ' and (mitreattcktechnique:*T1083* or mitreattcktechnique:*T1087* or mitreattcktechnique:*T1615* or mitreattcktechnique:*T1016*) and -id:'
+                  simple: ' and (mitreattcktechnique:*T1083* or mitreattcktechnique:*T1087*
+                    or mitreattcktechnique:*T1615* or mitreattcktechnique:*T1016*)
+                    and -id:'
           - operator: concat
             args:
               prefix: {}
@@ -173,13 +175,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: fa4fa8c6-d34a-4357-8924-d1b2adafa8ce
+    taskid: 397aa0fb-bbfe-403b-807b-e1815c8e2bea
     type: regular
     task:
-      id: fa4fa8c6-d34a-4357-8924-d1b2adafa8ce
+      id: 397aa0fb-bbfe-403b-807b-e1815c8e2bea
       version: -1
       name: Get additional event information
-      description: Returns detailed information about the LDAP searches executed by the user.
+      description: Returns detailed information about the LDAP searches executed by
+        the user.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -210,13 +213,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: afca0c65-ed01-44ea-89ca-49f6975302cb
+    taskid: 2967545d-ba7a-4934-89fc-84f4a41ff124
     type: regular
     task:
-      id: afca0c65-ed01-44ea-89ca-49f6975302cb
+      id: 2967545d-ba7a-4934-89fc-84f4a41ff124
       version: -1
       name: Search for recent malware alerts on client IP
-      description: Searches for alerts that happened in the past day with Malware category where the host IP is the client IP of the current alert.
+      description: Searches for alerts that happened in the past day with Malware
+        category where the host IP is the client IP of the current alert.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -262,16 +266,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b419832c-d9ef-4ab3-8be7-c77c5dcded23
+    taskid: 6effa91d-38e0-4dfb-8a92-df531a3d6b4e
     type: title
     task:
-      id: b419832c-d9ef-4ab3-8be7-c77c5dcded23
+      id: 6effa91d-38e0-4dfb-8a92-df531a3d6b4e
       version: -1
       name: Investigation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -294,13 +297,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7b8ea3cf-e9d9-4845-86a3-bd8c1b7e86ad
+    taskid: a685af16-c239-4712-81ff-00dbcca78bca
     type: condition
     task:
-      id: 7b8ea3cf-e9d9-4845-86a3-bd8c1b7e86ad
+      id: a685af16-c239-4712-81ff-00dbcca78bca
       version: -1
       name: Ensure that a single client IP exists
-      description: Ensures that the alert contains only 1 client IP. LDAP enumeration query alerts containing multiple IPs are not supported by the playbook.
+      description: Ensures that the alert contains only 1 client IP. LDAP enumeration
+        query alerts containing multiple IPs are not supported by the playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -360,13 +364,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0b55bb54-fc93-480f-8a81-ce7ddafdca90
+    taskid: 1095fda1-e8e9-4711-8634-165e8ba8345d
     type: regular
     task:
-      id: 0b55bb54-fc93-480f-8a81-ce7ddafdca90
+      id: 1095fda1-e8e9-4711-8634-165e8ba8345d
       version: -1
       name: Get endpoint information for the client IP
-      description: Retrieves the endpoint name, agent ID and more information about the IP used by the client in which the LDAP queries were executed.
+      description: Retrieves the endpoint name, agent ID and more information about
+        the IP used by the client in which the LDAP queries were executed.
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -399,13 +404,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: db861fe7-0529-4a7b-8f6d-02981b115a2c
+    taskid: dc1fbcf7-0e00-4de1-8b0f-34f97599343f
     type: condition
     task:
-      id: db861fe7-0529-4a7b-8f6d-02981b115a2c
+      id: dc1fbcf7-0e00-4de1-8b0f-34f97599343f
       version: -1
       name: Ensure client is not DC or server
-      description: Ensures that the client that executed the LDAP queries is not a server or the domain controller.
+      description: Ensures that the client that executed the LDAP queries is not a
+        server or the domain controller.
       type: condition
       iscommand: false
       brand: ""
@@ -472,10 +478,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 06906d9c-623d-46ee-8572-08bec2c6ee2b
+    taskid: d0f20db7-f43f-4f64-8517-f117cc5ce025
     type: regular
     task:
-      id: 06906d9c-623d-46ee-8572-08bec2c6ee2b
+      id: d0f20db7-f43f-4f64-8517-f117cc5ce025
       version: -1
       name: Get host risk level
       description: Retrieves risk information for the client host.
@@ -514,13 +520,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 195d4c3b-da80-4a02-857f-718b0936492a
+    taskid: 96e73641-40eb-41f4-8d9b-66fc609b90b2
     type: regular
     task:
-      id: 195d4c3b-da80-4a02-857f-718b0936492a
+      id: 96e73641-40eb-41f4-8d9b-66fc609b90b2
       version: -1
       name: Enrich the user that executed the queries
-      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      description: This script gathers user data from multiple integrations and returns
+        an Account entity with consolidated information to the context.
       scriptName: get-user-data
       type: regular
       iscommand: false
@@ -554,16 +561,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f8edc878-eac3-4f58-8cc0-a38679b31b25
+    taskid: bf1f8757-6ccd-48fb-8deb-1949e097e4ac
     type: title
     task:
-      id: f8edc878-eac3-4f58-8cc0-a38679b31b25
+      id: bf1f8757-6ccd-48fb-8deb-1949e097e4ac
       version: -1
       name: Remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -586,13 +592,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 62a40ca6-091f-4d32-8c76-97dc2f09690c
+    taskid: 0caeb27b-423f-45e3-8971-fa08e763f2d5
     type: condition
     task:
-      id: 62a40ca6-091f-4d32-8c76-97dc2f09690c
+      id: 0caeb27b-423f-45e3-8971-fa08e763f2d5
       version: -1
       name: Check preconditions for continuing investigation
-      description: Checks if investigation and remediation can be done based on pre-conditions signifying high probability of a true positive alert and inherently malicious behavior.
+      description: Checks if investigation and remediation can be done based on pre-conditions
+        signifying high probability of a true positive alert and inherently malicious
+        behavior.
       type: condition
       iscommand: false
       brand: ""
@@ -654,16 +662,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: cebd17a3-6462-4415-8840-6635fa9b471d
+    taskid: b9b43bcd-a930-4a38-8459-1c1e985bd858
     type: title
     task:
-      id: cebd17a3-6462-4415-8840-6635fa9b471d
+      id: b9b43bcd-a930-4a38-8459-1c1e985bd858
       version: -1
       name: Skip / False Positive
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -685,13 +692,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 3c54f48e-e472-4e72-8812-9b817dc93076
+    taskid: 8f70c85b-5ef3-4fee-8d9a-7ca33697047a
     type: condition
     task:
-      id: 3c54f48e-e472-4e72-8812-9b817dc93076
+      id: 8f70c85b-5ef3-4fee-8d9a-7ca33697047a
       version: -1
       name: Check host analysis results
-      description: Checks whether any host-related anomalies were found in the investigation (the host is risky or malware alerts occurred on the host in the past 1 day).
+      description: Checks whether any host-related anomalies were found in the investigation
+        (the host is risky or malware alerts occurred on the host in the past 1 day).
       type: condition
       iscommand: false
       brand: ""
@@ -733,16 +741,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 93537e4b-89ea-4360-8e06-6a368200125b
+    taskid: 3e68f1c5-0a1f-4a29-8bf3-755951ce366a
     type: title
     task:
-      id: 93537e4b-89ea-4360-8e06-6a368200125b
+      id: 3e68f1c5-0a1f-4a29-8bf3-755951ce366a
       version: -1
       name: User Checks
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -764,16 +771,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 793c7b2b-5022-4b63-87e7-1401487204d4
+    taskid: 27d91290-e332-4afe-807c-de77e2aa6b1a
     type: title
     task:
-      id: 793c7b2b-5022-4b63-87e7-1401487204d4
+      id: 27d91290-e332-4afe-807c-de77e2aa6b1a
       version: -1
       name: Host Checks
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -795,13 +801,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 2401b4b4-4b02-4a09-8e38-d5c4c9d4847f
+    taskid: 9a2fc279-8dee-4dec-8c1a-c9e33e9057d8
     type: condition
     task:
-      id: 2401b4b4-4b02-4a09-8e38-d5c4c9d4847f
+      id: 9a2fc279-8dee-4dec-8c1a-c9e33e9057d8
       version: -1
       name: Check user querying frequency
-      description: Checks if the user executes LDAP queries on a regular basis from one or from multiple hosts, daily.
+      description: Checks if the user executes LDAP queries on a regular basis from
+        one or from multiple hosts, daily.
       type: condition
       iscommand: false
       brand: ""
@@ -847,13 +854,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 2bd4c400-fe9b-4c83-83b3-1b3ad6a69cf5
+    taskid: 161ded8b-7f45-43e7-8855-9c3f138e2693
     type: regular
     task:
-      id: 2bd4c400-fe9b-4c83-83b3-1b3ad6a69cf5
+      id: 161ded8b-7f45-43e7-8855-9c3f138e2693
       version: -1
       name: Save result - user does not regularly query
-      description: Saves a context key indicating the user doesn't regularly execute LDAP queries (from one or more hosts).
+      description: Saves a context key indicating the user doesn't regularly execute
+        LDAP queries (from one or more hosts).
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -884,10 +892,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 6390c0fd-b70a-42c3-8f9a-b1c91e03adb1
+    taskid: f147ff27-f084-40cc-82ee-7187f4b11f11
     type: condition
     task:
-      id: 6390c0fd-b70a-42c3-8f9a-b1c91e03adb1
+      id: f147ff27-f084-40cc-82ee-7187f4b11f11
       version: -1
       name: Check if user creation date exists
       description: Checks if the date and time of when the user was created is available.
@@ -927,13 +935,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2d9d8c8c-d7c3-4532-890b-42da3b8a45f5
+    taskid: d2b6725d-73e9-468b-84d6-c59a4fd309af
     type: regular
     task:
-      id: 2d9d8c8c-d7c3-4532-890b-42da3b8a45f5
+      id: d2b6725d-73e9-468b-84d6-c59a4fd309af
       version: -1
       name: Convert user creation date to epoch
-      description: Converts the user creation date to epoch to find relative time of creation.
+      description: Converts the user creation date to epoch to find relative time
+        of creation.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -968,13 +977,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e80bf475-a26d-4342-8b39-d594d53dea4f
+    taskid: 8082772d-1556-493e-89ce-9ced56fa975e
     type: condition
     task:
-      id: e80bf475-a26d-4342-8b39-d594d53dea4f
+      id: 8082772d-1556-493e-89ce-9ced56fa975e
       version: -1
       name: Check if user was created recently
-      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
+      description: Checks if the user's creation date in AD happened 24 hours or less
+        since the time that this alert occurred.
       type: condition
       iscommand: false
       brand: ""
@@ -1021,10 +1031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 2b532878-3d9c-40a6-850e-89c62df1f4b2
+    taskid: 3ed684ec-849d-403a-8ab2-5cc0b6481da1
     type: regular
     task:
-      id: 2b532878-3d9c-40a6-850e-89c62df1f4b2
+      id: 3ed684ec-849d-403a-8ab2-5cc0b6481da1
       version: -1
       name: Save result - user created recently
       description: Saves a context key indicating the user was created recently.
@@ -1058,13 +1068,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 0d1e00a6-7822-426b-8275-936806d30216
+    taskid: 3b855ee6-8e16-4a2c-8567-185090bcd3ff
     type: condition
     task:
-      id: 0d1e00a6-7822-426b-8275-936806d30216
+      id: 3b855ee6-8e16-4a2c-8567-185090bcd3ff
       version: -1
       name: Check user groups and roles
-      description: Checks if the user is part of built-in privileged Active Directory groups.
+      description: Checks if the user is part of built-in privileged Active Directory
+        groups.
       type: condition
       iscommand: false
       brand: ""
@@ -1167,13 +1178,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 542f9bee-9efa-4c60-8233-0a29661f7aa3
+    taskid: 4132aec2-37d9-44ce-84b0-7ca2ceb5e7d7
     type: regular
     task:
-      id: 542f9bee-9efa-4c60-8233-0a29661f7aa3
+      id: 4132aec2-37d9-44ce-84b0-7ca2ceb5e7d7
       version: -1
       name: Save result - user is unprivileged
-      description: Saves a context key indicating the user does not belong to default privileged AD groups.
+      description: Saves a context key indicating the user does not belong to default
+        privileged AD groups.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1204,10 +1216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: cff5f81b-9769-4399-8e9e-61715596401d
+    taskid: 8549af3b-58bb-4216-86b8-545001f9562b
     type: condition
     task:
-      id: cff5f81b-9769-4399-8e9e-61715596401d
+      id: 8549af3b-58bb-4216-86b8-545001f9562b
       version: -1
       name: Check host risk level
       description: Checks if the client host's risk level is high.
@@ -1259,13 +1271,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f5d85e85-980f-4473-846b-fd85b47c626f
+    taskid: 908b20bf-75c5-4aca-806b-de824b8a2e2c
     type: regular
     task:
-      id: f5d85e85-980f-4473-846b-fd85b47c626f
+      id: 908b20bf-75c5-4aca-806b-de824b8a2e2c
       version: -1
       name: Save risky host result
-      description: Saves a context key indicating that the client host's risk level is high.
+      description: Saves a context key indicating that the client host's risk level
+        is high.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1296,10 +1309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f3f3bc3a-446c-4b5a-8b54-3f5cf76e6d3b
+    taskid: 164debc9-a89b-403d-8566-3fd31c1185ba
     type: regular
     task:
-      id: f3f3bc3a-446c-4b5a-8b54-3f5cf76e6d3b
+      id: 164debc9-a89b-403d-8566-3fd31c1185ba
       version: -1
       name: Logoff user from client host
       description: |-
@@ -1376,10 +1389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: a40c151d-aab9-40b8-8cbb-d71d2bd6a427
+    taskid: c2828931-1af9-4e07-8701-bf60232a986a
     type: regular
     task:
-      id: a40c151d-aab9-40b8-8cbb-d71d2bd6a427
+      id: c2828931-1af9-4e07-8701-bf60232a986a
       version: -1
       name: Isolate the endpoint
       description: Isolates the client host machine where the LDAP queries were executed.
@@ -1445,10 +1458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: f65209cc-dd2f-4cda-84bc-f44884b271ff
+    taskid: 66791eda-dabf-4492-88bd-6841c95509eb
     type: condition
     task:
-      id: f65209cc-dd2f-4cda-84bc-f44884b271ff
+      id: 66791eda-dabf-4492-88bd-6841c95509eb
       version: -1
       name: Manual - decide whether to isolate the endpoint
       description: |
@@ -1488,13 +1501,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body: {}
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1510,10 +1523,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 01f53047-6e4b-4433-8c3a-d9b3fc6eee6f
+    taskid: e95328f6-94c8-443b-84a0-0118c0aa0a6a
     type: condition
     task:
-      id: 01f53047-6e4b-4433-8c3a-d9b3fc6eee6f
+      id: e95328f6-94c8-443b-84a0-0118c0aa0a6a
       version: -1
       name: Manual - decide whether to disable the user
       description: |
@@ -1564,13 +1577,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body: {}
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1586,10 +1599,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 2a99bafb-f92c-4682-86fa-89d7b5ed8d39
+    taskid: 5c2a3c2d-4e31-497b-8511-e0a84c97a96a
     type: regular
     task:
-      id: 2a99bafb-f92c-4682-86fa-89d7b5ed8d39
+      id: 5c2a3c2d-4e31-497b-8511-e0a84c97a96a
       version: -1
       name: Close the alert
       description: Closes the current alert.
@@ -1618,13 +1631,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 7742d059-9e60-413e-8705-1623a13943cb
+    taskid: 8f55e219-35b2-459e-854f-cacc017c3c06
     type: regular
     task:
-      id: 7742d059-9e60-413e-8705-1623a13943cb
+      id: 8f55e219-35b2-459e-854f-cacc017c3c06
       version: -1
       name: Disable user in AD
-      description: Disables the user that executed the LDAP enumeration queries in Active Directory.
+      description: Disables the user that executed the LDAP enumeration queries in
+        Active Directory.
       script: '|||ad-disable-account'
       type: regular
       iscommand: true
@@ -1653,13 +1667,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: b61c0b34-61fe-4d6f-8f5a-e103b9bab4ca
+    taskid: 28ece8ff-24c9-4ed8-89f2-cf3f519e1f77
     type: condition
     task:
-      id: b61c0b34-61fe-4d6f-8f5a-e103b9bab4ca
+      id: 28ece8ff-24c9-4ed8-89f2-cf3f519e1f77
       version: -1
       name: Ensure client is not the DC or a server, and runs Windows
-      description: Ensures that the client is not a server, not the domain controller, and runs the Windows operating system (required for automatic remediation).
+      description: Ensures that the client is not a server, not the domain controller,
+        and runs the Windows operating system (required for automatic remediation).
       type: condition
       iscommand: false
       brand: ""
@@ -1725,170 +1740,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
-    taskid: 4efd8d1d-a036-4d07-8912-a8b7a9a8895f
-    type: regular
-    task:
-      id: 4efd8d1d-a036-4d07-8912-a8b7a9a8895f
-      version: -1
-      name: Base64 encode logoff script
-      description: Will encode an input using Base64 format.
-      scriptName: Base64Encode
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "46"
-    scriptarguments:
-      input:
-        simple: |
-          ($domainUser = "${alert.username.[0]}"; $username = ($domainUser -split '\\')[-1]; $userSession = quser $username 2>&1 | Select-String '(\d+)\s+Active' | ForEach-Object { if ($_ -match '(\d+)\s+Active') { [PSCustomObject]@{ Username = $username; SessionID = $matches[1] } } }; if ($userSession) { Write-Host "User '$username' is logged in. Logging off session ID $($userSession.SessionID)..."; logoff $userSession.SessionID } else { Write-Host "User '$username' is not logged in."; exit 0 })
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2490,
-          "y": 2590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
-    taskid: 32db2534-f8bc-4e39-8c9e-ed9b2cbb827b
-    type: regular
-    task:
-      id: 32db2534-f8bc-4e39-8c9e-ed9b2cbb827b
-      version: -1
-      name: Logoff user from client host
-      description: Initiate a new endpoint script execution of shell commands.
-      script: '|||core-run-script-execute-commands'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      commands:
-        complex:
-          root: Base64
-          accessor: encoded
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: Powershell -Command $EncodedScript ="
-              suffix:
-                value:
-                  simple: '"; $DecodedScript = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($EncodedScript)); Invoke-Expression $DecodedScript'
-      endpoint_ids:
-        simple: ${Core.Endpoint.endpoint_id}
-      is_raw_command:
-        simple: "true"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2620,
-          "y": 2765
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
-    taskid: 86e57903-10fd-4439-8113-4907a9d16066
-    type: regular
-    task:
-      id: 86e57903-10fd-4439-8113-4907a9d16066
-      version: -1
-      name: Base64 encode logoff script (oneliner)
-      description: Will encode an input using Base64 format.
-      scriptName: Base64Encode
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      input:
-        simple: |
-          ($domainUser = "${alert.username.[0]}"; $username = ($domainUser -split '\\')[-1]; $userSession = quser $username 2>&1 | Select-String '(\d+)\s+Active' | ForEach-Object { if ($_ -match '(\d+)\s+Active') { [PSCustomObject]@{ Username = $username; SessionID = $matches[1] } } }; if ($userSession) { Write-Host "User '$username' is logged in. Logging off session ID $($userSession.SessionID)..."; logoff $userSession.SessionID } else { Write-Host "User '$username' is not logged in."; exit 0 })
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3000,
-          "y": 2610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
-    taskid: 7e6fbf92-e283-4b24-824a-c780b8420bbd
-    type: regular
-    task:
-      id: 7e6fbf92-e283-4b24-824a-c780b8420bbd
-      version: -1
-      name: Logoff user from client host
-      description: Initiate a new endpoint script execution of shell commands.
-      script: '|||core-run-script-execute-commands'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      commands:
-        simple: |-
-          $Script = @'
-          Write-Host "Line 1"
-          Write-Host "Line 2"
-          Write-Host "Line 3"
-          '@
-          $EncodedScript = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($Script))
-      endpoint_ids:
-        simple: ${Core.Endpoint.endpoint_id}
-      is_raw_command:
-        simple: "true"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3420,
-          "y": 2610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 5f65bbb2-5ce6-4e91-8545-2e43d3277e02
+    taskid: 904e0927-8a4d-4289-8031-e7efbb6c5c30
     type: condition
     task:
-      id: 5f65bbb2-5ce6-4e91-8545-2e43d3277e02
+      id: 904e0927-8a4d-4289-8031-e7efbb6c5c30
       version: -1
       name: Check user analysis results
       description: Checks whether any user-related anomalies were found in the investigation.
@@ -1943,16 +1800,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: f4d89180-b8f9-4d55-811b-068ca6321a0a
+    taskid: fb134545-e8fb-432f-8194-8a901d99a119
     type: title
     task:
-      id: f4d89180-b8f9-4d55-811b-068ca6321a0a
+      id: fb134545-e8fb-432f-8194-8a901d99a119
       version: -1
       name: Insufficient evidence for remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -1974,13 +1830,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 88adb952-1975-4fb3-89b1-ab03193a94fb
+    taskid: 12287b3f-c14f-46d2-8873-42a4283f7c3d
     type: regular
     task:
-      id: 88adb952-1975-4fb3-89b1-ab03193a94fb
+      id: 12287b3f-c14f-46d2-8873-42a4283f7c3d
       version: -1
       name: Manually remediate server / DC / non-Windows machine
-      description: "The following host is a domain controller, a server, or not a Windows machine. This means automatic remediation cannot be executed. \n\nPlease review the information below and manually remediate the alert.\nEndpoint name: ${Core.Endpoint.endpoint_name}\n\nFindings of the investigation:\n\n---\n\n#### Malware Alerts on Host:\n`${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length > 0 ? \"True\" : \"False\"}`\n\n---\n\n#### Host is Risky:\n`${.=val.HostIsRisky ? \"True\" : \"False\"}`\n"
+      description: "The following host is a domain controller, a server, or not a
+        Windows machine. This means automatic remediation cannot be executed. \n\nPlease
+        review the information below and manually remediate the alert.\nEndpoint name:
+        ${Core.Endpoint.endpoint_name}\n\nFindings of the investigation:\n\n---\n\n####
+        Malware Alerts on Host:\n`${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length
+        > 0 ? \"True\" : \"False\"}`\n\n---\n\n#### Host is Risky:\n`${.=val.HostIsRisky
+        ? \"True\" : \"False\"}`\n"
       type: regular
       iscommand: false
       brand: ""
@@ -2005,13 +1867,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 34ec36c5-ded9-445c-8775-dbda0c8b6b39
+    taskid: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
     type: regular
     task:
-      id: 34ec36c5-ded9-445c-8775-dbda0c8b6b39
+      id: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
       version: -1
       name: Check if user is logged in
-      description: Initiates code execution on the client host to check if the user is currently logged in to the host.
+      description: Initiates code execution on the client host to check if the user
+        is currently logged in to the host.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -2044,13 +1907,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: c2cf68fd-1b81-44d4-8a2d-84c9370c263e
+    taskid: f369276b-2db7-4648-8fed-32516d14d725
     type: regular
     task:
-      id: c2cf68fd-1b81-44d4-8a2d-84c9370c263e
+      id: f369276b-2db7-4648-8fed-32516d14d725
       version: -1
       name: Get log in check result
-      description: Retrieves results from the "quser" command for the user - which can be used to tell if the user is currently logged in.
+      description: Retrieves results from the "quser" command for the user - which
+        can be used to tell if the user is currently logged in.
       script: '|||core-get-script-execution-results'
       type: regular
       iscommand: true
@@ -2079,13 +1943,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 8248f214-4cab-477c-8e43-2ed3386cb07a
+    taskid: e53a7044-64ba-47db-8470-d9d23b475850
     type: condition
     task:
-      id: 8248f214-4cab-477c-8e43-2ed3386cb07a
+      id: e53a7044-64ba-47db-8470-d9d23b475850
       version: -1
       name: Check for active session of the user
-      description: Checks if the execution results show that there is currently an active session for the user - which means the user is currently logged in.
+      description: Checks if the execution results show that there is currently an
+        active session for the user - which means the user is currently logged in.
       type: condition
       iscommand: false
       brand: ""
@@ -2143,10 +2008,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: c80ab3ad-be47-45d8-8797-7624bffdc8ad
+    taskid: 699a3c31-10f1-431d-8287-6e5d296cd319
     type: regular
     task:
-      id: c80ab3ad-be47-45d8-8797-7624bffdc8ad
+      id: 699a3c31-10f1-431d-8287-6e5d296cd319
       version: -1
       name: Save username without domain prefix
       description: Saves the username without the domain prefix.
@@ -2222,7 +2087,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3315,
-        "width": 4840,
+        "width": 3090,
         "x": -1040,
         "y": 30
       }
@@ -2230,6 +2095,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.10.0
