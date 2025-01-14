@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![IP Whitelist - GCP Firewall](https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/GoogleCloudCompute/doc_files/IP_Whitelist_-_GCP_Firewall.png)
+![IP Whitelist - GCP Firewall](../doc_files/IP_Whitelist_-_GCP_Firewall.png)
