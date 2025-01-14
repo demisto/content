@@ -3931,7 +3931,8 @@
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
             "fromversion": "5.5.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "Field polling test",
