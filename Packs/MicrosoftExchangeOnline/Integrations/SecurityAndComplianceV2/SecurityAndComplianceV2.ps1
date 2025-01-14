@@ -1895,9 +1895,9 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-    $app_secret = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
-    $tenant_id = if ($integration_params.credentials_tenant_id.identifier) {$integration_params.credentials_tenant_id.identifier} else {$integration_params.tenant_id}
-    $app_id = if ($integration_params.credentials_app_id.identifier) {$integration_params.credentials_app_id.identifier} else {$integration_params.app_id}
+    $app_secret = $integration_params.credentials_app_secret.password -or $integration_params.app_secret
+    $tenant_id = $integration_params.credentials_tenant_id.identifier -or $integration_params.tenant_id
+    $app_id = $integration_params.credentials_app_id.identifier -or $integration_params.app_id
     if ($integration_params.insecure -eq $true) {
         # Bypass SSL verification if insecure is true
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
