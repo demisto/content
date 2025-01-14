@@ -221,9 +221,6 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-folder
-    -  --skip-integration-script-file-name
-    -  --skip-markdown
     -  --skip-suffix
 
   - id: validate-conf-json
