@@ -92,8 +92,14 @@ def extractVulnDetails(requestfromconnection):
                     cvssmetric = cvssmetric[0]
 
                     for key, locations in key_locations.items():
-                        cvssmetricsdict[key] = next((get_value_from_hierarchy(cvssmetric, loc)
-                                                    for loc in locations if get_value_from_hierarchy(cvssmetric, loc) is not None), None)
+                        cvssmetricsdict[key] = next(
+                            (
+                                get_value_from_hierarchy(cvssmetric, loc)
+                                for loc in locations
+                                if get_value_from_hierarchy(cvssmetric, loc) is not None
+                            ),
+                            None,
+                        )
                     cvssmetricslist.append(cvssmetricsdict)
 
             pretty_dict['metrics'] = cvssmetricslist
