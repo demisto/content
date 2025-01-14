@@ -171,33 +171,33 @@ script:
       - build.gradle
       - gradle.properties
       - build.gradle.kts
-      - pom.xml 
+      - pom.xml
       - requirements.txt
       - package-lock.json
       - package.json
-      - bower.json 
-      - go.sum 
+      - bower.json
+      - go.sum
       - go.mod
       - tf
-      - json 
-      - yml    
-      - yaml 
+      - json
+      - yml
+      - yaml
       - Template
-      - .checkov.baseline 
+      - .checkov.baseline
       - Hcl
       - Dockerfile
       - gradle-wrapper.properties
-      - METADATA 
+      - METADATA
       - Bicep
       - Pipfile.lock
-      - Pipfile   
+      - Pipfile
       - Yarn.lock
-      - Gemfile 
+      - Gemfile
       - Gemfile.lock
       - gemspec
       - env
       - settings.py
-      - main.py 
+      - main.py
       - application.py
       - config.py
       - app.js
@@ -210,20 +210,20 @@ script:
       - Index.php
       - config.php
       - config.xml
-      - strings.xml 
+      - strings.xml
       - app.module.ts
       - environment.ts
-      - tpl 
+      - tpl
       - tfvars
-      - unknown 
-      - csproj 
+      - unknown
+      - csproj
       - packages.config
       - Directory.Packages.props
       - paket.dependencies
       - paket.references
       - paket.lock
       - sln
-      - config      
+      - config
       - composer.json
       - composer.lock
     - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument (code_categories, file_types, iac_categories...)
@@ -2420,86 +2420,919 @@ script:
     execution: false
     name: update-remote-system
   - arguments:
-      - description: Access key name.
-        name: name
-        required: true
-      - description: Timestamp in milliseconds when access key expires. Default:0.
-        name: expires-on
+    - description: Access key name.
+      name: name
+      required: true
+    - description: Timestamp in milliseconds when access key expires. Default:0.
+      name: expires-on
     deprecated: false
     description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
     execution: false
     name: prisma-cloud-access-key-create
     outputs:
-      - contextPath: PrismaCloud.AccessKeys.id
-        description: Access key ID.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.secretKey
-        description: Access key secret.
-        type: String
+    - contextPath: PrismaCloud.AccessKeys.id
+      description: Access key ID.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.secretKey
+      description: Access key secret.
+      type: String
   - arguments:
-      - description: Returns the metadata of the access key that has the specified ID.
-        name: access-key
-      - description: Maximum number of entries to return.
-        name: limit
+    - description: Returns the metadata of the access key that has the specified ID.
+      name: access-key
+    - description: Maximum number of entries to return.
+      name: limit
     deprecated: false
     description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
     execution: false
     name: prisma-cloud-access-keys-list
     outputs:
-      - contextPath: PrismaCloud.AccessKeys.id
-        description: Access key ID.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.createdBy
-        description: The user who created the access key.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.createdTs
-        description: Time access key was created.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.expiresOn
-        description: The time the access key expires.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.lastUsedTime
-        description: The last time the access key was used.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.name
-        description: The name of the access key.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.role
-        description: Access key user role.
-        type: Object
-      - contextPath: PrismaCloud.AccessKeys.roleType
-        description: User role permission type.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.status
-        description: Access key status.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.username
-        description: Access key user name.
-        type: String
+    - contextPath: PrismaCloud.AccessKeys.id
+      description: Access key ID.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.createdBy
+      description: The user who created the access key.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.createdTs
+      description: Time access key was created.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.expiresOn
+      description: The time the access key expires.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.lastUsedTime
+      description: The last time the access key was used.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.name
+      description: The name of the access key.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.role
+      description: Access key user role.
+      type: Object
+    - contextPath: PrismaCloud.AccessKeys.roleType
+      description: User role permission type.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.status
+      description: Access key status.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.username
+      description: Access key user name.
+      type: String
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Deactivates the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-disable
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Activates the access key that has the specified ID. You cannot activate an expired access key.
     execution: false
     name: prisma-cloud-access-key-enable
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Deletes the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-delete
+  - arguments:
+    - description: Unified Asset Id or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External Finding Types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: External finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline Item ID.
+      name: timeline_item_id
+    - description: List of Alert Ids.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions Type.
+      name: permission_type
+    - description: Next Page Token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion Findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset with the given id.
+    name: prisma-cloud-asset-get
+  - arguments:
+    - description: Unified Asset Id or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: asset
+      description: Asset Domain Service query type.
+      name: type
+      predefined:
+      - external_finding
+      - asset
+      - asset_lite
+      - alerts
+      - alerts_counts
+      - alert_summary
+      - finding_summary
+      - attack_path
+      - attack_path_summary
+      - raw_config
+      - network
+      - timeline
+      - external_integration
+      - asset_data_indicators
+      - relationships
+      - findings
+      - vulnerabilities
+      - permissions
+      - package_info
+      - labels
+      - vulnerability_aggregates
+      - process_info
+      - vulnerabilities_group_by_type
+      - asset_cwp_vulns
+      - app_contexts
+      - attributes
+      - data_security
+      - data_security_summary
+      required: true
+    - auto: PREDEFINED
+      description: External Finding Types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: External finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline Item ID.
+      name: timeline_item_id
+    - description: List of Alert Ids.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions Type.
+      name: permission_type
+    - description: Next Page Token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion Findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset with the given id.
+    name: prisma-cloud-asset-generic-get
+  - arguments:
+    - description: Unified Asset Id or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External Finding Types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: External finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline Item ID.
+      name: timeline_item_id
+    - description: List of Alert Ids.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions Type.
+      name: permission_type
+    - description: Next Page Token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion Findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset findings with the given id.
+    name: prisma-cloud-asset-findings-get
+  - arguments:
+    - description: Unified Asset Id or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External Finding Types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: External finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline Item ID.
+      name: timeline_item_id
+    - description: List of Alert Ids.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions Type.
+      name: permission_type
+    - description: Next Page Token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion Findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset vulnerabilities with the given id.
+    name: prisma-cloud-asset-vulnerabilities-get
+  - arguments:
+    - description: Unified Asset Id or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External Finding Types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: External finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline Item ID.
+      name: timeline_item_id
+    - description: List of Alert Ids.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions Type.
+      name: permission_type
+    - description: Next Page Token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion Findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset alerts with the given id.
+    name: prisma-cloud-asset-alerts-get
+  - arguments:
+    - description: Unified Asset Id or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External Finding Types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: External finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline Item ID.
+      name: timeline_item_id
+    - description: List of Alert Ids.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions Type.
+      name: permission_type
+    - description: Next Page Token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion Findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset relationships with the given id.
+    name: prisma-cloud-asset-relationships-get
+  - arguments:
+    - description: Unified Asset Id or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External Finding Types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: External finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline Item ID.
+      name: timeline_item_id
+    - description: List of Alert Ids.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions Type.
+      name: permission_type
+    - description: Next Page Token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion Findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: 'Supported Vuln Info Types: Package, layer and CVE.'
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset network with the given id.
+    name: prisma-cloud-asset-network-get
+  runonce: false
 tests:
 - Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper
