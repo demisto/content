@@ -10,19 +10,19 @@
                     "simple": "details"
                 },
                 "Impact": {
-                    "simple": "bmcimpact"
+                    "simple": "bmcitsmimpact"
                 },
                 "Priority": {
                     "simple": "sourcepriority"
                 },
                 "RiskLevel": {
-                    "simple": "bmcrisklevel"
+                    "simple": "bmcitsmrisklevel"
                 },
                 "Status": {
                     "simple": "sourcestatus"
                 },
                 "StatusReason": {
-                    "simple": "bmcstatusreason"
+                    "simple": "bmcitsmstatusreason"
                 },
                 "Summary": {
                     "simple": "description"
@@ -39,7 +39,7 @@
                     "simple": "details"
                 },
                 "Impact": {
-                    "simple": "bmcimpact"
+                    "simple": "bmcitsmimpact"
                 },
                 "Priority": {
                     "simple": "sourcepriority"
@@ -48,7 +48,7 @@
                     "simple": "sourcestatus"
                 },
                 "StatusReason": {
-                    "simple": "bmcstatusreason"
+                    "simple": "bmcitsmstatusreason"
                 },
                 "Summary": {
                     "simple": "description"
@@ -65,7 +65,7 @@
                     "simple": "details"
                 },
                 "Impact": {
-                    "simple": "bmcimpact"
+                    "simple": "bmcitsmimpact"
                 },
                 "Priority": {
                     "simple": "labels.Priority"
@@ -74,7 +74,7 @@
                     "simple": "sourcestatus"
                 },
                 "StatusReason": {
-                    "simple": "bmcstatusreason"
+                    "simple": "bmcitsmstatusreason"
                 },
                 "Summary": {
                     "simple": "description"
@@ -91,7 +91,7 @@
                     "simple": "details"
                 },
                 "Impact": {
-                    "simple": "bmcimpact"
+                    "simple": "bmcitsmimpact"
                 },
                 "Priority": {
                     "simple": "sourcepriority"
@@ -100,7 +100,7 @@
                     "simple": "sourcestatus"
                 },
                 "StatusReason": {
-                    "simple": "bmcstatusreason"
+                    "simple": "bmcitsmstatusreason"
                 },
                 "Summary": {
                     "simple": "description"
@@ -117,13 +117,13 @@
                     "simple": "details"
                 },
                 "Impact": {
-                    "simple": "bmcimpact"
+                    "simple": "bmcitsmimpact"
                 },
                 "Status": {
                     "simple": "sourcestatus"
                 },
                 "StatusReason": {
-                    "simple": "bmcstatusreason"
+                    "simple": "bmcitsmstatusreason"
                 },
                 "Summary": {
                     "simple": "description"
@@ -146,7 +146,7 @@
                     "simple": "sourcestatus"
                 },
                 "StatusReason": {
-                    "simple": "bmcstatusreason"
+                    "simple": "bmcitsmstatusreason"
                 },
                 "Summary": {
                     "simple": "description"
