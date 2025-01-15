@@ -1639,7 +1639,6 @@ tasks:
           right:
             value:
               simple: "True"
-            iscontext: true
           ignorecase: true
     continueonerrortype: ""
     view: |-
