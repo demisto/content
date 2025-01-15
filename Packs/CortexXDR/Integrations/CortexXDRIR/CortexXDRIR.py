@@ -53,6 +53,7 @@ XDR_TO_XSOAR = "XDR -> XSOAR"
 
 XDR_OPEN_STATUS_TO_XSOAR = ['under_investigation', 'new']
 
+
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
         return None
