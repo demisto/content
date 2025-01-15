@@ -9,7 +9,7 @@
     "type": "singleSelect",
     "closeForm": false,
     "editForm": true,
-    "required": false,
+    "required": true,
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
