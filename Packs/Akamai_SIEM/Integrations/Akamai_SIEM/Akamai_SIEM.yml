@@ -259,7 +259,6 @@ script:
   isfetchevents: true
   isfetchevents:xsoar: false
   longRunning: true
-  longRunning:xsoar: false
   runonce: false
   script: '-'
   subtype: python3

@@ -1,5 +1,5 @@
 name:  Akamai_WAF Parsing Rule
-id:  Akamai_WAF_Parsing_Rule
+id:  Akamai_WAF_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''
