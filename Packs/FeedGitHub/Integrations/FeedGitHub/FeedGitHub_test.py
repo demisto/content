@@ -65,7 +65,7 @@ def test_get_content_files_from_repo(mocker):
                               "- File description: 64-bit DLL stager for Cobalt Strike\n"
                               "- Run method: rundll32.exe [filename],ApendMenu \n"
                               "- Sample: https://bazaar.abuse.ch/sample/"
-                              "9e68ac920bae102ccf1829ae8b8c212cc3046dd82114966c74e740df68b76fcd/\n".encode()}
+                              "9e68ac920bae102ccf1829ae8b8c212cc3046dd82114966c74e740df68b76fcd/\n".encode(encoding='utf-8')}
     mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
     assert content_files == util_load_json(
