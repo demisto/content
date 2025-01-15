@@ -1990,6 +1990,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
 def get_missing_files_description(missing_files):
     if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):
         return missing_files[0].get('description')
+    return None
 
 
 def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
@@ -2475,6 +2476,9 @@ def parse_command_injections(commands: list[str] | list | dict[list, list],
         list[str] | list | dict[list, list]: The parsed command
     """
 
+    # !!! IMPORTANT !!!
+    # Do not make changes to this function without consulting the SecEng Team
+
     chained_command_chars = {';', '&', '|'}
     nested_command_regex = re.compile('`.*?`|\\$\\(.*?\\)')
     filter_bypass_space_regex = re.compile('\\$\\{IFS\\}|\\{.*\\,.*\\}|\\<|\\$\'.*\'|\\\\x20|%09|%.*\\:~\\d+,-*\\d+%')
@@ -2489,15 +2493,16 @@ def parse_command_injections(commands: list[str] | list | dict[list, list],
 
     for command in commands:
 
-        if ((not is_chained_command and bool(chained_command_chars.intersection(str(command))))
-                or bool(nested_command_regex.findall(str(command)))
-                or bool(filter_bypass_space_regex.findall(str(command)))
-                or bool(filter_bypass_tilde_regex.findall(str(command)))
-                or bool(filter_bypass_char_regex.findall(str(command)))
-                or bool(filter_bypass_raw_hex_regex.findall(str(command)))
-                or bool(filter_bypass_quotes_regex.findall(str(command)))
-                or bool(filter_bypass_dollar_regex.findall(str(command)))
-                or bool(filter_bypass_wildcards_regex.findall(str(command)))
+        str_cmd = str(command)
+        if ((not is_chained_command and bool(chained_command_chars.intersection(str_cmd)))
+                or bool(nested_command_regex.findall(str_cmd))
+                or bool(filter_bypass_space_regex.findall(str_cmd))
+                or bool(filter_bypass_tilde_regex.findall(str_cmd))
+                or bool(filter_bypass_char_regex.findall(str_cmd))
+                or bool(filter_bypass_raw_hex_regex.findall(str_cmd))
+                or bool(filter_bypass_quotes_regex.findall(str_cmd))
+                or bool(filter_bypass_dollar_regex.findall(str_cmd))
+                or bool(filter_bypass_wildcards_regex.findall(str_cmd))
                 ):
             raise DemistoException(
                 f'The command "{command}" contains characters or substrings that can be used to inject malicious commands.')
@@ -2515,12 +2520,14 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     commands = args.get('commands')
     is_raw_command = argToBoolean(args.get('is_raw_command', False))
     is_chained_command = argToBoolean(args.get('is_chained_command', False))
+    override_validation = argToBoolean(args.get('override_validation', False))
     commands_list = remove_empty_elements([commands]) if is_raw_command else argToList(commands)
 
     if args.get('command_type') == 'powershell':
         commands_list = [form_powershell_command(command) for command in commands_list]
 
-    parameters = {'commands_list': parse_command_injections(commands_list, is_chained_command)}
+    parsed_commands = commands_list if override_validation else parse_command_injections(commands_list, is_chained_command)
+    parameters = {'commands_list': parsed_commands}
 
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')

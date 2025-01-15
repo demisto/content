@@ -1856,6 +1856,10 @@ script:
       name: is_chained_command
       type: Boolean
       required: false
+    - description: Whether or not to override input validation. WARNING - only use this flag if you are sure of what you are doing as it removes an important feature.
+      name: override_validation
+      type: Boolean
+      required: false
     - description: Type of shell command.
       auto: PREDEFINED
       name: command_type

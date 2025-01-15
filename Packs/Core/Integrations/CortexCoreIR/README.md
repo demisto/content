@@ -1482,6 +1482,7 @@ Initiate a new endpoint script execution of shell commands.
 | commands | Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. Set the `is_chained_command` argument to `true` when using `\|\|`, `&amp;&amp;`, `;` separators for controlling the flow of multiple commands. | Required | 
 | is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional | 
 | is_chained_command | Whether or not the command has chained commands. When true, the command overrides validation for `\|\|`, `&amp;&amp;`, `;` separators. | Optional | 
+| override_validation | Whether or not to override input validation. WARNING - only use this flag if you are sure of what you are doing as it removes an important feature | Optional | 
 | command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | action_id | For polling use. | Optional | 
