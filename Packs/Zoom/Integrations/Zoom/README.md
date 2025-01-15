@@ -81,13 +81,17 @@ Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
 
 **Endpoint URL Requirements:**
 
-&emsp; &emsp; To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
+&emsp; &emsp; According to the [Zoom requirements](https://developers.zoom.us/docs/api/webhooks/#webhook-endpoint-requirements) in order to receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
 
 &emsp; &emsp; * Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
 
-&emsp; &emsp; * Be able to accept HTTP POST requests.
+&emsp; &emsp; * Employ the `https://` scheme.
 
-&emsp; &emsp; * Be able to respond with a 200 or 204 HTTP Status Code.
+&emsp; &emsp; * Be able to accept HTTP POST requests containing JSON payloads.
+
+&emsp; &emsp; * Be a fully qualified domain name (FQDN).
+
+&emsp; &emsp; * be able to respond with an HTTP Status Code.
 
 &emsp; &emsp; ---
 

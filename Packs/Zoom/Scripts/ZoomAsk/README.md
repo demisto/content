@@ -56,21 +56,21 @@ It uses a mechanism that allows external users to respond in Cortex XSOAR (per i
 ![SlackAsk](../../doc_files/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
 
 The automation can utilize the interactive capabilities of Zoom to send a form with buttons. 
-This requires the external endpoint for interactive responses to be available for connection. (See the Zoom integration documentation for more information).
+This requires the external endpoint for interactive responses to be available for connection. (See the [Zoom integration documentation](https://xsoar.pan.dev/docs/reference/integrations/zoom)).
 You can also utilize a dropdown list instead, by specifying the `responseType` argument.
 
-In order to use ZoomAsk via playbooks:
-    1. Add the ZoomAsk script to a playbook as a task.
-    2. In the 'Message' argument, specify the message to be sent.
-    3. Configure the response options by filling out the 'Option1' and 'Option2' arguments (default values are 'Yes' and 'No').
+In order to use `ZoomAsk` via playbook:
+    1. Add the `ZoomAsk` script to a playbook as a task.
+    2. In the `message` argument, specify the message to be sent.
+    3. Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').
     4. Either a user or a channel_id or channel_name must be specified.
-    5. All other inputs are optional.
-    6. At some point at the playbook, after running ZoomAsk, add a mutual conditional task which holds up the playbook execution until the response is received form zoom.
-       1. The condition names should much the response options you passed in to the ZoomAsk.
-       2. In order to tie the conditional task back to ZoomAsk:
-          - Add a tag to the conditional task.
-          - In the ZoomAsk task, include the same tag value under the "task" argument.
-    7. The conditional task remark as completed when executing the playbook.
+    5. In the `ZoomAsk` task, pass a tag value to the `task` argument.
+    6. All other inputs are optional.
+    7. At some point at the playbook, after running `ZoomAsk`, add a manual conditional task, which holds up the playbook execution until the response is received from Zoom.
+       1. The condition names must match the response options you passed in to `ZoomAsk`.
+       2. In order to tie the conditional task back to `ZoomAsk`:
+          - Add the same tag from the fourth step to the conditional task (under the "Details" tab of the task).
+    8. The conditional task will be marked as completed when a user responds to the `ZoomAsk` form.
 
 ## Notes
 
