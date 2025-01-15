@@ -106,12 +106,7 @@ configuration:
   - section: Connect
     display: 'Is pagination Needed'
     name: pagination_needed
-    defaultvalue: "False"
-    type: 15
-    required: True
-    options:
-      - True
-      - False
+    type: 8
   - section: Connect
     display: Pagination Field Name
     name: pagination_field_name
@@ -146,7 +141,6 @@ configuration:
     name: insecure
     type: 8
     required: false
-    defaultvalue: false
   - section: Collect
     display: First fetch time
     name: first_fetch

@@ -2,7 +2,7 @@ import contextlib
 
 from CommonServerPython import *
 import demistomock as demisto
-from typing import Any, cast, Tuple  # noqa: UP035
+from typing import Any, cast  # noqa: UP035
 from base64 import b64encode
 from datetime import datetime
 from distutils.util import strtobool
@@ -139,7 +139,13 @@ class Client(BaseClient):
         )
 
 
-def organize_events_to_xsiam_format(events):
+def organize_events_to_xsiam_format(events: Any, events_keys: list[str]) -> list[dict[str, Any]]:
+    raw_events: list[dict[str, Any]] = dict_safe_get(events, events_keys, [], list, True)  # type: ignore
+    return raw_events
+
+
+# # region Auto-detection functionality
+def detect_where_is_the_events_to_xsiam_format(events):
     raw_events = events
     events_to_xsiam = []
     events_list: Dict[Any, Any]
@@ -227,6 +233,15 @@ def get_time_field_from_event(events_list):
                     break
 
     return event_time_field
+# endregion
+
+
+def get_time_field_from_event_to_dt(event: dict[str, Any], timestamp_field_config) -> datetime:
+    if timestamp_field_config['field_name'] not in event:
+        raise DemistoException(f"Timestamp field: {timestamp_field_config['field_name']} not found in event")
+    timestamp_str: str = iso8601_to_datetime_str(event[timestamp_field_config['field_name']])
+    # Convert the timestamp to the desired format.
+    return datetime.strptime(timestamp_str, timestamp_field_config.get('format', DATE_FORMAT))
 
 
 def is_pagination_needed(events, pagination_logic):
@@ -244,8 +259,17 @@ def is_pagination_needed(events, pagination_logic):
     return pagination_needed, next_page_value
 
 
-def fetch_events(client: Client, last_run, first_fetch_time, endpoint, method, request_data, request_json, query_params,
-                 pagination_logic):
+def fetch_events(client: Client,
+                 last_run,
+                 first_fetch_time,
+                 endpoint,
+                 method,
+                 request_data,
+                 request_json,
+                 query_params,
+                 pagination_logic,
+                 events_keys,
+                 timestamp_field_config):
     # region Gets Last Time
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
@@ -272,7 +296,7 @@ def fetch_events(client: Client, last_run, first_fetch_time, endpoint, method, r
     events = client.search_events(endpoint=endpoint, method=method, request_data=request_data, request_json=request_json,
                                   query_params=query_params)
     pagination_needed, next_page_value = is_pagination_needed(events, pagination_logic)
-    raw_events_list = organize_events_to_xsiam_format(events)
+    raw_events_list = organize_events_to_xsiam_format(events, events_keys)
     demisto.debug(f"{len(raw_events_list)} events fetched")
 
     while pagination_needed:
@@ -280,7 +304,7 @@ def fetch_events(client: Client, last_run, first_fetch_time, endpoint, method, r
 
         events = client.search_events(endpoint=endpoint, method=method, request_data=request_data, request_json=request_json,
                                       query_params=query_params)
-        events_list = organize_events_to_xsiam_format(events)
+        events_list = organize_events_to_xsiam_format(events, events_keys)
         raw_events_list.extend(events_list)
         demisto.debug(f"{len(raw_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(events, pagination_logic)
@@ -288,41 +312,29 @@ def fetch_events(client: Client, last_run, first_fetch_time, endpoint, method, r
     # endregion
 
     # region Collect all events based on their last fetch time.
-    event_time_field = get_time_field_from_event(raw_events_list)
+    for event in raw_events_list:
 
-    if event_time_field:
-        for event in raw_events_list:
+        incident_created_time_dt = get_time_field_from_event_to_dt(event, timestamp_field_config)
+        unix_timestamp = int(incident_created_time_dt.timestamp())
+        incident_created_time = unix_timestamp
 
-            incident_created_time = event.get(event_time_field, '0')
+        # to prevent duplicates, we are only adding events with creation_time > last fetched incident
+        if incident_created_time > last_fetch:  # type: ignore
+            demisto.debug(f'Pulling event.. {event}')
+            event_list.append(event)
+        else:
+            demisto.debug(f'This event is to old to pull, creation time: {incident_created_time}')
 
-            incident_created_time = iso8601_to_datetime_str(incident_created_time)
+        if first_fetch_for_this_integration and incident_created_time > latest_created_time:
+            demisto.debug(f'Pulling event.. {event}')
+            event_list.append(event)
 
-            log_source_time_format = identify_time_format(incident_created_time)
-            incident_created_time_dt = datetime.strptime(incident_created_time, log_source_time_format)  # type: ignore
-            unix_timestamp = int(incident_created_time_dt.timestamp())
-            incident_created_time = unix_timestamp
-
-            # to prevent duplicates, we are only adding events with creation_time > last fetched incident
-            if incident_created_time > last_fetch:  # type: ignore
-                demisto.debug(f'Pulling event.. {event}')
-                event_list.append(event)
-            else:
-                demisto.debug('This event is to old to pull..')
-                demisto.debug(f'Incident start time: {incident_created_time}..')
-
-            if first_fetch_for_this_integration and incident_created_time > latest_created_time:
-                demisto.debug(f'Pulling event.. {event}')
-                event_list.append(event)
-
-            # Update last run and add event if the event is newer than the last fetch
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
-    else:
-        demisto.debug('did not find any time field')
-    # endregion
+        # Update last run and add event if the event is newer than the last fetch
+        if incident_created_time > latest_created_time:
+            latest_created_time = incident_created_time
 
     # region Saves important parameters here to Integration context / last run
-    demisto.debug(f'next_run.. {latest_created_time}')
+    demisto.debug(f'next run:{latest_created_time}')
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
     # endregion
@@ -347,7 +359,7 @@ def test_module(client: Client,
                 method,
                 request_data,
                 request_json,
-                query_params) -> Tuple[str, list[dict[str, Any]]]:
+                query_params) -> tuple[str, list[dict[str, Any]]]:
     try:
         events = client.search_events(endpoint=endpoint, method=method, request_data=request_data, request_json=request_json,
                                       query_params=query_params)
@@ -496,6 +508,17 @@ def main() -> None:
         raise DemistoException('HTTP method is not valid, please choose between GET and POST')
     # endregion
 
+    # region Gets the timestamp field configuration
+    if not params.get('timestamp_field'):
+        raise DemistoException('Timestamp field is missing')
+    timestamp_field_config = {
+        'field_name': params.get('timestamp_field'),
+        'format': params.get('timestamp_format')
+    }
+    demisto.debug(f"Timestamp field configuration - field_name: {timestamp_field_config['field_name']}, "
+                  f"format: {timestamp_field_config.get('format', 'Not provided')}")
+    # endregion
+
     # region Pagination logic
     pagination_needed = str2bool(params.get('pagination_needed'))
     pagination_field_name = params.get('pagination_field_name')
@@ -512,6 +535,15 @@ def main() -> None:
             raise DemistoException('Pagination field name is missing')
         if not pagination_flag:
             raise DemistoException('Pagination flag is missing')
+    # endregion
+
+    # region Gets the events keys
+    events_keys: list[str] = argToList(params.get('events_keys'), '.')
+    if not events_keys:
+        raise DemistoException(
+            'Events keys are missing, please provide the keys to the events in the API response, '
+            'the format should be: key1.key2.key3')
+    demisto.debug(f"Events keys: {events_keys}")
     # endregion
 
     # Collect headers & request queries.
@@ -563,7 +595,7 @@ def main() -> None:
             vendor = params.get('vendor').lower()
             product = params.get('product').lower()
             demisto.debug(f"Vendor: {vendor}, Product: {product}")
-            events_to_xsiam = organize_events_to_xsiam_format(events)
+            events_to_xsiam = organize_events_to_xsiam_format(events, events_keys)
             send_events_to_xsiam(events_to_xsiam, vendor=vendor, product=product)  # noqa
 
         return_results(result)
@@ -589,7 +621,9 @@ def main() -> None:
             request_data=request_data,
             request_json=request_json,
             query_params=query_params,
-            pagination_logic=pagination_logic
+            pagination_logic=pagination_logic,
+            events_keys=events_keys,
+            timestamp_field_config=timestamp_field_config,
         )
 
         # saves next_run for the time fetch-incidents are invoked.
@@ -599,7 +633,7 @@ def main() -> None:
         demisto.debug(f"Vendor: {vendor}, Product: {product}")
 
         # Fix The JSON Format to send to XSIAM dataset.
-        events_to_xsiam = organize_events_to_xsiam_format(events)
+        events_to_xsiam = organize_events_to_xsiam_format(events, events_keys)
         send_events_to_xsiam(events_to_xsiam, vendor=vendor, product=product)  # noqa
 
 
