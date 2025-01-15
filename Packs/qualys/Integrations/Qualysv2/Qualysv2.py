@@ -793,7 +793,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-host-list-detection": {
-        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list",
+        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -1684,6 +1684,8 @@ class Client(BaseClient):
         params: dict[str, Any] = {
             "truncation_limit": limit,
             "vm_scan_date_after": since_datetime,
+            "show_qds": 1,
+            "show_qds_factors": 1,
         }
         timeout = (60, 150)  # (Connection Timeout, Read Timeout)
         if next_page:
