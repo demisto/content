@@ -38,4 +38,4 @@ Optional types are:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
-  Records from the detection endpoint of *CrowdStrike Falcon* UI could be of types: Endpoint Detection, IDP Detection and OFP Detection.
+  Records from the detection endpoint of *CrowdStrike Falcon* UI could be of types: Endpoint Detection and OFP Detection.
