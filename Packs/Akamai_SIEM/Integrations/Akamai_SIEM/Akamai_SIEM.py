@@ -636,7 +636,7 @@ async def get_events_with_offset_aiohttp(
     else:
         from_param = int(from_epoch)
         params["from"] = from_param
-        demisto.info(f"Running in interval = {counter}. didnt receive offset. will run a time based request with {from_param=}.")
+        demisto.info(f"Running in interval = {counter}. didn't receive offset. will run a time based request with {from_param=}.")
 
     url = f"{client._base_url}/"
     demisto.info(f"Running in interval = {counter}. Init session and sending request.")
@@ -648,9 +648,9 @@ async def get_events_with_offset_aiohttp(
                                                                              ssl=client._verify) as response:
         try:
             response.raise_for_status()  # Check for any HTTP errors
-            raw_response = await response.read()
+            raw_response = await response.text()
         except aiohttp.ClientResponseError as e:
-            raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e}")
+            raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e.message}")
     demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
     events: list[str] = raw_response.split('\n')
     new_offset = None
@@ -791,13 +791,13 @@ async def get_events_from_akamai(client: Client,
             demisto.info(f"Running in interval = {counter}. Testing for possible tasks qt overflow.")
             await wait_until_tasks_load_decrease(counter, max_concurrent_tasks)
             demisto.info(f"Running in interval = {counter}. Finished testing for possible tasks qt overflow.")
-            get_events_task = get_mock_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
-            # get_events_task = get_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
+            # get_events_task = get_mock_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
+            get_events_task = get_events_with_offset_aiohttp(client, config_ids, offset, page_size, from_epoch, counter=counter)
             events, offset = None, None
             events, offset = await get_events_task
             demisto.info(f"Running in interval = {counter}. got {len(events)} events and {offset=}.")
         except DemistoException as e:
-            demisto.error(f"Running in interval = {counter}. Got an error when trying to request for new events from Akamai\n{e}")
+            demisto.error(f"{e.message}")
             err = str(e)
             if "Requested Range Not Satisfiable" in err:
                 err = f"Running in interval = {counter}. Got offset out of range error when attempting to fetch events from" \
@@ -817,7 +817,7 @@ async def get_events_from_akamai(client: Client,
                 demisto.debug(f"Running in interval = {counter}. No events were received from Akamai,"
                               "going to sleep for 60 seconds.")
             else:
-                demisto.info(f"Running in interval = {counter}. got {len(events)} events which is less"
+                demisto.debug(f"Running in interval = {counter}. got {len(events)} events which is less"
                              f"than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}, going to sleep for 60 seconds.")
             await asyncio.sleep(60)
             demisto.info(f"Running in interval = {counter}. Finished sleeping for 60 seconds.")
@@ -1016,7 +1016,7 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
     return
 
 
-def split_data_to_chunks_evenly(data, target_chunk_size):
+def split_data_to_chunks_evenly(data, target_chunk_size):  # pragma: no cover
     """
     Splits a string/list of data into chunks of an approximately specified size.
     The actual size can be lower. the slicing is based on the assumption that all entries have the same size.
