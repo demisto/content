@@ -818,7 +818,7 @@ async def get_events_from_akamai(client: Client,
                               "going to sleep for 60 seconds.")
             else:
                 demisto.debug(f"Running in interval = {counter}. got {len(events)} events which is less"
-                              f"than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}, going to sleep for 60 seconds.")
+                              f" than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}, going to sleep for 60 seconds.")
             await asyncio.sleep(60)
             demisto.info(f"Running in interval = {counter}. Finished sleeping for 60 seconds.")
 
