@@ -41,4 +41,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![PhishUp Mail Scanner](https://raw.githubusercontent.com/demisto/content/69bf4f8875443f05bad0be5bbbfdcc56bb1fe419/Packs/PhishUp/doc_files/PhishUp_Mail_Scanner.png)
+![PhishUp Mail Scanner](../doc_files/PhishUp_Mail_Scanner.png)
