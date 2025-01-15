@@ -41,7 +41,7 @@ XSOAR endpoint URL-
 
 
 ## Create Zoom ChatBOT app
-1. Log onto the Zoom App Marketplace https://marketplace.zoom.us/.
+1. Log onto the Zoom App Marketplace: https://marketplace.zoom.us/.
 2. Click **Develop** > **Build App**.
 3. Choose **General App**.
 4. Click **Create**.
@@ -50,34 +50,34 @@ XSOAR endpoint URL-
 ### Configure App Settings
 
 1. Update your app’s name. By default, the build flow generates a generic name for your app. To change your app's name, select the edit icon (pencil) and update the name. To save your changes, click anywhere outside of the app name field.
-2. Under the section "Select how the app is managed" select on "Admin-managed".
+2. Under the section "Select how the app is managed", select "Admin-managed", and click "Save".
 3. Enter your Cortex XSOAR endpoint URL in the **OAuth Redirect URL**.
-4. Click **Feature** > **Surface** > **Team Chat**.
-In the Team Chat Subscription section under BOT endpoint URL, add:
+4. Click **Features** > **Surface** > **Team Chat**.
+Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
    - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
    - For Cortex XSOAR 8.x / XSIAM you need to run using external engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
 ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/bot_endpoint_url.gif)
 
-2. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
+5. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
 
    | Scope Type | Scope Name | 
    | --- |  --- | 
-   | Team Chat |  Enable Chatbot within Zoom Team Chat Client /imchat:bot |
-   | Team Chat |  View a user's chat message /team_chat:read:user_message:admin |
-   | Team Chat |  View a user's chat sessions /team_chat:read:list_user_sessions:admin |
-   | Team Chat |  View a user's chat messages /team_chat:read:list_user_messages:admin |
-   | Team Chat |  Create a chat channel for a user /team_chat:write:user_channel:admin |
-   | Team Chat |  Add members to a chat channel /team_chat:write:members:admin |
-   | Team Chat |  Update a user's chat channel /team_chat:update:user_channel:admin |
-   | User |   View all user information /user:read:user:admin |
+   | Team Chat | /imchat:bot |
+   | Team Chat | /team_chat:read:user_message:admin |
+   | Team Chat | /team_chat:read:list_user_sessions:admin |
+   | Team Chat | /team_chat:read:list_user_messages:admin |
+   | Team Chat | /team_chat:write:user_channel:admin |
+   | Team Chat | /team_chat:write:members:admin |
+   | Team Chat | /team_chat:update:user_channel:admin |
+   | User | /user:read:user:admin |
 ![enter image description here](../../doc_files/scope-premissions.png)
 
-1. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
+6. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
    
  ![enter image description here](../../doc_files/test-zoom-app.gif)
 
-4. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
+7. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
 
 **Endpoint URL Requirements:**
 
@@ -91,12 +91,12 @@ In the Team Chat Subscription section under BOT endpoint URL, add:
 
 &emsp; &emsp; ---
 
-&emsp; &emsp; 1. Copy the **secret token** from the "Feature" page under the "Token" section and add it to the instance configuration.
+&emsp; &emsp; 1. Copy the **Secret Token** from the "Features" > "Access" page under the "Token" section and add it to the instance configuration. 
     ![enter image description here](../../doc_files/zoom-token.png)
 
 &emsp; &emsp; 2. Configure Event Subscriptions.
 
-&emsp; &emsp; &emsp; 1. In the "Feature" section under "Access" in the "General Features" section, enable "Event Subscriptions".
+&emsp; &emsp; &emsp; 1. In the "Features" section, under "Access", in the "General Features" section, enable "Event Subscription".
 
 &emsp; &emsp; &emsp; 2. Click **+Add New Event Subscription**.
 
