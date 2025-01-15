@@ -760,6 +760,7 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
 
 
 @pytest.mark.asyncio
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
 async def test_fetch_events_long_running_command_flow(mocker, client):
     """
         Given:
@@ -812,3 +813,4 @@ async def test_fetch_events_long_running_command_flow(mocker, client):
     assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == [event_1, event_2]
     demisto_debug.assert_called_with(
         'Running in interval = 2. got 1 events which is less than 0.95 % of the page_size=2, going to sleep for 60 seconds.')
+    yield
