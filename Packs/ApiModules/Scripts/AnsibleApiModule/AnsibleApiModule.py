@@ -271,9 +271,13 @@ def generic_ansible(integration_name: str, command: str,
 
     if args.get('concurrency'):
         fork_count = cast(int, args.get('concurrency'))
-
     # generate ansible host inventory
+    start_time = time.time()
     inventory, sshkey = generate_ansible_inventory(args=args, host_type=host_type, int_params=int_params)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    demisto.debug(f"The function generate_ansible_inventory took {elapsed_time:.2f} seconds to execute.")
+    demisto.debug(f"{inventory=}, {sshkey=}")
 
     module_args = ""
     # build module args list
