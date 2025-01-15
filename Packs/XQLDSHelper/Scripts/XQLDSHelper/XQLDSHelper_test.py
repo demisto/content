@@ -89,6 +89,11 @@ class MainTester:
             return_value=ent.get('args') or {}
         )
         mocker.patch.object(
+            demisto,
+            'executeCommand',
+            side_effect=self.__demisto_execute_command
+        )
+        mocker.patch.object(
             XQLDSHelper,
             'execute_command',
             side_effect=self.__execute_command
@@ -247,15 +252,36 @@ class MainTester:
                 'path': conf
             }
 
+        ec_key = (
+            'PaloAltoNetworksXQL.GenericQuery'
+            '(val.execution_id && val.execution_id == obj.execution_id)'
+        )
         if isinstance(conf, dict):
             _type = conf.get('type')
             if _type == 'file':
                 with open(conf.get('path'), 'r') as f:
-                    self.__xql_last_resp = json.loads(f.read())
+                    resp = json.loads(f.read())
+
+                self.__xql_last_resp = {
+                    'Type': 1,  # EntryType.NOTE
+                    'Contents': {},
+                    'EntryContext': {
+                        ec_key: resp
+                    }
+                }
             elif _type == 'data':
-                self.__xql_last_resp = conf.get('data')
+                self.__xql_last_resp = {
+                    'Type': 1,  # EntryType.NOTE
+                    'Contents': {},
+                    'EntryContext': {
+                        ec_key: conf.get('data')
+                    }
+                }
             elif _type == 'error':
-                raise RuntimeError(conf.get('message'))
+                self.__xql_last_resp = {
+                    'Type': 4,  # EntryType.ERROR
+                    'Contents': conf.get('message')
+                }
             else:
                 raise ValueError(f'Invalid XQL response config - {conf}')
         else:
@@ -266,10 +292,16 @@ class MainTester:
     def __get_query_results(
         self,
     ) -> list:
-        if self.__xql_last_resp:
-            return self.__xql_last_resp['results']
-        else:
+        if not self.__xql_last_resp:
             return []
+
+        ec = self.__xql_last_resp.get('EntryContext') or {}
+        for k, v in ec.items():
+            k, _, _ = k.partition('(')
+            if k == 'PaloAltoNetworksXQL.GenericQuery' and isinstance(v, dict):
+                return v['results']
+        else:
+            raise DemistoException(f'Unable to get query results - {self.__xql_last_resp}')
 
     def __demisto_dt(
         self,
@@ -337,6 +369,18 @@ class MainTester:
 
         return val
 
+    def __demisto_execute_command(
+        self,
+        command: str,
+        args: dict[str, Any],
+    ) -> list[Any]:
+        if command in ('xdr-xql-generic-query', 'xdr-xql-get-query-results'):
+            return [self.__next_query_response()]
+        elif command == 'executeCommandAt':
+            return []
+        else:
+            raise RuntimeError(f'Not implemented - {command}')
+
     def __execute_command(
         self,
         command: str,
@@ -344,36 +388,28 @@ class MainTester:
         extract_contents: bool = True,
         fail_on_error: bool = True,
     ) -> Any:
-        match command:
-            case 'getList':
-                lists = self.__config.get('lists') or {}
-                list_name = args.get('listName')
-                for ent in filter(
-                    None,
-                    [lists.get(list_name)] + to_list(lists.get('*'))
-                ):
-                    data_type = ent.get('type')
-                    if data_type == 'raw':
-                        return ent.get('data')
-                    elif data_type == 'content-bundle':
-                        list_data = self.__get_list_from_content_bundle(
-                            bundle_file=ent.get('data'),
-                            list_name=list_name
-                        )
-                        if list_data is not None:
-                            return list_data
-                    else:
-                        raise RuntimeError(f'Invalid data type - {data_type}')
-                raise RuntimeError('No List - {list_name}')
-
-            case 'xdr-xql-generic-query':
-                return self.__next_query_response()
-
-            case 'xdr-xql-get-query-results':
-                return self.__next_query_response()
-
-            case _:
-                raise RuntimeError(f'Not implemented - {command}')
+        if command == 'getList':
+            lists = self.__config.get('lists') or {}
+            list_name = args.get('listName')
+            for ent in filter(
+                None,
+                [lists.get(list_name)] + to_list(lists.get('*'))
+            ):
+                data_type = ent.get('type')
+                if data_type == 'raw':
+                    return ent.get('data')
+                elif data_type == 'content-bundle':
+                    list_data = self.__get_list_from_content_bundle(
+                        bundle_file=ent.get('data'),
+                        list_name=list_name
+                    )
+                    if list_data is not None:
+                        return list_data
+                else:
+                    raise RuntimeError(f'Invalid data type - {data_type}')
+            raise RuntimeError('No List - {list_name}')
+        else:
+            raise RuntimeError(f'Not implemented - {command}')
 
     def __return_error(
         self,
@@ -420,11 +456,9 @@ class MainTester:
                     expected_entry,
                     skip_keys=skip_keys,
                 )
-                """
                 if not ok:
                     print(json.dumps(self.__config, indent=2))
                     print(json.dumps(returned_entry, indent=2))
-                """
                 assert ok
 
             # Validate 'QueryParams' - only when results.QueryParams is provided

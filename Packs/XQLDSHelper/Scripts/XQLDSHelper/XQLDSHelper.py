@@ -532,6 +532,19 @@ class XQLQuery:
     """
     This class executes XQL queries.
     """
+    @staticmethod
+    def __get_response(
+        res: list[dict[str, Any]],
+    ) -> dict[Hashable, Any]:
+        for ent in res:
+            ec = ent.get('EntryContext') or {}
+            for k, v in ec.items():
+                k, _, _ = k.partition('(')
+                if k == 'PaloAltoNetworksXQL.GenericQuery' and isinstance(v, dict):
+                    return v
+        else:
+            raise DemistoException(f'Unable to get query results - {res}')
+
     def __init__(
         self,
         xql_query_instance: str | None = None,
@@ -553,44 +566,68 @@ class XQLQuery:
         :param query_params: The query parameters.
         :return: List of fields retrieved.
         """
+        # Start the query
         time_frame = f'between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}'
         demisto.debug(f'Run XQL: {query_params.query_name} {time_frame}: {query_params.query_string}')
 
         for retry_count in range(self.__retry_max + 1):
-            try:
-                contents = execute_command(
-                    'xdr-xql-generic-query',
-                    assign_params(
-                        query_name=query_params.query_name,
-                        query=query_params.query_string,
-                        time_frame=time_frame,
-                        using=self.__xql_query_instance,
-                    ),
-                )
+            res = demisto.executeCommand(
+                'xdr-xql-generic-query',
+                assign_params(
+                    query_name=query_params.query_name,
+                    query=query_params.query_string,
+                    time_frame=time_frame,
+                    parse_result_file_to_context='true',
+                    using=self.__xql_query_instance,
+                ),
+            )
+            if not is_error(res):
                 break
-            except Exception as e:
-                if retry_count < self.__retry_max:
-                    if 'reached max allowed amount of parallel running queries' in str(e):
-                        time.sleep(self.__retry_interval)
-                        continue
-                raise
 
-        execution_id = contents.get('execution_id')
+            error_message = get_error(res)
+            if (
+                retry_count >= self.__retry_max or
+                'reached max allowed amount of parallel running queries' not in error_message
+            ):
+                raise DemistoException((
+                    'Failed to execute xdr-xql-generic-query.'
+                    f' Error details:\n{error_message}'
+                ))
+            else:
+                time.sleep(self.__retry_interval)
+
+        # Poll and retrieve the record set
+        response = self.__get_response(res)
+
+        execution_id = response.get('execution_id')
         if not execution_id:
             raise DemistoException('No execution_id in the response.')
 
         while True:
-            status = contents.get('status', '')
+            status = response.get('status', '')
             if status == 'SUCCESS':
-                return contents.get('results', [])
+                return response.get('results') or []
             elif status == 'PENDING':
                 time.sleep(self.__polling_interval)
-                contents = execute_command(
+
+                res = demisto.executeCommand(
                     'xdr-xql-get-query-results',
-                    assign_params(query_id=execution_id)
+                    assign_params(
+                        query_id=execution_id,
+                        parse_result_file_to_context='true',
+                        using=self.__xql_query_instance,
+                    ),
                 )
+                if is_error(res):
+                    error_message = get_error(res)
+                    raise DemistoException((
+                        'Failed to execute xdr-xql-get-query-results.'
+                        f' Error details:\n{error_message}'
+                    ))
+
+                response = self.__get_response(res)
             else:
-                raise DemistoException(f'Failed to get query results - {contents}')
+                raise DemistoException(f'Failed to get query results - {response}')
 
 
 class Query:
