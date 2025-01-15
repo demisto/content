@@ -14,5 +14,5 @@ alter web_category = uppercase(categories)
         xdm.target.file.size = to_integer(fileSize),
         xdm.network.http.referrer = parentPageURL,
         xdm.target.file.file_type = fileMimeType,
-        xdm.network.http.request.content_type = fileMimeType,
+        xdm.network.http.content_type = fileMimeType,
         xdm.alert.subcategory = classification;
