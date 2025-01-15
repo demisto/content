@@ -879,10 +879,9 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI&A_Feed client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    generator = client.poller.create_update_generator(
-        collection_name="compromised/mule", limit=10
-    )
-    generator.__next__()
+    test = client.poller.get_available_collections()
+    if len(test) == 0:
+        return "There are no collections available"
     return "ok"
 
 
@@ -1194,7 +1193,11 @@ def validate_launch_get_indicators_command(limit, collection_name):
 
 
 """ Commands """
-
+def collection_availability_check(client: Client, collection_name: str) -> None:
+    if collection_name not in client.poller.get_available_collections():
+        raise Exception(
+            f"Collection {collection_name} is not available from you, please disable collection on it or contact Group-IB to grant access"
+        )
 
 def fetch_indicators_command(
     client: Client,
@@ -1220,6 +1223,7 @@ def fetch_indicators_command(
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
 
     for collection_name in indicator_collections:
+        collection_availability_check(client=client, collection_name=collection_name)
         mapping: dict = COMMON_MAPPING.get(collection_name, {})
         requests_sent = 0
         date_from, seq_update = DateHelper.handle_first_time_fetch(

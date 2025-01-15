@@ -2061,11 +2061,16 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    for currently_available_collection in MAPPING.keys():
-        client_collections = client.poller.get_available_collections()
-        if currently_available_collection not in client_collections:
-            return f"Test failed, some problems with getting available collections. Error in collection {str(currently_available_collection)}"            
+    test = client.poller.get_available_collections()
+    if len(test) == 0:
+        return "There are no collections available"
     return "ok"
+
+def collection_availability_check(client: Client, collection_name: str) -> None:
+    if collection_name not in client.poller.get_available_collections():
+        raise Exception(
+            f"Collection {collection_name} is not available from you, please disable collection on it or contact Group-IB to grant access"
+        )
 
 
 def fetch_incidents_command(
@@ -2091,6 +2096,7 @@ def fetch_incidents_command(
     incidents = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:  # noqa: B007
+        collection_availability_check(client=client, collection_name=collection_name)
         CommonHelpers.validate_collections(collection_name)
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
         requests_count = 0
