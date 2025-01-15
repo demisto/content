@@ -323,7 +323,7 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     # Create base files.
     contrib_converter.create_pack_base_files = types.MethodType(_create_pack_base_files, contrib_converter)
-    contrib_converter.create_pack_base_files()
+    contrib_converter.create_pack_base_files()  # noqa: E1102
 
     # Determine entity type by filename prefix.
     file_name_prefix = '-'.join(file_name.split('-')[:-1])
