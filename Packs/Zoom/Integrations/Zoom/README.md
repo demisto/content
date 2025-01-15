@@ -106,17 +106,17 @@ Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
 
 &emsp; &emsp; &emsp; &emsp; - Authentication Header Option - 
 
-&emsp; &emsp; &emsp; &emsp; &emsp; 1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
+&emsp; &emsp; &emsp; &emsp; &emsp; 1. **Default Header Provided by Zoom option** - This option allows you to use a verification token provided by Zoom. Copy the **Verification Token** under the "Token" section and add it to the instance configuration.
 
 &emsp; &emsp; &emsp; &emsp; &emsp; ![enter image description here](../../doc_files/verification.png)
 
-&emsp; &emsp; &emsp; &emsp; &emsp; 2. **Basic Authentication Option** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration.
+&emsp; &emsp; &emsp; &emsp; &emsp; 2. **Basic Authentication option** - You can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration.
 
 &emsp; &emsp; &emsp; &emsp; &emsp; ![enter image description here](../../doc_files/authentication_header.png)
 
 &emsp; &emsp; &emsp; &emsp; - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
 
-&emsp; &emsp; &emsp; &emsp; - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
+&emsp; &emsp; &emsp; &emsp; - Add Events: Click **+Add Events**. Under Event Types, select **Chat Message**, and then select **Chat Message Sent**.
 
 &emsp; &emsp; &emsp; &emsp; ![enter image description here](../../doc_files/add-event.gif)
 
