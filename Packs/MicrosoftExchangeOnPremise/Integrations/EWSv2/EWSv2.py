@@ -1880,10 +1880,6 @@ def test_module(client: EWSClient):  # pragma: no cover
     demisto.results('ok')
 
 
-def encode_and_submit_results(obj):  # pragma: no cover
-    demisto.results(obj)
-
-
 def get_client_from_params(params: dict):
     """
     Constructs an EWSClient instance from the provided integration parameters.
@@ -1951,53 +1947,53 @@ def sub_main():  # pragma: no cover
             incidents = fetch_emails_as_incidents(client, skip_unparsable_emails, fetch_all_history, fetch_time)
             demisto.incidents(incidents)
         elif demisto.command() == 'ews-get-attachment':
-            encode_and_submit_results(fetch_attachments_for_message(client, **args))
+            return_results(fetch_attachments_for_message(client, **args))
         elif demisto.command() == 'ews-delete-attachment':
-            encode_and_submit_results(delete_attachments_for_message(client, **args))
+            return_results(delete_attachments_for_message(client, **args))
         elif demisto.command() == 'ews-get-searchable-mailboxes':
-            encode_and_submit_results(get_searchable_mailboxes(client))
+            return_results(get_searchable_mailboxes(client))
         elif demisto.command() == 'ews-search-mailboxes':
-            encode_and_submit_results(search_mailboxes(client, **args))
+            return_results(search_mailboxes(client, **args))
         elif demisto.command() == 'ews-move-item-between-mailboxes':
-            encode_and_submit_results(move_item_between_mailboxes(client, **args))
+            return_results(move_item_between_mailboxes(client, **args))
         elif demisto.command() == 'ews-move-item':
-            encode_and_submit_results(move_item(client, **args))
+            return_results(move_item(client, **args))
         elif demisto.command() == 'ews-delete-items':
-            encode_and_submit_results(delete_items(client, **args))
+            return_results(delete_items(client, **args))
         elif demisto.command() == 'ews-search-mailbox':
-            encode_and_submit_results(search_items_in_mailbox(client, **args))
+            return_results(search_items_in_mailbox(client, **args))
         elif demisto.command() == 'ews-get-contacts':
-            encode_and_submit_results(get_contacts(client, **args))
+            return_results(get_contacts(client, **args))
         elif demisto.command() == 'ews-get-out-of-office':
-            encode_and_submit_results(get_out_of_office_state(client, **args))
+            return_results(get_out_of_office_state(client, **args))
         elif demisto.command() == 'ews-recover-messages':
-            encode_and_submit_results(recover_soft_delete_item(client, **args))
+            return_results(recover_soft_delete_item(client, **args))
         elif demisto.command() == 'ews-create-folder':
-            encode_and_submit_results(create_folder(client, **args))
+            return_results(create_folder(client, **args))
         elif demisto.command() == 'ews-mark-item-as-junk':
-            encode_and_submit_results(mark_item_as_junk(client, **args))
+            return_results(mark_item_as_junk(client, **args))
         elif demisto.command() == 'ews-find-folders':
-            encode_and_submit_results(find_folders(client, **args))
+            return_results(find_folders(client, **args))
         elif demisto.command() == 'ews-get-items-from-folder':
-            encode_and_submit_results(get_items_from_folder(client, **args))
+            return_results(get_items_from_folder(client, **args))
         elif demisto.command() == 'ews-get-items':
-            encode_and_submit_results(get_items(client, **args))
+            return_results(get_items(client, **args))
         elif demisto.command() == 'ews-get-folder':
-            encode_and_submit_results(get_folder(client, **args))
+            return_results(get_folder(client, **args))
         elif demisto.command() == 'ews-get-autodiscovery-config':
-            encode_and_submit_results(get_autodiscovery_config())
+            return_results(get_autodiscovery_config())
         elif demisto.command() == 'ews-expand-group':
-            encode_and_submit_results(get_expanded_group(client, **args))
+            return_results(get_expanded_group(client, **args))
         elif demisto.command() == 'ews-mark-items-as-read':
-            encode_and_submit_results(mark_item_as_read(client, **args))
+            return_results(mark_item_as_read(client, **args))
         elif demisto.command() == 'ews-resolve-name':
-            encode_and_submit_results(resolve_name_command(client, args))
+            return_results(resolve_name_command(client, args))
         elif demisto.command() == 'ews-get-items-as-eml':
-            encode_and_submit_results(get_item_as_eml(client, **args))
+            return_results(get_item_as_eml(client, **args))
         elif demisto.command() == 'send-mail':
-            encode_and_submit_results(send_email(client, args))
+            return_results(send_email(client, args))
         elif demisto.command() == 'reply-mail':
-            encode_and_submit_results(reply_email(client, args))
+            return_results(reply_email(client, args))
         else:
             return_error(f'Command: "{demisto.command()}" was not recognized by this integration')
 
