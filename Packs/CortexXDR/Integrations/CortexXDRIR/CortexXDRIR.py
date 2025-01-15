@@ -51,8 +51,6 @@ MIRROR_DIRECTION = {
 XSOAR_TO_XDR = "XSOAR -> XDR"
 XDR_TO_XSOAR = "XDR -> XSOAR"
 
-XDR_OPEN_STATUS_TO_XSOAR = ['under_investigation', 'new']
-
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1615,7 +1613,6 @@ def main():  # pragma: no cover
             last_run_mirroring['mirroring_last_update'] = next_mirroring_time
             set_last_mirror_run(last_run_mirroring)
             demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
-            demisto.debug(f"IDs of modified remote incidents {modified_incidents.modified_incident_ids=}")
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
