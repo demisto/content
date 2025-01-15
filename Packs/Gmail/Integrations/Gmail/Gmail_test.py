@@ -1,7 +1,6 @@
 import uuid
 from freezegun import freeze_time
 import demistomock as demisto
-import pytest
 from test_data import input_data
 import datetime
 from datetime import UTC
