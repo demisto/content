@@ -1,9 +1,6 @@
 import shutil
-import traceback
-import types
-from datetime import datetime, timedelta
 
-import requests
+from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 from ruamel.yaml import YAML
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
@@ -19,9 +16,7 @@ from contextlib import contextmanager, redirect_stderr
 import zipfile
 import git
 import io
-import os
-import re
-import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -255,7 +250,7 @@ def content_item_to_package_format(
                 os.remove(content_item_file_path)
 
 
-def convert_contribution_to_pack(contrib_converter: "ContributionConverter"):
+def convert_contribution_to_pack(contrib_converter: ContributionConverter):
     """
         Creates or updates a pack in the Content repo from the contents of a contributed zip file.
     Args:
