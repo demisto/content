@@ -338,7 +338,7 @@ def unshorten_url(service_name: str, url: str, redirect_limit: int, use_system_p
                     "It is possible that the unshortening process was not fully completed.\n\n"
 
     service_class = URLUnshortingService.find_matching_service(service_name=service_name)
-    service_instance = service_class(redirect_limit=redirect_limit,
+    service_instance = service_class(redirect_limit=redirect_limit,  # pylint: disable=E0110
                                      proxy=use_system_proxy,
                                      verify=session_verify)
     returned_data = service_instance.resolve_url(url=url)

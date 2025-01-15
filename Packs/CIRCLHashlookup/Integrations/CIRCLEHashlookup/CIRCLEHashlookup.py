@@ -91,6 +91,9 @@ def create_file_output(results: Dict[str, str], hashtype: str, reliability: str,
         file_hash = results.get('SHA-1')
     elif hashtype == 'md5':
         file_hash = results.get('MD5')
+    else:
+        file_hash = ""
+        demisto.debug(f"{hashtype=} doesn't match any type. {file_hash=}")
 
     if 'KnownMalicious' in results:
         dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,

@@ -11,9 +11,7 @@ filter
 	xdm.auth.auth_method = AuthMethod,
     xdm.event.type=EventType,
     xdm.source.ipv4 = FromIPAddress,
-    xdm.source.application.name = AppId,
-    xdm.observer.vendor=_vendor,
-    xdm.observer.product=_product;
+    xdm.source.application.name = AppId;
     
 filter  EventType not in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud.Core.MfaSummary", "Cloud.Core.StartImpersonate","Cloud.Core.Login", "Cloud.Core.LoginFail", "Cloud.Core.Logout", "Cloud.Core.OAuthToken.InvalidClient" )
  |   alter
@@ -33,6 +31,4 @@ filter  EventType not in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "
     xdm.target.resource_before.type = OldLicenseType,
     xdm.target.resource.sub_type = MobileAppType,
     xdm.session_context_id = coalesce(JobUniqueId, SessionId),
-	xdm.event.type=EventType,
-    xdm.observer.vendor=_vendor,
-    xdm.observer.product=_product;
+	xdm.event.type=EventType;
