@@ -444,6 +444,8 @@ tasks:
         simple: powershell -Command "$ActionPath = '${alert.targetprocesscmd.[0]}'; $tasks = Get-ScheduledTask | Where-Object { $_.Actions | Where-Object { $_.Execute -eq $ActionPath } }; if ($tasks -or $tasks.Count -gt 0) { $tasks | ForEach-Object { Disable-ScheduledTask -TaskPath $_.TaskPath -TaskName $_.TaskName; Write-Host 'The task ' + $_.TaskName + ' has been disabled successfully.' } } else { Write-Host 'No tasks found running the action at ' + $ActionPath }"
       endpoint_ids:
         simple: ${alert.agentid}
+      is_chained_command:
+        simple: "true"
       timeout:
         simple: "120"
       timeout_in_seconds:
