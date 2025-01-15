@@ -3,6 +3,7 @@
 from datetime import datetime
 import time
 import json
+import demistomock as demisto
 
 # 3-rd party packages
 import pytest
@@ -157,12 +158,13 @@ class TestCommandsFunctions:
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
-        for events, _, total_events_count, _, auto_trigger_next_run in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for events, _, total_events_count, auto_trigger_next_run in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       220,
                                                                                       '',
                                                                                       {},
-                                                                                      50
+                                                                                      50,
+                                                                                      False
                                                                                       ):
             mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(True, 1))
         assert total_events_count == 50
@@ -189,17 +191,18 @@ class TestCommandsFunctions:
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
-        for events, _, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for events, _, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       220,
                                                                                       '',
                                                                                       {},
-                                                                                      page_size=60
+                                                                                      page_size=60,
+                                                                                      should_skip_decode_events=False
                                                                                       ):
             pass
         assert total_events_count == 50
 
-    def test_fetch_events_command__sanity(self, client, mocker):
+    def test_fetch_events_command_sanity(self, client, mocker):
         """
         Given:
         - A client object
@@ -225,17 +228,18 @@ class TestCommandsFunctions:
         ])
         total_events_count = 0
 
-        for events, offset, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for events, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       limit,
                                                                                       '',
                                                                                       {},
-                                                                                      page_size
+                                                                                      page_size,
+                                                                                      False
                                                                                       ):
             assert offset == f"offset_{events[-1]['id']}" if events else True
         assert total_events_count == 250
 
-    def test_fetch_events_command__no_results(self, mocker, client, requests_mock):
+    def test_fetch_events_command_no_results(self, mocker, client, requests_mock):
         """
         Given:
         - A client object
@@ -252,13 +256,13 @@ class TestCommandsFunctions:
         requests_mock.get(f'{BASE_URL}/50170?limit={size}&offset={last_offset}', text=SEC_EVENTS_EMPTY_TXT)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
 
-        for _, offset, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client, '12 hours', size,  # noqa: B007
-                                                                              '50170', {"offset": last_offset}, size):
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client, '12 hours', size,  # noqa: B007
+                                                                              '50170', {"offset": last_offset}, size, False):
             last_offset = offset
         assert total_events_count == 0
         assert last_offset == "318d8"
 
-    def test_fetch_events_command__limit_is_smaller_than_page_size(self, client, requests_mock, mocker):
+    def test_fetch_events_command_limit_is_smaller_than_page_size(self, client, requests_mock, mocker):
         """
         Given:
         - A client object
@@ -278,10 +282,11 @@ class TestCommandsFunctions:
         requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=218d9', text=SEC_EVENTS_TXT)
         requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=318d8', text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                              '12 hours',
                                                                                              6, '50170',
-                                                                                             {}, 6):
+                                                                                             {}, 6,
+                                                                                             False):
             last_offset = offset
         assert total_events_count == 6
         assert last_offset == "218d9"
@@ -306,11 +311,12 @@ class TestCommandsFunctions:
         requests_mock.get(f'{BASE_URL}/50170?limit=6&offset=218d9', text=SEC_EVENTS_TXT)
         requests_mock.get(f'{BASE_URL}/50170?limit=6&offset=318d8', text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                              '12 hours',
                                                                                              20,
                                                                                              '50170',
-                                                                                             {}, 6
+                                                                                             {}, 6,
+                                                                                             False
                                                                                             ):
             last_offset = offset
         assert total_events_count == 8
@@ -336,62 +342,16 @@ class TestCommandsFunctions:
         requests_mock.get(f'{BASE_URL}/50170?limit=2&from=1575966002', text=SEC_EVENTS_TWO_RESULTS_TXT)
         requests_mock.get(f'{BASE_URL}/50170?limit=2&offset=117d9', text=SEC_EVENTS_TXT)
 
-        for _, offset, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                  '12 hours',
                                                                                  2,
                                                                                  '50170',
-                                                                                 {}, 2
+                                                                                 {}, 2,
+                                                                                 False
                                                                                 ):
             last_offset = offset
         assert total_events_count == 2
         assert last_offset == "117d9"
-
-    def test_deduplication(self, mocker, client):
-        """
-        Given:
-        - A client object
-        - 250 events.
-        - hashed events from previous run list with 4 events, 3 events which will appear in the response and one event that won't.
-        When:
-        - Calling fetch_events_command()
-        Then:
-        - Ensure that the events list returned doesn't include the filtered events and that the length of the list is 247.
-        - Ensure that on each iteration, the number of events in the hashed events is 50
-        (even in intervals where some events were deduped).
-        - Ensure the returned offset and hashed events are json serializable.
-        """
-        num_of_results = 500
-        page_size = 50
-        num_of_pages = num_of_results // page_size
-        events = [
-            (
-                [{"id": i + 1, "httpMessage": {"start": i + 1}} for i in range(page_size * j, page_size * (j + 1))],
-                f"offset_{page_size * (j + 1)}",
-            )
-            for j in range(num_of_pages)
-        ]
-        events_not_in_list = [events[0][0][0], events[0][0][2], events[0][0][4]]
-        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
-        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
-        total_events_count = 0
-        hashed = {"506353d42f4aaac34493bdfff026ea0c4463a3bc510fb7aa038df8cea7aabbd1",
-                  "fce8004cc56a8fb1131f30d2715412d4dcc90be0564c375d1c6b9aee2103b360",
-                  "5075434ef4e7e1d0b6c1922e180653e18481aee76674966ae5de876faefc62d3",
-                  "fce8004cc56a8fb1131f30d2715412d4dcc90be0564c375d1c6b9aee2103b3ds"}
-        for events, offset, total_events_count, hashed, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
-                                                                                      '3 days',
-                                                                                      250,
-                                                                                      '',
-                                                                                      {"hashed_events_from_previous_run": hashed},
-                                                                                      page_size
-                                                                                      ):
-            assert offset == f"offset_{events[-1]['id']}" if events else True
-            assert len(hashed) == 50
-        assert total_events_count == 297
-        for event_not_in_list in events_not_in_list:
-            assert event_not_in_list not in events
-        ctx = {"offset": offset, "hashed_events_from_previous_run": list(hashed)}
-        assert isinstance(json.dumps(ctx), str)
 
     def test_fetch_events_command_with_page_truncated(self, mocker, client, requests_mock):
         """
@@ -413,19 +373,20 @@ class TestCommandsFunctions:
         requests_mock.get(f"{BASE_URL}/50170?limit=2&from=1575750002", text=first_response_mock)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
-        for _, offset, total_events_count, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       fetch_time='3 days',
                                                                                       fetch_limit=fetch_limit,
                                                                                       config_ids='50170',
                                                                                       ctx={},
-                                                                                      page_size=page_size
+                                                                                      page_size=page_size,
+                                                                                      should_skip_decode_events=False
                                                                                       ):
             requests_mock.get(f"{BASE_URL}/50170?limit=1&offset={offset}", text=second_response_mock)
         assert total_events_count == fetch_limit
         assert offset == 'b'
 
     @pytest.mark.parametrize(
-        "error_entry, error_message, should_expect_extra_info",
+        "error_entry, error_message, expect_extra_info",
         [
             ({
                 "clientIp": "192.0.2.228",
@@ -449,7 +410,7 @@ class TestCommandsFunctions:
             }, "Error in API call [403] - Unauthorized", False)
         ],
     )
-    def test_index_out_of_range_error(self, mocker, client, error_entry, error_message, should_expect_extra_info):
+    def test_response_errors(self, mocker, client, error_entry, error_message, expect_extra_info):
         """
         Given:
         - A client object and an error entry
@@ -465,17 +426,20 @@ class TestCommandsFunctions:
         err_msg = f'{error_message}\n{json.dumps(error_entry)}'
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=DemistoException(err_msg, res={}))
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=False)
+        error_log_mocker = mocker.patch.object(demisto, 'error')
         with pytest.raises(DemistoException) as e:
-            for _, _, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+            for _, _, _ in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                         '3 days',
                                                                                         220,
                                                                                         '',
                                                                                         {},
-                                                                                        5000
+                                                                                        5000,
+                                                                                        False
                                                                                         ):
                 pass
-        assert ('Got Index out of range error when attempting to fetch events from Akamai.' in str(e)) == should_expect_extra_info
-        assert ('Expired offset parameter in the request' in str(e)) == should_expect_extra_info
+        error_log_mocker.assert_called_with(f"Got an error when trying to request for new events from Akamai\n{err_msg}")
+        assert ('Got offset out of range error when attempting to fetch events from Akamai.' in str(e)) == expect_extra_info
+        assert ('Expired offset parameter in the request' in str(e)) == expect_extra_info
 
 
 @pytest.mark.parametrize(
@@ -514,38 +478,6 @@ def test_decode_url(header):
                              'Connection': 'keep-alive', 'Server_Timing': 'intid;desc=dd',
                              'Strict_Transport_Security': 'max-age=31536000 ; includeSubDomains ; preload'}
     assert Akamai_SIEM.decode_url(header) == expected_decoded_dict
-
-
-@pytest.mark.parametrize(
-    "hashed_events_mapping, hashed_events_from_previous_run, expected_deduped_list",
-    [
-        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, {"a", "b", "c"}, []),
-        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, {"d", "e", "f"}, [{"id": 1}, {"id": 2}, {"id": 3}]),
-        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, set(), [{"id": 1}, {"id": 2}, {"id": 3}]),
-        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, {"a", "d", "e"}, [{"id": 2}, {"id": 3}]),
-    ],
-)
-def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, expected_deduped_list, mocker):
-    """
-    Given: hashed_events_mapping dict, and hashed_events_from_previous_run set
-        - Case 1: dictionary with 3 events with all 3 events hashes appears in the hashed_events_from_previous_run set.
-        - Case 2: dictionary with 3 events with none of the 3 events hashes appears in the hashed_events_from_previous_run set.
-        - Case 3: dictionary with 3 events with an empty hashed_events_from_previous_run set.
-        - Case 4: dictionary with 3 events with only 1 event hash appears in the hashed_events_from_previous_run set,
-                  along with 2 hashes that doesn't appear in the dict.
-    When: Running dedup_events on them.
-    Then: Ensure that the whole set of keys was returned as hashed_events_from_current_run for the next interval,
-          and that the right events were filtered out.
-          - Case 1: should filter all events.
-          - Case 2: shouldn't filter any events.
-          - Case 3: shouldn't filter any events.
-          - Case 4: should filter only the one event that appears in the hashed_events_from_previous_run set.
-    """
-    mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=False)
-    deduped_events, hashed_events_from_current_run = Akamai_SIEM.dedup_events(hashed_events_mapping,
-                                                                              hashed_events_from_previous_run)
-    assert hashed_events_from_current_run == set(hashed_events_mapping.keys())
-    assert deduped_events == expected_deduped_list
 
 
 @pytest.mark.parametrize(

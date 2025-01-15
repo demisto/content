@@ -63,7 +63,7 @@ def test_second_fetch_incidents(mocker):
     # Check that incident isn't extracted again
     incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:31:07",
                                                    'existing_ids': ['da637029414680409372_735564929']}, False)
-    assert [{
+    assert incidents == [{
         'rawJSON': '{"id": "da637029414680409372_735564929", "incidentId": 14, "investigationId": null, '
                    '"assignedTo": null, "severity": "Medium", "status": "New", "classification": null, '
                    '"determination": null, "investigationState": "UnsupportedAlertType", '
@@ -75,7 +75,7 @@ def test_second_fetch_incidents(mocker):
                    '"machineId": "43df73d1dac43593d1275e20422f44a949f6dfc3", "alertUser": null, "comments": [], '
                    '"alertFiles": [], "alertDomains": [], "alertIps": []}',
         'name': 'Microsoft Defender ATP Alert da637029414680409372_735564929',
-        'occurred': '2019-09-01T13:31:08.0252869Z', 'dbotMirrorId': 'da637029414680409372_735564929'}] == incidents
+        'occurred': '2019-09-01T13:31:08.0252869Z', 'dbotMirrorId': 'da637029414680409372_735564929'}]
 
 
 def test_third_fetch_incidents(mocker):
@@ -91,9 +91,9 @@ def test_third_fetch_incidents(mocker):
 
 test_get_machine_by_ip_data = [
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
-     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]),  # expected two machines
+     '8.8.8.8', '2024-05-19T01:00:05Z', {"value": [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]}),  # expected two machines
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
-     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}])  # expected only 1 machine
+     '8.8.8.8', '2024-05-19T01:00:05Z', {"value": [{'a': 'b'}]})  # expected only 1 machine
 ]
 
 

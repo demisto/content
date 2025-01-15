@@ -2038,7 +2038,7 @@ def test_chat_add_user_command(mocker, chat, member, expected_exit, expected_war
     get_user_mock = mocker.patch('MicrosoftTeams.get_user', side_effect=mocked_get_user)
     add_user_to_chat_mock = mocker.patch('MicrosoftTeams.add_user_to_chat')
 
-    if expected_warning == ValueError:
+    if expected_warning is ValueError:
         with pytest.raises(ValueError) as e:
             chat_add_user_command()
         assert str(e.value) == expected_result
@@ -2111,7 +2111,7 @@ def test_chat_list_command(mocker, requests_mock, args, expected_response, expec
     return_results = mocker.patch('MicrosoftTeams.return_results')
     mocker.patch.object(demisto, 'args', return_value=args)
 
-    if expected_response == ValueError:
+    if expected_response is ValueError:
         with pytest.raises(ValueError) as e:
             chat_list_command()
         assert str(e.value) == "Retrieve a single chat does not support the 'filter' ODate query parameter."
@@ -2677,3 +2677,104 @@ def test_create_messaging_endpoint_command_invalid_xsoar_engine(mocker, engine_u
     with pytest.raises(ValueError) as e:
         create_messaging_endpoint_command()
     assert 'Invalid engine URL -' in str(e.value)
+
+
+def test_switch_auth_type_to_client_credentials(mocker):
+    """
+    Tests the 'auth_type_switch_handling' logic when the user switched the auth type in the instance parameters from Auth Code
+    Flow to the Client Credentials Flow.
+
+    Given:
+        - Auth type instance parameter is now 'Client Credentials'.
+
+    When:
+        - Running the 'auth_type_switch_handling' function.
+
+    Then:
+        - Verify that the integration context was updated as follows:
+            1. current_auth_type =  'Client Credentials'.
+            2. graph token related values were deleted.
+        - Verify that the debug logs are as expected.
+    """
+    from MicrosoftTeams import auth_type_switch_handling
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'current_auth_type': 'Authorization Code',
+                                                                         'current_refresh_token': 'test_refresh_token',
+                                                                         'graph_access_token': 'test_graph_token',
+                                                                         'graph_valid_until': 'test_valid_until'})
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Client Credentials')
+
+    auth_type_switch_handling()
+
+    assert set_integration_context_mocker.call_count == 2
+    assert set_integration_context_mocker.call_args[0][0] == {
+        'current_auth_type': 'Client Credentials', 'current_refresh_token': '',
+        'graph_access_token': '', 'graph_valid_until': ''}
+    assert 'Setting the current_auth_type in the integration context to Client Credentials' in debug_log_mocker.call_args[0][0]
+    assert debug_log_mocker.call_count == 4
+
+
+def test_switch_auth_type_to_authorization_code_flow(mocker):
+    """
+    Tests the 'auth_type_switch_handling' logic when the user switched the auth type in the instance parameters from the
+    Client Credentials Flow to the Auth Code Flow.
+
+    Given:
+        - Auth type instance parameter is now 'Authorization Code'.
+
+    When:
+        - Running the 'auth_type_switch_handling' function.
+
+    Then:
+        - Verify that the integration context was updated as follows:
+            1. current_auth_type = 'Authorization Code'.
+            2. graph token related values were deleted.
+        - Verify that the debug logs are as expected.
+    """
+    from MicrosoftTeams import auth_type_switch_handling
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'current_auth_type': 'Client Credentials',
+                                                                         'current_refresh_token': 'test_refresh_token',
+                                                                         'graph_access_token': 'test_graph_token',
+                                                                         'graph_valid_until': 'test_valid_until'})
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Authorization Code')
+
+    auth_type_switch_handling()
+
+    assert set_integration_context_mocker.call_count == 2
+    assert set_integration_context_mocker.call_args[0][0] == {
+        'current_auth_type': 'Authorization Code', 'current_refresh_token': '',
+        'graph_access_token': '', 'graph_valid_until': ''}
+    assert 'Setting the current_auth_type in the integration context to Authorization Code' in debug_log_mocker.call_args[0][0]
+    assert debug_log_mocker.call_count == 4
+
+
+def test_auth_type_handling_for_first_run_of_the_instance(mocker):
+    """
+    Tests the 'auth_type_switch_handling' logic in the first run of the integration instance/
+
+    Given:
+        - Auth type instance parameter is now 'Authorization Code'.
+
+    When:
+        - Running the 'auth_type_switch_handling' function.
+
+    Then:
+        - Verify that the integration context was updated as follows:
+            1. current_auth_type = 'Authorization Code'.
+        - Verify that the debug logs are as expected.
+    """
+    from MicrosoftTeams import auth_type_switch_handling
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={})
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Authorization Code')
+
+    auth_type_switch_handling()
+
+    assert set_integration_context_mocker.call_count == 1
+    assert set_integration_context_mocker.call_args[0][0] == {'current_auth_type': 'Authorization Code'}
+    assert 'This is the first run of the integration instance' in debug_log_mocker.call_args[0][0]
+    assert debug_log_mocker.call_count == 1

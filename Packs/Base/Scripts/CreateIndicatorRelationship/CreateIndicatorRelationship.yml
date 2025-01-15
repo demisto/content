@@ -62,7 +62,7 @@ args:
   - Course of Action
   - Infrastructure
   - Intrusion Set
-- description: The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicators This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.
+- description: The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see for Cortex XSOAR 6.13 https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicators or for Cortex XSOAR 8 Cloud https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-concepts or for Cortex XSOAR 8.7 On-prem https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-concepts This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.
   name: entity_b_query
 - auto: PREDEFINED
   description: The name of relationship to be created.
@@ -232,7 +232,7 @@ args:
   - F - Reliability cannot be judged
 - description: Free text description to add to the relationship.
   name: description
-- description: 'The time the relationship was seen. If left empty, the default value will be the time the relationship was created. Format (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
+- description: 'The time the relationship was seen. If left empty, the default value will be the time the relationship was created. Format (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z.'
   name: first_seen
 - description: True, if the non-existing indicators will be created according to the specified entities and their types. Default is false.
   auto: PREDEFINED
@@ -252,7 +252,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.11.10.116949
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

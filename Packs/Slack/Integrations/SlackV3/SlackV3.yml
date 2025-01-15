@@ -46,10 +46,11 @@ configuration:
   advanced: true
   required: false
   defaultvalue: Low
-- display: Types of Notifications to Send.
+- display: Types of Notifications to Send (Deprecated)
   name: permitted_notifications
   type: 16
   section: Collect
+  hidden: true
   required: false
   options:
   - incidentAssigned
@@ -65,7 +66,7 @@ configuration:
   - mentionNew
   - mentionOld
   advanced: true
-  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
+  additionalinfo: Deprecated. Use User (User Name) -> User Preferences -> Notifications instead. 
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13

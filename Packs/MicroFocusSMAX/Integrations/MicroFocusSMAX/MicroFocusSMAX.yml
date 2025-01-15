@@ -64,109 +64,109 @@ configuration:
   name: isFetch
   type: 8
   required: false
-description: Fetch SMAX cases and automate  differen SMAX case management actions
+description: Fetch SMAX cases and automate  differen SMAX case management actions.
 display: MicroFocus SMAX
 name: MicroFocusSMAX
 script:
   commands:
   - arguments:
-    - description: 'Entity type, for example: "Incident", the type is case-sensitive'
+    - description: 'Entity type, for example: "Incident", the type is case-sensitive.'
       name: entity_type
       predefined:
       - ''
       required: true
-    - description: 'Entity Id '
+    - description: 'Entity Id.'
       name: entity_id
       required: true
-    - description: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident"'
+    - description: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident".'
       name: entity_fields
-    description: Get any entity details
+    description: Get any entity details.
     name: microfocus-smax-get-entity
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
   - arguments:
-    - description: 'Entity type, for example: "Incident", the type is case-sensitive'
+    - description: 'Entity type, for example: "Incident", the type is case-sensitive.'
       name: entity_type
       required: true
-    - description: 'Query filter , example:  Status = ''Ready''" for Incident queries, see "REST API collection query protocol" in SMAX documentation to know how to use the filter'
+    - description: 'Query filter , example:  Status = ''Ready''" for Incident queries, see "REST API collection query protocol" in SMAX documentation to know how to use the filter.'
       name: query_filter
-    - description: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident"'
+    - description: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident".'
       name: entity_fields
-    - description: 'The order query parameter specifies the order in which the returned resources are placed, example: "Id desc"'
+    - description: 'The order query parameter specifies the order in which the returned resources are placed, example: "Id desc".'
       name: order_by
     - description: Specify the maximum number of resources requested to be returned.
       name: size
     - description: Specify how many resources should be skipped by specifying the starting index of the returned result.
       name: skip
-    description: Query entities' details using a collection query filter
+    description: Query entities' details using a collection query filter.
     name: microfocus-smax-query-entities
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: MicroFocus.SMAX.Query.query_time
-      description: Query time
+      description: Query time.
       type: String
     - contextPath: MicroFocus.SMAX.Query.total_count
-      description: Query results total count
+      description: Query results total count.
       type: String
     - contextPath: MicroFocus.SMAX.Query.completion_status
-      description: Query result status
+      description: Query result status.
       type: String
   - arguments:
-    - description: A list of new entity objects to creates, please review the Bulk API documentation for more information
+    - description: A list of new entity objects to creates, please review the Bulk API documentation for more information.
       name: entities
       required: true
-    description: Create new entities
+    description: Create new entities.
     name: microfocus-smax-create-entities
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
-      description: Query result status
+      description: Query result status.
       type: String
   - arguments:
-    - description: A list of updated entity objects, please review the Bulk API documentation for more information
+    - description: A list of updated entity objects, please review the Bulk API documentation for more information.
       name: entities
       required: true
-    description: Update entities
+    description: Update entities.
     name: microfocus-smax-update-entities
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
-      description: Query result status
+      description: Query result status.
       type: String
   - arguments:
-    - description: Incident name
+    - description: Incident name.
       name: incident_name
       required: true
-    - description: Incident description
+    - description: Incident description.
       name: incident_description
       required: true
-    - description: Impacted service by the incident, you must provide a service id
+    - description: Impacted service by the incident, you must provide a service id.
       name: impacted_service
       required: true
-    - description: Incident requested by, you must provide a user id
+    - description: Incident requested by, you must provide a user id.
       name: requested_by
     - auto: PREDEFINED
-      description: Incident urgency level
+      description: Incident urgency level.
       name: incident_urgency
       predefined:
       - NoDisruption
@@ -174,37 +174,37 @@ script:
       - SevereDisruption
       - TotalLossOfService
     - auto: PREDEFINED
-      description: Incident impact scope
+      description: Incident impact scope.
       name: impact_scope
       predefined:
       - SingleUser
       - MultipleUsers
       - SiteOrDepartment
       - Enterprise
-    - description: Service desk group, you have to provide a group id
+    - description: Service desk group, you have to provide a group id.
       name: service_desk_group
-    - description: An object of other properities
+    - description: An object of other properities.
       name: other_properities
-    description: Create a new incident
+    description: Create a new incident.
     name: microfocus-smax-create-incident
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
-      description: Query result status
+      description: Query result status.
       type: String
   - arguments:
-    - description: Incident Id
+    - description: Incident Id.
       name: incident_id
       required: true
-    - description: Incident description
+    - description: Incident description.
       name: incident_description
     - auto: PREDEFINED
-      description: Incident urgency level
+      description: Incident urgency level.
       name: incident_urgency
       predefined:
       - NoDisruption
@@ -212,7 +212,7 @@ script:
       - SevereDisruption
       - TotalLossOfService
     - auto: PREDEFINED
-      description: Incident impact scope
+      description: Incident impact scope.
       name: impact_scope
       predefined:
       - SingleUser
@@ -220,7 +220,7 @@ script:
       - SiteOrDepartment
       - Enterprise
     - auto: PREDEFINED
-      description: Incident status
+      description: Incident status.
       name: incident_status
       predefined:
       - Ready
@@ -228,41 +228,41 @@ script:
       - Pending
       - Suspended
       - Complete
-    - description: Incident closure category, you have to provide a category Id
+    - description: Incident closure category, you have to provide a category Id.
       name: incident_closure_category
-    - description: Incident completion code
+    - description: Incident completion code.
       name: incident_completion_code
-    - description: Incident solution details
+    - description: Incident solution details.
       name: incident_solution
-    - description: An object of other properities
+    - description: An object of other properities.
       name: other_properities
-    description: Update an incident
+    description: Update an incident.
     name: microfocus-smax-update-incident
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
-      description: Query result status
+      description: Query result status.
       type: String
   - arguments:
-    - description: Request name
+    - description: Request name.
       name: request_name
       required: true
-    - description: Request description
+    - description: Request description.
       name: request_description
       required: true
-    - description: Requested by, you must provide a user id
+    - description: Requested by, you must provide a user id.
       name: requested_by
       required: true
-    - description: Requested for, you must provide a user id
+    - description: Requested for, you must provide a user id.
       name: requested_for
       required: true
     - auto: PREDEFINED
-      description: Request urgency level
+      description: Request urgency level.
       name: request_urgency
       predefined:
       - NoDisruption
@@ -270,35 +270,35 @@ script:
       - SevereDisruption
       - TotalLossOfService
     - auto: PREDEFINED
-      description: Request impact scope
+      description: Request impact scope.
       name: impact_scope
       predefined:
       - SingleUser
       - MultipleUsers
       - SiteOrDepartment
       - Enterprise
-    - description: An object of other properities
+    - description: An object of other properities.
       name: other_properities
-    description: Create a new request
+    description: Create a new request.
     name: microfocus-smax-create-request
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
-      description: Query result status
+      description: Query result status.
       type: String
   - arguments:
-    - description: Request Id
+    - description: Request Id.
       name: request_id
       required: true
-    - description: Request description
+    - description: Request description.
       name: request_description
     - auto: PREDEFINED
-      description: Request urgency level
+      description: Request urgency level.
       name: request_urgency
       predefined:
       - NoDisruption
@@ -306,7 +306,7 @@ script:
       - SevereDisruption
       - TotalLossOfService
     - auto: PREDEFINED
-      description: Incident impact scope
+      description: Incident impact scope.
       name: impact_scope
       predefined:
       - SingleUser
@@ -314,7 +314,7 @@ script:
       - SiteOrDepartment
       - Enterprise
     - auto: PREDEFINED
-      description: Request status
+      description: Request status.
       name: request_status
       predefined:
       - RequestStatusReady
@@ -327,23 +327,23 @@ script:
       - RequestStatusPendingVendor
       - RequestStatusPendingExternalServiceDesk
       - RequestStatusPendingSpecialOperation
-    - description: Request update note
+    - description: Request update note.
       name: request_note
-    - description: An object of other properities
+    - description: An object of other properities.
       name: other_properities
-    description: Update a request
+    description: Update a request.
     name: microfocus-smax-update-request
     outputs:
     - contextPath: MicroFocus.SMAX.Entities.properties.Id
-      description: Entity Id
+      description: Entity Id.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.Name
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
-      description: Query result status
+      description: Query result status.
       type: String
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

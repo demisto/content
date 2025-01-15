@@ -21,6 +21,8 @@ HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("passwo
 
 
 def format_proxy(addr, username=None, password=None):
+    protocol: str
+    proxy_name: str
     if addr.startswith("http://"):
         protocol = addr[:7]
         proxy_name = addr[7:]
@@ -171,7 +173,7 @@ def a1000_report_output(response_json):
     markdown += f'''\n **Category:** {result.get('category')}
     **Classification origin:** {result.get('classification_origin')}
     **Classification reason:** {result.get('classification_reason')}
-    **Aliases:** {','.join(result.get('aliases'))}
+    **Aliases:** {','.join(result.get('aliases', []))}
     **Extracted file count:** {result.get('extracted_file_count')}
     **Identification name:** {result.get('identification_name')}
     **Identification version:** {result.get('identification_version')}\n'''

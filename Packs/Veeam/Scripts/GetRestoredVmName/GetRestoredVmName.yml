@@ -5,7 +5,7 @@ args:
 commonfields:
   id: 'GetRestoredVmName'
   version: -1
-dockerimage: demisto/python3:3.11.9.107902
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.10.0
 enabled: true
 engineinfo: {}
