@@ -111,7 +111,7 @@ script:
   - name: mispthreatactors-get-indicators
     arguments:
     - name: limit
-      description: Limit the amount of indicators to fetch (default is 10)
+      description: Limit the amount of indicators to fetch (default is 10).
       required: false
     outputs:
     - contextPath: FeedMISPThreatActors.ThreatActor.name
