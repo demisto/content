@@ -18,7 +18,7 @@
     "propagationLabels": [
         "all"
     ],
-    "required": false,
+    "required": true,
     "sla": 0,
     "system": false,
     "threshold": 72,
