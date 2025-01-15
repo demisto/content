@@ -779,3 +779,11 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Search job test_SRCH deleted successfully.
+
+## Troubleshooting
+
+In case of **hash verification** error:
+- Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
+- Execute the command *!azure-log-analytics-auth-reset*. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
+- Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
+- After updating the credentials, test the integration.

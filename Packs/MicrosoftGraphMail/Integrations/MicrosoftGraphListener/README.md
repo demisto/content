@@ -681,3 +681,11 @@ Delete a specific email rule by ID for a user's mailbox using Microsoft Graph AP
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+In case of **hash verification** error:
+- Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
+- Execute the command *!msgraph-mail-auth-reset*. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
+- Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
+- After updating the credentials, test the integration.
