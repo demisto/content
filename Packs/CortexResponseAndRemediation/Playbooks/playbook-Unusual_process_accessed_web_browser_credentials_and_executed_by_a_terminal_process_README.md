@@ -8,7 +8,7 @@ During the analysis, the playbook will perform the following:
 - Checks the Initiator file path for any suspicious locations.
 - Check the initiator process reputation.
 
-The playbook determines the appropriate verdict based on the initiator file's reputation. If the file is malicious, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
+If the file is malicious, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
 
 Investigation:
 During the alert investigation, the playbook will perform the following:
@@ -20,7 +20,7 @@ The playbook determines the appropriate verdict. If related alerts or insights a
 Remediation:
 
 - Automatically terminate the causality process.
-- Quarantine the Initiator file (requires analyst approval).
+- Quarantine the initiator file if its reputation is malicious, if medium- to high-severity alerts indicating malicious activity are found, or if related insights are found and the initiator is running from a suspicious path. (This action requires analyst approval).
 - Automatically Close the alert.
 
 ## Dependencies
