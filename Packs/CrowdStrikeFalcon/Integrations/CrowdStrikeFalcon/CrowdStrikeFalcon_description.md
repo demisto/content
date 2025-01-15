@@ -29,3 +29,15 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 * When encountering connectivity or authorization errors within Cortex XSOAR 8, it is necessary to include the IP addresses corresponding to the relevant region in the CrowdStrike Falcon allow list. These IP addresses can be found in [this](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Enable-Access-to-Cortex-XSOAR) 
 documentation, under **Egress - Used for communication between Cortex XSOAR and customer resources**.
 * When encountering a 429 error code returned from Crowdstrike Falcon within Cortex XSOAR 8, the solution is to use an engine as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
+* In the different query parameters such as Endpoint Detections fetch query, Endpoint Incidents fetch query, etc. if you want to query for multiple values in the same field (for example, retrieving severity_name equal to Medium, High, and Critical) you need to use the following format: field:['value1','value2','value3'].
+* When encountering the error "400 - Reason: Bad Request: Invalid element in the request", ensure that your command arguments are correct. For example, if you're using the ID of a detection pre-Raptor (legacy API) in an integration configured to run with Raptor, this error will appear.
+* When encountering missing incidents on the ***fetch-incidents*** command, make sure that the 'Fetch Type' integration parameter includes the type of the missing incidents.
+Optional types are:
+  - Endpoint Incident
+  - Endpoint Detection
+  - Indicator of Misconfiguration
+  - Indicator of Attack
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+  Records from the detection endpoint of *CrowdStrike Falcon* could be of types: Endpoint Detection, IDP Detection, OFP Detection and Mobile Detection.
