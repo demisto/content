@@ -844,6 +844,7 @@ def mirror_investigation():
     mirror['channel_topic'] = channel_topic
 
     mirrors.append(mirror)
+    demisto.debug(f'SlackV3 integration: This is the mirrors list - {mirrors}')
 
     if DISABLE_CACHING:
         set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
