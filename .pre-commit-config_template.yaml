@@ -34,7 +34,7 @@ repos:
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.272
+  rev: v0.8.0
   hooks:
   - id: ruff
     parallel: false
@@ -221,9 +221,6 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-folder
-    -  --skip-integration-script-file-name
-    -  --skip-markdown
     -  --skip-suffix
 
   - id: validate-conf-json
