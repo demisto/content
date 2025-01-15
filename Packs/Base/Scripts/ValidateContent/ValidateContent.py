@@ -107,7 +107,7 @@ class ValidationResult:
 
 
 @contextmanager
-def ConstantTemporaryDirectory(path):
+def ConstantTemporaryDirectory(path: str):
     """ Creates a temporary directory with a constant name. """
 
     def cleanup():
@@ -136,7 +136,7 @@ def setup_proxy(_args: dict):
         del os.environ['https_proxy']
 
 
-def strip_ansi_codes(text):
+def strip_ansi_codes(text: str):
     ansi_escape = re.compile(r'''
         \x1B  # ESC
         \[    # [
@@ -255,7 +255,7 @@ def content_item_to_package_format(
                 os.remove(content_item_file_path)
 
 
-def convert_contribution_to_pack(contrib_converter):
+def convert_contribution_to_pack(contrib_converter: "ContributionConverter"):
     """
         Creates or updates a pack in the Content repo from the contents of a contributed zip file.
     Args:
