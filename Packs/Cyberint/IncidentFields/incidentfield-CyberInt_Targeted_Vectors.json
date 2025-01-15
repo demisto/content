@@ -1,7 +1,7 @@
 {
     "id": "incident_cyberinttargetedvectors",
     "version": -1,
-    "name": "Cyberint Targeted Vectors",
+    "name": "CyberInt Targeted Vectors",
     "ownerOnly": false,
     "cliName": "cyberinttargetedvectors",
     "type": "multiSelect",

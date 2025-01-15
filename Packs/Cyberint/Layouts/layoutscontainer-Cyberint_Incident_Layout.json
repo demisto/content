@@ -583,7 +583,7 @@
             {
                 "hidden": false,
                 "id": "gyt4oyoflh",
-                "name": "Cyberint Incident",
+                "name": "CyberInt Incident",
                 "sections": [
                     {
                         "displayType": "CARD",
@@ -752,7 +752,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Cyberint Incident Details",
+                        "name": "CyberInt Incident Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -870,7 +870,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Cyberint Closing Information",
+                        "name": "CyberInt Closing Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -1145,7 +1145,7 @@
     },
     "group": "incident",
     "id": "Cyberint Incident Layout",
-    "name": "Cyberint Incident Layout",
+    "name": "CyberInt Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "Cyberint incident layout",

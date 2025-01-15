@@ -13,7 +13,7 @@
     "id": "incident_cyberintfiletype",
     "isReadOnly": false,
     "locked": false,
-    "name": "CyberInt File Type",
+    "name": "Cyberint File Type",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

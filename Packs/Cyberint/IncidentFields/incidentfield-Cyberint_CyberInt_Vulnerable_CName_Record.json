@@ -2,7 +2,7 @@
     "id": "incident_cyberinvulnerablecnamerecord",
     "version": -1,
     "modified": "2021-02-22T21:50:43.871414193+02:00",
-    "name": "Cyberint Vulnerable CName Record",
+    "name": "CyberInt Vulnerable CName Record",
     "ownerOnly": false,
     "cliName": "cyberinvulnerablecnamerecord",
     "type": "shortText",
