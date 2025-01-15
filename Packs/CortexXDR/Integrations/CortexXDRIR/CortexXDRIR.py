@@ -971,7 +971,7 @@ def get_remote_data_command(client, args):
             # handle closed issue in XDR and handle outgoing error entry
             entries = []
             if argToBoolean(client._params.get('close_xsoar_incident', True)):
-                entries = [handle_incoming_incident(incident_data)]
+                entries = [handle_incoming_closing_incident(incident_data)]
 
             reformatted_entries = []
             for entry in entries:
