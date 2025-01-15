@@ -391,6 +391,58 @@ def parse_refs(original_ioc: str, refs: list[str]) -> list[dict[str, str]]:
 ''' COMMAND FUNCTIONS '''
 
 
+def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieve indicators from the MISP Threat Actors Galaxy feed.
+
+    This function fetches threat actor indicators from the MISP Threat Actors Galaxy,
+    processes them according to the provided arguments, and returns the results.
+
+    Args:
+        client (Client): An instance of the Client class used to interact with the MISP Threat Actors Galaxy feed.
+        args (dict[str, str]): A dictionary containing command arguments, which may include:
+            - limit: The maximum number of indicators to retrieve.
+
+    Returns:
+        CommandResults: An object containing the processed indicators and associated metadata,
+        formatted for display in Cortex XSOAR.
+    """
+
+    def build_results(actors: list[dict[str, Any]]) -> CommandResults:
+        return CommandResults(
+            outputs_prefix='FeedMISPThreatActors.ThreatActor',
+            outputs_key_field='',
+            outputs=actors,
+            readable_output=tableToMarkdown('Threat Actors', actors, headers=['Name', 'Aliases', 'Country', 'Description']),
+            raw_response=data
+        )
+
+    limit = int(args.get('limit', 10))
+    data = client.get_threat_actors_galaxy_file()
+    threat_actors_data = data.get('values', [])
+    actors = []
+
+    for counter, threat_actor in enumerate(threat_actors_data):
+        if counter >= limit:
+            break
+
+        actor = {
+            "Name": threat_actor['value'],
+            "Description": threat_actor.get('description', '')
+        }
+
+        if synonyms := threat_actor["meta"].get('synonyms', []):
+            actor['Aliases'] = ', '.join(synonyms)
+
+        if origin_country := threat_actor["meta"].get('country', ''):
+            full_country_name = COUNTRIES.get(origin_country, origin_country)
+            actor['Country'] = full_country_name
+
+        actors.append(actor)
+
+    return build_results(actors)
+
+
 def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> tuple[str, list[dict[str, Any]]]:
     """
     Fetch threat actor indicators from the MISP Threat Actors Galaxy via Github.
@@ -437,7 +489,6 @@ def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> 
                 'tlp_color': tlp_color,
                 'tags': [tag for tag in feed_tags.split(',') + [f'MISP_ID: {(threat_actor.get("uuid"))}'] if tag]
             },
-
         }
 
         if refs := meta.get('refs', []):
@@ -481,6 +532,7 @@ def main():
     reliability = params.get('integrationReliability', 'B - Usually reliable')
     tlp_color = params.get('tlp_color') or 'WHITE'
     feed_tags = params.get('feedTags', '')
+    commands = {"mispthreatactors-get-indicators": get_indicators_command}
 
     if not DBotScoreReliability.is_valid_type(reliability):
         raise Exception(
@@ -513,6 +565,12 @@ def main():
                 demisto.createIndicators(iter_)
 
             demisto.setLastRun({'version': f'{version}'})
+
+        elif command in commands:
+            return_results(commands[command](client, demisto.args()))
+
+        else:
+            raise NotImplementedError(f'Command "{command}" was not implemented.')
 
     except NotImplementedError:
         demisto.error(traceback.format_exc())  # print the traceback

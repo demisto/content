@@ -3,7 +3,7 @@ from CommonServerPython import *
 import json
 
 import FeedMISPThreatActors
-from FeedMISPThreatActors import build_relationships, parse_refs, fetch_indicators_command, main, Client
+from FeedMISPThreatActors import build_relationships, parse_refs, fetch_indicators_command, main, Client, get_indicators_command
 
 
 CLIENT = Client(
@@ -97,6 +97,28 @@ def test_fetch_indicators_command(mocker):
     assert results[0]['value'] == expected[0]['value']
     assert results[0]['type'] == expected[0]['type']
     assert results[0]['fields']['description'] == expected[0]['fields']['description']
+
+
+def test_get_indicators_command(mocker):
+    """Tests the get_indicators_command function.
+
+    Scenario: Retrieving indicators from MISP Threat Actors feed
+
+    Given:
+        A mocked CLIENT object with a predefined response for get_threat_actors_galaxy_file.
+
+    When:
+        Calling the get_indicators_command function with the mocked CLIENT and empty parameters.
+
+    Then:
+        Ensure the function returns a human-readable output matching the expected format and content.
+    """
+    expected = "### Threat Actors\n|Name|Aliases|Country|Description|\n|---|---|---|---|\n| TEST | AKA | country | test |\n"
+    data = _open_json_file("test_data/misp_threat_actor_galaxy_example.json")
+    mocker.patch.object(CLIENT, "get_threat_actors_galaxy_file", return_value=data)
+    results = get_indicators_command(CLIENT, {})
+
+    assert results.to_context()['HumanReadable'] == expected
 
 
 def test_feedmispthreatactors_main_command_success(mocker):

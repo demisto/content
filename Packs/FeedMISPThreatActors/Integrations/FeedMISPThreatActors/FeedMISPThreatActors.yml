@@ -107,6 +107,26 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.10.115186
+  commands:
+  - name: mispthreatactors-get-indicators
+    arguments:
+    - name: limit
+      description: Limit the amount of indicators to fetch (default is 10)
+      required: false
+    outputs:
+    - contextPath: FeedMISPThreatActors.ThreatActor.name
+      description: The name of the threat actor.
+      type: string
+    - contextPath: FeedMISPThreatActors.ThreatActor.description
+      description: The threat actor description.
+      type: string
+    - contextPath: FeedMISPThreatActors.ThreatActor.aliases
+      description: Additional aliases the threat actor may be known by.
+      type: string
+    - contextPath: FeedMISPThreatActors.ThreatActor.country
+      description: The origin country of the threat actor.
+      type: string
+    description: Retrieves indicators from Threat Vault.
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
