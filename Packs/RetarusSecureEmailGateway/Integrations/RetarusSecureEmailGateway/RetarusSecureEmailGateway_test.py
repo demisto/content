@@ -172,3 +172,27 @@ def test_fetch_events(mocker, connection):
     assert events[1]["id"] == "2"
     
     debug_logs.assert_any_call("Retarus-logs Fetched 2 events")
+
+
+# def test_websocket_connection(mocker):
+#     """
+#     Given: url, token_id, fetch_interval, channel, verify_ssl
+#     When: Calling websocket_connection func
+#     Then: -connect function is called with the right arguments
+#           -EventConnection object is set with the right fields
+#     """
+#     from unittest.mock import patch
+#     mock_event_connection = mocker.patch('RetarusSecureEmailGateway.EventConnection', side_effect = EventConnection(None, 10, 5))
+#     with mocker.patch('RetarusSecureEmailGateway.connect') as mock_connect:
+        
+#         mock_event_connection.return_value = Mock()
+
+#         with websocket_connection("url_1", "token_id_1", 10, "channel_1", True):
+#             pass
+
+#             mock_connect.assert_called_with(
+#                 "wss://url_1/email/siem/v1/websocket?channel=channel_1",
+#                 additional_headers={"Authorization: Bearer token_id_1"},
+#                 ssl=ssl.create_default_context()
+#             )
+
