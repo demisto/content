@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PhishingDemo-Onboarding](../doc_files/PhishingDemo-Onboarding.png)
+![PhishingDemo-Onboarding](../doc_files//PhishingDemo-Onboarding.png)
