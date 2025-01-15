@@ -310,6 +310,14 @@ def start_logging():
 
 
 def get_client_from_params(params: dict) -> EWSClient:
+    """
+    Parse the integration params and create an EWS client object
+    Args:
+        params (dict): dict received from demisto.params()
+
+    Returns:
+        EWSClient: EWS client object to interact with the exchange API
+    """
     client_id = params.get('_client_id') or params.get('client_id', '')
     client_secret = (params.get('credentials') or {}).get('password') or params.get('client_secret', '')
     tenant_id = params.get('_tenant_id') or params.get('tenant_id', '')
