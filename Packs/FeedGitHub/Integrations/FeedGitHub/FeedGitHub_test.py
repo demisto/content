@@ -88,7 +88,7 @@ def test_get_commit_files(mocker):
 def test_filter_out_files_by_status():
     """
     Given:
-     - A list of dictionaries representing commit files, each containing a status and a raw_url.
+     - A list of dictionaries representing commit files, each containing a status and a filename.
     When:
      - Filtering out files by their status using the filter_out_files_by_status function.
     Then:
@@ -97,11 +97,11 @@ def test_filter_out_files_by_status():
     from FeedGitHub import filter_out_files_by_status
 
     commits_files = [
-        {"status": "added", "raw_url": "http://example.com/file1"},
-        {"status": "modified", "raw_url": "http://example.com/file2"},
-        {"status": "removed", "raw_url": "http://example.com/file3"},
-        {"status": "renamed", "raw_url": "http://example.com/file4"},
-        {"status": "added", "raw_url": "http://example.com/file5"},
+        {"status": "added", "filename": "http://example.com/file1"},
+        {"status": "modified", "filename": "http://example.com/file2"},
+        {"status": "removed", "filename": "http://example.com/file3"},
+        {"status": "renamed", "filename": "http://example.com/file4"},
+        {"status": "added", "filename": "http://example.com/file5"},
     ]
 
     expected_output = [
