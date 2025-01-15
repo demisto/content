@@ -6504,6 +6504,7 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 Optional types are:
   - Endpoint Incident
   - Endpoint Detection
+  - IDP Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection

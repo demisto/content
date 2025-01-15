@@ -33,6 +33,7 @@ documentation, under **Egress - Used for communication between Cortex XSOAR and 
 Optional types are:
   - Endpoint Incident
   - Endpoint Detection
+  - IDP Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
