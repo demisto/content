@@ -301,7 +301,7 @@ class MainTester:
             if k == 'PaloAltoNetworksXQL.GenericQuery' and isinstance(v, dict):
                 return v['results']
         else:
-            raise DemistoException(f'Unable to get query results - {self.__xql_last_resp}')
+            raise RuntimeError(f'Unable to get query results - {self.__xql_last_resp}')
 
     def __demisto_dt(
         self,
