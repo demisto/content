@@ -317,12 +317,12 @@ There is no context output for this command.
 ## Additional Information
 - Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.
 - Note that the API only supports start times up to 7 days in the past when fetching. If the last fetch timestamp exceeds this limit, the integration automatically fetches data from 7 days ago.
--  credentials are valid for a single instance only.
+-  The credentials are valid for a single instance only.
 
 ## Troubleshooting
 
-In case of **hash verification** error:
-- Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
-- Execute the command *!ms-management-activity-auth-reset*. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
-- Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
-- After updating the credentials, test the integration.
+In case of a **hash verification** error:
+1. Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
+2. Execute the command ***!ms-management-activity-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
+3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
+4. After updating the credentials, test the integration.
