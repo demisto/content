@@ -2,7 +2,7 @@ from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
 
-VERSION = "v2.4.0"
+VERSION = "v2.4.4"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
@@ -427,11 +427,12 @@ def get_classification(a1000):
     """
     hash_value = demisto.getArg('hash')
     local_only = argToBoolean(demisto.getArg('localOnly'))
+    av_scanners = argToBoolean(demisto.getArg('avScanners'))
 
     try:
         response_json = a1000.get_classification_v3(hash_value,
                                                     local_only=local_only,
-                                                    av_scanners=True).json()
+                                                    av_scanners=av_scanners).json()
     except Exception as e:
         return_error(str(e))
 
@@ -1211,36 +1212,41 @@ def sample_classification_output(resp_json, action, av_scanners, sample_hash):
     markdown = f"""## ReversingLabs A1000 sample classification - {action}\n"""
 
     if action == "GET CLASSIFICATION":
-        markdown = markdown + f"""**Classification**: {resp_json.get("classification")}
-        **Risk score**: {resp_json.get("riskscore")}
-        **First seen**: {resp_json.get("first_seen")}
-        **Last seen**: {resp_json.get("last_seen")}
-        **Classification result**: {resp_json.get("classification_result")}
-        **Classification reason**: {resp_json.get("classification_reason")}
-        **SHA-1**: {resp_json.get("sha1")}
-        **SHA-256**: {resp_json.get("sha256")}
-        **MD5**: {resp_json.get("md5")}
-        """
-        if av_scanners:
-            scanners_table = tableToMarkdown("Scanner results", resp_json.get("av_scanners"))
-            markdown = markdown + f"\n{scanners_table}"
+        if resp_json.get("classification"):
+            markdown = markdown + f"""**Classification**: {resp_json.get("classification")}
+            **Risk score**: {resp_json.get("riskscore")}
+            **First seen**: {resp_json.get("first_seen")}
+            **Last seen**: {resp_json.get("last_seen")}
+            **Classification result**: {resp_json.get("classification_result")}
+            **Classification reason**: {resp_json.get("classification_reason")}
+            **SHA-1**: {resp_json.get("sha1")}
+            **SHA-256**: {resp_json.get("sha256")}
+            **MD5**: {resp_json.get("md5")}
+            """
+            if av_scanners:
+                scanners_table = tableToMarkdown("Scanner results", resp_json.get("av_scanners"))
+                markdown = markdown + f"\n{scanners_table}"
 
-        d_bot_score = classification_to_score(resp_json.get("classification").upper())
-        dbot_score = Common.DBotScore(
-            indicator=sample_hash,
-            indicator_type=DBotScoreType.FILE,
-            integration_name='ReversingLabs A1000 v2',
-            score=d_bot_score,
-            malicious_description=resp_json.get("classification_result"),
-            reliability=RELIABILITY
-        )
+            d_bot_score = classification_to_score(resp_json.get("classification").upper())
+            dbot_score = Common.DBotScore(
+                indicator=sample_hash,
+                indicator_type=DBotScoreType.FILE,
+                integration_name='ReversingLabs A1000 v2',
+                score=d_bot_score,
+                malicious_description=resp_json.get("classification_result"),
+                reliability=RELIABILITY
+            )
 
-        indicator = Common.File(
-            md5=resp_json.get("md5"),
-            sha1=resp_json.get("sha1"),
-            sha256=resp_json.get("sha256"),
-            dbot_score=dbot_score
-        )
+            indicator = Common.File(
+                md5=resp_json.get("md5"),
+                sha1=resp_json.get("sha1"),
+                sha256=resp_json.get("sha256"),
+                dbot_score=dbot_score
+            )
+
+        else:
+            markdown = markdown + "There were no results for the given hash."
+            indicator = None
 
         command_results = CommandResults(
             outputs_prefix="ReversingLabs",
