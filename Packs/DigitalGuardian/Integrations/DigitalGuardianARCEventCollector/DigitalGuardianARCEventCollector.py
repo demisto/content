@@ -112,17 +112,21 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, export_profiles: list[str]) -> str:
+def test_module(client: Client, export_profiles: list[str], export_calls_per_fetch: int) -> str:
     """
-    Tests API connectivity and authentication and validates export profiles.
+    Tests API connectivity and authentication and validates configuration parameters.
     Args:
         client (Client): Digital Guardian client to use.
         export_profiles (list): List of export profile names.
+        export_calls_per_fetch (int): Number of API calls to export events.
     Returns:
-        str: 'ok' if connection to the service is successful, an error message otherwise.
+        str: 'ok' if valid parameters and connection to the service is successful, an error message otherwise.
     Raises:
         DemistoException | Exception: If request failed.
     """
+    if export_calls_per_fetch < 0 or export_calls_per_fetch > 5:
+        return 'The number of export requests per fetch should be set to between 1 and 5'
+
     invalid_export_profiles = set()
 
     for export_profile in export_profiles:
@@ -231,25 +235,30 @@ def get_events_command(client: Client, args: dict, export_profile: str) -> tuple
     return events, last_run, CommandResults(readable_output=human_readable)
 
 
-def push_events(client: Client, events: list[dict], last_run: dict, export_profile: str, *, set_export_bookmark: bool) -> None:
+def push_events(client: Client, events: list[dict], export_profile: str) -> None:
     """
-    Pushes events to XSIAM and (optionally) moves internal bookmark in the API for the next time fetch-events is invoked.
+    Pushes events from a specific export profile to XSIAM.
 
     Args:
         client (Client): Digital Guardian client.
         events (list[dict]): Events get_events_command or fetch_events.
-        last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
         export_profile (str): Export profile name.
-        set_export_bookmark (bool): Whether to set the API-managed bookmark (saves us the need to set `last run`).
     """
     demisto.debug(f'Sending {len(events)} events to XSIAM from profile: {export_profile}.')
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
-    if set_export_bookmark:
-        demisto.debug(f'Setting export bookmark after run: {last_run} for profile: {export_profile}.')
-        client.set_export_bookmark(export_profile)
-    else:
-        demisto.debug('Skipped setting export bookmark.')
+
+def set_export_bookmark(client: Client, last_run: dict, export_profile: str) -> None:
+    """
+    Moves internal bookmark in the API for the next time fetch-events is invoked (API equivalent of `demisto.setLastRun`).
+
+    Args:
+        client (Client): Digital Guardian client.
+        last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
+        export_profile (str): Export profile name.
+    """
+    demisto.debug(f'Setting export bookmark after run: {last_run} for profile: {export_profile}.')
+    client.set_export_bookmark(export_profile)
 
 
 def main() -> None:  # pragma: no cover
@@ -266,6 +275,7 @@ def main() -> None:  # pragma: no cover
     # optional
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    export_calls_per_fetch = arg_to_number(params.get('export_calls_per_fetch')) or 1
 
     demisto.debug(f'{base_url=}')
 
@@ -289,7 +299,7 @@ def main() -> None:  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, export_profiles)
+            result = test_module(client, export_profiles, export_calls_per_fetch)
             return_results(result)
 
         elif command == 'digital-guardian-get-events':
@@ -300,12 +310,14 @@ def main() -> None:  # pragma: no cover
                 return_results(command_results)
 
                 if should_push_events:
-                    push_events(client, events, last_run, export_profile, set_export_bookmark=False)
+                    push_events(client, events, export_profile)
 
         elif command == 'fetch-events':
-            for export_profile in export_profiles:
-                events, last_run = fetch_events(client, export_profile)
-                push_events(client, events, last_run, export_profile, set_export_bookmark=True)
+            for _ in range(export_calls_per_fetch):
+                for export_profile in export_profiles:
+                    events, last_run = fetch_events(client, export_profile)
+                    push_events(client, events, export_profile)
+                    set_export_bookmark(client, last_run, export_profile)
 
         else:
             raise NotImplementedError(f'Unknown command: {command}')
