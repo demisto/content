@@ -1,10 +1,10 @@
 commonfields:
-  id: SumoLogic
+  id: SumoLogic-bd77d6d
   version: -1
-name: SumoLogic
-display: SumoLogic
+name: SumoLogic-bd77d6d
+display: SumoLogic-bd77d6d
 category: Analytics & SIEM
-description: Cloud-based service for logs & metrics management
+description: Cloud-based service for logs & metrics management.
 configuration:
 - display: 'Sumo Logic URL (region specific), for example: https://api.us2.sumologic.com/api/'
   name: url
@@ -117,7 +117,7 @@ script:
       description: Maximum number of results to return from the query. Default is 100. The value specified will override the default set in the "limit" parameter.
       defaultValue: "100"
     - name: offset
-      description: Return results starting at this offset. should be int - by default is 0
+      description: Return results starting at this offset. should be int - by default is 0.
       defaultValue: "0"
     - name: timezone
       description: The time zone if from/to is not in milliseconds. Default is UTC. Please refer to the article at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of time zone codes.
