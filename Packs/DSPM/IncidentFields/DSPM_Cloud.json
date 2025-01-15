@@ -8,7 +8,7 @@
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
-    "required": false,
+    "required": true,
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "useAsKpi": false,
