@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+        "integrations": "qualys_fim",
+        "playbookID": "QualysFIM-Playbook"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
         },
@@ -3941,7 +3945,8 @@
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
             "fromversion": "5.5.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "Field polling test",
@@ -6101,6 +6106,7 @@
         "QRadar Indicator Hunting Test": "CRTX-141972"
     },
     "skipped_integrations": {
+        "qualys_fim": "No Instance",
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
         "RedCanary": "No instance",
