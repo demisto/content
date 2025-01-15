@@ -45,6 +45,7 @@ class Client:
             "sysparm_limit": limit,
             "sysparm_offset": offset,
             "sysparm_query": f"sys_created_on>{from_time}",
+            "sysparm_no_count": True
         }
         res = self.sn_client.http_request(
             method="GET",
