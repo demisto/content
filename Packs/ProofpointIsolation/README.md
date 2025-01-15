@@ -1,22 +1,21 @@
-# Product Name
- 
-<~XSIAM>
- 
-This pack includes Cortex XSIAM content.
- 
-## Configuration on Server Side
- 
-<Fill in here the necesseary configuration steps required on the vendor's product to set the integration with XSIAM, 
- such configuring syslog forwarding, generating API credentials, enabling audit, etc. >
- 
-## Collect Events from Vendor
- 
-<Here you add the options for collections >
- 
-### <Collection method> (Replace with the collection method name)
- 
-<Fill in the configuration steps required on XSIAM to complete the integration >
- 
-#### Filebeat Configuration File (If applicable)
- 
-</~XSIAM>
+### Proofpoint Isolation
+This pack includes integration and modeling rules for Proofpoint Isolation logs.
+
+### Supported Timestamp Formats:
+Timestamp is extracted from the **date** field with the following format - yyyy-mm-ddTHH:MM:SS.SSS
+
+### Collect Events from Proofpoint Isolation (XSIAM)
+
+**On Proofpoint Isolation side:**
+1. Navigate to **Product Settings** >  **Reporting API**.
+2. Copy the **Reporting API Key**.
+
+**On XSIAM side:**
+1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
+2. Type **Proofpoint Isolation** on the search bar.
+3. Select the **Proofpoint Isolation** integration.
+4. Click **Connect**.
+5. Set the following values:
+   - Name as `Proofpoint Isolation`
+   - API Key - paste the **Reporting API Key** we copied from **Proofpoint Isolation** UI.
+6. Click **Connect**.
