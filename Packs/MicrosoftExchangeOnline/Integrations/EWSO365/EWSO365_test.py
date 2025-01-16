@@ -666,11 +666,10 @@ def test_parse_incident_from_item_with_attachments(mocker):
             ),
         ],
     )
-    mock_file_result = mocker.patch('EWSO365.fileResult')
+    mocker.patch('EWSO365.fileResult')
     incident = parse_incident_from_item(message)
 
     assert incident['attachment']
-    assert mock_file_result.called_once_with('test_attachment.eml', content)
 
 
 def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
