@@ -1,6 +1,7 @@
 import json
 from unittest import mock
 from io import BytesIO
+from Packs.Base.Scripts.ValidateContent.ValidateContent import setup_envvars
 from ValidateContent import (ValidationResult, read_validate_results, resolve_entity_type,
                              HOOK_ID_TO_PATTERN, get_pack_name, strip_ansi_codes, extract_hook_id, parse_pre_commit_output)
 import demistomock as demisto
@@ -195,3 +196,15 @@ def test_read_validate_results(tmp_path):
     assert results[0].filePath.endswith("Packs/TestPack/Scripts/TestScript/TestScript.yml")
     assert results[0].errorCode == "ST001"
     assert results[0].message == "Test error message"
+
+def test_setup_envvars(mocker):
+    mock_os = mocker.patch('ValidateContent.os')
+    mock_demisto = mocker.patch('ValidateContent.demisto')
+    
+    setup_envvars()
+    
+    assert mock_os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] == 'false'
+    assert mock_os.environ['DEMISTO_SDK_OFFLINE_ENV'] == 'False'
+    assert mock_os.environ['ARTIFACTS_FOLDER'] == '/tmp/artifacts'
+    assert mock_os.environ['DEMISTO_SDK_LOG_NO_COLORS'] == 'true'
+    mock_demisto.debug.assert_called_once()

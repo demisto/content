@@ -322,8 +322,8 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
     # create pack_metadata.json file in TmpPack
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     # Create base files.
-    contrib_converter.create_pack_base_files = types.MethodType(_create_pack_base_files, contrib_converter)  # noqa: E1102
-    contrib_converter.create_pack_base_files()  # noqa: E1102
+    contrib_converter.create_pack_base_files = _create_pack_base_files
+    contrib_converter.create_pack_base_files(contrib_converter)
 
     # Determine entity type by filename prefix.
     file_name_prefix = '-'.join(file_name.split('-')[:-1])
@@ -755,7 +755,7 @@ def setup_content_dir(file_name: str, file_contents: bytes | str, entry_id: str,
 
 
 def setup_envvars():
-    os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] = "false"
+    os.environ['DEMISTO_SDK_IGNORE_CONTENT_WARNING'] = 'false'
     os.environ['DEMISTO_SDK_OFFLINE_ENV'] = 'False'
     os.environ['ARTIFACTS_FOLDER'] = '/tmp/artifacts'
     os.environ['DEMISTO_SDK_LOG_NO_COLORS'] = 'true'
