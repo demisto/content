@@ -3495,7 +3495,8 @@
         },
         {
             "integrations": "Tanium v2",
-            "playbookID": "Tanium v2 - Test"
+            "playbookID": "Tanium v2 - Test",
+            "is_mockable": false
         },
         {
             "integrations": "Office 365 Feed",
