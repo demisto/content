@@ -1,20 +1,15 @@
 {
-  "trigger_id": "934cafcebab59e0ca332603850b0e2e5",
-  "playbook_id": "Unsigned and unpopular process performed an injection",
-  "suggestion_reason": "Recommended for 'Unsigned and unpopular process performed an injection' alerts",
-  "description": "This trigger is responsible for handling several the 'Unsigned and unpopular process performed an injection' alerts",
-  "trigger_name": "Unsigned and unpopular process performed an injection",
+  "trigger_id": "66c14136957cd342e560cedb6e29d3c6",
+  "playbook_id": "AppleScript Process Executed With Rare Command Line",
+  "suggestion_reason": "Recommended for 'AppleScript Process Executed With Rare Command Line' alerts",
+  "description": "This trigger is responsible for handling several the 'AppleScript Process Executed With Rare Command Line' alerts",
+  "trigger_name": "AppleScript Process Executed With Rare Command Line",
   "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
         "AND": [
             {
             "OR": [
-                {
-                "SEARCH_FIELD": "alert_name",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "Unsigned and unpopular process performed injection into a commonly abused process"
-                },
                 {
                 "SEARCH_FIELD": "alert_name",
                 "SEARCH_TYPE": "CONTAINS",
