@@ -1197,10 +1197,6 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
-        if params.get("isFetchEvents", False) and params.get("longRunning", False):
-            raise DemistoException("Cannot run both fetch events and longg-running command simultaneously.\n"
-                                   "Please make sure to set either isFetchEvents or longRunning to false in"
-                                   " the integration configuration.")
         if params.get("isFetch") and not (0 < (arg_to_number(params.get('fetchLimit')) or 20) <= 2000):
             raise DemistoException('Fetch limit must be an integer between 1 and 2000')
 
@@ -1213,6 +1209,10 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
+            if params.get("longRunning", False):
+                raise DemistoException("Cannot run both fetch events and long-running command simultaneously.\n"
+                                       "Please make sure to set either isFetchEvents or longRunning to false in"
+                                       " the integration configuration.")
             page_size = int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE))
             limit = int(params.get("fetchLimit", 300000))
             if limit > MAX_ALLOWED_FETCH_LIMIT:
@@ -1254,6 +1254,10 @@ def main():  # pragma: no cover
                 demisto.info(f"Got less than {limit} events this interval - will not trigger next run automatically.")
             demisto.setLastRun(next_run)
         elif command == "long-running-execution":
+            if params.get("isFetchEvents", False):
+                raise DemistoException("Cannot run both fetch events and long-running command simultaneously.\n"
+                                       "Please make sure to set either isFetchEvents or longRunning to false in"
+                                       " the integration configuration.")
             page_size = min(int(params.get("beta_page_size", BETA_FETCH_EVENTS_MAX_PAGE_SIZE)), BETA_FETCH_EVENTS_MAX_PAGE_SIZE)
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             max_concurrent_tasks = min(int(params.get("max_concurrent_tasks", 100)), MAX_ALLOWED_CONCURRENT_TASKS)
