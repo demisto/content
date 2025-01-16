@@ -89,3 +89,4 @@ marketplaces:
 fromversion: 6.8.0
 tests:
 - No tests
+toversion: 8.9.0
