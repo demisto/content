@@ -21505,9 +21505,8 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_PROCESSED_DATETIME | Date | Date detection was last processed. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.PORT | String | Detection port. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL | String | Detection protocol. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS.#text | String | Numerical detection score. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS.@severity | String | Detection severity. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS_FACTORS.QDS_FACTOR | Array | Factors affecting detection score. |
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS | Object | Detection score. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS_FACTORS | Object | Factors affecting detection score. |
 
 #### Command example
 ```!qualys-host-list-detection truncation_limit=2```
