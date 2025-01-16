@@ -22,7 +22,7 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
     | Application date field for fetch | The value should be the field name. Default is Date/Time Occurred. | True |
     | Maximum number of incidents to pull per fetch | Default is 10. | False |
     | First fetch timestamp | Time from which to begin fetching incidents in the `<number> <time unit>` format. For example: 12 hours, 7 days, 3 months, 1 year. | False |
-    | List of fields from the application to get into the incident | A comma-separated list of application field names. For example: `Field A,Field B`. | False |
+    | List of fields from the application to get into the incident | A comma-separated list of application field names. For example: `Date/Time Occurred,Days Open`. | False |
     | XML for fetch filtering | An XML condition element which can be used in conjunction with the fetch date filter condition. For example: "TextFilterCondition" XML element. This cannot be a "DateComparisonFilterCondition" element since it would interfere with the existing fetch filter. | False |
     | Fetch filtering logic operator | A boolean logic operator to combine the existing fetch date filter condition with the custom "XML for fetch filtering" condition. For example: "AND". This cannot be "OR" since it would result in the fetching of duplicate incidents. | False |
 

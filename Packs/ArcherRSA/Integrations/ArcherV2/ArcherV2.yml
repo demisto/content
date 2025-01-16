@@ -55,7 +55,7 @@ configuration:
   name: fetch_time
   type: 0
   required: false
-- additionalinfo: 'A comma-separated list of application field names. For example: "Field A,Field B".'
+- additionalinfo: 'A comma-separated list of application field names. For example: "Date/Time Occurred,Days Open".'
   display: List of fields from the application to get into the incident
   name: fields_to_fetch
   type: 0
