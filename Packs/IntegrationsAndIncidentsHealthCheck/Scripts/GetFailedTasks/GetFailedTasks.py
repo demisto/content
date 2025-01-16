@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 BRAND = "Core REST API"
 
 
@@ -262,7 +263,7 @@ def filter_playbooks_failures(response: list | None) -> list | None:
         The filtered list of tasks. Tasks of type "playbook" whose names appear in the ancestors of other tasks are removed.
     """
 
-    if not isinstance(response, list):
+    if type(response) is not list:
         return response
 
     ancestors = set()
