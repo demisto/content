@@ -2086,7 +2086,7 @@ def main() -> None:
 
     params = demisto.params()
     command = demisto.command()
-    demisto.args()
+    args = demisto.args()
 
     ip = params.get("ip")
     token = params.get("token", None)
