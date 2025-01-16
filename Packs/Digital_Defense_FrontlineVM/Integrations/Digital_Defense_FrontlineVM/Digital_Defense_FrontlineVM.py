@@ -8,7 +8,7 @@ import signal
 import socket
 import struct
 import urllib3
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 # disable insecure warnings
@@ -602,7 +602,7 @@ def build_scan(low_ip_address, high_ip_address, scan_policy, scan_name):
     scanner_data = get_scan_data(network_data, low_ip_number, high_ip_number)
 
     # Set time for scan:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     time_zone = "UTC"
     tzoffset = 0
     scan = {}   # type: Dict[str, Any]
@@ -672,6 +672,8 @@ def scan_asset(ip_address, scan_policy, scan_name, ip_range_start, ip_range_end)
             low_ip_address = ip_range_start
             high_ip_address = ip_range_end
         else:
+            low_ip_address = ""
+            high_ip_address = ""
             msg = "Invalid arguments. Must input either a single ip_address or range of ip addresses to scan."
             demisto.debug(msg)
             return_error(msg)
