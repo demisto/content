@@ -48,7 +48,8 @@ def test_get_content_files_from_repo(mocker):
     client = mock_client()
     params = {"feedType": "IOCs", "extensions_to_fetch": ["txt"]}
     relevant_files = util_load_json("test_data/relevant-files.json")
-    return_data = util_load_json("test_data/content_files_from_repo.json")
+    # return_data = util_load_json("test_data/content_files_from_repo.json")
+    return_data = {"content": "This is dummy text with fake details and placeholders.".encode('utf-8')}
     mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
     assert content_files == util_load_json(
