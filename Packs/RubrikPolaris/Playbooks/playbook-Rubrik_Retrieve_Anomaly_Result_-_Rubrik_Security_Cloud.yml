@@ -842,6 +842,7 @@ tasks:
         complex:
           root: anomaly_cdm_id
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
