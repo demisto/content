@@ -357,14 +357,15 @@ def generic_ansible(integration_name: str, command: str,
                 demisto.debug(f"generic_ansible-The function dict2md took {elapsed_time:.2f} seconds to execute.")
 
                 # add host and status to result if it is a dict. Some ansible modules return a list
-                if (type(result) == dict) and (host != 'localhost'):
+                if (type(result) is dict) and (host != 'localhost'):
                     result['host'] = host
                     outputs_key_field = 'host'  # updates previous outputs that share this key, neat!
 
-                if type(result) == dict:
+                if type(result) is dict:
                     result['status'] = status.strip()
 
                 results.append(result)
+            msg = ""
             if each_host_event['event'] == "runner_on_unreachable":
                 msg = "Host %s unreachable\nError Details: %s" % (host, result.get('msg'))
 

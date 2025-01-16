@@ -421,7 +421,7 @@ script:
     - contextPath: Synapse.Model.Valu
       description: The given value of the Synapse object type.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.117220
   runonce: false
   script: '-'
   subtype: python3

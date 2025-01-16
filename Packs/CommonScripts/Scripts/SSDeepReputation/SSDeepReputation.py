@@ -29,7 +29,7 @@ def get_ssdeep_related_indicators(ssdeep_indicator):
             file_obj = demisto.dt(context, "File(val.SSDeep == '%s')" % ssdeep_indicator['value'])
             if file_obj is None:
                 file_obj = {}
-            elif type(file_obj) == list:
+            elif type(file_obj) is list:
                 file_obj = file_obj[0]
             related_indicators.append(get_indicator_from_value(file_obj.get('MD5')))
             related_indicators.append(get_indicator_from_value(file_obj.get('SHA1')))
