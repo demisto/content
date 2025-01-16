@@ -1,8 +1,8 @@
 commonfields:
-  id: SumoLogic-bd77d6d
+  id: SumoLogic
   version: -1
-name: SumoLogic-bd77d6d
-display: SumoLogic-bd77d6d
+name: SumoLogic
+display: SumoLogic
 category: Analytics & SIEM
 description: Cloud-based service for logs & metrics management.
 configuration:
