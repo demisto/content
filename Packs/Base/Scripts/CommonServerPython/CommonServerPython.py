@@ -12635,10 +12635,6 @@ def content_profiler(func):
     return profiler_wrapper
 
 
-def find_and_remove_sensitive_text(text, pattern):
-
-    return
-
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
