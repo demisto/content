@@ -358,7 +358,7 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
             if word.lower() in word_frequency:
                 sentence_rank[i] += word_frequency[word.lower()]
         sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))  # type: ignore
-    top_sentences_indices: np.ndarray = np.argsort(sentence_rank)[::-1][:nb_sentences].tolist()
+    top_sentences_indices: np.ndarray = np.argsort(sentence_rank)[::-1][:nb_sentences].tolist()  # type: ignore[assignment]
     summary = []
     for sent_i in sorted(top_sentences_indices):  # type: ignore
         sent = corpus[sent_i].strip().replace('\n', ' ')

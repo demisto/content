@@ -672,6 +672,8 @@ def scan_asset(ip_address, scan_policy, scan_name, ip_range_start, ip_range_end)
             low_ip_address = ip_range_start
             high_ip_address = ip_range_end
         else:
+            low_ip_address = ""
+            high_ip_address = ""
             msg = "Invalid arguments. Must input either a single ip_address or range of ip addresses to scan."
             demisto.debug(msg)
             return_error(msg)
