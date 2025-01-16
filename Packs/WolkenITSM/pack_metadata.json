@@ -2,7 +2,7 @@
     "name": "Wolken ITSM",
     "description": "Use The Wolken IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.This is case management. Cortex XSOAR interfaces with Wolken ITSM to help streamline security-related service management and IT operations.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Shubham Agarwal",
     "url": "",
     "email": "",
