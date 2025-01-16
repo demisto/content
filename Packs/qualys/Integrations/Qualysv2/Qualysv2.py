@@ -2171,7 +2171,7 @@ def get_fetched_assets_qids(assets: list[dict], last_run: dict[str, Any]) -> lis
         list: List of QIDs.
     """
     asset_qids: set[str | None] = {asset.get('DETECTION', {}).get('QID') for asset in assets}
-    asset_qids.union(last_run.get('asset_qids', []))
+    asset_qids.update(last_run.get('asset_qids', []))
 
     return [asset_qid for asset_qid in asset_qids if asset_qid]
 

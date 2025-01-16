@@ -23,6 +23,8 @@ from Qualysv2 import (
     get_simple_response_from_raw,
     validate_required_group,
     get_activity_logs_events_command,
+    get_fetched_assets_qids,
+    get_unfetched_vulnerabilities_qids,
     fetch_events, get_activity_logs_events, fetch_assets, fetch_vulnerabilities, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT,
     HOST_LIMIT
 )
@@ -44,6 +46,11 @@ WARNING
 "1980","17 record limit exceeded. Use URL to get next batch of results.","https://server_url/api/2.0/fo/activity_log/
 ?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
 ----END_RESPONSE_FOOTER_CSV"""
+
+
+def util_load_json(path: str):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_get_activity_logs_events_command(requests_mock):
@@ -1532,3 +1539,41 @@ def test_truncate_asset_size(mocker, asset, expected_truncated):
 
     # Reset mock_debug for the next test case
     mock_debug.reset_mock()
+
+
+def test_get_fetched_assets_qids():
+    """
+    Given:
+        - A list of fetched assets.
+    When:
+        - Calling get_fetched_assets_qids.
+    Assert:
+        - The list of QIDs is expanded to include newly fetched ones.
+    """
+    # has 'NEWLY_FETCHED_QID_A' and 'NEWLY_FETCHED_QID_B'
+    assets = util_load_json('test_data/fetched_assets.json')
+
+    last_run = {'asset_qids': ['LAST_RUN_QID_A', 'LAST_RUN_QID_B']}
+
+    fetched_qids = get_fetched_assets_qids(assets, last_run)
+
+    assert sorted(fetched_qids) == ['LAST_RUN_QID_A', 'LAST_RUN_QID_B', 'NEWLY_FETCHED_QID_A', 'NEWLY_FETCHED_QID_B']
+
+
+def test_get_unfetched_vulnerabilities_qids():
+    """
+    Given:
+        - A list of fetched vulnerabilities.
+    When:
+        - Calling get_unfetched_vulnerabilities_qids.
+    Assert:
+        - The list of QIDs excludes already fetched ones.
+    """
+    # has 'ALREADY_FETCHED_VULN_QID_X' and 'ALREADY_FETCHED_VULN_QID_Y'
+    vulnerabilities = util_load_json('test_data/fetched_vulnerabilities.json')
+
+    last_run = {'asset_qids': ['NOT_YET_FETCHED_VULN_QID_A', 'NOT_YET_FETCHED_VULN_QID_A', 'ALREADY_FETCHED_VULN_QID_X']}
+
+    unfetched_qids = get_unfetched_vulnerabilities_qids(vulnerabilities, last_run)
+
+    assert sorted(unfetched_qids) == ['NOT_YET_FETCHED_VULN_QID_A', 'NOT_YET_FETCHED_VULN_QID_A']
