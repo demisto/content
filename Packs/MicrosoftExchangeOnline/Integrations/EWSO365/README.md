@@ -2,6 +2,13 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
+## Retirement of RBAC Application Impersonation
+
+As of February 2025, the Impersonation access type of the integration is deprecated by Microsoft, read about it [here](https://techcommunity.microsoft.com/blog/exchange/critical-update-applicationimpersonation-rbac-role-deprecation-in-exchange-onlin/4295762).
+To avoid disruptions, it is imperative that administrators begin transitioning their applications immediately.
+To identify accounts using the ApplicationImpersonation role use the Exchange Online PowerShell command:
+`Get-ManagementRoleAssignment -Role ApplicationImpersonation -GetEffectiveUsers -Delegating:$false`
+
 ## Use Cases
 
 The EWS integration can be used for the following use cases.
