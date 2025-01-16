@@ -67,6 +67,7 @@ def test_get_content_files_from_repo(mocker):
     }
     mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
+    print(f'############# {content_files} ################')
     assert content_files == util_load_json(
         "test_data/get_content-files-from-repo-result.json"
     )
