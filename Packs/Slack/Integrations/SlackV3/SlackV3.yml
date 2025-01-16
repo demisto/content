@@ -3,7 +3,7 @@ sectionOrder:
 - Collect
 category: Messaging and Conferencing
 commonfields:
-  id: SlackV3 - dev
+  id: SlackV3
   version: -1
 configuration:
 - display: ''
@@ -200,8 +200,8 @@ configuration:
   advanced: true
   required: false
 description: Send messages and notifications to your Slack team.
-display: Slack v3 - dev
-name: SlackV3 - dev
+display: Slack v3
+name: SlackV3
 script:
   commands:
   - arguments:
