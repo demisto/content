@@ -196,7 +196,6 @@ switch (command) {
         var headers = 'headers' in args ? argToList(args.headers) : undefined;
         var waitForSearchComplete = args.waitForSearchComplete == 'true';
         commandLimit = a2i(args.limit, limit)
-        logDebug(`The limit is ${commandLimit}`);
         var s = search(query, args.from, args.to, commandLimit, a2i(args.offset, 0), args.timezone,
             a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
             waitForSearchComplete);
