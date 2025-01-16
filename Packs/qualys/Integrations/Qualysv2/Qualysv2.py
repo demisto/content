@@ -1651,13 +1651,13 @@ class Client(BaseClient):
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-
-        params: dict[str, Any] = assign_params(
-            truncation_limit=max_fetch,
-            since_datetime=since_datetime,
-            id_max=next_page,
-            values_to_ignore=(None,),  # to ensure `truncation_limit` is kept when 0
-        )
+        params: dict[str, Any] = {
+            "truncation_limit": max_fetch
+        }
+        if since_datetime:
+            params["since_datetime"] = since_datetime
+        if next_page:
+            params["id_max"] = next_page
 
         response = self._http_request(
             method='GET',
@@ -1681,17 +1681,13 @@ class Client(BaseClient):
         """
         set_new_limit = False
         self._headers.update({"Content-Type": 'application/json'})
-
-        params: dict[str, Any] = assign_params(
-            truncation_limit=limit,
-            vm_scan_date_after=since_datetime,
-            id_min=next_page,
-            show_qds=1,  # show QDS value in the output for each detection
-            show_qds_factors=1,  # show QDS contributing factors associated with each detection
-            values_to_ignore=(None,),  # to ensure `truncation_limit` is kept when 0
-        )
-
+        params: dict[str, Any] = {
+            "truncation_limit": limit,
+            "vm_scan_date_after": since_datetime,
+        }
         timeout = (60, 150)  # (Connection Timeout, Read Timeout)
+        if next_page:
+            params["id_min"] = next_page
         try:
             response = self._http_request(
                 method='GET',
