@@ -1872,12 +1872,19 @@
 		},
 		"Source Port": {
 		    "simple": "source.port"
+		},
+		"uuid": {
+		    "simple": "event.id"
 		}
             }
 	},
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
-            "internalMapping": {}
+            "internalMapping": {
+		    "UUID": {
+			    "simple": "event.id"
+		    }
+	    }
         }
     },
     "name": "Gatewatcher Mapper Incoming",
