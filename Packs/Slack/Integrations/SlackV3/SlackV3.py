@@ -107,7 +107,7 @@ EXTENSIVE_LOGGING: bool
 
 ''' HELPER FUNCTIONS '''
 def extensive_log(message):
-    if EXTENSIVE_LOGGING:
+    if demisto.params().get('extensive_logging', False):
         demisto.debug(message)
 
 def get_war_room_url(url: str) -> str:
