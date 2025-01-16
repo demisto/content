@@ -231,7 +231,7 @@ def generate_indicator(data: dict) -> Common.CVE:
     cvss_table = []
 
     for category in ("impact", "access"):
-        for key, value in data.get(category, []).items():
+        for key, value in data.get(category, {}).items():
             cvss_table.append({"metrics": key, "value": value})
 
     vulnerable_products = [Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])]
