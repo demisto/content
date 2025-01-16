@@ -4910,7 +4910,8 @@
             "memory_threshold": 250,
             "integrations": [
                 "CrowdStrike Falcon X"
-            ]
+            ],
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
