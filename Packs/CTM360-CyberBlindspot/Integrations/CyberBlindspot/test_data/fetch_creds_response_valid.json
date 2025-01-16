@@ -1,0 +1,46 @@
+[
+    {
+        "first_seen": "09-11-2023 08:06:30 AM",
+        "last_seen": "09-11-2023 08:06:30 AM",
+        "breach_source": [
+            "Linkedin"
+        ],
+        "domain": "sampleme.local",
+        "type": "",
+        "remarks": "Linkedin Breach - nathan.good@sampleme.local",
+        "email": "nathan.good@sampleme.local",
+        "username": "nathan.good@sampleme.local",
+        "password": null,
+        "brand": "RiskAssess Demo",
+        "id": "BC-7FPF679C6",
+        "status": "new"
+    },
+    {
+        "first_seen": "15-10-2019 09:00:00 PM",
+        "last_seen": "15-10-2019 09:00:00 PM",
+        "breach_source": [
+            "PHP Freaks"
+        ],
+        "domain": "hackthisexample.local",
+        "type": "",
+        "remarks": "PHP Freaks Breach - acid@hackthisexample.local",
+        "email": "acid@hackthisexample.local",
+        "brand": "RiskAssess Demo",
+        "id": "BC-2EL85279F",
+        "status": "new"
+    },
+    {
+        "first_seen": "30-12-2016 10:00:00 AM",
+        "last_seen": "30-12-2016 10:00:00 AM",
+        "breach_source": [
+            "Nulled.io"
+        ],
+        "domain": "hackthisexample.local",
+        "type": "",
+        "remarks": "Nulled.io Breach - sam@hackthisexample.local",
+        "email": "sam@hackthisexample.local",
+        "brand": "RiskAssess Demo",
+        "id": "BC-1EF22EW64",
+        "status": "new"
+    }
+]

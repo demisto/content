@@ -1,0 +1,55 @@
+[
+    {
+        "name": "Linkedin Breach - nathan.good@sampleme.local",
+        "occurred": "2023-11-09T08:06:30+00:00",
+        "externalstatus": "new",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "",
+            "cbs_coa": "",
+            "cbs_updated_date": "2023-11-09T08:06:30+00:00",
+            "breach_source": [
+                "Linkedin"
+            ],
+            "domain": "sampleme.local",
+            "email": "nathan.good@sampleme.local",
+            "username": "nathan.good@sampleme.local",
+            "password": null
+        },
+        "rawJson": "{\"name\":\"Linkedin Breach - nathan.good@sampleme.local\",\"occurred\":\"2023-11-09T08:06:30+00:00\",\"type\":\"\",\"externalstatus\":\"new\",\"severity\":1,\"CustomFields\":{\"cbs_coa\":\"\",\"cbs_updated_date\":\"2023-11-09T08:06:30+00:00\",\"breach_source\":[\"Linkedin\"],\"domain\":\"sampleme.local\",\"email\":\"nathan.good@sampleme.local\",\"username\":\"nathan.good@sampleme.local\",\"password\":null}}"
+    },
+    {
+        "name": "PHP Freaks Breach - acid@hackthisexample.local",
+        "occurred": "2019-10-15T21:00:00+00:00",
+        "externalstatus": "new",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "",
+            "cbs_coa": "",
+            "cbs_updated_date": "2019-10-15T21:00:00+00:00",
+            "breach_source": [
+                "PHP Freaks"
+            ],
+            "domain": "hackthisexample.local",
+            "email": "acid@hackthisexample.local"
+        },
+        "rawJson": "{\"name\":\"PHP Freaks Breach - acid@hackthisexample.local\",\"occurred\":\"2019-10-15T21:00:00+00:00\",\"type\":\"\",\"externalstatus\":\"new\",\"severity\":1,\"CustomFields\":{\"cbs_coa\":\"\",\"cbs_updated_date\":\"2019-10-15T21:00:00+00:00\",\"breach_source\":[\"PHP Freaks\"],\"domain\":\"hackthisexample.local\",\"email\":\"acid@hackthisexample.local\"}}"
+    },
+    {
+        "name": "Nulled.io Breach - sam@hackthisexample.local",
+        "occurred": "2016-12-30T10:00:00+00:00",
+        "externalstatus": "new",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "",
+            "cbs_coa": "",
+            "cbs_updated_date": "2016-12-30T10:00:00+00:00",
+            "breach_source": [
+                "Nulled.io"
+            ],
+            "domain": "hackthisexample.local",
+            "email": "sam@hackthisexample.local"
+        },
+        "rawJson": "{\"name\":\"Nulled.io Breach - sam@hackthisexample.local\",\"occurred\":\"2016-12-30T10:00:00+00:00\",\"type\":\"\",\"externalstatus\":\"new\",\"severity\":1,\"CustomFields\":{\"cbs_coa\":\"\",\"cbs_updated_date\":\"2016-12-30T10:00:00+00:00\",\"breach_source\":[\"Nulled.io\"],\"domain\":\"hackthisexample.local\",\"email\":\"sam@hackthisexample.local\"}}"
+    }
+]

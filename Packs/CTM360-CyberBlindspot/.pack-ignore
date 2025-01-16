@@ -8,6 +8,11 @@ ignore=IF115
 ignore=IF115
 [file:incidentfields-Potential_Attack.json]
 ignore=IF115
+[file:incidentfields-Module.json]
+ignore=IF115
+
+[file:playbook-CyberBlindspot_Incident_Management_V2.yml]
+ignore=PB106
 
 [known_words]
 D

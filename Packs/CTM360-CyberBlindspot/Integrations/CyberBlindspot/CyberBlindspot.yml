@@ -16,6 +16,20 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+- additionalinfo: "Choose the module you want to use: Incidents, or Leaks."
+  defaultvalue: Incidents
+  display: Module To Use
+  name: module_to_use
+  options:
+  - Incidents
+  - Compromised Cards
+  - Breached Credentials
+  - Domain Infringement
+  - Subdomain Infringement
+  type: 15
+  hidden:
+  - marketplacev2
+  required: false
 - defaultvalue: 7 days
   display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
   additionalinfo: The time the incidents should be fetched starting from.
@@ -115,12 +129,42 @@ script:
       description: Incident type on remote server.
     - contextPath: CyberBlindspot.RemoteIncident.remarks
       description: Remarks about the incident.
-    - contextPath: CyberBlindspot.RemoteIncident.created_date
+    - contextPath: CyberBlindspot.RemoteIncident.first_seen
       description: The creation date of the incident.
-    - contextPath: CyberBlindspot.RemoteIncident.updated_date
+    - contextPath: CyberBlindspot.RemoteIncident.last_seen
       description: The date the incident last got updated.
     - contextPath: CyberBlindspot.RemoteIncident.timestamp
       description: The timestamp of when the record was created.
+
+    - contextPath: CyberBlindspot.RemoteIncident.card_number
+      description: The compromised card's number.
+    - contextPath: CyberBlindspot.RemoteIncident.cvv
+      description: The compromised card's Card Verification Value (CVV).
+    - contextPath: CyberBlindspot.RemoteIncident.expiry_month
+      description: The compromised card's expiration month.
+    - contextPath: CyberBlindspot.RemoteIncident.expiry_year
+      description: The compromised card's expiration year.
+
+    - contextPath: CyberBlindspot.RemoteIncident.breach_source
+      description: The source of breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.domain
+      description: The domain related to the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.email
+      description: Email found in the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.username
+      description: Username found in the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.password
+      description: Password found in the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.executive_name
+      description: Executive member's name related to the breached data.
+
+    - contextPath: CyberBlindspot.RemoteIncident.confirmation_time
+      description: The time of infringement confirmation.
+    - contextPath: CyberBlindspot.RemoteIncident.risks
+      description: The potential difficulties carried by the infringement.
+    - contextPath: CyberBlindspot.RemoteIncident.incident_status
+      description: The status of the infringement incident.
+
   - name: get-remote-data
     arguments:
     - description: The incident ID.

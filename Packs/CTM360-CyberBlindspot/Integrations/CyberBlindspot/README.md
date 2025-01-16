@@ -4,18 +4,19 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 ## Configure CTM360 CyberBlindspot in Cortex
 
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
+| Module To Use | Choose the module you want to use: Incidents, or Leaks. | False |
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
 | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
 | Fetch incidents |  | False |
-| Date From | Set the date/time incidents should be fetched from \(setting this will always get incidents from this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
-| Date To | Set the date/time incidents should be fetched up to \(setting this will always get incidents before this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Incident type |  |  |
+| Incident type |  | False |
+
 
 
 ## Commands
@@ -203,43 +204,24 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.status | unknown | The current status of the incident on remote server. | 
 | CyberBlindspot.RemoteIncident.severity | unknown | The severity of the incident. | 
 | CyberBlindspot.RemoteIncident.subject | unknown | Asset or title of incident. | 
-| CyberBlindspot.RemoteIncident.type | unknown | Incident type. | 
+| CyberBlindspot.RemoteIncident.type | unknown | Incident type on remote server. | 
 | CyberBlindspot.RemoteIncident.remarks | unknown | Remarks about the incident. | 
-| CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident. | 
-| CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated. | 
+| CyberBlindspot.RemoteIncident.first_seen | unknown | The creation date of the incident. | 
+| CyberBlindspot.RemoteIncident.last_seen | unknown | The date the incident last got updated. | 
 | CyberBlindspot.RemoteIncident.timestamp | unknown | The timestamp of when the record was created. | 
-
-#### Command example
-```!ctm360-cbs-incident-details ticketId="COMY24510321162"```
-#### Context Example
-```json
-{
-    "CyberBlindspot": {
-        "RemoteIncident": {
-            "brand": "Mock Brand",
-            "class": "Link",
-            "coa": "Member Side Action",
-            "created_date": "04-01-2024 04:55:50 AM",
-            "id": "COMY24510321162",
-            "remarks": "New leaked_credential with severity High found",
-            "severity": "High",
-            "status": "Closed",
-            "subject": "157 customer credentials compromised (14dfy73)",
-            "timestamp": 1704344150478,
-            "type": "Leaked Credential",
-            "updated_date": "04-01-2024 07:51:42 AM"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
->|brand|class|coa|created_date|id|remarks|severity|status|subject|timestamp|type|updated_date|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| Mock Brand | Link | Member Side Action | 04-01-2024 04:55:50 AM | COMY24510321162 | New leaked_credential with severity High found | High | Closed | 157 customer credentials compromised (14dfy73) | 1704344150478 | Leaked Credential | 04-01-2024 07:51:42 AM |
-
+| CyberBlindspot.RemoteIncident.card_number | unknown | The compromised card's number. | 
+| CyberBlindspot.RemoteIncident.cvv | unknown | The compromised card's Card Verification Value (CVV). | 
+| CyberBlindspot.RemoteIncident.expiry_month | unknown | The compromised card's expiration month. | 
+| CyberBlindspot.RemoteIncident.expiry_year | unknown | The compromised card's expiration year. | 
+| CyberBlindspot.RemoteIncident.breach_source | unknown | The source of breached data. | 
+| CyberBlindspot.RemoteIncident.domain | unknown | The domain related to the breached data. | 
+| CyberBlindspot.RemoteIncident.email | unknown | Email found in the breached data. | 
+| CyberBlindspot.RemoteIncident.username | unknown | Username found in the breached data. | 
+| CyberBlindspot.RemoteIncident.password | unknown | Password found in the breached data. | 
+| CyberBlindspot.RemoteIncident.executive_name | unknown | Executive member's name related to the breached data. | 
+| CyberBlindspot.RemoteIncident.confirmation_time | unknown | The time of infringement confirmation. | 
+| CyberBlindspot.RemoteIncident.risks | unknown | The potential difficulties carried by the infringement. | 
+| CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. |
 
 ### get-remote-data
 
