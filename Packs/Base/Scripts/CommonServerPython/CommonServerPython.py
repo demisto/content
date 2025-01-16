@@ -12636,6 +12636,12 @@ def content_profiler(func):
 
 
 def find_and_remove_sensitive_text(text, pattern):
+    """ Removed function due to preformance issue.
+
+    Args:
+        text (_type_): string to check
+        pattern (_type_): pattern to check
+    """
     return
 
 
