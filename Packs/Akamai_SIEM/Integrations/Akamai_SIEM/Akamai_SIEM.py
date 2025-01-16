@@ -563,49 +563,6 @@ BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
 MAX_ALLOWED_CONCURRENT_TASKS = 10000
 
 
-async def get_mock_events_with_offset_aiohttp(
-    config_ids: str,
-    offset: str | None = '',
-    limit: int = 200000,
-    from_epoch: str = '',
-    counter: int = 0
-) -> tuple[list[str], str | None]:
-    params: dict[str, int | str] = {
-        'limit': limit
-    }
-    if offset:
-        demisto.info(f"Running in interval = {counter}. received {offset=} will run an offset based request.")
-        params["offset"] = offset
-    else:
-        from_param = int(from_epoch)
-        params["from"] = from_param
-        demisto.info(f"Running in interval = {counter}. didn't receive offset. will run time based request with {from_param=}.")
-
-    demisto.info(f"Running in interval = {counter}. Init session and sending request to Akamai.")
-    url = "https://edl-viso-qb8hymksjijlrdzyknr7rq.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_1/"
-    headers = {
-        'Authorization': 'Basic YTph',
-    }
-    async with aiohttp.ClientSession(base_url=url, headers=headers,
-                                     trust_env=True) as session, session.get(url=config_ids, params=params) as response:
-        try:
-            response.raise_for_status()  # Check for any HTTP errors
-            raw_response = await response.text()
-        except aiohttp.ClientResponseError as e:
-            raise DemistoException(f"Running in interval = {counter}. Error occurred when fetching from Akamai: {e.message}")
-
-    demisto.info(f"Running in interval = {counter}. Finished executing request to Akamai, processing")
-    events: list[str] = raw_response.split('\n')
-    offset = None
-    try:
-        offset_context = events.pop()
-        loaded_offset_context = json.loads(offset_context)
-        offset = loaded_offset_context.get("offset")
-    except Exception as e:
-        demisto.error(f"Running in interval = {counter}. couldn't decode offset with {offset_context=}, reason {e}")
-    return events, offset
-
-
 async def get_events_with_offset_aiohttp(
     client: Client,
     config_ids: str,
@@ -791,8 +748,7 @@ async def get_events_from_akamai(client: Client,
             demisto.info(f"Running in interval = {counter}. Testing for possible tasks qt overflow.")
             await wait_until_tasks_load_decrease(counter, max_concurrent_tasks)
             demisto.info(f"Running in interval = {counter}. Finished testing for possible tasks qt overflow.")
-            get_events_task = get_mock_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
-            # get_events_task = get_events_with_offset_aiohttp(client, config_ids, offset, page_size, from_epoch, counter=counter)
+            get_events_task = get_events_with_offset_aiohttp(client, config_ids, offset, page_size, from_epoch, counter=counter)
             events, offset = None, None
             events, offset = await get_events_task
             demisto.info(f"Running in interval = {counter}. got {len(events)} events and {offset=}.")
