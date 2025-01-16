@@ -50,8 +50,8 @@ set_demisto_arg("tags", "")
 set_demisto_arg("mailbox_location", "Processed_Reports")
 patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
 
-import CofenseTriagev2  # noqa: 402
-from CofenseTriagev2 import parse_triage_date  # noqa: 402
+import CofenseTriagev2  # noqa: E402
+from CofenseTriagev2 import parse_triage_date  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
