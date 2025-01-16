@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 ''' IMPORTS '''
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 from datetime import datetime
 from dateutil.parser import parse as parse_dt
 from pytz import utc as pyutc
@@ -41,14 +41,14 @@ class Client(BaseClient):
     """Client class to interact with Qintel APIs"""
 
     def __init__(self, base_url, verify=True, proxy=False, **kwargs):
-        super(Client, self).__init__(base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url, verify=verify, proxy=proxy)
 
         self._headers = {
             'User-Agent': USER_AGENT,
             'x-api-key': kwargs.get('token')
         }
 
-    def search(self, params: dict) -> Dict[str, Any]:
+    def search(self, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             params=params,
@@ -56,7 +56,7 @@ class Client(BaseClient):
             retries=5
         )
 
-    def ping(self) -> Dict[str, Any]:
+    def ping(self) -> dict[str, Any]:
         return self._http_request(
             method='GET',
         )
@@ -71,20 +71,21 @@ def test_module(client) -> str:
     try:
         client.search(search_params)
     except Exception as e:
-        return 'Test failed: {}'.format(e)
+        return f'Test failed: {e}'
 
     return 'ok'
 
 
 def _make_timestamp(ts):
     if not ts:
-        return
+        return None
 
     if isinstance(ts, int):
         return datetime.utcfromtimestamp(ts)
 
     if isinstance(ts, str):
         return parse_dt(ts).replace(tzinfo=pyutc)
+    return None
 
 
 def _make_dbot_score(itype, i, data):
@@ -121,8 +122,7 @@ def _process_ip_record(ip, data, return_data):
     as_owner = data.get('asn_name')
     if as_owner:
         asn_owner = as_owner.title()
-
-    return_data['IP']['as_owner'] = asn_owner
+        return_data['IP']['as_owner'] = asn_owner
 
     tags = data.get('tags')
     if tags:
@@ -146,7 +146,7 @@ def _process_ip_record(ip, data, return_data):
 
 def _process_ip_data(data, ip):
 
-    return_data: Dict = {'IP': {}, 'Qintel': {}}
+    return_data: dict = {'IP': {}, 'Qintel': {}}
 
     _process_ip_record(ip, data, return_data)
 
