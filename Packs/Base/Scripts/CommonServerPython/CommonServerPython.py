@@ -1615,19 +1615,6 @@ def stringUnEscape(st):
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
-def doubleBackslashes(st):
-    """
-       Double any backslashes in the given string if it contains two backslashes.
-
-       :type st: ``str``
-       :param st: The string to be modified (required).
-
-       :return: A modified string with doubled backslashes.
-       :rtype: ``str``
-    """
-    return st.replace('\\', '\\\\')
-
-
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1708,7 +1695,6 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
-                to_add.append(doubleBackslashes(a))
                 js = json.dumps(a)
                 if js.startswith('"'):
                     js = js[1:]
@@ -12673,23 +12659,23 @@ def find_and_remove_sensitive_text(text, pattern):
     :rtype: ``None``
     """
 
-    sensitive_pattern = re.compile(pattern)
-    matches = sensitive_pattern.findall(text)
-    if not matches:
-        return
+    # sensitive_pattern = re.compile(pattern)
+    # matches = sensitive_pattern.findall(text)
+    # if not matches:
+    #     return
 
-    for match in matches:
-        # in case the regex serches for a group pattern
-        if isinstance(match, tuple):
-            sensitive_text = match[1]
-        else:
-            # in case the regex serches for a specific word
-            sensitive_text = match
-        add_sensitive_log_strs(sensitive_text)
+    # for match in matches:
+    #     # in case the regex serches for a group pattern
+    #     if isinstance(match, tuple):
+    #         sensitive_text = match[1]
+    #     else:
+    #         # in case the regex serches for a specific word
+    #         sensitive_text = match
+    #     add_sensitive_log_strs(sensitive_text)
     return
 
 
-from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402the
+from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
