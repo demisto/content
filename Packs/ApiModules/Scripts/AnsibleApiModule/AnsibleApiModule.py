@@ -374,7 +374,7 @@ def generic_ansible(integration_name: str, command: str,
             if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)
     elapsed_time = time.time() - start_time
-    demisto.debug(f"generic_ansible-Succeed to gor over events in r.events, took {elapsed_time:.2f} seconds to execute.")
+    demisto.debug(f"generic_ansible-Succeed to go over events in r.events, took {elapsed_time:.2f} seconds to execute.")
     demisto.debug("generic_ansible-Finished successfully.")
     return CommandResults(
         readable_output=readable_output,
