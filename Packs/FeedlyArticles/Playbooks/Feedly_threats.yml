@@ -1,6 +1,5 @@
-id: 5e043079-e3a4-44b4-863f-80774c07c1e7
-version: 13
-vcShouldKeepItemLegacyProdMachine: false
+id: Feedly threats
+version: -1
 name: Feedly threats
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -263,3 +263,7 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: Links threat indicators to the report incident

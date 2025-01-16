@@ -6,7 +6,7 @@
     "name": "Feedly Report",
     "prevName": "Feedly Report",
     "color": "#F8E7A5",
-    "playbookId": "5e043079-e3a4-44b4-863f-80774c07c1e7",
+    "playbookId": "Feedly threats",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -20,7 +20,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "e53027fa-56c1-4521-8c38-822af5c0f6de",
+    "layout": "Feedly Report",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
