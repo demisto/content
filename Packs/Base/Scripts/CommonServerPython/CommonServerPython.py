@@ -12636,20 +12636,6 @@ def content_profiler(func):
 
 
 def find_and_remove_sensitive_text(text, pattern):
-
-    # sensitive_pattern = re.compile(pattern)
-    # matches = sensitive_pattern.findall(text)
-    # if not matches:
-    #     return
-
-    # for match in matches:
-    #     # in case the regex serches for a group pattern
-    #     if isinstance(match, tuple):
-    #         sensitive_text = match[1]
-    #     else:
-    #         # in case the regex serches for a specific word
-    #         sensitive_text = match
-    #     add_sensitive_log_strs(sensitive_text)
     return
 
 
