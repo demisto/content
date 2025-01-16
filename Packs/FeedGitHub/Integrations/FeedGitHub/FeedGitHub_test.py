@@ -1,3 +1,5 @@
+import base64
+
 import pytest
 
 
@@ -49,11 +51,20 @@ def test_get_content_files_from_repo(mocker):
     params = {"feedType": "IOCs", "extensions_to_fetch": ["txt"]}
     relevant_files = util_load_json("test_data/relevant-files.json")
     # return_data = util_load_json("test_data/content_files_from_repo.json")
-    malformed_string = "QmFzZTY0IGVuY29kZWQgZHVtbXkgY29udGVudCBmb3IgdGVzdGluZyBwdXJw\n" \
-                       "b3Nlcy4gU2ltcGxlIGNvbnRlbnQgdG8gcmVwcmVzZW50IGZha2UgaW5mb3Jt\n" \
-                       "YXRpb24gd2l0aCBwbGFjZWhvbGRlcnMgYW5kIGdlbmVyaWMgZGF0YS4gQ29u\n" \
-                       "dGFjdCB5b3VyIGFkbWluaXN0cmF0b3IgZm9yIG1vcmUgaW5mb3JtYXRpb24u\nCg"
-    return_data = {"content": malformed_string.encode('utf-8')}
+    return_data = {
+        "content": base64.b64encode(
+            b"2023-02-08 (WEDNESDAY) - COBALT STRIKE FROM ICEDID (BOKBOT) INFECTION\n\n"
+            b"REFERENCE:\n\n"
+            b"- https://twitter.com/Unit42_Intel/status/1623707361184477185\n\n"
+            b"NOTES:\n\n"
+            b"- IcedID infection generated using a OneNote file reported earlier today\n\n"
+            b"ICEDID TRAFFIC:\n\n"
+            b"- 80.66.88[.]143 port 80 - ehonlionetodo[.]com\n"
+            b"- GET /\n"
+            b"COBALT STRIKE TRAFFIC:\n\n"
+            b"- 167.172.154[.]189 port 80 - GET /36.ps1\n"
+        ).decode('utf-8')
+    }
     mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
     assert content_files == util_load_json(
