@@ -47,12 +47,15 @@ class Client:
             "sysparm_query": f"sys_created_on>{from_time}",
             "sysparm_no_count": True
         }
+        demisto.debug("##### Starting the search request with a 1 min timeout #####")
         res = self.sn_client.http_request(
             method="GET",
             full_url=f"{self.api_server_url}{URL[log_type]}",
             url_suffix=None,
             params=remove_empty_elements(params),
+            timeout=60
         )
+        demisto.debug("##### The search request has finished #####")
         return res.get("result")
 
 
