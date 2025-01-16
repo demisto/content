@@ -5,17 +5,17 @@ Playbook Stages:
 Investigation:
 During the alert investigation, the playbook will perform the following:
 
-- Searches for XSIAM prevention alerts with the same causality process ID.
-- Checks if the causality|actor image has bad reputation or is not signed.
-- Checks if malicious|suspicious patterns found in the command line.
-- Searches for XSIAM insights alerts indicating a suspicious activity.
+- Searches for Cortex XSIAM prevention alerts with the same causality process ID.
+- Checks if the causality|actor image has a bad reputation or is not signed.
+- Checks if malicious|suspicious patterns were found in the command line.
+- Searches for Cortex XSIAM insights alerts indicating a suspicious activity.
 
 
 Remediation:
 
 - Automatically terminate the causality process.
 - Quarantine the causality|actor image (requires analyst approval).
-- Automatically Close the alert.
+- Automatically close the alert.
 
 ## Dependencies
 
