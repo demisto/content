@@ -249,6 +249,10 @@ def construct_generic_filter_condition(
 
     Returns:
         str: An XML string representing the FilterCondition element.
+
+    Example:
+        >>> construct_generic_filter_condition(FilterConditionTypes.text, 'Equals', 'name', '123', 'John')
+        '<TextFilterCondition><Operator>Equals</Operator><Field name="name">123</Field><Value>John</Value></TextFilterCondition>'
     """
     root = ET.Element(condition_type.value)
 
@@ -274,6 +278,10 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
 
     Returns:
         str: An XML string representing the ContentFilterCondition element.
+
+    Example:
+        >>> construct_content_filter_condition('Equals', '123', 'test_value')
+        '<ContentFilterCondition><Level>123</Level><Operator>Equals</Operator><Values><Value>test_value</Value></Values></ContentFilterCondition>'
     """
     root = ET.Element(FilterConditionTypes.content.value)
 
@@ -296,6 +304,10 @@ def construct_operator_logic(logical_operator: str | None, conditions_count: int
 
     Returns:
         str: An XML string representing the OperatorLogic element.
+
+    Example:
+        >>> construct_operator_logic('AND', 4)
+        '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>'
     """
     if not logical_operator or not logical_operator.strip():
         return ''
@@ -1687,7 +1699,7 @@ def is_valid_xml(xml_document: str, blacklisted_tags: list[str] | None = None) -
 
 
 def search_records_command(client: Client, args: dict[str, str]):
-    app_id = args["applicationId"]  # required
+    app_id = args["applicationId"]
     field_to_search = args.get("fieldToSearchOn")
     field_to_search_by_id = args.get("fieldToSearchById")
     search_value = args.get("searchValue")
