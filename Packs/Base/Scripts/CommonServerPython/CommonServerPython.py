@@ -12635,7 +12635,6 @@ def content_profiler(func):
     return profiler_wrapper
 
 
-
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################

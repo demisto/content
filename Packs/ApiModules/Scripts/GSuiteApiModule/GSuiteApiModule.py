@@ -137,7 +137,7 @@ class GSuiteClient:
             raise DemistoException(COMMON_MESSAGES['TRANSPORT_ERROR'].format(error))
         except exceptions.RefreshError as error:
             if error.args:
-                 raise DemistoException(COMMON_MESSAGES['REFRESH_ERROR'].format(error.args[0]))
+                raise DemistoException(COMMON_MESSAGES['REFRESH_ERROR'].format(error.args[0]))
             raise DemistoException(error)
         except TimeoutError as error:
             raise DemistoException(COMMON_MESSAGES['TIMEOUT_ERROR'].format(error))

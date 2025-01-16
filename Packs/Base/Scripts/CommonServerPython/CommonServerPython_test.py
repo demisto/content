@@ -10010,5 +10010,3 @@ def test_get_engine_base_url(mocker):
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     res = get_engine_base_url('1111')
     assert res == '11.111.111.33:443'
-
-
