@@ -81,8 +81,8 @@ class CoreClient(BaseClient):
             default.
         '''
         if self.is_core and not IS_CORE_AVAILABLE:
-            raise DemistoException("Failed due to one of the following options: the integration can not be cloned,"
-                                   "please use only the built-in version OR the Server version of the tenant is below"
+            raise DemistoException("Failed due to one of the following options: The integration is cloned but can not be,"
+                                   " please use only the built-in version OR the Server version of the tenant is below"
                                    f" {SERVER_VERSION}-{BUILD_VERSION}.")
         if (not IS_CORE_AVAILABLE):
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
