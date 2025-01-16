@@ -791,8 +791,8 @@ async def get_events_from_akamai(client: Client,
             demisto.info(f"Running in interval = {counter}. Testing for possible tasks qt overflow.")
             await wait_until_tasks_load_decrease(counter, max_concurrent_tasks)
             demisto.info(f"Running in interval = {counter}. Finished testing for possible tasks qt overflow.")
-            # get_events_task = get_mock_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
-            get_events_task = get_events_with_offset_aiohttp(client, config_ids, offset, page_size, from_epoch, counter=counter)
+            get_events_task = get_mock_events_with_offset_aiohttp(config_ids, offset, page_size, from_epoch, counter=counter)
+            # get_events_task = get_events_with_offset_aiohttp(client, config_ids, offset, page_size, from_epoch, counter=counter)
             events, offset = None, None
             events, offset = await get_events_task
             demisto.info(f"Running in interval = {counter}. got {len(events)} events and {offset=}.")
@@ -975,7 +975,7 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     if data_size_expected_to_split_evenly:
-        data_chunks = split_data_to_chunks_evenly(data, chunk_size)
+        data_chunks = split_data_by_slices(data, chunk_size)
     else:
         data_chunks = split_data_to_chunks(data, chunk_size)
 
@@ -1016,7 +1016,7 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
     return
 
 
-def split_data_to_chunks_evenly(data, target_chunk_size):  # pragma: no cover
+def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
     """
     Splits a string/list of data into chunks of an approximately specified size.
     The actual size can be lower. the slicing is based on the assumption that all entries have the same size.
@@ -1197,6 +1197,10 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
+        if params.get("isFetchEvents", False) and params.get("longRunning", False):
+            raise DemistoException("Cannot run both fetch events and longg-running command simultaneously.\n"
+                                   "Please make sure to set either isFetchEvents or longRunning to false in"
+                                   " the integration configuration.")
         if params.get("isFetch") and not (0 < (arg_to_number(params.get('fetchLimit')) or 20) <= 2000):
             raise DemistoException('Fetch limit must be an integer between 1 and 2000')
 

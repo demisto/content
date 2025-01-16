@@ -130,15 +130,15 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- display: Long running Beta
+- display: Long running instance
   name: longRunning
-  additionalinfo: This is a beta feature for testing new mechanism for fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features. 
+  additionalinfo: This is a beta feature for high performance fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features.
   type: 8
   required: false
   hidden:
   - xsoar
   section: Collect
-- display: Long running Page Size 
+- display: Page Size - high performance mode
   name: beta_page_size
   type: 0
   defaultvalue: '200000'
