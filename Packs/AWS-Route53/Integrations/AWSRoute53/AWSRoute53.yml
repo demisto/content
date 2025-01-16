@@ -416,4 +416,4 @@ script:
   subtype: python3
   type: python
 tests:
-- playbook-create_delete_record_Test.yml
+- playbook-create_delete_record_Test
