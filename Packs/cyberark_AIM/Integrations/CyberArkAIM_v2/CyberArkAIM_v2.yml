@@ -86,7 +86,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-autoUpdateDockerImage: false  
 tests:
 - No tests
 fromversion: 5.0.0
