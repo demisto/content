@@ -262,7 +262,7 @@ def filter_playbooks_failures(response: list | None) -> list | None:
         The filtered list of tasks. Tasks of type "playbook" whose names appear in the ancestors of other tasks are removed.
     """
 
-    if isinstance(response) != list:
+    if not isinstance(response, list):
         return response
 
     ancestors = set()
