@@ -1,5 +1,5 @@
 id: dde79c86-9114-4312-8990-943064f129e8
-version: 95
+version: 97
 vcShouldKeepItemLegacyProdMachine: false
 name: Gatewatcher AionIQ - Malcore Alert Incident File Virus Total Reputation
 starttaskid: "0"
@@ -171,17 +171,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8cf589b5-610b-4872-8c2b-2978b952360a
+    taskid: 70d6f7f6-9bb0-4373-895b-c714e761ffa5
     type: regular
     task:
-      id: 8cf589b5-610b-4872-8c2b-2978b952360a
+      id: 70d6f7f6-9bb0-4373-895b-c714e761ffa5
       version: -1
       name: Check Malcore File SHA256 on Virus Total
       description: Checks the file reputation of the specified hash.
-      script: VirusTotal (API v3)|||file
+      script: VirusTotal|||file
       type: regular
       iscommand: true
-      brand: VirusTotal (API v3)
+      brand: VirusTotal
     scriptarguments:
       file:
         simple: ${File.SHA256}
