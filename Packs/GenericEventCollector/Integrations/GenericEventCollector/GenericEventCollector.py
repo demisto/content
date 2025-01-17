@@ -64,7 +64,6 @@ POSSIBLE_TIMESTAMP_FIELDS = [
     'eventdate',
     'insert_at',
     'insert_time',
-
 ]
 KNOWN_TIME_FORMATS = [
     "%d/%b/%Y:%H:%M:%S",
@@ -93,8 +92,6 @@ KNOWN_TIME_FORMATS = [
     "%d %b %Y",
     "%Y%m%d"
 ]
-VENDOR = 'generic'
-PRODUCT = 'collector'
 
 
 def str2bool(s: str) -> bool:
