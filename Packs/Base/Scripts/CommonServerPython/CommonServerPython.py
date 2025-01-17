@@ -47,7 +47,8 @@ _MODULES_LINE_MAPPING = {
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
-# So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
+MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
+# So if you're using a "heavy" API it is recommended to use maximum of 9MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -57,7 +58,6 @@ SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
-MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -1616,19 +1616,6 @@ def stringUnEscape(st):
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
-def doubleBackslashes(st):
-    """
-       Double any backslashes in the given string if it contains two backslashes.
-
-       :type st: ``str``
-       :param st: The string to be modified (required).
-
-       :return: A modified string with doubled backslashes.
-       :rtype: ``str``
-    """
-    return st.replace('\\', '\\\\')
-
-
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1709,7 +1696,6 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
-                to_add.append(doubleBackslashes(a))
                 js = json.dumps(a)
                 if js.startswith('"'):
                     js = js[1:]
@@ -12655,47 +12641,7 @@ def content_profiler(func):
     return profiler_wrapper
 
 
-def find_and_remove_sensitive_text(text, pattern):
-    r"""
-    Finds all appearances of sensitive information in a string using regex and adds the sensitive
-    information to the list of strings that should not appear in any logs.
-    The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
-        Examples:
-    >>> text = "first secret is ID123 and the second secret is id321 and the token: ABC"
-    >>> pattern = r'(token:\s*)(\S+)'  # Capturing groups: (token:\s*) and (\S+)
-    >>> find_and_remove_sensitive_text(text, pattern)
-    Sensitive text added to be masked in the logs: ABC
-
-    >>> pattern = r'\bid\w*\b'  # Match words starting with "id", case insensitive
-    >>> find_and_remove_sensitive_text(text, pattern)
-    Sensitive text added to be masked in the logs: ID123 and id321
-
-    :param text: The input text containing the sensitive information.
-    :type text: str
-    :param pattern: The regex pattern to match the sensitive information.
-    :type pattern: str
-
-    :return: None
-    :rtype: ``None``
-    """
-
-    sensitive_pattern = re.compile(pattern)
-    matches = sensitive_pattern.findall(text)
-    if not matches:
-        return
-
-    for match in matches:
-        # in case the regex serches for a group pattern
-        if isinstance(match, tuple):
-            sensitive_text = match[1]
-        else:
-            # in case the regex serches for a specific word
-            sensitive_text = match
-        add_sensitive_log_strs(sensitive_text)
-    return
-
-
-from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402the
+from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
