@@ -132,7 +132,7 @@ class MatiIndicator:
                                                         entity_a_type=self.ioc_type, entity_b=entity_b,
                                                         entity_b_type="Threat Actor"))
             elif association_type == "malware":
-                relationships.append(EntityRelationship(name="indicates", reverse_name="indicated-by",
+                relationships.append(EntityRelationship(name="indicates", reverse_name="indicator-of",
                                                         entity_a=self.ioc_value, entity_a_type=self.ioc_type,
                                                         entity_b=entity_b, entity_b_type="Malware"))
         return relationships
@@ -234,7 +234,6 @@ class MatiIndicator:
         return indicator_object
 
     def build_markdown(self) -> str:
-        ioc_type = self.ioc_data.get("type", "")
         categories = set()
         for t in self.build_threat_types():
             categories.add(t.threat_category)
@@ -251,8 +250,7 @@ class MatiIndicator:
         }
 
         return tableToMarkdown(f"Mandiant Advantage Threat Intelligence information for {self.ioc_value}\n"
-                               f"[View on Mandiant Advantage]({ADV_BASE_URL}/indicator/"
-                               f"{ioc_type}/{self.get_stix_id()})", table)
+                               f"[View on Mandiant Advantage]({ADV_BASE_URL}/indicator/{self.get_stix_id()})", table)
 
     def build_indicator_command_result(self) -> CommandResults:
         return CommandResults(
@@ -423,7 +421,7 @@ class MatiThreatActor:
 
     def build_vulnerbility_relationships(self) -> Generator:
         for vuln in self.actor_data.get("cve", []):
-            yield EntityRelationship(name="exploits", reverse_name="exploited-by", entity_a=self.actor_name,
+            yield EntityRelationship(name="exploits", reverse_name="used-by", entity_a=self.actor_name,
                                      entity_a_type="Threat Actor", entity_b=vuln.get("cve_id", ""),
                                      entity_b_type="CVE").to_indicator()
 
@@ -531,7 +529,7 @@ class MatiMalware:
 
     def build_vulnerability_relationships(self) -> Generator:
         for vuln in self.malware_data.get("cve", []):
-            yield EntityRelationship(name="exploits", reverse_name="exploited-by", entity_a=self.malware_name,
+            yield EntityRelationship(name="exploits", reverse_name="used-by", entity_a=self.malware_name,
                                      entity_a_type="Malware", entity_b=vuln.get("cve_id", ""),
                                      entity_b_type="CVE").to_indicator()
 
@@ -690,12 +688,12 @@ class MatiCve:
         relationships = []
 
         for a in self.cve_data.get("associated_actors", []):
-            relationships.append(EntityRelationship(name="exploited-by", reverse_name="exploits", entity_a=self.cve_id,
+            relationships.append(EntityRelationship(name="used-by", reverse_name="exploits", entity_a=self.cve_id,
                                                     entity_a_type="Indicator", entity_b=a.get("name", ""),
                                                     entity_b_type="Threat Actor"))
 
         for m in self.cve_data.get("associated_malware", []):
-            relationships.append(EntityRelationship(name="exploited-by", reverse_name="exploits", entity_a=self.cve_id,
+            relationships.append(EntityRelationship(name="used-by", reverse_name="exploits", entity_a=self.cve_id,
                                                     entity_a_type="Indicator", entity_b=m.get("name", ""),
                                                     entity_b_type="Malware"))
         return relationships
