@@ -122,6 +122,12 @@ configuration:
     required: true
     additionalinfo: 'The name of the event creation time in the response data, e.g. "timestamp" or "created_at".'
   - section: Connect
+    display: events_keys
+    name: events_keys
+    type: 0
+    required: true
+    additionalinfo: 'Where within the response object to find the events list.'
+  - section: Connect
     display: "Connection Test Type"
     name: test_type
     defaultvalue: connection
