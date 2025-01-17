@@ -142,6 +142,7 @@ class GSuiteClient:
                 find_and_remove_sensitive_text(text=error_msg,
                                                pattern=r'(token:\s*)(\S+)')
                 raise DemistoException(COMMON_MESSAGES['REFRESH_ERROR'].format(error_msg))
+            raise DemistoException(error)
         except TimeoutError as error:
             raise DemistoException(COMMON_MESSAGES['TIMEOUT_ERROR'].format(error))
         except Exception as error:
