@@ -57,7 +57,6 @@ SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
-MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -12060,13 +12059,8 @@ def split_data_to_chunks(data, target_chunk_size):
             yield chunk
             chunk = []
             chunk_size = 0
-        data_part_size = sys.getsizeof(data_part)
-        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
-            demisto.error("entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
-                                                                                                                       MAX_ALLOWED_ENTRY_SIZE))
-            continue
         chunk.append(data_part)
-        chunk_size += data_part_size
+        chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
