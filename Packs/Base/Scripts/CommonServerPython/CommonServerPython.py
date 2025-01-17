@@ -10786,7 +10786,7 @@ def support_multithreading():  # pragma: no cover
 def get_tenant_account_name():
     """Gets the tenant name from the server url.
 
-    :return: The account name.
+    :return: The account name testing testing.
     :rtype: ``str``
 
     """
