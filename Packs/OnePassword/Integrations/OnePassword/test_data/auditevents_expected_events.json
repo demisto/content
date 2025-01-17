@@ -1,0 +1,83 @@
+[
+    {
+        "uuid": "first event",
+        "timestamp": "2024-12-02T11:54:19.710457472Z",
+        "actor_details": {
+            "name": "Test User",
+            "email": "userA@example.com"
+        },
+        "action": "create",
+        "object_type": "device",
+        "aux_details": {
+            "name": "Test User",
+            "email": "userA@example.com"
+        },
+        "session": {
+            "login_time": "2024-12-02T11:54:19.693369325Z",
+            "ip": "8.8.8.8"
+        },
+        "location": {
+            "country": "Israel",
+            "region": "Tel Aviv",
+            "city": "Tel Aviv"
+        },
+        "actor_type": "user",
+        "_time": "2024-12-02T11:54:19Z",
+        "timestamp_ms": "2024-12-02T11:54:19.710457Z",
+        "SOURCE_LOG_TYPE": "AUDIT EVENTS"
+    },
+    {
+        "uuid": "middle event",
+        "timestamp": "2024-12-02T11:55:20.710457472Z",
+        "actor_details": {
+            "name": "Test User",
+            "email": "userA@example.com"
+        },
+        "action": "patch",
+        "object_type": "device",
+        "aux_details": {
+            "name": "Test User",
+            "email": "userA@example.com"
+        },
+        "session": {
+            "login_time": "2024-12-02T11:54:22.773369325Z",
+            "ip": "8.8.8.8"
+        },
+        "location": {
+            "country": "Israel",
+            "region": "Tel Aviv",
+            "city": "Tel Aviv"
+        },
+        "actor_type": "user",
+        "_time": "2024-12-02T11:55:20Z",
+        "timestamp_ms": "2024-12-02T11:55:20.710457Z",
+        "SOURCE_LOG_TYPE": "AUDIT EVENTS"
+    },
+    {
+        "uuid": "last event",
+        "timestamp": "2024-12-02T11:55:20.710457472Z",
+        "actor_details": {
+            "name": "Jenny Bee",
+            "email": "userB@example.com"
+        },
+        "action": "create",
+        "object_type": "device",
+        "aux_details": {
+            "name": "Jenny Bee",
+            "email": "userB@example.com"
+        },
+        "session": {
+            "login_time": "2024-12-02T11:55:20.693369325Z",
+            "ip": "7.7.7.7"
+        },
+        "location": {
+            "country": "United States",
+            "region": "California",
+            "city": "Santa Clara"
+        },
+        "actor_type": "user",
+        "_time": "2024-12-02T11:55:20Z",
+        "timestamp_ms": "2024-12-02T11:55:20.710457Z",
+        "SOURCE_LOG_TYPE": "AUDIT EVENTS"
+    }
+]
