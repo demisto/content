@@ -197,4 +197,4 @@ outputs:
 - contextPath: ${incident}
   description: Gatewatcher Alert Incident
   type: unknown
-quiet: true
+quiet: false
