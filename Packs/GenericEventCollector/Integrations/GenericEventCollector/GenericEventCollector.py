@@ -491,9 +491,9 @@ def main() -> None:
     params = demisto.params()
 
     # region Gets the service API url endpoint and method.
-    base_url = params.get('base_url')
-    endpoint = params.get('endpoint')
-    http_method = params.get('http_method')
+    base_url: str = params.get('base_url')
+    endpoint: str = params.get('endpoint')
+    http_method: str | None = params.get('http_method')
     demisto.debug(f"base url: {base_url}, endpoint: {endpoint}, http method: {http_method}")
     if not base_url:
         raise DemistoException('Base URL is missing')
@@ -501,7 +501,7 @@ def main() -> None:
         raise DemistoException('Endpoint is missing')
     if not http_method:
         raise DemistoException('HTTP method is missing')
-    if http_method not in ['GET', 'POST']:
+    if not http_method or http_method.upper() not in ['GET', 'POST']:
         raise DemistoException('HTTP method is not valid, please choose between GET and POST')
     # endregion
 
@@ -517,9 +517,9 @@ def main() -> None:
     # endregion
 
     # region Pagination logic
-    pagination_needed = str2bool(params.get('pagination_needed'))
-    pagination_field_name = params.get('pagination_field_name')
-    pagination_flag = params.get('pagination_flag')
+    pagination_needed: bool = str2bool(params.get('pagination_needed', 'false'))
+    pagination_field_name: str | None = params.get('pagination_field_name')
+    pagination_flag: str | None = params.get('pagination_flag')
     pagination_logic = {
         'pagination_needed': pagination_needed,
         'pagination_field_name': pagination_field_name,
@@ -536,10 +536,6 @@ def main() -> None:
 
     # region Gets the events keys
     events_keys: list[str] = argToList(params.get('events_keys'), '.')
-    if not events_keys:
-        raise DemistoException(
-            'Events keys are missing, please provide the keys to the events in the API response, '
-            'the format should be: key1.key2.key3')
     demisto.debug(f"Events keys: {events_keys}")
     # endregion
 
