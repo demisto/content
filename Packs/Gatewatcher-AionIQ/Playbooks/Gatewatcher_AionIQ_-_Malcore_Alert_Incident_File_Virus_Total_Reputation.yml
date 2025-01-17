@@ -93,7 +93,7 @@ tasks:
     scriptarguments:
       fileName:
         complex:
-          root: File
+          root: File.Name
           filters:
           - - operator: isNotEmpty
               left:
