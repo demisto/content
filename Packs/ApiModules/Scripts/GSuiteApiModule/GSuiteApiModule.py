@@ -143,7 +143,7 @@ class GSuiteClient:
             raise DemistoException(COMMON_MESSAGES['TIMEOUT_ERROR'].format(error))
         except Exception as error:
             raise DemistoException(error)
-#testing
+# testing
 
     @staticmethod
     def get_http_client(proxy: bool, verify: bool, timeout: int = 60) -> httplib2.Http:
