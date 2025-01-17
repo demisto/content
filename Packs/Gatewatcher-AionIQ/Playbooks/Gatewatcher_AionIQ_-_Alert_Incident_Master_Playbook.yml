@@ -1,0 +1,200 @@
+id: 10eb7c90-829f-4962-8b65-a32a38b0feb0
+version: 5
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: 1.3.0
+    fromServerVersion: 6.5.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Gatewatcher AionIQ - Alert Incident Master Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 86555362-4158-4946-8b02-e591bd7bc3b9
+    type: start
+    task:
+      id: 86555362-4158-4946-8b02-e591bd7bc3b9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bb86993b-f891-4f21-80fa-0106b22cf3fa
+    type: condition
+    task:
+      id: bb86993b-f891-4f21-80fa-0106b22cf3fa
+      version: -1
+      name: Is GCenter103 installed?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        simple: ${modules.brand}=="GCenter103"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 476235e3-5737-4973-8497-389526fc7f5e
+    type: regular
+    task:
+      id: 476235e3-5737-4973-8497-389526fc7f5e
+      version: -1
+      name: GCenter103 is missing
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: GCenter103 is missing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5a22d676-9bfb-4e3a-854a-146c6eda61f1
+    type: condition
+    task:
+      id: 5a22d676-9bfb-4e3a-854a-146c6eda61f1
+      version: -1
+      name: Is it a Malcore Alert?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.gatewatchereventmodule}
+            iscontext: true
+          right:
+            value:
+              simple: malcore
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e838ebb9-896a-4e42-8377-2a691cc9c995
+    type: playbook
+    task:
+      id: e838ebb9-896a-4e42-8377-2a691cc9c995
+      version: -1
+      name: Gatewatcher AionIQ - Malcore Alert Incident File Virus Total Reputation
+      playbookName: Gatewatcher AionIQ - Malcore Alert Incident File Virus Total Reputation
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 800,
+        "x": 240,
+        "y": -100
+      }
+    }
+  }
+inputs:
+- key: Gatewatcher Alert Incident
+  value:
+    simple: ${incident}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: ${incident}
+  description: Gatewatcher Alert Incident
+  type: unknown
+quiet: true
