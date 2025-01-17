@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+        "integrations": "qualys_fim",
+        "playbookID": "QualysFIM-Playbook"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
         },
@@ -1297,41 +1301,47 @@
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "6.1.0",
             "timeout": 1500,
-            "nightly": true
+            "nightly": true,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 2400
+            "timeout": 2400,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
@@ -1350,7 +1360,8 @@
             "integrations": "Panorama",
             "instance_names": "panorama_instance_best_practice",
             "playbookID": "Panorama Best Practise - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Tenable.io",
@@ -1413,7 +1424,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Test_EDL",
@@ -1449,13 +1461,15 @@
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Block IP - Generic V3_Test",
@@ -1465,7 +1479,8 @@
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Endpoint Malware Investigation - Generic - Test",
@@ -2993,7 +3008,8 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1500
+            "timeout": 1500,
+            "memory_threshold": 200
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
@@ -3002,7 +3018,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "timeout": 300
+            "timeout": 300,
+            "memory_threshold": 200
         },
         {
             "integrations": "Snowflake",
@@ -3263,7 +3280,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "fromversion": "4.5.0",
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "Flashpoint",
@@ -3330,7 +3348,8 @@
             "fromversion": "5.5.0",
             "timeout": 1500,
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama"
+            "instance_names": "palo_alto_panorama",
+            "memory_threshold": 200
         },
         {
             "integrations": "Elasticsearch v2",
@@ -3926,7 +3945,8 @@
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
             "fromversion": "5.5.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "Field polling test",
@@ -4887,10 +4907,11 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 160,
+            "memory_threshold": 250,
             "integrations": [
                 "CrowdStrike Falcon X"
-            ]
+            ],
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
@@ -5201,6 +5222,11 @@
         {
             "playbookID": "Test-CreateDBotScore-With-Reliability",
             "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "ValidateContent - Test",
+            "fromversion": "5.5.0",
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5677,7 +5703,8 @@
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
-            "fromversion": "6.9.0"
+            "fromversion": "6.9.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Secneurx Analysis",
@@ -5825,9 +5852,15 @@
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
-            "integrations": "AWS-SNS-Listener",
+            "integrations": [
+                "AWS-SNS-Listener",
+                "AWS - SNS"
+            ],
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener",
+            "instance_names": [
+                "AWS-SNS-Listener",
+                "AWSSNS"
+            ],
             "is_mockable": false
         },
         {
@@ -5878,6 +5911,7 @@
         }
     ],
     "skipped_tests": {
+        "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
@@ -6018,7 +6052,6 @@
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
-        "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode - Test": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
@@ -6067,9 +6100,14 @@
         "Netskope_V2_Test": "No instance - developed by Qmasters",
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
-        "BoxV2_TestPlaybook": "CRTX-145174"
+        "BoxV2_TestPlaybook": "CRTX-145174",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "CRTX-147998",
+        "QRadar_v3-test": "CRTX-141972",
+        "QRadar - Get Offense Logs Test": "CRTX-141972",
+        "QRadar Indicator Hunting Test": "CRTX-141972"
     },
     "skipped_integrations": {
+        "qualys_fim": "No Instance",
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
         "RedCanary": "No instance",
