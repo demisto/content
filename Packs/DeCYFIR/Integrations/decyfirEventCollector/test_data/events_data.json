@@ -1,0 +1,9 @@
+[
+    {
+        "event_type": "Access Logs",
+        "principal": "abc@cyfirma.com",
+        "action_type": "AUTHENTICATION_SUCCESS",
+        "IP": "000.00.00.000",
+        "event_date": "2025-01-09T14:05:26.000+00:00"
+    }
+]

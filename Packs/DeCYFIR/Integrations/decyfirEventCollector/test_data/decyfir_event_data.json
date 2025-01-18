@@ -1,0 +1,18 @@
+[
+    {
+        "principal": "abc@cyfirma.com",
+        "uid": null,
+        "event_type": "AUTHENTICATION_SUCCESS",
+        "ip": "000.00.00.000",
+        "event_date": "2025-01-09T14:05:26.000+00:00",
+        "name": "client_ip"
+    },
+    {
+        "principal": "absamw@cyfirma.com",
+        "uid": null,
+        "event_type": "AUTHENTICATION_ATTEMPT",
+        "ip": "000.00.00.000",
+        "event_date": "2025-01-09T14:05:26.000+00:00",
+        "name": "client_ip"
+    }
+]
