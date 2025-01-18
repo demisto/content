@@ -15,7 +15,7 @@ def test_fetch_events(mocker):
         base_url='test_url',
         verify=False,
     )
-    mocker.patch.object(Client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response['iocs'])
+    mocker.patch.object(Client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response)
     last_fetch = (datetime.now() - timedelta(days=2)).strftime(date_format)
     last_run = {
         'last_fetch': last_fetch
