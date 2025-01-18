@@ -56,7 +56,7 @@ script:
       name: limit
       required: false
     description: Gets events from DeCYFIR.
-    name: decyfir-get-events
+    name: get-decyfir-events
     example: "!get-decyfir-events"
   dockerimage: demisto/python3:3.10.14.101217
   isfetchevents: false
