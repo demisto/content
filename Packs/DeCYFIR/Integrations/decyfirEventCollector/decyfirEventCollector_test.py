@@ -1,4 +1,4 @@
-from decyfirEventCollector import Client, fetch_events
+from decyfirEventCollector import Client, fetch_events,VAR_ACCESS_LOGS
 from datetime import datetime, timedelta
 import json
 
@@ -6,6 +6,17 @@ def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
+def test_get_event_format(mocker):
+    mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
+    mock_pa_event_response = util_load_json('test_data/events_data.json')
+    client = Client(
+        base_url='test_url',
+        verify=False,
+    )
+    mocker.patch.object(Client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response)
+
+    data = client.get_event_format(mock_decyfir_event_response, VAR_ACCESS_LOGS)
+    assert data == mock_pa_event_response
 
 def test_fetch_events(mocker):
     mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
@@ -20,10 +31,10 @@ def test_fetch_events(mocker):
     last_run = {
         'last_fetch': last_fetch
     }
-    data = fetch_events(
+    last_fetch, events = fetch_events(
         client=client,
         decyfir_api_key='api_key',
-        first_fetch='30 days',
-        last_run=last_run, max_fetch=20,
+        first_fetch='1 days',
+        last_run=last_run, max_fetch=1,
     )
-    assert data.raw_response == mock_pa_event_response
+    assert events == mock_pa_event_response

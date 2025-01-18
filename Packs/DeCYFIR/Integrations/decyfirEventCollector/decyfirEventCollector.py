@@ -1,10 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+from typing import Any
 import urllib3
-
-import uuid
 
 urllib3.disable_warnings()
 
@@ -43,7 +41,7 @@ class Client(BaseClient):
             if event_type == VAR_ACCESS_LOGS:
                 for raw_data1 in events_raw_data:
                     data = {
-                    #    "id": uuid.uuid4(),
+                        #    "id": uuid.uuid4(),
                         "event_type": "Access Logs",
                         "principal": raw_data1.get("principal", ""),
                         "action_type": raw_data1.get("event_type", ""),
@@ -69,11 +67,11 @@ class Client(BaseClient):
                     final_data.append(data)
         return final_data
 
-    def get_decyfir_event_logs(self, after_val: int, decyfir_api_key: str, max_fetch):
+    def get_decyfir_event_logs(self, after_val: int, decyfir_api_key: str, max_fetch) -> list:
         size = max_fetch if max_fetch else MAX_EVENT_TO_FETCH
-        return_data = []
+        return_data: list = []
         for event_type in EVENT_TYPES:
-            current_page = 0
+            # current_page = 0
             # while True:
             request_params = {
                 "key": decyfir_api_key,
@@ -83,7 +81,7 @@ class Client(BaseClient):
             }
             response_data = self.request_decyfir_api(event_type, request_params)
             if response_data:
-                return_data = return_data + self.get_event_format(response_data, event_type)
+                return self.get_event_format(response_data, event_type)
         return return_data
 
 
@@ -98,7 +96,7 @@ def test_event_logs_command(client, decyfir_api_key):
         return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
 
 
-def fetch_events(client: Client, decyfir_api_key: str, last_run, max_fetch, first_fetch):
+def fetch_events(client: Client, decyfir_api_key: str, last_run, max_fetch, first_fetch) -> tuple[dict[str, str], list]:
     start_fetch = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
     start_fetch_timestamp_val: float = start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
     start_fetch_timestamp: int = int(start_fetch_timestamp_val * 1000)
@@ -138,15 +136,16 @@ def main():  # pragma: no cover
     first_fetch = params.get('first_fetch', '30 days').strip()
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch', 500))
+    should_push_events = argToBoolean(args.get('should_push_events', False))
 
     try:
         client = Client(base_url=decyfir_url, verify=verify_certificate, proxy=proxy)
 
         if demisto.command() == 'test-module':
             result = test_event_logs_command(client, decyfir_api_key)
-            demisto.results(result)
+            return_results(result)
 
-        elif demisto.command() in ['fetch-events', 'decyfir-get-events']:
+        elif demisto.command() in ['fetch-events', 'get-decyfir-events']:
             next_run, events = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -154,10 +153,11 @@ def main():  # pragma: no cover
                 decyfir_api_key=decyfir_api_key,
                 max_fetch=max_fetch
             )
-
             add_time_to_events(events)
             demisto.results(events)
-            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            if should_push_events:
+                add_time_to_events(events)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
         else:
