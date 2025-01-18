@@ -4,7 +4,7 @@ from CommonServerPython import *
 import re
 import json
 import base64
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from email.utils import parsedate_to_datetime, format_datetime
 import httplib2
 from httplib2 import socks
@@ -369,7 +369,7 @@ class Client:
             res = parsedate_to_datetime(date_part)
             if res.tzinfo is None:
                 # some headers may contain a non TZ date so we assume utc
-                res = res.replace(tzinfo=timezone.utc)
+                res = res.replace(tzinfo=UTC)
             return res
         except Exception as ex:
             demisto.debug(f'Failed parsing date from header value: [{header}]. Err: {ex}. Will ignore and continue.')
@@ -408,10 +408,10 @@ class Client:
             timestamp_len = len(str(int(time.time())))
             if len(str(internalDate)) > timestamp_len:
                 internalDate = (str(internalDate)[:timestamp_len])
-            return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
+            return datetime.fromtimestamp(int(internalDate), tz=UTC), True
         # we didn't get a date from anywhere
         demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
-        return datetime.now(tz=timezone.utc), False
+        return datetime.now(tz=UTC), False
 
     def get_email_context(self, email_data, mailbox) -> tuple[dict, dict, dict, datetime, bool]:
         """Get the email context from email data
@@ -543,7 +543,7 @@ class Client:
         Returns:
             datetime: datetime representation
         """
-        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=UTC)
 
     def mail_to_incident(self, msg, service, user_key) -> tuple[dict, datetime, bool]:
         """Parse an email message
@@ -771,7 +771,7 @@ class Client:
             attachment = {
                 'maintype': maintype,
                 'subtype': subtype,
-                'data': base64.b64decode(m.group(3)),
+                'data': b64_decode(m.group(3)),
                 'name': name,
                 'cid': cid,
                 'ID': cid

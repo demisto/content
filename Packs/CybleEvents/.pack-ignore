@@ -6,3 +6,10 @@ ignore=BA101
 
 [known_words]
 cyble
+
+# GR103 is temporary, see CIAC-11656
+[file:incidenttype-Cyble_Intel_Alert.json]
+ignore=GR103
+
+[file:layoutscontainer-Cyble_Intel_Alert.json]
+ignore=GR103

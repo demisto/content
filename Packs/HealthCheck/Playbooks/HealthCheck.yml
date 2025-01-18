@@ -1,4 +1,4 @@
-description: New version for HealthCheck main playbook
+description: New version for HealthCheck main playbook.
 id: HealthCheck
 inputs:
 - description: ""
@@ -23,18 +23,18 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 37d4b949-a249-4151-88ea-d8296e0e5bdc
+      id: de2d5100-330b-480d-8c3c-d2ba326ae21e
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 37d4b949-a249-4151-88ea-d8296e0e5bdc
+    taskid: de2d5100-330b-480d-8c3c-d2ba326ae21e
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 1237.5,
           "y": 50
         }
       }
@@ -51,7 +51,7 @@ tasks:
       wait: 1
     nexttasks:
       '#none#':
-      - "34"
+      - "3"
     note: false
     quietmode: 0
     scriptarguments:
@@ -106,20 +106,20 @@ tasks:
     task:
       brand: ""
       description: "Collect Log bundle and parse data\n\nHolding the default Thresholds:\n{\n\t\"LargeInvestigations\": {\n\t\t\"numberofincidentswithmorethan500entries\": 300,\n\t\t\"numberofincidentsbiggerthan10mb\": 1,\n\t\t\"numberofincidentsbiggerthan1mb\": 300\n\t},\n\t\"LargeInputsOutputs\": {\n\t\t\"numberofincidentsIObiggerthan10mb\": 1,\n\t\t\"numberofincidentsIObiggerthan1mb\": 10\n\t},\n\t\"Indicators\": {\n\t\t\"relatedIndicatorCount\": 100\n\t},\n\t\"CPU\": {\n\t\t\"CPUHighUsage\": 90,\n\t\t\"CPULowUsage\": 30,\n\t\t\"CPUMediumUsage\": 70\n\t},\n\t\"Disk\": {\n\t\t\"DiskUsageHigh\": 90,\n\t\t\"DiskUsageMedium\": 80,\n\t\t\"DiskUsageLow\": 70,\n\t\t\"DiskUsageDailyIncrease\": 2\n\t},\n\t\"Docker\": {\n\t\t\"DockerContainerCPUUsage\": 10,\n\t\t\"DockerContainerRAMUsage\": 10\n\t},\n\t\"DB\": {\n\t\t\"FSPartitionsMedium\": 12,\n\t\t\"FSPartitionsLow\": 6\n\t},\n\t\"Playbooks\": {\n\t\t\"CustomPlaybookLength\": 30,\n\t\t\"CustomPlaybookSetIncidentCount\": 4,\n\t\t\"CustomPlaybookDeprecatedScriptIds\": [\n\t\t\t\"Sleep\",\n\t\t\t\"EmailAskUser\"\n\t\t]\n\t},\n\t\"Incidents\": {\n\t\t\"NumberOfDroppedIncidents\": 2000\n\t}\n}"
-      id: 8e3ce3e1-3edd-4248-850e-2dc28b9dec79
+      id: cdeb61e9-0442-401e-8b61-f74d6d45be68
       iscommand: false
       name: Health Check - Collect Log Bundle
       type: playbook
       version: -1
-      playbookName: Health Check - Collect Log Bundle
-    taskid: 8e3ce3e1-3edd-4248-850e-2dc28b9dec79
+      playbookId: Health Check - Collect Log Bundle
+    taskid: cdeb61e9-0442-401e-8b61-f74d6d45be68
     timertriggers: []
     type: playbook
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 370
+          "x": 1452.5,
+          "y": 1215
         }
       }
     isautoswitchedtoquietmode: false
@@ -138,20 +138,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 55435db1-1014-4fde-8782-72304fb7d4f6
+      id: c2c984fd-3847-4c70-85fe-d0eed5d0edab
       iscommand: false
       name: Collect Information
       type: title
       version: -1
       description: ''
-    taskid: 55435db1-1014-4fde-8782-72304fb7d4f6
+    taskid: c2c984fd-3847-4c70-85fe-d0eed5d0edab
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1215
+          "x": 1452.5,
+          "y": 1390
         }
       }
     isautoswitchedtoquietmode: false
@@ -172,7 +172,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - "42"
     note: false
     quietmode: 0
     separatecontext: false
@@ -180,20 +180,20 @@ tasks:
     task:
       brand: ""
       description: Return the Demisto server version.
-      id: 6c0734fc-7a62-4714-80ac-425fc7fb3c22
+      id: 6d664315-e10a-442f-83d0-2e4fc4ce1763
       iscommand: false
       name: Set version and incident name
       type: regular
       version: -1
-      scriptName: DemistoVersion
-    taskid: 6c0734fc-7a62-4714-80ac-425fc7fb3c22
+      script: DemistoVersion
+    taskid: 6d664315-e10a-442f-83d0-2e4fc4ce1763
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1040
+          "x": 1237.5,
+          "y": 865
         }
       }
     isautoswitchedtoquietmode: false
@@ -215,20 +215,20 @@ tasks:
     task:
       brand: ""
       description: Present or analyze workers usage
-      id: 5e01ac84-257f-4f04-8379-b4c8d869fcfc
+      id: 10982ac3-7098-41d7-85fc-4f1c07c4c42b
       iscommand: false
       name: HealthCheckWorkers
       type: regular
       version: -1
-      scriptName: HealthCheckWorkers
-    taskid: 5e01ac84-257f-4f04-8379-b4c8d869fcfc
+      script: HealthCheckWorkers
+    taskid: 10982ac3-7098-41d7-85fc-4f1c07c4c42b
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2175
+          "x": 2385,
+          "y": 1795
         }
       }
     isautoswitchedtoquietmode: false
@@ -239,7 +239,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     note: false
     quietmode: 0
     scriptarguments:
@@ -250,20 +250,20 @@ tasks:
     task:
       brand: ""
       description: "Read the installedpacks.json. \n\nCount and get packs names"
-      id: 7bc43960-f102-428b-805b-733d4320e5ae
+      id: bb77ac80-c57c-455e-8194-cd8c40b06350
       iscommand: false
       name: Installed Packs
       type: regular
       version: -1
-      scriptName: HealthCheckInstalledPacks
-    taskid: 7bc43960-f102-428b-805b-733d4320e5ae
+      script: HealthCheckInstalledPacks
+    taskid: bb77ac80-c57c-455e-8194-cd8c40b06350
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 1855
+          "x": 1340,
+          "y": 2670
         }
       }
     isautoswitchedtoquietmode: false
@@ -274,7 +274,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     note: false
     quietmode: 0
     separatecontext: false
@@ -282,20 +282,20 @@ tasks:
     task:
       brand: ""
       description: Trend graph for incidents created per day
-      id: e313c651-331c-40d2-807d-684e61e23964
+      id: 7a1df602-ded5-4e3c-89f0-6e9d6dc6f1f0
       iscommand: false
       name: Integrations instances
       type: regular
       version: -1
-      scriptName: HealthCheckIntegrations
-    taskid: e313c651-331c-40d2-807d-684e61e23964
+      script: HealthCheckIntegrations
+    taskid: 7a1df602-ded5-4e3c-89f0-6e9d6dc6f1f0
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 55,
-          "y": 1855
+          "x": 910,
+          "y": 2670
         }
       }
     isautoswitchedtoquietmode: false
@@ -313,20 +313,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b472fa76-fbd2-43ef-8eff-c1d25951e0d9
+      id: 0ad58a24-1f65-4e05-87c6-d39ed77ae9aa
       iscommand: false
       name: System Details
       type: title
       version: -1
       description: ''
-    taskid: b472fa76-fbd2-43ef-8eff-c1d25951e0d9
+    taskid: 0ad58a24-1f65-4e05-87c6-d39ed77ae9aa
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 895
+          "x": 1237.5,
+          "y": 720
         }
       }
     isautoswitchedtoquietmode: false
@@ -347,20 +347,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 385f671c-ba17-462c-85c8-5c38d229c814
+      id: e12cd0ae-cda7-4cfc-8f95-877d6874712e
       iscommand: false
       name: Packs and Integrations
       type: title
       version: -1
       description: ''
-    taskid: 385f671c-ba17-462c-85c8-5c38d229c814
+    taskid: e12cd0ae-cda7-4cfc-8f95-877d6874712e
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1710
+          "x": 695,
+          "y": 2525
         }
       }
     isautoswitchedtoquietmode: false
@@ -379,20 +379,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c608de40-b0ca-449c-81f4-b7714da253e8
+      id: 9f90bcde-0948-41bc-8c4c-d1d594ea804e
       iscommand: false
       name: System Resources
       type: title
       version: -1
       description: ''
-    taskid: c608de40-b0ca-449c-81f4-b7714da253e8
+    taskid: 9f90bcde-0948-41bc-8c4c-d1d594ea804e
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2030
+          "x": 2600,
+          "y": 1650
         }
       }
     isautoswitchedtoquietmode: false
@@ -403,7 +403,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - "43"
     note: false
     quietmode: 0
     scriptarguments:
@@ -414,20 +414,20 @@ tasks:
     task:
       brand: ""
       description: 'Present or parse CPU usage stats '
-      id: 8ab3735b-a55f-46d8-83ca-6a6572775df8
+      id: 9ccf28eb-f527-4114-87c8-98bbdb7188ca
       iscommand: false
       name: HealthCheckCPU
       type: regular
       version: -1
-      scriptName: HealthCheckCPU
-    taskid: 8ab3735b-a55f-46d8-83ca-6a6572775df8
+      script: HealthCheckCPU
+    taskid: 9ccf28eb-f527-4114-87c8-98bbdb7188ca
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2350
+          "x": 2385,
+          "y": 1970
         }
       }
     isautoswitchedtoquietmode: false
@@ -449,20 +449,20 @@ tasks:
     task:
       brand: ""
       description: 'Present or parse Disk usage stats '
-      id: 0924f6ab-f16c-4253-8551-3c24a5a3c412
+      id: 3ba8a1c5-1ff1-4907-8dda-da771d5d4611
       iscommand: false
       name: HealthCheckDiskUsage
       type: regular
       version: -1
-      scriptName: HealthCheckDiskUsage
-    taskid: 0924f6ab-f16c-4253-8551-3c24a5a3c412
+      script: HealthCheckDiskUsage
+    taskid: 3ba8a1c5-1ff1-4907-8dda-da771d5d4611
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2175
+          "x": 2885,
+          "y": 1795
         }
       }
     isautoswitchedtoquietmode: false
@@ -473,7 +473,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - "43"
     note: false
     quietmode: 0
     separatecontext: false
@@ -481,20 +481,20 @@ tasks:
     task:
       brand: ""
       description: Containers status
-      id: 8a87e5bb-63f4-42fb-8b60-6b7a3ab91347
+      id: 4f9bc57e-4f87-4f8b-8ddd-6921521003fa
       iscommand: false
       name: HealthCheckContainersStatus
       type: regular
       version: -1
-      scriptName: HealthCheckContainersStatus
-    taskid: 8a87e5bb-63f4-42fb-8b60-6b7a3ab91347
+      script: HealthCheckContainersStatus
+    taskid: 4f9bc57e-4f87-4f8b-8ddd-6921521003fa
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2350
+          "x": 2885,
+          "y": 1970
         }
       }
     isautoswitchedtoquietmode: false
@@ -512,20 +512,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9bc024c0-bb96-443d-8061-411d864be68f
+      id: 34f6c1eb-8e9a-426c-8744-01f0692c0407
       iscommand: false
       name: Playbook Analysis
       type: title
       version: -1
       description: ''
-    taskid: 9bc024c0-bb96-443d-8061-411d864be68f
+    taskid: 34f6c1eb-8e9a-426c-8744-01f0692c0407
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2525
+          "x": 807.5,
+          "y": 2845
         }
       }
     isautoswitchedtoquietmode: false
@@ -547,20 +547,20 @@ tasks:
     task:
       brand: ""
       description: Parsing playbooks
-      id: 94cb346f-ad53-4fd1-836f-1c2fd15c2823
+      id: 3562c402-f577-44a9-86bc-3ec38e104532
       iscommand: false
       name: Analyze playbooks
       type: regular
       version: -1
-      scriptName: HealthCheckPlaybookAnalysis
-    taskid: 94cb346f-ad53-4fd1-836f-1c2fd15c2823
+      script: HealthCheckPlaybookAnalysis
+    taskid: 3562c402-f577-44a9-86bc-3ec38e104532
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2670
+          "x": 807.5,
+          "y": 2990
         }
       }
     isautoswitchedtoquietmode: false
@@ -578,20 +578,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4f427998-2c43-466e-8d1c-cf281bb789d7
+      id: 54191f45-09dd-4cfe-8bd7-d91bfd092a52
       iscommand: false
       name: Incidents
       type: title
       version: -1
       description: ''
-    taskid: 4f427998-2c43-466e-8d1c-cf281bb789d7
+    taskid: 54191f45-09dd-4cfe-8bd7-d91bfd092a52
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2845
+          "x": 807.5,
+          "y": 3180
         }
       }
     isautoswitchedtoquietmode: false
@@ -615,20 +615,20 @@ tasks:
     task:
       brand: ""
       description: Number of dropped incidents
-      id: 9951eb1b-c398-4ff1-8f79-3a8514a1b2fe
+      id: 4e125e3c-76bd-46a8-8c36-caafd4e0424a
       iscommand: false
       name: Dropped Incidents
       type: regular
       version: -1
-      scriptName: HealthCheckNumberOfDroppedIncidents
-    taskid: 9951eb1b-c398-4ff1-8f79-3a8514a1b2fe
+      script: HealthCheckNumberOfDroppedIncidents
+    taskid: 4e125e3c-76bd-46a8-8c36-caafd4e0424a
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2990
+          "x": 807.5,
+          "y": 3340
         }
       }
     isautoswitchedtoquietmode: false
@@ -646,20 +646,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b8d67aad-81ea-4749-889d-19da6192b894
+      id: df2811a4-f0c2-4bed-8ba5-fabb58df68a5
       iscommand: false
       name: Indicators
       type: title
       version: -1
       description: ''
-    taskid: b8d67aad-81ea-4749-889d-19da6192b894
+    taskid: df2811a4-f0c2-4bed-8ba5-fabb58df68a5
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3180
+          "x": 807.5,
+          "y": 3530
         }
       }
     isautoswitchedtoquietmode: false
@@ -681,20 +681,20 @@ tasks:
     task:
       brand: ""
       description: Reports on common indicators
-      id: c0e40aad-ba00-4daa-8c22-4e3eec8a17be
+      id: d3878e5e-57d5-4b09-811b-815aa324d580
       iscommand: false
       name: Analyze Indicators
       type: regular
       version: -1
-      scriptName: HealthCheckCommonIndicators
-    taskid: c0e40aad-ba00-4daa-8c22-4e3eec8a17be
+      script: HealthCheckCommonIndicators
+    taskid: d3878e5e-57d5-4b09-811b-815aa324d580
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3340
+          "x": 807.5,
+          "y": 3690
         }
       }
     isautoswitchedtoquietmode: false
@@ -712,20 +712,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6d634c4c-d18f-474b-8e42-66af883b57e0
+      id: 4effe8ff-81ed-4de0-8c61-3f8879c06257
       iscommand: false
       name: Conclusions
       type: title
       version: -1
       description: ''
-    taskid: 6d634c4c-d18f-474b-8e42-66af883b57e0
+    taskid: 4effe8ff-81ed-4de0-8c61-3f8879c06257
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3515
+          "x": 807.5,
+          "y": 3865
         }
       }
     isautoswitchedtoquietmode: false
@@ -757,20 +757,20 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: cc76a917-36f5-4eff-8e21-e9705f36b7ac
+      id: 5ed1d49c-7e6d-4790-831c-ecb82175cd5d
       iscommand: false
       name: Save to action items table
       type: regular
       version: -1
-      scriptName: SetGridField
-    taskid: cc76a917-36f5-4eff-8e21-e9705f36b7ac
+      script: SetGridField
+    taskid: 5ed1d49c-7e6d-4790-831c-ecb82175cd5d
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3660
+          "x": 807.5,
+          "y": 4010
         }
       }
     isautoswitchedtoquietmode: false
@@ -785,20 +785,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 266e759a-4206-46d6-8d3f-82ccc1bee9f2
+      id: 95f6960a-0fde-4462-8234-69334764de93
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 266e759a-4206-46d6-8d3f-82ccc1bee9f2
+    taskid: 95f6960a-0fde-4462-8234-69334764de93
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 3835
+          "x": 1565,
+          "y": 4185
         }
       }
     isautoswitchedtoquietmode: false
@@ -814,7 +814,7 @@ tasks:
       wait: 1
     nexttasks:
       '#none#':
-      - "30"
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
@@ -825,20 +825,20 @@ tasks:
     task:
       brand: ""
       description: Parse files
-      id: 9095e4e2-ef79-470e-826c-8c63f26a8dde
+      id: 3930e5c0-f2fc-49cf-8a47-9189eaf92221
       iscommand: false
       name: Health Check - Log Analysis Read All files
       type: playbook
       version: -1
-      playbookName: Health Check - Log Analysis Read All files
-    taskid: 9095e4e2-ef79-470e-826c-8c63f26a8dde
+      playbookId: Health Check - Log Analysis Read All files
+    taskid: 3930e5c0-f2fc-49cf-8a47-9189eaf92221
     timertriggers: []
     type: playbook
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1360
+          "x": 2600,
+          "y": 1475
         }
       }
     isautoswitchedtoquietmode: false
@@ -863,20 +863,20 @@ tasks:
     task:
       brand: ""
       description: Analyze large investigation
-      id: aa7144e8-07dd-4a11-8beb-3c43b0c60956
+      id: 251c3764-c478-4943-8bf1-2affd87bdcd8
       iscommand: false
       name: Large Investigations
       type: regular
       version: -1
-      scriptName: HealthCheckAnalyzeLargeInvestigations
-    taskid: aa7144e8-07dd-4a11-8beb-3c43b0c60956
+      script: HealthCheckAnalyzeLargeInvestigations
+    taskid: 251c3764-c478-4943-8bf1-2affd87bdcd8
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 2990
+          "x": 1892.5,
+          "y": 3340
         }
       }
     isautoswitchedtoquietmode: false
@@ -901,20 +901,20 @@ tasks:
     task:
       brand: ""
       description: 'Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations in the last 6 months '
-      id: f34c4268-3802-4056-80e2-a33140919c6a
+      id: b61105f9-9903-4d1f-85ff-0276273132bb
       iscommand: false
       name: Large inputs and outputs
       type: regular
       version: -1
-      scriptName: HealthCheckGetLargestInputsAndOutputsInIncidents
-    taskid: f34c4268-3802-4056-80e2-a33140919c6a
+      script: HealthCheckGetLargestInputsAndOutputsInIncidents
+    taskid: b61105f9-9903-4d1f-85ff-0276273132bb
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 3165
+          "x": 1892.5,
+          "y": 3515
         }
       }
     isautoswitchedtoquietmode: false
@@ -936,20 +936,20 @@ tasks:
     task:
       brand: ""
       description: Read the license_data.log file extracted from the log bundle
-      id: 499bfff9-83f6-46a0-842b-c01e1dce572a
+      id: 91a0c066-15b9-4c0e-8dcf-3d0d83952069
       iscommand: false
       name: Server Configuration
       type: regular
       version: -1
-      scriptName: HealthCheckServerConfiguration
-    taskid: 499bfff9-83f6-46a0-842b-c01e1dce572a
+      script: HealthCheckServerConfiguration
+    taskid: 91a0c066-15b9-4c0e-8dcf-3d0d83952069
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1535
+          "x": 695,
+          "y": 2350
         }
       }
     isautoswitchedtoquietmode: false
@@ -981,20 +981,20 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: 7056fe7f-e300-4066-828c-8fe02768a749
+      id: 5e51ddc7-bbc0-40d1-89fb-cff7f0bf33bd
       iscommand: false
       name: Save to action items table
       type: regular
       version: -1
-      scriptName: SetGridField
-    taskid: 7056fe7f-e300-4066-828c-8fe02768a749
+      script: SetGridField
+    taskid: 5e51ddc7-bbc0-40d1-89fb-cff7f0bf33bd
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 3660
+          "x": 1667.5,
+          "y": 4010
         }
       }
     isautoswitchedtoquietmode: false
@@ -1012,20 +1012,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e508a242-08ec-45f3-8288-1cb76065db16
+      id: b3042565-6465-44a2-8e52-624f4bca63be
       iscommand: false
       name: DB Stats Conclusions
       type: title
       version: -1
       description: ''
-    taskid: e508a242-08ec-45f3-8288-1cb76065db16
+    taskid: b3042565-6465-44a2-8e52-624f4bca63be
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 3515
+          "x": 1667.5,
+          "y": 3865
         }
       }
     isautoswitchedtoquietmode: false
@@ -1054,19 +1054,19 @@ tasks:
     task:
       brand: ""
       description: Check DB stats output
-      id: 92cd23f6-0e9c-4f3b-8043-9807462aca6d
+      id: c95b65d3-53a3-4971-8b81-481a0b9bd1aa
       iscommand: false
       name: DB stats conclusions
       type: condition
       version: -1
-    taskid: 92cd23f6-0e9c-4f3b-8043-9807462aca6d
+    taskid: c95b65d3-53a3-4971-8b81-481a0b9bd1aa
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 3340
+          "x": 1892.5,
+          "y": 3690
         }
       }
     isautoswitchedtoquietmode: false
@@ -1095,19 +1095,19 @@ tasks:
     task:
       brand: ""
       description: Checking if default thresholds were changed
-      id: 3ceaeee9-c613-4681-816c-b92f2e38ebec
+      id: a93d9d0c-ed32-4968-82c1-5c4b7869c083
       iscommand: false
       name: Is Change Thresholds Required?
       type: condition
       version: -1
-    taskid: 3ceaeee9-c613-4681-816c-b92f2e38ebec
+    taskid: a93d9d0c-ed32-4968-82c1-5c4b7869c083
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 545
+          "x": 1237.5,
+          "y": 370
         }
       }
     isautoswitchedtoquietmode: false
@@ -1171,20 +1171,20 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: d025a889-9e5e-4c22-86e8-bef83507d026
+      id: 6d395bb1-aadb-48ec-804b-41e1b07956c8
       iscommand: false
       name: Set Thresholds
       type: regular
       version: -1
-      scriptName: Set
-    taskid: d025a889-9e5e-4c22-86e8-bef83507d026
+      script: Set
+    taskid: 6d395bb1-aadb-48ec-804b-41e1b07956c8
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 720
+          "x": 1350,
+          "y": 545
         }
       }
     isautoswitchedtoquietmode: false
@@ -1197,7 +1197,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - "34"
     note: false
     quietmode: 0
     separatecontext: false
@@ -1207,19 +1207,19 @@ tasks:
       description: |-
         Validate if API Integration was defined correctly.
         If not detect what is the problem and warn about it.
-      id: cd049c00-bab1-44cc-8304-46709984ed3b
+      id: 931a9081-f8bf-450d-83fe-35d7082117d3
       iscommand: false
       name: Validate API Integration
       type: regular
       version: -1
-      scriptName: HealthCheckAPIvalidation
-    taskid: cd049c00-bab1-44cc-8304-46709984ed3b
+      script: HealthCheckAPIvalidation
+    taskid: 931a9081-f8bf-450d-83fe-35d7082117d3
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 1237.5,
           "y": 195
         }
       }
@@ -1231,7 +1231,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     note: false
     quietmode: 0
     separatecontext: false
@@ -1239,20 +1239,20 @@ tasks:
     task:
       brand: ""
       description: Parsing custom fields to detect indexed fields for risky field types
-      id: 7c994b82-544f-473e-85a1-fce3c47584e1
+      id: eee268d2-7173-4429-8599-c3bf89b247ad
       iscommand: false
       name: Fields settings
       type: regular
       version: -1
-      scriptName: HealthCheckFields
-    taskid: 7c994b82-544f-473e-85a1-fce3c47584e1
+      script: HealthCheckFields
+    taskid: eee268d2-7173-4429-8599-c3bf89b247ad
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 1855
+          "x": 50,
+          "y": 2670
         }
       }
     continueonerrortype: ""
@@ -1271,20 +1271,20 @@ tasks:
     task:
       brand: ""
       description: Collect data from System Diagnostics tool
-      id: b282b3bf-d51b-4e47-8007-054e072dc5e8
+      id: b5065db9-518f-4ed8-8129-25995f4aa759
       iscommand: false
       name: DB System Diagnostics
       type: regular
       version: -1
-      scriptName: HealthCheckSystemDiagnostics
-    taskid: b282b3bf-d51b-4e47-8007-054e072dc5e8
+      script: HealthCheckSystemDiagnostics
+    taskid: b5065db9-518f-4ed8-8129-25995f4aa759
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 2830
+          "x": 1892.5,
+          "y": 3180
         }
       }
     continueonerrortype: ""
@@ -1295,50 +1295,6 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "40"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 933b4762-4e1f-4d2d-8396-f0b7292fa7b0
-      iscommand: false
-      name: Database Diagnostics
-      type: title
-      version: -1
-      description: ''
-    taskid: 933b4762-4e1f-4d2d-8396-f0b7292fa7b0
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 960,
-          "y": 2365
-        }
-      }
-    continueonerrortype: ""
-  "40":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: DemistoVersion.buildNumber
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: "1222475"
-      label: "yes"
-    id: "40"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "27"
-      "yes":
       - "38"
     note: false
     quietmode: 0
@@ -1346,46 +1302,46 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Bypass System Diagnostics data for versions older than 6.2
-      id: d2545cf0-90e4-4383-8ed0-61a900ff43c2
+      id: 0662f4a9-0ea0-4a3a-84ab-6314d8a93e7b
       iscommand: false
-      name: Version newer than 6.2.0
-      type: condition
+      name: Database Diagnostics
+      type: title
       version: -1
-    taskid: d2545cf0-90e4-4383-8ed0-61a900ff43c2
+      description: ''
+    taskid: 0662f4a9-0ea0-4a3a-84ab-6314d8a93e7b
     timertriggers: []
-    type: condition
+    type: title
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 2670
+          "x": 1892.5,
+          "y": 3020
         }
       }
     continueonerrortype: ""
   "41":
     id: "41"
-    taskid: 36e57f48-7c58-4e55-8474-bf12aa0992b0
+    taskid: 456a3919-a7f6-49b1-89e1-89069529f723
     type: regular
     task:
-      id: 36e57f48-7c58-4e55-8474-bf12aa0992b0
+      id: 456a3919-a7f6-49b1-89e1-89069529f723
       version: -1
       name: Types settings
-      description: "Identify custom and detached system incidents type  \nChecking if 'Auto Extraction' is turned on for:\nExtract from all\nExtract from specific indicators doesn't have any settings"
-      scriptName: HealthCheckIncidentTypes
+      description: "Identify custom and detached system incidents type.  \nChecking if 'Auto Extraction' is turned on for:\nExtract from all\nExtract from specific indicators doesn't have any settings."
       type: regular
       iscommand: false
       brand: ""
+      script: HealthCheckIncidentTypes
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1855
+          "x": 480,
+          "y": 2670
         }
       }
     note: false
@@ -1395,21 +1351,129 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "42":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: version
+                root: DemistoVersion
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: .
+                  operator: split
+                - operator: FirstArrayElement
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "8"
+      label: V8
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: version
+                root: DemistoVersion
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: .
+                  operator: split
+                - operator: FirstArrayElement
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "6"
+      label: V6
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      V6:
+      - "1"
+      V8:
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checking the Cortex XSOAR version.
+      id: d442451b-736c-43ff-8100-ea23eeabce29
+      iscommand: false
+      name: XSOAR Version
+      type: condition
+      version: -1
+    taskid: d442451b-736c-43ff-8100-ea23eeabce29
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1040
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f109a77c-1302-4ede-87e4-068015e5cabf
+      iscommand: false
+      name: Server Configuration
+      type: title
+      version: -1
+      description: ''
+    taskid: f109a77c-1302-4ede-87e4-068015e5cabf
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2205
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3850,
-        "width": 1700,
-        "x": -360,
+        "height": 4200,
+        "width": 3215,
+        "x": 50,
         "y": 50
       }
     }
   }
-fromversion: 6.0.0
+fromversion: 6.9.0
 marketplaces:
 - xsoar
+- xsoar_saas
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all

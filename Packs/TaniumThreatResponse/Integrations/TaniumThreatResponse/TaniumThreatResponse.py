@@ -7,7 +7,7 @@ import ast
 import json
 import os
 import urllib.parse
-from typing import Any, Tuple
+from typing import Any
 
 import urllib3
 from dateutil.parser import parse
@@ -49,7 +49,7 @@ class Client(BaseClient):
         self.username = username
         self.password = password
         self.session = ''
-        super(Client, self).__init__(base_url, **kwargs)
+        super().__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, json_data=None, params=None, data=None, resp_type='json', headers=None):
         if not self.session:
@@ -155,7 +155,7 @@ def evidence_type_number_to_name(num: int) -> str:
     :param num: The evidence type number
     :return: The string name of the evidence type
     """
-    name: str = str()
+    name: str = ''
     supported_types = ['Network', 'Process', 'File', 'Registry', 'Security', 'Image', 'DNS']
     try:
         name = supported_types[num - 1]
@@ -1262,7 +1262,7 @@ def get_process_timeline(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_file_data(entry_id: str) -> Tuple[str, str, str]:
+def get_file_data(entry_id: str) -> tuple[str, str, str]:
     """ Gets a file name and content from the file's entry ID.
 
         :type entry_id: ``str``
@@ -1276,7 +1276,7 @@ def get_file_data(entry_id: str) -> Tuple[str, str, str]:
     file = demisto.getFilePath(entry_id)
     file_path = file.get('path')
     file_name = file.get('name')
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         file_content = f.read()
     return file_name, file_path, file_content
 
@@ -1455,7 +1455,7 @@ def main():
             error_msg = str(e)
             if command in COMMANDS_DEPEND_ON_CONNECTIVITY:
                 error_msg += DEPENDENT_COMMANDS_ERROR_MSG
-            return_error('Error in Tanium Threat Response Integration: {}'.format(error_msg), traceback.format_exc())
+            return_error(f'Error in Tanium Threat Response Integration: {error_msg}', traceback.format_exc())
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

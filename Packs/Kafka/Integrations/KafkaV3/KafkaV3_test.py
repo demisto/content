@@ -9,7 +9,8 @@ import pytest
 import KafkaV3
 import os
 
-KAFKA = KafkaCommunicator(brokers=['some_broker_ip'])
+KAFKA = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=False, trust_any_cert=False,
+                          ca_cert='ca_cert', client_cert='client_cert', client_cert_key='client_cert_key')
 
 
 def test_passing_simple_test_module(mocker):
@@ -57,7 +58,7 @@ def create_cluster_metadata(topic_partitions):
     """
     cluster_metadata = ClusterMetadata()
     topics_dict = {}
-    for topic in topic_partitions.keys():
+    for topic in topic_partitions:
         topic_metadata = TopicMetadata()
         partitions = topic_partitions[topic]
         partitions_dict = {}
@@ -189,11 +190,14 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
     Then:
         - Assert all the topics and partitions are in the command results.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
+    from CommonServerPython import CommandResults
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
-    mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     result = print_topics(KAFKA, demisto_args)
-    for topic in cluster_tree.keys():
+    assert type(result) is CommandResults  # for Pylance
+    assert type(result.outputs) is list  # for Pylance
+    for topic in cluster_tree:
         topic_partitions = [{'ID': partition} for partition in cluster_tree[topic]]
         assert {'Name': topic, 'Partitions': topic_partitions} in result.outputs
 
@@ -214,11 +218,14 @@ def test_print_topics_with_offsets(mocker, demisto_args, first_offset, last_offs
     mocker.patch.object(KProducer, '__init__', return_value=None)
     mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata({'some-topic': [1]})
-    mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(first_offset, last_offset))
     result = print_topics(KAFKA, demisto_args)
     expected = {'Name': 'some-topic',
                 'Partitions': [{'ID': 1, 'EarliestOffset': first_offset, 'OldestOffset': last_offset}]}
+    from CommonServerPython import CommandResults
+    assert type(result) is CommandResults  # for PyLance
+    assert type(result.outputs) is list  # for PyLance
     assert expected in result.outputs
 
 
@@ -232,8 +239,8 @@ def test_print_topics_no_topics(mocker, demisto_args):
     Then:
         - Assert the 'No topics found.' response and that no errors are raised.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
-    mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     assert print_topics(KAFKA, demisto_args) == 'No topics found.'
 
 
@@ -250,11 +257,11 @@ def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
     Then:
         - Assert the fetched partitions are in the command results.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
-    mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     result = fetch_partitions(KAFKA, demisto_args)
-    assert {'Name': topic, 'Partition': cluster_tree[topic]} == result.outputs
+    assert result.outputs == {'Name': topic, 'Partition': cluster_tree[topic]}
 
 
 @pytest.mark.parametrize('demisto_args', [{'topic': 'some-topic'}, {'topic': None}])
@@ -267,21 +274,21 @@ def test_fetch_partitions_no_topics(mocker, demisto_args):
     Then:
         - Assert the relevant error was raised.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
-    mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     with pytest.raises(DemistoException) as exception_info:
         fetch_partitions(KAFKA, demisto_args)
     assert f'Topic {demisto_args["topic"]} was not found in Kafka' in str(exception_info.value)
 
 
-class MessageMock(object):
+class MessageMock:
     """Mocked message class for easier mocking"""
     message = None
     offset_value = None
     topic_value = None
     partition_value = None
 
-    def __init__(self, message=None, offset=None, topic=None, partition=None, timestamp=None):
+    def __init__(self, message='', offset=None, topic=None, partition=None, timestamp=None):
         self.message = message.encode('utf-8')
         self.offset_value = offset
         self.topic_value = topic
@@ -762,6 +769,113 @@ def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_p
     set_last_run_mock.assert_called_once_with(next_run)
 
 
+@pytest.mark.parametrize(
+    "demisto_params, last_run, cluster_tree, topic_partitions, incidents, next_run, polled_msgs, offsets",
+    [
+        pytest.param(
+            {
+                "topic": "some-topic",
+                "partition": "",
+                "first_fetch": "0",
+                "max_fetch": "2",
+                "stop_consuming_upon_timeout": True,
+            },
+            {},
+            {"some-topic": [0]},
+            [TopicPartition(topic="some-topic", partition=0, offset=1)],
+            [
+                {
+                    "name": "Kafka some-topic partition:0 offset:1",
+                    "details": "polled_msg",
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, '
+                    '"Message": "polled_msg"}',
+                }
+            ],
+            {"last_fetched_offsets": {"0": 1}, "last_topic": "some-topic"},
+            [
+                MessageMock(
+                    message="polled_msg",
+                    partition=0,
+                    offset=1,
+                    timestamp=(TIMESTAMP_NOT_AVAILABLE, 0),
+                ),
+                None,
+            ],
+            [(0, 2), (0, 2), (0, 2)],
+            id="first run, offset is 0,stop_consuming_upon_timeout is true",
+        )
+    ],
+)
+def test_fetch_incidents_stop_consuming_upon_timeout_is_true(
+    mocker,
+    demisto_params,
+    last_run,
+    cluster_tree,
+    topic_partitions,
+    incidents,
+    next_run,
+    polled_msgs,
+    offsets,
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+        - demisto_params
+        - last_run dict
+        - available cluster tree
+        - stop_consuming_upon_timeout
+    When:
+        - fetching incidents
+    Then:
+        - Assert the relevant topicPartitions are assigned to the consumer
+        - Assert the polled messages are the right amount
+        - Assert the created incidents are as expected
+        - Assert setting the last run
+        - Assert break method was called
+        - Assert poll method was called with timeout 10.0
+    """
+    mocker.patch.object(KConsumer, "__init__", return_value=None)
+    cluster_metadata = create_cluster_metadata(cluster_tree)
+    mocker.patch.object(KConsumer, "list_topics", return_value=cluster_metadata)
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    assign_mock = mocker.patch.object(KConsumer, "assign")
+    poll_mock = mocker.patch.object(KConsumer, "poll", side_effect=polled_msgs)
+    mocker.patch.object(KConsumer, "get_watermark_offsets", side_effect=offsets)
+    close_mock = mocker.patch.object(KConsumer, "close")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+    debug = mocker.patch.object(demisto, "debug")
+
+    fetch_incidents(KAFKA, demisto_params)
+
+    assign_mock.assert_called_once_with(topic_partitions)
+    called_topic_partitions = assign_mock.call_args.args[0]
+    for partition_num in range(len(topic_partitions)):
+        assert (
+            called_topic_partitions[partition_num].topic
+            == topic_partitions[partition_num].topic
+        )
+        assert (
+            called_topic_partitions[partition_num].partition
+            == topic_partitions[partition_num].partition
+        )
+        assert (
+            called_topic_partitions[partition_num].offset
+            == topic_partitions[partition_num].offset
+        )
+
+    assert len(polled_msgs) == poll_mock.call_count
+    debug.assert_called_with(f"Fetching finished, setting last run to {next_run}")
+    assert (
+        debug.call_args_list[-2][0][0]
+        == "Didn't get a message after 10.0 seconds, stop_consuming_upon_timeout is true, break the loop. num_polled_msg=1"
+    )
+    poll_mock.assert_any_call(10.0)
+    close_mock.assert_called_once()
+    incidents_mock.assert_called_once_with(incidents)
+    set_last_run_mock.assert_called_once_with(next_run)
+
+
 @pytest.mark.parametrize('demisto_params, last_run, cluster_tree', [
     pytest.param(
         {'topic': 'some-topic',
@@ -807,7 +921,7 @@ def test_fetch_incidents_no_messages(mocker, demisto_params, last_run, cluster_t
 def test_ssl_configuration():
     """
     Given:
-        - Kafka initialization parameters
+        - Kafka initialization parameters with use_ssl is True
     When:
         - Initializing KafkaCommunicator object
     Then:
@@ -819,7 +933,13 @@ def test_ssl_configuration():
                               client_cert_key='client_cert_key',
                               ssl_password='ssl_password',
                               offset='earliest',
-                              trust_any_cert=False)
+                              trust_any_cert=False,
+                              use_ssl=True)
+
+    assert type(kafka.ca_path) is str  # foy Pylance
+    assert type(kafka.client_cert_path) is str  # foy Pylance
+    assert type(kafka.client_key_path) is str  # foy Pylance
+
     expected_consumer_conf = {
         'auto.offset.reset': 'earliest',
         'bootstrap.servers': 'brokers',
@@ -842,12 +962,153 @@ def test_ssl_configuration():
     }
     assert kafka.conf_consumer == expected_consumer_conf
     assert kafka.conf_producer == expected_producer_conf
-    with open(kafka.ca_path, 'r') as f:
+    with open(kafka.ca_path) as f:
         assert f.read() == 'ca_cert'
-    with open(kafka.client_cert_path, 'r') as f:
+    with open(kafka.client_cert_path) as f:
         assert f.read() == 'client_cert'
-    with open(kafka.client_key_path, 'r') as f:
+    with open(kafka.client_key_path) as f:
         assert f.read() == 'client_cert_key'
     os.remove(kafka.ca_path)
     os.remove(kafka.client_cert_path)
     os.remove(kafka.client_key_path)
+
+
+def test_sasl_ssl_configuration():
+    """
+    Given:
+        - Kafka initialization parameters with use_sasl equals true
+    When:
+        - Initializing KafkaCommunicator object
+    Then:
+        - Assert initialization is as expected.
+    """
+    kafka = KafkaCommunicator(brokers='brokers',
+                              ca_cert='ca_cert',
+                              plain_username='plain_username',
+                              plain_password='plain_password',
+                              ssl_password='ssl_password',
+                              offset='earliest',
+                              trust_any_cert=False,
+                              use_ssl=True,
+                              use_sasl=True)
+
+    assert type(kafka.ca_path) is str
+
+    expected_consumer_conf = {
+        'auto.offset.reset': 'earliest',
+        'bootstrap.servers': 'brokers',
+        'enable.auto.commit': False,
+        'group.id': 'xsoar_group',
+        'session.timeout.ms': 10000,
+        'ssl.ca.location': os.path.abspath(kafka.ca_path),
+        'ssl.key.password': 'ssl_password',
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanism': 'PLAIN',
+        'sasl.username': 'plain_username',
+        'sasl.password': 'plain_password'
+    }
+    expected_producer_conf = {
+        'bootstrap.servers': 'brokers',
+        'ssl.ca.location': os.path.abspath(kafka.ca_path),
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanism': 'PLAIN',
+        'sasl.username': 'plain_username',
+        'sasl.password': 'plain_password',
+        'ssl.key.password': 'ssl_password'
+    }
+    assert kafka.conf_consumer == expected_consumer_conf
+    assert kafka.conf_producer == expected_producer_conf
+    with open(kafka.ca_path) as f:
+        assert f.read() == 'ca_cert'
+    os.remove(kafka.ca_path)
+
+
+valid_params_cases = [
+    # Valid case with SSL only
+    {
+        'use_ssl': True, 'use_sasl': False, 'brokers': 'broker1,broker2', 'plain_username': None, 'plain_password': None,
+        'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'
+    },
+    # Valid case with SSL and SASL
+    {
+        'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2',
+        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None, 'plain_username': 'user', 'plain_password': 'pass'
+    },
+    # Valid case with SASL
+    {
+        'use_ssl': False, 'use_sasl': True, 'brokers': 'broker1,broker2',
+        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None, 'plain_username': 'user', 'plain_password': 'pass'
+    },
+    # Valid case trust_any_cert
+    {
+        'use_ssl': False, 'use_sasl': False, 'brokers': 'broker1,broker2', 'plain_username': None,
+        'plain_password': None, 'ca_cert': None, 'client_cert': None, 'client_cert_key': None
+    }
+]
+
+
+@pytest.mark.parametrize('params', valid_params_cases)
+def test_validate_params__valid(params):
+    from KafkaV3 import validate_params
+    # This test should not raise any exceptions
+    validate_params(**params)
+
+
+# use_ssl, use_sasl, plain_username, plain_password, brokers, ca_cert, client_cert, client_cert_key
+invalid_params_cases = [
+    # Missing brokers
+    (
+        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': None, 'ca_cert': 'cert',
+         'client_cert': 'client_cert', 'client_cert_key': 'client_key'},
+        'Please specify a CSV list of Kafka brokers to connect to.'
+    ),
+    # SSL enabled but missing certificates
+    (
+        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1,broker2',
+         'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
+        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer), \
+Client certificate key (.key). Please provide them.'),
+    (
+        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
+         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+        'Missing required parameters: Client certificate (.cer), Client certificate key (.key). \
+Please provide them.'
+    ),
+    (
+        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
+         'ca_cert': None, 'client_cert': 'client_cert', 'client_cert_key': None},
+        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate key (.key). \
+Please provide them.'
+    ),
+    (
+        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
+         'ca_cert': None, 'client_cert': None, 'client_cert_key': 'client_key'},
+        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer). \
+Please provide them.'
+    ),
+    # SASL_SSL missing username/password/ca_cert
+    (
+        {'use_ssl': True, 'use_sasl': True, 'plain_username': None, 'plain_password': 'pass', 'brokers': 'broker1, broker2',
+         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+        'Missing required parameters: SASL PLAIN Username. Please provide them.'
+    ),
+    (
+        {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': None, 'brokers': 'broker1, broker2',
+         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+        'Missing required parameters: SASL PLAIN Password. Please provide them.'
+    ),
+    (
+        {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': 'pass', 'brokers': 'broker1, broker2',
+         'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
+        'Missing required parameters: CA certificate of Kafka server (.cer). Please provide them.'
+    ),
+]
+
+
+@pytest.mark.parametrize('params, expected_message', invalid_params_cases)
+def test_validate_params_invalid(params, expected_message):
+    from KafkaV3 import validate_params
+    # Test that the appropriate exception is raised with the correct message
+    with pytest.raises(DemistoException) as e:
+        validate_params(**params)
+    assert str(e.value) == expected_message

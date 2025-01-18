@@ -1,22 +1,18 @@
 BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
 
-## Configure Infoblox BloxOne Threat Defense on Cortex XSOAR
+## Configure Infoblox BloxOne Threat Defense in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Infoblox BloxOne Threat Defense.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                      | **Required** |
-    | ---------------------------------- | ------------ |
-    | Service API Key                    | True         |
-    | Trust any certificate (not secure) | False        |
-    | Use system proxy settings          | False        |
+| **Parameter**                      | **Required** |
+| ---------------------------------- | ------------ |
+| Service API Key                    | True         |
+| Trust any certificate (not secure) | False        |
+| Use system proxy settings          | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### bloxone-td-dossier-lookup-get

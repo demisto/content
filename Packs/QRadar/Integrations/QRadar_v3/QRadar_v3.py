@@ -1055,7 +1055,11 @@ def insert_values_to_reference_set_polling(client: Client,
         if not use_old_api:
             # get the reference set data
             response = client.reference_sets_list(ref_name=ref_name)
-        outputs = sanitize_outputs(response, REFERENCE_SETS_RAW_FORMATTED)
+        key_replace_dict = {
+            k: v for k, v in REFERENCE_SETS_RAW_FORMATTED.items()
+            if k != "data" or not argToBoolean(args.get("quiet_mode") or False)
+        }
+        outputs = sanitize_outputs(response, key_replace_dict)
 
         command_results = CommandResults(
             readable_output=tableToMarkdown('Reference Update Create', outputs, removeNull=True),
@@ -2452,6 +2456,7 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
     """
     print_debug_msg(f'Creating {len(offenses)} incidents')
     return [{
+        # NOTE: incident name will be updated in mirroring also with incoming mapper.
         'name': f'''{offense.get('id')} {offense.get('description', '')}''',
         'rawJSON': json.dumps(offense),
         'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
@@ -2591,7 +2596,7 @@ def long_running_execution_command(client: Client, params: dict):
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
     mirror_options = params.get('mirror_options', '')
-    assets_limit = int(params.get('assets_limit', DEFAULT_ASSETS_LIMIT))
+    assets_limit = int(params.get('limit_assets', DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
     context_data, version = get_integration_context_with_version()

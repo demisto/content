@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The webhook URL in the Teams channel.
-  display: Microsoft Webhook URL
+  display: Microsoft workflow URL
   name: webhookurl
   required: true
   type: 0
@@ -24,7 +24,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
+description: Integration for sending notifications to a Microsoft Teams channel via a workflow of type `Post to a channel when a webhook request is received`.
 display: Microsoft Teams via Webhook
 name: Microsoft Teams via Webhook
 script:
@@ -40,9 +40,20 @@ script:
     - defaultValue: Cortex XSOAR URL
       description: The title for the link, defaults to "Cortex XSOAR URL".
       name: url_title
+    - description: Should the adaptive card format be used or a single text message.
+      name: adaptive_cards_format
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: true
+    - description: JSON object used to overwrite the default adaptive card JSON.
+      required: false
+      name: overwrite_adaptive_card_json
     description: Send a message to Microsoft Teams via Incoming Webhook.
     name: ms-teams-message
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.111526
   runonce: false
   script: ''
   subtype: python3

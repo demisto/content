@@ -18,3 +18,37 @@ ignore=BA101
 
 [file:1_4_1.md]
 ignore=RN116
+
+# GR103 is temporary, see CIAC-11656
+[file:incidentfield-GIB_Screenshot.json]
+ignore=GR103
+[file:incidentfield-GIB_Related_Indicators_Data.json]
+ignore=GR103
+[file:incidentfield-GIB_Date_Expired.json]
+ignore=GR103
+[file:incidentfield-GIB_Phishing_Status.json]
+ignore=GR103
+[file:incidentfield-GIB_HTML.json]
+ignore=GR103
+[file:incidentfield-GIB_Date_Created.json]
+ignore=GR103
+[file:incidentfield-GIB_Address.json]
+ignore=GR103
+[file:incidentfield-GIB_Phishing_Domain.json]
+ignore=GR103
+[file:incidentfield-GIB_Phishing_Type.json]
+ignore=GR103
+[file:incidentfield-GIB_Title.json]
+ignore=GR103
+[file:classifier-Group-IB_Threat_Intelligence_mapper.json]
+ignore=GR103
+[file:incidentfield-GIB_Name_Servers.json]
+ignore=GR103
+[file:incidentfield-GIB_Email.json]
+ignore=GR103
+[file:incidentfield-GIB_Person.json]
+ignore=GR103
+[file:incidentfield-GIB_ID.json]
+ignore=GR103
+[file:incidentfield-GIB_Favicon.json]
+ignore=GR103

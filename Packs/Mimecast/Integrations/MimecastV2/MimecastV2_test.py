@@ -669,6 +669,56 @@ def test_empty_query(mocker):
     assert len(results.get('Contents')) == 0
 
 
+def test_query_email_arguments(requests_mock):
+    """
+    Test case for the 'query' function of the MimecastV2 integration with email arguments.
+
+    GIVEN:
+        - A mocked HTTP request to Mimecast API with specific email parameters.
+    WHEN:
+        - The 'query' function is called with sentTo, sentFrom, and subject arguments.
+    THEN:
+        - Ensure the request body matches the expected XML structure with the correct values.
+    """
+    query_data = util_load_json("test_data/query_response.json")
+    expected_body = {'admin': True,
+                     'query': '<?xml version="1.0"?> \n'
+                              '    <xmlquery trace="iql,muse">\n'
+                              '    <metadata query-type="emailarchive" archive="true" '
+                              'active="false" page-size="25" startrow="0">\n'
+                              '        <smartfolders/>\n'
+                              '        <return-fields>\n'
+                              '            <return-field>attachmentcount</return-field>\n'
+                              '            <return-field>status</return-field>\n'
+                              '            <return-field>subject</return-field>\n'
+                              '            <return-field>size</return-field>\n'
+                              '            <return-field>receiveddate</return-field>\n'
+                              '            <return-field>displayfrom</return-field>\n'
+                              '            <return-field>id</return-field>\n'
+                              '            <return-field>displayto</return-field>\n'
+                              '            <return-field>smash</return-field>\n'
+                              '        </return-fields>\n'
+                              '    </metadata>\n'
+                              '    <muse>\n'
+                              '        <text>subject: Test Email Subject</text>\n'
+                              '        <date select="last_year"/>\n'
+                              '        <sent select="from" >sender@example.com</sent><sent '
+                              'select="to" >recipient@example.com</sent>\n'
+                              '        <docs select="optional"></docs>\n'
+                              '        <route/>\n'
+                              '    </muse>\n'
+                              '</xmlquery>'}
+    mocked_post = requests_mock.post(
+        f"{MimecastV2.BASE_URL}/api/archive/search",
+        json=query_data["response"],
+        status_code=200
+    )
+    args = {"sentTo": "recipient@example.com", "sentFrom": "sender@example.com", "subject": "Test Email Subject"}
+    MimecastV2.query(args)
+    sent_body = mocked_post.last_request.json()
+    assert sent_body["data"] == [expected_body], "The request body does not match the expected structure."
+
+
 def test_get_message_metadata_with_attachments(mocker):
     """
         Given: Message metadata from API with attachments.

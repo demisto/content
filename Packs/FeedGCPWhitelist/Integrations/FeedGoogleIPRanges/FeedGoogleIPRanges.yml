@@ -8,6 +8,7 @@ configuration:
   name: feed
   type: 8
   required: false
+  section: Collect
 - defaultvalue: All GCP customer global and regional external IP ranges
   display: IP Address Ranges
   name: ip_ranges
@@ -17,6 +18,7 @@ configuration:
   required: true
   type: 15
   additionalinfo: IP address ranges group to be fetched. See integration help for more information.
+  section: Connect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: None
   display: Indicator Reputation
@@ -28,6 +30,7 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -41,6 +44,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -51,6 +55,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -61,34 +66,57 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
+  section: Collect
+  advanced: true
+- display: Enrichment Excluded
+  name: enrichmentExcluded
+  type: 8
+  required: false
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  defaultvalue: 'false'
+  hidden:
+  - xsoar_on_prem
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: Use the Google IP Ranges integration to get GCP and Google global IP ranges.
 display: Google IP Ranges Feed
 name: Google IP Ranges Feed
@@ -100,7 +128,7 @@ script:
       defaultValue: "10"
     description: Gets indicators from the feed.
     name: google-ip-ranges-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.86612
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: false
   script: '-'
@@ -109,3 +137,6 @@ script:
 fromversion: 6.0.0
 tests:
 - Fetch Indicators Test
+sectionOrder:
+- Connect
+- Collect

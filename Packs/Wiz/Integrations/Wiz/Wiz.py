@@ -10,7 +10,7 @@ WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 WIZ = 'wiz'
 
-WIZ_VERSION = '1.2.12'
+WIZ_VERSION = '1.3.2'
 INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
 
 
@@ -41,6 +41,7 @@ AUTH0_PREFIX = [
     "auth0.test"
 ]
 URL_SUFFIX = 'wiz.io/oauth/token'
+URL_SUFFIX_FED = 'wiz.us/oauth/token'
 
 # Pull Issues
 PULL_ISSUES_QUERY = ("""
@@ -159,10 +160,1057 @@ query IssuesTable(
     orderBy: $orderBy) {
     nodes {
       evidenceQuery
+      threatDetectionDetails{
+        ...ThreatDetectionDetailsDetections
+        ...ThreatDetectionDetailsActorsResources
+        ...ThreatDetectionDetailsMainDetection
+        ...ThreatDetectionDetailsCloudEventGroups
+      }
+      type
     }
     pageInfo {
       hasNextPage
       endCursor
+    }
+  }
+}
+fragment ThreatDetectionDetailsDetections on ThreatDetectionIssueDetails {
+  detections(first: 500) {
+    nodes {
+      primaryResource {
+        id
+        type
+        name
+        externalId
+      }
+      actors {
+        id
+        name
+        externalId
+        providerUniqueId
+        type
+      }
+      startedAt
+      id
+      severity
+      description(format: MARKDOWN)
+      primaryResource {
+        region
+        cloudAccount {
+          id
+          name
+          externalId
+          cloudProvider
+        }
+      }
+      ruleMatch {
+        rule {
+          id
+          name
+          securitySubCategories {
+            id
+            title
+            category {
+              id
+              name
+              framework {
+                id
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment ThreatDetectionDetailsActorsResources on ThreatDetectionIssueDetails {
+  actors {
+    id
+    name
+    externalId
+    providerUniqueId
+    type
+  }
+  resources {
+    id
+    name
+    externalId
+    providerUniqueId
+    type
+    nativeType
+  }
+}
+
+fragment ThreatDetectionDetailsMainDetection on ThreatDetectionIssueDetails {
+  mainDetection {
+    id
+    startedAt
+    severity
+    description(format: MARKDOWN)
+    ruleMatch {
+      rule {
+        id
+        name
+        origins
+      }
+    }
+  }
+}
+
+fragment ThreatDetectionDetailsCloudEventGroups on ThreatDetectionIssueDetails {
+  cloudEventGroups(first: 500) {
+    nodes {
+      id
+      name
+      firstEventAt
+      lastEventAt
+      status
+      kind
+      origin
+      groupType
+      description
+      cloudEvents {
+        ...CloudEventGroupCloudEventResponse
+      }
+    }
+  }
+}
+
+fragment CloudEventGroupCloudEventResponse on CloudEvent {
+  id
+  category
+  externalName
+  isForeignActorIP
+  rawAuditLogRecord
+  errorMessage
+  timestamp
+  origin
+  path
+  kind
+  cloudPlatform
+  actor {
+    id
+    externalId
+    name
+    type
+    email
+    userAgent
+    accessKeyId
+    providerUniqueId
+    inactiveInLast90Days
+    friendlyName
+    hasAdminKubernetesPrivileges
+    hasAdminPrivileges
+    hasHighKubernetesPrivileges
+    hasHighPrivileges
+    isExternalCloudAccount
+    actingAs {
+      id
+      name
+      friendlyName
+      externalId
+      providerUniqueId
+      type
+    }
+  }
+  actorIP
+  actorIPMeta {
+    relatedAttackGroupNames
+    city
+    country
+    countryCode
+    reputation
+    autonomousSystemOrganization
+  }
+  subjectResource {
+    id
+    type
+    name
+    nativeType
+    externalId
+    providerUniqueId
+    region
+    cloudAccount {
+      id
+      name
+      externalId
+      cloudProvider
+    }
+    containerService {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    containerServiceGraphEntity {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesClusterGraphEntity {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesCluster {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesNamespaceGraphEntity {
+      id
+      name
+      providerUniqueId
+    }
+    kubernetesNamespace {
+      id
+      name
+      providerUniqueId
+    }
+    kubernetesControllerGraphEntity {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesController {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    openToAllInternet
+  }
+  errorCode
+  statusDetails {
+    errorReason
+    providerErrorMessage
+    providerErrorCode
+  }
+  status
+  matchedRules {
+    rule {
+      builtInId
+      name
+      id
+    }
+  }
+  ...CloudEventExtraDetails
+}
+
+fragment CloudEventExtraDetails on CloudEvent {
+  extraDetails {
+    ...CloudEventRuntimeDetails
+    ...CloudEventAdmissionReviewDetails
+    ...CloudEventFimDetails
+    ...CloudEventImageIntegrityDetails
+    ...CloudEventCICDScanDetails
+  }
+  trigger {
+    ...CloudEventSensorRulesMatch
+    ...CloudEventAdmissionReviewTriggerDetails
+  }
+}
+
+fragment CloudEventRuntimeDetails on CloudEventRuntimeDetails {
+  sensor {
+    id
+    name
+    lastSeenAt
+    firstSeenAt
+    sensorVersion
+    definitionsVersion
+    status
+    ipAddress
+    type
+    workload {
+      id
+      name
+      sensorName
+    }
+    cluster {
+      id
+      name
+      type
+    }
+  }
+  processTree {
+    ...CloudEventRuntimeProcessBasicDetails
+    userName
+    userId
+    hash
+    executionTime
+    stdin
+    stdout
+    name
+    wizResponse
+    enforcementResult {
+      action
+      errorMessage
+    }
+    containerGraphEntity {
+      ...ProcessResourceGraphEntity
+      properties
+    }
+    container {
+      id
+      name
+      externalId
+      imageGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      image {
+        id
+        externalId
+      }
+      podGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      pod {
+        id
+        name
+        externalId
+        ips
+        namespace
+        namespaceGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+      }
+      kubernetesControllerGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      kubernetesController {
+        id
+        name
+        externalId
+        type
+      }
+      kubernetesClusterGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      kubernetesCluster {
+        id
+        name
+        externalId
+      }
+      serviceAccount
+      ecsContainerDetails {
+        ecsTask {
+          id
+          externalId
+        }
+        ecsTaskGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+        ecsCluster {
+          id
+          name
+          externalId
+        }
+        ecsClusterGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+        ecsService {
+          id
+          name
+          externalId
+        }
+        ecsServiceGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+      }
+    }
+  }
+  hostGraphEntity {
+    properties
+    ...ProcessResourceGraphEntity
+  }
+  host {
+    id
+    externalId
+    type
+    hostname
+    kernelVersion
+    computeInstanceGroupGraphEntity {
+      id
+      name
+      type
+    }
+  }
+  rawDetails
+  runtimeExecutionDataId
+  type
+  context {
+    ... on CloudEventRuntimeTypeFileContext {
+      fileName
+    }
+    ... on CloudEventRuntimeTypeNetworkConnectContext {
+      remoteIP
+      remotePort
+    }
+    ... on CloudEventRuntimeTypeDNSQueryContext {
+      query
+    }
+    ... on CloudEventRuntimeTypeProcessStartContext {
+      commandLine
+    }
+    ... on CloudEventRuntimeTypeIMDSQueryContext {
+      query
+    }
+    ... on CloudEventRuntimeTypeChangeDirectoryContext {
+      path
+    }
+  }
+}
+
+fragment CloudEventRuntimeProcessBasicDetails on CloudEventRuntimeProcess {
+  id
+  command
+  path
+  executionTime
+}
+
+fragment ProcessResourceGraphEntity on GraphEntity {
+  id
+  name
+  type
+}
+
+fragment CloudEventAdmissionReviewDetails on CloudEventAdmissionReviewDetails {
+  verdict
+  policyEnforcement
+  reviewDuration
+  infoMatches
+  lowMatches
+  mediumMatches
+  highMatches
+  criticalMatches
+  totalMatches
+  policies {
+    ...CICDScanPolicyDetails
+  }
+  cloudConfigurationFindings {
+    cloudConfigurationRule {
+      id
+      shortId
+      name
+      severity
+      cloudProvider
+    }
+    passedPolicies {
+      ...CICDScanPolicyDetails
+    }
+    failedPolicies {
+      ...CICDScanPolicyDetails
+    }
+  }
+}
+
+fragment CICDScanPolicyDetails on CICDScanPolicy {
+  id
+  name
+  description
+  policyLifecycleEnforcements {
+    enforcementMethod
+    deploymentLifecycle
+  }
+  params {
+    __typename
+    ... on CICDScanPolicyParamsIAC {
+      severityThreshold
+    }
+    ... on CICDScanPolicyParamsVulnerabilities {
+      severity
+    }
+    ... on CICDScanPolicyParamsSensitiveData {
+      dataFindingSeverityThreshold
+    }
+    ... on CICDScanPolicyParamsHostConfiguration {
+      hostConfigurationSeverity
+      rulesScope {
+        type
+        securityFrameworks {
+          id
+          name
+        }
+      }
+      failCountThreshold
+      passPercentageThreshold
+    }
+  }
+}
+
+fragment CloudEventFimDetails on CloudEventFimDetails {
+  previousHash
+}
+
+fragment CloudEventImageIntegrityDetails on CloudEventImageIntegrityAdmissionReviewDetails {
+  verdict
+  policyEnforcement
+  reviewDuration
+  policies {
+    ...CICDScanPolicyDetails
+  }
+  images {
+    id
+    name
+    imageVerdict
+    sources
+    digest
+    policiesFailedBasedOnNoMatchingValidators {
+      id
+      name
+    }
+    imageIntegrityValidators {
+      imageIntegrityValidator {
+        ...ImageSignatureValidatorDetails
+      }
+      verdict
+      failedPolicies {
+        ...CICDScanPolicyDetails
+      }
+      passedPolicies {
+        ...CICDScanPolicyDetails
+      }
+      extraDetails {
+        ... on ImageIntegrityAdmissionReviewImageValidatorExtraDetailsWizScan {
+          cicdScan {
+            id
+            status {
+              verdict
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment ImageSignatureValidatorDetails on ImageIntegrityValidator {
+  id
+  name
+  description
+  imagePatterns
+  projects {
+    id
+    isFolder
+    slug
+    name
+  }
+  value {
+    method
+    notary {
+      certificate
+    }
+    cosign {
+      method
+      key
+      certificate
+      certificateChain
+    }
+    wizScan {
+      maxAgeHours
+      policyId
+      serviceAccountIds
+    }
+  }
+}
+
+fragment CloudEventCICDScanDetails on CloudEventCICDScanDetails {
+  cicdScanPolicyEnforcement: policyEnforcement
+  scanDuration
+  trigger
+  tags {
+    key
+    value
+  }
+  createdBy {
+    serviceAccount {
+      id
+      name
+    }
+    user {
+      id
+      name
+      email
+    }
+  }
+  cliDetails {
+    ...CICDScanCLIDetailsFragment
+  }
+  codeAnalyzerDetails {
+    taskUrl
+    commit {
+      author
+      infoURL
+      messageSnippet
+      ref
+      sha
+    }
+    webhookEvent {
+      createdAt
+      hookID
+      payload
+      processedAt
+      receivedAt
+      source
+      sourceRequestID
+      type
+      wizRequestID
+    }
+    pullRequest {
+      author
+      title
+      baseCommit {
+        sha
+        ref
+        infoURL
+      }
+      headCommit {
+        sha
+        ref
+        infoURL
+      }
+      bodySnippet
+      infoURL
+      analytics {
+        additions
+        deletions
+        changedFiles
+        commits
+      }
+    }
+  }
+  warnedPolicies {
+    ...CICDScanPolicyDetails
+  }
+  failedPolicies {
+    ...CICDScanPolicyDetails
+  }
+  passedPolicies {
+    ...CICDScanPolicyDetails
+  }
+  policies {
+    ...CICDScanPolicyDetails
+  }
+  secretDetails {
+    failedPolicyMatches {
+      policy {
+        __typename
+        id
+        name
+      }
+    }
+    secrets {
+      id
+      contains {
+        name
+        type
+      }
+      details {
+        __typename
+      }
+      failedPolicyMatches {
+        policy {
+          __typename
+          id
+          name
+        }
+      }
+      description
+      lineNumber
+      offset
+      path
+      snippet
+      type
+      severity
+      hasAdminPrivileges
+      hasHighPrivileges
+      relatedEntities {
+        id
+        type
+        name
+        properties
+      }
+    }
+  }
+  iacDetails {
+    ruleMatches {
+      rule {
+        id
+        shortId
+        name
+        description
+        cloudProvider
+      }
+      deletedRuleFallback: rule {
+        id
+        name
+      }
+      severity
+      failedResourceCount
+      failedPolicyMatches {
+        policy {
+          id
+        }
+      }
+      matches {
+        resourceName
+        fileName
+        lineNumber
+        matchContent
+        expected
+        found
+      }
+    }
+    scanStatistics {
+      infoMatches
+      lowMatches
+      highMatches
+      mediumMatches
+      criticalMatches
+      totalMatches
+    }
+  }
+  hostConfigurationDetails {
+    ...HostConfigurationDetails
+  }
+  vulnerabilityDetails {
+    vulnerableSBOMArtifactsByNameVersion {
+      ...CICDSbomArtifactsByNameVersion
+    }
+    cpes {
+      name
+      version
+      path
+      vulnerabilities {
+        ...CICDScanDiskScanVulnerabilityDetails
+      }
+      detectionMethod
+    }
+    osPackages {
+      name
+      version
+      vulnerabilities {
+        ...CICDScanDiskScanVulnerabilityDetails
+      }
+      detectionMethod
+    }
+    libraries {
+      name
+      version
+      path
+      vulnerabilities {
+        ...CICDScanDiskScanVulnerabilityDetails
+      }
+      detectionMethod
+    }
+    applications {
+      name
+      vulnerabilities {
+        path
+        pathType
+        version
+        vulnerability {
+          ...CICDScanDiskScanVulnerabilityDetails
+        }
+      }
+      detectionMethod
+    }
+  }
+  dataDetails {
+    dataFindingsWithFullClassifierInfo: findings {
+      dataClassifier {
+        id
+        name
+        category
+        originalDataClassifierOverridden
+      }
+      ...CICDScanDataFindingDetails
+    }
+    dataFindings: findings {
+      dataClassifier {
+        id
+        name
+      }
+      ...CICDScanDataFindingDetails
+    }
+  }
+  status {
+    details
+    state
+    verdict
+  }
+  policies {
+    __typename
+    id
+    name
+    params {
+      __typename
+    }
+  }
+}
+
+fragment CICDScanCLIDetailsFragment on CICDScanCLIDetails {
+  scanOriginResource {
+    name
+    __typename
+    ... on CICDScanOriginIAC {
+      subTypes
+      name
+    }
+    ... on CICDScanOriginContainerImage {
+      digest
+      id
+      name
+    }
+  }
+  scanOriginResourceType
+  clientName
+  clientVersion
+  buildParams {
+    commitUrl
+    branch
+    commitHash
+    committedBy
+    platform
+    repository
+    extraDetails {
+      ... on CICDBuildParamsContainerImage {
+        dockerfilePath
+        dockerfileContents
+      }
+    }
+  }
+}
+
+fragment HostConfigurationDetails on CICDHostConfigurationScanResult {
+  hostConfigurationFrameworks {
+    framework {
+      id
+      name
+    }
+    matches {
+      policyMatch {
+        policy {
+          id
+        }
+      }
+    }
+  }
+  hostConfigurationFindings {
+    rule {
+      description
+      name
+      id
+      securitySubCategories {
+        id
+        resolutionRecommendation
+        title
+        description
+        category {
+          id
+          name
+          framework {
+            id
+            name
+            enabled
+          }
+        }
+      }
+    }
+    status
+    severity
+    failedPolicyMatches {
+      policy {
+        id
+      }
+    }
+  }
+}
+
+fragment CICDSbomArtifactsByNameVersion on CICDDiskScanResultSBOMArtifactsByNameVersion {
+  id
+  name
+  version
+  filePath
+  vulnerabilityFindings {
+    fixedVersion
+    remediation
+    severities {
+      criticalCount
+      highCount
+      infoCount
+      lowCount
+      mediumCount
+    }
+    findings {
+      id
+      vulnerabilityExternalId
+      vulnerableAsset {
+        ... on VulnerableAssetRepositoryBranch {
+          id
+          type
+          name
+          providerUniqueId
+          repositoryName
+        }
+      }
+      remediationPullRequestAvailable
+      remediationPullRequestConnector {
+        id
+        name
+        type {
+          id
+          name
+        }
+      }
+      severity
+    }
+  }
+  layerMetadata {
+    id
+    isBaseLayer
+    details
+  }
+  type {
+    ...SBOMArtifactTypeFragment
+  }
+}
+
+fragment SBOMArtifactTypeFragment on SBOMArtifactType {
+  group
+  codeLibraryLanguage
+  osPackageManager
+  hostedTechnology {
+    id
+    name
+    icon
+  }
+  plugin
+}
+
+fragment CICDScanDiskScanVulnerabilityDetails on DiskScanVulnerability {
+  name
+  severity
+  fixedVersion
+  source
+  score
+  exploitabilityScore
+  hasExploit
+  hasCisaKevExploit
+  cisaKevReleaseDate
+  cisaKevDueDate
+  epssProbability
+  epssPercentile
+  epssSeverity
+  publishDate
+  fixPublishDate
+  gracePeriodEnd
+  gracePeriodRemainingHours
+  failedPolicyMatches {
+    policy {
+      id
+      name
+      params {
+        ... on CICDScanPolicyParamsHostConfiguration {
+          failCountThreshold
+          passPercentageThreshold
+          rulesScope {
+            type
+          }
+        }
+      }
+    }
+  }
+  weightedSeverity
+  finding {
+    id
+    version
+  }
+}
+
+fragment CICDScanDataFindingDetails on CICDDiskScanResultDataFinding {
+  matchCount
+  severity
+  examples {
+    path
+    matchCount
+    value
+  }
+}
+
+fragment CloudEventSensorRulesMatch on CloudEventSensorRulesMatch {
+  sensorEngineRules {
+    rule {
+      id
+      name
+      description
+      MITRETactics
+      MITRETechniques
+    }
+    version
+  }
+  fileReputationHashMatch {
+    name
+    md5
+    sha1
+    sha256
+    sampleFirstSeen
+    sampleLastSeen
+    scannerMatch
+    scannerCount
+    scannerPercent
+    trustFactor
+    malwareClassification {
+      isGeneric
+      type
+      platform
+      subPlatform
+      family
+      vulnerability {
+        id
+      }
+    }
+  }
+  connectivityReputation {
+    source {
+      ip
+      port
+    }
+    destination {
+      ip
+      ipReputation
+      port
+    }
+    process {
+      ...CloudEventRuntimeProcessBasicDetails
+    }
+  }
+  dnsQueryReputation {
+    domain
+    domainReputation
+    process {
+      ...CloudEventRuntimeProcessBasicDetails
+    }
+  }
+}
+
+fragment CloudEventAdmissionReviewTriggerDetails on CloudEventAdmissionReview {
+  cloudConfigurationRuleMatches {
+    cloudConfigurationRule {
+      id
+    }
+    cicdScanPolicies {
+      id
+      name
+      params {
+        __typename
+      }
     }
   }
 }
@@ -448,6 +1496,48 @@ PULL_RESOURCES_QUERY = ("""
                 }
             }
     """)
+PULL_RESOURCES_ID_NATIVE_QUERY = """
+query CloudResourceSearch($filterBy: CloudResourceFilters, $first: Int, $after: String) {
+  cloudResources(filterBy: $filterBy, first: $first, after: $after) {
+    nodes {
+      id
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+"""
+PULL_CLOUD_RESOURCES_NATIVE_QUERY = """
+query CloudResourceSearch($filterBy: CloudResourceFilters, $first: Int, $after: String) {
+  cloudResources(filterBy: $filterBy, first: $first, after: $after) {
+    nodes {
+      id
+      name
+      type
+      subscriptionId
+      subscriptionExternalId
+      graphEntity {
+        id
+        providerUniqueId
+        name
+        type
+        projects {
+          id
+        }
+        properties
+        firstSeen
+        lastSeen
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+"""
 PULL_RESOURCES_VARIABLES = {
     "fetchPublicExposurePaths": True,
     "fetchInternalExposurePaths": False,
@@ -469,11 +1559,22 @@ PULL_RESOURCES_VARIABLES = {
     "quick": True
 }
 
+# Copy to forensics account
+COPY_TO_FORENSICS_ACCOUNT_MUTATION = """
+        mutation CopyResourceForensicsToExternalAccount($input: CopyResourceForensicsToExternalAccountInput!) {
+          copyResourceForensicsToExternalAccount(input: $input) {
+            systemActivityGroupId
+          }
+        }
+    """
+
 
 class WizInputParam:
     ISSUE_ID = 'issue_id'
     ISSUE_TYPE = 'issue_type'
+    ENTITY_TYPE = 'entity_type'
     RESOURCE_ID = 'resource_id'
+    RESOURCE_NAME = 'resource_name'
     SEVERITY = 'severity'
     REJECT_REASON = 'reject_reason'
     REJECT_NOTE = 'reject_note'
@@ -508,6 +1609,12 @@ def generate_auth_urls(prefix):
     return auth_url, http_auth_url
 
 
+def generate_auth_urls_fed(prefix):
+    auth_url = f"{prefix}.{URL_SUFFIX_FED}"
+    http_auth_url = f"https://{auth_url}"
+    return auth_url, http_auth_url
+
+
 def get_token():
     """
     Retrieve the token using the credentials
@@ -516,6 +1623,7 @@ def get_token():
     cognito_list = []
     for cognito_prefix in COGNITO_PREFIX:
         cognito_list.extend(generate_auth_urls(cognito_prefix))
+        cognito_list.extend(generate_auth_urls_fed(cognito_prefix))
 
     auth0_list = []
     for auth0_prefix in AUTH0_PREFIX:
@@ -702,21 +1810,22 @@ def get_issue(issue_id):
     return issues
 
 
-def get_filtered_issues(issue_type, resource_id, severity, limit):
+def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     """
     Retrieves Filtered Issues
     """
-    demisto.info(f"Issue type is {issue_type}\n"
+    demisto.info(f"Entity type is {entity_type}\n"
                  f"Resource ID is {resource_id}\n"
-                 f"Severity is {severity}")
+                 f"Severity is {severity}\n"
+                 f"Issue type is {issue_type}")
     error_msg = ''
 
-    if not severity and not issue_type and not resource_id:
-        error_msg = "You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id" \
-                    "\n\tseverity\n"
+    if not severity and not entity_type and not resource_id and not issue_type:
+        error_msg = "You should pass (at least) one of the following parameters:\n\tentity_type\n\tresource_id" \
+                    "\n\tseverity\n\tissue_type\n"
 
-    if issue_type and resource_id:
-        error_msg = f"{error_msg}You cannot pass issue_type and resource_id together\n"
+    if entity_type and resource_id:
+        error_msg = f"{error_msg}You cannot pass entity_type and resource_id together\n"
 
     if error_msg:
         demisto.error(error_msg)
@@ -725,7 +1834,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     issue_variables = {}
     query = PULL_ISSUES_QUERY
 
-    if issue_type:
+    if entity_type:
         issue_variables = {
             "first": limit,
             "filterBy": {
@@ -735,9 +1844,9 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                 ],
                 "relatedEntity": {
                     "type": [
-                        issue_type
+                        entity_type
                     ]
-                }
+                },
             },
             "orderBy": {
                 "field":
@@ -813,6 +1922,13 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
             return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
                     "upper or lower case.")
 
+    if issue_type:
+        if 'filterBy' not in issue_variables.keys():
+            issue_variables['filterBy'] = {}
+            issue_variables['first'] = limit
+
+        issue_variables['filterBy']['type'] = [issue_type]
+
     demisto.info(f"Query is {query}")
     demisto.info(f"Issue variables is {issue_variables}")
 
@@ -833,13 +1949,40 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     return issues
 
 
-def get_resource(resource_id):
+def get_resource(resource_id, resource_name):
     """
     Retrieves Resource Details
     """
 
     demisto.debug("get_resource, enter")
 
+    if resource_name and resource_id:
+        demisto.error("You cannot pass both resource_name and resource_id together")
+        return "You should pass exactly one of resource_name or resource_id"
+
+    if not resource_name and not resource_id:
+        demisto.error("You must pass either resource_name or resource_id")
+        return "You should pass exactly one of resource_name or resource_id"
+
+    if resource_name:
+        variables = {
+            "first": WIZ_API_LIMIT,
+            "filterBy": {
+                "search": resource_name
+            }
+        }
+        try:
+            response_json = checkAPIerrors(PULL_CLOUD_RESOURCES_NATIVE_QUERY, variables)
+        except DemistoException:
+            demisto.debug(f"could not find resource with this resource_name {resource_name}")
+            return {}
+
+        if response_json['data']['cloudResources']['nodes'] is None or not response_json['data']['cloudResources']['nodes']:
+            demisto.info("Resource Not Found")
+            return "Resource Not Found"
+        else:
+            return response_json
+    # to get resource by resource_id
     variables = {
         "fetchPublicExposurePaths": True,
         "fetchInternalExposurePaths": False,
@@ -1157,6 +2300,17 @@ def get_issue_evidence(issue_id):
     # Getting the Issue Evidence Query
     issue_object = _get_issue(issue_id, is_evidence=True)
 
+    if not issue_object['data']['issues']['nodes']:
+        return f"Issue not found: {issue_id}"
+
+    issue_type = issue_object['data']['issues']['nodes'][0]['type']
+
+    if issue_type == 'THREAT_DETECTION':
+        if issue_object['data']['issues']['nodes'][0]['threatDetectionDetails'] is not None:
+            return issue_object['data']['issues']['nodes'][0]['threatDetectionDetails']
+        else:
+            return f"No issue threat detection details evidence for Issue ID: {issue_id}"
+
     query_for_evidence = issue_object['data']['issues']['nodes'][0]['evidenceQuery']
 
     if not query_for_evidence:
@@ -1176,97 +2330,10 @@ def get_issue_evidence(issue_id):
 
     if response.get('data', {}).get('graphSearch', {}).get('nodes') is None:
         return "Resource Not Found"
+    elif len(response.get('data', {}).get('graphSearch', {}).get('nodes')) == 0:
+        return "No Evidence Found"
     else:
         return response['data']['graphSearch']['nodes'][0].get('entities', {})
-
-
-def rescan_machine_disk(vm_id):
-    """
-    Rescan a VM disk in Wiz
-    """
-
-    demisto.debug("rescan_machine_disk, enter")
-
-    if not vm_id:
-        demisto.error("You should pass a VM ID.")
-        return "You should pass a VM ID."
-
-    # find VM on the graph
-    vm_variables = {
-        "projectId": "*",
-        "query": {
-            "type": [
-                "VIRTUAL_MACHINE"
-            ],
-            "where": {
-                "providerUniqueId": {
-                    "EQUALS": [
-                        vm_id
-                    ]
-                }
-            }
-        }
-    }
-    vm_query = (  # pragma: no cover
-        """
-        query GraphEntityResourceFilterAutosuggest(
-            $query: GraphEntityQueryInput
-            $projectId: String!
-            ) {
-            graphSearch(
-                first: 100, query: $query, quick: true, projectId: $projectId
-            ) {
-                nodes {
-                    entities {
-                        id
-                        name
-                        type
-                    }
-                }
-            }
-        }
-    """)
-
-    try:
-        vm_response = checkAPIerrors(vm_query, vm_variables)
-    except DemistoException:
-        demisto.debug(f"could not find VM with ID {vm_id}")
-        return {}
-
-    # Run the rescan query
-    if not vm_response.get('data', {}).get('graphSearch', {}).get('nodes', []):
-        demisto.error(f"could not find VM with ID {vm_id}")
-        return f"could not find VM with ID {vm_id}"
-
-    else:
-        vm_id_wiz = vm_response['data']['graphSearch']['nodes'][0]['entities'][0]['id']
-        demisto.info(f"Found VM with ID {vm_id}")
-
-    variables = {
-        'input': {
-            'id': vm_id_wiz,
-            'type': 'VIRTUAL_MACHINE'
-        }
-    }
-    query = (  # pragma: no cover
-        """
-        mutation RequestResourceScan($input: RequestConnectorEntityScanInput!) {
-          requestConnectorEntityScan(input: $input) {
-            success
-            reason
-          }
-        }
-    """)
-
-    demisto.info(f"Running scan on VM ID {vm_id}")
-    try:
-        response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"could not find run scan on VM ID {vm_id}")
-        return {}
-
-    demisto.info(f"Scan on VM ID {vm_id} submitted successfully.")
-    return response
 
 
 def get_project_team(project_name):
@@ -1370,6 +2437,46 @@ def get_project_team(project_name):
         return project_team
 
 
+def copy_to_forensics_account(resource_id):
+    """
+    Copy resource Volumes to a Forensics Account
+    """
+    demisto.info(f"resource id is {resource_id}\n")
+    demisto.debug("copy_to_forensics_account, enter")
+
+    if not is_valid_uuid(resource_id):
+        variables = {
+            "first": 1,
+            "filterBy": {
+                "providerUniqueId": [resource_id]
+            }
+        }
+        resource_id_response = checkAPIerrors(PULL_RESOURCES_ID_NATIVE_QUERY, variables)
+        if resource_id_response['data'] is None or not resource_id_response['data']['cloudResources']['nodes']:
+            demisto.error(f"Resource with ID {resource_id} not found.")
+            return f"Resource with ID {resource_id} not found."
+        else:
+            resource_id = resource_id_response['data']['cloudResources']['nodes'][0]['id']
+
+    copy_to_forensics_account_variables = {
+        "input": {
+            "id": resource_id
+        }
+    }
+
+    response_json = checkAPIerrors(COPY_TO_FORENSICS_ACCOUNT_MUTATION, copy_to_forensics_account_variables)
+    demisto.debug(f"The API response is {response_json}")
+
+    if response_json["data"] is None and response_json["errors"] is not None:
+        demisto.error(f"Resource with ID {resource_id} was not copied to Forensics Account.")
+        return f"Resource with ID {resource_id} was not copied to Forensics Account. error: {response_json['errors']}"
+    elif not response_json["data"]["copyResourceForensicsToExternalAccount"]["systemActivityGroupId"]:
+        demisto.info(f"Resource with ID {resource_id} was not copied to Forensics Account.")
+        return {}
+    else:
+        return response_json
+
+
 def is_valid_uuid(uuid_string):
     if not isinstance(uuid_string, str):
         uuid_string = str(uuid_string)
@@ -1423,10 +2530,12 @@ def main():
             issue_type = demisto_args.get(WizInputParam.ISSUE_TYPE)
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             severity = demisto_args.get(WizInputParam.SEVERITY)
+            entity_type = demisto_args.get(WizInputParam.ENTITY_TYPE)
             issues = get_filtered_issues(
                 issue_type=issue_type,
                 resource_id=resource_id,
                 severity=severity,
+                entity_type=entity_type,
                 limit=WIZ_API_LIMIT,
             )
             if isinstance(issues, str):
@@ -1438,9 +2547,15 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-get-resource":
-            resource = get_resource(resource_id=demisto.args()[WizInputParam.RESOURCE_ID])
-            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource,
-                                            raw_response=resource)
+            demisto_args = demisto.args()
+            resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+            resource_name = demisto_args.get(WizInputParam.RESOURCE_NAME)
+            resource = get_resource(resource_id=resource_id, resource_name=resource_name)
+            if resource_id:
+                command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource,
+                                                raw_response=resource)
+            else:
+                command_result = CommandResults(readable_output=resource, raw_response=resource)
             return_results(command_result)
 
         elif command == 'wiz-reject-issue':
@@ -1547,15 +2662,6 @@ def main():
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
-        elif command == 'wiz-rescan-machine-disk':
-            demisto_args = demisto.args()
-            vm_id = demisto_args.get(WizInputParam.VM_ID)
-            issue_response = rescan_machine_disk(
-                vm_id=vm_id
-            )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
-            return_results(command_result)
-
         elif command == 'wiz-get-project-team':
             demisto_args = demisto.args()
             project_name = demisto_args.get(WizInputParam.PROJECT_NAME)
@@ -1563,6 +2669,19 @@ def main():
                 project_name=project_name
             )
             command_result = CommandResults(readable_output=projects_response, raw_response=projects_response)
+            return_results(command_result)
+
+        elif command == 'wiz-rescan-machine-disk':
+            return_results(CommandResults(readable_output="This command is deprecated",
+                           raw_response="This command is deprecated"))
+
+        elif command == 'wiz-copy-to-forensics-account':
+            demisto_args = demisto.args()
+            resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+            copy_mutation_response = copy_to_forensics_account(
+                resource_id=resource_id
+            )
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         else:

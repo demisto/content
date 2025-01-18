@@ -1,6 +1,15 @@
+[file:README.md]
+ignore=RM102
+
 [file:NetskopeEventCollector.yml]
 ignore=MR108
 
 [file:NetskopeEventCollector_1_3.yml]
 ignore=MR108
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-NetskopeAPIv2_Test.yml]
+ignore=GR103
+
+[file:NetskopeAPIv2.yml]
+ignore=IN136

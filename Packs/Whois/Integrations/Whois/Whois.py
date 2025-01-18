@@ -7216,6 +7216,7 @@ def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, st
 
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
                   server_list=None, is_recursive=True):
+    new_list = []
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -8118,7 +8119,7 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    demisto.debug(e)
+                    demisto.debug(f'{e}')
         try:
             if year > 0:
                 if month > 12:
@@ -8335,11 +8336,18 @@ def get_whois(domain: str, is_recursive=True):
 
 # Drops the mic disable-secrets-detection-end
 
-def get_domain_from_query(query):
+def get_domain_from_query(query: str):
 
     demisto.debug(f"Attempting to get domain from query '{query}'...")
 
     try:
+        # remove everything after the first appearance of one of "/", "?" or "#"
+        idx_to_split = min(
+            i for i in [query.find("#"), query.find("?"), query.replace("://", ":$$").find("/"), len(query)]
+            if i > -1
+        )
+        query = query[:idx_to_split]
+
         # checks for largest matching suffix inside tlds dictionary
         suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
         # if suffix(TLD) was found increase the length by one in order to add the dot before it. --> .com instead of com
@@ -9086,7 +9094,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                         headers=hr_headers,
                         removeNull=True,
                     ),
-                    raw_response=str(domain_data),
+                    raw_response=dict(domain_data),
                 )
             )
         except Exception as e:

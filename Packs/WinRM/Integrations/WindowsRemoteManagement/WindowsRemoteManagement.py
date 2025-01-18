@@ -3,12 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import winrm
-
+from winrm import Session
 
 ''' Helper functions '''
 
 
-class Client(object):
+class Client:
     def __init__(self, username, password, auth_type, realm, default_host, decode):
         self.username = username
         self.password = password
@@ -23,13 +23,15 @@ class Client(object):
         self.res = None
 
     def run(self):
+        s: Session
         if self.auth == "ntlm":
             s = winrm.Session(
                 target=self.hostname,
                 auth=(self.username, self.password),
                 transport=self.auth
             )
-        elif self.auth == "kerberos":
+        else:  # self.auth == "kerberos":
+            demisto.debug(f"{self.auth=}. Should be kerberos")
             s = winrm.Session(
                 target=self.hostname,
                 auth=(self.username, self.password),
@@ -38,10 +40,10 @@ class Client(object):
             )
 
         if self.runType == 'Process':
-            self.res = s.run_cmd(self.command, self.arguments)
+            self.res = s.run_cmd(self.command, self.arguments)  # type: ignore[arg-type]
 
         elif self.runType == 'Script':
-            self.res = s.run_ps(self.script)
+            self.res = s.run_ps(self.script)  # type: ignore[arg-type]
 
     def output(self):
         entry_context = None

@@ -1,0 +1,19 @@
+{
+    "trigger_id": "907c5db410d816a487249e77cbbf411a",
+    "playbook_id": "Netcat Makes or Gets Connections",
+    "suggestion_reason": "Recommended for `Netcat Makes or Gets Connections` Alerts ",
+    "description": "This trigger is responsible for handling `Netcat Makes or Gets Connections` alert",
+    "trigger_name": "Netcat Makes or Gets Connections",
+    "fromVersion": "8.8.0",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Netcat makes or gets connections"
+                }
+            ]
+        }
+    }
+}

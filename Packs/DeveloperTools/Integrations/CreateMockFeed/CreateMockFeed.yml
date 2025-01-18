@@ -99,7 +99,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList

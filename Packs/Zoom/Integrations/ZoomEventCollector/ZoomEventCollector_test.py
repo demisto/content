@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import json
 from freezegun import freeze_time
 
@@ -93,7 +93,7 @@ def test_fetch_events(mocker):
     """
     from ZoomEventCollector import fetch_events, Client
 
-    first_fetch_time = datetime(2023, 3, 1).replace(tzinfo=timezone.utc)
+    first_fetch_time = datetime(2023, 3, 1).replace(tzinfo=UTC)
 
     http_request_mocker = mocker.patch.object(Client, "error_handled_http_request", side_effect=[
         util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events_month_before'),
@@ -107,7 +107,7 @@ def test_fetch_events(mocker):
 
     client = Client(base_url=BASE_URL)
     next_run, events = fetch_events(client, last_run={},
-                                    first_fetch_time=datetime(2023, 2, 1).replace(tzinfo=timezone.utc))
+                                    first_fetch_time=datetime(2023, 2, 1).replace(tzinfo=UTC))
 
     mock_events = util_load_json('test_data/zoom_fetch_events.json')
     assert http_request_mocker.call_args_list[0][1].get("params") == {'page_size': 300, 'from': '2023-02-01',
@@ -154,7 +154,7 @@ def test_fetch_events_with_last_run(mocker):
         - Ensure the events are returned as expected and the pagination is working as expected
     """
     from ZoomEventCollector import fetch_events, Client
-    first_fetch_time = datetime(2023, 3, 1).replace(tzinfo=timezone.utc)
+    first_fetch_time = datetime(2023, 3, 1).replace(tzinfo=UTC)
 
     http_request_mocker = mocker.patch.object(Client, "error_handled_http_request", side_effect=[
         util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events_with_token'),
@@ -214,7 +214,7 @@ def test_get_events_command(mocker):
 
     client = Client(base_url=BASE_URL)
     events, results = get_events(client, limit=2,
-                                 first_fetch_time=datetime(2023, 3, 1).replace(tzinfo=timezone.utc))
+                                 first_fetch_time=datetime(2023, 3, 1).replace(tzinfo=UTC))
 
     mock_events = util_load_json('test_data/zoom_get_events.json')
     assert http_request_mocker.call_args_list[0][1].get("params") == {'page_size': 2, 'from': '2023-03-01',
@@ -228,7 +228,7 @@ def test_get_events_command(mocker):
     # Test limit > MAX_RECORDS_PER_PAGE
     with pytest.raises(DemistoException) as e:
         get_events(client, limit=MAX_RECORDS_PER_PAGE + 1,
-                   first_fetch_time=datetime(2023, 3, 1).replace(tzinfo=timezone.utc))
+                   first_fetch_time=datetime(2023, 3, 1).replace(tzinfo=UTC))
     assert e.value.message == f"The requested limit ({MAX_RECORDS_PER_PAGE + 1}) exceeds the maximum number of " \
                               f"records per page ({MAX_RECORDS_PER_PAGE}). Please reduce the limit and try again."
 

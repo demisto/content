@@ -1,0 +1,59 @@
+[MODEL: dataset = hashicorp_vault_raw]
+alter
+    client_id = _raw_log -> request.client_id, 
+    client_ip = _raw_log -> request.remote_address, // The IP address of the client making the request
+    client_port = _raw_log -> request.remote_port, // The port used by the client
+    client_token = coalesce(_raw_log -> request.client_token, _raw_log -> auth.client_token), // HMAC SHA256 of the client token id
+    entity_id = _raw_log -> auth.entity_id, // The Identity entity ID attached to the token, if any
+    error_msg = _raw_log -> error, // If there is an error in the request, it will be contained here
+    event_type = _raw_log -> type, // Type of log entry, either request or response
+    http_status_code = _raw_log -> response.data.http_status_code,
+    is_access_denied = if(_raw_log -> auth.policy_results.allowed = "false"),
+    mount_class = coalesce(_raw_log -> request.mount_class, _raw_log -> response.mount_class), // Authentication method used for a particular request.
+    mount_point = coalesce(_raw_log -> request.mount_point, _raw_log -> response.mount_point),
+    mount_type = coalesce(_raw_log -> request.mount_type, _raw_log -> response.mount_type), // Authentication method used for a particular request.
+    operation = _raw_log -> request.operation, // This is the type of operation which corresponds to path capabilities and is expected to be one of: create, read, update, delete, or list
+    policies = arraydistinct(arrayconcat(json_extract_scalar_array(_raw_log, "$.auth.token_policies"), json_extract_scalar_array(_raw_log, "$.auth.policies"))), // list of policies associated with the token
+    request_id = _raw_log -> request.id, // Unique identifier for the request
+    request_path = _raw_log -> request.path, // The requested Vault path for operation
+    roles = arraycreate(_raw_log -> auth.metadata.role, _raw_log -> auth.metadata.role_name),
+    service_account_name = _raw_log -> auth.metadata.service_account_name,
+    service_account_uid = _raw_log -> auth.metadata.service_account_uid,
+    vault_version = arraystring(arraydistinct(arraycreate(_raw_log -> request.mount_running_version, _raw_log -> response.mount_running_plugin_version)), ",")
+| alter 
+    client_ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip), 
+    client_ipv6 = if(client_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", client_ip)
+| alter 
+    xdm.auth.auth_method = if(mount_class = "auth", mount_type),
+    xdm.event.id = request_id,
+    xdm.event.operation_sub_type = operation,
+    xdm.event.original_event_type = event_type,
+    xdm.event.outcome = if(error_msg != null or is_access_denied, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = replace(replace(error_msg, """\n""", ""), """\t""", " "),
+    xdm.event.type = "AUDIT",
+    xdm.network.http.response_code = if(http_status_code = null, null, http_status_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_status_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_status_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_status_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_status_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_status_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_status_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_status_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_status_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_status_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_status_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_status_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_status_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_status_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_status_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_status_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_status_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_status_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_status_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_status_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_status_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_status_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_status_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_status_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_status_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_status_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_status_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_status_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_status_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_status_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_status_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_status_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_status_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_status_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_status_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_status_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_status_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_status_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_status_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_status_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, http_status_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_status_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_status_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_status_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_status_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_status_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_status_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_status_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_status_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_status_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_status_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_status_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_status_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_status_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_status_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_status_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_status_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_status_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_status_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_status_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_status_code),
+    xdm.network.rule = if(array_length(policies) > 0, arraystring(policies, ",")),
+    xdm.network.session_id = client_token,
+    xdm.observer.version = vault_version,
+    xdm.session_context_id = client_token,
+    xdm.source.host.ipv4_addresses = if(client_ipv4 != null, arraycreate(client_ipv4)),
+    xdm.source.host.ipv4_public_addresses = if(
+        client_ipv4 = null, null,
+        incidr(client_ipv4, "10.0.0.0/8"), null, 
+        incidr(client_ipv4, "192.168.0.0/16"), null,
+        incidr(client_ipv4, "172.16.0.0/12"), null,
+        incidr(client_ipv4, "127.0.0.0/8"), null,
+        incidr(client_ipv4, "169.254.0.0/16"), null,
+        incidr(client_ipv4, "100.64.0.0/10"), null, arraycreate(client_ipv4)),
+    xdm.source.host.ipv6_addresses = if(client_ipv6 != null, arraycreate(client_ipv6)),
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.ipv6 = client_ipv6,
+    xdm.source.port = to_integer(client_port),
+    xdm.source.user.groups = roles,
+    xdm.source.user.identifier = coalesce(client_id, entity_id),
+    xdm.target.resource.id = mount_point,
+    xdm.target.resource.name = request_path,
+    xdm.target.resource.sub_type = mount_type,
+    xdm.target.resource.type = mount_class,
+    xdm.target.user.identifier = service_account_uid,
+    xdm.target.user.username = service_account_name;

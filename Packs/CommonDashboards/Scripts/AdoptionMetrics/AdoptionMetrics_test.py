@@ -33,8 +33,9 @@ def test_check_phishing_incidents(mocker, data, expected_result):
 
 
 CASES_RAPID_BREACH_RESPONSE = [
-    ([{"Contents": {"response": []}}], False),  # No content packs are installed.
-    ([{"Contents": {"response": [{"name": "Rapid Breach Response"}]}}], True)  # content packs are installed.
+    ([{"Contents": {"response": []}, "Type": EntryType.NOTE}], False),  # No content packs are installed.
+    # content packs are installed.
+    ([{"Contents": {"response": [{"name": "Rapid Breach Response"}]}, "Type": EntryType.NOTE}], True)
 ]
 
 

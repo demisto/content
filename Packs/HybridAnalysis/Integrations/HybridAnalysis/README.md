@@ -214,7 +214,7 @@
 <h5>Command Example</h5>
 <pre> !hybrid-analysis-scan file=bb3bed4a07c472ad7a51c19634e33ad2c9769a27fa750f096d9cca5b5b9e4616</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/50294648/64110038-af7e1480-cd89-11e9-83d1-260b6cfc46a4.png"></p>
+<p><img src="../../doc_files/64110038-af7e1480-cd89-11e9-83d1-260b6cfc46a4.png"></p>
 <h3 id="h_b63c2c7b-06fb-4a46-bfdc-4061401623d0">2. Submit a file sample</h3>
 <hr>
 <p>Submits a file from the investigation to the analysis server. The minimum required authorization is "default".</p>
@@ -274,7 +274,7 @@
 <h5>Command Example</h5>
 <pre> !hybrid-analysis-submit-sample entryId=413@13 environmentID=100</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/50294648/64110089-d1779700-cd89-11e9-8081-cbafd5302d48.png"> </p>
+<p><img src="../../doc_files/64110089-d1779700-cd89-11e9-8081-cbafd5302d48.png"> </p>
 <h3 id="h_45553fb5-7f23-4905-839d-fa242e830d28">3. Search Hybrid Analysis</h3>
 <hr>
 <p>Performs a search on the database using the Hybrid Analysis search syntax.</p>
@@ -504,7 +504,7 @@
 <h5>Command Example</h5>
 <pre> !hybrid-analysis-search filename=fvp_setup_3.2.1.53fi.exe min_malicious_scanners=2</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/50294648/64110158-f9ff9100-cd89-11e9-98d6-002df881848c.png"></p>
+<p><img src="../../doc_files/64110158-f9ff9100-cd89-11e9-98d6-002df881848c.png"></p>
 <h3 id="h_325260ec-f4db-47f6-b291-4782f6f65ee8">4. Detonate a file</h3>
 <hr>
 <p>Submits a file for detonation in Hybrid Analysis.</p>
@@ -809,7 +809,7 @@
 <h5>Command Example</h5>
 <pre> !hybrid-analysis-quick-scan-url url=www.google.com</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/50294648/64110245-392de200-cd8a-11e9-81da-6141a1a0868e.png"></p>
+<p><img src="../../doc_files/64110245-392de200-cd8a-11e9-81da-6141a1a0868e.png"></p>
 <h3 id="h_074ce04d-a33f-4a8e-8d7b-70938f697c38">7. Submit a website or file URL for analysis</h3>
 <hr>
 <p>Submits the URL of a website or the URL that contains the file, for analysis.</p>
@@ -874,7 +874,7 @@
 <h5>Command Example</h5>
 <pre>!hybrid-analysis-submit-url environmentID=100 url=www.google.com</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/50294648/64110344-9033b700-cd8a-11e9-98d1-158a2f4b047a.png"></p>
+<p><img src="../../doc_files/64110344-9033b700-cd8a-11e9-98d1-158a2f4b047a.png"></p>
 <h3 id="h_f0b380e9-7a7a-45d4-8f38-6ea34f8a0dc5">8. Get a list of scanners</h3>
 <hr>
 <p>Returns a list of available scanners.</p>
@@ -913,7 +913,7 @@
 <h5>Command Example</h5>
 <pre> !hybrid-analysis-list-scanners</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/50294648/64110375-a477b400-cd8a-11e9-9f40-0ba69357a9ad.png"></p>
+<p><img src="../../doc_files/64110375-a477b400-cd8a-11e9-9f40-0ba69357a9ad.png"></p>
 <h3 id="h_06b5e260-5d28-46ed-a407-2a3984deafc6">9. Get scan results</h3>
 <hr>
 <p>Returns the scan results of the given URL ID.</p>
@@ -1003,4 +1003,4 @@
 <h5>Command Example</h5>
 <pre>!hybrid-analysis-quick-scan-url-results scanID=5d6cf460028838eb26d56dc4</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/50294648/64110431-d0933500-cd8a-11e9-8844-1b1e3d1370d3.png"></p>
+<p><img src="../../doc_files/64110431-d0933500-cd8a-11e9-8844-1b1e3d1370d3.png"></p>

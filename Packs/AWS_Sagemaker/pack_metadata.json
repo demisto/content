@@ -2,7 +2,7 @@
     "name": "AWS Sagemaker",
     "description": "AWS Sagemaker - Demisto Phishing Email Classifier",
     "support": "xsoar",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

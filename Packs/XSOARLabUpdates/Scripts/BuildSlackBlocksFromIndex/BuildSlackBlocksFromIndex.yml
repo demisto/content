@@ -11,7 +11,7 @@ comment: 'Extracts the index.zip and filters new packs since the last run.
 commonfields:
   id: BuildSlackBlocksFromIndex
   version: -1
-dockerimage: demisto/unzip:1.0.0.100283
+dockerimage: demisto/unzip:1.0.0.114702
 enabled: true
 name: BuildSlackBlocksFromIndex
 outputs:

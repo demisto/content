@@ -1,0 +1,787 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Veeam Incident Dashboard",
+    "layout": [
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "01f431d0-f810-11ee-817f-b33d9ea00598",
+            "id": "01f431d0-f810-11ee-817f-b33d9ea00598",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T14:30:10.325064348Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "days",
+                        "field": "",
+                        "fromValue": 2,
+                        "toValue": 0
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75a8041b-b9b9-46bc-83f2-d6c75674c192",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T14:30:10.361059512Z",
+                "name": "Incidents by Type",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "new",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:closed and (sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "49b6a370-0b9a-11ef-bbaa-b99b2dcc5249",
+            "id": "49b6a370-0b9a-11ef-bbaa-b99b2dcc5249",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T14:30:10.325064348Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "days",
+                        "field": "",
+                        "fromValue": 2,
+                        "toValue": 0
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75a8041b-b9b9-46bc-83f2-d6c75674c192",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T14:30:10.361059512Z",
+                "name": "Incidents by Source",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "sourceInstance"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "new",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:closed and (sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 2,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "4a3cd880-0b9c-11ef-bbaa-b99b2dcc5249",
+            "id": "4a3cd880-0b9c-11ef-bbaa-b99b2dcc5249",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T14:30:10.325064348Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75a8041b-b9b9-46bc-83f2-d6c75674c192",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T14:30:10.361059512Z",
+                "name": "All Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ],
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "new",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "(sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "e5cbfc10-0bbd-11ef-92b4-c9fe37297b8b",
+            "id": "e5cbfc10-0bbd-11ef-92b4-c9fe37297b8b",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T14:30:10.325064348Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75a8041b-b9b9-46bc-83f2-d6c75674c192",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T14:30:10.361059512Z",
+                "name": "Veeam Backup \u0026 Replication Active Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ],
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "new",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:closed and sourceBrand:\"VBR REST API\"",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 5,
+            "i": "b74d18d0-0df0-11ef-9097-156ec4b745c4",
+            "id": "b74d18d0-0df0-11ef-9097-156ec4b745c4",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T14:30:10.325064348Z",
+                "dataType": "incidents",
+                "sort": [
+                    {
+                        "field": "created",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75a8041b-b9b9-46bc-83f2-d6c75674c192",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T14:30:10.361059512Z",
+                "name": "Latest Veeam Backup \u0026 Replication Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "showGraphValues": false,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "type",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "severity",
+                            "width": 80
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "details",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "occurred",
+                            "width": 180
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "created",
+                            "width": 180
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        }
+                    ]
+                },
+                "prevName": "new",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-status:closed -category:job and sourceBrand:\"VBR REST API\"",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 6
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "9186b7e0-1698-11ef-aa4e-df01b7efbe23",
+            "id": "9186b7e0-1698-11ef-aa4e-df01b7efbe23",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Veeam REST API POST Requests",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "modified(d)",
+                        "command"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration command:\"veeam-vbr-create-malware-event\" or command:\"veeam-vbr-start-instant-recovery\" or command:\"veeam-vbr-start-configuration-backup\" or command:\"veeam-vbr-start-instant-recovery-customized\" or command:\"veeam-vone-resolve-triggered-alarms\"",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 8,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "3a5d9c00-175f-11ef-a64a-2d577159920e",
+            "id": "3a5d9c00-175f-11ef-a64a-2d577159920e",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-03-22T10:49:34.157014641Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Command execution errors",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.48",
+                "modified": "2024-03-22T10:50:04.052323155Z",
+                "name": "Command Execution Errors",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Command execution errors",
+                "propagationLabels": [],
+                "query": "type:integration and name:\"VBR REST API\" or name:\"Veeam ONE REST API\"",
+                "size": 5,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 6,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "3c75cda0-175f-11ef-a64a-2d577159920e",
+            "id": "3c75cda0-175f-11ef-a64a-2d577159920e",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-03-22T10:49:34.162302083Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Command execution errors per Instance",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.48",
+                "modified": "2024-03-22T10:50:04.054664282Z",
+                "name": "Command Execution Errors per Instance",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "instance"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Command execution errors per Instance",
+                "propagationLabels": [],
+                "query": "type:integration and name:\"VBR REST API\" or name:\"Veeam ONE REST API\"",
+                "size": 5,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "50f71720-1d04-11ef-bdc5-055c3d66349a",
+            "id": "50f71720-1d04-11ef-bdc5-055c3d66349a",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T14:30:10.325064348Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75a8041b-b9b9-46bc-83f2-d6c75674c192",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T14:30:10.361059512Z",
+                "name": "Veeam ONE Active Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ],
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "new",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:closed and sourceBrand:\"Veeam ONE REST API\"",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 5,
+            "i": "aa3290d0-1d04-11ef-bdc5-055c3d66349a",
+            "id": "aa3290d0-1d04-11ef-bdc5-055c3d66349a",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T14:30:10.325064348Z",
+                "dataType": "incidents",
+                "sort": [
+                    {
+                        "field": "created",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75a8041b-b9b9-46bc-83f2-d6c75674c192",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T14:30:10.361059512Z",
+                "name": "Latest Veeam ONE Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "showGraphValues": false,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "type",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "severity",
+                            "width": 80
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "details",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "occurred",
+                            "width": 180
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "created",
+                            "width": 180
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        }
+                    ]
+                },
+                "prevName": "new",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-status:closed -category:job and sourceBrand:\"Veeam ONE REST API\"",
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 6,
+            "y": 6
+        }
+    ],
+    "name": "Veeam Incident Dashboard",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "",
+    "isPredefined": true
+}

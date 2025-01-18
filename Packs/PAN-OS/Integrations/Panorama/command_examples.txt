@@ -149,3 +149,10 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-create-security-profile-group group_name="test_security_pg" antivirus_profile="default" anti_spyware_profile="default" data_filtering_profile="test data filtering" file_blocking_profile="test file blocking" URL_filtering_profile="default" vulnerability_protection_profile="default" wildfire_analysis_profile="test wildfire analysis"
 !pan-os-edit-security-profile-group group_name="test_security_pg" profile_to_change="Antivirus Profile" profile_value="default"
 !pan-os-delete-security-profile-group group_name="test_security_pg"
+!pan-os-add-profile-exception profile_name="test1" threat="10002" action="Drop"
+!pan-os-list-profile-exception profile_name="test1" profile_type="Vulnerability Protection Profile"
+!pan-os-edit-profile-exception profile_name="test1" threat="10002" action="Drop"
+!pan-os-delete-profile-exception profile_name="test2" threat="10005" profile_type="Vulnerability Protection Profile"
+!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992
+!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992
+!pan-os-get-master-key-details

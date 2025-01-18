@@ -1,27 +1,23 @@
 Proactively Prevent Fraud
 This integration was integrated and tested with version 1.0 of IPQualityScore
-## Configure IPQualityScore on Cortex XSOAR
+## Configure IPQualityScore in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IPQualityScore.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | See guide below for getting an API key. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | IP Suspicious Score Threshold | Threshold for fraud score from IP lookup to be marked as suspicious | False |
-    | IP Malicious Score Threshold | Threshold for fraud score from IP lookup to be marked as malicious | False |
-    | Email Suspicious Score Threshold | Threshold for fraud score from Email lookup to be marked as suspicious | False |
-    | Email Malicious Score Threshold | Threshold for fraud score from Email lookup to be marked as malicious | False |
-    | Url Suspicious Score Threshold | Threshold for fraud score from Url lookup to be marked as suspicious | False |
-    | Url Malicious Score Threshold | Threshold for fraud score from Url lookup to be marked as malicious | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | See guide below for getting an API key. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| IP Suspicious Score Threshold | Threshold for fraud score from IP lookup to be marked as suspicious | False |
+| IP Malicious Score Threshold | Threshold for fraud score from IP lookup to be marked as malicious | False |
+| Email Suspicious Score Threshold | Threshold for fraud score from Email lookup to be marked as suspicious | False |
+| Email Malicious Score Threshold | Threshold for fraud score from Email lookup to be marked as malicious | False |
+| Url Suspicious Score Threshold | Threshold for fraud score from Url lookup to be marked as suspicious | False |
+| Url Malicious Score Threshold | Threshold for fraud score from Url lookup to be marked as malicious | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -386,4 +382,3 @@ Notice: Submitting indicators using this command might make the indicator data p
 >|message|success|unsafe|domain|ip_address|server|content_type|status_code|page_size|domain_rank|dns_valid|parking|spamming|malware|phishing|suspicious|adult|risk_score|domain_age|request_id|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Success. | true | false | google.com | 172.217.11.142 |  gws<br/> | text/html; charset=UTF-8 | 200 | 39242 | 1 | true | false | false | false | false | false | false | 0 | human: 24 years ago<br/>timestamp: 874296000<br/>iso: 1997-09-15T00:00:00-04:00 | 4DpK9WpOZGQFSPi | https://google.com |
-

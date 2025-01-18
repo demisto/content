@@ -1,24 +1,20 @@
 Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction. (previously known as OPSWAT Filescan Sandbox)
 
-## Configure MetaDefender Sandbox on Cortex XSOAR
+## Configure MetaDefender Sandbox in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MetaDefender Sandbox.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. <https://www.filescan.io/api>) | True |
-    | API Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Verbose | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. <https://www.filescan.io/api>) | True |
+| API Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Verbose | False |
 
-4. Click **Test** to validate the URLs, the API Key and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
@@ -126,7 +122,7 @@ Notice: Submitting indicators using this command might make the indicator data p
                                 [],
                                 "verdict":
                                 {
-                                    "verdict": "INFORMATIONAL",
+                                    "verdict": "NO_THREAT",
                                     "threatLevel": 0.1,
                                     "confidence": 1
                                 }
@@ -506,7 +502,7 @@ Search for reports. Finds reports and uploaded files by various tokens.
                                 "synonyms": [],
                                 "descriptions": [],
                                 "verdict": {
-                                    "verdict": "INFORMATIONAL",
+                                    "verdict": "NO_THREAT",
                                     "threatLevel": 0.1,
                                     "confidence": 1
                                 }

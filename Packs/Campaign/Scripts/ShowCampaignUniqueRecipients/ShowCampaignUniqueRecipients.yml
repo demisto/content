@@ -10,7 +10,7 @@ comment: Displays the number of unique recipients of an email campaign.
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.113941
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

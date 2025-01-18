@@ -55,3 +55,15 @@ ignore=BA124
 [file:QRadarPrintAssets.yml]
 ignore=BA124
 
+[file:playbook-TIM_-_QRadar_Add_Domain_Indicators.yml]
+ignore=GR107
+
+[file:playbook-TIM_-_QRadar_Add_IP_Indicators.yml]
+ignore=GR107
+
+[file:playbook-TIM_-_QRadar_Add_Url_Indicators.yml]
+ignore=GR107
+
+[file:playbook-TIM_-_QRadar_Add_Bad_Hash_Indicators.yml]
+ignore=GR107
+

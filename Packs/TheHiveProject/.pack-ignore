@@ -20,3 +20,7 @@ ignore=IN153
 
 [file:TheHiveProject_image.png]
 ignore=IM111
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-Hive_layout_custom.json]
+ignore=GR103

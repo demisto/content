@@ -1,19 +1,15 @@
 Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
-## Configure PolySwarmV2 on Cortex XSOAR
+## Configure PolySwarmV2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PolySwarmV2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | PolySwarm API Key |  | True |
-    | The base URL to connect to |  | True |
-    | PolySwarm v2 Community | the segment of PolySwarm's marketplace to query on. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| PolySwarm API Key |  | True |
+| The base URL to connect to |  | True |
+| PolySwarm v2 Community | the segment of PolySwarm's marketplace to query on. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### polyswarm-get-report
 ***
@@ -370,5 +366,4 @@ Uploads a file to PolySwarm and retrieves the analysis results.
 `!file-scan entryID="995@0c42ee2d-57ff-4ccf-88ef-8d51c7936595"`
 
 #### Human Readable Output
-
 

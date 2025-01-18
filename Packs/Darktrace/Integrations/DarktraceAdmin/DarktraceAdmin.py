@@ -5,8 +5,9 @@ import hmac
 import json
 import traceback
 from base64 import b64encode
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Mapping, Optional
+from datetime import datetime, UTC
+from typing import Any
+from collections.abc import Mapping
 
 import dateparser
 import urllib3
@@ -50,7 +51,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get(self, query_uri: str, params: Dict[str, str] = None):
+    def get(self, query_uri: str, params: dict[str, str] = None):
         """Handles Darktrace GET API calls"""
         return self._darktrace_api_call(query_uri, method="GET", params=params)
 
@@ -65,7 +66,7 @@ class Client(BaseClient):
         params: dict = None,
         data: dict = None,
         json: dict = None,
-        headers: Dict[str, str] = None,
+        headers: dict[str, str] = None,
     ):
         """Handles Darktrace API calls"""
         headers = {
@@ -115,14 +116,14 @@ class Client(BaseClient):
         elif res.status_code >= 300:
             raise Exception(DARKTRACE_API_ERRORS['UNDETERMINED_ERROR'])
 
-    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> Dict[str, str]:
+    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
-        date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
+        date = (datetime.now(UTC)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {"DTAPI-Token": public_token, "DTAPI-Date": date, "DTAPI-Signature": signature}
 
-    def run_advanced_search_analysis(self, query, metric, operation) -> Dict[str, Any]:
+    def run_advanced_search_analysis(self, query, metric, operation) -> dict[str, Any]:
         """Returns information from Darktrace advanced search analysis'
         :type query: ``str``
         :param query: Darktrace query string
@@ -138,7 +139,7 @@ class Client(BaseClient):
         query_format = f"{ADVANCED_SEARCH_ENDPOINT}/{metric}/{operation}/{query_url}"
         return self.get(query_format)
 
-    def get_device_connection_info(self, **query_params) -> Dict[str, Any]:
+    def get_device_connection_info(self, **query_params) -> dict[str, Any]:
         """Returns information from Darktrace about graphical connection data for devices using '/deviceinfo'
         :type did: ``str``
         :param did: Darktrace Device ID
@@ -161,7 +162,7 @@ class Client(BaseClient):
         query_uri = DEVICE_INFO_ENDPOINT
         return self.get(query_uri, query_params)
 
-    def get_external_endpoint_details(self, endpoint_type, endpoint_value, additional_info, devices, score) -> Dict[str, Any]:
+    def get_external_endpoint_details(self, endpoint_type, endpoint_value, additional_info, devices, score) -> dict[str, Any]:
         """Returns information from Darktrace about external endpoints using '/endpointdetails'
         :type endpoint_type: ``str``
         :param endpoint_type: Type of endpoint, IP or hostname
@@ -185,7 +186,7 @@ class Client(BaseClient):
         }
         return self.get(query_uri, params)
 
-    def get_similar_devices(self, did, max_results) -> List[Dict[str, Any]]:
+    def get_similar_devices(self, did, max_results) -> list[dict[str, Any]]:
         """Returns a list of similar devices using '/similardevices'
         :type did: ``str``
         :param did: Device ID of device
@@ -201,7 +202,7 @@ class Client(BaseClient):
         }
         return self.get(query_uri, params)
 
-    def post_to_watched_list(self, addlist, description) -> Dict[str, Any]:
+    def post_to_watched_list(self, addlist, description) -> dict[str, Any]:
         """Returns information from POST endpoints to watched list advanced search analysis
         :type addlist: ``List[str]``
         :param addlist: Darktrace query string
@@ -215,7 +216,7 @@ class Client(BaseClient):
             json['description'] = description
         return self.post(INTEL_FEED_ENDPOINT, json=json)
 
-    def get_tagged_devices(self, tag_name) -> Dict[str, Any]:
+    def get_tagged_devices(self, tag_name) -> dict[str, Any]:
         """Returns information from devices given a tag as a filter
         :type tag_name: ``str``
         :param tag_name: tag name to query from
@@ -225,7 +226,7 @@ class Client(BaseClient):
         params = {"tag": tag_name, "fulldevicedetails": "true"}
         return self.get(TAG_ENTITIES_ENDPOINT, params=params)
 
-    def get_tags_for_device(self, did) -> List[Dict[str, Any]]:
+    def get_tags_for_device(self, did) -> list[dict[str, Any]]:
         """Returns tags for a certain device
         :type did: ``str``
         :param did: device id
@@ -234,7 +235,7 @@ class Client(BaseClient):
         """
         return self.get(TAG_ENTITIES_ENDPOINT, params={"did": did})
 
-    def post_tag_to_device(self, did, tag_name) -> Dict[str, Any]:
+    def post_tag_to_device(self, did, tag_name) -> dict[str, Any]:
         """Returns response from post command
         :type did: ``str``
         :param did: device id
@@ -257,7 +258,7 @@ class Client(BaseClient):
 """*****HELPER FUNCTIONS****"""
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
     This function is used to quickly validate an argument provided to XSOAR
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
@@ -296,7 +297,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -365,7 +366,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def run_advanced_search_analysis_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def run_advanced_search_analysis_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """run_advanced_search_analysis_command: Runs an advanced search analysis on a specific query and metric and applies an
     operation to returned a list of results.
 
@@ -412,7 +413,7 @@ def run_advanced_search_analysis_command(client: Client, args: Dict[str, Any]) -
     )
 
 
-def get_device_connection_info_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_device_connection_info_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """get_device_connection_info_command: Returns graphing connection information about a specified device
 
     :type client: ``Client``
@@ -456,7 +457,7 @@ def get_device_connection_info_command(client: Client, args: Dict[str, Any]) -> 
     )
 
 
-def get_external_endpoint_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_endpoint_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """get_external_endpoint_details_command: Returns information about a specified external endpoint
 
     :type client: ``Client``
@@ -496,7 +497,7 @@ def get_external_endpoint_details_command(client: Client, args: Dict[str, Any]) 
     )
 
 
-def get_similar_devices_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_similar_devices_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """get_similar_devices_command: Returns a list of similar devices to a device specified
     by Darktrace DID
 
@@ -536,7 +537,7 @@ def get_similar_devices_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def post_to_watched_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_to_watched_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """post_to_watched_list_command: Returns a response from posting domains or ips to the watched list domain
 
     :type client: ``Client``
@@ -564,7 +565,7 @@ def post_to_watched_list_command(client: Client, args: Dict[str, Any]) -> Comman
     )
 
 
-def get_tagged_devices_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_tagged_devices_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """get_tagged_devices_command: Gets a list of device information based on a common tag.
 
     :type client: ``Client``
@@ -585,10 +586,10 @@ def get_tagged_devices_command(client: Client, args: Dict[str, Any]) -> CommandR
     tag_name = str(args['tagName'])
     device_info_response = client.get_tagged_devices(tag_name=tag_name)
     devices = device_info_response.get('devices')
-    output: List = []
+    output: list = []
     if devices and len(devices):
         for device in devices:
-            info: Dict[str, Any] = {}
+            info: dict[str, Any] = {}
             info['deviceId'] = device['did']
             info['hostname'] = device.get('hostname', 'N/A')
             info['label'] = device.get('devicelabel', 'N/A')
@@ -606,7 +607,7 @@ def get_tagged_devices_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_tags_for_device_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_tags_for_device_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """get_tags_for_device_command: Gets a list of tags for a device
 
     :type client: ``Client``
@@ -626,9 +627,9 @@ def get_tags_for_device_command(client: Client, args: Dict[str, Any]) -> Command
     check_required_fields(args, 'deviceId')
     did = str(args['deviceId'])
     device_tags_response = client.get_tags_for_device(did=did)
-    output: List = []
+    output: list = []
     for tag in device_tags_response:
-        info: Dict[str, Any] = {}
+        info: dict[str, Any] = {}
         info['tagId'] = tag['tid']
         info['tagName'] = tag['name']
         info['tagDescription'] = tag['data']['description']
@@ -643,7 +644,7 @@ def get_tags_for_device_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def post_tag_to_device_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_tag_to_device_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """post_tag_to_device_command: Posts a tag to a device and returns an action response
 
     :type client: ``Client``
@@ -664,7 +665,7 @@ def post_tag_to_device_command(client: Client, args: Dict[str, Any]) -> CommandR
     tag_name = str(args['tagName'])
     did = str(args['deviceId'])
     post_tag_to_device_response = client.post_tag_to_device(did=did, tag_name=tag_name)
-    output: Dict[str, Any] = {}
+    output: dict[str, Any] = {}
     output['tagId'] = post_tag_to_device_response['tid']
     output['tagName'] = tag_name
     output['deviceId'] = did

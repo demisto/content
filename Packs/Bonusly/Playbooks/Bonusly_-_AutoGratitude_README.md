@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Bonusly - AutoGratitude](https://raw.githubusercontent.com/demisto/content/014a50dcaac847219e23c996ddf622e1360547a1/Packs/Bonusly/doc_files/Bonusly_-_AutoGratitude.png)
+![Bonusly - AutoGratitude](../doc_files/Bonusly_-_AutoGratitude.png)

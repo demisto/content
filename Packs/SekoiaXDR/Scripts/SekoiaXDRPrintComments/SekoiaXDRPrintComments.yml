@@ -1,0 +1,19 @@
+commonfields:
+  id: SekoiaXDRPrintComments
+  version: -1
+name: SekoiaXDRPrintComments
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Prints the comments fetched from the Sekoia alert in a table format.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.111039
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

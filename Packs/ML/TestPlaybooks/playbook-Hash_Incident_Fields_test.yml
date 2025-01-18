@@ -1,15 +1,15 @@
 id: hashIncidentFields-test
-version: 8
+version: -1
 name: hashIncidentFields-test
-description: test playbook for hashIncidentFields
+description: test playbook for hashIncidentFields.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d3768e6d-0c99-4c2b-8cde-aeac8d0909e0
+    taskid: 5cea02d4-1d63-481c-8202-f1555c7c754f
     type: start
     task:
-      id: d3768e6d-0c99-4c2b-8cde-aeac8d0909e0
+      id: 5cea02d4-1d63-481c-8202-f1555c7c754f
       version: -1
       name: ""
       description: start
@@ -31,12 +31,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 60ef8591-e7e8-4e50-825a-d9e828eb9060
+    taskid: 889b4d7e-9629-4957-8fbc-b469b013a4da
     type: regular
     task:
-      id: 60ef8591-e7e8-4e50-825a-d9e828eb9060
+      id: 889b4d7e-9629-4957-8fbc-b469b013a4da
       version: -1
       name: CreateIncidents
       description: Create incidents for test
@@ -63,12 +66,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a3aa0160-3377-46e6-884b-54f2b7f5dd20
+    taskid: 1dd5d240-a8e0-4983-8a1a-65ee067d16e9
     type: regular
     task:
-      id: a3aa0160-3377-46e6-884b-54f2b7f5dd20
+      id: 1dd5d240-a8e0-4983-8a1a-65ee067d16e9
       version: -1
       name: HashIncidentsFields
       description: Get incidents and hash some fields
@@ -80,22 +86,16 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      NonEmptyFields: {}
       contextKeys:
         simple: simpleValue, listValue
-      fieldsToHash: {}
-      fromDate: {}
-      incidentTypes: {}
       includeContext:
         simple: "true"
-      limit: {}
       outputFormat:
         simple: json
-      populateFields: {}
       query:
         simple: ${IncidentsQuery}
-      timeField: {}
-      toDate: {}
+      execution-timeout:
+        simple: "4000"
     separatecontext: false
     view: |-
       {
@@ -109,12 +109,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: eae6f267-4ea2-42e2-8042-16abba6d65b3
+    taskid: 62df7b3f-03dd-40e9-8c65-7ac127054970
     type: title
     task:
-      id: eae6f267-4ea2-42e2-8042-16abba6d65b3
+      id: 62df7b3f-03dd-40e9-8c65-7ac127054970
       version: -1
       name: Done
       description: Done
@@ -134,12 +137,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6572dfe9-3b62-4ceb-84d3-b71c0ecefe74
+    taskid: 96880921-df18-48cd-8f35-3cd97d22e305
     type: condition
     task:
-      id: 6572dfe9-3b62-4ceb-84d3-b71c0ecefe74
+      id: 96880921-df18-48cd-8f35-3cd97d22e305
       version: -1
       name: File created ?
       description: Check if the file was created
@@ -170,12 +176,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 14d6754f-03f7-4ec6-8c62-3c7f27c82e8f
+    taskid: d300cd95-d46e-44c9-8066-2bee2800eb87
     type: regular
     task:
-      id: 14d6754f-03f7-4ec6-8c62-3c7f27c82e8f
+      id: d300cd95-d46e-44c9-8066-2bee2800eb87
       version: -1
       name: Clean Context
       description: Delete field from context
@@ -189,10 +198,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -206,6 +211,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {

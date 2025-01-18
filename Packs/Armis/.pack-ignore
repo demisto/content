@@ -1,17 +1,22 @@
+# GR103 is temporary, see CIAC-11656
 [file:incidentfields_Armis_Alert_Desctiption.json]
-ignore=IF100
+ignore=IF100,GR103
 
 [file:incidentfields_Armis_Alert_ID.json]
-ignore=IF100
+ignore=IF100,GR103
 
 [file:incidentfields_Armis_Alert_Severity.json]
-ignore=IF100
+ignore=IF100,GR103
 
 [file:incidentfields_Armis_Alert_Status.json]
-ignore=IF100,BA113
+ignore=IF100,BA113,GR103
+
 
 [file:incidentfields_Armis_Alert_Type.json]
-ignore=IF100
+ignore=IF100,GR103
+
+[file:classifier-Armis_mapper-incoming.json]
+ignore=GR103
 
 [file:Armis_image.png]
 ignore=IM111

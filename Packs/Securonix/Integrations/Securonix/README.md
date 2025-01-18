@@ -1,5 +1,5 @@
 ## Overview
-Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists. Integration was built and tested with SNYPR Versions: 6.4 (Feb 2023 R3 release).
+Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists. Integration was built and tested with SNYPR Versions: 6.4 (Nov 2024 R2 release).
 
 This integration supports both cloud and on-prem instances of Securonix.
 To configure a cloud base instance use the *Tenant* parameter only.
@@ -152,7 +152,7 @@ To fetch Securonix Threat follow the next steps:
 ## Troubleshooting
 
 ### Receive Notification on an Incident Fetch Error
-The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) for more information.
+The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [Cortex XSOAR 6.13 documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) or [Cortex XSOAR 8 Cloud documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Receive-notifications-on-an-incident-fetch-error) or [Cortex XSOAR 8.7 On-prem documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Receive-notifications-on-an-incident-fetch-error) for more information.
 
 ### Input and output entries of the playbook are not visible in the war room.
 Follow the below steps and add a new server configuration:
@@ -617,38 +617,95 @@ Gets a list of activity data for the specified resource group.
 | Securonix.ActivityData.Accountname | String | Account name. | 
 | Securonix.ActivityData.Accountresourcekey | String | Account source key. | 
 | Securonix.ActivityData.Agentfilename | String | Agent file name. | 
+| Securonix.ActivityData.Baseeventid | String | Base event ID. | 
+| Securonix.ActivityData.Categorizedtime | String | Categorized time. | 
 | Securonix.ActivityData.Categorybehavior | String | Category behavior. | 
 | Securonix.ActivityData.Categoryobject | String | Category object. | 
 | Securonix.ActivityData.Categoryseverity | String | Category severity. | 
 | Securonix.ActivityData.Collectionmethod | String | Collection method. | 
 | Securonix.ActivityData.Collectiontimestamp | String | Collection timestamp. | 
+| Securonix.ActivityData.Customnumber1 | Number | Custom number. | 
+| Securonix.ActivityData.Customstring13 | String | Custom string. | 
+| Securonix.ActivityData.Customstring17 | String | Custom string. | 
+| Securonix.ActivityData.Customtime1 | String | Custom time. | 
+| Securonix.ActivityData.Customtime2 | String | Custom time. | 
+| Securonix.ActivityData.Datetime | String | Date time. | 
+| Securonix.ActivityData.Dayofmonth | String | Day of month. | 
+| Securonix.ActivityData.Dayofweek | String | Day of week. | 
+| Securonix.ActivityData.Dayofyear | String | Day of year. | 
+| Securonix.ActivityData.Destinationntdomain | String | Destination NT domain. | 
 | Securonix.ActivityData.Destinationprocessname | String | Destination process name. | 
+| Securonix.ActivityData.Destinationservicename | String | Destination service name. | 
+| Securonix.ActivityData.Destinationuserid | String | Destination user ID. | 
 | Securonix.ActivityData.Destinationusername | String | Destination username. | 
 | Securonix.ActivityData.Deviceaddress | String | Device address. | 
+| Securonix.ActivityData.Destinationuserprivileges | String | Destination user privileges. | 
+| Securonix.ActivityData.Devicecustomstring4 | String | Device custom string. | 
+| Securonix.ActivityData.Deviceeventcategory | String | Device event category. | 
 | Securonix.ActivityData.Deviceexternalid | String | Device external ID. | 
 | Securonix.ActivityData.Devicehostname | String | Device hostname. | 
+| Securonix.ActivityData.Ehash | String | Event hash. | 
 | Securonix.ActivityData.EventID | String | Event ID. | 
 | Securonix.ActivityData.Eventoutcome | String | Event outcome. | 
 | Securonix.ActivityData.Eventtime | String | Time the event occurred. | 
 | Securonix.ActivityData.Filepath | String | File path. | 
+| Securonix.ActivityData.Filepermission | String | File permission. | 
+| Securonix.ActivityData.Hour | String | Date time hour. | 
+| Securonix.ActivityData.ID | String | Activity ID. | 
 | Securonix.ActivityData.Ingestionnodeid | String | Ingestion node ID. | 
-| Securonix.ActivityData.JobID | String | Job ID. | 
+| Securonix.ActivityData.Ipaddress | String | IP address. | 
+| Securonix.ActivityData.Ipaddress_Long | String | IP address long. | 
+| Securonix.ActivityData.JobID | String | Deprecated. Use the Securonix.ActivityData.Jobid field. | 
+| Securonix.ActivityData.Jobid | String | Job ID. | 
 | Securonix.ActivityData.Jobstarttime | String | Job start time. | 
 | Securonix.ActivityData.Message | String | Message. | 
+| Securonix.ActivityData.Minute | String | Date time minute. | 
+| Securonix.ActivityData.Month | String | Month. | 
+| Securonix.ActivityData.Oldfileid | String | Old file ID. | 
+| Securonix.ActivityData.Oldfilepath | String | Old file path. | 
+| Securonix.ActivityData.Others | String | Others. | 
+| Securonix.ActivityData.Poprocessedtime | String | PO processed time. | 
 | Securonix.ActivityData.Publishedtime | String | Published time. | 
+| Securonix.ActivityData.Rawevent | String | Raw event. | 
+| Securonix.ActivityData.Raweventsize | String | Raw event size. | 
 | Securonix.ActivityData.Receivedtime | String | Received time. | 
 | Securonix.ActivityData.Resourcename | String | Resource name. | 
 | Securonix.ActivityData.ResourceGroupCategory | String | Resource group category. | 
 | Securonix.ActivityData.ResourceGroupFunctionality | String | Resource group functionality. | 
 | Securonix.ActivityData.ResourceGroupID | String | Resource group ID. | 
 | Securonix.ActivityData.ResourceGroupName | String | Resource group name. | 
+| Securonix.ActivityData.ResourceGroupTimezoneoffset | String | Resource Group Timezone offset. | 
 | Securonix.ActivityData.ResourceGroupTypeID | String | Resource group resource type ID. | 
 | Securonix.ActivityData.ResourceGroupVendor | String | Resource group vendor. | 
+| Securonix.ActivityData.Resourcegroupid | String | Resource Group ID. | 
+| Securonix.ActivityData.Resourcegroupname | String | Resource Group Name. | 
+| Securonix.ActivityData.Resourcehostname | String | Resource host name. | 
+| Securonix.ActivityData.Resourcehostname_Long | String | Resource host name long. | 
+| Securonix.ActivityData.Resourcename | String | Resource name. | 
+| Securonix.ActivityData.Resourcetype | String | Resource type. | 
+| Securonix.ActivityData.Sessionid | String | Session ID. | 
+| Securonix.ActivityData.Sourceaddress | String | Source address. | 
+| Securonix.ActivityData.Sourceaddress_Long | String | Source address long. | 
 | Securonix.ActivityData.Sourcehostname | String | Source hostname. | 
+| Securonix.ActivityData.Sourcentdomain | String | Source domain. | 
+| Securonix.ActivityData.Sourceport | String | Source port. | 
+| Securonix.ActivityData.Sourceprocessname | String | Source process name. | 
+| Securonix.ActivityData.Sourceuserid | String | Source user ID. | 
 | Securonix.ActivityData.Sourceusername | String | Source username. | 
 | Securonix.ActivityData.TenantID | String | Tenant ID. | 
 | Securonix.ActivityData.Tenantname | String | Tenant name. | 
 | Securonix.ActivityData.Timeline | String | Time when the activity occurred, in Epoch time. | 
+| Securonix.ActivityData.Timeline_By_Hour | String | Timeline by hour. | 
+| Securonix.ActivityData.Timeline_By_Minute | String | Timeline by minute. | 
+| Securonix.ActivityData.Timeline_By_Month | String | Timeline by month. | 
+| Securonix.ActivityData.Timeline_By_Week | String | Timeline by week. | 
+| Securonix.ActivityData.Timestamp | String | Timestamp. | 
+| Securonix.ActivityData.Transactionstring1 | String | Transaction string 1. | 
+| Securonix.ActivityData.Userid | String | User ID. | 
+| Securonix.ActivityData.Week | String | Week. | 
+| Securonix.ActivityData.Year | String | Year. | 
+| Securonix.ActivityData._Indexed_At_Tdt | String | Indexed at TDT. | 
+| Securonix.ActivityData._Version_ | String | Activity version. | 
 | Securonix.Activity.totalDocuments | Number | Total number of events. | 
 | Securonix.Activity.message | String | Message from the API. | 
 | Securonix.Activity.queryId | String | Query Id for the pagination. | 

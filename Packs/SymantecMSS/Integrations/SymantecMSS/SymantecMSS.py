@@ -13,6 +13,7 @@ from cryptography.hazmat.primitives import serialization
 from xml.sax.saxutils import escape
 import defusedxml.ElementTree as defused_ET
 import re
+import time
 
 ''' GLOBALS/PARAMS '''
 
@@ -102,14 +103,14 @@ def api_call(body, headers):
             return defused_ET.fromstring(res.content)
         except xml.etree.ElementTree.ParseError as exc:
             # in case of a parsing error, try to remove problematic chars and try again.
-            demisto.debug('failed to parse request content, trying to parse without problematic chars:\n{}'.format(exc))
+            demisto.debug(f'failed to parse request content, trying to parse without problematic chars:\n{exc}')
             return defused_ET.fromstring(strip_unwanted_chars(res.content))
 
 
 def event_to_incident(event):
     """ Converts a Symantec event to a Demisto incident """
-    incident = dict()  # type: Dict[str, Any]
-    incident["name"] = "Incident: %s (%s)" % (event["IncidentNumber"], event["Classification"])
+    incident = {}  # type: Dict[str, Any]
+    incident["name"] = "Incident: {} ({})".format(event["IncidentNumber"], event["Classification"])
     incident["occurred"] = event["TimeCreated"] + "+0%s:00" % DST
     incident["rawJSON"] = json.dumps(event)
 
@@ -328,7 +329,7 @@ def query_incident_cmd():
         data = [data]
     sigs = []
     for sig in data:
-        sig_dict = dict()  # type: Dict[str, Any]
+        sig_dict = {}  # type: Dict[str, Any]
         sig_dict["SourceIPString"] = sig["SourceIPString"]
         sig_dict["SignatureName"] = sig["SignatureName"]
         sig_dict["VendorSignature"] = sig["VendorSignature"]

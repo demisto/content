@@ -62,6 +62,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  defaultvalue: new,open,assigned,closed,ignored
 - additionalinfo: You can find this value by navigating to Sources > JSON event source > POST URL.
   display: POST URL of the JSON alert source.
   name: post_url_id
@@ -105,13 +106,13 @@ script:
       - assigned
       - closed
       - ignored
-    - description: 'Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
+    - description: 'Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: created_after
       predefined:
       - ''
-    - description: 'Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
+    - description: 'Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: created_before
-    - description: 'Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
+    - description: 'Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: closed_after
     - description: 'Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: closed_before
@@ -132,7 +133,7 @@ script:
   subtype: python3
   type: python
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0

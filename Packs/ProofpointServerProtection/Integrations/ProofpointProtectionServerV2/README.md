@@ -21,22 +21,18 @@ The following are the required managed modules for this integration:
 
 The operations are accessed through port 10000.
 
-## Configure Proofpoint Protection Server v2 on Cortex XSOAR
+## Configure Proofpoint Protection Server v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Proofpoint Protection Server v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL (e.g., `https://xxxxxxxx.pphosted.com:10000`) | True |
-    | credentials | Username | True |
-    | unsecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Server URL (e.g., `https://xxxxxxxx.pphosted.com:10000`) | True |
+| credentials | Username | True |
+| unsecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### proofpoint-pps-smart-search
 ***

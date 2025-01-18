@@ -224,10 +224,11 @@ def test_module(client: Client):
         return 'ok'
 
     if params.get('self_deployed') and (not params.get('auth_code') or not params.get('redirect_uri')):
-        raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
-                               'redirect uri cannot be empty.')
-    raise DemistoException('The basic parameters are ok, authentication cannot be checked using the test module. '
-                           'Please run ms-management-activity-list-subscriptions to test your credentials.')
+        raise DemistoException('Error: in the self_deployed authentication flow the Authorization code and '
+                               'the Application redirect URI cannot be empty.')
+    raise DemistoException('The basic parameters are ok, authentication cannot be checked using the *Test* button.\n '
+                           'Please run the !ms-management-activity-list-subscriptions command instead once all '
+                           'relevant parameters have been entered.')
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):

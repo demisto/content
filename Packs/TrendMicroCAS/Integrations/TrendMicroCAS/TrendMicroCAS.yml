@@ -17,6 +17,7 @@ configuration:
   - Australia and New Zealand
   - UK
   - Canada
+  - India
   required: true
   type: 15
   section: Connect
@@ -272,7 +273,7 @@ script:
       name: file_sha1
     - description: 'The name of the attachment file for which to search, with or without a filename extension. A non-prefix wildcard is supported. For example, me*ssage.'
       name: file_name
-    - description: 'The filename extension of attachment files for which to search without a period ".". A non-prefix wildcard is supported. For example, do*'
+    - description: 'The filename extension of attachment files for which to search without a period ".". A non-prefix wildcard is supported. For example, do*.'
       name: file_extension
     - description: |-
         The URL contained in an email body or in an attachment for which to search. Type the
@@ -518,7 +519,7 @@ script:
       description: 'The string of the result code. For example, 0: success.'
       type: String
     - contextPath: TrendMicroCAS.EmailActionResult.service
-      description: The name of the protected service,
+      description: The name of the protected service.
       type: String
     - contextPath: TrendMicroCAS.EmailActionResult.status
       description: 'The status of the action. Can be: "Created": The API request was received. "Executing": The action is executing. "Success": The action was successful. "Skipped": The action was skipped. "Failed": The action failed.'
@@ -578,7 +579,7 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

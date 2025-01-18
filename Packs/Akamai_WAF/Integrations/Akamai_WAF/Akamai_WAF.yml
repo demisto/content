@@ -1490,10 +1490,20 @@ script:
       description: Akamai enrollments change status.
       type: Dictionary
   - arguments:
-    - defaultValue: '0'
-      description: The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
+    - description: Specify the contract on which to operate or view.
+      name: contract_id
+      required: true
+    description: 'Lists enrollments with active certificates. Note that the rate limit for this operation is 10 requests per minute per account.'
+    name: akamai-list-cps-active-certificates
+    outputs:
+    - contextPath: Akamai.Cps.Active.Certificates.Enrollments
+      description: A collection of Active Akami CPS enrollments.
+      type: Dictionary    
+  - arguments:
+    - description: The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
       name: change_id
       required: true
+      defaultValue: '0'
     - defaultValue: '0'
       description: Enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
       name: enrollment_id
@@ -1510,7 +1520,31 @@ script:
       required: true
     description: Get an enrollment in CPS by enrollment id.
     name: akamai-get-cps-enrollment-by-id
-  dockerimage: demisto/auth-utils:1.0.0.105764
+  - arguments: []
+    description: 'Lists available security configurations. Products: All.'
+    name: akamai-list-appsec-config
+    outputs:
+    - contextPath: Akamai.AppSecConfigAll
+      description: A list of dictionaries for all Akamai Security Configurations.
+      type: unknown
+  - arguments: []
+    description: List all zones that the current user has access to manage.
+    name: akamai-list-dns-zones
+    outputs:
+    - contextPath: Akamai.EdgeDns.Zones
+      description: A collection of Edge DNS zones.
+      type: Dictionary
+  - arguments:
+    - description: The name of the zone.
+      name: zone
+      required: true
+    description: Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zones.
+    name: akamai-list-dns-zone-recordsets
+    outputs:
+    - contextPath: Akamai.EdgeDns.ZoneRecordSets
+      description: A collection of Edge DNS zone's record sets.
+      type: Dictionary
+  dockerimage: demisto/auth-utils:1.0.0.1839651
   script: ''
   subtype: python3
   type: python

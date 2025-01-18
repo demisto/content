@@ -3,11 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import secrets
 import tempfile
-from datetime import timezone
+from datetime import UTC
 from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 from CoreIRApiModule import *
 
 disable_warnings()
@@ -169,7 +169,7 @@ def demisto_expiration_to_core(expiration) -> int:
         try:
             expiration_date = parse(expiration)
             assert expiration_date is not None, f'could not parse {expiration}'
-            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
+            return int(expiration_date.astimezone(UTC).timestamp() * 1000)
         except ValueError:
             pass
     return -1
@@ -253,8 +253,8 @@ def sync(client: Client):
         client.http_request(url_suffix='sync_tim_iocs', requests_kwargs=requests_kwargs)
     finally:
         os.remove(temp_file_path)
-    set_integration_context({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
-                             'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
+    set_integration_context({'ts': int(datetime.now(UTC).timestamp() * 1000),
+                             'time': datetime.now(UTC).strftime(DEMISTO_TIME_FORMAT),
                              'iocs_to_keep_time': create_iocs_to_keep_time()})
     return_outputs('sync with XDR completed.')
 
@@ -352,7 +352,7 @@ def core_expiration_to_demisto(expiration) -> str | None:
 
 
 def module_test(client: Client):
-    ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
+    ts = int(datetime.now(UTC).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
@@ -368,7 +368,7 @@ def core_iocs_sync_command(client: Client, first_time: bool = False):
 
 def iocs_to_keep_time():
     hour, minute = get_integration_context().get('iocs_to_keep_time', (0, 0))
-    time_now = datetime.now(timezone.utc)
+    time_now = datetime.now(UTC)
     return time_now.hour == hour and time_now.min == minute
 
 

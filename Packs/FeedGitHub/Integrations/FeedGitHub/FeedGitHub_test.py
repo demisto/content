@@ -241,6 +241,46 @@ def test_fetch_indicators(mocker):
     assert results == util_load_json("test_data/fetch-indicators-res.json")
 
 
+def test_fetch_indicators_enrichment_excluded(mocker):
+    """
+    Given:
+     - A mock client and parameters specifying the fetch time frame.
+     - Mocked responses for base and head commit SHAs, and indicators.
+     - Enrichment excluded marked as true
+    When:
+     - Calling fetch_indicators to retrieve indicators from the GitHub feed.
+    Then:
+     - Returns the list of indicators matching the expected results.
+     - All returned indicators have 'enrichmentExcluded' set to True
+    """
+    import FeedGitHub
+
+    client = mock_client()
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'setLastRun')
+    params = {'fetch_since': '15 days ago',
+              'enrichmentExcluded': True}
+    mocker.patch.object(
+        client,
+        'get_commits_between_dates',
+        return_value='046a799ebe004e1bff686d6b774387b3bdb3d1ce',
+    )
+    mocker.patch.object(
+        FeedGitHub,
+        'get_indicators',
+        return_value=(
+            util_load_json('test_data/iterator-test.json'),
+            '9a611449423b9992c126c20e47c5de4f58fc1c0e',
+        ),
+    )
+    results = FeedGitHub.fetch_indicators_command(client, params, {})
+    expected: list = util_load_json('test_data/fetch-indicators-res.json')
+    for ind in expected:
+        ind['enrichmentExcluded'] = True
+
+    assert results == expected
+
+
 @freeze_time("2024-05-20T11:05:36.984413")
 def test_get_indicators_command(mocker):
     """

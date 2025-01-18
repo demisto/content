@@ -61,7 +61,13 @@ def test_test_command(mocker: MockerFixture):
     'query,expected',
     [("app.paloaltonetwork.com", "paloaltonetwork.com"),
      ("test.this.google.co.il", "google.co.il"),
-     ("app.XSOAR.test", "app.XSOAR.test")
+     ("app.XSOAR.test", "app.XSOAR.test"),
+     ("https://hello.world.io/", "world.io"),
+     ("https://hello.world.io?", "world.io"),
+     ("https://hello.world.io#", "world.io"),
+     ("https://hello.world.io/a?b=c&d", "world.io"),
+     ("https://hello.world.io#a?b=c&d", "world.io"),
+     ("https://hello.world.io?a=b&c=d", "world.io"),
      ]
 )
 def test_get_domain_from_query(query, expected):
@@ -76,7 +82,7 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
     with capfd.disabled():
         with pytest.raises(SystemExit) as err:
             Whois.main()
-        assert err.type == SystemExit
+        assert err.type is SystemExit
         assert demisto.results.call_count == 1  # type: ignore
         # call_args is tuple (args list, kwargs). we only need the first one
         results = demisto.results.call_args[0]  # type: ignore
@@ -295,7 +301,7 @@ def test_parse_raw_whois_empty_nameserver():
                                                     (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
                                                     ])
 def test_parse_dates_invalid_time(input, expected_result):
-    assert type(Whois.parse_dates(input)[0]) == type(expected_result)
+    assert type(Whois.parse_dates(input)[0]) is type(expected_result)
 
 
 @pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
@@ -895,6 +901,19 @@ def test_new_test_command(mocker: MockerFixture):
 
 
 def test_whois_and_domain_command(mocker: MockerFixture):
+    """
+    Test the new whois/domain command.
+
+    Given:
+    - Mock response for WHOIS call.
+
+    When:
+    - 2 results are returned.
+
+    Then:
+    - The first result raw response is JSON.
+    """
+
     from Whois import whois_and_domain_command
     import whois
 
@@ -910,6 +929,7 @@ def test_whois_and_domain_command(mocker: MockerFixture):
     )
     res = whois_and_domain_command("domain", DBotScoreReliability.B)
     assert len(res) == 2
+    assert isinstance(res[0].raw_response, dict)
 
 
 @pytest.mark.parametrize(

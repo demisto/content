@@ -211,6 +211,29 @@ def test_query_logs_command_transform_results_1():
     assert results_noxform == {'CDL.Logging': cdl_records}
 
 
+def test_query_logs_command_transform_sysmtem_logs():
+    """
+    Given:
+        - a list of CDL query results from the log.system table.
+    When
+        - running query_logs_command function
+    Then
+        - the CDL query results from the log.system table should be transformed to the system log context format.
+    """
+    from CortexDataLake import query_logs_command
+
+    cdl_records = load_test_data('./test_data/test_query_logs_command_transform_results_system_logs.json')
+    cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_system_logs_xformed.json')
+
+    class MockClient():
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    _, results_xform, _ = query_logs_command({'limit': '1', 'query': 'SELECT * FROM `log.system`'}, MockClient())
+
+    assert results_xform == {'CDL.Logging': cdl_records_xform}
+
+
 class TestPagination:
     """
     A class to test the pagination mechanism in the Cortex Data Lake integration

@@ -164,10 +164,11 @@ def test_get_command_string_fail():
 
     expected_command_String = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
         '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
-        ' timeout="5" tag="None" additionalPollingCommandArgNames="my_arg_name"' \
-        '               additionalPollingCommandArgValues="hihi" pollingCommand="Set"  ids="payload"' \
-        ' pendingIds=".=\'payload\'"  pollingCommandArgName="key"' \
-        ' additionalPollingCommandArgNames="value" additionalPollingCommandArgValues="bar"'
+        ' timeout="5" tag="None" additionalPollingCommandArgNames="my_arg_name"               ' \
+                              'additionalPollingCommandArgValues="hihi\\" pollingCommand=\\"Set\\"  ' \
+                              'ids=\\"payload\\" pendingIds=\\".=\'payload\'\\"  ' \
+                              'pollingCommandArgName=\\"key\\" additionalPollingCommandArgNames=\\"value\\" ' \
+                              'additionalPollingCommandArgValues=\\"bar"'
 
     assert command_String == expected_command_String
     result = is_command_sanitized(command_String)

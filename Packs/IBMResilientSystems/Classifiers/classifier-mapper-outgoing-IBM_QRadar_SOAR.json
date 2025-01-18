@@ -1,0 +1,81 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "IBM QRadar SOAR Outgoing Mapper",
+    "mapping": {
+        "IBM QRadar SOAR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "description": {
+                    "simple": "description"
+                },
+                "owner_id": {
+                    "simple": "owner"
+                },
+                "resolution_id": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closeReason",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Unresolved,Duplicate,Not an Issue,Resolved"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "7,8,9,10"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "resolution_summary": {
+                    "simple": "closeNotes"
+                },
+                "creator.display_name": {
+                    "simple": "displayname"
+                },
+                "reporter": {
+                    "simple": "ibmsecurityqradarsoarreportername"
+                },
+                "severity_code": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "4,5,6"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "IBM QRadar SOAR Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -3,3 +3,7 @@ ignore=BA116
 
 [file:incidentfield-String_Sifter.json]
 ignore=BA116
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-RDP_Sessions.json]
+ignore=GR103

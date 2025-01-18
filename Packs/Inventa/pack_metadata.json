@@ -2,7 +2,7 @@
     "name": "Inventa",
     "description": "Handling DSAR reporting within Inventa Instance, including PII categories found, storages with data related to the PII etc.",
     "support": "partner",
-    "currentVersion": "1.1.11",
+    "currentVersion": "1.1.12",
     "author": "1Touch.io",
     "url": "1Touch.io",
     "email": "",

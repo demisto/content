@@ -2,7 +2,7 @@
     "name": "Datadog Cloud SIEM",
     "description": "Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform",
     "support": "xsoar",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",

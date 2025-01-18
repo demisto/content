@@ -16,33 +16,40 @@ Possible playbook triggers:
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* MITRE ATT&CK CoA - T1135 - Network Share Discovery
+
 * MITRE ATT&CK CoA - T1518 - Software Discovery
-* MITRE ATT&CK CoA - T1057 - Process Discovery
+* MITRE ATT&CK CoA - T1135 - Network Share Discovery
 * MITRE ATT&CK CoA - T1082 - System Information Discovery
 * MITRE ATT&CK CoA - T1083 - File and Directory Discovery
+* MITRE ATT&CK CoA - T1057 - Process Discovery
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * SetAndHandleEmpty
 * Set
 
 ### Commands
+
 * setIncident
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| technique | Mitre ATT&amp;amp;CK ID of a technique. |  | Optional |
+| technique | Mitre ATT&amp;CK ID of a technique. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -51,5 +58,7 @@ This playbook does not use any integrations.
 | Discovery.ProductList | Products used for remediation. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Courses of Action - Discovery](../doc_files/Courses_of_Action_-_Discovery.png)

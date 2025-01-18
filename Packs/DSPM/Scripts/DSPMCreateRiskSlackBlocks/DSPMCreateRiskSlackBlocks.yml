@@ -1,0 +1,25 @@
+commonfields:
+  id: DSPMCreateRiskSlackBlocks
+  version: -1
+name: DSPMCreateRiskSlackBlocks
+script: ''
+type: python
+tags: []
+comment: This XSOAR automation script generates a Slack message block to notify users of risks detected by a Data Security Posture Management (DSPM) tool. The Slack block is dynamically constructed based on the details of the security incident and includes options for users to take specific actions, such as creating a Jira ticket or remediating the risk.
+enabled: true
+args:
+- name: dspmIncident
+  description: ""
+outputs:
+- contextPath: slackBlock
+  description: Custom Slack for risk details notification.
+scripttarget: 0
+subtype: python3
+timeout: 100800h0m0s
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

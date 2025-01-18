@@ -1,12 +1,12 @@
 import inspect
 import locale
-from collections.abc import Iterator, Callable, Iterable  # noqa: F401
+from collections.abc import Iterator, Iterable
 import urllib
 import urllib.parse
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import datetime  # type: ignore[no-redef]
+from datetime import datetime
 import json
 import re
 
@@ -532,7 +532,7 @@ def _run_query(f, args):
     for name, p in sig.parameters.items():
         if name in args:
             if p.annotation != p.empty:
-                if p.annotation == bool:
+                if p.annotation is bool:
                     if FALSE_REGEX.match(args[name]):
                         kwargs[name] = False
                     else:
@@ -602,7 +602,7 @@ def parse_rate_limit_int(i):
 
 def parse_unix_time(ts) -> str:
     try:
-        return datetime.datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore[attr-defined]
+        return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ")
     except TypeError:
         return ts
 

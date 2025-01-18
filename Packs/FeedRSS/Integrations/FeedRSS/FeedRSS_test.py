@@ -1,7 +1,8 @@
+from CommonServerPython import DemistoException
 import pytest
 from FeedRSS import *
 from requests.models import Response
-from test_data.test_variables import HTML_CONTENT, FEED_DATA, TEST_DATA_MAX_SIZE
+from test_data.test_variables import HTML_CONTENT, FEED_DATA, TEST_DATA_MAX_SIZE, FEED_DATA_NO_PUBLISH_FIELD
 
 
 def side_effect_feed_url(mocker, client):
@@ -12,7 +13,7 @@ def side_effect_feed_url(mocker, client):
     client.feed_response = feed_content_res
 
 
-def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Client:
+def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45, enrichment_excluded: bool = False) -> Client:
     """ Create a mock client"""
 
     client = Client(server_url='test.com',
@@ -21,7 +22,8 @@ def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Clie
                     reliability='F - Reliability cannot be judged',
                     feed_tags=[],
                     tlp_color=None,
-                    content_max_size=content_max_size)
+                    content_max_size=content_max_size,
+                    enrichment_excluded=enrichment_excluded)
 
     mocker.patch.object(feedparser, 'parse', return_value=feedparser.util.FeedParserDict(dict_to_parse))
     mocker.patch.object(Client, 'request_feed_url', side_effect=side_effect_feed_url(mocker=mocker, client=client))
@@ -70,6 +72,24 @@ def test_get_url_content(mocker):
         "\n\n p in div p li inside ul li inside ul Coffee Tea Milk Month Savings January $100 This is h1"
 
 
+def test_get_url_content_invalid_link(mocker):
+    """
+    Given:
+    - Invalid URL link to get the content from
+
+    When:
+    - when creating Report indicators from each item on the rss feed, we want to extract the article content.
+
+    Then:
+    - Ensure it returns an empty value
+    """
+    client = mock_client(mocker=mocker, dict_to_parse={})
+    article_content_res = Response()
+    article_content_res.status_code = 403
+    mocker.patch.object(Client, '_http_request', side_effect=DemistoException(article_content_res))
+    assert client.get_url_content('test-link.com') == ""
+
+
 @pytest.mark.parametrize("article_content, expected_output", TEST_DATA_MAX_SIZE)
 def test_content_max_size(mocker, article_content, expected_output):
     """Check if the content of an article exceed "content_max_size", if so we cut him as expected"""
@@ -79,3 +99,23 @@ def test_content_max_size(mocker, article_content, expected_output):
     type(article_content_res).content = article_content
     mocker.patch.object(Client, '_http_request', return_value=article_content_res)
     assert client.get_url_content('test-link.com') == expected_output
+
+
+@pytest.mark.parametrize('parse_response,expected_output', FEED_DATA_NO_PUBLISH_FIELD)
+def test_parsed_indicators_from_response_no_publish_field(mocker, parse_response, expected_output):
+    """
+    Given:
+    - RSS feed url with indicators without publish filed
+
+    When:
+    - After parsing the feed content, we hold a list of items and create a Report indicator from each one of them
+
+    Then:
+    - Ensure all indicator fields extracted properly
+    """
+
+    client = mock_client(mocker, parse_response)
+
+    mocker.patch.object(Client, 'get_url_content', return_value='test description')
+    indicators = fetch_indicators(client)
+    assert indicators == expected_output

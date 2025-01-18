@@ -7,32 +7,34 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
 2. Search for Palo Alto Networks Cortex XDR - Investigation and Response.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                    | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | **Required** |
-    |----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | Fetch incidents                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Incident type                                                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Remove legacy incident fields                                                    | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | False        |
-    | Incident Mirroring Direction                                                     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Custom close-reason mapping for mirrored **XSOAR -> XDR** incidents.             | Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated close-reason mapping (acceptable format {XSOAR close reason}={XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`).                                                               | False        |
-    | Custom close-reason mapping for mirrored **XDR -> XSOAR** incidents.             | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {XDR close reason}={XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False        |
-    | Server URL (copy URL from XDR - click ? to see more info.)                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | True         |
-    | API Key ID                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | API Key                                                                          |
-    | XDR mirroring delay in minutes| In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. | False        |
-    | HTTP Timeout                                                                     | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | False        |
-    | Maximum number of incidents per fetch                                            | The maximum number of incidents per fetch. Cannot exceed 100.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | False        |
-    | Only fetch starred incidents                                                     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Starred incidents fetch window                                                   | Starred fetch window timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | False        |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Sync Incident Owners                                                             | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.                                                                                                                                                                             | False        |
-    | Trust any certificate (not secure)                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Use system proxy settings                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | Prevent Only Mode                                                                | Whether the XDR tenant Mode is prevent only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | False        |
-    | Incident Statuses to Fetch                                                       | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | False        |
-    | Incidents Fetch Interval                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Server URL (copy URL from XDR) |  | True |
+    | API Key ID |  | False |
+    | API Key |  | False |
+    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
+    | Incident Mirroring Direction |  | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored Cortex XDR Incident | When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. If not selected, but "Close all related alerts in XDR" is selected, the incident will automatically be closed in Cortex XDR. | False |
+    | XDR mirroring delay in minutes | In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents. | False |
+    | Custom close-reason mapping for mirrored **XSOAR -> XDR** incidents. | Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated close-reason mapping (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False |
+    | Custom lose-reason mapping for mirrored **XDR -> XSOAR** incidents. | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False |
+    | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
+    | Only fetch starred incidents |  | False |
+    | Starred incidents fetch window | Starred fetch window timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Prevent Only Mode | Whether the Cortex XDR tenant mode is prevent only. | False |
+    | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
+    | Minimize Incident Information | Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information. | False |
     | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Configuration
 
@@ -247,7 +249,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                          | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                             | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                            | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto, resolved_auto_resolve. | Optional | 
 | starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false.                                                                                                                          | Optional | 
 | starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days.                                                                                                              | Optional | 
 
@@ -746,6 +748,8 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
 | username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional | 
+| all_results | Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments. Possible values are: false, true. Default is false. | Optional | 
+| use_hr_timestamps | Whether to return timestamp values in human-readable format as opposed to Unix epoch timestamp format. Possible values are: false, true. Default is false. | Optional | 
 
 
 #### Context Output
@@ -1047,6 +1051,7 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | --- | --- | --- |
 | distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints &gt; Agent Installation page. | Required | 
 | package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
+| download_package | Supported only for package_type x64 or x86. Whether to download the installation package file. | Optional | 
 
 
 #### Context Output
@@ -1311,15 +1316,24 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 | incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Required | 
 | file_path | String that represents the path of the file you want to quarantine. | Required | 
-| file_hash | String that represents the file’s hash. Must be a valid SHA256 hash. | Required | 
+| file_hash | String that represents the file's hash. Must be a valid SHA256 hash. | Required | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| action_id | The action IDs for polling use. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-get-quarantine-status
 
@@ -1373,16 +1387,25 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
-| file_hash | String that represents the file in hash. Must be a valid SHA256 hash. | Required | 
-| endpoint_id | String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined. | Optional | 
+| file_hash | The hash code of the file. Must be a valid SHA256 hash. | Required | 
+| endpoint_id | String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints that relate to the quarantined file you defined. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| action_id | The action IDs for polling use. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-endpoint-scan-execute
 
@@ -1409,21 +1432,20 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Optional | 
 | dist_name | Name of the distribution list. | Optional | 
-| gte_first_seen | GTE first seen timestamp in milliseconds. | Optional | 
-| gte_last_seen | GET last seen timestamp in milliseconds. | Optional | 
-| lte_first_seen | LTE first seen timestamp in milliseconds. | Optional | 
-| lte_last_seen | LTE last seen timestamp in milliseconds. | Optional | 
+| gte_first_seen | Greater than or equal to first seen timestamp in milliseconds. | Optional | 
+| gte_last_seen | Greater than or equal to last seen timestamp in milliseconds. | Optional | 
+| lte_first_seen | Less than or equal to first seen timestamp in milliseconds. | Optional | 
+| lte_last_seen | Less than or equal to last seen timestamp in milliseconds. | Optional | 
 | ip_list | List of IP addresses. | Optional | 
 | group_name | Name of the endpoint group. | Optional | 
 | platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
 | alias | Endpoint alias name. | Optional | 
-| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
+| isolate | Whether an endpoint has been isolated. Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
 | all | Whether to scan all of the endpoints. Scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
-| action_id | For polling use. | Optional | 
+| action_id | The action IDs for polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-
 
 #### Context Output
 
@@ -1431,6 +1453,15 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | --- | --- | --- |
 | PaloAltoNetworksXDR.endpointScan.actionId | Number | The action ID of the scan request. | 
 | PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted? | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-endpoint-scan-abort
 
@@ -1730,8 +1761,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, so the first file path in the list is related to the first endpoint and so on. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| action_id | The action IDs for polling use. | Optional | 
 
 #### Context Output
 
@@ -1741,6 +1771,15 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | PaloAltoNetworksXDR.RetrievedFiles.endpoint_id | string | Endpoint ID. Added only when the operation is successful. | 
 | PaloAltoNetworksXDR.RetrievedFiles.file_link | string | Link to the file. Added only when the operation is successful. | 
 | PaloAltoNetworksXDR.RetrievedFiles.status | string | The action status. Added only when the operation is unsuccessful. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-retrieve-file-details
 
@@ -1889,7 +1928,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Investigat
 ### xdr-run-script
 
 ***
-This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+Deprecated. Use the `xdr-script-run` command instead. Initiates a new endpoint script execution action using a script from the script library.
 
 
 #### Base Command
@@ -1936,11 +1975,10 @@ Builtin Roles with this permission includes: "Responder", "Privileged Investigat
 | --- | --- | --- |
 | incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
-| snippet_code | Section of a script you want to initiate on an endpoint (e.g., print("7")). | Required | 
+| snippet_code | Section of a script to initiate on an endpoint (e.g., print("7")). | Required | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| action_id | Action IDs for polling use. | Optional | 
 
 #### Context Output
 
@@ -1948,6 +1986,15 @@ Builtin Roles with this permission includes: "Responder", "Privileged Investigat
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-get-script-execution-status
 
@@ -2074,7 +2121,6 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 ***
 Initiates a new endpoint script execution of shell commands.
 
-
 #### Base Command
 
 `xdr-script-commands-execute`
@@ -2085,12 +2131,13 @@ Initiates a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
-| commands | A comma-separated list of shell commands to execute. | Required | 
+| commands | A comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&amp;&amp;`, `;` separators for controlling the flow of multiple commands). | Required | 
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional | 
+| command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| action_id | The action IDs for polling use. | Optional | 
 
 #### Context Output
 
@@ -2098,12 +2145,20 @@ Initiates a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-file-delete-script-execute
 
 ***
 Initiates a new endpoint script execution to delete the specified file.
-
 
 #### Base Command
 
@@ -2111,16 +2166,15 @@ Initiates a new endpoint script execution to delete the specified file.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| **Argument Name** | **Description**                                                                                                       | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------| --- |
+| incident_id | Allows linking the response action to the incident that triggered it.                                                 | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.                    | Required | 
 | file_path | A comma-separated list of paths of the files to delete. All of the given file paths will run on all of the endpoints. | Required | 
-| timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. | Optional | 
-| timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| timeout | The timeout in seconds for this execution. Default is 600.                                                            | Optional | 
+| interval_in_seconds | Interval in seconds between each poll.                                                                                | Optional | 
+| timeout_in_seconds | Polling timeout in seconds.                                                                                           | Optional | 
+| action_id | The action IDs for polling use.                                                                                       | Optional | 
 
 #### Context Output
 
@@ -2128,12 +2182,20 @@ Initiates a new endpoint script execution to delete the specified file.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-file-exist-script-execute
 
 ***
-Initiates a new endpoint script execution to check if file exists.
-
+Initiates a new endpoint script execution to check if the file exists.
 
 #### Base Command
 
@@ -2149,8 +2211,7 @@ Initiates a new endpoint script execution to check if file exists.
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| action_id | The action IDs for polling use. | Optional | 
 
 #### Context Output
 
@@ -2158,12 +2219,20 @@ Initiates a new endpoint script execution to check if file exists.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### xdr-kill-process-script-execute
 
 ***
 Initiates a new endpoint script execution kill process.
-
 
 #### Base Command
 
@@ -2179,8 +2248,7 @@ Initiates a new endpoint script execution kill process.
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-| action_id | For polling use. | Optional | 
-
+| action_id | The action IDs for polling use. | Optional | 
 
 #### Context Output
 
@@ -2188,6 +2256,15 @@ Initiates a new endpoint script execution kill process.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### endpoint
 
@@ -2280,6 +2357,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | A comma-separated list of alert IDs. | Required | 
+| events_from_decider_format | Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False. | Optional |
 
 
 #### Context Output
@@ -3224,10 +3302,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
-| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>.             | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 10. | Optional | 
 
 #### Context Output
 
@@ -3282,10 +3360,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_id | The name of the host. | Optional | 
-| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| host_id | The host name of a specific host.                                                                                                                         | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 10. | Optional | 
 
 #### Context Output
 
@@ -3513,7 +3591,7 @@ There is no context output for this command.
 
 >Role was removed successfully for 1 user.
 
-## xdr-script-run
+### xdr-script-run
 
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
@@ -3859,7 +3937,7 @@ Update one or more alerts. You can update up to 100 alerts per request. Missing 
 | --- | --- | --- |
 | alert_ids | Comma-separated list of alert IDs. | Required | 
 | severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
-| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
+| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_auto_resolve, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
 | comment | Comment to append to updated alerts. | Optional | 
 
 #### Context Output
@@ -3871,5 +3949,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Alerts with IDs 35326 have been updated successfully.
-
-

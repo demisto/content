@@ -1,0 +1,42 @@
+commonfields:
+  id: VectraDetectCloseDuplicateIncidents
+  version: -1
+name: VectraDetectCloseDuplicateIncidents
+comment: This script closes duplicate incidents in XSOAR while resolving the assignment for the corresponding Vectra entity.
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: page_size
+  description: Specify the number of incidents to close during a single execution.
+  defaultValue: "50"
+- name: note
+  description: The note to add to the closed incidents.
+  defaultValue: "Duplicate. Closed."
+- name: close_in_vectra
+  description: If set to true, the script will close the entity's assignment in Vectra platform. This option is supported only when instance of Vectra Detect integration is enabled.
+  defaultValue: "True"
+- name: incident_types
+  description: Specify the incident type(s) to close duplicate incidents. Supports comma-separated values.
+  isArray: true
+  defaultValue: "Vectra Account, Vectra Host"
+outputs:
+- contextPath: VectraDetectIncidents.count
+  description: The total number of close incidents.
+  type: number
+- contextPath: VectraDetectIncidents.closed_incident_ids
+  description: The IDs of the closed incidents.
+  type: string
+- contextPath: VectraDetectIncidents.has_more_incidents
+  description: Whether there are more incidents to close.
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.111039
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

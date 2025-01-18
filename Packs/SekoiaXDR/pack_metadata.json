@@ -1,0 +1,23 @@
+{
+    "name": "SekoiaXDR",
+    "description": "Request Sekoia Defend (XDR) from Cortex XSOAR",
+    "support": "partner",
+    "currentVersion": "1.1.0",
+    "author": "SEKOIA.IO",
+    "url": "https://www.sekoia.io/en/contact/",
+    "email": "contact@sekoia.io",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "team-integration@sekoia.io"
+    ],
+    "githubUser": []
+}

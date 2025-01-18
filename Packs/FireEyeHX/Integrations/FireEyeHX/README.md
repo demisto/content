@@ -1,27 +1,23 @@
 FireEye Endpoint Security is an integrated solution that detects what others miss and protects endpoint against known and unknown threats. The HX Demisto integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate security operations automated playbook.
 
-## Configure FireEye HX on Cortex XSOAR
+## Configure FireEye HX in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEye HX.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1:3000) | True |
-    | Credentials | True |
-    | Password | True |
-    | Version | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Fetch limit | False |
-    | Incidents Fetch Interval | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://192.168.0.1:3000) | True |
+| Credentials | True |
+| Password | True |
+| Version | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| Fetch limit | False |
+| Incidents Fetch Interval | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fireeye-hx-host-containment
 ***
@@ -1359,7 +1355,7 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
  4. click **Add Server Configuration**.
  6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
  8. Set the **value** field to the desired time limit for the command to run (in minutes).
-  ![](https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/FireEyeHX_mceclip0.png)
+  ![](../../doc_files/FireEyeHX_mceclip0.png)
 
   
 

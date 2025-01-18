@@ -50,6 +50,7 @@ def get_phishing_map_labels(comma_values):
 
 def read_file(input_data, input_type):
     data = []  # type: List[Dict[str, str]]
+    file_path, file_content = '', ''
     if not input_data:
         return data
     if input_type.endswith("string"):
@@ -395,7 +396,7 @@ def main():
     if len(data) < MIN_INCIDENTS_THRESHOLD:
         return_results(
             f'{len(data)} incident(s) received.'
-            '\nMinimum number of incidents per label required for training: {MIN_INCIDENTS_THRESHOLD}.'
+            f'\nMinimum number of incidents per label required for training: {MIN_INCIDENTS_THRESHOLD}.'
             '\nMake sure that all arguments are set correctly and that enough incidents exist in the environment.'
         )
     else:

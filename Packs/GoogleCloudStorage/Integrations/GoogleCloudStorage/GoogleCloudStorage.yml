@@ -361,7 +361,25 @@ script:
       name: destination_object_name
     description: Copies a file (object) from one bucket to another.
     name: gcs-copy-file
-  dockerimage: demisto/google-cloud-storage:1.0.0.89308
+  - arguments:
+    - description: Name of the bucket to which public access policy is to be applied.
+      name: bucket_name
+      required: false
+    - description: |
+        Defines the public access prevention mode for the bucket.
+        - enforced: Completely blocks public access to the bucket, ensuring only authorized users can access it.
+        - inherited: The bucket will inherit the public access prevention setting from its parent project.
+      name: public_access_prevention
+      required: true
+      auto: PREDEFINED
+      defaultValue: 'enforced'
+      predefined:
+      - enforced
+      - inherited
+    description: |
+      Blocks public access to a specified Google Cloud Storage bucket by enabling public access prevention, ensuring only authorized users can access the bucket.
+    name: gcs-block-public-access-bucket
+  dockerimage: demisto/google-cloud-storage:1.0.0.117186
   runonce: false
   script: ''
   type: python

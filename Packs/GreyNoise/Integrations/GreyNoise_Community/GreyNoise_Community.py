@@ -8,7 +8,6 @@ import urllib3  # type: ignore
 import traceback
 import requests
 import copy
-from typing import Tuple
 from greynoise import GreyNoise, util  # type: ignore
 from greynoise.exceptions import RequestFailure, RateLimitError  # type: ignore
 
@@ -155,7 +154,7 @@ def get_ip_context_data(responses: list) -> list:
     return ip_context_responses
 
 
-def get_ip_reputation_score(classification: str) -> Tuple[int, str]:
+def get_ip_reputation_score(classification: str) -> tuple[int, str]:
     """Get DBot score and human readable of score.
 
     :type classification: ``str``
@@ -298,7 +297,7 @@ def main() -> None:  # pragma: no cover
     else:
         packs = []
 
-    pack_version = "1.3.0"
+    pack_version = "1.4.0"
     if isinstance(packs, list):
         for pack in packs:
             if pack["name"] == "GreyNoise":

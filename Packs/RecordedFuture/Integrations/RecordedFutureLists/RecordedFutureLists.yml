@@ -31,7 +31,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.116949
   commands:
   - name: recordedfuture-lists-search
     description: Search for lists in Recorded Future.

@@ -14,7 +14,6 @@ comment: |-
 enabled: true
 args:
   - name: left
-    required: true
     isArray: true
     description: Value to check if it has a substring that is equal to an element in the right side. Can be a single value or a comma-separated list.
   - name: right
@@ -25,4 +24,4 @@ scripttarget: 0
 fromversion: 6.9.0
 tests:
 - AnyMatch_Test
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186

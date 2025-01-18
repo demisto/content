@@ -1,6 +1,7 @@
 import os
 from typing import Any
 
+import demistomock as demisto
 import pytest
 import sqlalchemy
 import pyodbc
@@ -294,6 +295,26 @@ def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
     Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
            database='', ssl_connect=False, use_ldap=use_ldap)
     assert mock_create_engine.mock_calls[0][1][0] == expected_url
+
+
+@pytest.mark.parametrize('port, expected_url', [
+    ('', pytest.param("trino://username:password@host:8080/schema")),
+    ('1234', pytest.param("trino://username:password@host:1234/schema"))])
+def test_trino_connection(mocker, port: str, expected_url: str):
+    """
+    Given
+    - All required arguments for the client
+    When
+    - Creating a Generic SQL client with the Trino dialect
+    Then
+    - The client creation is successful
+    - The engine url is generated correctly per the Trino specification
+    """
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Trino', host='host', username='username', password='password', port=port, connect_parameters='',
+           database='schema', ssl_connect=False, use_ldap=False)
+    assert mock_create_engine.called_once_with(expected_url)
 
 
 @pytest.mark.parametrize('dialect, expected_port', [
@@ -708,3 +729,25 @@ def test_create_engine_and_connect_new_engine(mocker):
     assert client.connection == 'New Engine'
     assert cache['1'] != old_engine
     assert cache['1'] == new_engine
+
+
+@pytest.mark.parametrize('response, result', [
+    ("success", [{'Type': 'Successful', 'APICallsCount': 1}]),
+    ("general_error", [{'Type': 'GeneralError', 'APICallsCount': 1}]),
+    ("connection_error", [{'Type': 'ConnectionError', 'APICallsCount': 1}])
+])
+def test_create_api_metrics(mocker, response, result):
+    """
+    Test create_api_metrics function, make sure metrics are reported according to the response
+    """
+    mocker.patch.object(Client, '_create_engine_and_connect', return_value=ConnectionMock())
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Generic SQL'}]}})
+    client.create_api_metrics(status_type=response)
+
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == result

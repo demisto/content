@@ -33,7 +33,7 @@ class ScanStatus(Enum):
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow flexible conversion from strings to Enum."""
 
-    def __getitem__(self, item: Any):
+    def __getitem__(cls, item: Any):
         try:
             return super().__getitem__(item)
 
@@ -160,7 +160,7 @@ class Client(BaseClient):
             verify=verify,
         )
 
-    def _http_request(self, **kwargs):
+    def _http_request(self, **kwargs):  # type: ignore[override]
         """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
         for _time in range(1, self.connection_error_retries + 1):
             try:
@@ -5186,7 +5186,7 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
     scan_response = client.start_site_scan(
         site_id=site.id,
         scan_name=name if name else f"scan {datetime.now()}",
-        hosts=argToList(hosts) if hosts else None,
+        hosts=argToList(hosts) if hosts else None,  # type: ignore[arg-type]
     )
 
     if not scan_response or "id" not in scan_response:

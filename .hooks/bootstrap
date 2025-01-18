@@ -73,6 +73,9 @@ else
         echo "Installing Poetry version:${POETRY_VERSION}"
         curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
         error_code=$?
+        if [ -n "${ARTIFACTS_FOLDER}" ] && [ "${error_code}" -ne 0 ]; then
+            cp ${PWD}/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
+        fi
         if ! command -v poetry >/dev/null 2>&1; then
             exit_on_error $? "Poetry isn't installed"
         fi
@@ -80,9 +83,6 @@ else
           echo "Poetry version ${POETRY_VERSION} installed successfully"
         else
           exit_on_error 1 "Poetry version $(poetry --version) doesn't match the required version: ${POETRY_VERSION}"
-        fi
-        if [ -n "${ARTIFACTS_FOLDER}" ] && [ "${error_code}" -ne 0 ]; then
-            cp ${PWD}/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
         fi
         exit_on_error $error_code "Failed to install Poetry version:${POETRY_VERSION}"
     fi

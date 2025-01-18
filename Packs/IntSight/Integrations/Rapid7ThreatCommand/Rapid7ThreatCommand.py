@@ -19,7 +19,7 @@ RETRIES = 3  # One retry is completed right away, so it should be viewed as a mi
 STATUS_LIST_TO_RETRY = [429] + list(range(500, 600))
 
 
-class Headers(list, Enum):
+class Headers(list, Enum):  # type: ignore[misc]
     GET_ALERT = [
         "id",
         "type",
@@ -248,7 +248,7 @@ WHITELIST_ADD = "Add to the user whitelist"
 WHITELIST_DO_NOT = "Do not whitelist"
 
 
-class ArgumentValues(list, Enum):
+class ArgumentValues(list, Enum):  # type: ignore[misc]
     WHITELIST_STATUS = [WHITELIST_ADD, WHITELIST_DO_NOT]
     BOOLEAN = ["true", "false"]
     ALERT_TYPE = [

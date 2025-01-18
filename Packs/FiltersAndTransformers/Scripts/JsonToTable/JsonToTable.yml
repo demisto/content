@@ -26,7 +26,7 @@ args:
   description: 'Transformation JSON from value to strings. The syntax is: `{"header_key": {"keys": [<item1>, ...], "is_nested": true/false}}`.'
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 tests:
 - JsonToTable - Test Playbook

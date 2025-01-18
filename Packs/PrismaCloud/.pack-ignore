@@ -43,6 +43,12 @@ ignore=BA101
 [file:PrismaCloudIAM_image.png]
 ignore=IM111
 
+[file:layoutscontainer-Prisma_Cloud_-_Network_Incident_Layout.json]
+ignore=LO107
+
+[file:layoutscontainer-Prisma_Cloud_V2.json]
+ignore=LO107
+
 [known_words]
 ssh
 misconfiguration
@@ -62,4 +68,20 @@ ignore=BA101
 
 [file:PrismaCloud.yml]
 ignore=PR101,MR108
+
+# GR103 is temporary, see CIAC-11705
+[file:incidenttype-Azure_AKS_Misconfiguration.json]
+ignore=GR103
+
+[file:incidenttype-Azure_Network_Misconfiguration.json]
+ignore=GR103
+
+[file:incidenttype-Azure_SQL_Misconfiguration.json]
+ignore=GR103
+
+[file:playbook-Prisma_Cloud_-_VM_Alert_Prioritization.yml]
+ignore=GR107
+
+[file:playbook-Prisma_Cloud_-_Find_Public_Cloud_Resource_by_Public_IP.yml]
+ignore=GR107
 

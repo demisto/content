@@ -1,0 +1,127 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "DataBee - Incoming Mapper",
+    "mapping": {
+        "DataBee Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Source": {
+                    "simple": "data_sources"
+                },
+                "DataBee Analytic": {
+                    "complex": {
+                        "filters": [],
+                        "root": "analytic",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "DataBee Evidence": {
+                    "complex": {
+                        "filters": [],
+                        "root": "evidence",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "DataBee Findings": {
+                    "complex": {
+                        "filters": [],
+                        "root": "finding",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "DataBee Impact": {
+                    "simple": "impact"
+                },
+                "DataBee Message": {
+                    "simple": "message"
+                },
+                "DataBee SIC-CSC": {
+                    "complex": {
+                        "filters": [],
+                        "root": "cis_csc",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Description": {
+                    "simple": "finding.desc"
+                },
+                "Event Type": {
+                    "simple": "type_name"
+                },
+                "External Confidence": {
+                    "simple": "confidence"
+                },
+                "Source Category": {
+                    "simple": "category_name"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "User Risk Level": {
+                    "simple": "risk_level_id"
+                },
+                "name": {
+                    "simple": "analytic.name"
+                },
+                "occurred": {
+                    "simple": "start_time"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "DataBee - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

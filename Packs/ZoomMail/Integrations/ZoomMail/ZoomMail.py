@@ -925,9 +925,9 @@ def create_email_message(
         MIMEMultipart: The constructed email message object.
     """
     message = MIMEMultipart("mixed" if html_body or attachment_ids else "alternative")
-    message["From"] = from_email
-    message["To"] = to
-    message["Subject"] = subject
+    message["From"] = from_email  # type: ignore[assignment]
+    message["To"] = to  # type: ignore[assignment]
+    message["Subject"] = subject  # type: ignore[assignment]
 
     if body:
         message.attach(MIMEText(body, "plain"))

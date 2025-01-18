@@ -8,21 +8,26 @@ configuration:
   name: feed
   type: 8
   required: false
+  section: Collect
 - display: Server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: It is possible to provide an API key header instead. See the description for more details.
   display: Username
   name: credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: If selected, the indicator type will be auto detected for each indicator.
   defaultvalue: 'true'
   display: Auto detect indicator type
   name: auto_detect_type
   type: 8
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored. If the "Custom" option is selected, the Custom Indicator Type parameter must be provided.
   display: Indicator Type
   name: indicator_type
@@ -46,11 +51,15 @@ configuration:
   - Custom
   type: 15
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the Indicator Type field.
   display: Custom Indicator Type
   name: custom_indicator_type
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -62,6 +71,7 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -75,6 +85,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -85,6 +96,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -95,64 +107,99 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Time (in seconds) before HTTP requests timeout
   defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: Python regular expression for lines to ignore
   display: Ignore Regex
   name: ignore_regex
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Feed name
   name: feed_name
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Indicator extraction pattern
   name: indicator
   type: 12
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Fields extraction pattern
   name: fields
   type: 12
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: CSV list of headers to send in the HTTP request in the format of "header_name:header_value".
   display: Headers
   name: headers
   type: 0
   required: false
+  section: Collect
+  advanced: true
+- display: Enrichment Excluded
+  name: enrichmentExcluded
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  hidden:
+  - xsoar_on_prem
+  section: Collect
 description: Fetches indicators from a plain text feed.
 display: Plain Text Feed
 name: Plain Text Feed
@@ -166,7 +213,7 @@ script:
       name: indicator_type
     description: Gets indicators from the feed.
     name: plaintext-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.75615
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: false
   script: '-'
@@ -175,3 +222,6 @@ script:
 tests:
 - PlainText Feed - Test
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect

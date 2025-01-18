@@ -62,11 +62,13 @@ class Client(BaseClient):
         self._headers.update({'Authorization': f'Bearer {token}'})
         demisto.debug('Set auth headers successfully')
 
-    async def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,  # noqa: F841
-                            params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,  # noqa: F841
-                            return_empty_response=False, retries=0, status_list_to_retry=None,  # noqa: F841
-                            backoff_factor=5, raise_on_redirect=False, raise_on_status=False,  # noqa: F841
-                            error_handler=None, **kwargs):  # noqa: F841
+    async def _http_request(  # type: ignore[override]
+        self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,  # noqa: F841
+        params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,  # noqa: F841
+        return_empty_response=False, retries=0, status_list_to_retry=None,  # noqa: F841
+        backoff_factor=5, raise_on_redirect=False, raise_on_status=False,  # noqa: F841
+        error_handler=None, **kwargs  # noqa: F841
+    ):
         while True:
             try:
                 res = super()._http_request(

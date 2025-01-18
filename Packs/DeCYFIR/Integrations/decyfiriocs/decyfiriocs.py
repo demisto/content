@@ -471,7 +471,7 @@ class Client(BaseClient):
             ioc_labels = ioc.get("labels")
             if ioc_labels is not None:
                 for label in ioc_labels:
-                    if isinstance( label, dict):
+                    if isinstance(label, dict):
                         if label.get("geographies"):
                             ioc_data['fields']['geocountry'] = label.get("geographies")
                         if label.get("tags"):

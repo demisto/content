@@ -1,29 +1,25 @@
 An Identity and Access Management integration template.
 This integration was integrated and tested with version 2.0.0 of Zoom_IAM.
 
-## Configure Zoom_IAM on Cortex XSOAR
+## Configure Zoom_IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zoom_IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                      | **Description**                          | **Required** |
-    | ---------------------------------- | ---------------------------------------- | ------------ |
-    | Account ID (OAuth)                 |                                          | False        |
-    | Client ID (OAuth)                  |                                          | False        |
-    | Client Secret (OAuth)              |                                          | False        |
-    | API Key (JWT-Deprecated)           | This authentication method is deprecated. | False        |
-    | API Secret (JWT-Deprecated)        | This authentication method is deprecated. | False        |
-    | Use system proxy settings          |                                          | False        |
-    | Trust any certificate (not secure) |                                          | False        |
-    | Allow disabling users              |                                          | False        |
-    | Allow enabling users               |                                          | False        |
-    | Incoming Mapper                    |                                          | True         |
-    | Outgoing Mapper                    |                                          | True         |
+| **Parameter**                      | **Description**                          | **Required** |
+| ---------------------------------- | ---------------------------------------- | ------------ |
+| Account ID (OAuth)                 |                                          | False        |
+| Client ID (OAuth)                  |                                          | False        |
+| Client Secret (OAuth)              |                                          | False        |
+| API Key (JWT-Deprecated)           | This authentication method is deprecated. | False        |
+| API Secret (JWT-Deprecated)        | This authentication method is deprecated. | False        |
+| Use system proxy settings          |                                          | False        |
+| Trust any certificate (not secure) |                                          | False        |
+| Allow disabling users              |                                          | False        |
+| Allow enabling users               |                                          | False        |
+| Incoming Mapper                    |                                          | True         |
+| Outgoing Mapper                    |                                          | True         |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-disable-user
 ***

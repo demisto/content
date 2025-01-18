@@ -1,0 +1,92 @@
+args:
+- description: List of users IDs of the user to retrieve.
+  name: user_id
+  isArray: true
+- description: List of names of the users to retrieve.
+  name: user_name
+  isArray: true
+- description: List of emails of the users to retrieve.
+  name: user_email
+  isArray: true
+- description: list of AD user's attributes to retrieve, separated by comma.
+  name: attributes
+- description: The domain to retrieve users from. Available only for the iam-get-user command.
+  name: domain
+- description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
+  name: brands
+  auto: PREDEFINED
+  predefined:
+  - 'SailPointIdentityNow'
+  - 'Active Directory Query v2'
+  - 'PingOne'
+  - 'Okta v2'
+  - 'AWS - IAM'
+  - 'Microsoft Graph User'
+  - 'SailPointIdentityIQ'
+  - 'Cortex XDR - IR'
+  - 'Cortex Core - IR'
+  - 'iam-get-user'
+- description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+commonfields:
+  id: get-user-data
+  version: -1
+name: get-user-data
+outputs:
+- contextPath: Account.ID.Value
+  description: The user ID.
+  type: String
+- contextPath: Account.ID.Source
+  description: The source of the account ID, for example, the integration name.
+  type: String
+- contextPath: Account.Username
+  description: The username in the relevant system.
+  type: String
+- contextPath: Account.DisplayName
+  description: The display name.
+  type: String
+- contextPath: Account.Email.Address
+  description: The email address of the account.
+  type: String
+- contextPath: Account.Groups
+  description: Groups to which the account belongs (integration specific). For example, for AD these are groups of which the account is memberOf.
+  type: String
+- contextPath: Account.Type
+  description: The account type. The most common value is 'AD', but can be 'LocalOS', 'Google', 'AppleID'.
+  type: String
+- contextPath: Account.JobTitle
+  description: The job title of the account.
+  type: String
+- contextPath: Account.Office
+  description: The office where the person associated with the account works.
+  type: String
+- contextPath: Account.TelephoneNumber
+  description: The phone number associated with the account.
+  type: String
+- contextPath: Account.IsEnabled
+  description: Whether the account is enabled or disabled. 'True' means the account is enabled.
+  type: Bool
+- contextPath: Account.Manager.Email
+  description: The email address of the manager.
+  type: String
+- contextPath: Account.Manager.DisplayName
+  description: The display name of the manager.
+  type: String
+- contextPath: Account.RiskLevel
+  description: The risk level associated with the account. This could be 'LOW', 'MEDIUM', or 'HIGH'.
+  type: String
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

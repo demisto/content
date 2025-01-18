@@ -37,8 +37,8 @@ class Client:
             + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
         )
         auth_code_scope = (
-            f"{self.azure_cloud.endpoints.log_analytics_resource_id}"
-            + f"/Data.Read%20{self.azure_cloud.endpoints.resource_manager}user_impersonation"
+            f"{urljoin(self.azure_cloud.endpoints.log_analytics_resource_id, 'Data.Read')} "
+            f"{urljoin(self.azure_cloud.endpoints.resource_manager, 'user_impersonation')}"
         )
         resources_list = [self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id]
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
@@ -560,8 +560,14 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
     if argToBoolean(args["first_run"]):
         if start_search_time_datetime := arg_to_datetime(args.get('start_search_time', '1 day ago'), "start_search_time"):
             start_search_time_iso = start_search_time_datetime.isoformat()
+        else:
+            start_search_time_iso = None
+            demisto.debug(f"{start_search_time_datetime=} -> {start_search_time_iso=}")
         if end_search_time_datetime := arg_to_datetime(args.get('end_search_time', 'now'), "end_search_time"):
             end_search_time_iso = end_search_time_datetime.isoformat()
+        else:
+            end_search_time_iso = None
+            demisto.debug(f"{end_search_time_datetime=} -> {end_search_time_iso=}")
         url_suffix = f"/tables/{table_name}"
         data = {
             "properties": {

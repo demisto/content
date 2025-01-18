@@ -26,6 +26,7 @@
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
+/Packs/rasterize/Integrations/rasterize/* @ilaredo
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
@@ -52,19 +53,14 @@
 /Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
-# Build related
-.circleci/config.yml @yucohen
-
 # SDK Related
 .pre-commit-config_template.yaml @SamuelFain @YuvHayun
+validation_config.toml @YuvHayun
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @maimorag
-/Packs/Core/Integrations/ @maimorag
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @maimorag
-
-# Dependencies
-poetry.lock @dorschw
+/Packs/CortexXDR/Integrations/ @tcarmeli1
+/Packs/Core/Integrations/ @tcarmeli1
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori

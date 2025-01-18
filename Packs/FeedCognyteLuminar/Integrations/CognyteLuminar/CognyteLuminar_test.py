@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 
 from CognyteLuminar import Client, cognyte_luminar_get_indicators, \
@@ -32,7 +31,7 @@ generic_expected_output = {
 }
 enrich_malware_output = {
     "value": "Ukraine Power Grid",
-    "occurred": "01/04/2016, ""00:00:00",
+    "occurred": "01/04/2016, " + "00:00:00",
     "type": "Malware",
     "rawJSON": {
         "type": "malware",
@@ -44,7 +43,7 @@ enrich_malware_output = {
             "trojan"
         ],
         "is_family": False,
-        "name": "Ukraine ""Power ""Grid"
+        "name": "Ukraine " + "Power " + "Grid"
     },
     "fields": {
         "STIX Is Malware Family": False,
@@ -73,7 +72,7 @@ enrich_incident_output = {
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

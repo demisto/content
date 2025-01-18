@@ -17,9 +17,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "Netskope Behavior Analytics"
-    ],
+    "associatedTypes": ["Netskope Behavior Analytics", "Netskope DLP Incident"],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,

@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.5.0
 name: TIM - Process AWS indicators
 description: This playbook handles the tagging of AWS indicators. Specify the tag
-  to apply to these indicators in the playbook inputs. An example tag will be approved_white.
+  to apply to these indicators in the playbook inputs. An example tag will be approved_allow.
   If no inputs are specified, the indicators will be tagged for manual review. The
   user can specify whether a manual review incident is required.
 starttaskid: "0"
@@ -93,7 +93,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: whitelist_review
+              simple: allowlist_review
     view: |-
       {
         "position": {
@@ -211,8 +211,8 @@ tasks:
     task:
       id: 776d5507-566e-4c62-89e2-b7ecc22cbee8
       version: -1
-      name: Tag AWS indicators with tag whitelist review
-      description: Adds the whitelist_review tag to the indicator.
+      name: Tag AWS indicators with tag allowlist review
+      description: Adds the allowlist_review tag to the indicator.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -224,7 +224,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: whitelist_review
+        simple: allowlist_review
       indicatorsValues:
         complex:
           root: ${playbookQuery
@@ -461,7 +461,7 @@ tasks:
       malwarefamily: {}
       measurestomitigate: {}
       name:
-        simple: Review Indicators Manually For Whitelisting
+        simple: Review Indicators Manually For Allowlisting
       niststage: {}
       occurred: {}
       offboardingdate: {}
@@ -586,7 +586,7 @@ tasks:
       travelmaplink: {}
       triggeredsecurityprofile: {}
       type:
-        simple: Review Indicators Manually For Whitelisting
+        simple: Review Indicators Manually For Allowlisting
       urlsslverification: {}
       user: {}
       useraccountcontrol: {}
@@ -701,8 +701,8 @@ inputs:
   value: {}
   required: false
   description: 'Use this input to define which tag to apply to AWS indicators. An
-    example tag can be whitelist_review. If no tags are specified in the input, the
-    tag whitelist_review will be used. '
+    example tag can be allowlist_review. If no tags are specified in the input, the
+    tag allowlist_review will be used. '
   playbookInputQuery: null
 - key: ""
   value: {}
@@ -728,7 +728,7 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: This input determines if processed indicators that have the whitelist_review tag are reviewed in a new incident. 
+  description: This input determines if processed indicators that have the allowlist_review tag are reviewed in a new incident. 
     To create an incident, enter any value other than 'No'.
   playbookInputQuery: null
 outputs: []

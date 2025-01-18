@@ -1,0 +1,156 @@
+{
+    "fortinet_fortiweb_raw": {
+      "cefDeviceVersion": {
+          "type": "string",
+          "is_array": false
+        },
+      "cefDeviceEventClassId": {
+          "type": "string",
+          "is_array": false
+        },
+      "cefName": {
+          "type": "string",
+          "is_array": false
+        },
+      "cefSeverity": {
+          "type": "string",
+          "is_array": false
+        },
+      "cat": {
+          "type": "string",
+          "is_array": false
+        },
+      "cs1": {
+          "type": "string",
+          "is_array": false
+        },
+      "src": {
+          "type": "string",
+          "is_array": false
+        },
+      "cs2": {
+          "type": "string",
+          "is_array": false
+        },
+      "app": {
+          "type": "string",
+          "is_array": false
+        },
+      "act": {
+          "type": "string",
+          "is_array": false
+        },
+      "cs3": {
+          "type": "string",
+          "is_array": false
+        },
+      "cs4": {
+          "type": "string",
+          "is_array": false
+        },
+      "dhost": {
+          "type": "string",
+          "is_array": false
+        },
+      "request": {
+          "type": "string",
+          "is_array": false
+        },
+      "requestMethod": {
+          "type": "string",
+          "is_array": false
+        },
+      "requestClientApplication": {
+          "type": "string",
+          "is_array": false
+        },
+      "cs6": {
+          "type": "string",
+          "is_array": false
+        },
+      "msg": {
+          "type": "string",
+          "is_array": false
+        },
+      "cs5": {
+          "type": "string",
+          "is_array": false
+        },
+      "cipher_suite": {
+          "type": "string",
+          "is_array": false
+        },
+      "dst": {
+          "type": "string",
+          "is_array": false
+        },
+      "http_host": {
+          "type": "string",
+          "is_array": false
+        },
+      "original_src": {
+          "type": "string",
+          "is_array": false
+        },
+      "http_retcode": {
+          "type": "int",
+          "is_array": false
+        },
+      "service": {
+          "type": "string",
+          "is_array": false
+        },
+      "user_name": {
+          "type": "string",
+          "is_array": false
+        },
+      "http_method": {
+          "type": "string",
+          "is_array": false
+        },
+      "http_url": {
+          "type": "string",
+          "is_array": false
+        },
+      "http_refer": {
+          "type": "string",
+          "is_array": false
+        },
+      "http_agent": {
+          "type": "string",
+          "is_array": false
+        },
+      "status": {
+          "type": "string",
+          "is_array": false
+        },
+      "spt": {
+          "type": "int",
+          "is_array": false
+        },
+      "dpt": {
+          "type": "int",
+          "is_array": false
+        },
+      "cn3": {
+          "type": "int",
+          "is_array": false
+        },
+      "http_response_bytes": {
+          "type": "int",
+          "is_array": false
+        },
+      "dst_port": {
+          "type": "int",
+          "is_array": false
+        },
+      "http_request_bytes": {
+          "type": "int",
+          "is_array": false
+        },
+      "src_port": {
+          "type": "int",
+          "is_array": false
+        }
+    }
+}

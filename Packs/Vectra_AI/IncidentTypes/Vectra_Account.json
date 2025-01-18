@@ -17,12 +17,42 @@
     "default": false,
     "autorun": false,
     "disabled": false,
+    "playbookId": "Process Incident - Vectra Detect",
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
+    "layout": "Vectra Account",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
-        "fieldCliNameToExtractSettings": {}
+        "fieldCliNameToExtractSettings": {
+            "email": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "emailRep"
+                ]
+            },
+            "usernames": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectraaccounthostaccesshistory": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectradetectiondetails": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectraserviceaccesshistory": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
     },
     "fromVersion": "6.5.0"
 }

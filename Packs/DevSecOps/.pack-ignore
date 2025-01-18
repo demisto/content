@@ -30,3 +30,17 @@ ignore=RM112
 
 [file:1_1_8.md]
 ignore=RN116
+
+# GR103 is temporary, see CIAC-11656
+[file:DevSecOps_-_Fetch_PR_-_Triage.yml]
+ignore=GR103
+
+[file:DevSecOps_-_LGTM_-_Analysis_-_SubPB.yml]
+ignore=GR103,GR107
+
+[file:GitLab-test-playbook.yml]
+ignore=GR103
+
+[file:DevSecOps_-_LGTM_-_Analysis_-_SubPB_v2.yml]
+ignore=GR107
+

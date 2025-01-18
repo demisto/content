@@ -1,0 +1,22 @@
+[
+    {
+        "event-num": 1,
+        "event-created": "2020-09-24T16:30:10.016Z",
+        "event-action": "create",
+        "triage-item-id": "3ca266d3-4eb6-4852-a46a-9f42545fc412",
+        "risk-type": "exposed-credential",
+        "classification": "exposed-credential-alert",
+        "state": "unread",
+        "risk-level": "medium"
+    },
+    {
+        "event-num": 2,
+        "event-created": "2020-09-24T16:30:10.016Z",
+        "event-action": "create",
+        "triage-item-id": "15653b44-8f50-4636-a36a-7c75c5f2f283",
+        "risk-type": "exposed-credential",
+        "classification": "exposed-credential-alert",
+        "state": "unread",
+        "risk-level": "medium"
+    }
+]

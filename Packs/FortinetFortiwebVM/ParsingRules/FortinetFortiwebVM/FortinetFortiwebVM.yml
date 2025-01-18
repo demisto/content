@@ -1,0 +1,6 @@
+name: Fortinet Fortiweb Parsing Rule
+id: Fortinet_Fortiweb_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''

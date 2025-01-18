@@ -131,7 +131,7 @@ tasks:
       extend-context:
         simple: AzureUncommonCountryLogon=
       query:
-        simple: "BehaviorAnalytics\n| where ActivityInsights.FirstTimeUserConnectedFromCountry == \"True\"\n| where UserPrincipalName == \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(ActionType)"
+        simple: "BehaviorAnalytics\n| where ActivityInsights.FirstTimeUserConnectedFromCountry == \"True\"\n| where UserPrincipalName == @\"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(ActionType)"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -354,7 +354,7 @@ tasks:
       extend-context:
         simple: AzureUncommonVolume=
       query:
-        simple: "BehaviorAnalytics\n| where ActivityInsights.UncommonHighVolumeOfActions == \"True\"\n| where UserPrincipalName == \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(ActionType)"
+        simple: "BehaviorAnalytics\n| where ActivityInsights.UncommonHighVolumeOfActions == \"True\"\n| where UserPrincipalName == @\"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(ActionType)"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -394,7 +394,7 @@ tasks:
         simple: |-
           BehaviorAnalytics
           | where ActivityInsights.ActionUncommonlyPerformedByUser == "True"
-          | where UserPrincipalName == "${inputs.Username}"
+          | where UserPrincipalName == @"${inputs.Username}"
           | where TimeGenerated > ${inputs.AzureSearchTime}
           | summarize Count = count(), Events = make_list(ActionType)
     separatecontext: false
@@ -437,7 +437,7 @@ tasks:
           IdentityInfo
           | where RiskState contains "Risk"
           | where RiskLevel == "High"
-          | where AccountUPN == "${inputs.Username}"
+          | where AccountUPN == @"${inputs.Username}"
           | where TimeGenerated >  ${inputs.AzureSearchTime}
           | summarize Count = count()
     separatecontext: false
@@ -476,7 +476,7 @@ tasks:
       extend-context:
         simple: AzureAnomalies=
       query:
-        simple: "Anomalies \n| where UserPrincipalName ==  \"${inputs.Username}\"\n| where TimeGenerated >  ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(AnomalyDetails)"
+        simple: "Anomalies \n| where UserPrincipalName ==  @\"${inputs.Username}\"\n| where TimeGenerated >  ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(AnomalyDetails)"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -513,7 +513,7 @@ tasks:
       extend-context:
         simple: AzureNumOfFailLogin=
       query:
-        simple: "SigninLogs \n| where parse_json(Status) contains \"fail\"\n| where UserPrincipalName == \"${inputs.Username}\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize ActionCount = count() by UserPrincipalName\n| where ActionCount > ${inputs.failedLogonThreshold}\n| summarize Count = count()"
+        simple: "SigninLogs \n| where parse_json(Status) contains \"fail\"\n| where UserPrincipalName == @\"${inputs.Username}\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize ActionCount = count() by UserPrincipalName\n| where ActionCount > ${inputs.failedLogonThreshold}\n| summarize Count = count()"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -552,7 +552,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       query:
-        simple: "AuditLogs \n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName == \"${inputs.Username}\" \n| where AdditionalDetails[0].value contains \"python\" or AdditionalDetails[0].value contains \"curl\" or AdditionalDetails[0].value contains \"axios\" or AdditionalDetails[0].value contains \"httpie\" or AdditionalDetails[0].value contains \"wget\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(AdditionalDetails)"
+        simple: "AuditLogs \n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName == @\"${inputs.Username}\" \n| where AdditionalDetails[0].value contains \"python\" or AdditionalDetails[0].value contains \"curl\" or AdditionalDetails[0].value contains \"axios\" or AdditionalDetails[0].value contains \"httpie\" or AdditionalDetails[0].value contains \"wget\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(AdditionalDetails)"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -589,7 +589,7 @@ tasks:
       extend-context:
         simple: AzureSuccessSecurityRulesChange=
       query:
-        simple: "AzureActivity\n| where OperationName in (\"Delete Security Rule\",\"Create or Update Security Rule\",\"Update Alert Rules\",\"Delete Alert Rules\",\"Delete Watchlists\",\"Update Watchlists\",\"Microsoft.SecurityInsights/watchlists/watchlistItems/delete\",\"Create or Update Application Gateway WAF Policy\",\"Delete Application Gateway WAF Policy\",\"Update database threat detection policy\")\n| where ActivityStatus == \"Succeeded\"\n| where Caller ==  \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
+        simple: "AzureActivity\n| where OperationName in (\"Delete Security Rule\",\"Create or Update Security Rule\",\"Update Alert Rules\",\"Delete Alert Rules\",\"Delete Watchlists\",\"Update Watchlists\",\"Microsoft.SecurityInsights/watchlists/watchlistItems/delete\",\"Create or Update Application Gateway WAF Policy\",\"Delete Application Gateway WAF Policy\",\"Update database threat detection policy\")\n| where ActivityStatus == \"Succeeded\"\n| where Caller ==  @\"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -626,7 +626,7 @@ tasks:
       extend-context:
         simple: AzureUnsuccessSecurityRulesChange=
       query:
-        simple: "AzureActivity\n| where OperationName in (\"Delete Security Rule\",\"Create or Update Security Rule\",\"Update Alert Rules\",\"Delete Alert Rules\",\"Delete Watchlists\",\"Update Watchlists\",\"Microsoft.SecurityInsights/watchlists/watchlistItems/delete\",\"Create or Update Application Gateway WAF Policy\",\"Delete Application Gateway WAF Policy\",\"Update database threat detection policy\")\n| where ActivityStatus != \"Succeeded\"\n| where Caller ==  \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
+        simple: "AzureActivity\n| where OperationName in (\"Delete Security Rule\",\"Create or Update Security Rule\",\"Update Alert Rules\",\"Delete Alert Rules\",\"Delete Watchlists\",\"Update Watchlists\",\"Microsoft.SecurityInsights/watchlists/watchlistItems/delete\",\"Create or Update Application Gateway WAF Policy\",\"Delete Application Gateway WAF Policy\",\"Update database threat detection policy\")\n| where ActivityStatus != \"Succeeded\"\n| where Caller ==  @\"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -665,7 +665,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       query:
-        simple: "AuditLogs\n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName ==  \"${inputs.Username}\" \n| where Category in (\"ApplicationManagement\", \"UserManagement\", \"PolicyManagement\", \"GroupManagement\")| where Result == \"success\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
+        simple: "AuditLogs\n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName ==  @\"${inputs.Username}\" \n| where Category in (\"ApplicationManagement\", \"UserManagement\", \"PolicyManagement\", \"GroupManagement\")| where Result == \"success\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -741,7 +741,7 @@ tasks:
       extend-context:
         simple: AzureNumOfFailMFA=
       query:
-        simple: "SigninLogs \n| where ResultType =~ \"50074\"\n| where UserPrincipalName == \"${inputs.Username}\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize ActionCount = count() by UserPrincipalName\n| where ActionCount > ${inputs.MfaAttemptThreshold}"
+        simple: "SigninLogs \n| where ResultType =~ \"50074\"\n| where UserPrincipalName == @\"${inputs.Username}\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize ActionCount = count() by UserPrincipalName\n| where ActionCount > ${inputs.MfaAttemptThreshold}"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -771,7 +771,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -815,7 +817,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -859,7 +863,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -903,7 +909,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -947,7 +955,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -991,7 +1001,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1035,7 +1047,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1079,7 +1093,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1151,7 +1167,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1195,7 +1213,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1246,7 +1266,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false

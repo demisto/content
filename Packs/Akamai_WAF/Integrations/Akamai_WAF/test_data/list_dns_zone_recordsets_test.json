@@ -1,0 +1,67 @@
+{
+    "human_readable": "### Akamai WAF - list dns zones command\n|name|rdata|ttl|type|\n|---|---|---|---|\n| www.example.com | 192.0.2.11,<br>192.0.2.24 | 300 | A |\n| mail.example.com | 192.0.2.245,<br>192.0.2.117 | 300 | A |\n",
+    "context_entry": {
+        "Akamai.EdgeDns.ZoneRecordSets": {
+            "metadata": {
+                "page": 1,
+                "pageSize": 25,
+                "totalElements": 2,
+                "types": [
+                    "A"
+                ],
+                "zone": "example.com"
+            },
+            "recordsets": [
+                {
+                    "name": "www.example.com",
+                    "rdata": [
+                        "192.0.2.11",
+                        "192.0.2.24"
+                    ],
+                    "ttl": 300,
+                    "type": "A"
+                },
+                {
+                    "name": "mail.example.com",
+                    "rdata": [
+                        "192.0.2.245",
+                        "192.0.2.117"
+                    ],
+                    "ttl": 300,
+                    "type": "A"
+                }
+            ]
+        }
+    },
+    "raw_response": {
+        "metadata": {
+            "page": 1,
+            "pageSize": 25,
+            "totalElements": 2,
+            "types": [
+                "A"
+            ],
+            "zone": "example.com"
+        },
+        "recordsets": [
+            {
+                "name": "www.example.com",
+                "rdata": [
+                    "192.0.2.11",
+                    "192.0.2.24"
+                ],
+                "ttl": 300,
+                "type": "A"
+            },
+            {
+                "name": "mail.example.com",
+                "rdata": [
+                    "192.0.2.245",
+                    "192.0.2.117"
+                ],
+                "ttl": 300,
+                "type": "A"
+            }
+        ]
+    }
+}

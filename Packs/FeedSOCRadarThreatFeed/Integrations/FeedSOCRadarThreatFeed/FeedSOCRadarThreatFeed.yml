@@ -69,7 +69,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   type: 17
   required: false
 - defaultvalue: '20160'
@@ -198,7 +197,7 @@ script:
       type: String
   - description: Resets the indicator fetch history.
     name: socradar-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

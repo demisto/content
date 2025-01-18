@@ -8,6 +8,7 @@ description: |-
   ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
 starttaskid: "0"
 fromversion: 5.0.0
+toversion: 6.9.9
 tasks:
   "0":
     id: "0"
@@ -306,8 +307,10 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      description:
+        simple: ${inputs.IPDescription}
       ip_netmask:
-        simple: 255.255.255.255
+        simple: ${inputs.IP}
       name:
         complex:
           root: inputs.IP
@@ -586,6 +589,24 @@ inputs:
     Yes - Commit automatically.
     No - Commit manually.
   playbookInputQuery:
+- key: IPDescription
+  value:
+    simple: Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSOAR.
+  required: false
+  description: The description of the IP in case it will get created by the playbook.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - IP
+  - AddressGroupName
+  - AutoCommit
+  - IPDescription
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - PAN-OS - Block IP - Static Address Group Test

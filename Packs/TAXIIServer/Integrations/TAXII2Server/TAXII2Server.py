@@ -63,7 +63,7 @@ class TAXII2Server:
             types_for_indicator_sdo: The list of stix types to provide indicator stix domain objects.
         """
         self._url_scheme = url_scheme
-        self._host = host
+        self._host = host.replace('.xdr', '.crtx')
         self._port = port
         self._certificate = certificate
         self._private_key = private_key
@@ -167,10 +167,16 @@ class TAXII2Server:
             calling_context = get_calling_context()
             instance_name = calling_context.get('IntegrationInstance', '')
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
-            service_address = f'{self._url_scheme}://{self._host}{endpoint}'
+            if is_xsiam_or_xsoar_saas() and not instance_execute:
+                service_address = f'{self._url_scheme}://ext-{self._host}/xsoar{endpoint}'
+            else:
+                service_address = f'{self._url_scheme}://{self._host}{endpoint}'
         else:
             endpoint = f':{self._port}'
-            service_address = f'{self._url_scheme}://{self._host}{endpoint}'
+            if is_xsiam_or_xsoar_saas() and not instance_execute:
+                service_address = f'{self._url_scheme}://ext-{self._host}/xsoar{endpoint}'
+            else:
+                service_address = f'{self._url_scheme}://{self._host}{endpoint}'
 
         default = urljoin(service_address, API_ROOT)
         default = urljoin(default, '/')
@@ -638,7 +644,8 @@ def parse_manifest_and_object_args() -> tuple:
             datetime.strptime(added_after, UTC_DATE_FORMAT)
     except ValueError:
         try:
-            datetime.strptime(added_after, STIX_DATE_FORMAT)
+            if added_after:
+                datetime.strptime(added_after, STIX_DATE_FORMAT)
         except Exception as e:
             raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 
@@ -880,6 +887,8 @@ def test_module(params: dict) -> str:
     """
     Integration test module.
     """
+    if not params.get('longRunningPort'):
+        params['longRunningPort'] = '1111'
     run_long_running(params, is_test=True)
     return 'ok'
 
@@ -956,11 +965,6 @@ def main():  # pragma: no cover
     fields_to_present = create_fields_list(params.get('fields_filter', ''))
     types_for_indicator_sdo = argToList(params.get('provide_as_indicator'))
 
-    try:
-        port = int(params.get('longRunningPort'))
-    except ValueError as e:
-        raise ValueError(f'Invalid listen port - {e}')
-
     collections = get_collections(params)
     version = params.get('version')
     credentials = params.get('credentials', {})
@@ -984,6 +988,13 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
+        if command == 'test-module':
+            return_results(test_module(params))
+        try:
+            port = int(params.get('longRunningPort', ''))
+        except ValueError as e:
+            raise ValueError(f'Invalid listen port - {e}')
+
         SERVER = TAXII2Server(scheme, str(host_name), port, collections, certificate,
                               private_key, http_server, credentials, version, service_address, fields_to_present,
                               types_for_indicator_sdo)
@@ -997,9 +1008,6 @@ def main():  # pragma: no cover
             set_integration_context(integration_context)
 
             run_long_running(params)
-
-        elif command == 'test-module':
-            return_results(test_module(params))
 
         elif command == 'taxii-server-list-collections':
             integration_context = get_integration_context(True)

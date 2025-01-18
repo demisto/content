@@ -1,0 +1,17 @@
+commonfields:
+  id: VectraDetectAddNotesInLayouts
+  version: -1
+name: VectraDetectAddNotesInLayouts
+script: ''
+type: python
+tags: []
+comment: This script allows to add Entity notes in the layout.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.111039
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

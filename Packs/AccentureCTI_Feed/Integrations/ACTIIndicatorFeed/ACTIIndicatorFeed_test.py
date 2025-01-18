@@ -81,4 +81,4 @@ def test_build_iterator_change_extractor():
         with pytest.raises(TypeError) as e:
             custom_build_iterator(client, PARAMS['feed_name_to_config']['Domain'], 0)
         if not e:
-            assert False
+            raise AssertionError

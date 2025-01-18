@@ -3,7 +3,8 @@
     "associatedTypes": [
         "GDPR Data Breach",
         "HIPAA Breach Notification",
-        "US Breach Notification"
+        "US Breach Notification",
+        "IBM QRadar SOAR Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

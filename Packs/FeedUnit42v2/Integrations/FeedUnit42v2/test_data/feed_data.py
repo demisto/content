@@ -389,26 +389,97 @@ CAMPAIGN_INDICATOR = [{'fields': {'description': 'Since the beginning of the cal
                        'type': 'Campaign',
                        'value': 'Campaign 1 - [Endor] Maze Ransomware'}]
 
-REPORTS_INDICATORS = [{'fields': {'description': 'A description of the report',
-                                  'firstseenbysource': '1993-06-17T11:00:00.000Z',
-                                  'published': '1994-08-12T11:00:00.000Z',
-                                  'reportedby': 'Unit42',
-                                  'stixid': 'report--a',
-                                  'tags': ['intrusion-set'],
-                                  'Report Object References': [{'objectstixid': 'intrusion-set--a'}],
-                                  'report_types': [],
-                                  'modified': '1993-06-17T11:00:00.000Z'},
-                       'rawJSON': {'unit42_created_date': '1993-06-17T11:00:00.000Z',
-                                   'unit42_description': 'A description of the report',
-                                   'unit42_id': 'report--a',
-                                   'unit42_labels': ['intrusion-set'],
-                                   'unit42_modified_date': '1993-06-17T11:00:00.000Z',
-                                   'unit42_object_refs': ['intrusion-set--a', 'report--ab'],
-                                   'unit42_published': '1994-08-12T11:00:00.000Z'},
-                       'relationships': [],
-                       'score': 3,
-                       'type': 'Report',
-                       'value': '[Unit42 ATOM] Main Report'}]
+REPORTS_INDICATORS = [
+    {
+        "fields": {
+            "description": "A description of the report",
+            "firstseenbysource": "1993-06-17T11:00:00.000Z",
+            "published": "1994-08-12T11:00:00.000Z",
+            "reportedby": "Unit42",
+            "stixid": "report--a",
+            "tags": ["intrusion-set"],
+            "Report Object References": [
+                {"objectstixid": "intrusion-set--a"},
+                {
+                    "objectstixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+                },
+                {"objectstixid": "campaign--95c0884b-71e7-40fd-9307-626634425a93"},
+                {
+                    "objectstixid": "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59"
+                },
+                {"objectstixid": "identity--c6f27733-7387-4685-946e-3159d72ba15f"},
+                {"objectstixid": "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f"},
+                {"objectstixid": "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519"},
+                {"objectstixid": "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78"},
+                {"objectstixid": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9"},
+            ],
+            "report_types": [],
+            "modified": "1993-06-17T11:00:00.000Z",
+        },
+        "rawJSON": {
+            "unit42_created_date": "1993-06-17T11:00:00.000Z",
+            "unit42_description": "A description of the report",
+            "unit42_id": "report--a",
+            "unit42_labels": ["intrusion-set"],
+            "unit42_modified_date": "1993-06-17T11:00:00.000Z",
+            "unit42_object_refs": ["intrusion-set--a", "report--ab"],
+            "unit42_published": "1994-08-12T11:00:00.000Z",
+        },
+        "relationships": [],
+        "score": 3,
+        "type": "Report",
+        "value": "[Unit42 ATOM] Main Report",
+    },
+    {
+        "type": "Report",
+        "value": "[Unit42 ATOM] Sub Report",
+        "score": 3,
+        "fields": {
+            "stixid": "report--ab",
+            "firstseenbysource": "1993-06-17T11:00:00.000Z",
+            "modified": "1993-06-17T11:00:00.000Z",
+            "description": "A description of the report",
+            "published": "1994-08-12T11:00:00.000Z",
+            "report_types": [],
+            "tags": ["campaign"],
+            "Report Object References": [
+                {
+                    "objectstixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+                },
+                {"objectstixid": "campaign--95c0884b-71e7-40fd-9307-626634425a93"},
+                {
+                    "objectstixid": "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59"
+                },
+                {"objectstixid": "identity--c6f27733-7387-4685-946e-3159d72ba15f"},
+                {"objectstixid": "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f"},
+                {"objectstixid": "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519"},
+                {"objectstixid": "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78"},
+                {"objectstixid": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9"},
+            ],
+            "reportedby": "Unit42",
+        },
+        "rawJSON": {
+            "unit42_id": "report--ab",
+            "unit42_labels": ["campaign"],
+            "unit42_published": "1994-08-12T11:00:00.000Z",
+            "unit42_created_date": "1993-06-17T11:00:00.000Z",
+            "unit42_modified_date": "1993-06-17T11:00:00.000Z",
+            "unit42_description": "A description of the report",
+            "unit42_object_refs": [
+                "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+                "campaign--95c0884b-71e7-40fd-9307-626634425a93",
+                "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59",
+                "identity--c6f27733-7387-4685-946e-3159d72ba15f",
+                "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f",
+                "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519",
+                "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78",
+                "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9",
+                "relationship--ff0a724d-2a3d-4ac1-9c7f-6340bded0d6f",
+            ],
+        },
+        "relationships": [],
+    },
+]
 
 INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
                                 'indicatoridentification': 'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be',
@@ -1196,21 +1267,6 @@ FETCH_RESULTS = [
         "type": "Report",
         "value": "[Unit42 ATOM] Main Report",
         "score": 3,
-        "rawJSON": {
-            "unit42_id": "report--a",
-            "unit42_labels": [
-                "intrusion-set"
-            ],
-            "unit42_published": "1994-08-12T11:00:00.000Z",
-            "unit42_created_date": "1993-06-17T11:00:00.000Z",
-            "unit42_modified_date": "1993-06-17T11:00:00.000Z",
-            "unit42_description": "A description of the report",
-            "unit42_object_refs": [
-                "intrusion-set--a",
-                "report--ab"
-            ]
-        },
-        "relationships": [],
         "fields": {
             "stixid": "report--a",
             "firstseenbysource": "1993-06-17T11:00:00.000Z",
@@ -1222,12 +1278,131 @@ FETCH_RESULTS = [
                 "intrusion-set"
             ],
             "Report Object References": [
+                {"objectstixid": "intrusion-set--a"},
                 {
-                    "objectstixid": "intrusion-set--a"
-                }
+                    "objectstixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+                },
+                {"objectstixid": "campaign--95c0884b-71e7-40fd-9307-626634425a93"},
+                {
+                    "objectstixid": "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59"
+                },
+                {"objectstixid": "identity--c6f27733-7387-4685-946e-3159d72ba15f"},
+                {"objectstixid": "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f"},
+                {"objectstixid": "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519"},
+                {"objectstixid": "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78"},
+                {"objectstixid": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9"},
             ],
-            "reportedby": "Unit42"
-        }
+            "reportedby": "Unit42",
+        },
+        "rawJSON": {
+            "unit42_id": "report--a",
+            "unit42_labels": ["intrusion-set"],
+            "unit42_published": "1994-08-12T11:00:00.000Z",
+            "unit42_created_date": "1993-06-17T11:00:00.000Z",
+            "unit42_modified_date": "1993-06-17T11:00:00.000Z",
+            "unit42_description": "A description of the report",
+            "unit42_object_refs": ["intrusion-set--a", "report--ab"],
+        },
+        "relationships": [
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "[Unit42 ATOM] Main Report",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "Windows Management Instrumentation",
+                "entityBFamily": "Indicator",
+                "entityBType": "Attack Pattern",
+                "fields": {},
+            },
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "[Unit42 ATOM] Main Report",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "XBash",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {},
+            },
+        ],
+    },
+    {
+        "type": "Report",
+        "value": "[Unit42 ATOM] Sub Report",
+        "score": 3,
+        "fields": {
+            "stixid": "report--ab",
+            "firstseenbysource": "1993-06-17T11:00:00.000Z",
+            "modified": "1993-06-17T11:00:00.000Z",
+            "description": "A description of the report",
+            "published": "1994-08-12T11:00:00.000Z",
+            "report_types": [],
+            "tags": ["campaign"],
+            "Report Object References": [
+                {
+                    "objectstixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+                },
+                {"objectstixid": "campaign--95c0884b-71e7-40fd-9307-626634425a93"},
+                {
+                    "objectstixid": "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59"
+                },
+                {"objectstixid": "identity--c6f27733-7387-4685-946e-3159d72ba15f"},
+                {"objectstixid": "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f"},
+                {"objectstixid": "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519"},
+                {"objectstixid": "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78"},
+                {"objectstixid": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9"},
+            ],
+            "reportedby": "Unit42",
+        },
+        "rawJSON": {
+            "unit42_id": "report--ab",
+            "unit42_labels": ["campaign"],
+            "unit42_published": "1994-08-12T11:00:00.000Z",
+            "unit42_created_date": "1993-06-17T11:00:00.000Z",
+            "unit42_modified_date": "1993-06-17T11:00:00.000Z",
+            "unit42_description": "A description of the report",
+            "unit42_object_refs": [
+                "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+                "campaign--95c0884b-71e7-40fd-9307-626634425a93",
+                "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59",
+                "identity--c6f27733-7387-4685-946e-3159d72ba15f",
+                "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f",
+                "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519",
+                "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78",
+                "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9",
+                "relationship--ff0a724d-2a3d-4ac1-9c7f-6340bded0d6f",
+            ],
+        },
+        "relationships": [
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "[Unit42 ATOM] Sub Report",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "Windows Management Instrumentation",
+                "entityBFamily": "Indicator",
+                "entityBType": "Attack Pattern",
+                "fields": {},
+            },
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "[Unit42 ATOM] Sub Report",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "XBash",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {},
+            },
+        ],
     },
     {
         "value": "Campaign 1 - [Endor] Maze Ransomware",
@@ -1698,11 +1873,23 @@ REPORTS_INDICATORS_WITH_RELATIONSHIPS = {
             "entityA": "[Unit42 ATOM] name",
             "entityAFamily": "Indicator",
             "entityAType": "Report",
+            "entityB": "[Unit42 ATOM] name",
+            "entityBFamily": "Indicator",
+            "entityBType": "Report",
+            "fields": {},
+        },
+        {
+            "name": "related-to",
+            "reverseName": "related-to",
+            "type": "IndicatorToIndicator",
+            "entityA": "[Unit42 ATOM] name",
+            "entityAFamily": "Indicator",
+            "entityAType": "Report",
             "entityB": "Campaign 1 - [Endor] Maze Ransomware",
             "entityBFamily": "Indicator",
             "entityBType": "Campaign",
             "fields": {},
-        },
+        }
     ],
     "fields": {
         "stixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
@@ -1713,5 +1900,6 @@ REPORTS_INDICATORS_WITH_RELATIONSHIPS = {
         "report_types": [],
         "tags": ["intrusion-set"],
         "reportedby": "Unit42",
+        "Report Object References": [{'objectstixid': 'report--0f86dccd-29bd-46c6-83fd-e79ba040bf1'}, {'objectstixid': 'campaign--f69de074-6abd-45a1-909f-51ef8fce808a'}]
     },
 }

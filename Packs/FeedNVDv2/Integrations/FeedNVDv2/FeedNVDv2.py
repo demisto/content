@@ -374,7 +374,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
                 more_to_process = False
 
         except Exception as e:  # pylint: disable=broad-except
-            demisto.debug(e)
+            demisto.debug(f'{e}')
 
         # finally:
         #    time.sleep(.5)

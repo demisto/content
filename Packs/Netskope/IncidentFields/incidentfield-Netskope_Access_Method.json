@@ -20,7 +20,8 @@
     "associatedTypes": [
         "Netskope Compromised Credentials",
         "Netskope Malware",
-        "Netskope Quarantine"
+        "Netskope Quarantine",
+        "Netskope DLP Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,

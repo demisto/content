@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from typing import Callable
+from collections.abc import Callable
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -61,7 +61,7 @@ class Client:
             return return_error(ssl_error)
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
                 requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-            connection_error = 'Could not connect to PhishLabs IOC Feed: {}'.format(str(e))
+            connection_error = f'Could not connect to PhishLabs IOC Feed: {str(e)}'
             if RAISE_EXCEPTION_ON_ERROR:
                 raise Exception(connection_error)
             return return_error(connection_error)
@@ -74,7 +74,7 @@ class Client:
                 message = error_json.get('error', '')
             except Exception:
                 pass
-            error_message: str = ('Error in API call to PhishLabs IOC API, status code: {}'.format(status))
+            error_message: str = (f'Error in API call to PhishLabs IOC API, status code: {status}')
             if status == 401:
                 error_message = 'Could not connect to PhishLabs IOC Feed: Wrong credentials'
             if message:
@@ -86,7 +86,7 @@ class Client:
         try:
             return res.json()
         except Exception:
-            error_message = 'Failed parsing the response from PhishLabs IOC API: {!r}'.format(res.content)
+            error_message = f'Failed parsing the response from PhishLabs IOC API: {res.content!r}'
             if RAISE_EXCEPTION_ON_ERROR:
                 raise Exception(error_message)
             else:
@@ -111,22 +111,20 @@ def populate_context(dbot_scores: list, domain_entries: list, file_entries: list
     """
     context: dict = {}
     if url_entries:
-        context[outputPaths['url']] = createContext(list(map(lambda u: u[0], url_entries)))
-        context['PhishLabs.URL(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda u: u[1], url_entries)),
+        context[outputPaths['url']] = createContext([u[0] for u in url_entries])
+        context['PhishLabs.URL(val.ID && val.ID === obj.ID)'] = createContext([u[1] for u in url_entries],
                                                                               removeNull=True)
     if domain_entries:
-        context[outputPaths['domain']] = createContext(list(map(lambda d: d[0], domain_entries)))
-        context['PhishLabs.Domain(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda d: d[1],
-                                                                                          domain_entries)),
+        context[outputPaths['domain']] = createContext([d[0] for d in domain_entries])
+        context['PhishLabs.Domain(val.ID && val.ID === obj.ID)'] = createContext([d[1] for d in domain_entries],
                                                                                  removeNull=True)
     if file_entries:
-        context[outputPaths['file']] = createContext(list(map(lambda f: f[0], file_entries)))
-        context['PhishLabs.File(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda f: f[1], file_entries)),
+        context[outputPaths['file']] = createContext([f[0] for f in file_entries])
+        context['PhishLabs.File(val.ID && val.ID === obj.ID)'] = createContext([f[1] for f in file_entries],
                                                                                removeNull=True)
     if email_entries:
-        context['Email'] = createContext(list(map(lambda e: e[0], email_entries)))
-        context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda e: e[1],
-                                                                                         email_entries)),
+        context['Email'] = createContext([e[0] for e in email_entries])
+        context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] = createContext([e[1] for e in email_entries],
                                                                                 removeNull=True)
     if dbot_scores:
         context[outputPaths['dbotscore']] = dbot_scores
@@ -705,7 +703,7 @@ def main():
     )
 
     global RAISE_EXCEPTION_ON_ERROR
-    LOG('Command being called is {}'.format(demisto.command()))
+    LOG(f'Command being called is {demisto.command()}')
     handle_proxy()
     command_dict = {
         'test-module': test_module,

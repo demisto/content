@@ -45,7 +45,8 @@
 			"Generic Feed",
 			"Allow List",
 			"Plug & Enrich",
-			"Free Enricher"
+			"Free Enricher",
+            "Feed"
 		],
 		"xsoar": [],
 		"marketplacev2": ["Data Source"],

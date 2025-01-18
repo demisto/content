@@ -96,7 +96,7 @@ class ReadableOutputs(StrEnum):
     CHANGED = 'changed to "{0}"'
 
 
-class Headers(list, Enum):
+class Headers(list, Enum):  # type: ignore[misc]
     ATTACK = ["id", "module_id", "type", "class", "description"]
     VULNERABILITY = [
         "id",
@@ -1136,7 +1136,7 @@ def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     return list_handler(
         obj_id=args.get(XsoarArgKey.ATTACK),
-        request_command=partial(client.get_attack, args.get(XsoarArgKey.MODULE)),
+        request_command=partial(client.get_attack, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
         title="Attack metadata",
         headers=Headers.ATTACK.value,
         obj_type=OutputPrefix.ATTACK,
@@ -1162,7 +1162,7 @@ def get_attack_documentation_command(
     return list_handler(
         obj_id=args.get(XsoarArgKey.ATTACK),
         request_command=partial(
-            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),
+            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
         obj_type=OutputPrefix.ATTACK_DOCUMENTATION,
         use_flatten_dict=False,
         add_to_output=AddToOutput(

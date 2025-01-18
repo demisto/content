@@ -1,0 +1,29 @@
+{
+    "author": "pH-T (Nextron Systems)",
+    "date": "2022-07-15",
+    "description": "Detects DNS queries for \"anonfiles.com\", which is an anonymous file upload platform often used for malicious purposes",
+    "detection": {
+        "condition": "selection",
+        "selection": {
+            "QueryName|contains": ".anonfiles.com"
+        }
+    },
+    "falsepositives": [
+        "Rare legitimate access to anonfiles.com"
+    ],
+    "id": "065cceea-77ec-4030-9052-fc0affea7110",
+    "level": "high",
+    "logsource": {
+        "category": "dns_query",
+        "product": "windows"
+    },
+    "references": [
+        "https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-blackbyte"
+    ],
+    "status": "test",
+    "tags": [
+        "attack.exfiltration",
+        "attack.t1567.002"
+    ],
+    "title": "DNS Query for Anonfiles.com Domain - Sysmon"
+}

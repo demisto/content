@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1960,
+        "date_created": "2024-07-11T07:32:31Z",
+        "date_modified": null,
+        "created_by": "xsoar",
+        "modified_by": null,
+        "note": "test note"
+    },
+    {
+        "id": 1982,
+        "date_created": "2024-07-11T06:23:07Z",
+        "date_modified": null,
+        "created_by": "cds_xsoar",
+        "modified_by": null,
+        "note": "test note"
+    }
+]

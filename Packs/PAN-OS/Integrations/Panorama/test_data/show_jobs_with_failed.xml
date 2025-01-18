@@ -1,0 +1,31 @@
+<response status="success">
+    <result>
+        <job>
+            <type>Failed-Job</type>
+            <details>
+                <line>job failed because of configd restart</line>
+            </details>
+            <warnings />
+        </job>
+        <job>
+            <tenq>2024/08/25 22:07:53</tenq>
+            <tdeq>22:07:53</tdeq>
+            <id>7</id>
+            <user />
+            <type>Job Type</type>
+            <status>FIN</status>
+            <queued>NO</queued>
+            <stoppable>no</stoppable>
+            <result>OK</result>
+            <tfin>2024/08/25 22:09:00</tfin>
+            <description>description</description>
+            <positionInQ>0</positionInQ>
+            <progress>100</progress>
+            <details>
+                <line>line 1</line>
+                <line>line 2</line>
+            </details>
+            <warnings />
+        </job>
+    </result>
+</response>

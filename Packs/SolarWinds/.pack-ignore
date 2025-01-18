@@ -88,3 +88,7 @@ ignore=BA101
 
 [file:classifier-SolarWinds.json]
 ignore=BA101
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-SolarWinds_Alert.json]
+ignore=GR103

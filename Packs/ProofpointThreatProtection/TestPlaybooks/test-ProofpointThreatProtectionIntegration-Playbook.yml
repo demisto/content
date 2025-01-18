@@ -1,0 +1,417 @@
+description: Test playbook to excercise and test/validate the commands supplied via the ProofpointThreatProtection integration.
+id: test-ProofpointThreatProtectionIntegration-Playbook
+inputs: []
+name: test-ProofpointThreatProtectionIntegration-Playbook
+outputs: []
+fromversion: 6.10.0
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6bf070ca-ee5b-4a4b-8320-a45e44668c23
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6bf070ca-ee5b-4a4b-8320-a45e44668c23
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b4dde3a-0102-492e-8da6-ffefb763730c
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 7b4dde3a-0102-492e-8da6-ffefb763730c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8bcd4f0e-56ca-48c2-83b3-12c909172883
+      iscommand: true
+      name: proofpoint-tp-blocklist-get
+      script: Proofpoint Threat Protection|||proofpoint-tp-blocklist-get
+      type: regular
+      version: -1
+    taskid: 8bcd4f0e-56ca-48c2-83b3-12c909172883
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ProofpointThreatProtection.Blocklist
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c87632cf-e2d4-433d-8a22-a900596a5d55
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: c87632cf-e2d4-433d-8a22-a900596a5d55
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: add
+      attribute:
+        simple: $host
+      comment:
+        simple: Some evil mailhost at some evil domain!
+      operator:
+        simple: equal
+      value:
+        simple: evilmailhost.someevildomain.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Proofpoint Threat Protection
+      id: 722aafeb-4114-40e9-8b0c-13a7c54ac8ab
+      iscommand: true
+      name: Blocklist add host entry
+      script: Proofpoint Threat Protection|||proofpoint-tp-blocklist-add-or-delete-entry
+      type: regular
+      version: -1
+    taskid: 722aafeb-4114-40e9-8b0c-13a7c54ac8ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 97fbd5eb-9555-4864-8050-9a9269e5ad0b
+      iscommand: true
+      name: proofpoint-tp-safelist-get
+      script: Proofpoint Threat Protection|||proofpoint-tp-safelist-get
+      type: regular
+      version: -1
+    taskid: 97fbd5eb-9555-4864-8050-9a9269e5ad0b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ProofpointThreatProtection.Safelist
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a6a7558-4931-445f-843b-ec7533613dea
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 9a6a7558-4931-445f-843b-ec7533613dea
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: add
+      attribute:
+        simple: $ip
+      comment:
+        simple: Whitelisted because we love APNIC Cloudflare!
+      operator:
+        simple: equal
+      value:
+        simple: 1.1.1.1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Proofpoint Threat Protection
+      id: f01f7fcb-827f-4ae9-8f33-b09ba36b8b7d
+      iscommand: true
+      name: Safelist add ip entry
+      script: Proofpoint Threat Protection|||proofpoint-tp-safelist-add-or-delete-entry
+      type: regular
+      version: -1
+    taskid: f01f7fcb-827f-4ae9-8f33-b09ba36b8b7d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6996347f-e756-42ec-80bd-6d52f4a50416
+      iscommand: false
+      name: Test Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6996347f-e756-42ec-80bd-6d52f4a50416
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: delete
+      attribute:
+        simple: $host
+      operator:
+        simple: equal
+      value:
+        simple: evilmailhost.someevildomain.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Proofpoint Threat Protection
+      description: Add/Delete entry from the Organizational Block List.
+      id: 2f77d83e-6e5f-40a1-865a-b013b17dd38e
+      iscommand: true
+      name: Blocklist delete host entry
+      script: Proofpoint Threat Protection|||proofpoint-tp-blocklist-add-or-delete-entry
+      type: regular
+      version: -1
+    taskid: 2f77d83e-6e5f-40a1-865a-b013b17dd38e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: delete
+      attribute:
+        simple: $ip
+      operator:
+        simple: equal
+      value:
+        simple: 1.1.1.1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Proofpoint Threat Protection
+      description: Add To/Delete From the Organizational Safe List.
+      id: 83d0b6b1-e3ef-42a4-8700-61ec8586c4ee
+      iscommand: true
+      name: Safelist delete ip entry
+      script: Proofpoint Threat Protection|||proofpoint-tp-safelist-add-or-delete-entry
+      type: regular
+      version: -1
+    taskid: 83d0b6b1-e3ef-42a4-8700-61ec8586c4ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2015,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

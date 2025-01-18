@@ -13,7 +13,7 @@ args:
   name: lastZipFileInWarroom
 - auto: PREDEFINED
   defaultValue: 7z
-  description: Tool to extract zip
+  description: Tool to extract zip.
   name: zipTool
   predefined:
   - 7z
@@ -35,7 +35,7 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/unzip:1.0.0.86000
+dockerimage: demisto/unzip:1.0.0.117525
 tests:
 - ZipFile-Test
 - UnzipFile-Test

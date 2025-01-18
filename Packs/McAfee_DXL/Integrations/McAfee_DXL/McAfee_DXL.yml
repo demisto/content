@@ -39,7 +39,7 @@ configuration:
   name: push_hash_topic
   type: 0
   required: false
-description: McAfee DXL client
+description: McAfee DXL client.
 display: McAfee DXL
 name: McAfee DXL
 script:
@@ -117,7 +117,7 @@ script:
       required: true
     - description: The topic for which to publish the 'dxl-push-domain'.
       name: topic
-    description: The push domain to the DXL fabric
+    description: The push domain to the DXL fabric.
     name: dxl-push-domain
   - arguments:
     - description: The hash to push to the DXL fabric.
@@ -141,7 +141,7 @@ script:
       name: topic
     description: The push hash to the DXL fabric.
     name: dxl-push-hash
-  dockerimage: demisto/dxl:1.0.0.86273
+  dockerimage: demisto/dxl:1.0.0.116949
   runonce: false
   script: '-'
   subtype: python3

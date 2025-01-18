@@ -7,7 +7,6 @@
         "State": "active",
         "Tags": [],
         "ThreatScore": 80,
-
         "Category": "COMMAND & CONTROL",
         "Description": "A successful but suspicious sign-on to this account was detected.",
         "FirstTimestamp": "2022-07-09T13:42:22.000Z",
@@ -20,7 +19,7 @@
         "SourceAccountID": 9,
         "SourceIP": "101.162.72.123",
         "Type": "Azure AD Suspicious Sign-On",
-        "URL": "https://vectra.test/detections/14"
+        "URL": "https://vectra.test/detections/14?pivot=Vectra_AI-XSOAR-2.0.0"
     },
     "common_extract": {
         "AssignedDate": null,

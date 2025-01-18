@@ -1,0 +1,26 @@
+commonfields:
+  id: SekoiaXDRAddComment
+  version: -1
+name: SekoiaXDRAddComment
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: Script to add a comment to an alert in Sekoia, including the name of the person who made the comment.
+enabled: true
+args:
+- name: short_id
+  required: true
+  description: The short ID of the alert.
+- name: comment
+  required: true
+  description: The comment you want to send to an alert.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.111039
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

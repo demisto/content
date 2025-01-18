@@ -1,4 +1,4 @@
-Finds applications containing network objects related to IP address using BusinessFlow.
+Finds applications containing network objects related to IP address using AppViz.
 
 ## Script Data
 ---

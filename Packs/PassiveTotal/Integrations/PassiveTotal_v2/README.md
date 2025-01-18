@@ -1,11 +1,8 @@
 Analyze and understand threat infrastructure from a variety of sources-passive DNS, active DNS, WHOIS, SSL certificates and more-without devoting resources to time-intensive manual threat research and analysis.
 This integration was integrated and tested with enterprise version of PassiveTotal v2.
 
-## Configure PassiveTotal v2 on Cortex XSOAR
+## Configure PassiveTotal v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PassiveTotal v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,11 +13,10 @@ This integration was integrated and tested with enterprise version of PassiveTot
 | proxy | Use system proxy settings | False |
 | request_timeout | HTTP\(S\) Request Timeout \(in seconds\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### pt-whois-search

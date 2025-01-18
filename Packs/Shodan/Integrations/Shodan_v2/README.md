@@ -1,23 +1,21 @@
-A search engine used for searching Internet-connected devices.
+Shodan is a search engine for Internet-connected devices. Unlike traditional search engines that index websites, Shodan indexes information about the devices connected to the internet, such as servers, routers, webcams, and other IoT devices.
 
-## Configure Shodan v2 on Cortex XSOAR
+## Configure Shodan v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Shodan v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Api Key | True |
-    | Base url to Shodan API | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key |  | False |
+| Base URL to Shodan API |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| The maximum number of events per fetch |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### search
@@ -752,3 +750,36 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Removed service "1.1.1.1:80" for trigger any in alert 0EKRH38BBQEHTQ3E from the allow list
+### shodan-get-events
+
+***
+Retrieves events from Shodan.
+
+#### Base Command
+
+`shodan-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If set to 'True', the command will create events; otherwise, it will only display them. Possible values are: True, False. Default is False. | Optional | 
+| start_date | Fetch events created after this date. You can also use relative terms like "3 days ago". Default is 3 days ago. | Optional | 
+| max_fetch | The maximum amount of events to return. Default is 50000. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+
+## Fetch Events
+
+Fetch process returns a listing of all the network alerts that are currently active on the account.
+
+To enable the Shodan integration you need to have an API key, which you can get for free by creating a Shodan account <https://account.shodan.io/register>
+Once you have an API key, you insert it into the *API Key* field and click the **Test** button.
+
+
+## Rate Limits
+
+All API plans are subject to a rate limit of 1 request per second - [docs](https://account.shodan.io/billing)

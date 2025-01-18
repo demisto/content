@@ -2,7 +2,7 @@
     "name": "Polygon",
     "description": "Analyze your files and URLs with Polygon playbooks and extract deep IOCs that appear when malicious code is triggered and executed.",
     "support": "partner",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.14",
     "author": "Group-IB",
     "url": "https://thfwiki.group-ib.tech/about/summary/",
     "email": "thf@group-ib.com",

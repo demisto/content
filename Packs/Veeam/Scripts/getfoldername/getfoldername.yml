@@ -1,0 +1,26 @@
+args:
+- description: 'Array of servers.'
+  isArray: true
+  name: data
+  required: true
+commonfields:
+  id: 'GetFolderName'
+  version: -1
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+enabled: true
+engineinfo: {}
+name: GetFolderName
+outputs:
+- contextPath: Veeam.FOLDER.parsed_value
+  description: "ID of the VMware vSphere object."
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+type: python
+tests:
+- No tests (auto formatted)

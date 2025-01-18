@@ -1,0 +1,226 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "IBM QRadar SOAR Incoming Mapper",
+    "mapping": {
+        "IBM QRadar SOAR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Type ID": {
+                    "simple": "incident_type_ids"
+                },
+                "Breach Confirmation": {
+                    "simple": "confirmed"
+                },
+                "IBM Security QRadar SOAR Phase": {
+                    "simple": "phase"
+                },
+                "City": {
+                    "simple": "city"
+                },
+                "Department": {
+                    "simple": "exposure_dept_id"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Display Name": {
+                    "simple": "creator.display_name"
+                },
+                "Email": {
+                    "simple": "creator.email"
+                },
+                "IBM Security QRadar SOAR Discovered Date": {
+                    "simple": "discovered_date"
+                },
+                "IBM Security QRadar SOAR Exposure Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "exposure_type_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Unknown,Individual,External Party"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "IBM Security QRadar SOAR NIST Attack Vectors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "nist_attack_vectors",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4,5,6,7,8"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "External/RemovableMedia, Attrition, Web, Email, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "IBM Security QRadar SOAR Negative PR": {
+                    "simple": "negative_pr_likely"
+                },
+                "IBM Security QRadar SOAR Reporter Name": {
+                    "simple": "reporter"
+                },
+                "IBM Security QRadar SOAR Resolution": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resolution_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "7,8,9,10"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Unresolved, Duplicate, Not an Issue, Resolved"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "IBM Security QRadar SOAR Resolution Summary": {
+					"complex": {
+						"filters": [],
+						"root": "resolution_summary",
+						"transformers": [
+							{
+								"args": {
+									"action_dt": {
+										"isContext": false
+									},
+									"ignore_case": {
+										"isContext": false
+									},
+									"multi_line": {
+										"isContext": false
+									},
+									"output_format": {
+										"isContext": false
+									},
+									"period_matches_newline": {
+										"isContext": false
+									},
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "<.*?>"
+										}
+									}
+								},
+								"operator": "RegexReplace"
+							}
+						]
+					}
+				},
+				"IBM Security QRadar SOAR Name": {
+					"simple": "name"
+				},
+                "Last Modified On": {
+                    "simple": "inc_last_modified_date"
+                },
+                "Mobile Phone": {
+                    "simple": "creator.cell"
+                },
+                "Phone Number": {
+                    "simple": "artifacts.[0].creator.phone"
+                },
+                "Street Address": {
+                    "simple": "addr"
+                },
+                "Zip Code": {
+                    "simple": "zip"
+                },
+                "severity": {
+                    "complex": {
+                        "root": "severity_code",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "IBM Security QRadar SOAR Notes": {
+                    "simple": "notes"
+                },
+                "IBM Security QRadar SOAR Tasks": {
+                    "simple": "tasks"
+                },
+                "IBM Security QRadar SOAR Attachments": {
+                    "simple": "attachments"
+                },
+                "IBM Security QRadar SOAR Artifacts": {
+                    "simple": "artifacts"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                }
+            }
+        }
+    },
+    "name": "IBM QRadar SOAR Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

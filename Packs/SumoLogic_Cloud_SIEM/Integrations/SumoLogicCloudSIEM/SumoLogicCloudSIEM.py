@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 """
 from datetime import datetime
-from typing import List, Any, Dict, Tuple, cast
+from typing import Any, cast
 
 import traceback
 
@@ -55,13 +55,13 @@ class Client(BaseClient):
         ).get('data')
         return r
 
-    def set_extra_params(self, args: Dict[str, Any]) -> None:
+    def set_extra_params(self, args: dict[str, Any]) -> None:
         '''
         Set any extra params (in the form of a dictionary) for this client
         '''
         self.extra_params = args
 
-    def get_extra_params(self) -> Dict[str, Any]:
+    def get_extra_params(self) -> dict[str, Any]:
         '''
         Set any extra params (in the form of a dictionary) for this client
         '''
@@ -85,7 +85,7 @@ def translate_severity(severity):
 
 def add_to_query(q):
     if len(q) > 0:
-        return '{} '.format(q)  # No need for 'AND' here
+        return f'{q} '  # No need for 'AND' here
     else:
         return q
 
@@ -97,11 +97,12 @@ def arg_time_query_to_q(q, argval, timefield):
     if not argval or argval == 'All time':
         return q
     if argval == 'Last week':
-        return add_to_query(q) + '{}:NOW-7D..NOW'.format(timefield)
+        return add_to_query(q) + f'{timefield}:NOW-7D..NOW'
     if argval == 'Last 48 hours':
-        return add_to_query(q) + '{}:NOW-48h..NOW'.format(timefield)
+        return add_to_query(q) + f'{timefield}:NOW-48h..NOW'
     if argval == 'Last 24 hours':
-        return add_to_query(q) + '{}:NOW-24h..NOW'.format(timefield)
+        return add_to_query(q) + f'{timefield}:NOW-24h..NOW'
+    return None
 
 
 def add_list_to_q(q, fields, args):
@@ -112,10 +113,10 @@ def add_list_to_q(q, fields, args):
         arg_value = args.get(arg_field, None)
         if arg_value:
             if ',' in arg_value:
-                quoted_values = ['"{}"'.format(v) for v in arg_value.split(',')]
+                quoted_values = [f'"{v}"' for v in arg_value.split(',')]
                 q = add_to_query(q) + '{}:in({})'.format(arg_field, ','.join(quoted_values))
             else:
-                q = add_to_query(q) + '{}:"{}"'.format(arg_field, arg_value)
+                q = add_to_query(q) + f'{arg_field}:"{arg_value}"'
     return q
 
 
@@ -131,20 +132,17 @@ def insight_signal_to_readable(obj):
 
     # Only show Entity name (Insights and Signals)
     cap_obj['Entity'] = ''
-    if obj.get('entity'):
-        if 'name' in obj['entity']:
-            cap_obj['Entity'] = obj['entity']['name']
+    if obj.get('entity') and 'name' in obj['entity']:
+        cap_obj['Entity'] = obj['entity']['name']
 
     # Only show status displayName (Insights only)
-    if obj.get('status'):
-        if 'displayName' in obj['status']:
-            cap_obj['Status'] = obj['status']['displayName']
+    if obj.get('status') and 'displayName' in obj['status']:
+        cap_obj['Status'] = obj['status']['displayName']
 
     # For Assignee show username (email)
     cap_obj['Assignee'] = ''
-    if obj.get('assignee'):
-        if 'username' in obj['assignee']:
-            cap_obj['Assignee'] = obj['assignee']['username']
+    if obj.get('assignee') and 'username' in obj['assignee']:
+        cap_obj['Assignee'] = obj['assignee']['username']
 
     # Remove some deprecated fields, replaced by "Assignee"
     cap_obj.pop('AssignedTo', None)
@@ -171,9 +169,8 @@ def entity_to_readable(obj):
 
     if len(cap_obj.get('Inventory', [])) > 0:
         invdata = cap_obj['Inventory'][0]
-        if 'metadata' in invdata:
-            if 'operatingSystem' in invdata['metadata']:
-                cap_obj['OperatingSystem'] = invdata['metadata']['operatingSystem']
+        if 'metadata' in invdata and 'operatingSystem' in invdata['metadata']:
+            cap_obj['OperatingSystem'] = invdata['metadata']['operatingSystem']
         cap_obj['InventoryData'] = True
     else:
         cap_obj['InventoryData'] = False
@@ -230,7 +227,7 @@ def is_inmirrorable_object(readable_remote_id: str) -> bool:
     can be in-mirrored into XSOAR. Note the readable_remote_id must be in reable form, not
     the raw ID
     '''
-    return True if readable_remote_id.startswith('INSIGHT') else False
+    return bool(readable_remote_id.startswith('INSIGHT'))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -282,7 +279,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+def insight_get_details(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get insight details
     '''
@@ -314,7 +311,7 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def insight_add_comment(client: Client, args: Dict[str, Any]) -> CommandResults:
+def insight_add_comment(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Add a comment to an insight
     '''
@@ -322,7 +319,7 @@ def insight_add_comment(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     reqbody = {}
     reqbody['body'] = args.get('comment')
-    c = client.req('POST', 'sec/v1/insights/{}/comments'.format(insight_id), None, reqbody)
+    c = client.req('POST', f'sec/v1/insights/{insight_id}/comments', None, reqbody)
 
     comment = [{'Id': c.get('id'), 'Body': c.get('body'), 'Author': c.get('author').get('username'),
                 'Timestamp': c.get('timestamp'), 'InsightId': insight_id}]
@@ -338,12 +335,12 @@ def insight_add_comment(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults:
+def insight_get_comments(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get comments for insight
     '''
     insight_id = args.get('insight_id')
-    resp_json = client.req('GET', 'sec/v1/insights/{}/comments'.format(insight_id))
+    resp_json = client.req('GET', f'sec/v1/insights/{insight_id}/comments')
     comments = [{'Id': c.get('id'), 'Body': c.get('body'), 'Author': c.get('author').get('username'),
                  'Timestamp': c.get('timestamp'), 'InsightId': insight_id} for c in resp_json.get('comments')]
     readable_output = tableToMarkdown('Insight Comments:', comments,
@@ -358,7 +355,7 @@ def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+def signal_get_details(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get signal details
     '''
@@ -366,7 +363,7 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not signal_id:
         raise ValueError('signal_id not specified')
 
-    signal = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
+    signal = client.req('GET', f'sec/v1/signals/{signal_id}')
     signal.pop('allRecords', None)  # don't need to display records from signal
     signal = insight_signal_to_readable(signal)
     signal['SumoUrl'] = craft_sumo_url(client.get_extra_params()['instance_endpoint'], 'signal', signal_id)
@@ -382,7 +379,7 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+def entity_get_details(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get entity details
     '''
@@ -390,7 +387,7 @@ def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not entity_id:
         raise ValueError('entity_id not specified')
 
-    resp_json = client.req('GET', 'sec/v1/entities/{}'.format(entity_id), {'expand': 'inventory'})
+    resp_json = client.req('GET', f'sec/v1/entities/{entity_id}', {'expand': 'inventory'})
     entity = entity_to_readable(resp_json)
     readable_output = tableToMarkdown(
         'Entity Details:', [entity],
@@ -405,7 +402,7 @@ def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
+def insight_search(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Search insights using available filters
 
@@ -478,7 +475,7 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def entity_search(client: Client, args: Dict[str, Any]) -> CommandResults:
+def entity_search(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Search entities using the available filters
     '''
@@ -509,7 +506,7 @@ def entity_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def signal_search(client: Client, args: Dict[str, Any]) -> CommandResults:
+def signal_search(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Search signals using available filters
     '''
@@ -540,7 +537,7 @@ def signal_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
+def insight_set_status(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Change status of insight
 
@@ -549,11 +546,13 @@ def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     insight_id = args.get('insight_id')
     reqbody = {}
     reqbody['status'] = args.get('status')
-    if args.get('status') == 'closed' and args.get('resolution'):
-        # resolution should only be specified when the status is set to "closed"
-        reqbody['resolution'] = args['resolution']
+    resolution = args.get('sub_resolution') or args.get('resolution')
 
-    resp_json = client.req('PUT', 'sec/v1/insights/{}/status'.format(insight_id), None, reqbody)
+    if args.get('status') == 'closed' and resolution:
+        # resolution should only be specified when the status is set to "closed"
+        reqbody['resolution'] = resolution
+
+    resp_json = client.req('PUT', f'sec/v1/insights/{insight_id}/status', None, reqbody)
 
     for s in resp_json.get('signals'):
         s.pop('allRecords', None)
@@ -573,7 +572,7 @@ def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def match_list_get(client: Client, args: Dict[str, Any]) -> CommandResults:
+def match_list_get(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get match lists
     '''
@@ -601,7 +600,7 @@ def match_list_get(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
+def match_list_update(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Add to match list
     '''
@@ -612,7 +611,7 @@ def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
     item['expiration'] = args.get('expiration')
     item['value'] = args.get('value')
 
-    resp_json = client.req('POST', 'sec/v1/match-lists/{}/items'.format(match_list_id), None, {'items': [item]})
+    resp_json = client.req('POST', f'sec/v1/match-lists/{match_list_id}/items', None, {'items': [item]})
     result = get_update_result(resp_json)
     readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server Response'])
 
@@ -623,7 +622,7 @@ def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def threat_intel_search_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threat_intel_search_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Search Threat Intel Indicators
 
@@ -676,7 +675,7 @@ def threat_intel_search_indicators(client: Client, args: Dict[str, Any]) -> Comm
     )
 
 
-def threat_intel_get_sources(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threat_intel_get_sources(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Get the list of Threat Intel Sources
     '''
@@ -703,7 +702,7 @@ def threat_intel_get_sources(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threat_intel_update_source(client: Client, args: dict[str, Any]) -> CommandResults:
     '''
     Add Indicator to a Threat Intel Source
     '''
@@ -714,7 +713,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
     item['expiration'] = args.get('expiration')
     item['value'] = args.get('value')
 
-    resp_json = client.req('POST', 'sec/v1/threat-intel-sources/{}/items'.format(threat_intel_source_id),
+    resp_json = client.req('POST', f'sec/v1/threat-intel-sources/{threat_intel_source_id}/items',
                            None, {'indicators': [item]})
     result = get_update_result(resp_json)
     readable_output = tableToMarkdown('Result:', [result], ['Result', 'Response'])
@@ -726,7 +725,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def cleanup_records(signal: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def cleanup_records(signal: Optional[dict[str, Any]]) -> Optional[dict[str, Any]]:
     '''
     Function to clean up all "bro" fields of the records under a Signal object
     '''
@@ -788,7 +787,7 @@ def get_remote_data_command(client: Client, args: dict, close_incident: bool):
         return GetRemoteDataResponse(mirrored_object=insight, entries=entries)
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> str:
     """ Pushes changes in XSOAR incident into the corresponding Sumo Logic Insight.
 
     Args:
@@ -863,9 +862,9 @@ def get_modified_remote_data_command(client: Client, args: Any) -> Any:
     raise NotImplementedError('get-modified-remote-data not implemented')
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch_time: Optional[int],
+def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int], first_fetch_time: Optional[int],
                     fetch_query: Optional[str], pull_signals: Optional[bool], record_summary_fields: Optional[str],
-                    other_args: Union[Dict[str, Any], None]) -> Tuple[Dict[str, int], List[dict]]:
+                    other_args: Union[dict[str, Any], None]) -> tuple[dict[str, int], list[dict]]:
     '''
     Retrieve new incidents periodically based on pre-defined instance parameters
     '''
@@ -876,8 +875,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     last_fetch = last_run.get('last_fetch', None)
 
     # track last_fetch_ids to handle insights with the same timestamp
-    last_fetch_ids: List[str] = cast(List[str], last_run.get('last_fetch_ids', []))
-    current_fetch_ids: List[str] = []
+    last_fetch_ids: list[str] = cast(list[str], last_run.get('last_fetch_ids', []))
+    current_fetch_ids: list[str] = []
 
     # Handle first fetch time
     if last_fetch is None:
@@ -893,7 +892,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # set query values that do not change with pagination
     q = f'created:>={insight_timestamp_to_created_format(last_fetch_created_time)}'
@@ -934,9 +933,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 incident_created_time = (int)(incident_created_time_ms / 1000)
 
                 # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
-                if last_fetch:
-                    if incident_created_time < last_fetch:
-                        continue
+                if last_fetch and incident_created_time < last_fetch:
+                    continue
 
                 signals = a.get('signals')
                 for signal in signals:
@@ -1005,7 +1003,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(
-        Dict[str, Any],
+        dict[str, Any],
         {
             'last_fetch': latest_created_time,
             'last_fetch_ids': current_fetch_ids if len(current_fetch_ids) > 0 else last_fetch_ids

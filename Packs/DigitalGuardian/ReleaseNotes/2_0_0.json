@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### Digital Guardian ARC Event Collector\nThe 'Max events per fetch' parameter has been removed.\nRefer to the release notes for additional details."
+}

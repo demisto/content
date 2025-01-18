@@ -1,0 +1,19 @@
+commonfields:
+  id: SekoiaXDRPrintCase
+  version: -1
+name: SekoiaXDRPrintCase
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Prints case details from the Sekoia alert.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.111039
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

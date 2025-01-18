@@ -5,7 +5,6 @@ from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
-from typing import Dict, Optional
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request, Response
@@ -37,7 +36,7 @@ def is_json(jstr):
 
 
 class SimpleAPIProxyAccessFormatter(AccessFormatter):
-    def get_user_agent(self, scope: Dict) -> str:
+    def get_user_agent(self, scope: dict) -> str:
         headers = scope.get('headers', [])
         user_agent_header = list(filter(lambda header: header[0].decode() == 'user-agent', headers))
         user_agent = ''
@@ -54,7 +53,7 @@ class SimpleAPIProxyAccessFormatter(AccessFormatter):
 
 
 def make_api_request(
-        url: str, method: str, data: Optional[dict] = None, parameters: Optional[dict] = None
+        url: str, method: str, data: dict | None = None, parameters: dict | None = None
 ) -> Union[requests.Response, Response]:
     '''
         Make request to api endpoint
@@ -206,7 +205,7 @@ def run_log_running(port: int, is_test: bool = False):
         certificate_path = ''
         private_key_path = ''
         try:
-            ssl_args = dict()
+            ssl_args = {}
 
             if certificate and private_key:
                 certificate_file = NamedTemporaryFile(delete=False)
@@ -234,7 +233,7 @@ def run_log_running(port: int, is_test: bool = False):
                 '()': SimpleAPIProxyAccessFormatter,
                 'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
             }
-            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)  # type: ignore[arg-type]
             if is_test:
                 time.sleep(5)
                 return 'ok'

@@ -1,0 +1,23 @@
+{
+    "defaultIncidentType": "Sekoia XDR",
+    "description": "",
+    "feed": false,
+    "id": "Sekoia XDR - Classifier",
+    "keyTypeMap": {
+        "malware": "Sekoia XDR",
+        "masquerade": "Sekoia XDR",
+        "phishing": "Sekoia XDR",
+        "ransomware": "Sekoia XDR",
+        "system-compromise": "Sekoia XDR"
+    },
+    "name": "Sekoia XDR - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "alert_type.value"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

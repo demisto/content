@@ -8,7 +8,13 @@ ignore=RM102
 ignore=BA101
 
 [file:MITRE_ATT&CK.json]
-ignore=BA101
+ignore=BA101,GR107
 
 [file:FeedMitreAttack_image.png]
 ignore=IM111
+
+[file:reputation-mitreAttck.json]
+ignore=GR107
+
+[file:MitreIDLayoutDynamicSection.yml]
+ignore=BA124

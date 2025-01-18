@@ -19,7 +19,7 @@ def upload_file_command(args: dict) -> list[CommandResults]:
     for entry_id in entry_ids:
         response = upload_file(incident_id, entry_id, body, using, target == 'incident attachment')
         if is_error(response[0]):
-            raise DemistoException("There was an issue uploading the file. Check your API key and input arguments.")
+            raise DemistoException(f"There was an issue uploading the file. Error received: {response[0]['Contents']}")
 
         uploaded_entry_id = demisto.dt(response, 'Contents.response.entries.id')
         readable = 'File uploaded successfully.'

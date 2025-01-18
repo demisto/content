@@ -1,6 +1,8 @@
-from enum import Enum, unique
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from enum import Enum, unique
+
+
 import json
 
 ''' IMPORTS '''
@@ -17,6 +19,7 @@ INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
 INTEGRATION_NETWORK_INFO_CONTEXT_KEY = "NetworkInfo"
+INTEGRATION_AUTHORIZATION_EXCEPTION_MESSAGE = "Authorization error, check your credentials."
 
 # COMMON RAW RESULT KEYS
 INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY = "_ref"
@@ -161,6 +164,69 @@ class IPv4AddressStatus(Enum):
     USED = "USED"
 
 
+def inject_cookies(func: Callable) -> Callable:
+    """
+    Decorator to manage session persistence and handle authentication for API requests.
+
+    This decorator attempts to execute the provided function using existing session cookies
+    stored in the 'integration_context'. If no valid cookies are available, or if the existing
+    session is no longer valid the auth generate new cookies to save, bad credentials force the
+    storage clean.
+
+    The decorator handles saving and loading cookies between different executions, allowing for
+    session persistence across multiple API calls.
+
+    Args:
+        func (Callable): The API request function to be executed.
+
+    Raises:
+        DemistoException: If the API request fails.
+
+    Returns:
+        Callable: The result from executing 'func' with the provided arguments and keyword arguments.
+    """
+
+    @wraps(wrapped=func)
+    def wrapper(client: "InfoBloxNIOSClient", *args, **kwargs):
+
+        def save_cookies_to_context(client: "InfoBloxNIOSClient") -> None:
+            cookies_dict = {}
+            for cookie in client._session.cookies:
+                cookies_dict[cookie.name] = {
+                    'value': cookie.value,
+                    'domain': cookie.domain,
+                    'path': cookie.path
+                }
+            set_integration_context({'cookies': cookies_dict})
+
+        def load_cookies(client: "InfoBloxNIOSClient", cookies_dict: dict) -> None:
+            for name, cookie_data in cookies_dict.items():
+                client._session.cookies.set(
+                    name,
+                    cookie_data['value'],
+                    domain=cookie_data['domain'],
+                    path=cookie_data['path']
+                )
+
+        integration_context = get_integration_context()
+        if (
+            integration_context
+            and (context_cookies := integration_context.get("cookies"))
+        ):
+            load_cookies(client, context_cookies)
+
+        try:
+            response = func(client, *args, **kwargs)
+            save_cookies_to_context(client)
+            return response
+        except DemistoException as error:
+            if error.message and error.message == INTEGRATION_AUTHORIZATION_EXCEPTION_MESSAGE:
+                set_integration_context({})
+            raise error
+
+    return wrapper
+
+
 class InfoBloxNIOSClient(BaseClient):
 
     REQUEST_PARAMS_RETURN_AS_OBJECT_KEY = '_return_as_object'
@@ -182,8 +248,12 @@ class InfoBloxNIOSClient(BaseClient):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.params: dict[str, Any] = {self.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY: '1'}
 
-    def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
-                      data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
+    @inject_cookies
+    def _http_request(  # type: ignore[override]
+        self, method, url_suffix, full_url=None, headers=None, auth=None,
+        json_data=None, params=None, data=None, files=None,
+        timeout=10, resp_type='json', ok_codes=None, **kwargs
+    ):
         if params:
             self.params.update(params)
         try:
@@ -581,7 +651,7 @@ class InfoBloxNIOSClient(BaseClient):
 def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text'):
     err_msg = err_string = error.args[0]
     if '[401]' in err_string:
-        err_msg = 'Authorization error, check your credentials.'
+        err_msg = INTEGRATION_AUTHORIZATION_EXCEPTION_MESSAGE
     elif 'Failed to parse json object' in err_string:
         err_msg = 'Cannot connect to Infoblox server, check your proxy and connection.'
     elif 'Error in API call' in err_string:
@@ -863,6 +933,9 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
             max_results=max_results,
             extended_attributes=extended_attributes
         )
+    else:
+        raw_response = {}
+        demisto.debug(f"No condition was met, {raw_response=}")
 
     ip_list = raw_response.get('result')
 

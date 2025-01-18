@@ -1,0 +1,13 @@
+
+{
+    "google_scc_raw": {
+      "finding": {
+        "type": "string",
+        "is_array": false
+      },
+      "resource": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

@@ -1,0 +1,31 @@
+args:
+- description: ID of the note to be updated.
+  name: note_id
+  required: true
+
+- description: Note body.
+  name: note_body
+  required: true
+
+- auto: PREDEFINED
+  description: The note tag. Use the note entry tag (defined in your instance configuration) to mirror the note to IBM QRadar SOAR.
+  name: tags
+  required: true
+  isArray: true
+
+comment: Use this script to add a note entry in Cortex XSOAR, which will then be mirrored as a note to an IBM QRadar SOAR incident. This script should be run within an incident.
+commonfields:
+  id: IbmUpdateNote
+  version: -1
+name: IbmUpdateNote
+script: ""
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.111526
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -11,7 +11,7 @@ import re
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Microsoft Azure AD Connect Health Feed'
-PATTERN = re.compile(r"(https?:/{2}|\*\.)([\w-]+\.)+\w{2,3}")   # guardrails-disable-line
+PATTERN = re.compile(r"(https?:/{2}|\*\*\.|\*\.)([\w-]+\.)+\w{2,3}")   # guardrails-disable-line
 
 
 class Client(BaseClient):
@@ -40,7 +40,7 @@ class Client(BaseClient):
 
         global PATTERN
         scraped_indicators = list(set([PATTERN.match(cell.text).group(0) for cell in soup.select(  # type: ignore # noqa
-            "tbody tr td li") if PATTERN.match(cell.text)]))
+            "tbody tr td code") if PATTERN.match(cell.text)]))
         for indicator in scraped_indicators:
             result.append({
                 'value': indicator,

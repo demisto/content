@@ -1,0 +1,7 @@
+[INGEST:vendor="Google", product="SCC", target_dataset="google_scc_raw", no_hit=keep]
+
+// Converting time format 2024-08-15T07:27:05.219041Z 
+alter tmp_event_time= parse_timestamp("%FT%H:%M:%E*SZ",finding -> eventTime )
+
+| alter _time = tmp_event_time 
+| fields - tmp*;

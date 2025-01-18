@@ -1,0 +1,32 @@
+{
+    "id": "incident_clarotyxdomealertdescription",
+    "version": -1,
+    "modified": "2024-09-16T10:25:25.209772537Z",
+    "name": "Claroty xDome Alert Description",
+    "ownerOnly": false,
+    "description": "The alert description, such as \"SMBv1 Communication was detected by 2 OT Device devices\"",
+    "cliName": "clarotyxdomealertdescription",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Claroty xDome Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -2,7 +2,7 @@
     "name": "Secureworks",
     "description": "Provides access to the Secureworks CTP and Taegis XDR systems",
     "support": "partner",
-    "currentVersion": "5.0.8",
+    "currentVersion": "5.0.10",
     "author": "Secureworks",
     "url": "https://ctpx.secureworks.com",
     "email": "support@secureworks.com",

@@ -1,0 +1,197 @@
+category: Email
+commonfields:
+  id: Proofpoint Threat Protection
+  version: -1
+configuration:
+- defaultvalue: https://threatprotection-api.proofpoint.com/api/v1
+  display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- display: Cluster ID
+  name: cluster_id
+  required: true
+  type: 0
+description: Threat Protection APIs are REST APIs that allow Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
+display: Proofpoint Threat Protection
+name: Proofpoint Threat Protection
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      name: all_results
+      description: A boolean argument to designate whether to send back all the list results. This argument takes precedence over the limit argument when set to true. Default is False.
+    - name: limit
+      description: An integar argument to designate the amount of entries to return from the list results. Defualt is 25. Maximum is 100.
+    description: Get entries from the Organizational Block List.
+    name: proofpoint-tp-blocklist-list
+    outputs:
+    - contextPath: ProofpointThreatProtection.Blocklist
+      description: A list of entries in the blocklist.
+  - arguments:
+    - auto: PREDEFINED
+      name: attribute
+      predefined:
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
+      required: true
+      description: Supported attributes for the Organizational Block List.
+    - auto: PREDEFINED
+      name: operator
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      required: true
+      description: Supported operators for the Organizational Block List.
+    - description: The entry that is to be added to the Organizational Block List.
+      name: value
+      required: true
+    - description: An optional short comment about the added entry (max 150 chars).
+      name: comment
+    description: Add an entry to the Organizational Block List.
+    name: proofpoint-tp-blocklist-add-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Blocklist
+      description: Standard HTTP response with status code 200.
+  - arguments:
+    - auto: PREDEFINED
+      name: attribute
+      predefined:
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
+      required: true
+      description: Supported attributes for the Organizational Block List.
+    - auto: PREDEFINED
+      name: operator
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      required: true
+      description: Supported operators for the Organizational Block List.
+    - description: The entry that is to be deleted from the Organizational Block List.
+      name: value
+      required: true
+    - description: The short comment associated with the blockilst entry.
+      name: comment
+    description: Delete an entry from the Organizational Block List.
+    name: proofpoint-tp-blocklist-delete-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Blocklist
+      description: Standard HTTP response with status code 200.
+  - arguments:
+    - auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      name: all_results
+      description: A boolean argument to designate whether to send back all the list results. This argument takes precedence over the limit argument when set to true. Default is False.
+    - name: limit
+      description: An integar argument to designate the amount of entries to return from the list results. Defualt is 25. Maximum is 100.
+    description: Get entries from the Organizational Safe List.
+    name: proofpoint-tp-safelist-list
+    outputs:
+    - contextPath: ProofpointThreatProtection.Safelist
+      description: A list of entries in the Organizational Safe List.
+  - arguments:
+    - auto: PREDEFINED
+      name: attribute
+      predefined:
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
+      required: true
+      description: Supported attributes for the Organizational Safe List.
+    - auto: PREDEFINED
+      name: operator
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      required: true
+      description: Supported operators for the Organizational Safe List.
+    - description: The entry to be added to the Organizational Safe List.
+      name: value
+      required: true
+    - description: An optional short comment about the added entry (max 150 chars).
+      name: comment
+    description: Add an entry to the Organizational Safe List.
+    name: proofpoint-tp-safelist-add-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Safelist
+      description: Standard HTTP response with status code 200.
+  - arguments:
+    - auto: PREDEFINED
+      name: attribute
+      predefined:
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
+      required: true
+      description: Supported attributes for the Organizational Safe List.
+    - auto: PREDEFINED
+      name: operator
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      required: true
+      description: Supported operators for the Organizational Safe List.
+    - description: The entry to be deleted from the Organizational Safe List.
+      name: value
+      required: true
+    description: Delete an entry from the Organizational Safe List.
+    name: proofpoint-tp-safelist-delete-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Safelist
+      description: Standard HTTP response with status code 200.
+  dockerimage: demisto/python3:3.11.10.115186
+  alt_dockerimages: ["demisto/fastapi:0.111.0.100929"]
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

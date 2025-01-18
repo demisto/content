@@ -12,7 +12,7 @@ import urllib.parse
 import re
 import os
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, UTC
 from devo.sender import Lookup, SenderConfigSSL, Sender
 from functools import partial
 
@@ -175,11 +175,11 @@ def _to_unix(date, milliseconds=False):
 
     elif date == 'now':
         epoch = datetime.now().timestamp()
-    elif type(date) == str:
+    elif type(date) is str:
         epoch = pd.to_datetime(date).timestamp()
     elif isinstance(date, pd.Timestamp | datetime):
         if date.tzinfo is None:
-            epoch = date.replace(tzinfo=timezone.utc).timestamp()
+            epoch = date.replace(tzinfo=UTC).timestamp()
         else:
             epoch = date.timestamp()
     elif isinstance(date, int | float):
@@ -301,7 +301,7 @@ def check_configuration():
 
 def check_type(input, tar_type):
     if (
-        tar_type == list
+        tar_type is list
         and isinstance(input, str)
         and input.startswith("[")
         and input.endswith("]")
@@ -355,6 +355,8 @@ def get_time_range(timestamp_from, timestamp_to):
     elif isinstance(timestamp_from, datetime):
         t_from = timestamp_from.timestamp()
         t_to = time.time() if timestamp_to is None else timestamp_to.timestamp()
+    else:
+        raise ValueError(f"To and From Dates should have values. {timestamp_from=} {timestamp_to=}")
     current_time: float = time.time()
     if t_from > current_time or t_to > current_time:
         raise ValueError("Date should not be greater than current time")
@@ -442,7 +444,7 @@ def fetch_incidents():
 
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
-
+        filter_string = ""
         if alert_filters["type"] == "AND":
             filter_string = " , ".join(
                 [
@@ -712,6 +714,7 @@ def get_alerts_command(offset, items):
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
+        filter_string = ""
         if alert_filters["type"] == "AND":
             filter_string = ", ".join(
                 [

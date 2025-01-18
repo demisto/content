@@ -25,6 +25,9 @@
 			}
 		}
 	},
+    "marketplaces": [
+        "xsoar"
+    ],
 	"name": "User Profile - PrismaCloud (Incoming)",
 	"type": "mapping-incoming",
 	"version": -1,

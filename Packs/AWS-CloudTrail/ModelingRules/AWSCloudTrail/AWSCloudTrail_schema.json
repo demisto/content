@@ -1,0 +1,96 @@
+{
+    "amazon_aws_raw": {
+        "_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "additionalEventData": {
+            "type": "string",
+            "is_array": false
+        },
+        "awsRegion": {
+            "type": "string",
+            "is_array": false
+        },
+        "errorCode": {
+            "type": "string",
+            "is_array": false
+        },
+        "errorMessage": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventCategory": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventID": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventName": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventSource": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "recipientAccountId": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestID": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestParameters": {
+            "type": "string",
+            "is_array": false
+        },
+        "responseElements": {
+            "type": "string",
+            "is_array": false
+        },
+        "resources": {
+            "type": "string",
+            "is_array": false
+        },
+        "sharedEventID": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceIPAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "tlsDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "userAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "userIdentity": {
+            "type": "string",
+            "is_array": false
+        },
+        "vpcEndpointAccountId": {
+            "type": "string",
+            "is_array": false
+        },
+        "vpcEndpointId": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

@@ -8,6 +8,7 @@ import sys
 import traceback
 import uuid
 import warnings
+from email import _header_value_parser as parser
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
@@ -450,7 +451,7 @@ class MarkAsJunk(EWSAccountService):
 
     def get_payload(self, item_id, move_item):  # pragma: no cover
         junk = create_element(
-            f"m: {self.SERVICE_NAME}",
+            f"m:{self.SERVICE_NAME}",
             {"IsJunk": "true", "MoveItem": "true" if move_item else "false"},
         )
 
@@ -498,7 +499,7 @@ class GetSearchableMailboxes(EWSService):
         ]
 
     def get_payload(self):
-        element = create_element(f"m: {self.SERVICE_NAME}")
+        element = create_element(f"m:{self.SERVICE_NAME}")
         return element
 
 
@@ -536,7 +537,7 @@ class ExpandGroup(EWSService):
             sys.exit()
 
     def get_payload(self, email_address):
-        element = create_element(f"m: {self.SERVICE_NAME}")
+        element = create_element(f"m:{self.SERVICE_NAME}")
         mailbox_element = create_element("m:Mailbox")
         add_xml_child(mailbox_element, "t:EmailAddress", email_address)
         element.append(mailbox_element)
@@ -1724,7 +1725,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base64.b64decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name
         }
         attachment['cid'] = cid
@@ -1978,7 +1979,7 @@ def add_additional_headers(additional_headers):
     return headers
 
 
-def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
+def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
@@ -2128,6 +2129,35 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
     return attached_email
 
 
+def handle_attached_email_with_incorrect_from_header(attached_email: Message):
+    """This function handles a malformed From value which can be returned in the header of certain email objects.
+    This issue happens due to a current bug in "email" library.
+    Public issue link: https://github.com/python/cpython/issues/114906
+
+    The function will run on every attached email if exists, check its From header value and fix it if possible.
+    Args:
+        attached_email (Message): attached email object.
+
+    Returns:
+        Message: attached email object.
+    """
+    for i, (header_name, header_value) in enumerate(attached_email._headers):
+        if header_name.lower() == "from":
+            demisto.debug(f'Handling From header, value={header_value}.')
+            try:
+                new_value = parser.get_address_list(header_value)[0].value
+                new_value = new_value.replace("\n", " ").replace("\r", " ").strip()
+                if header_value != new_value:
+                    # Update the 'From' header with the corrected value
+                    attached_email._headers[i] = (header_name, new_value)
+                    demisto.debug(f'From header fixed, new value: {new_value}')
+
+            except Exception as e:
+                demisto.debug(f"Error processing From header: {e}")
+            break
+    return attached_email
+
+
 def handle_incorrect_message_id(message_id: str) -> str:
     """
     Use regex to identify and correct one of the following invalid message_id formats:
@@ -2135,7 +2165,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
     2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
     If no necessary changes identified the original 'message_id' argument value is returned.
     """
-    if re.search("\<\[.*\]\>", message_id):
+    if re.search(r"\<\[.*\]\>", message_id):
         # find and replace "<[" with "<" and "]>" with ">"
         fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
         demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
@@ -2171,11 +2201,15 @@ def decode_email_data(email_obj: Message):
 def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+
     if isinstance(mime_content, str) and not mime_content.isascii():
         mime_content = mime_content.encode()
-    message = email.message_from_bytes(mime_content, policy=email_policy) \
-        if isinstance(mime_content, bytes) \
-        else email.message_from_string(mime_content, policy=email_policy)
+
+    if isinstance(mime_content, bytes):
+        message = email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
+    else:
+        message = email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
+
     return message
 
 
@@ -2288,6 +2322,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
+                        attached_email = handle_attached_email_with_incorrect_from_header(attached_email)
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
@@ -2390,7 +2425,7 @@ def parse_incident_from_item(item):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
+def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip_unparsable_emails: bool = False):
     """
     Fetch incidents
     :param client: EWS Client
@@ -2423,21 +2458,33 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
             last_modification_time = last_modification_time.ewsformat()
 
         for item in last_emails:
-            if item.message_id:
-                current_fetch_ids.add(item.message_id)
-                incident = parse_incident_from_item(item)
-                incidents.append(incident)
+            try:
+                if item.message_id:
+                    current_fetch_ids.add(item.message_id)
+                    incident = parse_incident_from_item(item)
+                    incidents.append(incident)
 
-                if incident_filter == MODIFIED_FILTER:
-                    item_modified_time = item.last_modified_time.ewsformat()
-                    if last_modification_time is None or last_modification_time < item_modified_time:
-                        last_modification_time = item_modified_time
+                    if incident_filter == MODIFIED_FILTER:
+                        item_modified_time = item.last_modified_time.ewsformat()
+                        if last_modification_time is None or last_modification_time < item_modified_time:
+                            last_modification_time = item_modified_time
 
-                if item.id:
-                    emails_ids.append(item.id)
+                    if item.id:
+                        emails_ids.append(item.id)
 
-                if len(incidents) >= client.max_fetch:
-                    break
+                    if len(incidents) >= client.max_fetch:
+                        break
+            except Exception as e:
+                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
+                    raise
+
+                # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
+                error_msg = (
+                    "Encountered email parsing issue while fetching. "
+                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
+                )
+                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
+                demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
@@ -2626,9 +2673,11 @@ def sub_main():  # pragma: no cover
             if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
                 incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
             demisto.debug(f"{incident_filter=}")
-            incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
+            skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
+            incidents = fetch_emails_as_incidents(client, last_run, incident_filter, skip_unparsable_emails)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
             demisto.incidents(incidents)
+
         elif command == "send-mail":
             commands_res = send_email(client, **args)
             return_results(commands_res)

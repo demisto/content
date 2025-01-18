@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import sys
 from base64 import b64encode
-from typing import Any, Dict
+from typing import Any
 
 import requests
 
@@ -49,7 +49,7 @@ def panos_connect(net_connect: Netmiko = None):
 
 
 def panos_ssh(cmd: str, net_connect: Netmiko = None):
-    result_cmd = str()
+    result_cmd = ''
     if sshConfigured:
         """
         Run any command
@@ -93,7 +93,7 @@ def prisma_access_cli_command():
 
 def prisma_access_query():
     query = demisto.args().get('query')
-    cmd = 'debug plugins cloud_services gpcs query {}'.format(query)
+    cmd = f'debug plugins cloud_services gpcs query {query}'
     sshRes = panos_ssh(cmd)
     jsonStartPos = sshRes.find('{"@status')
     if jsonStartPos < 0:
@@ -113,7 +113,7 @@ def prisma_access_query():
 
 def prisma_access_active_users():
     limit = demisto.args().get('limit', 20)
-    cmd = 'debug plugins cloud_services gpcs query querystring limit={} action getGPaaSActiveUsers'.format(limit)
+    cmd = f'debug plugins cloud_services gpcs query querystring limit={limit} action getGPaaSActiveUsers'
     sshRes = panos_ssh(cmd)
     jsonStartPos = sshRes.find('{"@status')
     if jsonStartPos < 0:
@@ -220,8 +220,8 @@ class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
 
-def http_request(uri: str, method: str, headers: Dict = {},
-                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
+def http_request(uri: str, method: str, headers: dict = {},
+                 body: dict = {}, params: dict = {}, files=None) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -230,7 +230,7 @@ def http_request(uri: str, method: str, headers: Dict = {},
         uri,
         headers=headers,
         data=body,
-        verify=USE_SSL,
+        verify=USE_SSL,  # pylint: disable=E0606
         params=params,
         files=files
     )
@@ -327,11 +327,11 @@ def prisma_access_test():
             params = {
                 'type': 'op',
                 'cmd': '<show><system><info></info></system></show>',
-                'key': API_KEY
+                'key': API_KEY  # pylint: disable=E0606
             }
 
             http_request(
-                URL,
+                URL,  # pylint: disable=E0606
                 'GET',
                 params=params
             )
@@ -392,19 +392,19 @@ def device_group_test():
 
 
 @logger
-def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str) -> Dict[str, str]:
+def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str) -> dict[str, str]:
     if apiConfigured:
         xmlComputer = '<computer>%s</computer>' % b64encode(computer.encode('utf8')).decode('utf8') if computer else ''
         b64User = (b64encode(user.encode('utf8'))).decode('utf8')
         cmd = ''
         if domain:
             cmd = '''<request><plugins><cloud_services><gpcs>
-                  <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
-                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+                  <logout_mobile_user><gateway>{}<domain>{}</domain><user>{}</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>'''.format(xmlComputer, domain, b64User)
         else:
             cmd = '''<request><plugins><cloud_services><gpcs>
-                  <logout_mobile_user><gateway>%s<user>%s</user></gateway></logout_mobile_user>
-                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, b64User)
+                  <logout_mobile_user><gateway>{}<user>{}</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>'''.format(xmlComputer, b64User)
 
         if tenant:
             tenant_entry = f"<multi-tenant><tenant-name><entry name='{tenant}'></entry></tenant-name>"

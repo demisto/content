@@ -26,6 +26,9 @@ def is_rapid_breach_response_installed() -> bool | DemistoException:
     try:
         res = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/metadata/installed"})
         if res:
+            for entry in res:
+                if is_error(entry):
+                    return_error(get_error(entry))
             installed_packs = res[0].get("Contents", {}).get("response")
             return any(pack["name"] == "Rapid Breach Response" for pack in installed_packs)
         return False
@@ -70,10 +73,9 @@ def get_use_cases() -> Dict[str, Any]:
         category = details.get('category', '').lower()
         brand = details.get('brand', '').lower()
         state = details.get('state')
-        incident_types = details.get('incident_types', [])
 
         if brand != 'builtin' and state == 'active' and category != 'utilities':
-            if category in ['email', 'messaging', 'messaging and conferencing'] and 'phishing' in incident_types:
+            if category in ['email', 'messaging', 'messaging and conferencing']:
                 if phishing_incidents:
                     use_cases_in_production.add('Business Email Compromise Coverage')
                 else:

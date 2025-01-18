@@ -69,7 +69,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   name: feedExpirationPolicy
   required: false
 - display: ''
@@ -125,7 +124,7 @@ script:
     name: luminar-get-leaked-records
   - description: This command will reset your fetch history.
     name: luminar-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.11.10.116949
   feed: true
   runonce: false
   script: '-'

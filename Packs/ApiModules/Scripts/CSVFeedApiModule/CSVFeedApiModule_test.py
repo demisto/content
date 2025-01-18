@@ -323,6 +323,56 @@ def test_get_indicators_with_relations():
         assert indicators == expected_res
 
 
+def test_fetch_indicators_with_enrichment_excluded(requests_mock):
+    """
+    Given:
+    - Raw json of the csv row extracted
+
+    When:
+    - Fetching indicators from csv rows
+    - enrichment_excluded param is set to True
+
+    Then:
+    - Validate the returned list of indicators have enrichment exclusion set.
+    """
+
+    feed_url_to_config = {
+        'https://ipstack.com': {
+            'fieldnames': ['value', 'a'],
+            'indicator_type': 'IP',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
+            'mapping': {
+                'AAA': 'a',
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+            }
+        }
+    }
+    expected_res = ([{'value': 'test.com', 'type': 'IP',
+                      'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
+                                  None: ['2021-04-22 06:03',
+                                         'https://test.com/manual/test-iplist.txt'],
+                                  'type': 'IP'},
+                      'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
+                                 'tags': []},
+                      'relationships': [],
+                      'enrichmentExcluded': True,
+                      }],
+                    True)
+
+    ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
+
+    itype = 'IP'
+    requests_mock.get('https://ipstack.com', content=ip_ranges.encode('utf8'))
+    client = Client(
+        url="https://ipstack.com",
+        feed_url_to_config=feed_url_to_config
+    )
+    indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
+                                          limit=35, create_relationships=False, enrichment_excluded=True)
+    assert indicators == expected_res
+
+
 def test_get_indicators_without_relations():
     """
     Given:

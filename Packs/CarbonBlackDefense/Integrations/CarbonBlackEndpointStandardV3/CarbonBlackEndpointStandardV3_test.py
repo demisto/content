@@ -373,7 +373,7 @@ def test_find_processes_command(mocker, mock_client, args):
     )
 
 
-@pytest.mark.parametrize("args", [({'event_ids': '1234', "polling": "true"})])
+@pytest.mark.parametrize("args", [({'event_ids': '1234', "polling": "true"}), ({'observation_ids': '1234', "polling": "true"})])
 def test_find_observation_details_command(mocker, mock_client, args):
     http_request = mocker.patch.object(Client, "_http_request", return_value={"job_id": "abc123"})
 

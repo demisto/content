@@ -1,18 +1,16 @@
+from ldap3.utils.conv import escape_filter_chars
+from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
+                             set_library_log_hide_sensitive_data, EXTENDED)
+import os
+from datetime import datetime
+import ssl
+from ldap3.extend import microsoft
+from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef, \
+    AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
+from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
-
-from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef, \
-    AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
-from ldap3.extend import microsoft
-import ssl
-from datetime import datetime
-import os
-from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
-                             set_library_log_hide_sensitive_data, EXTENDED)
-from ldap3.utils.conv import escape_filter_chars
 
 ''' GLOBAL VARS '''
 
@@ -190,6 +188,18 @@ def user_account_to_boolean_fields(user_account_control):
         'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
         'TRUSTED_TO_AUTH_FOR_DELEGATION': bool(user_account_control & 0x1000000),
         'PARTIAL_SECRETS_ACCOUNT': bool(user_account_control & 0x04000000),
+    }
+
+
+def user_account_to_boolean_fields_msDS_user_account_control_computed(user_account_control):
+    """
+    parse the msDS-User-Account-Control-Computed into boolean values.
+    following the values from:
+    https://learn.microsoft.com/en-us/windows/win32/adschema/a-msds-user-account-control-computed
+    """
+    return {
+        'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
+        'LOCKOUT': bool(user_account_control & 0x0010),
     }
 
 
@@ -666,7 +676,8 @@ def search_users(default_base_dn, page_size):
 
     attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES)
                       - set(argToList(args.get('attributes-to-exclude'))))
-
+    if 'userAccountControl' in attributes:
+        attributes.append('msDS-User-Account-Control-Computed')
     entries = search_with_paging(
         query,
         default_base_dn,
@@ -687,6 +698,13 @@ def search_users(default_base_dn, page_size):
                 if args.get('user-account-control-out', '') == 'true':
                     user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
                         user_account_control) or user_account_control
+
+            if user.get("msDS-User-Account-Control-Computed"):
+                user_account_control_msDS = user.get("msDS-User-Account-Control-Computed")[0]
+                user_account_to_boolean_dict = user_account_to_boolean_fields_msDS_user_account_control_computed(
+                    user_account_control_msDS)
+                user.setdefault("userAccountControlFields", {}).update(user_account_to_boolean_dict)
+
     entry_context = {
         'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
         # 'backward compatability' with ADGetUser script
@@ -1577,33 +1595,59 @@ def add_member_to_group(default_base_dn):
     search_base = args.get('base-dn') or default_base_dn
 
     # get the  dn of the member - either user or computer
-    args_err = "Please provide either username or computer-name"
+    args_err = "Please provide either username, computer-name, or nested_group_cn"
     member_dn = ''
 
     if args.get('username') and args.get('computer-name'):
         # both arguments passed
         raise Exception(args_err)
     if args.get('username'):
-        member_dn = user_dn(args['username'], search_base)
+        usernames = argToList(args.get('username'))
+        demisto.debug(f"Usernames collected are {usernames}")
+        member_dns = []
+        for u in usernames:
+            member_dn = user_dn(u, search_base)
+            demisto.debug(f"Member DNs after formatting are: {member_dn}")
+            member_dns.append(member_dn)
     elif args.get('computer-name'):
-        member_dn = computer_dn(args['computer-name'], search_base)
+        computers = argToList('computer-name')
+        member_dns = []
+        for c in computers:
+            member_dn = computer_dn(c, search_base)
+            member_dns.append(member_dn)
+    # added option to pass a Group CN to be added to the Group as a nested group
+    elif args.get('nested_group_cn'):
+        member_dn = group_dn(args['nested_group_cn'], search_base)
+        member_dns = [member_dn]
     else:
         # none of the arguments passed
         raise Exception(args_err)
 
     grp_dn = group_dn(args.get('group-cn'), search_base)
 
-    success = microsoft.addMembersToGroups.ad_add_members_to_groups(connection, [member_dn], [grp_dn])
+    # Updated to take an array of member DNs to add to the group. Not detailed in the ldap3 documentation but per the function
+    # hints https://github.com/cannatag/ldap3/blob/dev/ldap3/extend/microsoft/addMembersToGroups.py
+    # def ad_add_members_to_groups(connection, members_nd, groups_dn, fixe=True, raise_error=False):
+    # """
+    # :param connection: a bound Connection object
+    # :param members_dn: the list of members to add to groups
+    # :param groups_dn: the list of groups where members are to be added
+    # :param fix: checks for group existence and already assigned members
+    # :param raise_error: If the operation fails it raises an error instead of returning False
+    # :return: a boolean where True means that the operation was successful and False means an error has happened
+    # Establishes users-groups relations following the Active Directory rules: users are added to the member attribute of groups.
+    # Raises LDAPInvalidDnError if members or groups are not found in the DIT.
+    # """
+    success = microsoft.addMembersToGroups.ad_add_members_to_groups(
+        connection=connection, members_dn=member_dns, groups_dn=[grp_dn], raise_error=True)
+    demisto.debug(f'addMembersToGroups: {success}')
     if not success:
-        raise Exception("Failed to add {} to group {}".format(
-            args.get('username') or args.get('computer-name'),
-            args.get('group-cn')
-        ))
+        raise Exception(success)
 
     demisto_entry = {
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
-        'Contents': "Object with dn {} was added to group {}".format(member_dn, args.get('group-cn'))
+        'Contents': f"Object(s) with dn(s) {member_dns} were added to group {args.get('group-cn')}"
     }
     demisto.results(demisto_entry)
 
@@ -1773,10 +1817,9 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials_command(server_ip, ntlm_connection):
+def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
     args = demisto.args()
     username = args.get('username')
-    server = Server(server_ip, get_info='ALL')
     try:
         connection = create_connection(
             server=server,
@@ -1784,7 +1827,7 @@ def test_credentials_command(server_ip, ntlm_connection):
             username=username,
             password=args.get('password'),
             ntlm_connection=argToBoolean(ntlm_connection),
-            auto_bind=True,
+            auto_bind=auto_bind,
         )
         connection.unbind()
     except LDAPBindError:
@@ -1984,7 +2027,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(test_credentials_command(server_ip, ntlm_connection=ntlm_auth))
+            return return_results(test_credentials_command(server_ip, server, ntlm_connection=ntlm_auth, auto_bind=auto_bind))
 
         # IAM commands
         elif command == 'iam-get-user':

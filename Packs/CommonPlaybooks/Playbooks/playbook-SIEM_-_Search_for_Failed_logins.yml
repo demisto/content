@@ -326,7 +326,7 @@ tasks:
         simple: |-
           SecurityEvent
           | where EventID == 4771 or EventID == 4625 and (LogonType ==  2 or LogonType == 7 or LogonType == 10)
-          | where TargetAccount == '${inputs.Username}'
+          | where TargetAccount == @'${inputs.Username}'
           | where TimeGenerated > ${inputs.AzureSearchTime}
     separatecontext: false
     continueonerrortype: ""
@@ -774,7 +774,7 @@ outputs:
 - contextPath: AzureFailedLogonLogs
   description: The result of the Azure Log Analytics search.
   type: unknown
-quiet: true
+quiet: false
 tests:
   - No tests
 fromversion: 6.5.0

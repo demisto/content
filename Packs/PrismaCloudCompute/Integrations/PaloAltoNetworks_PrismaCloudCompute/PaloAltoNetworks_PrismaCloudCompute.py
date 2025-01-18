@@ -54,7 +54,7 @@ class PrismaCloudComputeClient(BaseClient):
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
             self._verify = verify
 
-    def _http_request(self, method, url_suffix, full_url=None, headers=None,
+    def _http_request(self, method, url_suffix, full_url=None, headers=None,  # type: ignore[override]
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=30, resp_type='json', ok_codes=None, **kwargs):
         """
@@ -1269,6 +1269,40 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
     return CommandResults(readable_output="Successfully updated the custom IP feeds")
 
 
+def remove_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Remove a list of IPs from the system's block list.
+    Implements the command 'prisma-cloud-compute-custom-feeds-ip-remove'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-custom-feeds-ip-remove command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    # Cast to sets for faster operations and to remove duplicates
+    current_ip_feeds = set((client.get_custom_ip_feeds() or {}).get('feed') or [])
+    ips = set(argToList(arg=args.pop('ip')))
+    ips_to_remove = ips & current_ip_feeds
+    ignored_ips = ips - ips_to_remove
+
+    if not ips_to_remove:
+        return CommandResults(readable_output=f'Could not find {ignored_ips} in the custom IP feeds.')
+
+    filtered_feeds = list(current_ip_feeds - ips_to_remove)
+
+    client.add_custom_ip_feeds(feeds=filtered_feeds)
+
+    if ignored_ips:
+        hr = f'''Successfully removed {ips_to_remove} from the custom IP feeds.
+        Could not find {ignored_ips} in the custom IP feeds.'''
+    else:
+        hr = f'Successfully removed {ips_to_remove} from the custom IP feeds'
+
+    return CommandResults(readable_output=hr)
+
+
 def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     List all custom uploaded md5 malware records.
@@ -2222,6 +2256,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
 
     if ci_scan_results := client.get_ci_scan_results(all_results=all_results, params=params):
+        table = ""
         if not verbose:
             ci_scan_results = reduce_ci_scan_results(ci_scan_results)
             if all_results:
@@ -2537,7 +2572,7 @@ def archive_audit_incident_command(client: PrismaCloudComputeClient, args: dict)
             string: A string that indicates success or failure
     """
     incident_id = args.get("incident_id") or ""
-    data = {'acknowledged': True if args.get("action") == "archive" else False}
+    data = {'acknowledged': args.get('action') == 'archive'}
     client.archive_audit_incident(incident_id=incident_id, data=json.dumps(data))
     return f'Incident {incident_id} was successfully {"archived" if args.get("action") == "archive" else "unarchived"}'
 
@@ -2714,6 +2749,8 @@ def main():
             return_results(results=get_profile_host_forensic_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-add':
             return_results(results=add_custom_ip_feeds(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-remove':
+            return_results(results=remove_custom_ip_feeds(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-console-version-info':
             return_results(results=get_console_version(client=client))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-list':

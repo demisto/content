@@ -16,3 +16,6 @@ ignore=MR108
 [file:layoutscontainer-SentinelOne_Incident_Layout.json]
 ignore=LO107
 
+# GR103 is temporary, see CIAC-11656
+[file:classifier-mapper-outgoing-SentinelOne.json]
+ignore=GR103

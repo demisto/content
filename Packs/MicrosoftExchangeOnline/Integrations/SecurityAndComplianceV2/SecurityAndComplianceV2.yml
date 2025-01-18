@@ -116,8 +116,9 @@ script:
       isArray: true
       name: exchange_location
       defaultValue: 'All'
-    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. Deprecated since Microsoft is supporting it only on-premise.
       isArray: true
+      deprecated: true
       name: exchange_location_exclusion
     - description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
       isArray: true
@@ -1188,10 +1189,11 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.112382
   runonce: true
   script: ''
   type: powershell
 fromversion: 5.5.0
 tests:
 - O365-SecurityAndComplianceV2-Test
+autoUpdateDockerImage: false

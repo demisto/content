@@ -210,7 +210,7 @@ script:
     description: Delete file from Share.
     execution: true
     name: azure-storage-fileshare-file-delete
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

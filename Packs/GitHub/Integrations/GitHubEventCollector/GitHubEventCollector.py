@@ -47,7 +47,7 @@ class GithubParams(BaseModel):
     order: str = 'asc'
     phrase: str
     per_page: int = 100  # Maximum is 100
-    _normalize_after = validator('phrase', pre=True, allow_reuse=True)(
+    _normalize_after = validator('phrase', pre=True, allow_reuse=True)(  # type: ignore[type-var]
         get_github_timestamp_format
     )
 
@@ -66,7 +66,7 @@ class GithubClient(IntegrationEventsClient):
 
 class GithubGetEvents(IntegrationGetEvents):
 
-    def _iter_events(self) -> Generator:
+    def _iter_events(self) -> Generator | list:  # type: ignore[return]
         """
         Function that responsible for the iteration over the events returned from github api
         """

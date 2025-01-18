@@ -1,2 +1,9 @@
+[file:layoutscontainer-SymantecEDR_Event_layout.json]
+ignore=LO107
+
+[file:layoutscontainer-SymantecEDR_layout.json]
+ignore=LO107
+
+
 [known_words]
 Symantec

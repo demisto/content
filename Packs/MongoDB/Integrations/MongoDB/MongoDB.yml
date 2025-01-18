@@ -55,7 +55,7 @@ script:
       name: query
       required: true
     - defaultValue: '50'
-      description: Limits the result returned from MongoDB
+      description: Limits the result returned from MongoDB.
       name: limit
     - description: Sorting order for the query results. Use the format "field1:asc,field2:desc".
       name: sort
@@ -75,7 +75,7 @@ script:
     - description: Name of the collection in which to insert the entry.
       name: collection
       required: true
-    - description: 'The entry to insert, in JSON format. Can include the `_id` argument or not, for example: `{"key": "value"}`'
+    - description: 'The entry to insert, in JSON format. Can include the `_id` argument or not, for example: `{"key": "value"}`.'
       name: entry
       required: true
     description: Inserts an entry to the database.
@@ -140,7 +140,7 @@ script:
       description: The name of the collection to create.
       name: collection
       required: true
-    description: Creates a collection
+    description: Creates a collection.
     name: mongodb-create-collection
   - arguments:
     - default: true
@@ -154,7 +154,7 @@ script:
     - description: Name of the collection to query.
       name: collection
       required: true
-    - description: 'A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]'
+    - description: 'A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: `[{"key1": "value1"}, {"key2": "value2"}]`.'
       name: pipeline
       required: true
     - defaultValue: '50'
@@ -200,7 +200,7 @@ script:
       - 'false'
     description: Bulk updates entries in a collection.
     name: mongodb-bulk-update
-  dockerimage: demisto/py3-tools:1.0.0.90842
+  dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
   subtype: python3

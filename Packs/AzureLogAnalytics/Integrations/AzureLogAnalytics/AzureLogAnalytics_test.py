@@ -317,7 +317,8 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         "credentials": {"identifier": client_id, "password": "client_secret"},
         "subscriptionID": "subscriptionID",
         "resourceGroupName": "resourceGroupName",
-        "workspaceName": "workspaceName"
+        "workspaceName": "workspaceName",
+        "server_url": None
     }
     mocker.patch.object(demisto, "params", return_value=mocked_params)
     mocker.patch.object(

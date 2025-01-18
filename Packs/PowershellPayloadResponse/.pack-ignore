@@ -2,3 +2,6 @@
 ignore=RM104
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:Powershell_Payload_Response.yml]
+ignore=GR107
