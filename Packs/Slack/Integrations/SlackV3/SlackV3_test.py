@@ -3938,8 +3938,20 @@ def test_get_user(mocker):
 
     # Set
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        new_user = {
+            'name': 'perikles',
+            'profile': {
+                'email': 'perikles@acropoli.com',
+                'display_name': 'Dingus',
+                'real_name': 'Lingus'
+            },
+            'id': 'U012B3CUI'
+        }
         if method == 'users.info':
-            return {'user': js.loads(USERS)[0]}
+            user = {'user': js.loads(USERS)[0]}
+            return user
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
         return None
 
     mocker.patch.object(demisto, 'args', return_value={'user': 'spengler'})
