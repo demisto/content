@@ -60,17 +60,17 @@ This requires the external endpoint for interactive responses to be available fo
 You can also utilize a dropdown list instead, by specifying the `responseType` argument.
 
 In order to use `ZoomAsk` via playbook:
-&emsp; &emsp; 1. Add the `ZoomAsk` script to a playbook as a task.
-&emsp; &emsp; 2. In the `message` argument, specify the message to be sent.
-&emsp; &emsp; 3. Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').
-&emsp; &emsp; 4. Either a user or a channel_id or channel_name must be specified.
-&emsp; &emsp; 5. In the `ZoomAsk` task, pass a tag value to the `task` argument.
-&emsp; &emsp; 6. All other inputs are optional.
-&emsp; &emsp; 7. At some point at the playbook, after running `ZoomAsk`, add a manual conditional task, which holds up the playbook execution until the response is received from Zoom.
-&emsp; &emsp;&emsp; &emsp; 1. The condition names must match the response options you passed in to `ZoomAsk`.
-&emsp; &emsp; &emsp; &emsp; 2. In order to tie the conditional task back to `ZoomAsk`:
-&emsp; &emsp; &emsp; &emsp; &emsp;- Add the same tag from the fourth step to the conditional task (under the "Details" tab of the task).
-&emsp; &emsp; 8. The conditional task will be marked as completed when a user responds to the `ZoomAsk` form.
+    - Add the `ZoomAsk` script to a playbook as a task.
+    - In the `message` argument, specify the message to be sent.
+    - Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').
+    - Either a user or a channel_id or channel_name must be specified.
+    - In the `ZoomAsk` task, pass a tag value to the `task` argument.
+    - All other inputs are optional.
+    - At some point at the playbook, after running `ZoomAsk`, add a manual conditional task, which holds up the playbook execution until the response is received from Zoom.
+    - The condition names must match the response options you passed in to `ZoomAsk`.
+    - In order to tie the conditional task back to `ZoomAsk`:
+        - Add the same tag from the fourth step to the conditional task (under the "Details" tab of the task).
+    - The conditional task will be marked as completed when a user responds to the `ZoomAsk` form.
 
 ## Notes
 
