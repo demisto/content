@@ -18,14 +18,14 @@ This integration was integrated and tested with version xx of DeCYFIR Event Coll
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### decyfir-get-events
+### get-decyfir-events
 
 ***
 Gets events from DeCYFIR.
 
 #### Base Command
 
-`decyfir-get-events`
+`get-decyfir-events`
 
 #### Input
 

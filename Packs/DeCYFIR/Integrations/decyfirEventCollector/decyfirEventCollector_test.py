@@ -15,7 +15,6 @@ def test_get_event_format(mocker):
         base_url='test_url',
         verify=False,
     )
-    mocker.patch.object(Client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response)
 
     data = client.get_event_format(mock_decyfir_event_response, VAR_ACCESS_LOGS)
     assert data[0] == mock_pa_event_response[0]
@@ -41,6 +40,21 @@ def test_fetch_events(mocker):
         last_run=last_run, max_fetch=1,
     )
     data = client.get_event_format(events, VAR_ACCESS_LOGS)
-    # print(f">> Event > {events[0]}")
-    # print(f">> enprt > {mock_pa_event_response[0]}")
     assert data[0] == mock_pa_event_response[0]
+
+
+def test_request_decyfir_api(mocker):
+    mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
+
+    client = Client(
+        base_url='test_url',
+        verify=False,
+    )
+    mocker.patch.object(client, 'request_decyfir_api', return_value=mock_decyfir_event_response)
+    request_params = {
+        "key": 'key',
+        "size": 1,
+
+    }
+    events_resp = client.request_decyfir_api(request_params=request_params, event_type='')
+    assert events_resp[0] == mock_decyfir_event_response[0]
