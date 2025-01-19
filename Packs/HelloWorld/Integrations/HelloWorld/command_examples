@@ -1,5 +1,0 @@
-helloworld-say-hello name="Hello Dbot"
-ip ip="8.8.8.8"
-helloworld-alert-list limit="3" severity="low"
-helloworld-alert-list alert_id=2
-helloworld-alert-note-create alert_id=2 note_text=test

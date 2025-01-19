@@ -1,3 +1,0 @@
-!domain domain=example.com
-!email email=test@example.com
-!email-hippo-email-quota-get
