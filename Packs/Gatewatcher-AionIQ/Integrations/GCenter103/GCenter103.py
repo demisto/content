@@ -529,7 +529,7 @@ def handle_little_fetch_alerts(client: GwClient,
 def handle_little_fetch_empty_selected_engines(client: GwClient,
                                                fetch_type: str,
                                                query: dict[str, Any]):
-
+    gw_alerts = {}
     if fetch_type in ("Alerts", "Both"):
 
         res_a = query_es_alerts(client=client, query=query)
