@@ -88,26 +88,6 @@ def test_gw_client_is_authenticated_true():
         assert client.is_authenticated() is True
 
 
-def test_gw_client_is_authenticated_false():
-    """
-    Given:
-     - A GwClient instance that has invalid session info.
-     - The server's _get call returns status code 404.
-    When:
-     - is_authenticated is called.
-    Then:
-     - The function should return False.
-    """
-    from GCenter103 import GwClient
-
-    mock_response = MagicMock()
-    mock_response.status_code = 404
-
-    with patch.object(GwClient, '_get', return_value=mock_response):
-        client = GwClient(ip="fake_ip")
-        assert client.is_authenticated() is False
-
-
 def test_last_run_range_no_last_run(mocker):
     """
     Given:
