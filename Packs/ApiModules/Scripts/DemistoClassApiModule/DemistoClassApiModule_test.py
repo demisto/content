@@ -3,7 +3,7 @@ import pytest
 
 from DemistoClassApiModule import *
 
-TEST_SKIP_REASON = "DemistoWrapper is not supported for python 2"
+TEST_SKIP_REASON = "ClientWrapper is not supported for python 2"
 
 
 def prepare_demistomock(
@@ -52,41 +52,41 @@ def debug_logs_sent(demisto, msgs):
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_set_demisto_class_script_context(mocker):
+def test_set_client_class_script_context(mocker):
     """
     Given:
     - A mock `demisto` object with a script context, version = 8.9.0
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
-    - Ensure a DemistoScript class is set for `demisto`.
+    - Ensure a ScriptClient class is set for `demisto`.
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="script")
     assert type(demisto) == types.ModuleType  # demistomock is a module
-    demisto = set_demisto_class()
-    assert type(demisto) == DemistoScript
+    demisto = set_client_class()
+    assert type(demisto) == ScriptClient
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_set_demisto_class_command_context(mocker):
+def test_set_client_class_command_context(mocker):
     """
     Given:
     - A mock `demisto` object with a command context, version = 8.9.0.
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
-    - Ensure a DemistoIntegration class is set for `demisto`.
+    - Ensure an IntegrationClient class is set for `demisto`.
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command")
     assert type(demisto) == types.ModuleType  # demistomock is a module
-    demisto = set_demisto_class()
-    assert type(demisto) == DemistoIntegration
+    demisto = set_client_class()
+    assert type(demisto) == IntegrationClient
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_set_demisto_class_is_debug(mocker):
+def test_set_client_class_is_debug(mocker):
     """
     Given:
     - A `demisto` object on debug mode.
@@ -98,13 +98,13 @@ def test_set_demisto_class_is_debug(mocker):
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command", is_debug=True)
     assert type(demisto) == types.ModuleType  # demistomock is a module
-    demisto = set_demisto_class()
-    assert type(demisto) == DemistoIntegration
+    demisto = set_client_class()
+    assert type(demisto) == IntegrationClient
     assert demisto.is_debug
 
 
 @pytest.mark.skipif(IS_PY3, reason=TEST_SKIP_REASON)
-def test_set_demisto_class_python_2(mocker):
+def test_set_client_class_python_2(mocker):
     """
     Given:
     - Python 2
@@ -112,13 +112,13 @@ def test_set_demisto_class_python_2(mocker):
     When:
     - Importing the API module.
     Then:
-    - Ensure set_demisto_class() is not defined, thus demisto class is not changed.
+    - Ensure set_client_class() is not defined, thus demisto class is not changed.
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command")
     assert type(demisto) == types.ModuleType  # demistomock is a module
     with pytest.raises(NameError):
-        demisto = set_demisto_class()
+        demisto = set_client_class()
     assert type(demisto) == types.ModuleType
 
 
@@ -147,7 +147,7 @@ def test_is_supported_version(mocker, platform_version, is_supported):
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_set_demisto_class_not_supported_version(mocker):
+def test_set_client_class_not_supported_version(mocker):
     """
     Given:
     - A mock `demisto` object with version = 8.5.0
@@ -159,12 +159,12 @@ def test_set_demisto_class_not_supported_version(mocker):
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command", version="8.5.0")
     assert type(demisto) == types.ModuleType  # demistomock is a module
-    demisto = set_demisto_class()
+    demisto = set_client_class()
     assert type(demisto) == types.ModuleType
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_set_demisto_class_malformed_version(mocker):
+def test_set_client_class_malformed_version(mocker):
     """
     Given:
     - A `demisto` object with a malformed version from the server.
@@ -177,9 +177,9 @@ def test_set_demisto_class_malformed_version(mocker):
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command", version="asdsadasdsad")
     assert type(demisto) == types.ModuleType  # demistomock is a module
-    demisto = set_demisto_class()
+    demisto = set_client_class()
     assert type(demisto) == types.ModuleType
-    assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
+    assert debug_logs_sent(demisto, [CLIENT_WRAPPER_FAILED])
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
@@ -194,7 +194,7 @@ def test_init_log_execution_details(mocker):
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command")
-    demisto = set_demisto_class()
+    demisto = set_client_class()
     demisto.info.assert_called_with(
         "{}{}".format(
             EXECUTING_LOG.format(demisto.exec_type, demisto.exec_name),
@@ -204,22 +204,22 @@ def test_init_log_execution_details(mocker):
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_set_demisto_class_init_error(mocker):
+def test_set_client_class_init_error(mocker):
     """
     Given:
     - A `demisto` object and a malformed command context with a missing `context.command` field.
     When:
     - Setting the appropriate class for `demisto` based on the calling context.
     Then:
-    - Ensure a DemistoIntegration class is set for `demisto`.
+    - Ensure an IntegrationClient class is set for `demisto`.
     - Ensure the warning debug log message is sent during __init__(), but no exception is returned.
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command")
     demisto.callingContext = {"context": {"IntegrationBrand": "hello"}}
-    demisto = set_demisto_class()
-    assert type(demisto) == DemistoIntegration
-    assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
+    demisto = set_client_class()
+    assert type(demisto) == IntegrationClient
+    assert debug_logs_sent(demisto, [CLIENT_WRAPPER_FAILED])
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
@@ -230,7 +230,7 @@ def test_set_demisto_class_init_error(mocker):
         ({"path": "a/b/c"}, FILE_PATH_LOG.format("test", '{"path": "a/b/c"}')),
 
         # bad response - not json serializable
-        (set(), DEMISTO_WRAPPER_FAILED)
+        (set(), CLIENT_WRAPPER_FAILED)
     ]
 )
 def test_get_file_path(mocker, get_fp_response, expected_log):
@@ -241,11 +241,11 @@ def test_get_file_path(mocker, get_fp_response, expected_log):
     - Fetching the file path for an entry ID.
     Then:
     - Case 1: Ensure the file path is returned correctly and debug logs are sent.
-    - Case 2: Ensure that if an error occurs in DemistoScript.getFilePath(), log the error and skip it.
+    - Case 2: Ensure that if an error occurs in ScriptClient.getFilePath(), log the error and skip it.
     """
     import demistomock as demisto
     get_fp_cmd = prepare_demistomock(mocker, exec_type="script", mock_cmd="getFilePath", mock_val=get_fp_response)
-    demisto = set_demisto_class()
+    demisto = set_client_class()
 
     res = demisto.getFilePath("test")
     assert res == get_fp_response
@@ -268,7 +268,7 @@ def test_execute_command(mocker, is_debug, expected_entries_length):
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="script", is_debug=is_debug)
-    demisto = set_demisto_class()
+    demisto = set_client_class()
     res = demisto.executeCommand("cmdWithDebugFile", {})
     assert len(res) == expected_entries_length
     assert demisto.is_debug or any(entry["Type"] == 16 for entry in res)
@@ -294,7 +294,7 @@ def test_execute_command_without_debug_log_output(mocker):
     assert res == entries[0]
 
     prepare_demistomock(mocker, exec_type="script", is_debug=True)
-    demisto = set_demisto_class()
+    demisto = set_client_class()
 
     res = demisto.executeCommand("cmdWithoutDebugFile", {})
     assert res == entries
@@ -317,12 +317,12 @@ def test_execute_command_bad(mocker):
     import demistomock as demisto
     entries = [{"Contents": "oy vey no entry type"}, {"Type": 16}]
     exec_cmd_func = prepare_demistomock(mocker, exec_type="script", is_debug=True, mock_cmd="executeCommand", mock_val=entries)
-    demisto = set_demisto_class()
+    demisto = set_client_class()
 
     res = demisto.executeCommand("cmdWithDebugFile", {})
     assert len(res) == 2
     assert exec_cmd_func.called_once()
-    assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
+    assert debug_logs_sent(demisto, [CLIENT_WRAPPER_FAILED])
 
 
 @pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
@@ -330,7 +330,7 @@ def test_execute_command_bad(mocker):
     "last_run, expected_log",
     [
         ("lastRun", LAST_RUN_IS_LOG.format("\"lastRun\"")),
-        (set(), DEMISTO_WRAPPER_FAILED)
+        (set(), CLIENT_WRAPPER_FAILED)
     ]
 )
 def test_get_last_run(mocker, last_run, expected_log):
@@ -345,7 +345,7 @@ def test_get_last_run(mocker, last_run, expected_log):
     """
     import demistomock as demisto
     get_lr_cmd = prepare_demistomock(mocker, exec_type="command", mock_cmd="getLastRun", mock_val=last_run)
-    demisto = set_demisto_class()
+    demisto = set_client_class()
 
     res = demisto.getLastRun()
     assert res == last_run
@@ -358,7 +358,7 @@ def test_get_last_run(mocker, last_run, expected_log):
     "last_run, expected_log",
     [
         ("lastRun", SET_LAST_RUN_LOG.format('"lastRun"')),
-        (set(), DEMISTO_WRAPPER_FAILED)
+        (set(), CLIENT_WRAPPER_FAILED)
     ]
 )
 def test_set_last_run(mocker, last_run, expected_log):
@@ -373,7 +373,7 @@ def test_set_last_run(mocker, last_run, expected_log):
     """
     import demistomock as demisto
     set_last_run_cmd = prepare_demistomock(mocker, exec_type="command", mock_cmd="setLastRun")
-    demisto = set_demisto_class()
+    demisto = set_client_class()
 
     demisto.setLastRun(last_run)
     assert set_last_run_cmd.called_once()
@@ -392,7 +392,7 @@ def test_set_last_run_truncated(mocker):
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command")
-    demisto = set_demisto_class()
+    demisto = set_client_class()
 
     last_run = "aa" * 1024
     demisto.setLastRun(last_run)
@@ -411,7 +411,7 @@ def test_set_last_run_exceeds_recommendation(mocker):
     """
     import demistomock as demisto
     prepare_demistomock(mocker, exec_type="command")
-    demisto = set_demisto_class()
+    demisto = set_client_class()
 
     last_run = "aa" * 1024 ** 2
     last_run_size = round(
@@ -421,83 +421,3 @@ def test_set_last_run_exceeds_recommendation(mocker):
 
     demisto.setLastRun(last_run)
     assert debug_logs_sent(demisto, [LAST_RUN_SIZE_LOG.format(last_run_size)])
-
-
-@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-@pytest.mark.parametrize(
-    "incidents, expected_log",
-    [
-        (
-            # no source IDs
-            [{}, {}],
-            CREATING_INCIDENTS_LOG.format(2),
-        ),
-        (
-            # should include source IDs
-            [{"dbotMirrorId": "1"}, {"dbotMirrorId": 2}, {"dbotMirrorId": None}],
-            CREATING_INCIDENTS_LOG.format(3) + CREATING_INCIDENTS_SUFFIX.format("1, 2, None"),
-        ),
-        (
-            # invalid dict - should skip
-            [1, 2],
-            DEMISTO_WRAPPER_FAILED,
-        )
-    ]
-)
-def test_incidents(mocker, incidents, expected_log):
-    """
-    Given:
-    - A `demisto` object with mocked `incidents` method and various incident inputs.
-    When:
-    - Adding incidents using `incidents`.
-    Then:
-    - Case 1: Log the number of incidents added.
-    - Case 2: Include source IDs in the log if present in the incidents.
-    - Case 3: Log an error if invalid data is encountered.
-    """
-    import demistomock as demisto
-    incidents_cmd = prepare_demistomock(mocker, exec_type="command", mock_cmd="incidents")
-    demisto = set_demisto_class()
-
-    demisto.incidents(incidents)
-    assert incidents_cmd.called_once()
-    assert debug_logs_sent(demisto, [expected_log])
-
-
-@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_create_indicators(mocker):
-    """
-    Given:
-    - A `demisto` object with mocked `createIndicators` method.
-    When:
-    - Creating indicators using `createIndicators`.
-    Then:
-    - Ensure the method is called and debug logs include the correct number of indicators.
-    """
-    import demistomock as demisto
-    create_indciators_cmd = prepare_demistomock(mocker, exec_type="command", is_debug=True, mock_cmd="createIndicators")
-    demisto = set_demisto_class()
-
-    demisto.createIndicators([])
-    assert create_indciators_cmd.called_once()
-    assert debug_logs_sent(demisto, [CREATING_INDICATORS_LOG.format(0), "createIndicators took"])
-
-
-@pytest.mark.skipif(not IS_PY3, reason=TEST_SKIP_REASON)
-def test_create_indicators_failure(mocker):
-    """
-    Given:
-    - A `demisto` object with mocked `createIndicators` method.
-    When:
-    - Creating indicators using `createIndicators` with bad input
-      that should raise an exception in the DemistoIntegration implementation.
-    Then:
-    - Ensure the method is called and debug logs include the correct number of indicators.
-    """
-    import demistomock as demisto
-    create_indciators_cmd = prepare_demistomock(mocker, exec_type="command", is_debug=True, mock_cmd="createIndicators")
-    demisto = set_demisto_class()
-
-    demisto.createIndicators(None)
-    assert create_indciators_cmd.called_once()
-    assert debug_logs_sent(demisto, [DEMISTO_WRAPPER_FAILED])
