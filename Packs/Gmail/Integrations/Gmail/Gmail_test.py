@@ -3,6 +3,7 @@ from freezegun import freeze_time
 import demistomock as demisto
 from test_data import input_data
 import datetime
+import pytest
 from datetime import UTC
 
 MOCK_MAIL_NO_LABELS = {
