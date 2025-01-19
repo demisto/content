@@ -1,3 +1,4 @@
+from CommonServerPython import *
 import demistomock as demisto  # noqa: F401
 import pytest
 from unittest.mock import patch, MagicMock
@@ -428,3 +429,473 @@ def test_fetch_incidents(mocker, engine_list, fetch_type, max_fetch):
 
     # In both scenarios, last run should be set
     mock_set_last_run.assert_called_once()
+
+
+@pytest.fixture
+def mock_gw_client(mocker):
+    """
+    Fixture creating a mock GwClient instance with basic _post, _get stubs.
+    """
+    from GCenter103 import GwClient
+    client = GwClient(ip="fake_ip")
+    return client
+
+
+def test_fix_broken_list_str(mocker):
+    """
+    Given:
+     - A params dictionary with 'engine_selection' set to a string containing known engine keywords.
+    When:
+     - fix_broken_list is called.
+    Then:
+     - We get only the matching engines in a list.
+    """
+    from GCenter103 import fix_broken_list
+    params = {"engine_selection": "malcore,random,sigflow_alert"}
+    result = fix_broken_list(params)
+    # Known engines are: "malcore", "sigflow_alert"
+    assert len(result) == 2
+    assert "malcore" in result
+    assert "sigflow_alert" in result
+
+
+def test_fix_broken_list_list(mocker):
+    """
+    Given:
+     - A params dictionary with 'engine_selection' as a list containing known engine keywords.
+    When:
+     - fix_broken_list is called.
+    Then:
+     - We get only the valid engines from that list.
+    """
+    from GCenter103 import fix_broken_list
+    params = {"engine_selection": ["malcore", "abc", "shellcode_detect"]}
+    result = fix_broken_list(params)
+    assert len(result) == 2
+    assert "malcore" in result
+    assert "shellcode_detect" in result
+
+
+def test_fix_broken_list_invalid_param(mocker):
+    """
+    Given:
+     - A params dictionary missing engine_selection or with invalid type.
+    When:
+     - fix_broken_list is called.
+    Then:
+     - A ValueError is raised.
+    """
+    from GCenter103 import fix_broken_list
+    with pytest.raises(ValueError):
+        fix_broken_list({"no_engine_selection": True})
+    with pytest.raises(ValueError):
+        fix_broken_list({"engine_selection": 123})  # not str or list
+
+
+def test_query_es_alerts(mocker, mock_gw_client):
+    """
+    Given:
+     - A GwClient and a query dict.
+    When:
+     - query_es_alerts is called and the response has hits.hits data.
+    Then:
+     - The function returns hits.hits from the JSON response.
+    """
+    from GCenter103 import query_es_alerts
+
+    mock_response = MagicMock(spec=requests.Response)
+    mock_response.json.return_value = {"hits": {"hits": [{"_id": "1"}]}}
+    mock_gw_client._post = MagicMock(return_value=mock_response)
+
+    q = {"query": {"match_all": {}}}
+    hits = query_es_alerts(mock_gw_client, q)
+    assert hits == [{"_id": "1"}]
+
+
+def test_query_es_alerts_empty(mocker, mock_gw_client):
+    """
+    Given:
+     - A GwClient and a query dict.
+    When:
+     - query_es_alerts is called and hits.hits is empty.
+    Then:
+     - An empty dict is returned.
+    """
+    from GCenter103 import query_es_alerts
+
+    mock_response = MagicMock(spec=requests.Response)
+    mock_response.json.return_value = {"hits": {"hits": []}}
+    mock_gw_client._post = MagicMock(return_value=mock_response)
+
+    q = {"query": {"match_all": {}}}
+    hits = query_es_alerts(mock_gw_client, q)
+    assert hits == {}
+
+
+def test_query_es_metadata(mocker, mock_gw_client):
+    """
+    Given:
+     - A GwClient and a query dict.
+    When:
+     - query_es_metadata is called and the response has hits.hits data.
+    Then:
+     - The function returns hits.hits from the JSON response.
+    """
+    from GCenter103 import query_es_metadata
+
+    mock_response = MagicMock(spec=requests.Response)
+    mock_response.json.return_value = {"hits": {"hits": [{"_id": "m1"}]}}
+    mock_gw_client._post = MagicMock(return_value=mock_response)
+
+    q = {"query": {"match_all": {}}}
+    hits = query_es_metadata(mock_gw_client, q)
+    assert hits == [{"_id": "m1"}]
+
+
+def test_gw_client_auth(mocker):
+    """
+    Given:
+     - A params dict with user/password or token.
+    When:
+     - gw_client_auth is called.
+    Then:
+     - Returns a GwClient with the authentication set.
+    """
+    from GCenter103 import gw_client_auth
+    mocker.patch('GCenter103.GwClient.auth', return_value=None)
+    params = {
+        "ip": "1.1.1.1",
+        "token": None,
+        "credentials": {"identifier": "admin", "password": "admin"},
+        "check_cert": False
+    }
+    client = gw_client_auth(params)
+    assert client.ip == "1.1.1.1"
+
+
+def test_handle_little_fetch_empty_selected_engines_alerts(mocker, mock_gw_client):
+    """
+    Given:
+     - fetch_type in ("Alerts", "Both").
+     - query_es_alerts returning some hits.
+    When:
+     - handle_little_fetch_empty_selected_engines is called.
+    Then:
+     - The returned data is not empty (the alerts).
+    """
+    from GCenter103 import handle_little_fetch_empty_selected_engines
+
+    mock_response = [{"_id": "abc"}]
+    mocker.patch('GCenter103.query_es_alerts', return_value=mock_response)
+
+    query = {"query": {"bool": {"must": []}}}
+    res = handle_little_fetch_empty_selected_engines(mock_gw_client, "Alerts", query)
+    assert res == mock_response
+
+
+def test_handle_little_fetch_empty_selected_engines_not_alerts(mocker, mock_gw_client):
+    """
+    Given:
+     - fetch_type = "Metadata" (no alerts).
+     When:
+     - handle_little_fetch_empty_selected_engines is called.
+    Then:
+     - The function returns an empty dict (no alerts fetched).
+    """
+    from GCenter103 import handle_little_fetch_empty_selected_engines
+    query = {"query": {"bool": {"must": []}}}
+    res = handle_little_fetch_empty_selected_engines(mock_gw_client, "Metadata", query)
+    assert res == {}  # no alerts if fetch_type == "Metadata"
+
+
+def test_main_test_module(mocker):
+    """
+    Given:
+     - demisto.command returns 'test-module'.
+     - The client authenticates successfully.
+    When:
+     - main is called.
+    Then:
+     - test_module is executed, and 'ok' is returned as a result.
+    """
+    from GCenter103 import main
+
+    # 1) Patch demisto commands/params
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value={
+        "ip": "1.1.1.1",
+        "token": None,
+        "credentials": {"identifier": "admin", "password": "admin"}
+    })
+    mocker.patch.object(demisto, 'args', return_value={})
+
+    # 2) Patch `return_results` from the correct module path.
+    mocked_return_results = mocker.patch('GCenter103.return_results')
+
+    # 3) Mock GwClient so it doesn't do real auth
+    client_mock = mocker.patch('GCenter103.GwClient', autospec=True).return_value
+    client_mock.is_authenticated.return_value = True
+
+    # 4) Run main
+    main()
+
+    # 5) Verify test_module returned "ok"
+    mocked_return_results.assert_called_with("ok")
+
+
+def test_main_fetch_incidents(mocker):
+    """
+    Given:
+     - demisto.command returns 'fetch-incidents'.
+    When:
+     - main is called.
+    Then:
+     - fetch_incidents is invoked and passes a real list of incidents to return_results.
+    """
+    from GCenter103 import main
+
+    # 1) Patch demisto commands/params
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'params', return_value={
+        "ip": "1.1.1.1",
+        "fetch_type": "Alerts",
+        "credentials": {"identifier": "admin", "password": "admin"}
+    })
+    mocker.patch.object(demisto, 'args', return_value={})
+
+    # 2) Patch `return_results` from the correct module path.
+    mocked_return_results = mocker.patch('GCenter103.return_results')
+
+    # 3) Mock out GwClient so we don't do real auth
+    mocker.patch('GCenter103.GwClient')
+
+    # 4) Make `fetch_incidents` return a **real list** (not MagicMock)
+    #    so JSON serialization won't fail.
+    mock_incidents = [
+        {"name": "test_incident",
+         "occurred": "2025-01-01T00:00:00Z",
+         "type": "Gatewatcher Incident"}
+    ]
+    mocker.patch('GCenter103.fetch_incidents', return_value=mock_incidents)
+
+    # 5) Execute main
+    main()
+
+    # 6) Confirm return_results was called with that real list
+    #    (The actual call structure is [mock_incidents], but
+    #     mocker captures the first positional arg from call_args[0]).
+    called_arg = mocked_return_results.call_args[0][0]
+    assert called_arg == mock_incidents
+
+
+def test_handle_big_fetch_selected_engines_alerts(mocker):
+    """
+    Given:
+     - fetch_type = "Alerts".
+     - engine_selection has multiple engines (e.g., ["engineA", "engineB"]).
+     - query_es_alerts returns chunks of alerts, each with a 'sort' key.
+     - max_fetch is large enough to trigger multiple while-loop iterations.
+    When:
+     - handle_big_fetch_selected_engines is called.
+    Then:
+     - All fetched alerts from multiple engines are combined and returned.
+     - search_after is updated repeatedly in the query.
+    """
+    from GCenter103 import handle_big_fetch_selected_engines
+
+    mock_client = MagicMock()
+
+    def mock_query_es_alerts_side_effect(*args, **kwargs):
+        query = kwargs.get("query", {})
+        # Distinguish the first chunk from the second chunk by checking
+        # if 'search_after' is in the query
+        if "search_after" not in query:
+            # first chunk
+            return [
+                {'sort': [100], '_source': {"event": {"id": "id1"}}},
+                {'sort': [101], '_source': {"event": {"id": "id2"}}}
+            ]
+        else:
+            # second chunk
+            return [
+                {'sort': [200], '_source': {"event": {"id": "id3"}}},
+                {'sort': [201], '_source': {"event": {"id": "id4"}}}
+            ]
+
+    mocker.patch('GCenter103.query_es_alerts', side_effect=mock_query_es_alerts_side_effect)
+
+    initial_query = {
+        "size": 0,
+        "query": {
+            "bool": {
+                "must": [
+                    {"match": {"event.module": "engineA"}},
+                    {"range": {"@timestamp": {"gt": "2025-01-01"}}}
+                ]
+            }
+        }
+    }
+    engine_selection = ["engineA", "engineB"]
+    max_fetch = 1  # Ensure nb_req=0 => nb_req=1 => 1 iteration => 2 calls total/engine
+    fetch_type = "Alerts"
+
+    results = handle_big_fetch_selected_engines(
+        client=mock_client,
+        query=initial_query,
+        engine_selection=engine_selection,
+        max_fetch=max_fetch,
+        fetch_type=fetch_type
+    )
+
+    # Each engine => 4 total items (2 per call * 2 calls).
+    # We have 2 engines => 8 total.
+    assert len(results) == 8
+    # Confirm query had 'size' set to 10000
+    assert initial_query["size"] == 10000
+    # Confirm each chunk's 'search_after' was updated in the while loop
+    # The final value should have been reset to [] after engineB is processed.
+    assert "search_after" in initial_query
+    assert initial_query["search_after"] == []
+
+
+def test_handle_big_fetch_selected_engines_no_alerts(mocker):
+    """
+    Given:
+     - fetch_type = "Metadata" (the code *still* fetches alerts in the for-loop).
+    When:
+     - handle_big_fetch_selected_engines is called.
+    Then:
+     - We confirm that calls to query_es_alerts return our dummy item,
+       and the final list matches it, e.g. 4 items if we have 2 engines.
+    """
+    from GCenter103 import handle_big_fetch_selected_engines
+
+    mock_client = MagicMock()
+
+    def mock_query_es_alerts_side_effect(*args, **kwargs):
+        return [{'_source': {"event": {"id": "dummy"}}, 'sort': [999]}]
+
+    mocker.patch('GCenter103.query_es_alerts', side_effect=mock_query_es_alerts_side_effect)
+
+    # Correctly define query_mock as a dict with the structure your code expects
+    query_mock = {
+        "size": 0,
+        "query": {
+            "bool": {
+                "must": [
+                    {"match": {"event.module": "engineA"}},
+                    {"range": {"@timestamp": {"gt": "2025-01-01"}}}
+                ]
+            }
+        }
+    }
+    engine_selection = ["engineA", "engineB"]
+    max_fetch = 20000
+    fetch_type = "Metadata"
+
+    results = handle_big_fetch_selected_engines(
+        client=mock_client,
+        query=query_mock,
+        engine_selection=engine_selection,
+        max_fetch=max_fetch,
+        fetch_type=fetch_type
+    )
+    assert len(results) == 4
+
+
+
+
+@pytest.mark.parametrize(
+    "max_fetch_val, fetch_type_val, returned_alerts, returned_metadata",
+    [
+        # 1) Big fetch scenario (max_fetch > 10000), "Both" => calls big-fetch logic for both alerts+metadata
+        (15000, "Both", [{"_source": {"event": {"id": "alert1"}}}], [{"_source": {"event": {"id": "meta1"}}}]),
+        # 2) Small fetch scenario (max_fetch <= 10000), "Alerts" => calls little-fetch for alerts
+        (5000, "Alerts", [{"_source": {"event": {"id": "alert2"}}}], []),
+        # 3) Another small fetch scenario with "Both"
+        (5000, "Both", [{"_source": {"event": {"id": "alert3"}}}], [{"_source": {"event": {"id": "meta3"}}}])
+    ]
+)
+def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_alerts, returned_metadata):
+    """
+    Given:
+     - A non-empty engine_selection.
+     - max_fetch can be above or below 10000.
+     - Different fetch_type ("Alerts", "Both", etc.).
+    When:
+     - fetch_selected_engines is called.
+    Then:
+     - The correct big or little fetch helper is used, and the results are combined with indexing.
+    """
+    from GCenter103 import (
+        fetch_selected_engines,
+        last_run_range
+    )
+
+    # 1) Patch last_run_range to avoid real datetime calls
+    mocker.patch('GCenter103.last_run_range', return_value=["2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z"])
+
+    # 2) Patch the big fetch or little fetch calls
+    mock_handle_big_fetch_selected_engines = mocker.patch('GCenter103.handle_big_fetch_selected_engines', return_value=returned_alerts)
+    mock_handle_big_fetch_metadata = mocker.patch('GCenter103.handle_big_fetch_metadata', return_value=returned_metadata)
+
+    mock_handle_little_fetch_alerts = mocker.patch('GCenter103.handle_little_fetch_alerts', return_value=returned_alerts)
+    mock_handle_little_fetch_metadata = mocker.patch('GCenter103.handle_little_fetch_metadata', return_value=returned_metadata)
+
+    # 3) Patch index functions to simply return the incidents back
+    def mock_index_alerts_incidents(to_index, incidents, params):
+        # Just append them with a placeholder structure
+        for item in to_index:
+            incidents.append({"name": "Alert: " + str(item["_source"]["event"]["id"]), "occurred": "2025-01-01T00:00:00Z"})
+        return incidents
+
+    def mock_index_metadata_incidents(to_index, incidents):
+        for item in to_index:
+            incidents.append({"name": "Meta: " + str(item["_source"]["event"]["id"]), "occurred": "2025-01-02T00:00:00Z"})
+        return incidents
+
+    mocker.patch('GCenter103.index_alerts_incidents', side_effect=mock_index_alerts_incidents)
+    mocker.patch('GCenter103.index_metadata_incidents', side_effect=mock_index_metadata_incidents)
+
+    mock_client = MagicMock()  # pretend we have a real client
+    engine_selection = ["suricata"]
+    params = {"ip": "1.1.1.1"}  # minimal for test
+    incidents = []
+
+    # 4) Call function under test
+    results = fetch_selected_engines(
+        client=mock_client,
+        engine_selection=engine_selection,
+        params=params,
+        max_fetch=max_fetch_val,
+        fetch_type=fetch_type_val,
+        incidents=incidents
+    )
+
+    # 5) Then: check logic paths
+    if max_fetch_val > 10000:
+        # big fetch
+        mock_handle_big_fetch_selected_engines.assert_called_once()
+        if fetch_type_val in ("Both", "Alerts"):
+            # We should see calls to big fetch for alerts
+            mock_handle_big_fetch_metadata.assert_called_once()
+        else:
+            mock_handle_big_fetch_metadata.assert_not_called()
+        mock_handle_little_fetch_alerts.assert_not_called()
+        mock_handle_little_fetch_metadata.assert_not_called()
+    else:
+        # little fetch
+        mock_handle_little_fetch_alerts.assert_called_once()
+        if fetch_type_val in ("Both", "Alerts"):
+            mock_handle_little_fetch_alerts.assert_called_once()
+        if fetch_type_val in ("Both", "Metadata"):
+            mock_handle_little_fetch_metadata.assert_called_once()
+        mock_handle_big_fetch_selected_engines.assert_not_called()
+        mock_handle_big_fetch_metadata.assert_not_called()
+
+    # Also verify the final incidents list structure
+    if returned_alerts:
+        assert any("Alert: " in inc["name"] for inc in results)
+    if returned_metadata:
+        assert any("Meta: " in inc["name"] for inc in results)
+    # If we get no alerts or metadata, results is empty
