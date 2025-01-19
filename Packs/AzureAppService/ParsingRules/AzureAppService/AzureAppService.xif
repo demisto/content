@@ -1,0 +1,4 @@
+[INGEST:vendor="msft", product="azure", target_dataset="msft_azure_app_service_raw", no_hit = drop]
+filter category in("")
+// zulu time suffix notation, e.g. "2024-09-24T16:41:59.698Z
+| alter _time = parse_timestamp("%FT%H:%M:%E*SZ", to_string(time));
