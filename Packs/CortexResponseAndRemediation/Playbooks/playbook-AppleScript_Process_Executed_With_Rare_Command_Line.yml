@@ -176,7 +176,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -201,23 +201,32 @@ tasks:
     conditions:
     - label: Malicious
       condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: foundIncidents.CustomFields.action
-            iscontext: true
-          right:
-            value:
-              simple: BLOCKED
-          ignorecase: true
       - - operator: isEqualString
           left:
             value:
-              simple: foundIncidents.CustomFields.cid
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: BLOCKED
+                    ignorecase: true
+                accessor: cid
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
           right:
             value:
-              simple: alert.cid
+              complex:
+                root: alert
+                accessor: cid
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
           ignorecase: true
     continueonerrortype: ""
