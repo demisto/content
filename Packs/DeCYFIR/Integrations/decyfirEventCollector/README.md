@@ -1,5 +1,5 @@
 Collects the events log for authentication and Audit provided by DeCYFIR admin API.
-This integration was integrated and tested with version xx of DeCYFIR Event Collector.
+This integration was integrated and tested with version v1 of DeCYFIR Event Collector.
 
 ## Configure DeCYFIR Event Collector in Cortex
 

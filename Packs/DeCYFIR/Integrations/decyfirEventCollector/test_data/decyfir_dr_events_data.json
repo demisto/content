@@ -1,0 +1,14 @@
+[
+    {
+		"event_action": "ORG_ASSETS_CREATE",
+		"asset_comments": "acme",
+		"asset_name": "acme.com",
+		"vendor": "",
+		"asset_type": "Domain",
+		"modified_by": "acme.com",
+		"created_date": null,
+		"modified_date": "2025-01-06T03:48:12",
+		"version": "",
+		"created_by": ""
+	}
+]

@@ -1,10 +1,13 @@
 commonfields:
   id: DeCYFIR Event Collector
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: DeCYFIR Event Collector
 display: DeCYFIR Event Collector
 category: Analytics & SIEM
-description: Collects the events log for authentication and Audit provided by DeCYFIR admin API.
+description: Collects the events log for authentication and Audit provided by DeCYFIR API.
 configuration:
 - display: Server URL
   name: url
@@ -50,14 +53,13 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: true
-    - defaultValue: 2
+      required: false
+    - defaultValue: 100
       description: Maximum number of results to return. Value should be between 1 - 500.
       name: limit
       required: false
     description: Gets events from DeCYFIR.
     name: get-decyfir-events
-    example: "!get-decyfir-events"
   dockerimage: demisto/python3:3.10.14.101217
   isfetchevents: false
   subtype: python3
