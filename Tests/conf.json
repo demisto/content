@@ -4406,7 +4406,8 @@
             "fromversion": "6.9.0",
             "integrations": [
                 "VenafiTLSProtect"
-            ]
+            ],
+            "is_mockable": false
         },
         {
             "playbookID": "3da36d51-3cdf-4120-882a-cee03b038b89",
