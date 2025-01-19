@@ -5,7 +5,8 @@ from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
-    search_records_soap_request, upload_and_associate_command
+    search_records_soap_request, upload_and_associate_command, is_valid_xml, construct_generic_filter_condition, \
+    construct_operator_logic, FilterConditionTypes
 
 BASE_URL = 'https://test.com/'
 
@@ -580,13 +581,42 @@ class TestArcherV2:
         assert records[0]['record']['Id'] == '238756'
         assert records[0]['record']['Device Name'] == 'DEVICE NAME'
 
-    @pytest.mark.parametrize('field_name,field_to_search_by_id,expected_condition', [
-        ('id_field_name', '', '<TextFilterCondition>        <Operator>Contains</Operator>        '
-         + '<Field name="id_field_name">field_id</Field>        <Value>1234</Value></TextFilterCondition >'),
-        ('id_field_name', 'id_field_name', '<ContentFilterCondition>        <Level>5678</Level>        '
-         + '<Operator>Equals</Operator>        <Values><Value>1234</Value></Values></ContentFilterCondition>')
-    ])
-    def test_search_records_soap_request(self, field_name, field_to_search_by_id, expected_condition):
+    @pytest.mark.parametrize(
+        'field_name, field_to_search_by_id, expected_condition',
+        [
+            pytest.param(
+                # Inputs ↓
+                'id_field_name',
+                '',
+                # Expected ↓
+                '<TextFilterCondition>'
+                '<Operator>Contains</Operator>'
+                '<Field name="id_field_name">field_id</Field>'
+                '<Value>1234</Value>'
+                '</TextFilterCondition>',
+                id='Generic text filter',
+            ),
+            pytest.param(
+                # Inputs ↓
+                'id_field_name',
+                'id_field_name',
+                # Expected ↓
+                '<ContentFilterCondition>'
+                '<Level>5678</Level>'
+                '<Operator>Equals</Operator>'
+                '<Values><Value>1234</Value></Values>'
+                '</ContentFilterCondition>',
+                id='Content filter by ID',
+            )
+
+        ]
+    )
+    def test_search_records_soap_request(
+        self,
+        field_name: str,
+        field_to_search_by_id: str,
+        expected_condition: str
+    ):
         """
         Given:
             - Fields to search on records and id fields to search by ID.
@@ -932,6 +962,40 @@ class TestArcherV2:
         assert last_fetch == next_fetch
         assert not incidents, 'Should not get new incidents.'
 
+    @staticmethod
+    def test_fetch_blacklisted_date_filter():
+        """
+        Given:
+            fetch_xml parameter with a forbidden DateComparisonFilterCondition
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that a ValueError is raised with the appropriate error message
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported',
+            'fetch_xml': (
+                '<DateComparisonFilterCondition>'
+                '<Operator>GreaterThan</Operator>'
+                '<Field name="Last Updated">7195</Field>'
+                '<Value>2023-06-04T13:08:43.433385Z</Value>'
+                '<TimeZoneId>UTC Standard Time</TimeZoneId>'
+                '<IsTimeIncluded>TRUE</IsTimeIncluded>'
+                '</DateComparisonFilterCondition>'
+            )
+        }
+        from_time = datetime(2024, 12, 11)
+        expected_error_message = (
+            "The 'XML for fetch filtering' parameter either contains "
+            "a syntax error or is of type 'DateComparisonFilterCondition'."
+        )
+        with pytest.raises(ValueError, match=expected_error_message):
+            fetch_incidents(client, params, from_time, '204')
+
     def test_same_record_returned_in_two_fetches(self, mocker):
         """
         Given:
@@ -1077,6 +1141,129 @@ class TestArcherV2:
         else:
             assert not new_token_mocker.called
         assert soap_mocker.call_count == len(http_call_attempt_results)
+
+    @pytest.mark.parametrize(
+        'xml_document, blacklisted_tags, expected_is_valid',
+        [
+            pytest.param(
+                # Inputs ↓
+                '<DisplayField name="First Published">7194</DisplayField>',
+                [],
+                # Expected ↓
+                True,
+                id='Valid',
+            ),
+            pytest.param(
+                # Inputs ↓
+                '<ShowStatSummaries>false</ShowSummaries>',
+                [],
+                # Expected ↓
+                False,
+                id='Mismatched tags',
+            ),
+            pytest.param(
+                # Inputs ↓
+                '<ModuleCriteria><Module name="appname">5</Module></ModuleCriteria>',
+                ['ModuleCriteria'],
+                # Expected ↓
+                False,
+                id='Blacklisted tag',
+            ),
+        ]
+    )
+    def test_is_valid_xml(self, xml_document: str, blacklisted_tags: list[str], expected_is_valid: bool):
+        """
+        Given:
+            - A string that is meant to represent an XML document.
+        When:
+            - Calling is_valid_xml.
+        Assert:
+            - Ensure the result matches the XML validity.
+        """
+        is_valid = is_valid_xml(xml_document, blacklisted_tags)
+        assert is_valid == expected_is_valid
+
+    @pytest.mark.parametrize(
+        'condition_type, operator, field_name, field_id, search_value, expected_xml_condition',
+        [
+            pytest.param(
+                # Inputs ↓
+                FilterConditionTypes.date,
+                'GreaterThan',
+                'Last Updated',
+                '1234',
+                '2024-12-11T11:11:24.433385Z',
+                # Expected ↓
+                '<DateComparisonFilterCondition>'
+                '<Operator>GreaterThan</Operator>'
+                '<Field name="Last Updated">1234</Field>'
+                '<Value>2024-12-11T11:11:24.433385Z</Value>'
+                '</DateComparisonFilterCondition>',
+                id='Date greater than condition',
+            ),
+            pytest.param(
+                # Inputs ↓
+                FilterConditionTypes.text,
+                'Contains',
+                'Incident Priority',
+                '456',
+                'High',
+                # Expected ↓
+                '<TextFilterCondition>'
+                '<Operator>Contains</Operator>'
+                '<Field name="Incident Priority">456</Field>'
+                '<Value>High</Value>'
+                '</TextFilterCondition>',
+                id='Text contains condition',
+            ),
+        ]
+    )
+    def test_construct_generic_filter_condition(
+        self,
+        condition_type: FilterConditionTypes,
+        operator: str,
+        field_name: str,
+        field_id: str,
+        search_value: str,
+        expected_xml_condition: str
+    ):
+        """
+        Given:
+            - A filter condition with a comparison operator on a given field.
+        When:
+            - Calling construct_generic_filter_condition.
+        Assert:
+            - Ensure a valid condition XML element with the correct sub-elements.
+        """
+        xml_condition = construct_generic_filter_condition(
+            condition_type=condition_type,
+            operator=operator,
+            field_name=field_name,
+            field_id=field_id,
+            search_value=search_value,
+        )
+        assert xml_condition == expected_xml_condition
+
+    @pytest.mark.parametrize(
+        'logical_operator, conditions_count, expected_operator_logic',
+        [
+            pytest.param('or', 3, '<OperatorLogic>1 OR 2 OR 3</OperatorLogic>', id='OR with 3 conditions'),
+            pytest.param('AND', 4, '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>', id='AND with 4 conditions'),
+            pytest.param('XOR', 1, '', id='XOR with 1 condition'),
+        ]
+    )
+    def test_construct_operator_logic(self, logical_operator: str, conditions_count: int, expected_operator_logic: str):
+        """
+        Given:
+            - A logical operator and a conditions count.
+        When:
+            - Calling construct_operator_logic.
+        Assert:
+            - Cases 1 & 2: Ensure a valid OperatorLogic XML element with the correct inner text.
+            - Case 3: Ensure no operator logic since it is irrelevant for fewer than 2 conditions.
+        """
+        operator_logic = construct_operator_logic(logical_operator, conditions_count)
+        assert operator_logic == expected_operator_logic
 
     def test_upload_and_associate_command_record_has_attachments(self, mocker):
         """
