@@ -29,10 +29,10 @@ Gets events from DeCYFIR.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------| --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. Value should be between 1 - 1000. Default is 500. | Optional | 
+| limit | Maximum number of results to return. Value should be between 1 - 500. Default is 100.                                             | Optional | 
 
 #### Context Output
 

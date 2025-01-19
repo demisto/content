@@ -10,8 +10,9 @@ def util_load_json(path):
 
 def test_get_event_format(mocker):
     mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
-    mock_decyfir_dr_event_response = util_load_json('test_data/decyfir_dr_events_data.json')
     mock_pa_event_response = util_load_json('test_data/events_data.json')
+
+    mock_decyfir_dr_event_response = util_load_json('test_data/decyfir_dr_events_data.json')
     mock_dr_pa_event_response = util_load_json('test_data/dr_events_data.json')
     client = Client(
         base_url='test_url',

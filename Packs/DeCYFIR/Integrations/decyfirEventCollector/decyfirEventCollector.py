@@ -57,7 +57,7 @@ class Client(BaseClient):
                         "action_type": raw_data2.get("event_action", ""),
                         "asset_comments": raw_data2.get("asset_comments", ""),
                         "vendor": raw_data2.get("vendor", ""),
-                        "asset_type": raw_data2.get("asset_comments", ""),
+                        "asset_type": raw_data2.get("asset_type", ""),
                         "asset_name": raw_data2.get("asset_name", ""),
                         "modified_by": raw_data2.get("modified_by", ""),
                         "event_date": raw_data2.get("modified_date", ""),
