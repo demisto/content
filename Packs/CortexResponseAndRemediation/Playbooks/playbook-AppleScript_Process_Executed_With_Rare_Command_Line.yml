@@ -1145,7 +1145,7 @@ tasks:
       id: e30c2f55-4e28-41bd-8d51-55979a512d75
       version: -1
       name: Should quarantine the malicious/unsigned file?
-      description: Decide if the malicious or unsigned file should be quarantined based on the findings.
+      description: 'Checks if the verdict is malicious/unsigned+not prevalent was matched; if so, a quarantine approval will be prompt.'
       type: condition
       iscommand: false
       brand: ""
