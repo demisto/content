@@ -12,16 +12,19 @@ configuration:
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key
   name: apikey
   type: 4
   hidden: true
   required: false
+  section: Connect
 description: XQL Query Engine enables you to run XQL queries on your data sources.
 display: XQL Query Engine
 name: XQL Query Engine

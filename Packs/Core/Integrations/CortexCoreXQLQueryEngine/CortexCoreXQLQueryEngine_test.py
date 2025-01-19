@@ -1080,13 +1080,13 @@ def test_get_xql_quota_is_core_available_false(mock_http_request):
     with pytest.raises(DemistoException) as e:
         CLIENT.get_xql_quota({})
         ("Failed due to one of the following options: The integration is cloned, "
-                                   "please use only the built-in version since it can not be cloned."
-                                   " OR the Server version of the tenant is below"
-                                   " 8.7.0-1247804.")
+         "please use only the built-in version since it can not be cloned."
+         " OR the Server version of the tenant is below"
+         " 8.7.0-1247804.")
     assert e.value.message == ("Failed due to one of the following options: The integration is cloned, "
-                                   "please use only the built-in version since it can not be cloned."
-                                   " OR the Server version of the tenant is below"
-                                   " 8.7.0-1247804.")
+                               "please use only the built-in version since it can not be cloned."
+                               " OR the Server version of the tenant is below"
+                               " 8.7.0-1247804.")
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
@@ -1109,9 +1109,9 @@ def test_start_xql_query_is_core_available_false(mock_api_call):
     with pytest.raises(DemistoException) as e:
         CLIENT.start_xql_query({})
     assert e.value.message == ("Failed due to one of the following options: The integration is cloned, "
-                                   "please use only the built-in version since it can not be cloned."
-                                   " OR the Server version of the tenant is below"
-                                   " 8.7.0-1247804.")
+                               "please use only the built-in version since it can not be cloned."
+                               " OR the Server version of the tenant is below"
+                               " 8.7.0-1247804.")
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
@@ -1134,9 +1134,9 @@ def test_get_xql_query_results_is_core_available_false(mock_api_call):
     with pytest.raises(DemistoException) as e:
         CLIENT.get_xql_query_results({})
     assert e.value.message == ("Failed due to one of the following options: The integration is cloned, "
-                                   "please use only the built-in version since it can not be cloned."
-                                   " OR the Server version of the tenant is below"
-                                   " 8.7.0-1247804.")
+                               "please use only the built-in version since it can not be cloned."
+                               " OR the Server version of the tenant is below"
+                               " 8.7.0-1247804.")
 
 
 @patch('CoreXQLApiModule.demisto.debug')
