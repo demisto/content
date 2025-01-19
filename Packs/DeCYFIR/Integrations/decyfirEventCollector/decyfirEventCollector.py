@@ -23,16 +23,22 @@ EVENT_TYPES = [VAR_ACCESS_LOGS, VAR_ASSETS_LOGS, VAR_DR_KEYWORDS_LOGS]
 
 class Client(BaseClient):
 
-    def request_decyfir_api(self, event_type, request_params: dict) -> list[dict]:
-        response = self._http_request(
-            url_suffix=f"{VAR_EVENT_API_PATH_SUFFIX}/{event_type}", params=request_params,
-            resp_type='response',
-            method='GET')
+    def request_decyfir_events_api(self, event_type, request_params: dict) -> list[dict]:
+        try:
+            response = self._http_request(
+                url_suffix=f"{VAR_EVENT_API_PATH_SUFFIX}/{event_type}", params=request_params,
+                resp_type='response',
+                method='GET')
 
-        if response.status_code == 200 and response.content:
-            return response.json()
+            if response.status_code == 200 and response.content:
+                return response.json()
 
-        return []
+            return []
+            # Log exceptions
+        except Exception as e:
+            err = f'Failed to fetch the  DeCYFIR events error: {str(e)}'
+            return_error(err)
+            raise e
 
     def get_event_format(self, events_raw_data, event_type: str):
         final_data = []
@@ -78,21 +84,23 @@ class Client(BaseClient):
                 "after": after_val,
                 # "page": current_page
             }
-            response_data = self.request_decyfir_api(event_type, request_params)
+            response_data = self.request_decyfir_events_api(event_type, request_params)
             if response_data:
                 return self.get_event_format(response_data, event_type)
         return return_data
 
 
 def test_event_logs_command(client, decyfir_api_key):
-    url = VAR_EVENT_API_PATH_SUFFIX + "/" + VAR_ACCESS_LOGS + "?key=" + decyfir_api_key
-    response = client._http_request(url_suffix=url, method='GET', resp_type='response')
-    if response.status_code == 200:
+    try:
+        request_params = {
+            "key": decyfir_api_key,
+            "size": 1,
+        }
+        client.request_decyfir_events_api(request_params=request_params, event_type=VAR_ACCESS_LOGS)
         return 'ok'
-    elif response.status_code in [401, 403]:
-        return 'Not Authorized'
-    else:
-        return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
+    except Exception as e:
+        err = f'Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {e}'
+        raise DemistoException(f'Failed due to - {err}')
 
 
 def fetch_events(client: Client, decyfir_api_key: str, last_run, max_fetch, first_fetch) -> tuple[dict[str, str], list]:
@@ -141,7 +149,7 @@ def main():  # pragma: no cover
         client = Client(base_url=decyfir_url, verify=verify_certificate, proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_event_logs_command(client, decyfir_api_key)
+            result = test_event_logs_command(client=client, decyfir_api_key=decyfir_api_key)
             return_results(result)
 
         elif demisto.command() in ['fetch-events', 'get-decyfir-events']:
