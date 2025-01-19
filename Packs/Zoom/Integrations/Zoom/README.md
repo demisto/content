@@ -74,10 +74,8 @@ Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
    | User | /user:read:user:admin |
 ![enter image description here](../../doc_files/scope-premissions.png)
 
-6. Click **Local Test** > **Add** to test your app and authorize your Cortex XSOAR app.
+6. Click **Local Test** > **Add App Now** to test your app and authorize your Cortex XSOAR app.
    
- ![enter image description here](../../doc_files/test-zoom-app.gif)
-
 7. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
 
    1. **Endpoint URL Requirements:**
