@@ -803,8 +803,6 @@ def test_handle_big_fetch_selected_engines_no_alerts(mocker):
     assert len(results) == 4
 
 
-
-
 @pytest.mark.parametrize(
     "max_fetch_val, fetch_type_val, returned_alerts, returned_metadata",
     [
@@ -828,8 +826,7 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
      - The correct big or little fetch helper is used, and the results are combined with indexing.
     """
     from GCenter103 import (
-        fetch_selected_engines,
-        last_run_range
+        fetch_selected_engines
     )
 
     # 1) Patch last_run_range to avoid real datetime calls
