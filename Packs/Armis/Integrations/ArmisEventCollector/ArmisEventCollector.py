@@ -646,7 +646,8 @@ def main():  # pragma: no cover
                 handle_fetched_events(events, next_run)
 
             if should_return_results:
-                return_results(events_to_command_results(events=events, event_type=event_type.dataset_name))
+                return_results(events_to_command_results
+                               (events=events, event_type=event_type.dataset_name))  # pylint: disable=E0606
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')

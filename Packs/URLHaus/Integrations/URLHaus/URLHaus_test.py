@@ -1,6 +1,5 @@
 import json
 import pytest
-import io
 from CommonServerPython import Common
 from typing import *
 
@@ -14,7 +13,7 @@ params = {
 
 
 def util_load_json(path: str) -> Any:
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
