@@ -77,8 +77,7 @@ Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
 6. Click **Local Test** > **Add App Now** to test your app and authorize your Cortex XSOAR app.
    
 7. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
-
-   1. **Endpoint URL Requirements:**
+   1.  **Endpoint URL Requirements:**
 
      - According to the [Zoom requirements](https://developers.zoom.us/docs/api/webhooks/#webhook-endpoint-requirements) in order to receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
 
