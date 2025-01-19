@@ -9,7 +9,6 @@ from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
-from Packs.Slack.Integrations.SlackV3 import SlackV3
 from SlackV3 import get_war_room_url, parse_common_channels
 
 from CommonServerPython import *
