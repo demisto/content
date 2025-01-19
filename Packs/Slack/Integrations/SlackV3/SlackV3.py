@@ -106,9 +106,7 @@ IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 
 ''' HELPER FUNCTIONS '''
-def extensive_log(message):
-    if demisto.params().get('extensive_logging', False):
-        demisto.debug(message)
+
 
 def get_war_room_url(url: str) -> str:
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
@@ -402,6 +400,37 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
         return get_user_by_name_without_caching(user_to_search=user_to_search)
     else:
         return get_user_by_name_with_caching(user_to_search=user_to_search, add_to_context=add_to_context)
+
+
+def get_user_by_id(user_id: str) -> dict:
+    """
+    Retrieves a Slack user's details by user ID.
+
+    Args:
+        user_id: The user's unique ID in Slack.
+
+    Returns:
+        Formatted user results if a user is found.
+    """
+    if not user_id:
+        raise ValueError('User ID must be provided')
+
+    _body = {
+        'user': user_id
+    }
+    response = send_slack_request_sync(CLIENT, 'users.info', http_verb='GET', body=_body)
+    user = response.get('user', {})  # type: ignore
+
+    if not user:
+        err_str = format_user_not_found_error(user_id)
+        demisto.results({
+            'Type': WARNING_ENTRY_TYPE,
+            'Contents': err_str,
+            'ContentsFormat': formats['text']
+        })
+        return {}
+    else:
+        return format_user_results(user)
 
 
 def search_slack_users(users: Union[list, str]) -> list:
@@ -736,13 +765,13 @@ def mirror_investigation():
     private = argToBoolean(demisto.args().get('private', 'false'))
 
     investigation = demisto.investigation()
-    extensive_log(f'SlackV3 integration: This is the investigation - {investigation}')
+    demisto.debug(f'SlackV3 integration: This is the investigation - {investigation}')
 
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
         return_error('Can not perform this action in playground.')
 
     integration_context = get_integration_context(SYNC_CONTEXT)
-    extensive_log(f'SlackV3 integration: This is the integration context - {integration_context}')
+    demisto.debug(f'SlackV3 integration: This is the integration context - {integration_context}')
 
     if not integration_context or not integration_context.get('mirrors', []):
         mirrors: list = []
@@ -755,7 +784,7 @@ def mirror_investigation():
     channel_filter: list = []
     if channel_name:
         channel_filter = list(filter(lambda m: m['channel_name'] == channel_name, mirrors))
-        extensive_log(f'SlackV3 integration: This is the channel filter - {channel_filter}')
+        demisto.debug(f'SlackV3 integration: This is the channel filter - {channel_filter}')
 
     if not current_mirror:
         channel_name = channel_name or f'incident-{investigation_id}'
@@ -2580,11 +2609,16 @@ def kick_from_channel():
 
 
 def get_user():
-    user = demisto.args()['user']
+    user_input = demisto.args()['user']
 
-    slack_user = get_user_by_name(user)
+    # Check if the input might be an email or a user ID
+    if re.match(emailRegex, user_input):
+        slack_user = get_user_by_email(user_input)
+    else:
+        slack_user = get_user_by_id(user_input)
+
     if not slack_user:
-        err_str = format_user_not_found_error(user=user)
+        err_str = format_user_not_found_error(user=user_input)
         demisto.results({
             'Type': WARNING_ENTRY_TYPE,
             'Contents': err_str,
@@ -2600,7 +2634,7 @@ def get_user():
         'Email': profile.get('email')
     }
 
-    hr = tableToMarkdown('Details for Slack user: ' + user, result_user,
+    hr = tableToMarkdown('Details for Slack user: ' + user_input, result_user,
                          headers=['ID', 'Username', 'Name', 'DisplayName', 'Email'], headerTransform=pascalToSpace,
                          removeNull=True)
     context = {
