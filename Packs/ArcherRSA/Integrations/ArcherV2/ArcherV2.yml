@@ -27,8 +27,9 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: true
+  section: Connect
   type: 9
+  required: true
 - display: User domain
   name: userDomain
   section: Connect
