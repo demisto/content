@@ -68,11 +68,11 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
 
-        For Cortex.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
 
-        For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+        For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
 
-        For Cortex on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
 
         For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SearchIncidentsV2
@@ -394,16 +394,16 @@ tasks:
       version: -1
       name: Retrieve insights alerts for the agent ID
       description: |-
-        Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
+        Searches Cortex XSIAM alerts. A summarized version of this script is available with the summarizedversion argument.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
 
-        For Cortex.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
 
-        For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+        For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
 
-        For Cortex on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
 
         For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       scriptName: SearchIncidentsV2
@@ -567,7 +567,7 @@ tasks:
       description: |-
         **Approval Required: Suspicious Activity Detection**
 
-        The detection does not meet the thresholds for a definitive malicious verdict. It falls into a suspicious category based on the following conditions:
+        The investigation does not meet the thresholds for a definitive malicious verdict. It falls into a suspicious category based on the following conditions:
 
         **Matched Verdicts:**
         * Insights alerts indicating a suspicious activity found for the same agent ID.
@@ -964,7 +964,7 @@ tasks:
 
         The playbook was unable to quarantine the suspected file due to the following possible reasons:
 
-        - The file is not found or no longer exists on the local host.
+        - The file was not found or no longer exists on the local host.
         - The endpoint is currently disconnected.
 
         Please take manual action to terminate the causality process if needed and quarantine the file.
@@ -1030,7 +1030,7 @@ tasks:
       id: 8bfa2daf-8f92-4b36-86ab-d5aca7289056
       version: -1
       name: File quarantine
-      description: 'Quarantines a file on selected endpoints. '
+      description: Quarantines a file on selected endpoints.
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
