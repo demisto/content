@@ -197,7 +197,7 @@ script:
       description: Geographic ASN location of the IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.Geo.City
-      description: City of the IP address involved in the attack
+      description: City of the IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.Geo.Continent
       description: Continent of the IP address involved in the attack.
