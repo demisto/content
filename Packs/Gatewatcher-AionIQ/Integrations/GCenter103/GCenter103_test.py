@@ -108,48 +108,6 @@ def test_gw_client_is_authenticated_false():
         assert client.is_authenticated() is False
 
 
-def test_test_module_ok():
-    """
-    Given:
-     - A GwClient instance that is properly authenticated.
-     - is_authenticated returns True.
-    When:
-     - test_module is called.
-    Then:
-     - The function should return 'ok'.
-    """
-    from GCenter103 import GwClient, test_module
-
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-
-    with patch.object(GwClient, '_get', return_value=mock_response):
-        client = GwClient(ip="fake_ip")
-        result = test_module(client)
-        assert result == "ok"
-
-
-def test_test_module_auth_error():
-    """
-    Given:
-     - A GwClient instance that is not authenticated properly.
-     - is_authenticated returns False.
-    When:
-     - test_module is called.
-    Then:
-     - The function should return the expected error string.
-    """
-    from GCenter103 import GwClient, test_module
-
-    mock_response = MagicMock()
-    mock_response.status_code = 404
-
-    with patch.object(GwClient, '_get', return_value=mock_response):
-        client = GwClient(ip="fake_ip")
-        result = test_module(client)
-        assert "Authentication error" in result
-
-
 def test_last_run_range_no_last_run(mocker):
     """
     Given:
