@@ -221,8 +221,7 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-suffix
-
+    
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
