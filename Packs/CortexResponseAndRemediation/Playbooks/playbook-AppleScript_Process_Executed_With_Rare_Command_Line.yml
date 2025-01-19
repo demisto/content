@@ -61,7 +61,7 @@ tasks:
     task:
       id: 54fc54f0-02d2-489a-87e2-b8eb888d1d45
       version: -1
-      name: Retrieve all alert for the agent ID
+      name: Retrieve all alerts for the agent ID
       description: |-
         Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
 
@@ -751,7 +751,7 @@ tasks:
       - "25"
     scriptarguments:
       closeNotes:
-        simple: Malicious scheduled task detected
+        simple: A malicious activity of an AppleScript Process Executed With a Rare Command Line was identified and remediated.
       closeReason:
         simple: Resolved - Handled by the playbook "AppleScript Process Executed With Rare Command Line"
       id:
@@ -879,7 +879,7 @@ tasks:
         simple: |-
           Dear Analyst,
           Should perform quarantine on the suspected file?
-          ${${fileToQuarantine.path}
+          ${fileToQuarantine.path}
       methods: []
       format: ""
       bcc:
@@ -1037,7 +1037,7 @@ tasks:
       file_hash:
         simple: ${fileToQuarantine.sha256}
       file_path:
-        simple: ${${fileToQuarantine.path}
+        simple: ${fileToQuarantine.path}
       incident_id:
         complex:
           root: alert
