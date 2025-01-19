@@ -9,7 +9,7 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL | For example: https://192.168.0.1/rsaarcher, https://192.168.0.1/, or https://192.168.0.1/archer. | True |
-    | Advanced: API Endpoint | Change only if using another API endpoint. | True |
+    | API Endpoint | Change only if using another API endpoint. | True |
     | Username | | True |
     | Fetch incidents | | False |
     | Incident type | | False |

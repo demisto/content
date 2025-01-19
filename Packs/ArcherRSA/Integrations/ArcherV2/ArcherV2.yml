@@ -14,8 +14,10 @@ configuration:
   type: 0
 - additionalinfo: Change only if using another API endpoint.
   defaultvalue: api
-  display: 'Advanced: API Endpoint'
+  display: 'API Endpoint'
   name: api_endpoint
+  section: Connect
+  advanced: true
   type: 0
   required: false
 - display: Instance name
