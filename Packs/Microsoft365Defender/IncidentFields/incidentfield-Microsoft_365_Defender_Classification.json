@@ -38,7 +38,7 @@
         "InformationalExpectedActivity - LineOfBusinessApplication",
         "InformationalExpectedActivity - ConfirmedActivity",
         "InformationalExpectedActivity - Other",
-        "FalsePositive - Clean",
+        "FalsePositive - NotMalicious",
         "FalsePositive - NoEnoughDataToValidate",
         "FalsePositive - Other",
         "Unknown - NotAvailable"
