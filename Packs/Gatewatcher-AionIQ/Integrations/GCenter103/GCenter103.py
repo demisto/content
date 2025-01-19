@@ -1,17 +1,17 @@
-from typing import  (
+from typing import (
     Any
 )
 
-import demistomock as demisto  # noqa: F401 
-from CommonServerPython import *  # noqa: F401, F403 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401, F403
 import urllib3
 import json
-import os
 import requests
 from datetime import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
+
 
 class GwAPIException(Exception):
     """A base class from which all other exceptions inherit.
@@ -19,6 +19,7 @@ class GwAPIException(Exception):
     If you want to catch all errors that the gwapi_benedictine package might raise,
     catch this base exception.
     """
+
 
 class GwRequests:
     """Allows to easily interact with HTTP server.
@@ -59,7 +60,7 @@ class GwRequests:
         self.ip = ip
         self.headers = headers
         self.check_cert = check_cert
-        
+
         if proxy:
 
             d = handle_proxy(proxy_param_name='proxy')
@@ -125,11 +126,11 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,
-            json_data=json_data,
-            params=params,
-            headers=headers,
-            cookies=cookies,
+            data=data,  # type: ignore[arg-type]
+            json_data=json_data,  # type: ignore[arg-type]
+            params=params,  # type: ignore[arg-type]
+            headers=headers,  # type: ignore[arg-type]
+            cookies=cookies,  # type: ignore[arg-type]
             redirects=redirects
         )
         return requests.get(**kwargs)
@@ -156,11 +157,11 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,
-            json_data=json_data,
-            params=params,
-            headers=headers,
-            cookies=cookies,
+            data=data,  # type: ignore[arg-type]
+            json_data=json_data,  # type: ignore[arg-type]
+            params=params,  # type: ignore[arg-type]
+            headers=headers,  # type: ignore[arg-type]
+            cookies=cookies,  # type: ignore[arg-type]
             redirects=redirects,
             files=files
         )
@@ -188,11 +189,11 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,
-            json_data=json_data,
-            params=params,
-            headers=headers,
-            cookies=cookies,
+            data=data,  # type: ignore[arg-type]
+            json_data=json_data,  # type: ignore[arg-type]
+            params=params,  # type: ignore[arg-type]
+            headers=headers,  # type: ignore[arg-type]
+            cookies=cookies,  # type: ignore[arg-type]
             redirects=redirects,
             files=files
         )
@@ -219,14 +220,15 @@ class GwRequests:
         """
         kwargs = self._gen_request_kwargs(
             endpoint=endpoint,
-            data=data,
-            json_data=json_data,
-            params=params,
-            headers=headers,
-            cookies=cookies,
+            data=data,  # type: ignore[arg-type]
+            json_data=json_data,  # type: ignore[arg-type]
+            params=params,  # type: ignore[arg-type]
+            headers=headers,  # type: ignore[arg-type]
+            cookies=cookies,  # type: ignore[arg-type]
             redirects=redirects
         )
         return requests.delete(**kwargs)
+
 
 class GwClient(GwRequests):
     """Client class to interact with the service API."""
@@ -290,6 +292,7 @@ class GwClient(GwRequests):
             )
             return False
 
+
 def test_module(client: GwClient) -> str:  # noqa: E501
     """Tests API connectivity and authentication command.
 
@@ -305,6 +308,7 @@ def test_module(client: GwClient) -> str:  # noqa: E501
     else:
         return "Authentication error, please check ip/user/password/token: [ERROR]"
 
+
 def convert_event_severity(gw_sev: int) -> float:
 
     severity_map = {
@@ -315,6 +319,7 @@ def convert_event_severity(gw_sev: int) -> float:
     }
     return severity_map.get(gw_sev, 0)
 
+
 def gw_client_auth(params: dict) -> GwClient:
 
     ip = params.get("ip")
@@ -323,7 +328,7 @@ def gw_client_auth(params: dict) -> GwClient:
     password = params.get("credentials", {}).get("password", None)
     check_cert = params.get("check_cert", False)
 
-    client = GwClient(ip=ip, check_cert=check_cert)
+    client = GwClient(ip=ip, check_cert=check_cert)  # type: ignore[arg-type]
     client.auth(
         user=user if user != "" else None,
         password=password if password != "" else None,
@@ -332,11 +337,12 @@ def gw_client_auth(params: dict) -> GwClient:
 
     return client
 
+
 def last_run_range(params: dict[str, Any]) -> list[str]:
 
     from_to: list[str] = ["", ""]
     first_fetch = params.get('first_fetch', '1 day')
-    first_fetch_dt = arg_to_datetime(arg=first_fetch, arg_name='First fetch', required=True) # noqa: F405
+    first_fetch_dt = arg_to_datetime(arg=first_fetch, arg_name='First fetch', required=True)  # noqa: F405
 
     last_run = demisto.getLastRun()
     now = datetime.today()
@@ -344,7 +350,7 @@ def last_run_range(params: dict[str, Any]) -> list[str]:
 
     if last_run == {}:
 
-        first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds') + "Z"
+        first_fetch_dt_str = first_fetch_dt.isoformat(sep='T', timespec='milliseconds') + "Z"  # type: ignore[union-attr]
 
         from_to[0] = str(first_fetch_dt_str)
         from_to[1] = str(now_str)
@@ -359,6 +365,7 @@ def last_run_range(params: dict[str, Any]) -> list[str]:
 
         return from_to
 
+
 def query_es_alerts(client: GwClient,
                     query: dict[str, Any]) -> dict[Any, Any]:
 
@@ -370,24 +377,27 @@ def query_es_alerts(client: GwClient,
 
     return {}
 
-def query_es_metadata(client: GwClient, 
+
+def query_es_metadata(client: GwClient,
                       query: dict[str, Any]) -> dict[Any, Any]:
 
-    ret: requests.Response = client._post(endpoint="/api/v1/data/es/search/", params={"index": "engines_metadata"}, json_data=query)
-    res: dict [Any, Any] = ret.json()
+    ret: requests.Response = client._post(endpoint="/api/v1/data/es/search/",
+                                          params={"index": "engines_metadata"}, json_data=query)
+    res: dict[Any, Any] = ret.json()
 
     if len(res['hits']['hits']) > 0:
         return res['hits']['hits']
 
     return {}
 
-def handle_big_fetch_selected_engines(client: GwClient, 
-                                      query: dict[str, Any], 
-                                      engine_selection: list[str], 
-                                      max_fetch: int, 
+
+def handle_big_fetch_selected_engines(client: GwClient,
+                                      query: dict[str, Any],
+                                      engine_selection: list[str],
+                                      max_fetch: int,
                                       fetch_type: str):
 
-    gw_alerts = []
+    gw_alerts = []  # type: ignore[var-annotated]
     search_after_id_a: int = -1
 
     if fetch_type in ("Alerts", "Both"):
@@ -396,7 +406,7 @@ def handle_big_fetch_selected_engines(client: GwClient,
         query['query']['bool']['must'][0]['match']['event.module'] = str(engine_selection[0])
 
         res_a = query_es_alerts(client=client, query=query)
-        gw_alerts = res_a
+        gw_alerts = res_a  # type: ignore[assignment]
         search_after_id_a = gw_alerts[-1]['sort'][0]
 
         nb_req: int = max_fetch // 10000
@@ -434,19 +444,20 @@ def handle_big_fetch_selected_engines(client: GwClient,
 
     return gw_alerts
 
-def handle_big_fetch_empty_selected_engines(client: GwClient, 
-                                            query: dict[str, Any], 
-                                            max_fetch: int, 
+
+def handle_big_fetch_empty_selected_engines(client: GwClient,
+                                            query: dict[str, Any],
+                                            max_fetch: int,
                                             fetch_type: str):
 
     query['size'] = 10000
     search_after_id_a: int = -1
-    gw_alerts = []
+    gw_alerts = []  # type: ignore[var-annotated]
 
     if fetch_type in ("Alerts", "Both"):
 
         res_a = query_es_alerts(client=client, query=query)
-        gw_alerts = res_a
+        gw_alerts = res_a  # type: ignore[assignment]
         search_after_id_a = gw_alerts[-1]['sort'][0]
 
     nb_req: int = max_fetch // 10000
@@ -465,20 +476,21 @@ def handle_big_fetch_empty_selected_engines(client: GwClient,
 
     return gw_alerts
 
-def handle_big_fetch_metadata(client: GwClient, 
-                              query: dict[str, Any], 
-                              max_fetch: int, 
+
+def handle_big_fetch_metadata(client: GwClient,
+                              query: dict[str, Any],
+                              max_fetch: int,
                               fetch_type: str):
 
     query['size'] = 10000
 
     search_after_id_m: int = -1
-    gw_metadata = []
+    gw_metadata = []  # type: ignore[var-annotated]
 
     if fetch_type in ("Metadata", "Both"):
 
         res_m = query_es_metadata(client=client, query=query)
-        gw_metadata = res_m
+        gw_metadata = res_m  # type: ignore[assignment]
         search_after_id_m = gw_metadata[-1]['sort'][0]
 
     nb_req: int = max_fetch // 10000
@@ -495,12 +507,13 @@ def handle_big_fetch_metadata(client: GwClient,
 
     return gw_metadata
 
-def handle_little_fetch_alerts(client: GwClient, 
-                               fetch_type: str, 
-                               engine_selection: list[str], 
+
+def handle_little_fetch_alerts(client: GwClient,
+                               fetch_type: str,
+                               engine_selection: list[str],
                                query: dict[str, Any]):
 
-    gw_alerts = []
+    gw_alerts = []  # type: ignore[var-annotated]
 
     for i in range(0, len(engine_selection)):
 
@@ -512,8 +525,9 @@ def handle_little_fetch_alerts(client: GwClient,
 
     return gw_alerts
 
-def handle_little_fetch_empty_selected_engines(client: GwClient, 
-                                               fetch_type: str, 
+
+def handle_little_fetch_empty_selected_engines(client: GwClient,
+                                               fetch_type: str,
                                                query: dict[str, Any]):
 
     if fetch_type in ("Alerts", "Both"):
@@ -523,21 +537,23 @@ def handle_little_fetch_empty_selected_engines(client: GwClient,
 
     return gw_alerts
 
-def handle_little_fetch_metadata(client: GwClient, 
-                                 fetch_type: str, 
+
+def handle_little_fetch_metadata(client: GwClient,
+                                 fetch_type: str,
                                  query: dict[str, Any]):
 
-    gw_metadata = []
+    gw_metadata = []  # type: ignore[var-annotated]
 
     if fetch_type in ("Metadata", "Both"):
 
         res_m = query_es_metadata(client=client, query=query)
-        gw_metadata = res_m
+        gw_metadata = res_m  # type: ignore[assignment]
 
     return gw_metadata
 
-def index_alerts_incidents(to_index, 
-                           incidents, 
+
+def index_alerts_incidents(to_index,
+                           incidents,
                            params: dict[str, Any]):
 
     webui_link: str = "https://" + str(params['ip']) + "/ui/alerts?drawer=alert&drawer_uuid="
@@ -552,12 +568,12 @@ def index_alerts_incidents(to_index,
             'dbotMirrorId': str(to_index[i]['_source']['event']['id']),
             'labels': [
                 {
-                "value": str(to_index[i]['_source']['source']['ip']),
-                "type": "IP"
+                    "value": str(to_index[i]['_source']['source']['ip']),
+                    "type": "IP"
                 },
                 {
-                "value": str(to_index[i]['_source']['destination']['ip']), 
-                "type": "IP"
+                    "value": str(to_index[i]['_source']['destination']['ip']),
+                    "type": "IP"
                 }
             ],
             'rawJSON': json.dumps(to_index[i]['_source']),
@@ -589,7 +605,8 @@ def index_alerts_incidents(to_index,
 
     return incidents
 
-def index_metadata_incidents(to_index, 
+
+def index_metadata_incidents(to_index,
                              incidents):
 
     for i in range(0, len(to_index)):
@@ -647,6 +664,7 @@ def query_selected_engines_builder(max_fetch: int, engine_selection: list, from_
 
     return query
 
+
 def query_empty_selected_engines_builder(from_to: list, max_fetch: int) -> dict[str, Any]:
 
     query: dict[str, Any] = {
@@ -668,27 +686,28 @@ def query_empty_selected_engines_builder(from_to: list, max_fetch: int) -> dict[
 
     return query
 
-def fetch_selected_engines(client: GwClient, 
-                           engine_selection: list[str], 
-                           params: dict[str, Any], 
-                           max_fetch: int, 
-                           fetch_type: str, 
+
+def fetch_selected_engines(client: GwClient,
+                           engine_selection: list[str],
+                           params: dict[str, Any],
+                           max_fetch: int,
+                           fetch_type: str,
                            incidents):
 
     from_to: list[str] = last_run_range(params=params)
     query: dict[str, Any] = query_selected_engines_builder(max_fetch=max_fetch,
-                                                           engine_selection=engine_selection, 
+                                                           engine_selection=engine_selection,
                                                            from_to=from_to)
 
     if max_fetch > 10000:
 
-        gw_alerts = handle_big_fetch_selected_engines(client=client, 
-                                                      query=query, 
-                                                      engine_selection=engine_selection, 
-                                                      max_fetch=max_fetch, 
+        gw_alerts = handle_big_fetch_selected_engines(client=client,
+                                                      query=query,
+                                                      engine_selection=engine_selection,
+                                                      max_fetch=max_fetch,
                                                       fetch_type=fetch_type)
-        incidents_a = index_alerts_incidents(to_index=gw_alerts, 
-                                             incidents=incidents, 
+        incidents_a = index_alerts_incidents(to_index=gw_alerts,
+                                             incidents=incidents,
                                              params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
@@ -713,10 +732,11 @@ def fetch_selected_engines(client: GwClient,
 
         return incidents_a + incidents_m
 
-def fetch_empty_selected_engines(client: GwClient, 
-                                 max_fetch: int, 
-                                 fetch_type: str, 
-                                 incidents, 
+
+def fetch_empty_selected_engines(client: GwClient,
+                                 max_fetch: int,
+                                 fetch_type: str,
+                                 incidents,
                                  params: dict[str, Any]):
 
     from_to: list[str] = last_run_range(params=params)
@@ -752,7 +772,7 @@ def fetch_empty_selected_engines(client: GwClient,
 
 def fix_broken_list(params: Dict[str, Any]) -> List[str]:
 
-    if 'engine_selection' not in params or not isinstance(params['engine_selection'], (str, list)):
+    if 'engine_selection' not in params or not isinstance(params['engine_selection'], str | list):
 
         raise ValueError("Invalid 'engine_selection' parameter")
 
@@ -789,15 +809,15 @@ def fetch_incidents():
 
     client: GwClient = gw_client_auth(params=params)
 
-    incidents = []
+    incidents: list = []
 
     if len(engine_selection) > 0:
 
-        incidents = fetch_selected_engines(client=client, 
+        incidents = fetch_selected_engines(client=client,
                                            engine_selection=engine_selection,
-                                           params=params, 
-                                           max_fetch=max_fetch, 
-                                           fetch_type=fetch_type, 
+                                           params=params,
+                                           max_fetch=max_fetch,
+                                           fetch_type=fetch_type,
                                            incidents=incidents)
 
     else:
@@ -811,6 +831,7 @@ def fetch_incidents():
         demisto.setLastRun({'start_time': str(last_incident['occurred'])})
 
     demisto.incidents(incidents=incidents)
+
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
@@ -835,17 +856,18 @@ def main() -> None:
             token=token
         )
         if command == "test-module":
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 test_module(client=client)
-            ) 
+            )
         elif command == "fetch-incidents":
-            return_results( # noqa: F405
+            return_results(  # noqa: F405
                 fetch_incidents()
-            ) 
+            )
     except Exception as e:
-        return_error( # noqa: F405
+        return_error(  # noqa: F405
             f"Failed to execute {command} command.\nError: {str(e)}"
         )
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
