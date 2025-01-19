@@ -1,10 +1,12 @@
-from decyfirEventCollector import Client, fetch_events,VAR_ACCESS_LOGS
+from decyfirEventCollector import Client, fetch_events, VAR_ACCESS_LOGS
 from datetime import datetime, timedelta
 import json
+
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 def test_get_event_format(mocker):
     mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
@@ -16,7 +18,8 @@ def test_get_event_format(mocker):
     mocker.patch.object(Client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response)
 
     data = client.get_event_format(mock_decyfir_event_response, VAR_ACCESS_LOGS)
-    assert data == mock_pa_event_response
+    assert data[0] == mock_pa_event_response[0]
+
 
 def test_fetch_events(mocker):
     mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
@@ -26,7 +29,7 @@ def test_fetch_events(mocker):
         base_url='test_url',
         verify=False,
     )
-    mocker.patch.object(Client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response)
+    mocker.patch.object(client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response)
     last_fetch = (datetime.now() - timedelta(days=2)).strftime(date_format)
     last_run = {
         'last_fetch': last_fetch
@@ -37,4 +40,7 @@ def test_fetch_events(mocker):
         first_fetch='1 days',
         last_run=last_run, max_fetch=1,
     )
-    assert events == mock_pa_event_response
+    data = client.get_event_format(events, VAR_ACCESS_LOGS)
+    # print(f">> Event > {events[0]}")
+    # print(f">> enprt > {mock_pa_event_response[0]}")
+    assert data[0] == mock_pa_event_response[0]

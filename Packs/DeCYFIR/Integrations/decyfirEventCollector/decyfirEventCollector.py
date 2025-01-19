@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any
 import urllib3
 
 urllib3.disable_warnings()
@@ -49,9 +48,9 @@ class Client(BaseClient):
                         "event_date": raw_data1.get("event_date", "")
                     }
                     final_data.append(data)
-            elif event_type == VAR_ACCESS_LOGS or event_type == VAR_DR_KEYWORDS_LOGS:
+            elif event_type in (VAR_ACCESS_LOGS, VAR_DR_KEYWORDS_LOGS):
                 for raw_data2 in events_raw_data:
-                    event_type1 = "Asset Logs" if event_type == VAR_ACCESS_LOGS else "Digital Risk Keywards Logs"
+                    event_type1 = "Asset Logs" if event_type == VAR_ACCESS_LOGS else "Digital Risk Keywords Logs"
                     data = {
                         # "id": str(uuid.uuid4()),
                         "event_type": event_type1,
