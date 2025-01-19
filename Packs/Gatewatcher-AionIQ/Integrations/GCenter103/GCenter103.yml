@@ -45,6 +45,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Connect
 - name: fetch_type
   display: Fetch incidents from type
   defaultvalue: Alerts
@@ -54,6 +55,7 @@ configuration:
   - Metadata
   - Both
   required: false
+  section: Collect
 - name: engine_selection
   display: Engine alerts selection
   type: 16
@@ -68,6 +70,7 @@ configuration:
   - ransomware_detect
   - beacon_detect  
   required: false
+  section: Collect
 - defaultvalue: 1 day
   display: First fetch
   name: first_fetch
