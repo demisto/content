@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
 import traceback
 import json
 
@@ -156,13 +155,13 @@ def gatewatcherAlertEngine() -> CommandResults:
         ret_fields['beacon.session_count'] = d['beacon']['session_count']
         ret_fields['beacon.type'] = d['beacon']['type']
 
-    results = CommandResults(raw_response = ret_fields)
-    return_results(results)
+    return CommandResults(raw_response=ret_fields)
 
 
 def main():
     try:
-        gatewatcherAlertEngine()
+        return_results(gatewatcherAlertEngine())
+
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute Gate. Error: {str(ex)}')
