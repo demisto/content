@@ -1,0 +1,2 @@
+!msgraph-apps-service-principal-remove id=4d77f5f1-ec0b-482c-a4ae-1df6a50f19c2
+!msgraph-apps-service-principal-list limit=1

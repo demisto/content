@@ -1,0 +1,1 @@
+!gsuite-activity-search application_name=admin max_results=2

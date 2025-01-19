@@ -1,0 +1,1 @@
+!majesticmillion-get-indicators limit=4

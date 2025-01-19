@@ -1,0 +1,16 @@
+!lgtm-add-project repository="https://github.com/my-devsecops/moon"
+!lgtm-create-query-job language=python project-id=1511896439667 query-list=${lists.CodeQL-Queries-SQL_Injection}
+!lgtm-get-alerts analysis-id=1977acc9cbeb31c5fb106de40600a365061506e9
+!lgtm-get-analysis analysis-id=c8996fdd9968066cd410eda9deffdfdcca550e14
+!lgtm-get-analysis-for-commit commit-id=b1b136e071533d78053be506d32f79417651727d project-id=1511925128331
+!lgtm-get-code-review review-id=525d2cd0df76e6ba1e5a47c920b61cacb8e4068e
+!lgtm-get-project project-id=1512319787549
+!lgtm-get-project-by-url-identifier name=moon org=my-devsecops provider=g
+!lgtm-get-project-config project-id="1511896439667"
+!lgtm-get-projects limit=10
+!lgtm-get-query-job queryjob-id=2651230846634222938
+!lgtm-get-query-job-results-for-project project-id=1511896439667 queryjob-id=2651230846634222938
+!lgtm-get-query-job-results-overview queryjob-id=206061421522356021
+!lgtm-get-version
+!lgtm-request-analysis commit=b1b136e071533d78053be506d32f79417651727d project-id=1511925128331 language=python
+!lgtm-request-review project-id=1512319787549 base=405fc6ea44910177f48db9b2eb6839efb4211743 external-id=49  patch-entry-id=478@ed5c5f6c-726a-4e62-85dc-8b1aad179194

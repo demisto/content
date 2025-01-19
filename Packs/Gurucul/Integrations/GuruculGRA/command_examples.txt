@@ -1,0 +1,23 @@
+!gra-fetch-users page=1 max=25
+!gra-fetch-accounts page=1 max=25
+!gra-fetch-active-resource-accounts resource_name="Linux"  page=1 max=25
+!gra-fetch-user-accounts employee_id="AB1234"  page=1 max=25
+!gra-fetch-resource-highrisk-accounts resource_name="Linux"  page=1 max=25
+!gra-fetch-hpa  page=1 max=25
+!gra-fetch-resource-hpa resource_name="Linux"  page=1 max=25
+!gra-fetch-orphan-accounts  page=1 max=25
+!gra-fetch-resource-orphan-accounts resource_name="Linux"  page=1 max=25
+!gra-user-activities employee_id="AB1234"  page=1 max=25
+!gra-fetch-users-details employee_id="AB1234"
+!gra-highRisk-users  page=1 max=25
+!gra-cases status="OPEN" page=1 max=25
+!gra-user-anomalies employeeId="AB1234"  page=1 max=25
+!gra-case-action action=closeCase caseId=1 subOption="True Incident" caseComment=Done
+!gra-case-action action=modelReviewCase caseId=2 subOption="Tuning Required" caseComment=Done
+!gra-case-action action=riskManageCase caseId=3 subOption="Correct Detection" caseComment=Done riskAcceptDate=2021-05-12
+!gra-case-action-anomaly action=closeCaseAnomaly caseId=4 anomalyNames=anomalyNames subOption="True Incident" caseComment=Done
+!gra-case-action-anomaly action=modelReviewCaseAnomaly caseId=5 anomalyNames=anomalyName1,anomalyName2 subOption="Tuning Required" caseComment="This is Completed"
+!gra-case-action-anomaly action=riskAcceptCaseAnomaly caseId=6 anomalyNames=anomalyName subOption="Correct Detection" caseComment=Done riskAcceptDate=2021-05-12
+!gra-investigate-anomaly-summary modelName=ModelName
+!gra-analytical-features-entity-value modelName=ModelName entityValue=EntityValue
+!gra-validate-api

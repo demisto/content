@@ -1,0 +1,26 @@
+!cbd-create-policy description=`This is Demisto's test policy` name=`Demisto test policy` priorityLevel=HIGH policy=`{}`
+!cbd-get-policies
+!cbd-get-policy policyId=1234
+!cbd-set-policy policy=1234 keyValue=`{"policyInfo": {"description": "update example", "name": "demisto test1", "id": 1234, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}`
+!cbd-update-policy id=1234 description=`This is Demisto's test policy after an update` name=`Demisto test policy` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}`
+!cbd-delete-policy policyId=1234
+!cbd-add-rule-to-policy action=TERMINATE operation=MODIFY_SYSTEM_EXE required=true type=REPUTATION value=COMPANY_BLACK_LIST policyId=1234
+!cbd-update-rule-in-policy action=TERMINATE operation=MODIFY_SYSTEM_EXE required=false id=1 type=REPUTATION value=COMPANY_BLACK_LIST policyId=1234
+!cbd-delete-rule-from-policy policyId=1234 ruleId=1
+!cbd-find-events alert_category=THREAT blocked_hash=1234567890abcdef device_external_ip=1.2.3.4 device_id=1234 device_internal_ip=1.2.3.4 device_name=example device_os=MACevent_type=childproc parent_hash=1234567890abcdef parent_name=example parent_reputation=ADAPTIVE_WHITE_LIST process_cmdline=/bin/bash/usr/sbin/ksmtuned process_guid=ABCD1234-0002b226-00001615-00000000-1d6225bbba74c00 process_hash=c78655bc80301d76ed4fef1c1ea40a7d process_name=c:\\windows\\system32\\svchost.exe process_pid=`[1234, 5678]` process_reputation=ADAPTIVE_WHITE_LIST process_start_time=2020-05-04T21:34:03.968Z process_terminated=false process_username=`["root"]` query=chrome rows=20 sensor_action=SUSPEND start=0 time_range=`{"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}`
+!cbd-find-events-results job_id=6b414c3e-c664-45ea-bb69-3aabf4430f7e
+!cbd-find-events-details event_ids=`["1dac44ffe96111ea9759353269fbac39"]`
+!cbd-find-events-details-resultsn job_id=6b414c3e-c664-45ea-bb69-3aabf4430f7e
+!cbd-find-processes alert_category=THREAT blocked_hash=1234567890abcdef device_external_ip=1.2.3.4 device_id=1234 device_internal_ip=1.2.3.4 device_name=example device_os=MAC device_timestamp=2020-01-19T04:28:40.190Z event_type=childproc parent_hash=1234567890abcdef parent_name=example parent_reputation=ADAPTIVE_WHITE_LIST process_cmdline=/bin/bash/usr/sbin/ksmtuned process_guid=ABCD1234-0002b226-00001615-00000000-1d6225bbba74c00 process_hash=c78655bc80301d76ed4fef1c1ea40a7d process_name=c:\\windows\\system32\\svchost.exe process_pid=`[1234, 5678]` process_reputation=ADAPTIVE_WHITE_LIST process_start_time=2020-05-04T21:34:03.968Z process_terminated=false process_username=`["root"]` query=chrome rows=20 sensor_action=SUSPEND start=0 time_range=`{"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}`
+!cbd-find-processes-results job_id=6b414c3e-c664-45ea-bb69-3aabf4430f7e
+!cbd-alerts-search category=MONITORED device_id=1234 device_username=example first_event_time=`{"end": "2015-01-20T10:40:00.00Z", "start": "2010-09-25T00:10:50.277Z"}` policy_id=1234 process_sha256=`["131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267"]` query=chrome reputation=KNOWN_MALWARE rows=5 start=0 tag=`["string"]` type=all
+!cbd-get-alert-details alertId=225219783948647d55b11e9962bf3b07592c207
+!cbd-device-search device_id=1234 end_time=2015-01-20T10:40:00.00Z os=MAC query=chrome rows=10 start_time=2010-01-20T10:40:00.00Z status=DEREGISTERED target_priority=HIGH
+!cbd-device-quarantine device_id=1234
+!cbd-device-unquarantine device_id=1234
+!cbd-device-background-scan device_id=1234
+!cbd-device-background-scan-stop device_id=1234
+!cbd-device-bypass device_id=1234
+!cbd-device-unbypass device_id=1234
+!cbd-device-policy-update device_id=1234 policy_id=1234
+!cbd-device-update-sensor-version device_id=1234 sensor_version={\"AMAZON_LINUX\":\"1.2.3.4\"}

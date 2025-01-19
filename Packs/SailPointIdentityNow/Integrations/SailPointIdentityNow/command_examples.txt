@@ -1,0 +1,24 @@
+!identitynow-search-identities query=id:2c918084740346d5017408d79229489e
+
+!identitynow-get-accounts id=2c918084740346d30174088afa6d625e
+!identitynow-get-accounts name=Testy.Testerson
+!identitynow-get-accounts native_identity=41263
+
+!identitynow-get-accountactivities id=4fcac89c839f4e4dbeef2810a435f9f6
+!identitynow-get-accountactivities requested_by=2c91808363f06ad80163fb690fae55b8
+!identitynow-get-accountactivities requested_for=2c91808363f06ad80163fb690fae55b8
+!identitynow-get-accountactivities regarding_identity=2c91808a6fca28a6016fd7f5ec3f5228
+!identitynow-get-accountactivities type=appRequest
+!identitynow-get-accountactivities requested_by=2c91808363f06ad80163fb690fae55b8 requested_for=2c91808a6fca28a6016fd7f5ec3f5228
+
+!identitynow-search-accessprofiles query=id:2c91808a700d408901701223fb6b0077
+
+!identitynow-search-roles query=id:2c9180846ff9c50201700beb2e9000da
+
+!identitynow-search-entitlements query=id:2c9180846ff7e56b01700bb399f60eaa
+
+!identitynow-search-events query=id:2bd61299-d986-4c27-bd37-408b9c9ba118
+
+!identitynow-request-grant requested_for=2c9180886ccef167016cdb658fb6547a requested_item=2c918086775e1f5d01776530eb67037b requested_item_type=ACCESS_PROFILE comment=PAN_XSOAR_TEST
+
+!identitynow-request-revoke requested_for=2c9180886ccef167016cdb658fb6547a requested_item=2c918086775e1f5d01776530eb67037b requested_item_type=ACCESS_PROFILE comment=PAN_XSOAR_TEST

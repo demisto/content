@@ -1,0 +1,62 @@
+!ctix-get-indicator-details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-indicator-observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-conversion-feed-source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-indicator-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-indicator-tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-saved-searches
+!ctix-get-server-collections
+!ctix-get-threat-data query=type=indicator
+!ctix-get-allowed-iocs q=type=indicator
+!ctix-add-analyst-score data={\"analyst_score\":10} object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator
+!ctix-add-analyst-tlp object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator data={\"analyst_tlp\":\"GREEN\"}
+!ctix-add-indicator-as-false-positive object_ids=19176d96-716d-48aa-af15-dfeff22e72e2,531e47a6-d7cd-47be-ae21-a3260518d4a5 object_type=indicator
+!ctix-add-tag-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372
+!ctix-remove-tag-from-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372
+!ctix-create-tag tag_name=xsoar_test_trial color_code=#95A1B1
+!ctix-search-for-tag q=xsoar_test_trial
+!ctix-delete-tag tag_name=xsoar_test_trial
+!ctix-get-tags
+!ctix-deprecate-ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
+!ctix-ioc-manual-review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
+!ctix-remove-allowed-ioc ids=7a33a7ac-ab54-412f-a725-f35c208a54ea
+!ctix-get-lookup-threat-data object_names=example.com, test.com object_type=indicator
+!ctix-get-create-threat-data object_names=example.com,8.8.8.8,zzzzz collection=anotherone source=testing
+!ctix-get-actions action_type=manual object_type=indicator
+!ctix-saved-result-set label_name=test query=type=indicator
+!ctix-allowed-iocs reason=test type="ipv4-addr" values=127.0.0.1,127.0.0.2
+!ctix-make-request type=POST endpoint=ingestion/notes/ body="{
+    \"text\": \"this is the old text\",
+    \"type\": \"threatdata\",
+    \"meta_data\": {
+        \"component\": \"threatdata\",
+        \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\",
+        \"type\": \"indicator\"
+    },
+    \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\"
+}"
+!ctix-make-request type=GET endpoint=ingestion/notes/ params="{\"page\": 1, \"page_size\": 25}"
+!ctix-make-request type=PUT endpoint=ingestion/notes/474d1cab-5468-4252-b882-021aa6f3b1c3/ body="{
+    \"text\": \"this is the new text\",
+    \"type\": \"threatdata\",
+    \"meta_data\": {
+        \"component\": \"threatdata\",
+        \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\",
+        \"type\": \"indicator\"
+    },
+    \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\"
+}"
+!ctix-make-request type=DELETE endpoint=ingestion/notes/821ee475-1ecf-499c-bbe5-a3708c432d89/
+!ctix-get-all-notes
+!ctix-get-note-details id="d0fdd122-9a1b-46a8-ac4e-bdb1de321e68"
+!ctix-get-note-details id="fake"
+!ctix-update-note id="d0fdd122-9a1b-46a8-ac4e-bdb1de321e68" text="this is a test"
+!ctix-update-note id="d0fdd122-9a1b-46a8-ac4e-bdb1de321e68" object_id="2f9c2881-0c72-4ad3-b0a1-068f9bb03dbc"
+!ctix-update-note id="d0fdd122-9a1b-46a8-ac4e-bdb1de321e68" object_id="2f9c2881-0c72-4ad3-b0a1-068f9bb03dbc" object_type=indicator
+!ctix-update-note id="d0fdd122-9a1b-46a8-ac4e-bdb1de321e68" object_id="fake" object_type=indicator
+!ctix-create-note text="hello world x100"
+!ctix-create-note text="hello world x100" object_id="2f9c2881-0c72-4ad3-b0a1-068f9bb03dbc"
+!ctix-create-note text="hello world x100" object_id="2f9c2881-0c72-4ad3-b0a1-068f9bb03dbc" object_type=indicator
+!ctix-create-note text="hello world x100" object_id="fake" object_type=indicator
+!ctix-delete-note id=fake
+!ctix-delete-note id=5437b392-e60b-48ee-bbbb-6366c2a3c29f
+!ctix-get-vulnerability-data cve="CVE-2021-44228"

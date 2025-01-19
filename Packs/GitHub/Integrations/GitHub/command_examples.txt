@@ -1,0 +1,6 @@
+!GitHub-search-code query="create_artifacts+repo:demisto/demisto-sdk" page_size="2" limit="5"
+!GitHub-list-branch-pull-requests branch_name=Update-Docker-Image
+!GitHub-get-path-data organization=demisto repository=content relative_path=Packs/BitcoinAbuse/Integrations/BitcoinAbuse
+!GitHub-releases-list limit=1
+!GitHub-trigger-workflow workflow=nightly.yml
+!GitHub-list-workflows workflow=nightly.yml limit=1

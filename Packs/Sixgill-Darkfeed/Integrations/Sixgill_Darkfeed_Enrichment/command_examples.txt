@@ -1,0 +1,6 @@
+!ip ip=8.8.8.8
+!url url=www.url.com
+!domain domain=url.com
+!file file=8a1cfdd51d39f97dac37cc58b3c2d74a
+!sixgill-get-actor actor=actor
+!sixgill-get-post-id post_id=a1a84d0b5e5c34e6ffb1108c6f9a5122c88dc594

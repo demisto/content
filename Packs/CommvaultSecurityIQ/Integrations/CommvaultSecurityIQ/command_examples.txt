@@ -1,0 +1,7 @@
+!commvault-security-set-disable-data-aging
+!commvault-security-get-generate-token
+!commvault-security-set-disable-saml-provider
+!commvault-security-get-copy-files-list-to-war-room
+!commvault-security-set-disable-user user_email='dummy@company.com'
+!commvault-security-get-generate-token
+!commvault-security-set-cleanroom-add-vm-to-recovery-group vm_name='vmname' clean_recovery_point='02:12:2024 21:00:00'

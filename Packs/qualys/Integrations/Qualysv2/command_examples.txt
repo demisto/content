@@ -1,0 +1,46 @@
+!qualys-vm-scan-launch scan_title=new target_from=assets ip=1.1.1.1 exclude_ip_per_scan=1.1.1.2 priority=4 option_title=Test2
+!qualys-ip-add ips=1.1.2.3 enable_pc=0 enable_vm=1 comment="Adding a new IP address"
+!qualys-ip-update ips=1.1.1.1 comment="Updating IP"
+!qualys-virtual-host-manage action=create ip=1.1.1.1 port=1291 fqdn=qualys-test.com
+!qualys-host-excluded-manage action=add comment="adding hosts" ips=1.1.1.1,1.1.2.1 expiry_days=2
+!qualys-vulnerability-list published_after=2021-04-01 published_before=2021-04-20 details=Basic is_patchable=1
+!qualys-vm-scan-fetch scan_ref=scan/1615886852.37638 ips=1.1.1.1 mode=brief
+!qualys-pc-scan-fetch scan_ref=compliance/1619019653.71885
+!qualys-report-list state=Finished expires_before_datetime=2021-05-01
+!qualys-ip-list ips=1.1.1.1-1.1.1.5 compliance_enabled=1 certview_enabled=1
+!qualys-vm-scan-list launched_before_datetime=2021-04-20 type=API processed=1 state=Finished
+!qualys-ip-restricted-list
+!qualys-host-excluded-list ips=1.1.1.1
+!qualys-report-fetch id=9470594 file_format=pdf
+!qualys-report-cancel id=9202443
+!qualys-scorecard-launch name="Most Prevalent Vulnerabilities Report" output_format=pdf all_asset_groups=1 source=asset_groups
+!qualys-group-list title=All
+!qualys-report-launch-compliance-policy template_id=1528886 output_format=pdf policy_id=1772919
+!qualys-report-launch-remediation output_format=pdf template_id=1528884 report_title=remediation ips=1.1.1.1
+!qualys-report-launch-patch output_format=pdf template_id=1528875 ips=1.1.1.1 report_title="patch report"
+!qualys-report-launch-compliance output_format=pdf template_id=1528877 ips=1.1.1.1
+!qualys-report-launch-scan-based-findings output_format=pdf report_refs=scan/1621951157.94402 template_id=2339987
+!qualys-report-launch-host-based-findings output_format=pdf template_id=2339987 ips=1.1.1.1
+!qualys-report-delete id=9470634
+!qualys-vm-scan-action action=delete scan_ref=scan/1621954927.94968
+!qualys-pc-scan-list scan_ref=compliance/1619018638.71779 processed=1 state=Finished
+!qualys-pc-scan-launch ip=1.1.1.1 option_title=test1
+!qualys-pc-scan-manage action=delete scan_ref=compliance/1622106967.13620
+!qualys-schedule-scan-list active=0 id=130694
+!qualys-host-list show_tags=1 vm_scan_since=2021-04-01
+!qualys-virtual-host-list ip=1.1.1.1 port=1231
+!qualys-scheduled-report-list id=8084468 is_active=1
+!qualys-scheduled-report-launch id=8084468
+!qualys-report-template-list
+!qualys-report-launch-map domain=qualys-test.com output_format=xml report_refs=map/1618151844.78754 template_id=1528888
+!qualys-ip-restricted-manage action=add ips=5.2.8.9
+!qualys-scap-scan-list action=list
+!qualys-host-list-detection truncation_limit=2
+!qualys-host-update ids=35700896 new_comment=comment
+!qualys-asset-group-add title=Test-Asset-Group123 ips="1.1.1.1"
+!qualys-asset-group-edit id=2886258 add_ips="1.1.1.1"
+!qualys-asset-group-delete id=2886258
+!qualys-schedule-scan-create option_title="Initial Options" scan_title="TestScheduleScan123" start_date=12/15/2023 start_hour=2 start_minute=2 time_zone_code=US-CA asset_group_ids=493238 frequency_days=1 default_scanner=1
+!qualys-schedule-scan-update id=783969 active=0
+!qualys-schedule-scan-delete id=783969
+!qualys-time-zone-code

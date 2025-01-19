@@ -1,0 +1,15 @@
+!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2
+
+!exabeam-platform-case-search limit=2 end_time="2 day ago" start_time="5 day ago" fields="priority,alertName,case_id" order_by="alertName ASC" include_related_rules=True all_results=False query=priority:LOW
+!exabeam-platform-case-search case_id=123
+
+!exabeam-platform-alert-search limit=2 all_results=False start_time="8 day ago" end_time="1 day ago" fields=priority,alertName,alert_id order_by=alertName include_related_rules=True query=priority:CRITICAL
+!exabeam-platform-alert-search alert_id=123
+
+!exabeam-platform-context-table-list limit=2 include_attributes=True
+!exabeam-platform-context-table-list table_id=123
+
+!exabeam-platform-table-record-list table_id=123 limit=2
+!exabeam-platform-table-record-create table_id=123 attributes=`{"attributeName":["val1","val2"]}` interval_in_seconds=2
+
+!exabeam-platform-context-table-delete table_id=123

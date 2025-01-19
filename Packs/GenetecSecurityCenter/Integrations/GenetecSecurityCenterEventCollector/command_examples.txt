@@ -1,0 +1,1 @@
+!genetec-security-center-get-events should_push_events=false limit=1

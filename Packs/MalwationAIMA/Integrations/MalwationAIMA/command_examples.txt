@@ -1,0 +1,6 @@
+!aima-upload-sample environment=win7x64 isPublic=true  entry_id=79@4
+!aima-get-result uuid=79@4
+!aima-cap-static-upload-sample entry_id=571@7d
+!aima-cap-mav-upload-sample entry_id=571@7d
+!aima-cap-static-get-submission uuid=407aa78e-cd1c-4568-b1e2-616fce50cacc
+!aima-cap-mav-upload-sample entry_id=571@7d

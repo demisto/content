@@ -1,0 +1,11 @@
+!pingone-unlock-user username=emma.sharp
+!pingone-deactivate-user username=emma.sharp
+!pingone-activate-user username=emma.sharp
+!pingone-set-password username=emma.sharp password=OnePing123!
+!pingone-get-groups username=emma.sharp
+!pingone-get-user username=emma.sharp
+!pingone-create-user username=richard.smith populationId=4cd45bdb-0eb2-42fe-8475-4bcd908269f1
+!pingone-update-user username=richard.smith phoneNumber=604-998-7766
+!pingone-add-to-group username=richard.smith groupName=Sales
+!pingone-remove-from-group username=richard.smith groupName=Sales
+!pingone-delete-user username=richard.smith

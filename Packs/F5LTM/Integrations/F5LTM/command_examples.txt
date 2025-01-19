@@ -1,0 +1,11 @@
+!f5-ltm-get-pools expand="false"
+!f5-ltm-get-pool pool_name="XSOAR"
+!f5-ltm-get-pool-members pool_name="XSOAR"
+!f5-ltm-get-pool-member-stats pool_name="XSOAR" member_name="XSOAR1:443"
+!f5-ltm-get-pool-by-node node_name="XSOAR1"
+!f5-ltm-get-nodes
+!f5-ltm-get-node node_name="Test"
+!f5-ltm-get-node-by-address ip_address="10.10.10.102"
+!f5-ltm-get-node-stats node_name="XSOAR1"
+!f5-ltm-enable-node node_name="XSOAR1"
+!f5-ltm-disable-node node_name="XSOAR1"

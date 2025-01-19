@@ -1,0 +1,5 @@
+meraki-fetch-organizations
+meraki-fetch-networks organizationId=828552
+meraki-get-organization-license-state organizationId=828552
+meraki-fetch-organization-inventory organizationId=828552
+meraki-fetch-devices networkId=N_645140646620837008

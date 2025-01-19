@@ -1,0 +1,17 @@
+!sysaid-table-list list_id=known_error
+!sysaid-asset-list fields=all
+!sysaid-asset-search query=Test fields=all
+!sysaid-filter-list fields=all
+!sysaid-user-list fields=all
+!sysaid-user-search query=dmst fields=all
+!sysaid-service-record-list type=all fields=all
+!sysaid-service-record-search type=all query=test fields=all
+!sysaid-service-record-update id=6 status=2
+!sysaid-service-record-close id=6 solution="Closing via API call"
+!sysaid-service-record-template-get type=incident fields=all
+!sysaid-service-record-create type=request description="This is a test" title="Test SR from API" sr_type=6 fields=all
+!sysaid-service-record-delete ids=2,32
+!sysaid-service-record-delete-file id=25 file_id=534492489_354835714
+!sysaid-service-record-get id=25 fields=all
+!sysaid-service-record-add-note id=25 note=`this is a new note`
+!sysaid-service-record-attach-file file_id=110@51d40811-801a-4b26-8861-68474c40b347 id=25

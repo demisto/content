@@ -1,0 +1,15 @@
+!arkime-connection-list baseline_date=720 start_time=1648817940 stop_time=1649595540
+!arkime-connection-csv-get start_time=1648817940 stop_time=1649595540
+!arkime-pcap-file-list limit=2
+!arkime-session-list start_time=1650190238 stop_time=1650363038 limit=2
+!arkime-session-csv-get start_time=1650190238 stop_time=1650363038 limit=2
+!arkime-session-pcap-get ids=220516-QHSdz21pJ_xCtJGoL8mbmyNv
+!arkime-spigraph-get field=220516-QHSdz21pJ_xCtJGoL8mbmyNv
+!arkime-spiview-get spi=220516-QHSdz21pJ_xCtJGoL8mbmyNv
+!arkime-field-list
+!arkime-unique-field-list expression_field_names=dns.ASN counts=0 limit=2
+!arkime-unique-field-list expression_field_names=dns.ASN counts=1 limit=2
+!arkime-multi-unique-field-list expression_field_names=destination.ip counts=1 database_field=dns.ASN limit=2
+!arkime-multi-unique-field-list expression_field_names=destination.ip counts=0 database_field=dns.ASN limit=2
+!arkime-session-tag-add tags=test ids=220425-L2AXYh6W4UJOSqilt0i3iDIL segments=time
+!arkime-session-tag-remove tags=test ids=220425-L2AXYh6W4UJOSqilt0i3iDIL segments=time

@@ -1,0 +1,41 @@
+!trendmicro-list-computers expand="firewall"
+!trendmicro-search-computers field_name=groupID field_type=numeric operation=equal value=0
+!trendmicro-get-computer computer_id=216
+!trendmicro-modify-computer computer_id=216 description="Example computer description"
+!trendmicro-get-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled
+!trendmicro-modify-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled value=on
+!trendmicro-reset-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled
+!trendmicro-list-firewall-rule-ids-of-computer computer_id=216
+!trendmicro-set-firewall-rule-ids-to-computer computer_id=216 rule_ids=21,22
+!trendmicro-add-firewall-rule-ids-to-computer computer_id=216 rule_ids=31
+!trendmicro-remove-firewall-rule-id-from-computer computer_id=216 firewall_rule_id=31
+!trendmicro-delete-computer computer_id=216
+!trendmicro-create-computer host_name="example_computer"
+!trendmicro-list-computer-groups
+!trendmicro-search-computer-groups field_name=ID operation=equal field_type=id value=110
+!trendmicro-get-computer-group computer_group_id=110
+!trendmicro-modify-computer-group computer_group_id=110 description="Example computer group description"
+!trendmicro-delete-computer-group computer_group_id=110
+!trendmicro-create-computer-group name="Example Computer Group" description="Example computer group description" parent_group_id=1
+!trendmicro-list-firewall-rules
+!trendmicro-search-firewall-rules field_name="action" field_type="choice" operation="equal" value="allow"
+!trendmicro-get-firewall-rule firewall_rule_id=174
+!trendmicro-modify-firewall-rule firewall_rule_id=174 action=deny
+!trendmicro-delete-firewall-rule firewall_rule_id=174
+!trendmicro-create-firewall-rule name="Example Rule" action=allow protocol=udp direction=incoming
+!trendmicro-list-policies
+!trendmicro-search-policies field_name=name operation=equal field_type=string value="Example Policy"
+!trendmicro-get-policy policy_id=105
+!trendmicro-modify-policy policy_id=105 description="Example policy description"
+!trendmicro-get-policy-setting policy_id=105 name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled
+!trendmicro-modify-policy-setting name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled policy_id=105 value=true
+!trendmicro-reset-policy-setting name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled policy_id=105
+!trendmicro-delete-policy policy_id=105
+!trendmicro-create-policy name="Example Policy" parent_id=2 description="Example policy description"
+!trendmicro-list-default-policy-settings
+!trendmicro-get-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled
+!trendmicro-modify-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled value=false
+!trendmicro-reset-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled
+!trendmicro-list-scheduled-task task_id=1
+!trendmicro-create-onceonly-scheduled-task name=test computer_id=1 type="scan-for-malware"
+!trendmicro-delete-scheduled-task task_id=1

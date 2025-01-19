@@ -1,0 +1,3 @@
+!url url=example.com using="Cofense Intelligence_instance_1"
+!ip ip=1.2.3.4 using="Cofense Intelligence_instance_1"
+!email email=example@example.com using="Cofense Intelligence_instance_1"

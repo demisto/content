@@ -1,0 +1,4 @@
+anomali-enterprise-retro-forensic-search indicators=141.69.254.35 from="1 month"
+anomali-enterprise-retro-forensic-search-results job_id=job1251604409794526
+anomali-enterprise-dga-domain-status domains=amazon.com
+domain domain=google.com

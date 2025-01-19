@@ -1,0 +1,3 @@
+whois query=paloaltonetworks.com
+domain domain=google.com
+ip ip=8.8.8.8
