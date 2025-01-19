@@ -1850,29 +1850,29 @@ script:
       required: true
     - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
       name: is_raw_command
-      type: Boolean
       required: false
+      type: Boolean
     - description: Whether or not the command has chained commands. When true, the command overrides validation for `||`, `&&`, `;` separators.
       name: is_chained_command
-      type: Boolean
       required: false
+      type: Boolean
     - description: Whether or not to override input validation. WARNING - only use this flag if you are sure of what you are doing as it removes an important feature.
       name: override_validation
-      type: Boolean
       required: false
+      type: Boolean
     - description: Type of shell command.
-      auto: PREDEFINED
       name: command_type
+      auto: PREDEFINED
       predefined:
       - 'powershell'
       - 'native'
       required: false
-    - defaultValue: '600'
-      description: The timeout in seconds for this execution.
+    - description: The timeout in seconds for this execution.
       name: timeout
+      defaultValue: '600'
     - description: For polling use.
-      isArray: true
       name: action_id
+      isArray: true
       deprecated: true
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
