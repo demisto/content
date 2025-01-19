@@ -912,7 +912,7 @@ def addEntry(id, entry, username=None, email=None, footer=None):
       entry (str): The text to add in the entry
       username (str): The username of the user to be the entry creator (Default value = None)
       email (str): The email address of the user to be the entry creator (Default value = None)
-      footer (str): The email address of the user to be the entry creator (Default value = None)
+      footer (str): The footer of the created entry (Default value = None)
 
     Returns:
       None: No data returned
