@@ -836,7 +836,9 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
     mocker.patch('GCenter103.last_run_range', return_value=["2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z"])
 
     # 2) Patch the big fetch or little fetch calls
-    mock_handle_big_fetch_selected_engines = mocker.patch('GCenter103.handle_big_fetch_selected_engines', return_value=returned_alerts)
+    mock_handle_big_fetch_selected_engines = mocker.patch(
+        'GCenter103.handle_big_fetch_selected_engines', return_value=returned_alerts
+    )
     mock_handle_big_fetch_metadata = mocker.patch('GCenter103.handle_big_fetch_metadata', return_value=returned_metadata)
 
     mock_handle_little_fetch_alerts = mocker.patch('GCenter103.handle_little_fetch_alerts', return_value=returned_alerts)
