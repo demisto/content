@@ -1,5 +1,4 @@
-from Integrations.decyfirEventCollector.decyfirEventCollector import VAR_DR_KEYWORDS_LOGS
-from decyfirEventCollector import Client, fetch_events, VAR_ACCESS_LOGS
+from decyfirEventCollector import Client, fetch_events, VAR_ACCESS_LOGS, VAR_DR_KEYWORDS_LOGS
 from datetime import datetime, timedelta
 import json
 
@@ -59,7 +58,6 @@ def test_request_decyfir_api(mocker):
     request_params = {
         "key": 'key',
         "size": 1,
-
     }
     events_resp = client.request_decyfir_api(request_params=request_params, event_type='')
     assert events_resp[0] == mock_decyfir_event_response[0]
