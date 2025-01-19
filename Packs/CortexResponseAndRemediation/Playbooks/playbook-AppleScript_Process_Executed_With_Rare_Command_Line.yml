@@ -1394,7 +1394,7 @@ tasks:
       id: 4bf441b3-1834-4a7f-82dd-280b369469f8
       version: -1
       name: Get the prevalence of the causality and actor processes
-      description: Get the prevalence of a file, identified by sha256.
+      description: Get the prevalence of a file, identified by SHA256.
       script: '|||core-get-hash-analytics-prevalence'
       type: regular
       iscommand: true
