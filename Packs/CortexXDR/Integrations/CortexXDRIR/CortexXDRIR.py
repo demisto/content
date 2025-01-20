@@ -621,16 +621,15 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id], exclude_artifacts=exclude_artifacts)
+    # The get_multiple_incident method is limited with the alert numbers, and it's redundant in the get-remote-data command
+    # as we send only one incident ID at a time.
+    if demisto.command() != 'get-remote-data':
+        raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id], exclude_artifacts=exclude_artifacts)
+    else:
+        demisto.debug(f'for incident: {incident_id} using the old call since the {demisto.command()=}')
+        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     if not raw_incident:
         raise DemistoException(f'Incident {incident_id} is not found')
-    if isinstance(raw_incident, list):
-        raw_incident = raw_incident[0]
-    if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS and demisto.command() != 'get-remote-data':
-        demisto.debug(f'for incident:{incident_id} using the old call since "\
-            "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
-            "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
-        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
 
     incident = sort_incident_data(raw_incident)
