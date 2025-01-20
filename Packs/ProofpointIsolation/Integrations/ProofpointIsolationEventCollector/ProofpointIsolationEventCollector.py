@@ -84,16 +84,6 @@ def sort_events_by_date(events: list) -> list:
     return sorted(events, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%dT%H:%M:%S.%f%z'))
 
 
-def add_time_to_event(event: dict) -> None:
-    """
-    Adds a '_TIME' field to an event dictionary, using the value from the 'date' field.
-
-    Args:
-        event (dict): A dictionary containing event data.
-    """
-    event['_TIME'] = event.get('date')
-
-
 def hash_user_name_and_url(event: dict) -> str:
     """
     Generates a hash-like string by concatenating the 'url' and 'userName' fields from an event dictionary.
@@ -191,7 +181,10 @@ def test_module(client: Client) -> str:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
     try:
-        client.get_events(start_date="2024-12-01", end_date="2024-12-02")
+        current_time = get_current_time()
+        start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
+        end_date = current_time.strftime(DATE_FORMAT)
+        fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -205,9 +198,14 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     output: list = []
 
     if get_events_args:  # handle get_event command
-        start, end, ids = initialize_args_to_get_events(get_events_args)
+        start = get_events_args.get('start_date')
+        end = get_events_args.get('end_date')
+        ids: set = set()
     else:  # handle fetch_events case
-        start, end, ids = initialize_args_to_fetch_events()
+        last_run = demisto.getLastRun() or {}
+        start = last_run.get('start_date')
+        ids = set(last_run.get('ids', []))
+        end = get_current_time().strftime(DATE_FORMAT)
         if not start:
             start = get_current_time().strftime(DATE_FORMAT)
             new_last_run = {'start_date': start, 'ids': []}
@@ -220,7 +218,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             break
 
         for event in events:
-            add_time_to_event(event)
+            event['_TIME'] = event.get('date')
             output.append(event)
             start = get_and_parse_date(event)
 
@@ -300,11 +298,11 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif command == 'fetch-events':
             events, new_last_run_dict = fetch_events(client, fetch_limit)
-            demisto.setLastRun(new_last_run_dict)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
             if events:
                 demisto.debug(f'Sending {len(events)} events to Cortex XSIAM')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(new_last_run_dict)
         elif command == 'proofpoint-isolation-get-events':
             events, command_results = get_events(client, args)
             if events and argToBoolean(args.get('should_push_events')):
