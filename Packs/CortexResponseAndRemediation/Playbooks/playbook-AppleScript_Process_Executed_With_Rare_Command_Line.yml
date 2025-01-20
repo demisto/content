@@ -20,6 +20,9 @@ description: |-
   - Automatically terminate the causality process.
   - Quarantine the causality|actor image (requires analyst approval).
   - Automatically Close the alert.
+tags:
+- T1059 - Command and Scripting Interpreter
+- TA0002 - Execution
 starttaskid: "0"
 tasks:
   "0":
