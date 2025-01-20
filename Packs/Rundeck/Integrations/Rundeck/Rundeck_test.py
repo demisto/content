@@ -22,7 +22,7 @@ from Rundeck import (
 
 
 from CommonServerPython import DemistoException
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import demistomock as demisto
 from dateparser import parse
 
@@ -42,7 +42,7 @@ def test_filter_results_when_response_is_dict(mocker):
 
     result = filter_results(results_to_filter, "key1", "_")
     assert "key1" not in result.keys()
-    assert "key3" in result.keys()
+    assert "key3" in result
 
 
 def test_filter_results_when_response_is_list(mocker):
@@ -60,7 +60,7 @@ def test_filter_results_when_response_is_list(mocker):
     result = filter_results(results_to_filter, "key1", "_")
 
     assert "key1" not in result[0].keys()
-    assert "key3" in result[1].keys()
+    assert "key3" in result[1]
 
 
 def test_attribute_pairs_to_dict(mocker):
@@ -692,8 +692,8 @@ def test_calc_run_at_time():
     Then:
         - ISO 8601 time
     """
-    cur_date = datetime.now().replace(tzinfo=timezone.utc)
-    result = parse(calc_run_at_time("1 second")).replace(tzinfo=timezone.utc)
+    cur_date = datetime.now().replace(tzinfo=UTC)
+    result = parse(calc_run_at_time("1 second")).replace(tzinfo=UTC)
     assert cur_date.year == result.year
     assert cur_date.month == result.month
     assert cur_date.day == result.day
