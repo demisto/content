@@ -1683,7 +1683,7 @@ class Main:
         """
         templates_type = args.get('templates_type') or 'raw'
         if templates_type == 'raw':
-            templates = args.get('templates')
+            templates: str | dict = args.get('templates')
         elif templates_type == 'list':
             templates = execute_command('getList', {
                 'listName': args.get('templates')
@@ -1695,7 +1695,7 @@ class Main:
             if argToBoolean(args.get('triple_quotes_to_string', 'true')):
                 templates = re.sub(
                     r"""("{3}|'{3})(.*?)\1""",
-                    lambda m: json.dumps(m[2]),
+                    lambda m: json.dumps(m.group(2)),
                     templates,
                     flags=re.DOTALL
                 )
