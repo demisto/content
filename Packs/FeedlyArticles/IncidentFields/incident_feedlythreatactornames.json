@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": true,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Feedly Report"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
