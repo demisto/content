@@ -95,8 +95,8 @@ def hash_user_name_and_url(event: dict) -> str:
         str: A string in the format '<url>&<userName>'.
     """
     url = event.get('url', "")
-    user_id = event.get('userName', "")
-    return f'{url}&{user_id}'
+    user_name = event.get('userName', "")
+    return f'{url}&{user_name}'
 
 
 def remove_duplicate_events(start_date, ids: set, events: list) -> None:

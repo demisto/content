@@ -7,10 +7,3 @@ To enable the Proofpoint Isolation Event Collector, follow these steps:
 2. In the search bar, type **Proofpoint Isolation**.
 3. At the right-corner, click **+ Add instance**.
 4. Follow the instructions in the prompt window to configure the Proofpoint Isolation Event Collector.
-
-
-#### How to Access Reporting API
-1. In Proofpoint Isolation, navigate to **Product Settings** > **Reporting API**.  Proofpoint Isolation’s Reporting API tools and documentation display in the Console’s main viewing panel.
-2. Copy the reporting API key.
-
-[image]("../../doc_files/readme_image.png")
