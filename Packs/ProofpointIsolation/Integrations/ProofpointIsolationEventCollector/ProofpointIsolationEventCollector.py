@@ -157,9 +157,6 @@ def test_module(client: Client) -> str:
         fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
         message = 'ok'
     except DemistoException as e:
-        # if 'Forbidden' in str(e) or 'Authorization' in str(e):
-        #     message = 'Authorization Error: make sure API Key is correctly set'
-        # else:
         raise e
     return message
 
