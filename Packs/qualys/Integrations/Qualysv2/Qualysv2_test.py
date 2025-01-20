@@ -3,6 +3,7 @@ import re
 import Qualysv2
 import pytest
 import requests
+from requests_mock import Mocker as RequestsMocker
 from Qualysv2 import (
     is_empty_result,
     format_and_validate_response,
@@ -206,22 +207,36 @@ def test_fetch_assets_command_time_out(requests_mock, mocker):
     assert set_new_limit
 
 
-def test_fetch_vulnerabilities_command(requests_mock):
+@pytest.mark.parametrize(
+    'query_param, fetch_by_asset_qids',
+    [
+        pytest.param(
+            f'last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
+            False,
+            id="Fetch by modified after timestamp",
+        ),
+        pytest.param(
+            'ids=A,B',
+            True,
+            id="Fetch by QIDs",
+        ),
+    ]
+)
+def test_fetch_vulnerabilities_command(requests_mock: RequestsMocker, query_param: str, fetch_by_asset_qids: bool):
     """
     Given:
-    - fetch_vulnerabilities_command
+    - last_run dictionary and fetch_by_asset_qids boolean flag.
     When:
-    - Want to list all existing incidents
-    Then:
-    - Ensure List vulnerabilities.
+    - Calling fetch_vulnerabilities.
+    Assert:
+    - Ensure correct next_run and length of vulnerabilities consistent with mock response text.
     """
     base_url = 'https://server_url/'
     with open('./test_data/vulnerabilities_raw.xml') as f:
         vulnerabilities = f.read()
 
-    requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
-                       f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
-                       text=vulnerabilities)
+    # call to Client.get_vulnerabilities method will raise requests_mock.exceptions.NoMockAddress if incorrect query param
+    requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/?action=list&{query_param}', text=vulnerabilities)
 
     client = Client(base_url=base_url,
                     verify=True,
@@ -230,11 +245,15 @@ def test_fetch_vulnerabilities_command(requests_mock):
                     username='demisto',
                     password='demisto',
                     )
-    last_run = {'since_datetime': {arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}}
-    vulnerabilities, last_run = fetch_vulnerabilities(client=client, last_run=last_run)
+    last_run = {'since_datetime': arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT), 'asset_qids': ['A', 'B']}
+    vulnerabilities, next_run = fetch_vulnerabilities(
+        client=client,
+        last_run=last_run,
+        fetch_vulnerabilities_by_asset_qids=fetch_by_asset_qids,
+    )
     assert len(vulnerabilities) == 2
-    assert last_run['next_page'] == ''
-    assert last_run['stage'] == 'assets'
+    assert next_run['next_page'] == ''
+    assert next_run['stage'] == 'assets'
 
 
 class TestIsEmptyResult:
@@ -1110,6 +1129,25 @@ class TestClientClass:
             "vm_scan_date_after": since_datetime,
             "show_qds": 1,
             "show_qds_factors": 1
+        }
+
+    def test_get_vulnerabilities(self, mocker):
+        since_datetime = "2024-12-12"
+        asset_qids = "A,B"
+
+        client_http_request = mocker.patch.object(self.client, "_http_request")
+        self.client.get_vulnerabilities(since_datetime, asset_qids)
+
+        http_request_kwargs = client_http_request.call_args.kwargs
+
+        assert client_http_request.called_once
+        assert http_request_kwargs["method"] == "POST"
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, 'knowledge_base/vuln/?action=list')
+        assert http_request_kwargs["params"] == {
+            "host_metadata": "all",
+            "show_cloud_tags": 1,
+            "ids": asset_qids,
+            "last_modified_after": since_datetime,
         }
 
 

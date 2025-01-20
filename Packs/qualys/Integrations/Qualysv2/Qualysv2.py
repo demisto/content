@@ -1716,10 +1716,12 @@ class Client(BaseClient):
 
         return response, set_new_limit
 
-    def get_vulnerabilities(self, since_datetime, asset_qids: list | None = None) -> requests.Response:
+    def get_vulnerabilities(self, since_datetime: str | None = None, asset_qids: str | None = None) -> requests.Response:
         """
         Make a http request to Qualys API to get vulnerabilities
         Args:
+            since_datetime (str | None): Optional timestamp for filtering vulnerabilities that have been modified afterwards.
+            asset_qids (str | None): Optional string of comma-separated values for filtering by Qualys vulnerability IDs.
         Returns:
             response from Qualys API
         Raises:
@@ -1727,13 +1729,12 @@ class Client(BaseClient):
         """
         self._headers.update({"Content-Type": 'application/json'})
 
-        params: dict[str, Any] = {'host_metadata': 'all', 'show_cloud_tags': 1}  # includes more fields in response
-        if not asset_qids:
-            # get all vulnerabilities that have been modified within the last 90 days
-            params['last_modified_after'] = since_datetime
-        else:
-            # get by unique vulnerability identifiers (QIDs)
-            params['ids'] = ','.join({str(qid) for qid in asset_qids})
+        params: dict[str, Any] = assign_params(
+            host_metadata='all',  # includes more fields in response
+            show_cloud_tags=1,
+            ids=asset_qids,
+            last_modified_after=since_datetime,
+        )
 
         response = self._http_request(
             method='POST',
@@ -2998,17 +2999,30 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
     return assets, next_page, set_new_limit
 
 
-def get_vulnerabilities(client: Client, since_datetime, asset_qids: list | None = None) -> list:
+def get_vulnerabilities(client: Client, since_datetime: str | None = None, asset_qids: list | None = None) -> list:
     """ Get vulnerabilities list from qualys
     Args:
-        client: Qualys client
-        since_datetime: The start fetch date.
+        client (Client): Qualys client
+        since_datetime (str | None): Optional start fetch date.
+        asset_qids (list | None): Optional list of Qualys vulnerability IDs.
     Returns:
         list vulnerabilities
     """
     demisto.debug('Starting to fetch vulnerabilities')
-    host_list_detections = client.get_vulnerabilities(since_datetime, asset_qids)
-    vulnerabilities = handle_vulnerabilities_result(host_list_detections) or []
+
+    if since_datetime:
+        host_list_detections = client.get_vulnerabilities(since_datetime=since_datetime)
+        vulnerabilities = handle_vulnerabilities_result(host_list_detections) or []
+
+    elif asset_qids is not None:
+        vulnerabilities = []
+        for qids_batch in batch(asset_qids, batch_size=QIDS_BATCH_SIZE):
+            host_list_detections = client.get_vulnerabilities(asset_qids=",".join(qids_batch))
+            vulnerabilities_batch = handle_vulnerabilities_result(host_list_detections) or []
+            vulnerabilities.extend(vulnerabilities_batch)
+
+    else:
+        raise ValueError("Either 'since_datetime' or 'asset_qids' need to be specified")
 
     demisto.debug(f'Parsed detections from hosts, got {len(vulnerabilities)=} vulnerabilities.')
     return vulnerabilities
@@ -3063,17 +3077,27 @@ def set_last_run_with_new_limit(last_run, limit):
     return last_run
 
 
-def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], asset_qids: list | None = None):
+def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], fetch_vulnerabilities_by_asset_qids: bool = False):
     """ Fetches vulnerabilities
     Args:
-        client: Qualys client
-        last_run: The last run.
+        client (Client): Qualys client
+        last_run (dict): The last run.
+        fetch_vulnerabilities_by_asset_qids (bool): Whether to fetch by Qualys ids or last modified after.
     Return:
         vulnerabilities: vulnerabilities to push to xsiam
         last_run: The  new last run to save.
     """
     demisto.debug('Starting fetch for vulnerabilities')
-    since_datetime = last_run.get('since_datetime', '')
+    since_datetime: str | None = None
+    asset_qids: list | None = None
+
+    if fetch_vulnerabilities_by_asset_qids:
+        asset_qids = last_run.get('asset_qids', [])
+    else:
+        since_datetime = (
+            last_run.get('since_datetime')
+            or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+        )
 
     vulnerabilities = get_vulnerabilities(client, since_datetime, asset_qids)
     new_last_run = {'stage': 'assets', 'next_page': '', 'total_assets': 0,
@@ -3591,13 +3615,11 @@ def main():  # pragma: no cover
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): real_amount_of_assets})
 
             elif fetch_stage == 'vulnerabilities':
-                vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
-
-                unfetched_qids = get_unfetched_vulnerabilities_qids(vulnerabilities, last_run)
-                for qids_batch in batch(unfetched_qids, batch_size=QIDS_BATCH_SIZE):
-                    vulnerabilities_by_quid, _ = fetch_vulnerabilities(client=client, last_run=last_run, asset_qids=qids_batch)
-                    vulnerabilities.extend(vulnerabilities_by_quid)
-
+                vulnerabilities, new_last_run = fetch_vulnerabilities(
+                    client=client,
+                    last_run=last_run,
+                    fetch_vulnerabilities_by_asset_qids=fetch_vulnerabilities_by_asset_qids,
+                )
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
                 demisto.setAssetsLastRun(new_last_run)
