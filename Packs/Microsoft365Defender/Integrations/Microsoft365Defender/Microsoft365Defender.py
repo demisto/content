@@ -23,7 +23,8 @@ class Client:
                  enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None,
-                 endpoint: str = 'com'):
+                 endpoint: str = 'com',
+                 azure_cloud: AZURE_CLOUDS = AZURE_WORLDWIDE_CLOUD):
         if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -56,6 +57,7 @@ class Client:
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.security,
             endpoint=endpoint,
+            azure_cloud=azure_cloud,
             command_prefix="microsoft-365-defender",
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
@@ -629,6 +631,7 @@ def main() -> None:
         if not managed_identities_client_id and not app_id:
             raise Exception('Application ID must be provided.')
 
+        azure_cloud = AZURE_CLOUDS.get(endpoint)
         client = Client(
             app_id=app_id,
             verify=verify_certificate,
@@ -640,7 +643,8 @@ def main() -> None:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            endpoint=endpoint
+            endpoint=endpoint,
+            azure_cloud=azure_cloud
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
