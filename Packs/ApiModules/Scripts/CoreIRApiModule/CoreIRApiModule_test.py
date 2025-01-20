@@ -1381,7 +1381,7 @@ def test_get_script_code_command(requests_mock):
     assert raw_response == get_script_code_command_reply.get("reply")
 
 
-def test_action_status_get_command(requests_mock):
+def test_action_status_get_command(mocker):
     """
         Given:
             - An action_id
@@ -1396,6 +1396,7 @@ def test_action_status_get_command(requests_mock):
     action_status_get_command_command_reply = load_test_data('./test_data/action_status_get.json')
 
     data = action_status_get_command_command_reply.get('reply').get('data')
+    error_reasons = action_status_get_command_command_reply.get('reply').get('errorReasons') or {}
     result = []
     for item in data:
         result.append({
@@ -1403,11 +1404,13 @@ def test_action_status_get_command(requests_mock):
             'endpoint_id': item,
             'status': data.get(item)
         })
+        if error_reason := error_reasons.get(item):
+            result[-1]['error_description'] = error_reason['errorDescription']
+            result[-1]['ErrorReasons'] = error_reason
+
     action_status_get_command_expected_result = result
 
-    requests_mock.post(f'{Core_URL}/public_api/v1/actions/get_action_status/',
-                       json=action_status_get_command_command_reply)
-
+    mocker.patch.object(CoreClient, '_http_request', return_value=action_status_get_command_command_reply)
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
@@ -1416,7 +1419,8 @@ def test_action_status_get_command(requests_mock):
     }
 
     res = action_status_get_command(client, args)
-    assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True)
+    assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                                  headers=['action_id', 'endpoint_id', 'status', 'error_description'])
     assert res.outputs == action_status_get_command_expected_result
     assert res.raw_response == result
 
@@ -4511,7 +4515,6 @@ def test_run_polling_command_values_raise_error(mocker):
     """
     Given -
         - run_polling_command arguments.
-        -
 
     When -
         - Running the run_polling_command
@@ -4532,6 +4535,7 @@ def test_run_polling_command_values_raise_error(mocker):
     mock_command_results.raw_response = {"status": "TIMEOUT"}
     mock_command_results.return_value = mock_command_results
     client.get_command_results.return_value = mock_command_results
+    mocker.patch('CoreIRApiModule.return_results')
 
     with pytest.raises(DemistoException) as e:
         run_polling_command(client=client,

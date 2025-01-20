@@ -3,7 +3,7 @@ import demistomock as demisto
 import pytest
 import json
 from GetFailedTasks import main, get_failed_tasks_output, get_incident_tasks_using_internal_request, get_incident_data, \
-    get_custom_scripts_map_id_and_name, get_rest_api_instance
+    get_custom_scripts_map_id_and_name, get_rest_api_instance, filter_playbooks_failures
 from test_data.constants import INCIDENTS_RESULT, RESTAPI_TAS_RESULT, INTERNAL_TASKS_RESULT
 
 
@@ -315,3 +315,31 @@ def test_get_custom_scripts_map_id_and_name_without_rest_api(mocker):
         uri='automation/search',
         body={'query': 'system:F'}
     )
+
+
+def test_filter_playbooks_failures():
+    """
+    Given:
+        - A list of tasks, some of which are of type "playbook" and appear in the ancestors of other tasks.
+
+    When:
+        - Running the filter_playbooks_failures function.
+
+    Then:
+        - Ensure that tasks of type "playbook" whose names appear in the ancestors of other tasks are removed.
+        - Ensure that tasks not matching this condition remain in the output.
+    """
+    tasks = [
+        {"id": "1", "type": "playbook", "task": {"name": "Playbook1"}, "ancestors": []},
+        {"id": "2", "type": "regular", "task": {"name": "Task1"}, "ancestors": ["Playbook1"]},
+        {"id": "3", "type": "playbook", "task": {"name": "Playbook2"}, "ancestors": ["Playbook1"]}
+    ]
+
+    # Expected output: Playbook1 should be removed because it is in the ancestors of Task1.
+    expected_filtered_tasks = [
+        {"id": "2", "type": "regular", "task": {"name": "Task1"}, "ancestors": ["Playbook1"]},
+        {"id": "3", "type": "playbook", "task": {"name": "Playbook2"}, "ancestors": ["Playbook1"]}
+    ]
+
+    filtered_tasks = filter_playbooks_failures(tasks)
+    assert filtered_tasks == expected_filtered_tasks

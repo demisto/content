@@ -1,6 +1,6 @@
 # This file contains the ruff hook rules when pre-commit is run with the --all flag
 
-select = [
+lint.select = [
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
@@ -91,7 +91,6 @@ select = [
     "PD012", # pandas-use-of-dot-read-table
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
-    "PGH002", # deprecated-log-warn
     "PIE807", # reimplemented-list-builtin
     "PLC3002", # unnecessary-direct-lambda-call
     "PLE0100", # yield-in-init
@@ -194,7 +193,7 @@ select = [
 
 line-length = 130
 
-[per-file-ignores]
+[lint.per-file-ignores]
 ".vulture_whitelist.py" = [
     "F821", # undefined-name
 ]
