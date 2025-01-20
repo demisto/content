@@ -181,7 +181,11 @@ def main():
     server_url = (params.get('server_url')).rstrip()
     default_headers = params.get('default_headers')
     if default_headers:
-        default_headers = json.loads(default_headers.strip())
+        try:
+            default_headers = json.loads(default_headers.strip())
+        except ValueError as e:
+            return_error(
+                'Unable to parse Request headers value. Please verify the headers value is a valid JSON. - ' + str(e))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
