@@ -1,6 +1,6 @@
 [
     {
-        "principal": "abc@cyfirma.com",
+        "principal": "abc@acme.com",
         "uid": null,
         "event_type": "AUTHENTICATION_SUCCESS",
         "ip": "000.00.00.000",

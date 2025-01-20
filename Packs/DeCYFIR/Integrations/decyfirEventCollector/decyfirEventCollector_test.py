@@ -7,7 +7,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_empty_get_event_format(mocker):
+def test_empty_get_event_format():
     from decyfirEventCollector import Client
     empty_data = []
 
@@ -20,7 +20,7 @@ def test_empty_get_event_format(mocker):
     assert data == empty_data
 
 
-def test_get_event_format(mocker):
+def test_get_event_format():
     from decyfirEventCollector import Client, VAR_ACCESS_LOGS
     mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
     mock_pa_event_response = util_load_json('test_data/events_data.json')
@@ -35,7 +35,7 @@ def test_get_event_format(mocker):
     assert data[0] == mock_pa_event_response[0]
 
 
-def test_get_dr_event_format(mocker):
+def test_get_dr_event_format():
     from decyfirEventCollector import Client, VAR_DR_KEYWORDS_LOGS
     mock_decyfir_dr_event_response = util_load_json('test_data/decyfir_dr_events_data.json')
     mock_dr_pa_event_response = util_load_json('test_data/dr_events_data.json')
@@ -49,7 +49,8 @@ def test_get_dr_event_format(mocker):
     assert dr_data[0] == mock_dr_pa_event_response[0]
     assert dr_data[1] == mock_dr_pa_event_response[1]
 
-def test_get_dr_assets_event_format(mocker):
+
+def test_get_dr_assets_event_format():
     from decyfirEventCollector import Client, VAR_DR_KEYWORDS_LOGS
     mock_decyfir_dr_event_response = util_load_json('test_data/decyfir_dr_events_data.json')
     mock_dr_pa_event_response = util_load_json('test_data/dr_events_data.json')
@@ -58,7 +59,6 @@ def test_get_dr_assets_event_format(mocker):
         verify=False,
     )
     dr_data = client.get_event_format(mock_decyfir_dr_event_response, VAR_DR_KEYWORDS_LOGS)
-
     assert dr_data is not None
     assert dr_data[1] == mock_dr_pa_event_response[1]
 
@@ -83,6 +83,7 @@ def test_fetch_events(mocker):
         first_fetch='1 days',
         last_run=last_run, max_fetch=1,
     )
+    assert events is not None
     data = client.get_event_format(events, VAR_ACCESS_LOGS)
     assert data is not None
     assert data[0] == mock_pa_event_response[0]
@@ -114,6 +115,33 @@ def test_test_event_logs_command(mocker):
         verify=False,
     )
     mocker.patch.object(client, 'request_decyfir_events_api', return_value=mock_decyfir_event_response)
-
     resp = test_event_logs_command(client, '')
     assert resp == 'ok'
+
+
+def test_add_time_to_events(mocker):
+    from decyfirEventCollector import Client, fetch_events, add_time_to_events, VAR_ACCESS_LOGS
+    mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
+    mock_pa_event_response = util_load_json('test_data/events_data.json')
+    date_format = '%Y-%m-%dT%H:%M:%SZ'
+    client = Client(
+        base_url='test_url',
+        verify=False,
+    )
+    mocker.patch.object(client, 'get_decyfir_event_logs', return_value=mock_decyfir_event_response)
+    last_fetch = (datetime.now() - timedelta(days=2)).strftime(date_format)
+    last_run = {
+        'last_fetch': last_fetch
+    }
+    last_fetch, events = fetch_events(
+        client=client,
+        decyfir_api_key='api_key',
+        first_fetch='1 days',
+        last_run=last_run, max_fetch=1,
+    )
+    assert events is not None
+    data = client.get_event_format(events, VAR_ACCESS_LOGS)
+    assert data is not None
+    add_time_to_events(data)
+    assert data is not None
+    assert data[0] == mock_pa_event_response[1]
