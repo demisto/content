@@ -7,8 +7,8 @@ HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 INTEGRATION_NAME = 'RSS Feed'
 
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" \
-             " Safari/537.36"
+USER_AGENT = '{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)'\
+              ' Chrome/127.0.0.0 Safari/537.36"}'
 
 
 class Client(BaseClient):
