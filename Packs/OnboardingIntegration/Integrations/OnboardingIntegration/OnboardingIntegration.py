@@ -767,7 +767,6 @@ def demo_url_command():
     }
 
     title = 'OnboardingIntegration URL Reputation - {}'.format(url)
-    demisto.debug("A")
     human_readable = tableToMarkdown(title, dbotscore_output)
 
     demisto.results({
