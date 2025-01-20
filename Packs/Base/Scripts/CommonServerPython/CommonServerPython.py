@@ -11862,7 +11862,7 @@ class OutputArgument:
     demisto-sdk generate_yml_from_python command syntax. For more information,
     visit the command's README.md.
 
-    :return: The OutputArgument object
+    :return: The OutputArgument object test
     :rtype: ``OutputArgument``
     """
 

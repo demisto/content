@@ -37,7 +37,7 @@ COMMON_MESSAGES: Dict[str, str] = {
 
 class GSuiteClient:
     """
-    Client to use in integration with powerful http_request.
+    Client to use in integration with powerful http_request test.
     """
 
     def __init__(self, service_account_dict: Dict[str, str], proxy: bool, verify: bool,
