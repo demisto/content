@@ -175,7 +175,6 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         end = get_current_time().strftime(DATE_FORMAT)
         if not start:
             start = get_current_time().strftime(DATE_FORMAT)
-            start = "2025-01-01T11:27:08"
             new_last_run = {'start_date': start, 'ids': []}
             return output, new_last_run
 
