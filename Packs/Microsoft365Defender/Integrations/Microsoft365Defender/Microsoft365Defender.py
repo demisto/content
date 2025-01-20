@@ -24,7 +24,7 @@ class Client:
                  private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None,
                  endpoint: str = 'com',
-                 azure_cloud: AZURE_CLOUDS = AZURE_WORLDWIDE_CLOUD):
+                 azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD):
         if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -47,8 +47,10 @@ class Client:
 
             # used for device code flow
             resource=MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
+            # token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
+            #                     f'/organizations/oauth2/v2.0/token' if not client_credentials else None,
             token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
-                                f'/organizations/oauth2/v2.0/token' if not client_credentials else None,
+                                f'/{tenant_id}/oauth2/v2.0/token' if not client_credentials else None,
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
@@ -58,6 +60,7 @@ class Client:
             managed_identities_resource_uri=Resources.security,
             endpoint=endpoint,
             azure_cloud=azure_cloud,
+            # azure_ad_endpoint=azure_cloud.endpoints.active_directory,
             command_prefix="microsoft-365-defender",
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
@@ -644,7 +647,7 @@ def main() -> None:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             endpoint=endpoint,
-            azure_cloud=azure_cloud
+            azure_cloud=azure_cloud,
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
