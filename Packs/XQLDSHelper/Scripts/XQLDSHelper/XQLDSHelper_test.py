@@ -506,3 +506,82 @@ class TestXQLDSHelper:
             for ent in self.__enum_test_config(file_path):
                 with MainTester(mocker=mocker, ent=ent) as main:
                     main.main()
+
+    @pytest.mark.parametrize(
+        argnames=(
+            'triple_quotes_to_string'
+            ', input_template'
+            ', output_template'
+        ),
+        argvalues=[
+            (
+                'false',
+                r'''
+                {
+                    "query": {
+                        "xql": "dataset = xdr_data\n| fields _time\n"
+                    }
+                }
+                ''',
+                {
+                    "query": {
+                        "xql": "dataset = xdr_data\n| fields _time\n"
+                    }
+                }
+            ),
+            (
+                'true',
+                r'''
+                {
+                    "query": {
+                        "xql":
+"""
+dataset = xdr_data
+| fields _time
+"""
+                    }
+                }
+                ''',
+                {
+                    "query": {
+                        "xql": "\ndataset = xdr_data\n| fields _time\n"
+                    }
+                }
+            ),
+            (
+                'true',
+                r"""
+                {
+                    "query": {
+                        "xql":
+'''
+dataset = xdr_data
+| fields _time
+'''
+                    }
+                }
+                """,
+                {
+                    "query": {
+                        "xql": "\ndataset = xdr_data\n| fields _time\n"
+                    }
+                }
+            )
+        ]
+    )
+    def test_triple_quotes(
+        self,
+        mocker,
+        triple_quotes_to_string,
+        input_template,
+        output_template
+    ) -> None:
+        args = {
+            'triple_quotes_to_string': triple_quotes_to_string,
+            'templates_type': 'raw',
+            'template_name': 'test',
+            'templates': '{"test":' + input_template + '}'
+        }
+        _, template = XQLDSHelper.Main._Main__get_template(args)
+        ok = MainTester.equals_entry(template, output_template, skip_keys=None)
+        assert ok
