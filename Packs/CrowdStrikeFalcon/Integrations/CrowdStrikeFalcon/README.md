@@ -26,7 +26,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Use system proxy settings |  | False |
 | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
 | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
-| Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
+| Fetch types | Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version. 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
 | Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
 | Incidents Fetch Interval |  | False |
 | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
@@ -6500,3 +6500,16 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 * When encountering a 429 error code returned from Crowdstrike Falcon within Cortex XSOAR 8, the solution is to use an engine as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
 * In the different query parameters such as Endpoint Detections fetch query, Endpoint Incidents fetch query, etc. if you want to query for multiple values in the same field (for example, retrieving severity_name equal to Medium, High, and Critical) you need to use the following format: field:['value1','value2','value3'].
 * When encountering the error "400 - Reason: Bad Request: Invalid element in the request", ensure that your command arguments are correct. For example, if you're using the ID of a detection pre-Raptor (legacy API) in an integration configured to run with Raptor, this error will appear.
+* When encountering missing incidents on the ***fetch-incidents*** command, make sure that the 'Fetch Type' integration parameter includes the type of the missing incidents.
+Optional types are:
+  - Endpoint Incident
+  - Endpoint Detection
+  - IDP Detection
+  - Indicator of Misconfiguration
+  - Indicator of Attack
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+Notes: 
+ 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
+ 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
