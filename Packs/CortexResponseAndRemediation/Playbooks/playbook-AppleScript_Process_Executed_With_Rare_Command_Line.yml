@@ -251,7 +251,7 @@ tasks:
     task:
       id: 2cd75c00-6cae-42f3-82c3-9c2d50fc2a67
       version: -1
-      name: Causality process unsigned and not prevalent or malicious
+      name: Causality process is (unsigned and not prevalent) or malicious
       description: Confirm if the causality process (the main process behind the event) is unsigned, not prevalent, or malicious.
       type: condition
       iscommand: false
@@ -1437,7 +1437,7 @@ tasks:
     task:
       id: 3dcdc9d4-b47d-45d7-8861-d85f24643a4e
       version: -1
-      name: Actor process unsigned and not prevalent or malicious
+      name: Actor process is (unsigned and not prevalent) or malicious
       description: Determine if the actor process (the process performing a suspicious action) is unsigned, not prevalent, or malicious.
       type: condition
       iscommand: false
