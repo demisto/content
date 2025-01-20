@@ -15,11 +15,12 @@ configuration:
   required: true
   section: Connect
   defaultvalue: https://decyfir.cyfirma.com
-- displaypassword: API key
+- displaypassword: DeCYFIR API Key
   name: api_key
-  hiddenusername: true
   type: 9
   required: true
+  hiddenusername: true
+  display: ''
 - display: Number of events to fetch per fetch
   name: max_fetch
   type: 0
@@ -60,7 +61,7 @@ script:
       required: false
     description: Gets events from DeCYFIR.
     name: get-decyfir-events
-  dockerimage: demisto/python3:3.10.14.101217
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: false
   subtype: python3
 #marketplaces:
