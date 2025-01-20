@@ -466,6 +466,7 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         # encode username and password in a basic authentication method
         auth_credentials = f'{username}:{password}'
         encoded_credentials = b64encode(auth_credentials.encode()).decode('utf-8')
+        add_sensitive_log_strs(encoded_credentials)
         headers = {
             'Authorization': f'Basic {encoded_credentials}',
         }
@@ -574,17 +575,18 @@ def main() -> None:
 
     # if your Client class inherits from BaseClient, it handles system proxy
     # out of the box, pass ``proxy`` to the Client constructor.
-    proxy = params.get('proxy', False)
+    proxy: bool = str2bool(params.get('proxy', False))
+    verify: bool = not str2bool(params.get('insecure', False))
 
     # Create a client object.
     client = Client(
         base_url=base_url,
-        verify=False,
+        verify=verify,
         headers=headers,
         proxy=proxy
     )
     command = demisto.command()
-
+    demisto.debug(f"Command being called is {command}")
     if command == 'test-module':
         test_module(
             client=client,
