@@ -8,7 +8,7 @@ HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 INTEGRATION_NAME = 'RSS Feed'
 
 USER_AGENT = '{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)'\
-              ' Chrome/127.0.0.0 Safari/537.36"}'
+    ' Chrome/127.0.0.0 Safari/537.36"}'
 
 
 class Client(BaseClient):
@@ -20,8 +20,12 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
-                 read_timeout=20, enrichment_excluded=False, headers={}):
-        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl, headers=headers)
+                 read_timeout=20, enrichment_excluded=False, headers=None):
+        if headers:
+            super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl, headers=headers)
+        else:
+            super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
+
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
