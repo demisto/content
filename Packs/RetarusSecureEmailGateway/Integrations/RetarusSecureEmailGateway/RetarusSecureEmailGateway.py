@@ -197,13 +197,14 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     event_ids = set()
     fetch_start_time = datetime.now().astimezone(timezone.utc)
     demisto.debug(f'{LOG_PREFIX} Starting to fetch events at {fetch_start_time}')
+    
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
             event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
-        event_id = event.get("_id", event.get("rmxId"))
+        event_id = event.get("rmxId")
         event_ts = event.get("ts")
         if not event_ts:
             # if timestamp is not in the response, use the current time
@@ -214,13 +215,14 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
             demisto.debug(f"{LOG_PREFIX} Event {event_id} has an invalid timestamp, using current time")
             # if timestamp is not in correct format, use the current time
             date = datetime.now()
-        event["id"] = event_id  # TODO not sure I am supposed to do it, maybe it's for @bavly
         event["_time"] = date.astimezone(timezone.utc).isoformat()
-        event["event_type"] = event.get("type")
+        event["SOURCE_LOG_TYPE"] = event.get("type")
         events.append(event)
         event_ids.add(event_id)
+        
     demisto.debug(f"{LOG_PREFIX} Fetched {len(events)} events")
     demisto.debug(f"{LOG_PREFIX} The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
+    
     return events
 
 
@@ -228,7 +230,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-    url = params.get["url"]
+    url = params["url"]
     token_id = params.get("credentials", {}).get("password", "")
     fetch_interval = arg_to_number(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
     verify_ssl = argToBoolean(not params.get("insecure", False))
