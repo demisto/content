@@ -12,7 +12,7 @@
     },
     {
         "event_type": "Digital Risk Keywords Logs",
-        "action_type": "ORG_ASSETS_CREATE",
+        "action_type": "ORG_ASSETS_UPDATE",
         "asset_comments": "",
         "vendor": "Ubuntu",
         "asset_type": "OS",
