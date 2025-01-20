@@ -309,7 +309,7 @@ class TAXIIServer:
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
 
             if is_xsiam_or_xsoar_saas():
-                prefix = 'ext-'
+                prefix = 'edl-' if is_xsiam() else 'ext-'
                 xsoar_path = '/xsoar'
         else:
             endpoint = f':{self.port}'

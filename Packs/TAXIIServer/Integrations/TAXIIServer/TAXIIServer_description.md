@@ -20,8 +20,11 @@ The collections are defined by a JSON object in the following format:
 - **https://*demisto_address*/instance/execute/*instance_name/taxii-discovery-service**
 - **http://*demisto_address*:*listen_port/taxii-discovery-service**
 
-(For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+(For Cortex XSOAR 8) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
   When running on an engine: http://xsoar_address:listen_port/{taxii2_api_endpoint}/
+
+(For Cortex XSIAM) `https://edl-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+  When running on an engine: http://xsiam_address:listen_port/{taxii2_api_endpoint}/
 
 
 
@@ -35,7 +38,9 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 
    - For Cortex XSOAR 6.x: **<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>**. For example, https://my.demisto.live/instance/execute/taxiiserver. Note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
 
-   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   - (For Cortex XSOAR 8) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+
+   - (For Cortex XSIAM) `https://edl-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
 
 ## How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
