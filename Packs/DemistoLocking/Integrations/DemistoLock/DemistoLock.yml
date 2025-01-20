@@ -16,6 +16,13 @@ configuration:
   required: true
   section: Connect
   advanced: true
+- display: Polling interval
+  name: polling_interval
+  type: 0
+  additionalinfo: Default polling interval value. Overridden by "polling_interval"  if set in command `demisto-lock-get`
+  section: Connect
+  advanced: true
+  required: false
 - display: Sync integration cache
   name: sync
   defaultvalue: "false"
