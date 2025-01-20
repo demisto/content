@@ -7,6 +7,9 @@ HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 INTEGRATION_NAME = 'RSS Feed'
 
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" \
+             " Safari/537.36"
+
 
 class Client(BaseClient):
     """Client for RSS Feed - gets Reports from the website
@@ -178,7 +181,7 @@ def check_feed(client: Client) -> str:
 def main():
     params = demisto.params()
     server_url = (params.get('server_url')).rstrip()
-    default_headers = params.get('default_headers')
+    default_headers = params.get('default_headers', USER_AGENT)
     if default_headers:
         try:
             default_headers = json.loads(default_headers.strip())
