@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Callable
+from collections.abc import Callable
 
 import requests.auth
 import urllib3
@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-STATUS_LIST_TO_RETRY = [429] + [i for i in range(500, 600)]
+STATUS_LIST_TO_RETRY = [429] + list(range(500, 600))
 OK_CODES = (200, 201, 204, 401)
 MAX_RETRIES = 3
 BACKOFF_FACTOR = 15
@@ -135,8 +135,8 @@ class VectraClient(BaseClient):
         integration_context = get_integration_context()
         self._token = integration_context.get("access_token") or self._generate_tokens()
 
-    def http_request(self, method: str, url_suffix: str = '', params: Dict[str, Any] = None,
-                     data: Dict[str, Any] = None, json_data: Dict[str, Any] = None, response_type: str = 'response',
+    def http_request(self, method: str, url_suffix: str = '', params: dict[str, Any] = None,
+                     data: dict[str, Any] = None, json_data: dict[str, Any] = None, response_type: str = 'response',
                      **kwargs):
         """
         Makes an HTTP request to the server.
@@ -245,7 +245,7 @@ class VectraClient(BaseClient):
             return access_token
 
     def list_users_request(self, username: Optional[str], role=Optional[str],
-                           last_login_timestamp=Optional[datetime]) -> Dict:
+                           last_login_timestamp=Optional[datetime]) -> dict:
         """
         List users.
 
@@ -264,7 +264,7 @@ class VectraClient(BaseClient):
     def list_entities_request(self, page: int = MAX_PAGE, page_size: int = MAX_PAGE_SIZE, is_prioritized: bool = None,
                               entity_type: str = None, last_modified_timestamp: Optional[datetime] = None,
                               last_detection_timestamp: Optional[datetime] = None,
-                              tags: str = None, ordering: str = None, state: str = 'active') -> Dict:
+                              tags: str = None, ordering: str = None, state: str = 'active') -> dict:
         """List entities.
 
         Args:
@@ -290,7 +290,7 @@ class VectraClient(BaseClient):
                                      response_type='json')
         return entities
 
-    def get_entity_request(self, entity_id: int = None, entity_type: str = None) -> Dict:
+    def get_entity_request(self, entity_id: int = None, entity_type: str = None) -> dict:
         """Get entity by ID.
 
         Args:
@@ -308,7 +308,7 @@ class VectraClient(BaseClient):
     def list_detections_request(self, detection_category: str = None, detection_type: str = None, entity_id: int = None,
                                 page: int = None, page_size: int = None, last_timestamp: Optional[datetime] = None,
                                 tags: str = None, state: str = 'active', detection_name: str = None,
-                                ids: str = None) -> Dict:
+                                ids: str = None) -> dict:
         """
         List detections.
 
@@ -335,7 +335,7 @@ class VectraClient(BaseClient):
                                        response_type='json')
         return detections
 
-    def list_entity_note_request(self, entity_id: int = None, entity_type: str = None) -> Dict:
+    def list_entity_note_request(self, entity_id: int = None, entity_type: str = None) -> dict:
         """
         List entity notes.
 
@@ -352,7 +352,7 @@ class VectraClient(BaseClient):
                                   params=params, response_type='json')
         return notes
 
-    def add_entity_note_request(self, entity_id: int = None, entity_type: str = None, note: str = None) -> Dict:
+    def add_entity_note_request(self, entity_id: int = None, entity_type: str = None, note: str = None) -> dict:
         """
         Add a note to an entity.
 
@@ -372,7 +372,7 @@ class VectraClient(BaseClient):
         return notes
 
     def update_entity_note_request(self, entity_id: int = None, entity_type: str = None, note: str = None,
-                                   note_id: int = None) -> Dict:
+                                   note_id: int = None) -> dict:
         """
         Updates the note of an entity.
 
@@ -412,7 +412,7 @@ class VectraClient(BaseClient):
                                 params=params, response_type='response')
         return res
 
-    def update_entity_tags_request(self, entity_id: int = None, entity_type: str = None, tags: List = None) -> Dict:
+    def update_entity_tags_request(self, entity_id: int = None, entity_type: str = None, tags: List = None) -> dict:
         """
         Update tags to an entity.
 
@@ -430,7 +430,7 @@ class VectraClient(BaseClient):
                                 params=params, json_data=data, response_type='json')
         return res
 
-    def list_entity_tags_request(self, entity_id: int = None, entity_type: str = None) -> Dict:
+    def list_entity_tags_request(self, entity_id: int = None, entity_type: str = None) -> dict:
         """
         List tags for the specified entity.
 
@@ -446,7 +446,7 @@ class VectraClient(BaseClient):
                                 params=params, response_type='json')
         return res
 
-    def mark_or_unmark_detection_fixed_request(self, detection_ids: List[str], mark: str) -> Dict:
+    def mark_or_unmark_detection_fixed_request(self, detection_ids: List[str], mark: str) -> dict:
         """
         Mark or unmark detections as fixed.
 
@@ -472,7 +472,7 @@ class VectraClient(BaseClient):
 
     def list_assignments_request(self, account_ids: str = None, host_ids: str = None, resolution: str = None,
                                  resolved: bool = None, created_after: str = None,
-                                 assignees: str = None, page: int = None, page_size: int = None) -> Dict:
+                                 assignees: str = None, page: int = None, page_size: int = None) -> dict:
         """
         Retrieve a list of assignments based on the provided account IDs and host IDs.
 
@@ -497,7 +497,7 @@ class VectraClient(BaseClient):
 
     def add_entity_assignment_request(self, assign_to_user_id: Optional[int] = None,
                                       assign_host_id: Optional[int] = None,
-                                      assign_account_id: Optional[int] = None) -> Dict:
+                                      assign_account_id: Optional[int] = None) -> dict:
         """
         Send a request to add an entity assignment.
 
@@ -520,7 +520,7 @@ class VectraClient(BaseClient):
         return res
 
     def update_entity_assignment_request(self, assign_to_user_id: Optional[int] = None,
-                                         assignment_id: Optional[int] = None) -> Dict:
+                                         assignment_id: Optional[int] = None) -> dict:
         """
         Send a request to update an existing entity assignment.
 
@@ -540,7 +540,7 @@ class VectraClient(BaseClient):
 
     def resolve_entity_assignment_request(self, assignment_id: Optional[int] = None, outcome: int = None,
                                           note: str = "Updated by XSOAR.",
-                                          triage_as: str = None, detection_ids=None) -> Dict:
+                                          triage_as: str = None, detection_ids=None) -> dict:
         """
         Resolves an entity assignment.
 
@@ -559,7 +559,7 @@ class VectraClient(BaseClient):
                                 data=body, response_type='json')
         return res
 
-    def list_assignment_outcomes_request(self, page: int = None, page_size: int = None) -> Dict:
+    def list_assignment_outcomes_request(self, page: int = None, page_size: int = None) -> dict:
         """
         Send a request to retrieve a list of assignment outcomes.
 
@@ -591,7 +591,7 @@ class VectraClient(BaseClient):
 
     def list_group_request(self, group_type: str, account_names: List[str], domains: List[str], host_ids: List[str],
                            host_names: List[str], importance: str, ips: List[str], description: str,
-                           last_modified_timestamp: Optional[datetime], last_modified_by: str, group_name: str) -> Dict:
+                           last_modified_timestamp: Optional[datetime], last_modified_by: str, group_name: str) -> dict:
         """
         List groups as per the specified parameters.
 
@@ -620,7 +620,7 @@ class VectraClient(BaseClient):
                                 response_type='json')
         return res
 
-    def get_group_request(self, group_id: int = None) -> Dict:
+    def get_group_request(self, group_id: int = None) -> dict:
         """Get group by ID.
 
         Args:
@@ -633,7 +633,7 @@ class VectraClient(BaseClient):
                                   response_type='json')
         return group
 
-    def update_group_members_request(self, group_id: int = None, members: List = None) -> Dict:
+    def update_group_members_request(self, group_id: int = None, members: List = None) -> dict:
         """Update members in group.
 
         Args:
@@ -671,7 +671,7 @@ def validate_urgency_score(urgency_score: str, score_name: str) -> Optional[int]
     return score
 
 
-def validate_configuration_parameters(params: Dict[str, Any]):
+def validate_configuration_parameters(params: dict[str, Any]):
     """
     Validates the configuration parameters provided.
 
@@ -738,7 +738,7 @@ def validate_positive_integer_arg(value: Optional[Any], arg_name: str, required:
     return True
 
 
-def validate_entity_list_command_args(args: Dict):
+def validate_entity_list_command_args(args: dict):
     """
     Validate the arguments for the entity_list command.
 
@@ -769,7 +769,7 @@ def validate_entity_list_command_args(args: Dict):
         raise ValueError(ERRORS['INVALID_PAGE_SIZE'])
 
 
-def validate_list_entity_detections_args(args: Dict[Any, Any]):
+def validate_list_entity_detections_args(args: dict[Any, Any]):
     """
     Validate the arguments for listing entity detections.
 
@@ -804,7 +804,7 @@ def validate_list_entity_detections_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['INVALID_PAGE_SIZE'])
 
 
-def validate_detection_describe_args(args: Dict[Any, Any]):
+def validate_detection_describe_args(args: dict[Any, Any]):
     """
     Validate the arguments for detection describe.
 
@@ -835,7 +835,7 @@ def validate_detection_describe_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['INVALID_PAGE_SIZE'])
 
 
-def validate_entity_note_list_command_args(args: Dict[Any, Any]):
+def validate_entity_note_list_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity list add command.
 
@@ -856,7 +856,7 @@ def validate_entity_note_list_command_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('entity_type', ', '.join(VALID_ENTITY_TYPE)))
 
 
-def validate_entity_note_add_command_args(args: Dict[Any, Any]):
+def validate_entity_note_add_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity note add command.
 
@@ -881,7 +881,7 @@ def validate_entity_note_add_command_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('note'))
 
 
-def validate_entity_note_update_command_args(args: Dict[Any, Any]):
+def validate_entity_note_update_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity note update command.
 
@@ -908,7 +908,7 @@ def validate_entity_note_update_command_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('note'))
 
 
-def validate_entity_note_remove_command_args(args: Dict[Any, Any]):
+def validate_entity_note_remove_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity note update command.
 
@@ -932,7 +932,7 @@ def validate_entity_note_remove_command_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('entity_type', ', '.join(VALID_ENTITY_TYPE)))
 
 
-def validate_entity_tag_add_command_args(args: Dict[Any, Any]):
+def validate_entity_tag_add_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity tag add command.
 
@@ -949,7 +949,7 @@ def validate_entity_tag_add_command_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('tags'))
 
 
-def validate_entity_tag_list_command_args(args: Dict[Any, Any]):
+def validate_entity_tag_list_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity tag list command.
 
@@ -986,7 +986,7 @@ def validate_detections_mark_and_unmark_args(detection_ids: List):
     all(validate_positive_integer_arg(i, arg_name='detection_ids') for i in detection_ids)
 
 
-def validate_assignment_list_command_args(args: Dict):
+def validate_assignment_list_command_args(args: dict):
     """
     Validate the arguments provided for the assignment list command.
 
@@ -1013,7 +1013,7 @@ def validate_assignment_list_command_args(args: Dict):
     validate_positive_integer_arg(value=page_size, arg_name='page_size')
 
 
-def validate_entity_assignment_add_command_args(args: Dict):
+def validate_entity_assignment_add_command_args(args: dict):
     """
     Validate the arguments provided for adding an entity assignment.
 
@@ -1038,7 +1038,7 @@ def validate_entity_assignment_add_command_args(args: Dict):
         raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('entity_type', ', '.join(VALID_ENTITY_TYPE)))
 
 
-def validate_entity_assignment_update_command_args(args: Dict):
+def validate_entity_assignment_update_command_args(args: dict):
     """
     Validate the arguments provided for updating an entity assignment.
 
@@ -1102,7 +1102,7 @@ def validate_entity_detections_mark_fix_command_args(args):
         raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('entity_type', ', '.join(VALID_ENTITY_TYPE)))
 
 
-def validate_group_list_command_args(args: Dict[Any, Any]):
+def validate_group_list_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the group list command.
 
@@ -1172,7 +1172,7 @@ def validate_group_assign_and_unassign_command_args(args):
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('members'))
 
 
-def urgency_score_to_severity(entity_urgency_score: Optional[int], params: Dict[str, Any]) -> int:
+def urgency_score_to_severity(entity_urgency_score: Optional[int], params: dict[str, Any]) -> int:
     """
     Maps the urgency score to severity levels.
     Demisto's severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low
@@ -1220,7 +1220,7 @@ def urgency_score_to_severity(entity_urgency_score: Optional[int], params: Dict[
         return SEVERITY['low']
 
 
-def trim_spaces_from_args(args: Dict) -> Dict:
+def trim_spaces_from_args(args: dict) -> dict:
     """
     Trim spaces from values of the args Dict.
 
@@ -1335,7 +1335,7 @@ def get_user_list_command_hr(users: List):
     return human_readable
 
 
-def get_entity_list_command_hr(entities: Dict, page: int, page_size: int, count: int):
+def get_entity_list_command_hr(entities: dict, page: int, page_size: int, count: int):
     """
     Converts a list of entities into a human-readable table format.
 
@@ -1387,7 +1387,7 @@ def get_entity_list_command_hr(entities: Dict, page: int, page_size: int, count:
     return human_readable
 
 
-def get_entity_get_command_hr(entity: Dict):
+def get_entity_get_command_hr(entity: dict):
     """
     Returns the human-readable output for the entity details.
 
@@ -1432,7 +1432,7 @@ def get_entity_get_command_hr(entity: Dict):
     return human_readable
 
 
-def get_list_entity_detections_command_hr(detections: Dict[Any, Any], page: Optional[int], page_size: Optional[int],
+def get_list_entity_detections_command_hr(detections: dict[Any, Any], page: Optional[int], page_size: Optional[int],
                                           count: int):
     """
     Converts the list of detections into a human-readable table format.
@@ -1493,7 +1493,7 @@ def get_list_entity_detections_command_hr(detections: Dict[Any, Any], page: Opti
     return human_readable
 
 
-def get_assignment_list_command_hr(assignments: Dict, page: Optional[int], page_size: Optional[int],
+def get_assignment_list_command_hr(assignments: dict, page: Optional[int], page_size: Optional[int],
                                    count: int):
     """
     Returns the human-readable output for the assignment.
@@ -1530,7 +1530,7 @@ def get_assignment_list_command_hr(assignments: Dict, page: Optional[int], page_
     return human_readable, assignments
 
 
-def entity_assignment_add_command_hr(assignment: Dict) -> str:
+def entity_assignment_add_command_hr(assignment: dict) -> str:
     """
     Returns the human-readable output for the assignment.
 
@@ -1558,7 +1558,7 @@ def entity_assignment_add_command_hr(assignment: Dict) -> str:
     return human_readable
 
 
-def get_assignment_outcome_list_command_hr(outcomes: Dict, page: Optional[int], page_size: Optional[int],
+def get_assignment_outcome_list_command_hr(outcomes: dict, page: Optional[int], page_size: Optional[int],
                                            count: int):
     """
     Returns the human-readable output for the assignment outcome list.
@@ -1591,7 +1591,7 @@ def get_assignment_outcome_list_command_hr(outcomes: Dict, page: Optional[int], 
     return human_readable, outcomes
 
 
-def get_list_entity_notes_command_hr(notes: Dict, entity_id: Optional[int], entity_type: str) -> str:
+def get_list_entity_notes_command_hr(notes: dict, entity_id: Optional[int], entity_type: str) -> str:
     """
     Returns the human-readable output for the entity notes.
 
@@ -1672,7 +1672,7 @@ def get_group_list_command_hr(groups: List):
     return human_readable
 
 
-def get_group_unassign_and_assign_command_hr(group: Dict, changed_members: List, assign_flag: bool = False):
+def get_group_unassign_and_assign_command_hr(group: dict, changed_members: List, assign_flag: bool = False):
     """
     Converts group into a human-readable table format.
 
@@ -1726,7 +1726,7 @@ def get_group_unassign_and_assign_command_hr(group: Dict, changed_members: List,
 """ COMMAND FUNCTIONS """
 
 
-def fetch_incidents(client: VectraClient, params: Dict[str, Any]) -> List:
+def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
     """
     Fetches incidents from the Vectra server.
 
@@ -1910,7 +1910,7 @@ def fetch_incidents(client: VectraClient, params: Dict[str, Any]) -> List:
     return demisto_incidents
 
 
-def vectra_user_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_user_list_command(client: VectraClient, args: dict[str, Any]):
     """
     Retrieves a list of users from the Vectra API.
 
@@ -1941,7 +1941,7 @@ def vectra_user_list_command(client: VectraClient, args: Dict[str, Any]):
                           readable_output=human_readable, raw_response=users, outputs_key_field=['user_id'])
 
 
-def vectra_entity_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_list_command(client: VectraClient, args: dict[str, Any]):
     """
     Retrieves a list of entities from the Vectra API.
 
@@ -1999,7 +1999,7 @@ def vectra_entity_list_command(client: VectraClient, args: Dict[str, Any]):
                           readable_output=human_readable, raw_response=entities, outputs_key_field=['id', 'type'])
 
 
-def vectra_entity_describe_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_describe_command(client: VectraClient, args: dict[str, Any]):
     """
     Describes an entity from the Vectra API.
 
@@ -2034,7 +2034,7 @@ def vectra_entity_describe_command(client: VectraClient, args: Dict[str, Any]):
                           readable_output=human_readable, raw_response=entity, outputs_key_field=['id', 'type'])
 
 
-def vectra_entity_detection_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_detection_list_command(client: VectraClient, args: dict[str, Any]):
     """
     Retrieves a list of entity detections from the Vectra API.
 
@@ -2094,7 +2094,7 @@ def vectra_entity_detection_list_command(client: VectraClient, args: Dict[str, A
                           readable_output=hr, raw_response=response, outputs_key_field='id')
 
 
-def vectra_detection_describe_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_detection_describe_command(client: VectraClient, args: dict[str, Any]):
     """
     Describes a list of detections for provided detection IDs from the Vectra API.
 
@@ -2134,7 +2134,7 @@ def vectra_detection_describe_command(client: VectraClient, args: Dict[str, Any]
                           readable_output=hr, raw_response=response, outputs_key_field='id')
 
 
-def vectra_entity_note_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_note_list_command(client: VectraClient, args: dict[str, Any]):
     """
     List entity notes.
 
@@ -2167,7 +2167,7 @@ def vectra_entity_note_list_command(client: VectraClient, args: Dict[str, Any]):
                               raw_response=notes)
 
 
-def vectra_entity_note_add_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_note_add_command(client: VectraClient, args: dict[str, Any]):
     """
     Adds a note to an entity in Vectra API.
 
@@ -2198,7 +2198,7 @@ def vectra_entity_note_add_command(client: VectraClient, args: Dict[str, Any]):
                           outputs_key_field=['entity_id', 'entity_type', 'note_id'])
 
 
-def vectra_entity_note_update_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_note_update_command(client: VectraClient, args: dict[str, Any]):
     """
     Updates a note to an entity in Vectra API.
 
@@ -2230,7 +2230,7 @@ def vectra_entity_note_update_command(client: VectraClient, args: Dict[str, Any]
                           outputs_key_field=['entity_id', 'entity_type', 'note_id'])
 
 
-def vectra_entity_note_remove_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_note_remove_command(client: VectraClient, args: dict[str, Any]):
     """
     Updates a note to an entity in Vectra API.
 
@@ -2257,7 +2257,7 @@ def vectra_entity_note_remove_command(client: VectraClient, args: Dict[str, Any]
     return CommandResults(outputs={}, readable_output=human_readable)
 
 
-def vectra_entity_tag_add_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_tag_add_command(client: VectraClient, args: dict[str, Any]):
     """
     Add tags to an entity.
 
@@ -2314,7 +2314,7 @@ def vectra_entity_tag_add_command(client: VectraClient, args: Dict[str, Any]):
                           outputs_key_field=['tag_id', 'entity_type', 'entity_id'])
 
 
-def vectra_entity_tag_remove_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_tag_remove_command(client: VectraClient, args: dict[str, Any]):
     """
     Removes associated tags for the specified entity using Vectra API.
 
@@ -2374,7 +2374,7 @@ def vectra_entity_tag_remove_command(client: VectraClient, args: Dict[str, Any])
                           outputs_key_field=['tag_id', 'entity_type', 'entity_id'])
 
 
-def vectra_entity_tag_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_tag_list_command(client: VectraClient, args: dict[str, Any]):
     """
     List tags for an entity.
 
@@ -2418,7 +2418,7 @@ def vectra_entity_tag_list_command(client: VectraClient, args: Dict[str, Any]):
                           outputs_key_field=['tag_id', 'entity_type', 'entity_id'])
 
 
-def vectra_detections_mark_fixed_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_detections_mark_fixed_command(client: VectraClient, args: dict[str, Any]):
     """
     Mark the provided detection IDs as fixed.
 
@@ -2451,7 +2451,7 @@ def vectra_detections_mark_fixed_command(client: VectraClient, args: Dict[str, A
     return CommandResults(outputs={}, readable_output=human_readable)
 
 
-def vectra_detections_unmark_fixed_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_detections_unmark_fixed_command(client: VectraClient, args: dict[str, Any]):
     """
     Unmark the provided detection IDs as fixed.
 
@@ -2484,7 +2484,7 @@ def vectra_detections_unmark_fixed_command(client: VectraClient, args: Dict[str,
     return CommandResults(outputs={}, readable_output=human_readable)
 
 
-def vectra_assignment_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_assignment_list_command(client: VectraClient, args: dict[str, Any]):
     """
     List assignments.
 
@@ -2537,7 +2537,7 @@ def vectra_assignment_list_command(client: VectraClient, args: Dict[str, Any]):
                               raw_response=response)
 
 
-def vectra_entity_assignment_add_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_assignment_add_command(client: VectraClient, args: dict[str, Any]):
     """
     Create an assignment for specified entity id.
 
@@ -2579,7 +2579,7 @@ def vectra_entity_assignment_add_command(client: VectraClient, args: Dict[str, A
                           readable_output=human_readable, raw_response=assignment, outputs_key_field=['assignment_id'])
 
 
-def vectra_entity_assignment_update_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_assignment_update_command(client: VectraClient, args: dict[str, Any]):
     """
     Updates an assignment for specified entity id.
 
@@ -2614,7 +2614,7 @@ def vectra_entity_assignment_update_command(client: VectraClient, args: Dict[str
                           raw_response=updated_assignment, outputs_key_field=['assignment_id'])
 
 
-def vectra_entity_assignment_resolve_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_assignment_resolve_command(client: VectraClient, args: dict[str, Any]):
     """
     Resolve an assignment for specified assignment id.
 
@@ -2663,7 +2663,7 @@ def vectra_entity_assignment_resolve_command(client: VectraClient, args: Dict[st
                           readable_output=human_readable, raw_response=assignment, outputs_key_field=['assignment_id'])
 
 
-def vectra_assignment_outcome_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_assignment_outcome_list_command(client: VectraClient, args: dict[str, Any]):
     """
     List assignment outcomes.
 
@@ -2696,7 +2696,7 @@ def vectra_assignment_outcome_list_command(client: VectraClient, args: Dict[str,
                           outputs_prefix="Vectra.Entity.Assignments.Outcomes", outputs_key_field=['id'])
 
 
-def vectra_detection_pcap_download_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_detection_pcap_download_command(client: VectraClient, args: dict[str, Any]):
     """
     Download the packet capture (PCAP) file associated with a Vectra detection.
 
@@ -2720,7 +2720,7 @@ def vectra_detection_pcap_download_command(client: VectraClient, args: Dict[str,
     return fileResult(filename=file_name, data=response.content)
 
 
-def vectra_entity_detections_mark_fixed_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_entity_detections_mark_fixed_command(client: VectraClient, args: dict[str, Any]):
     """
     Mark the provided entity detections as fixed.
 
@@ -2758,7 +2758,7 @@ def vectra_entity_detections_mark_fixed_command(client: VectraClient, args: Dict
     return CommandResults(readable_output=human_readable)
 
 
-def vectra_group_list_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_group_list_command(client: VectraClient, args: dict[str, Any]):
     """
     Retrieves a list of groups.
 
@@ -2808,7 +2808,7 @@ def vectra_group_list_command(client: VectraClient, args: Dict[str, Any]):
                           raw_response=groups, outputs_key_field=['group_id'])
 
 
-def vectra_group_unassign_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_group_unassign_command(client: VectraClient, args: dict[str, Any]):
     """
     Unassign members in Group.
 
@@ -2864,7 +2864,7 @@ def vectra_group_unassign_command(client: VectraClient, args: Dict[str, Any]):
                           raw_response=updated_group, outputs_key_field=['group_id'])
 
 
-def vectra_group_assign_command(client: VectraClient, args: Dict[str, Any]):
+def vectra_group_assign_command(client: VectraClient, args: dict[str, Any]):
     """
     Assign members in Group.
 
@@ -2937,7 +2937,7 @@ def test_module(client: VectraClient) -> str:
     return "ok"
 
 
-def get_modified_remote_data_command(client: VectraClient, args: Dict) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetModifiedRemoteDataResponse:
     """
     Get modified remote data from the Vectra platform and prepare it for mirroring in XSOAR.
 
@@ -3006,7 +3006,7 @@ def get_modified_remote_data_command(client: VectraClient, args: Dict) -> GetMod
     return GetModifiedRemoteDataResponse(modified_incident_ids=updated_incident_ids)
 
 
-def get_remote_data_command(client: VectraClient, args: Dict) -> GetRemoteDataResponse:
+def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataResponse:
     """
     Get remote data for a specific entity from the Vectra platform and prepare it for mirroring in XSOAR.
 
@@ -3019,7 +3019,7 @@ def get_remote_data_command(client: VectraClient, args: Dict) -> GetRemoteDataRe
     Returns:
         GetRemoteDataResponse: An object containing the remote incident data and any new entries to return to XSOAR.
     """
-    new_entries_to_return: List[Dict] = []
+    new_entries_to_return: List[dict] = []
 
     dbot_mirror_id: str = args.get('id')  # type: ignore
     demisto.debug(f'dbot_mirror_id:{dbot_mirror_id}')
@@ -3120,7 +3120,7 @@ def get_remote_data_command(client: VectraClient, args: Dict) -> GetRemoteDataRe
     return GetRemoteDataResponse(remote_incident_data, new_entries_to_return)
 
 
-def update_remote_system_command(client: VectraClient, args: Dict) -> str:
+def update_remote_system_command(client: VectraClient, args: dict) -> str:
     """
     Update a remote system based on changes in the XSOAR incident.
 
@@ -3155,6 +3155,7 @@ def update_remote_system_command(client: VectraClient, args: Dict) -> str:
                 demisto.info(
                     f"Skipping outgoing mirroring for entity note with XSOAR Incident ID:{xsoar_incident_id}, "
                     "because the note length exceeds 8000 characters.")
+                entry_user = ""
             else:
                 entry_user = entry.get('user', 'dbot') or 'dbot'
 
@@ -3172,7 +3173,7 @@ def update_remote_system_command(client: VectraClient, args: Dict) -> str:
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type,
                                           tags=xsoar_tags)
     # Check if all tags from XSOAR removed
-    elif not xsoar_tags and vectra_tags and 'tags' in delta.keys():
+    elif not xsoar_tags and vectra_tags and 'tags' in delta:
         demisto.debug(f'Sending the tags: {xsoar_tags}')
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type,
                                           tags=xsoar_tags)
@@ -3214,7 +3215,7 @@ def main():
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'vectra-user-list': vectra_user_list_command,
         'vectra-entity-list': vectra_entity_list_command,
         'vectra-entity-describe': vectra_entity_describe_command,
