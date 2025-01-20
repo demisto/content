@@ -14,7 +14,8 @@ import traceback
 import urllib.parse
 from collections import defaultdict
 from collections.abc import Iterable, Hashable
-from typing import Self
+from typing import Tuple
+from typing_extensions import Self
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
@@ -93,7 +94,7 @@ class ContextData:
             dx = self.__value
             key = key[1:]
         else:
-            for prefix in self.__specials:
+            for prefix in self.__specials.keys():
                 k = key[len(prefix):]
                 if key.startswith(prefix) and k[:1] in ('', '.', '(', '='):
                     if prefix == 'lists':
@@ -136,7 +137,7 @@ class ContextData:
 class Formatter:
     def __init__(
         self,
-        variable_substitution: tuple[str, str],
+        variable_substitution: Tuple[str, str],
         keep_symbol_to_null: bool
     ) -> None:
         self.__keep_symbol_to_null = keep_symbol_to_null
@@ -182,8 +183,8 @@ class Formatter:
         source: str,
         dx: ContextData | None,
         si: int,
-        markers: tuple[str, str] | None,
-    ) -> tuple[Any, int | None]:
+        markers: Tuple[str, str] | None,
+    ) -> Tuple[Any, int | None]:
         """ Extract a template text, or an enclosed value within starting and ending marks
 
         :param source: The template text, or the enclosed value starts with the next charactor of a start marker
@@ -293,11 +294,10 @@ class Formatter:
             return template
 
 
-class SortableValue:
+class SortableValue(object):
     """
     The custom value object class, which enables you to sort for any types of data even in different types.
     """
-
     def __init__(
         self,
         value: Any,
@@ -314,7 +314,7 @@ class SortableValue:
         ) -> bool:
             if any(
                 f(obj1) and f(obj2) for f in [
-                    lambda x:isinstance(x, int | float),
+                    lambda x:isinstance(x, (int, float)),
                     lambda x:isinstance(x, bool),
                     lambda x:isinstance(x, str),
                 ]
@@ -328,7 +328,7 @@ class SortableValue:
                 ) -> int:
                     if isinstance(v, bool):
                         return 1
-                    elif isinstance(v, int | float):
+                    elif isinstance(v, (int, float)):
                         return 2
                     elif isinstance(v, str):
                         return 3
@@ -362,10 +362,10 @@ class QueryParams:
             raise DemistoException('earliest_time and latest_time must be timezone aware.')
 
         if earliest_time > latest_time:
-            raise DemistoException(
+            raise DemistoException((
                 f'latest_time ({latest_time}) must be equal to or later than'
                 f' earliest_time ({earliest_time}).'
-            )
+            ))
 
         self.__query_name = query_name
         self.__query_string = '\n'.join(x.strip() for x in query_string.splitlines())
@@ -542,7 +542,8 @@ class XQLQuery:
                 k, _, _ = k.partition('(')
                 if k == 'PaloAltoNetworksXQL.GenericQuery' and isinstance(v, dict):
                     return v
-        raise DemistoException(f'Unable to get query results - {res}')
+        else:
+            raise DemistoException(f'Unable to get query results - {res}')
 
     def __init__(
         self,
@@ -585,13 +586,13 @@ class XQLQuery:
 
             error_message = get_error(res)
             if (
-                retry_count >= self.__retry_max
-                or 'reached max allowed amount of parallel running queries' not in error_message
+                retry_count >= self.__retry_max or
+                'reached max allowed amount of parallel running queries' not in error_message
             ):
-                raise DemistoException(
+                raise DemistoException((
                     'Failed to execute xdr-xql-generic-query.'
                     f' Error details:\n{error_message}'
-                )
+                ))
             else:
                 time.sleep(self.__retry_interval)
 
@@ -619,10 +620,10 @@ class XQLQuery:
                 )
                 if is_error(res):
                     error_message = get_error(res)
-                    raise DemistoException(
+                    raise DemistoException((
                         'Failed to execute xdr-xql-get-query-results.'
                         f' Error details:\n{error_message}'
-                    )
+                    ))
 
                 response = self.__get_response(res)
             else:
@@ -633,7 +634,6 @@ class Query:
     """
     This class allows you to get the query results.
     """
-
     def __init__(
         self,
         query_params: QueryParams,
@@ -652,10 +652,11 @@ class Query:
         else:
             dataset = None
 
-        if dataset is None and self.__xql_query:
-            dataset = self.__xql_query.query(self.__query_params)
-            if self.__cache:
-                self.__cache.save_dataset(self.__query_params, dataset)
+        if dataset is None:
+            if self.__xql_query:
+                dataset = self.__xql_query.query(self.__query_params)
+                if self.__cache:
+                    self.__cache.save_dataset(self.__query_params, dataset)
 
         return dataset or []
 
@@ -671,7 +672,7 @@ class EntryBuilder:
         group_by: str,
         asc: bool,
     ) -> Iterable[
-        tuple[
+        Tuple[
             Hashable,
             Iterable[dict[Hashable, Any]]
         ]
@@ -711,7 +712,7 @@ class EntryBuilder:
         d: dict[Hashable, float] = defaultdict(float)
         for fields in dataset:
             d[fields.get(group_by)] += to_float(fields.get(sum_field))
-        return dict(sorted(d.items(), key=lambda x: x[1], reverse=not order_asc))
+        return {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=not order_asc)}
 
     @staticmethod
     def __make_color_palette(
@@ -730,10 +731,13 @@ class EntryBuilder:
         elif isinstance(colors, list):
             color_order = colors
 
-        color_map: dict[Hashable, str] = dict(zip(
-            names,
-            color_order + EntryBuilder.list_colors(len(names))
-        ))
+        color_map: dict[Hashable, str] = {
+            name: color
+            for name, color in zip(
+                names,
+                color_order + EntryBuilder.list_colors(len(names))
+            )
+        }
         if isinstance(colors, dict):
             color_map.update(colors)
         return color_map
@@ -808,9 +812,9 @@ class EntryBuilder:
                     elif colors is None:
                         colors = []
                     elif not isinstance(colors, str):
-                        raise DemistoException(
+                        raise DemistoException((
                             f'colors must be of type dict, list or null - {type(colors)}'
-                        )
+                        ))
                     self.__colors = colors
 
                     sort = records.get('sort') or {}
@@ -950,7 +954,7 @@ class EntryBuilder:
             stats = [
                 {
                     'name': to_str(group.label or field or ''),
-                    'data': [sum(to_float(x.get(field)) for x in dataset)],
+                    'data': [sum((to_float(x.get(field)) for x in dataset))],
                     'color': group.color,
                 } for field, group in fields.items()
             ]
@@ -1047,9 +1051,9 @@ class EntryBuilder:
                         elif colors is None:
                             colors = []
                         elif not isinstance(colors, str):
-                            raise DemistoException(
+                            raise DemistoException((
                                 f'colors must be of type dict, list or null - {type(colors)}'
-                            )
+                            ))
                         self.__colors = colors
 
                     @property
@@ -1188,7 +1192,7 @@ class EntryBuilder:
                 group_by=template.x.by,
                 asc=template.x.asc
             ):
-                groups = {k: None for k in ynames}
+                groups = {k: None for k in ynames.keys()}
                 xlabel = ''
                 for y_fields in x_dataset:
                     data = y_fields.get(records.data_field)
@@ -1383,7 +1387,7 @@ class EntryBuilder:
                 self.__sort = self.Sort(sort)
 
                 self.__default = template.get('default') or ''
-                assert isinstance(self.__default, str | dict), (
+                assert isinstance(self.__default, (str, dict)), (
                     f'default must be of type str, dict or null - {type(self.__default)}'
                 )
 
@@ -1675,7 +1679,7 @@ class Main:
     @staticmethod
     def __get_template(
         args: dict[Hashable, Any],
-    ) -> tuple[str, dict[Hashable, Any]]:
+    ) -> Tuple[str, dict[Hashable, Any]]:
         """ Get the templates with its name
 
         :param args: The argument parameters.
@@ -1683,7 +1687,7 @@ class Main:
         """
         templates_type = args.get('templates_type') or 'raw'
         if templates_type == 'raw':
-            templates: str | dict = args.get('templates')
+            templates = args.get('templates')
         elif templates_type == 'list':
             templates = execute_command('getList', {
                 'listName': args.get('templates')
@@ -1768,7 +1772,7 @@ class Main:
     def __get_variable_substitution(
         args: dict[Hashable, Any],
         template: dict[Hashable, Any],
-    ) -> tuple[str, str]:
+    ) -> Tuple[str, str]:
         vs = args.get('variable_substitution') or '${,}'
         if isinstance(vs, str):
             vs = vs.split(',', maxsplit=1)
@@ -1781,18 +1785,17 @@ class Main:
             assert isinstance(vs[0], str), f'opening marker must be of type str - {vs[0]}'
             vs = [vs[0], '']
         elif len(vs) == 2:
-            assert isinstance(vs[0], str), f'opening marker must be of type str - {vs[0]}'
-            assert isinstance(vs[1], str), f'closing marker must be of type str - {vs[1]}'
+            assert isinstance(vs[0], str) and isinstance(vs[1], str), (
+                f'opening/closing marker must be of type str - {vs}'
+            )
         else:
-            raise DemistoException(f'too many values for variable_substitution - {vs}')
+            raise DemistoException(f'too many values for variable_substitution - {vs}.')
 
         var_opening = demisto.get(template, 'config.variable_substitution.opening')
         if var_opening is not None:
-            assert isinstance(var_opening, str), (
-                f'config.variable_substitution.opening must be of type str - {var_opening}'
-            )
-            assert var_opening, (
-                'config.variable_substitution.opening cannot be empty when provided'
+            assert var_opening and isinstance(var_opening, str), (
+                'config.variable_substitution.opening must be of type str,'
+                f'and cannot be empty when provided - {var_opening}'
             )
         else:
             var_opening = vs[0]
@@ -1870,7 +1873,7 @@ class Main:
         arg = self.__args.get(name)
         if arg is None or arg == '':
             return default_value
-        elif isinstance(arg, str | int | float):
+        elif isinstance(arg, (str, int, float)):
             try:
                 return int(arg)
             except Exception:
@@ -1911,7 +1914,7 @@ class Main:
                     return False
                 elif isinstance(conds, bool):
                     return conds
-                elif isinstance(conds, int | float):
+                elif isinstance(conds, (int, float)):
                     return conds != 0.0
                 elif isinstance(conds, str):
                     return conds.lower() not in ('', 'false')

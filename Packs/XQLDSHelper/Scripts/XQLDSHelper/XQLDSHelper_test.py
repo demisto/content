@@ -15,7 +15,7 @@ import urllib.parse
 from collections.abc import Iterator
 from typing import Any
 from types import TracebackType
-from typing import Self
+from typing_extensions import Self
 from pytest_mock import MockerFixture
 
 
@@ -58,7 +58,7 @@ class MainTester:
 
         self.__frozen_now = now
         self.__freezer_now = None
-
+        
         self.__xql_responses = demisto.get(ent, 'xql.responses')
         self.__xql_last_resp = None
         self.__xql_resp_iter = None
@@ -237,10 +237,10 @@ class MainTester:
         self,
     ) -> Any:
         if self.__xql_responses is None:
-            raise RuntimeError(
+            raise RuntimeError((
                 "xql.response is not configured."
                 " This test case may have been expected to hit the cache, but it didn't."
-            )
+            ))
 
         if self.__xql_resp_iter is None:
             self.__xql_resp_iter = iter(to_list(self.__xql_responses))
@@ -259,7 +259,7 @@ class MainTester:
         if isinstance(conf, dict):
             _type = conf.get('type')
             if _type == 'file':
-                with open(conf.get('path')) as f:
+                with open(conf.get('path'), 'r') as f:
                     resp = json.loads(f.read())
 
                 self.__xql_last_resp = {
@@ -300,7 +300,8 @@ class MainTester:
             k, _, _ = k.partition('(')
             if k == 'PaloAltoNetworksXQL.GenericQuery' and isinstance(v, dict):
                 return v['results']
-        raise RuntimeError(f'Unable to get query results - {self.__xql_last_resp}')
+        else:
+            raise RuntimeError(f'Unable to get query results - {self.__xql_last_resp}')
 
     def __demisto_dt(
         self,
@@ -326,7 +327,10 @@ class MainTester:
             var = r'>val.map((record) => " - " + record.text).join("\n")'
             if var == func:
                 return '\n'.join(
-                    ' - ' + x.get('text') for x in dataset
+                    map(
+                        lambda x: ' - ' + x.get('text'),
+                        dataset
+                    )
                 )
 
             var = (
@@ -335,7 +339,10 @@ class MainTester:
             )
             if var == ''.join(func.strip().split()):
                 return '\n'.join(
-                    f' - {x[0]+1}: ' + x[1].get('text') for x in enumerate(dataset)
+                    map(
+                        lambda x: f' - {x[0]+1}: ' + x[1].get('text'),
+                        enumerate(dataset)
+                    )
                 )
 
         var = r"""encodeURIComponent(val).replace('"', '%22')"""
@@ -478,7 +485,7 @@ class TestXQLDSHelper:
     def __enum_test_config(
         file_path: str,
     ) -> Iterator[dict[str, Any]]:
-        with open(file_path) as f:
+        with open(file_path, 'r') as f:
             ents = json.load(f)
             assert isinstance(ents, list), f'Invalid test file - {file_path}'
             for ent in ents:
