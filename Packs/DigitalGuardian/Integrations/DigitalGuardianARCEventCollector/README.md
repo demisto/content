@@ -5,7 +5,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Known Limitations
 
-- By default, a maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To increase the volume of fetched events beyond this value, set the "Number of Export Requests per Fetch" configuration parameter to greater than 1.
+- A maximum of **10,000** events can be retrieved per fetch for each Digital Guardian export profile. To optimize throughput, it is recommended to distribute alerts and events across multiple export profiles and configure the export profile in the Digital Guardian ARC platform to include only relevant alarm and event types.
 
 - Events are fetched starting from the **Last Exported Record** timestamp of the export profile. When first configuring the event collector, it is highly recommended to adjust the value of this field in the selected export profile(s) to a recent timestamp to prevent the fetching of outdated events.
 
@@ -21,7 +21,6 @@ This is the default integration for this content pack when configured by the Dat
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Export Profiles | Internal document names or GUIDs of the Digital Guardian ARC export profiles. Custom export profiles are not officially supported. Default is defaultExportProfile. | True |
-| Number of Export Requests per Fetch | Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. The value should be set to between 1 and 4. Default is 1. | False |
 
 ## Commands
 
