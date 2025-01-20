@@ -28,12 +28,12 @@ args:
   description: The pair of default opening and closing markers that enclose a variable name (Default = ${,}).
   name: variable_substitution
 - auto: PREDEFINED
-  defaultValue: "true"
+  defaultValue: 'true'
   description: 'Set to true to convert a string within triple quotes in the templates to a JSON string if it is of type string. Set to false to use the templates as they are, without any conversion (Default = true).'
   name: triple_quotes_to_string
   predefined:
-  - "true"
-  - "false"
+  - true
+  - false
 - auto: PREDEFINED
   defaultValue: dataset
   description: The name of the type that defines which data is stored and retrieved from the cache to create the entry (Default = dataset).
