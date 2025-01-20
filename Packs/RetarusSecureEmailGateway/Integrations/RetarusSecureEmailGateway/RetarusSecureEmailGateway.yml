@@ -4,7 +4,7 @@ commonfields:
 name: Retarus Secure Email Gateway
 display: Retarus Secure Email Gateway
 category: Email
-description: Integrate RetarusSecureEmailGateway to seamlessly fetch events and enhance email security.
+description: Integrate RetarusSecureEmailGateway to seamlessly fetch events from SecureEmailGateway by Retarus and enhance email security.
 configuration:
 - defaultvalue: events.retarus.com
   display: Server URL

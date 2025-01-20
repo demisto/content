@@ -1,6 +1,6 @@
 {
     "name": "Retarus Secure Email Gateway",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "The Retarus Secure Email Platform provides comprehensive security and advanced email routing. It offers features such as Advanced Threat Protection and Email Archiving.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
