@@ -26,7 +26,8 @@ from Qualysv2 import (
     get_fetched_assets_qids,
     get_unfetched_vulnerabilities_qids,
     fetch_events, get_activity_logs_events, fetch_assets, fetch_vulnerabilities, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT,
-    HOST_LIMIT
+    HOST_LIMIT,
+    API_SUFFIX,
 )
 
 from CommonServerPython import *  # noqa: F401
@@ -1045,6 +1046,7 @@ class MockResponse:
 
 
 class TestClientClass:
+    client: Client = Client("test.com", "testuser", "testpassword", False, False, {})
     ERROR_HANDLER_INPUTS = [
         (
             MockResponse(
@@ -1082,9 +1084,33 @@ class TestClientClass:
         Then:
         - Ensure readable message is as expected
         """
-        client: Client = Client("test.com", "testuser", "testpassword", False, False, None)
         with pytest.raises(DemistoException, match=re.escape(error_message)):
-            client.error_handler(response)
+            self.client.error_handler(response)
+
+    def test_get_host_list_detections_events(self, mocker):
+        """
+        Given
+            - A Qualys Client instance and a since_datetime value
+        When
+            - Calling Client.get_host_list_detections_events
+        Assert
+            - The correct http request is made
+        """
+        since_datetime = "2024-12-12"
+
+        client_http_request = mocker.patch.object(self.client, "_http_request")
+        self.client.get_host_list_detection(since_datetime=since_datetime, limit=HOST_LIMIT)
+        http_request_kwargs = client_http_request.call_args.kwargs
+
+        assert client_http_request.called_once
+        assert http_request_kwargs["method"] == "GET"
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
+        assert http_request_kwargs["params"] == {
+            "truncation_limit": HOST_LIMIT,
+            "vm_scan_date_after": since_datetime,
+            "show_qds": 1,
+            "show_qds_factors": 1
+        }
 
 
 class TestInputValidations:
