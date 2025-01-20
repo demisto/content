@@ -1618,7 +1618,7 @@ class Client(BaseClient):
         raise DemistoException(err_msg, res=res)
 
     @logger
-    def command_http_request(self, command_api_data: dict[str, str]) -> requests.Response:
+    def command_http_request(self, command_api_data: dict[str, str]) -> Union[str, bytes]:
         """
         Make a http request to Qualys API
         Args:
@@ -1641,7 +1641,7 @@ class Client(BaseClient):
             error_handler=self.error_handler,
         )
 
-    def get_user_activity_logs(self, since_datetime: str, max_fetch: int = 0, next_page=None) -> str:
+    def get_user_activity_logs(self, since_datetime: str, max_fetch: int = 0, next_page=None) -> Union[str, bytes]:
         """
         Make a http request to Qualys API to get user activities logs
         Args:
@@ -1670,7 +1670,7 @@ class Client(BaseClient):
 
         return response.text
 
-    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[requests.Response, bool]:
+    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[Union[str, bytes], bool]:
         """
         Make a http request to Qualys API to get assets
         Args:
@@ -3583,11 +3583,11 @@ def main():  # pragma: no cover
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): real_amount_of_assets})
 
             elif fetch_stage == 'vulnerabilities':
-                vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run=last_run)
+                vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
 
                 unfetched_qids = get_unfetched_vulnerabilities_qids(vulnerabilities, last_run)
                 for qids_batch in batch(unfetched_qids, batch_size=2000):
-                    vulnerabilities_by_quid, _ = fetch_vulnerabilities(client, last_run=last_run, asset_qids=qids_batch)
+                    vulnerabilities_by_quid, _ = fetch_vulnerabilities(client=client, last_run=last_run, asset_qids=qids_batch)
                     vulnerabilities.extend(vulnerabilities_by_quid)
 
                 demisto.debug('sending vulnerabilities to XSIAM.')
