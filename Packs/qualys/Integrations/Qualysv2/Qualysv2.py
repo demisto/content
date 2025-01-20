@@ -34,6 +34,7 @@ HOST_LIMIT = 1000
 ASSET_SIZE_LIMIT = 10 ** 6   # 1MB
 TEST_FROM_DATE = 'one day'
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
+QIDS_BATCH_SIZE = 2000
 
 
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
@@ -1670,7 +1671,7 @@ class Client(BaseClient):
 
         return response.text
 
-    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[Union[str, bytes], bool]:
+    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[str | requests.Response, bool]:
         """
         Make a http request to Qualys API to get assets
         Args:
@@ -2919,7 +2920,7 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
-def get_activity_logs_events(client: Client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
+def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
     """ Get logs activity from qualys
     API response returns events sorted in descending order. We are saving the next_page param and
     sending next request with next_page arg if needed. Saving the newest event fetched.
@@ -2956,13 +2957,7 @@ def get_activity_logs_events(client: Client, since_datetime, max_fetch, next_pag
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(
-    client: Client,
-    since_datetime,
-    next_page: str = '',
-    limit: int = HOST_LIMIT,
-    is_test: bool = False,
-) -> tuple:
+def get_host_list_detections_events(client, since_datetime, next_page='', limit=HOST_LIMIT, is_test=False) -> tuple:
     """ Get host list detections from qualys
     Args:
         client: Qualys client
@@ -3262,6 +3257,7 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
+    fetch_vulnerabilities_by_asset_qids = argToBoolean(params.get("fetch_vulnerabilities_by_asset_qids", False))
 
     commands_methods: dict[str, dict[str, Callable]] = {
         # *** Commands with unparsed response as output ***
@@ -3573,7 +3569,8 @@ def main():  # pragma: no cover
                     demisto.debug(f'sending {len(assets)} assets to XSIAM. Total assets collected so far: '
                                   f'{real_amount_of_assets}')
 
-                    new_last_run['asset_qids'] = get_fetched_assets_qids(assets, last_run)
+                    if fetch_vulnerabilities_by_asset_qids:
+                        new_last_run['asset_qids'] = get_fetched_assets_qids(assets, last_run)
 
                     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                                        snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
@@ -3586,7 +3583,7 @@ def main():  # pragma: no cover
                 vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
 
                 unfetched_qids = get_unfetched_vulnerabilities_qids(vulnerabilities, last_run)
-                for qids_batch in batch(unfetched_qids, batch_size=2000):
+                for qids_batch in batch(unfetched_qids, batch_size=QIDS_BATCH_SIZE):
                     vulnerabilities_by_quid, _ = fetch_vulnerabilities(client=client, last_run=last_run, asset_qids=qids_batch)
                     vulnerabilities.extend(vulnerabilities_by_quid)
 
