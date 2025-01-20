@@ -21,6 +21,7 @@ configuration:
   name: credentials
   displaypassword: Client Secret
   required: true
+  section: Connect
 - display: Export Profiles
   additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles. Custom export profiles are not officially supported.
   name: export_profile
