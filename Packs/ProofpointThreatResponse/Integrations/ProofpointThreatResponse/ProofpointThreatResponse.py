@@ -792,16 +792,18 @@ def close_incident_command():
 
 
 def search_quarantine():
-    arg_time = dateparser.parse(demisto.args().get('time'))
+    args = demisto.args()
+    arg_time = dateparser.parse(args.get('time'))
     emailTAPtime = 0
     if isinstance(arg_time, datetime):
         emailTAPtime = int(arg_time.timestamp())
     else:
         return_error("Timestamp was bad")
-
     lstAlert = []
-    mid = demisto.args().get('message_id')
-    recipient = demisto.args().get('recipient')
+    mid = args.get('message_id')
+    recipient = args.get('recipient')
+    creation_quarantined_limit = arg_to_number(args.get('creation_quarantined_limit', 120))
+    
 
     request_params = {
         'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
@@ -859,7 +861,8 @@ def search_quarantine():
                 if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
                     diff = (tsquarantine - tsalert).total_seconds()
                     # we want to make sure quarantine starts 2 minuts after creating the alert.
-                    if 0 < diff < 120:
+                    if creation_quarantined_limit and 0 < diff < creation_quarantined_limit:
+                        demisto.debug(f'PTR: final results- Adding the quarantined alert with id {alert.get("id")}')
                         resQ.append({
                             'quarantine': quarantine,
                             'alert': {
