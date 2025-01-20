@@ -533,16 +533,41 @@ class XQLQuery:
     This class executes XQL queries.
     """
     @staticmethod
-    def __get_response(
+    def __peek_response(
         res: list[dict[str, Any]],
-    ) -> dict[Hashable, Any]:
+    ) -> dict[Hashable, Any] | None:
         for ent in res:
             ec = ent.get('EntryContext') or {}
             for k, v in ec.items():
                 k, _, _ = k.partition('(')
                 if k == 'PaloAltoNetworksXQL.GenericQuery' and isinstance(v, dict):
                     return v
-        raise DemistoException(f'Unable to get query results - {res}')
+        return None
+
+    @staticmethod
+    def __get_response(
+        res: list[dict[str, Any]],
+    ) -> dict[Hashable, Any]:
+        resp = XQLQuery.__peek_response(res)
+        if resp is None:
+            raise DemistoException(f'Unable to get query results - {res}')
+        else:
+            return resp
+
+    @staticmethod
+    def __get_error_message(
+        res: list[dict[str, Any]],
+    ) -> str | None:
+        if XQLQuery.__peek_response(res) is not None:
+            return None
+        elif is_error(res):
+            if message := get_error(res):
+                return message
+        else:
+            for ent in res:
+                if message := ent.get('HumanReadable'):
+                    return message
+        return f'Unable to get query results - {res}'
 
     def __init__(
         self,
@@ -580,13 +605,18 @@ class XQLQuery:
                     using=self.__xql_query_instance,
                 ),
             )
-            if not is_error(res):
+            error_message = self.__get_error_message(res)
+            if error_message is None:
                 break
-
-            error_message = get_error(res)
-            if (
-                retry_count >= self.__retry_max
-                or 'reached max allowed amount of parallel running queries' not in error_message
+            elif (
+                retry_count >= self.__retry_max or
+                all(
+                    x not in error_message for x in
+                    [
+                        'reached max allowed amount of parallel running queries',
+                        'maximum allowed number of parallel running queries has been reached'
+                    ]
+                )
             ):
                 raise DemistoException(
                     'Failed to execute xdr-xql-generic-query.'
