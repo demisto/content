@@ -6,6 +6,7 @@ from CommonServerUserPython import *  # noqa: F403
 import ansible_runner  # pylint: disable=E0401
 import json
 from typing import Dict, cast, List, Union, Any
+import time
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
 
@@ -264,16 +265,18 @@ def generic_ansible(integration_name: str, command: str,
                              Mostly used by modules that connect out to cloud services.
     creds_mapping -- A mapping for the 'creds' param names to expected ansible param names
     """
-
+    demisto.debug("generic_ansible-Started successfully.")
     readable_output = ""
     sshkey = ""
     fork_count = 1  # default to executing against 1 host at a time
 
     if args.get('concurrency'):
         fork_count = cast(int, args.get('concurrency'))
-
     # generate ansible host inventory
+    start_time = time.time()
     inventory, sshkey = generate_ansible_inventory(args=args, host_type=host_type, int_params=int_params)
+    elapsed_time = time.time() - start_time
+    demisto.debug(f"generic_ansible-The function generate_ansible_inventory took {elapsed_time:.2f} seconds to execute.")
 
     module_args = ""
     # build module args list
@@ -302,12 +305,14 @@ def generic_ansible(integration_name: str, command: str,
 
             else:
                 module_args += "%s=\"%s\" " % (arg_key, arg_value)
-
+    start_time = time.time()
     r = ansible_runner.run(inventory=inventory, host_pattern='all', module=command, quiet=True,
                            omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
-
+    elapsed_time = time.time() - start_time
+    demisto.debug(f"generic_ansible-Succeeded to run ansible_runner. The ansible_runner.run took {elapsed_time:.2f} seconds to execute.")
     results = []
     outputs_key_field = ''
+    start_time = time.time()
     for each_host_event in r.events:
         # Troubleshooting
         # demisto.log("%s: %s\n" % (each_host_event['event'], each_host_event))
@@ -336,16 +341,20 @@ def generic_ansible(integration_name: str, command: str,
                         result = result[command]
                     else:
                         result.pop("ansible_facts", None)
-
+                start_time = time.time()
                 result = rec_ansible_key_strip(result)
+                elapsed_time = time.time() - start_time
+                demisto.debug(f"generic_ansible-The function rec_ansible_key_strip took {elapsed_time:.2f} seconds to execute.")
 
                 if host != "localhost":
                     readable_output += "# %s - %s\n" % (host, status)
                 else:
                     # This is integration is not host based
                     readable_output += "# %s\n" % status
-
+                start_time = time.time()
                 readable_output += dict2md(result)
+                elapsed_time = time.time() - start_time
+                demisto.debug(f"generic_ansible-The function dict2md took {elapsed_time:.2f} seconds to execute.")
 
                 # add host and status to result if it is a dict. Some ansible modules return a list
                 if (type(result) is dict) and (host != 'localhost'):
@@ -365,7 +374,9 @@ def generic_ansible(integration_name: str, command: str,
 
             if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)
-
+    elapsed_time = time.time() - start_time
+    demisto.debug(f"generic_ansible-Succeed to go over events in r.events, took {elapsed_time:.2f} seconds to execute.")
+    demisto.debug("generic_ansible-Finished successfully.")
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=integration_name + '.' + title_case(command),
