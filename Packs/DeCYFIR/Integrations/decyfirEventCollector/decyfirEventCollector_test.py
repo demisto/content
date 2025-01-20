@@ -49,6 +49,19 @@ def test_get_dr_event_format(mocker):
     assert dr_data[0] == mock_dr_pa_event_response[0]
     assert dr_data[1] == mock_dr_pa_event_response[1]
 
+def test_get_dr_assets_event_format(mocker):
+    from decyfirEventCollector import Client, VAR_DR_KEYWORDS_LOGS
+    mock_decyfir_dr_event_response = util_load_json('test_data/decyfir_dr_events_data.json')
+    mock_dr_pa_event_response = util_load_json('test_data/dr_events_data.json')
+    client = Client(
+        base_url='test_url',
+        verify=False,
+    )
+    dr_data = client.get_event_format(mock_decyfir_dr_event_response, VAR_DR_KEYWORDS_LOGS)
+
+    assert dr_data is not None
+    assert dr_data[1] == mock_dr_pa_event_response[1]
+
 
 def test_fetch_events(mocker):
     from decyfirEventCollector import Client, VAR_ACCESS_LOGS, fetch_events
