@@ -15,4 +15,4 @@ This integration was integrated and tested with RetarusSecureEmailGateway.
     | Fetch interval in seconds | True |
     | Trust any certificate (not secure) | False |
 
-5. No test button option available. Save the configured instance to test the connection. If you encounter an 'Authentication failed' error, check your configuration.
+5. No test button option available due to API limitation. Save the configured instance to test the connection. If you encounter an 'Authentication failed' error, check your configuration.

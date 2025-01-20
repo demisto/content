@@ -47,6 +47,7 @@ class EventConnection:
             Data: Next event received from the connection
         """
         with self.lock:
+            demisto.debug("Locked the thread to recv a message")
             event = self.connection.recv(timeout=timeout)
         return event
     
@@ -227,7 +228,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-    url = params.get("url", "events.retarus.com")
+    url = params.get["url"]
     token_id = params.get("credentials", {}).get("password", "")
     fetch_interval = arg_to_number(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
     verify_ssl = argToBoolean(not params.get("insecure", False))

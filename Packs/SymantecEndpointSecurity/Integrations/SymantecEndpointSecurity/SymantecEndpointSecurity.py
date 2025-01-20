@@ -41,17 +41,21 @@ class NextPointingNotAvailable(Exception):
 class Client(BaseClient):
     def __init__(
         self,
-        url: str,
-        token_id: str,
+        base_url: str,
+        token: str,
+        stream_id: str,
+        channel_id: str,
         verify: bool,
         proxy: bool,
     ) -> None:
 
         self.headers: dict[str, str] = {}
-        self.token_id = token_id
+        self.token = token
+        self.stream_id = stream_id
+        self.channel_id = channel_id
 
         super().__init__(
-            base_url=url,
+            base_url=base_url,
             verify=verify,
             proxy=proxy,
             timeout=180,
