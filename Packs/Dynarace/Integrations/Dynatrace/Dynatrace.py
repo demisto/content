@@ -19,22 +19,29 @@ EVENTS_TYPE_DICT = {"Vulnerability": ("securityProblems", "vul_limit"), "Audit l
 class Client(BaseClient):
     def init(self, base_url: str, client_id: str, client_secret: str, uuid: str, token: str, events_to_fetch: List[str], verify: bool, proxy):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        
         self.client_id = client_id,
         self.client_secret = client_secret,
         self.uuid = uuid,
         self.token = token
         self.personal_token = None
+        
         if not self.token:  # We are using OAuth2 authentication
             self.personal_token = self.create_personal_token(events_to_fetch)
+        
         self._headers = {"Authorization": f"Api-Token {self.personal_token}" if self.personal_token else f"Bearer {self.token}"}
+    
     def create_personal_token(self, events_to_fetch):
+        
         scopes = []
+        
         if "Vulnerability" in events_to_fetch:
             scopes.append("securityProblems.read")
         if "Audit logs" in events_to_fetch:
             scopes.append("auditLogs.read")
         if "APM" in events_to_fetch:
             scopes.append("events.read")
+        
         params = assign_params(
             grant_type = "client_credentials",
             client_id = self.client_id,
@@ -42,12 +49,14 @@ class Client(BaseClient):
             scope = " ".join(scopes),
             resource = f"urn:dtaccount:{self.uuid}"
         )
+        
         raw_response = self._http_request(
             method='POST',
             url_suffix="https://sso.dynatrace.com/sso/oauth2/token",
             json_data=params,
             headers=self._headers
         )
+        
         return raw_response  # TODO test how response returns and return the token within it
     
     

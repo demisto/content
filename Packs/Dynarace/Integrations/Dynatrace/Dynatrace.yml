@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Cloud Services
 commonfields:
   id: Dynatrace
   version: -1
