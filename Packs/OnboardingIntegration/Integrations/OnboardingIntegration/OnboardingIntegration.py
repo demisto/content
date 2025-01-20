@@ -628,6 +628,7 @@ def generate_incidents(last_run):
         })
     return num_of_incident_to_create, incidents
 
+
 def sanitize_email_headers(email_obj):
     for key, value in email_obj.items():
         sanitized_value = re.sub(r'\n+', ' ', value.strip())
