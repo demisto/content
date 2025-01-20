@@ -99,7 +99,6 @@ def build_indicators(client: Client, raw_cves: List[dict]):
         metrics: List = []
         cpes: list[dict] = []
         refs: list[dict] = []
-        cve_relationships_log = []
 
         indicator = {"value": raw_cve.get('id')}
         fields = {"description": raw_cve.get('descriptions')[0].get('value')}
@@ -150,9 +149,7 @@ def build_indicators(client: Client, raw_cves: List[dict]):
             fields["cvsstable"] = metrics
 
         if cpes:
-            cve_id = raw_cve.get('id')
-            tags, relationships = parse_cpe_command([d['CPE'] for d in cpes], cve_id)
-            cve_relationships_log.append([cve_id, len(relationships)])
+            tags, relationships = parse_cpe_command([d['CPE'] for d in cpes], raw_cve.get('id'))
             if client.feed_tags:
                 tags.append(str(client.feed_tags))
 
@@ -170,7 +167,6 @@ def build_indicators(client: Client, raw_cves: List[dict]):
 
         indicators.append(indicator)
 
-    demisto.debug(f'"cve:num_of_relationships" \n {cve_relationships_log}')
     return indicators
 
 
@@ -245,6 +241,8 @@ def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[Ent
                                              entity_a_type="cve",
                                              entity_b=product,
                                              entity_b_type="software") for product in products])
+
+    demisto.debug(f'{len(relationships)} relationships found for {cve_id}')
 
     return list(vendors | products | parts), relationships
 
