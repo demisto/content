@@ -251,8 +251,8 @@ tasks:
     task:
       id: 2cd75c00-6cae-42f3-82c3-9c2d50fc2a67
       version: -1
-      name: Causality process is (unsigned and not prevalent) or malicious
-      description: Confirm if the causality process (the main process behind the event) is unsigned, not prevalent, or malicious.
+      name: Is the causality or actor process unsigned and not prevalent?
+      description: Check if the causality or actor process is unsigned and not prevalent.
       type: condition
       iscommand: false
       brand: ""
@@ -274,27 +274,15 @@ tasks:
             value:
               simple: SIGNATURE_SIGNED
           ignorecase: true
-        - operator: isEqualString
+        - operator: isNotEqualString
           left:
             value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: alert.cgosha256
-                      iscontext: true
-                    ignorecase: true
-                accessor: Score
+              simple: alert.initiatorsignature
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
       - - operator: containsGeneral
           left:
             value:
@@ -309,6 +297,28 @@ tasks:
                     right:
                       value:
                         simple: alert.cgoname
+                      iscontext: true
+                    ignorecase: true
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Process
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.AnalyticsPrevalence.Process.process_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.osparentname
                       iscontext: true
                     ignorecase: true
                 accessor: value
@@ -1145,7 +1155,7 @@ tasks:
       id: e30c2f55-4e28-41bd-8d51-55979a512d75
       version: -1
       name: Should quarantine the malicious/unsigned file?
-      description: 'Checks if the verdict is malicious/unsigned+not prevalent was matched; if so, a quarantine approval will be prompt.'
+      description: Checks if the verdict is malicious/unsigned+not prevalent was matched; if so, a quarantine approval will be prompt.
       type: condition
       iscommand: false
       brand: ""
@@ -1437,8 +1447,8 @@ tasks:
     task:
       id: 3dcdc9d4-b47d-45d7-8861-d85f24643a4e
       version: -1
-      name: Actor process is (unsigned and not prevalent) or malicious
-      description: Determine if the actor process (the process performing a suspicious action) is unsigned, not prevalent, or malicious.
+      name: Is the causality or actor process malicious?
+      description: Check if the causality or actor process is malicious.
       type: condition
       iscommand: false
       brand: ""
@@ -1451,14 +1461,27 @@ tasks:
     conditions:
     - label: Malicious
       condition:
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
-              simple: alert.initiatorsignature
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.initiatorsha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
             iscontext: true
           right:
             value:
-              simple: SIGNATURE_SIGNED
+              simple: "3"
           ignorecase: true
         - operator: isEqualString
           left:
@@ -1481,28 +1504,6 @@ tasks:
           right:
             value:
               simple: "3"
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Core.AnalyticsPrevalence.Process
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Core.AnalyticsPrevalence.Process.process_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: alert.osparentname
-                      iscontext: true
-                    ignorecase: true
-                accessor: value
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1529,10 +1530,11 @@ view: |-
       "27_29_#default#": 0.8,
       "27_30_CGO": 0.63,
       "32_11_Malicious": 0.4,
-      "32_9_#default#": 0.41,
+      "32_9_#default#": 0.65,
       "5_11_Malicious": 0.1,
       "5_6_#default#": 0.64,
       "6_11_Malicious": 0.18,
+      "6_32_#default#": 0.65,
       "7_10_Suspicious": 0.55,
       "7_12_#default#": 0.37,
       "9_10_Suspicious": 0.49,
