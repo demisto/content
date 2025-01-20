@@ -1189,8 +1189,7 @@ def main():  # pragma: no cover
                 should_skip_decode_events=should_skip_decode_events
             )):
                 if events:
-                    demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
-                                 f"latest event time is: {events[-1]['_time']}")
+                    demisto.info(f"Sending {len(events)} events to xsiam using multithreading.")
                     futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                                    chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
                                                    multiple_threads=True, data_format="json")
