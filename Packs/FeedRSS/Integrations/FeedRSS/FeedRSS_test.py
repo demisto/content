@@ -121,8 +121,6 @@ def test_parsed_indicators_from_response_no_publish_field(mocker, parse_response
     assert indicators == expected_output
 
 
-
-
 def test_parsed_indicators_from_response_with_links_field(mocker):
     """
     Given:
@@ -141,7 +139,6 @@ def test_parsed_indicators_from_response_with_links_field(mocker):
 
     FEED_DATA[0][0]['entries'][0]['links'] = [example_link]
 
-
     client = mock_client(mocker, FEED_DATA[0][0])
 
     mocker.patch.object(Client, 'get_url_content', return_value='test description')
@@ -158,6 +155,5 @@ def test_parsed_indicators_from_response_with_links_field(mocker):
         "source": "test.com",
         "title": "Test Article, with comma"
     }]
-
 
     assert indicators[0]['fields']['publications'] == expected_output
