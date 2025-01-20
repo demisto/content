@@ -1,0 +1,27 @@
+{
+    "defaultIncidentType": "Gatewatcher Incident",
+    "description": "",
+    "feed": false,
+    "id": "Gatewatcher Incidents Classifier",
+    "keyTypeMap": {
+        "beacon_detect": "Gatewatcher Alert Incident",
+        "dga_detect": "Gatewatcher Alert Incident",
+        "ioc": "Gatewatcher Alert Incident",
+        "malcore": "Gatewatcher Alert Incident",
+        "malicious_powershell_detect": "Gatewatcher Alert Incident",
+        "ransomware_detect": "Gatewatcher Alert Incident",
+        "retrohunt": "Gatewatcher Alert Incident",
+        "shellcode_detect": "Gatewatcher Alert Incident",
+        "sigflow_alert": "Gatewatcher Alert Incident"
+    },
+    "name": "Gatewatcher Incidents Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "event.module"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

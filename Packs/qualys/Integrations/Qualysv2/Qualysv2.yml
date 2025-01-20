@@ -2038,6 +2038,12 @@ script:
     - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL
       description: Detection protocol.
       type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS
+      description: Detection score.
+      type: Object
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS_FACTORS
+      description: Factors affecting detection score.
+      type: Object
   - arguments:
     - description: A comma-separated list of host IDs/ranges to update. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field.
       isArray: true
