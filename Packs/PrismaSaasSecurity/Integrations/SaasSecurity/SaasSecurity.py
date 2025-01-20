@@ -136,12 +136,12 @@ class Client(BaseClient):
             'Content-Type': 'application/x-www-form-urlencoded; charset=ISO-8859-1',
             'Authorization': f'Basic {base64_encoded_creds}',
         }
-        params = {
+        data = {
             'grant_type': CLIENT_CREDS,
             'scope': f'{Scopes.api} {Scopes.incidents} {Scopes.remediation}',
         }
         token_response = self._http_request('POST', url_suffix='/oauth/token',
-                                            params=params, headers=headers)
+                                            data=data, headers=headers)
         return token_response.get('access_token')
 
     def get_incidents(self, limit: int = None, from_time: str = None, to_time: str = None, app_ids: str = None,
