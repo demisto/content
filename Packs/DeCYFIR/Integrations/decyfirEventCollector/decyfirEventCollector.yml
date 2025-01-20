@@ -21,6 +21,7 @@ configuration:
   required: true
   hiddenusername: true
   display: ''
+  section: Connect
 - display: Number of events to fetch per fetch
   name: max_fetch
   type: 0
