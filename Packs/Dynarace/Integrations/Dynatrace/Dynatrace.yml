@@ -1,0 +1,135 @@
+category: Analytics & SIEM
+commonfields:
+  id: Dynatrace
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Client ID
+  additionalinfo: Required If using OAuth 2 as authentication method.
+  name: client_id
+  required: false
+  type: 4
+- display: Client Secret
+  additionalinfo: Required If using OAuth 2 as authentication method.
+  name: client_secret
+  required: false
+  type: 4
+- display: Account UUID
+  additionalinfo: Required If using OAuth 2 as authentication method.
+  name: uuid
+  required: false
+  type: 4
+- display: Access Token
+  additionalinfo: Required If using Personal Access Token.
+  name: token
+  required: false
+  type: 4
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  defaultvalue: true
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  defaultvalue: '1'
+  advanced: true
+- display: Event types to fetch
+  name: events_to_fetch
+  type: 16
+  defaultvalue: Vulnerability,Audit logs,APM
+  required: true
+  section: Collect
+  advanced: true
+  options:
+  - Vulnerability
+  - Audit logs
+  - APM
+- display: The maximum number of vulnerability events per fetch
+  section: Collect
+  advanced: true
+  default: 2500
+  type: 0
+  name: vul_limit
+- display: The maximum number of audit logs events per fetch
+  section: Collect
+  advanced: true
+  default: 5000
+  type: 0
+  name: audit_limit
+- display: The maximum number of APM events per fetch
+  section: Collect
+  advanced: true
+  default: 5000  # Need to ask sara about the default limit in all event types
+  type: 0
+  name: apm_limit
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: Dynatrace
+name: Dynatrace
+script:
+  commands:
+    arguments:
+    - name: events_types_to_get
+      description: comma separated list of events types to get
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability
+      - Audit logs
+      - APM
+      required: true
+    - name: vul_from
+      description: The start date for searching vulnerability events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+    - name: vul_to
+      description: The end date for retrieving vulnerability events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+    - name: audit_logs_from
+      description: The start date for searching audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+    - name: audit_logs_to
+      description: The end date for retrieving audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+    - name: apm_from
+      description: The start date for searching apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+    - name: apm_to
+      description: The end date for retrieving apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
+    - name: vul_limit
+      required: true
+      description: Number of vulnerability events to fetch from each event type that was chosen.
+      defaultValue: "1"
+    - name: audit_limit
+      required: true
+      description: Number of audit_logs events to fetch from each event type that was chosen.
+      defaultValue: "1"
+    - name: apm_limit
+      required: true
+      description: Number of apm events to fetch from each event type that was chosen.
+      defaultValue: "1"
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    description: Manual command to fetch events and display them.
+    name: dynatrace-get-events
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)
