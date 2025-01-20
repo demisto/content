@@ -1196,7 +1196,8 @@ def validate_launch_get_indicators_command(limit, collection_name):
 def collection_availability_check(client: Client, collection_name: str) -> None:
     if collection_name not in client.poller.get_available_collections():
         raise Exception(
-            f"Collection {collection_name} is not available from you, please disable collection on it or contact Group-IB to grant access"
+            f"Collection {collection_name} is not available from you, " \
+            "please disable collection on it or contact Group-IB to grant access"
         )
 
 def fetch_indicators_command(

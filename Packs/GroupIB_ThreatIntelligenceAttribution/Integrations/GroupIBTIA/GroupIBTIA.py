@@ -2069,7 +2069,8 @@ def test_module(client: Client) -> str:
 def collection_availability_check(client: Client, collection_name: str) -> None:
     if collection_name not in client.poller.get_available_collections():
         raise Exception(
-            f"Collection {collection_name} is not available from you, please disable collection on it or contact Group-IB to grant access"
+            f"Collection {collection_name} is not available from you, " \
+            "please disable collection on it or contact Group-IB to grant access"
         )
 
 
