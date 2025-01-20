@@ -1206,6 +1206,9 @@ def search_applications_command(client: Client, args: dict[str, str]):
         res = client.do_rest_request("GET", endpoint_url)
     elif limit:
         res = client.do_rest_request("GET", endpoint_url, params={"$top": limit})
+    else:
+        res = {}
+        demisto.debug(f"No condition was met {res=}")
 
     errors = get_errors_from_res(res)
     if errors:
