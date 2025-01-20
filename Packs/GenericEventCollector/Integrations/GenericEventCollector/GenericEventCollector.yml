@@ -44,26 +44,19 @@ configuration:
     options:
       - GET
       - POST
-  - section: Connect
-    display: Token
-    name: token
-    type: 9
-    required: false
-    additionalinfo: 3rd party token / 3rd party API key
-  - section: Connect
-    display: ""
-    displaypassword: Username
-    name: username
-    type: 9
-    required: false
+  - name: token
+    type: 4
+    displaypassword: API Token
     hiddenusername: true
-  - section: Connect
-    display: ""
+    required: false
+    additionalinfo: API Token
+    section: Connect
+  - display: Username
+    name: credentials
+    type: 9
+    required: false
+    section: Connect
     displaypassword: Password
-    name: password
-    type: 9
-    required: false
-    hiddenusername: true
   - section: Connect
     display: Add Fields To header
     name: add_fields_to_header
@@ -109,7 +102,7 @@ configuration:
     type: 0
     required: false
     additionalinfo: 'Flag examples: {has_more: True}, {next: True} etc'
-  - section: Connet
+  - section: Connect
     display: Timestamp format of the event creation time.
     name: timestamp_format
     type: 0
@@ -117,28 +110,16 @@ configuration:
     additionalinfo: 'e.g. "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S"'
   - section: Connect
     display: Timestamp field
-    name: timestamp_field
+    name: timestamp_field_name
     type: 0
     required: true
     additionalinfo: 'The name of the event creation time in the response data, e.g. "timestamp" or "created_at".'
   - section: Connect
-    display: events_keys
+    display: 'Events lookup path in the response JSON, dot seperated, e.g. "data.items".'
     name: events_keys
     type: 0
-    required: true
+    required: false
     additionalinfo: 'Where within the response object to find the events list.'
-  - section: Connect
-    display: "Connection Test Type"
-    name: test_type
-    defaultvalue: connection
-    type: 15
-    required: true
-    options:
-      - connection
-      - push_to_dataset
-    additionalinfo: Pick connection if you just want to make sure the authentication
-      is working. Pick push_to_dataset if you want to see the data from the endpoint
-      in your dataset
   - section: Connect
     display: Use system proxy settings
     name: proxy
