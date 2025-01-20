@@ -113,7 +113,6 @@ def test_sort_events_by_date(mocker):
     When: The function is called to sort the events by their 'date' field.
     Then: Ensure the events are sorted in ascending order by date.
     """
-    from datetime import datetime
     from ProofpointIsolationEventCollector import sort_events_by_date
 
     events = [

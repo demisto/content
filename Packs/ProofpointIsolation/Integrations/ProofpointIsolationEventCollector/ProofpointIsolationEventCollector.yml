@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: ProofpointIsolationEventCollector
   version: -1
