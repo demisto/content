@@ -118,36 +118,6 @@ def remove_duplicate_events(start_date, ids: set, events: list) -> None:
             events.remove(event)
 
 
-def initialize_args_to_get_events(args: dict) -> tuple:
-    """
-    Initializes the arguments required to fetch events.
-
-    Args:
-        args (dict): A dictionary containing the input arguments for fetching events.
-
-    Returns:
-        tuple: A tuple containing: start (str), end (str), ids (set)
-    """
-    start = args.get('start_date')
-    end = args.get('end_date')
-    ids: set = set()
-    return start, end, ids
-
-
-def initialize_args_to_fetch_events() -> tuple:
-    """
-    Initializes the arguments required to fetch events based on the last run.
-
-    Returns:
-        tuple: A tuple containing start (str), end (str), ids (set).
-    """
-    last_run = demisto.getLastRun() or {}
-    start = last_run.get('start_date')
-    ids = set(last_run.get('ids', []))
-    end = get_current_time().strftime(DATE_FORMAT)
-    return start, end, ids
-
-
 def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) -> list:
     """
     Fetches events, sorts them by date, and removes duplicates.

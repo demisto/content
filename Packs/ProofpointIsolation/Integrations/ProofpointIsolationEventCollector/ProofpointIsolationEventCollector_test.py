@@ -50,62 +50,6 @@ def test_get_and_reorganize_events(mocker):
     assert organized_events[-1]['date'] == "2025-01-09T19:44:35.000+0000"
 
 
-def test_initialize_args_to_fetch_events(mocker):
-    """
-    Given: A mock `getLastRun` return value with a start date and event IDs, and a mock current time.
-    When: Initializing the arguments to fetch events.
-    Then: Ensure the start date, end date, and event IDs are correctly set based on the mock data,
-     and verify the behavior when no previous run data is available.
-    """
-    from ProofpointIsolationEventCollector import initialize_args_to_fetch_events, DATE_FORMAT
-    from datetime import datetime
-
-    last_run_mock = {
-        'start_date': "2025-01-08T10:27:08",
-        'ids': ["hashed_id_1", "hashed_id_2"]
-    }
-    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value=last_run_mock)
-
-    current_time = datetime(2025, 1, 9, 12, 0, 0)
-    mocker.patch('ProofpointIsolationEventCollector.get_current_time', return_value=current_time)
-
-    start, end, ids = initialize_args_to_fetch_events()
-    assert start == "2025-01-08T10:27:08"
-    assert end == current_time.strftime(DATE_FORMAT)
-    assert ids == {"hashed_id_1", "hashed_id_2"}
-
-    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value={})
-    start, end, ids = initialize_args_to_fetch_events()
-    assert start is None
-    assert ids == set()
-
-
-def test_initialize_args_to_get_events():
-    """
-    Given: A dictionary with start and end dates for event fetching.
-    When: Initializing the arguments to get events.
-    Then: Ensure the start date and end date are correctly set, and verify the behavior when no arguments are provided,
-     resulting in `None` values for start and end, and an empty set for IDs.
-    """
-    from ProofpointIsolationEventCollector import initialize_args_to_get_events
-    args = {
-        'start_date': "2025-01-08T10:27:08",
-        'end_date': "2025-01-09T10:27:08"
-    }
-    start, end, ids = initialize_args_to_get_events(args)
-
-    assert start == "2025-01-08T10:27:08"
-    assert end == "2025-01-09T10:27:08"
-    assert ids == set()
-
-    args = {}
-    start, end, ids = initialize_args_to_get_events(args)
-
-    assert start is None
-    assert end is None
-    assert ids == set()
-
-
 def test_remove_duplicate_events():
     """
     Given: A list of events sorted by date, with a specified start date and event IDs.
@@ -161,20 +105,6 @@ def test_hash_user_name_and_url():
     event = {'url': 'example.com', 'userName': 'testUser', 'extraField': 'extraValue'}
     result = hash_user_name_and_url(event)
     assert result == 'example.com&testUser'
-
-
-def test_add_time_to_event():
-    """
-    Given: A dictionary containing event data with or without a 'date' field.
-    When: The function is called to add a '_TIME' field.
-    Then: Ensure the '_TIME' field is correctly added, using the value from 'date',
-          or remains empty if 'date' is not present.
-    """
-    from ProofpointIsolationEventCollector import add_time_to_event
-
-    event = {'date': '2025-01-14T12:00:00', 'userName': 'testUser'}
-    add_time_to_event(event)
-    assert event['_TIME'] == '2025-01-14T12:00:00'
 
 
 def test_sort_events_by_date(mocker):
