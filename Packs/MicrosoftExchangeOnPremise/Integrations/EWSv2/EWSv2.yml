@@ -1007,10 +1007,13 @@ script:
     - name: to
       required: true
       description: A CSV list of email addresses for the 'to' field.
+      isArray: true
     - name: cc
       description: A CSV list of email addresses for the 'cc' field.
+      isArray: true
     - name: bcc
       description: A CSV list of email addresses for the 'bcc' field.
+      isArray: true
     - name: subject
       description: Subject for the email to be sent.
     - name: body
@@ -1036,7 +1039,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.5.0.115394
+  dockerimage: demisto/py-ews:5.5.0.118073
   isfetch: true
   runonce: false
   script: '-'

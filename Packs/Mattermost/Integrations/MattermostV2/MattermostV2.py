@@ -103,7 +103,7 @@ class WebSocketClient:  # pragma: no cover
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(
                         uri,
-                        ssl=SSL_CONTEXT,
+                        ssl=SSL_CONTEXT,  # type: ignore[arg-type]
                         proxy=PROXY_URL,
                     ) as websocket:
                         demisto.debug('MM: starting to authenticate')
@@ -1551,6 +1551,9 @@ def send_notification(client: HTTPClient, **args):
     ignore_add_url = argToBoolean(args.get('ignoreAddURL', False))
     mattermost_ask = argToBoolean(args.get('mattermost_ask', False))
     entitlement = ''
+    reply = ''
+    expiry = ''
+    default_response = ''
 
     if mattermost_ask:
         parsed_message = json.loads(args.get("message", ''))

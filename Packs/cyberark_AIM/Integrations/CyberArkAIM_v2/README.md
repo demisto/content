@@ -1,4 +1,4 @@
-The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM. This integration fetches credentials. For more information, see [Managing Credentials](https://xsoar.pan.dev/docs/reference/articles/managing-credentials).
+The CyberArk Central Credential Provider (CCP) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk CCP. This integration fetches credentials. For more information, see [Managing Credentials](https://xsoar.pan.dev/docs/reference/articles/managing-credentials).
 
 ## Authentication Options
 The integration uses the `Central Credential Provider` and supports the following authentication methods:
@@ -12,20 +12,23 @@ Further information is available from CyberArk at:
 
 ## Configure CyberArkAIM v2 in Cortex
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for CyberArkCCP.
+3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Server URL and Port \(e.g., https://example.net:1234\) | True |
-| app_id | AppID as configured in AIM | False |
-| folder | Folder to search in safe | True |
-| safe | Safe to search in | True |
+| **Parameter** | **Description**                                                                                              | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------| --- |
+| url | Server URL and Port \(e.g., https://example.net:1234\)                                                       | True |
+| app_id | AppID as configured in CCP                                                                                   | False |
+| folder | Folder to search in safe                                                                                     | True |
+| safe | Safe to search in                                                                                            | True |
 | credential_names | Credential names \- comma\-separated list of credentials names in the safe. Partial names are not supported. | False |
-| credentials | Username | False |
-| cert_text | Certificate file as text | False |
-| key_text | Key file as text | False |
-| isFetchCredentials | Fetches credentials | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| credentials | Username                                                                                                     | False |
+| cert_text | Certificate file as text                                                                                     | False |
+| key_text | Key file as text                                                                                             | False |
+| isFetchCredentials | Fetches credentials                                                                                          | False |
+| insecure | Trust any certificate \(not secure\)                                                                         | False |
+| proxy | Use system proxy settings                                                                                    | False |
 
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

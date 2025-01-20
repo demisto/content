@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Any, Dict
+from typing import Any
 import traceback
 import json
 
@@ -44,7 +44,7 @@ cd ..; rm openssh-9.8p1.tar.gz; rm -r openssh-9.8p1"
     }
 
     # Check if Package upgrade is supported for the ASM Rule
-    if asm_rule_id not in asm_rule_package_dict.keys() and output_run_command_dict.get(
+    if asm_rule_id not in asm_rule_package_dict and output_run_command_dict.get(
         "run_command_flag"
     ):
         output_run_command_dict["run_command_flag"] = False
@@ -136,7 +136,7 @@ cd ..; rm openssh-9.8p1.tar.gz; rm -r openssh-9.8p1"
     return output_run_command_dict
 
 
-def aws_package_upgrade(args: Dict[str, Any]) -> CommandResults:
+def aws_package_upgrade(args: dict[str, Any]) -> CommandResults:
     """
     Initiates an upgrade of a software package on a specified AWS EC2 instance.
 

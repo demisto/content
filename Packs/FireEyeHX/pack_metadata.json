@@ -2,7 +2,7 @@
     "name": "FireEye HX",
     "description": "FireEye Endpoint Security is an integrated solution that detects and protects endpoints against known and unknown threats. The FireEye HX Cortex XSOAR integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate the security operations automated playbooks.",
     "support": "xsoar",
-    "currentVersion": "2.3.15",
+    "currentVersion": "2.3.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

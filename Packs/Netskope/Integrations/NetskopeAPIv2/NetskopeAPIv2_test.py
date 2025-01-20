@@ -595,6 +595,11 @@ def test_fetch_incidents(client, requests_mock):
                     'incident_type': 'application-event',
                     'mirror_direction': 'Both',
                     'mirror_instance': '',
+                    'app_session_id': '8465907469530832528',
+                    'browser_session_id': '4306403352624265077',
+                    'incident_id': '5842546291106376750',
+                    'request_id': '2613596205044864769',
+                    'transaction_id': '5842546291106376750',
                 }),
         },
         {
@@ -614,6 +619,11 @@ def test_fetch_incidents(client, requests_mock):
                     'incident_type': 'page-event',
                     'mirror_direction': 'Both',
                     'mirror_instance': '',
+                    'app_session_id': '8465907469530832528',
+                    'browser_session_id': '4306403352624265077',
+                    'incident_id': '5842546291106376750',
+                    'request_id': '2613596205044864769',
+                    'transaction_id': '5842546291106376750',
                 }),
         },
         {
@@ -652,6 +662,12 @@ def test_fetch_incidents(client, requests_mock):
                     'incident_type': 'alert',
                     'mirror_direction': 'Both',
                     'mirror_instance': '',
+                    'app_session_id': '8638023457299261081',
+                    'browser_session_id': '4014571231818143674',
+                    'connection_id': '8594277971962832463',
+                    'incident_id': '6443216183026877636',
+                    'request_id': '2598159462674082048',
+                    'transaction_id': '6443216183026877636',
                 }),
         },
     ]
@@ -677,6 +693,109 @@ def test_fetch_incidents(client, requests_mock):
             "id": "c4a0ad0684b73c3746e205a0",
             "time": 1688577293,
         },
+    }
+
+
+def test_fetch_incidents_no_event_type(client, requests_mock):
+    """
+    Scenario: Fetch incidents and event type was not set.
+    Given:
+     -XSOAR arguments.
+    When:
+     - fetch-incident called.
+
+    Then:
+     - Ensure last run and incident are correct.
+    """
+
+    from NetskopeAPIv2 import fetch_incidents
+
+    alert_mock_response = util_load_json("alerts")
+    event_mock_response = util_load_json("events")
+    dlp_incidents_mock_response = util_load_json("dlp_incidents")
+
+    requests_mock.get(f"{SERVER_URL}api/v2/events/data/alert",
+                      json=alert_mock_response)
+    requests_mock.get(f"{SERVER_URL}api/v2/events/data/application",
+                      json=event_mock_response)
+    requests_mock.get(f"{SERVER_URL}api/v2/events/data/page",
+                      json=event_mock_response)
+    requests_mock.get(f"{SERVER_URL}api/v2/events/dataexport/events/incident",
+                      json=dlp_incidents_mock_response)
+
+    last_run, incidents = fetch_incidents(
+        client,
+        {
+            "max_fetch": 10,
+            "fetch_events": True,
+            "fetch_dlp_incidents": True,
+            "first_fetch": "2023-01-01 15:00",
+            "max_events_fetch": 10,
+            "max_dlp_incidents_fetch": 10,
+            "mirror_direction": "Incoming and Outgoing",
+        },
+    )
+    last_run["dlp_incident"]["date"] = "11-09-2024 08:00"
+    last_run["dlp_incident"]["time"] = 1726041600
+
+    assert incidents == [
+        {
+            "name":
+            "dlp_incident ID: 01",
+            "occurred":
+            "2024-03-20T10:01:00Z",
+            'incident_type':
+            'dlp_incident',
+            'mirror_direction':
+            'Both',
+            'mirror_instance':
+            '',
+            "rawJSON":
+            json.dumps(
+                dlp_incidents_mock_response["result"][0] | {
+                    'incident_type': 'dlp_incident',
+                    'mirror_direction': 'Both',
+                    'mirror_instance': '',
+                }),
+        },
+        {
+            "name":
+            "alert ID: 7a30814339c73cf437653b22",
+            "occurred":
+            "2023-07-05T17:14:00Z",
+            'incident_type':
+            'alert',
+            'mirror_direction':
+            'Both',
+            'mirror_instance':
+            '',
+            "rawJSON":
+            json.dumps(
+                alert_mock_response["result"][0] | {
+                    'incident_type': 'alert',
+                    'mirror_direction': 'Both',
+                    'mirror_instance': '',
+                    'app_session_id': '8638023457299261081',
+                    'browser_session_id': '4014571231818143674',
+                    'connection_id': '8594277971962832463',
+                    'incident_id': '6443216183026877636',
+                    'request_id': '2598159462674082048',
+                    'transaction_id': '6443216183026877636',
+                }),
+        },
+    ]
+
+    assert last_run == {
+        "alert": {
+            "date": "01-01-2023 15:00",
+            "id": "7a30814339c73cf437653b22",
+            "time": 1688577293,
+        },
+        "dlp_incident": {
+            "date": "11-09-2024 08:00",
+            "id": "01",
+            "time": 1726041600,
+        }
     }
 
 
