@@ -113,7 +113,7 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
             "uri": uri,
             "body": {
                 "states": ["Error"],
-                "types": ["regular", "condition", "collection"],
+                "types": ["regular", "condition", "collection", "playbook"],
             },
             "using": rest_api_instance,
         }
@@ -127,7 +127,10 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
         )
         raise DemistoException(error)
 
-    return response[0]["Contents"]["response"]
+    raw_response = response[0]["Contents"]["response"]
+    filtered_response = filter_playbooks_failures(raw_response)
+
+    return filtered_response
 
 
 def get_incident_tasks_using_internal_request(incident: dict):
@@ -145,12 +148,14 @@ def get_incident_tasks_using_internal_request(incident: dict):
         uri=f'investigation/{str(incident["id"])}/workplan/tasks',
         body={
             "states": ["Error"],
-            "types": ["regular", "condition", "collection"],
+            "types": ["regular", "condition", "collection", "playbook"],
         }
     )
 
     if response and response.get('statusCode') == 200:
-        tasks = json.loads(response.get('body', '{}'))
+        raw_response = json.loads(response.get('body', '{}'))
+        tasks = filter_playbooks_failures(raw_response)
+
     else:
         demisto.error(f'Failed running POST query to /investigation/{str(incident["id"])}/workplan/tasks.\n{str(response)}')
         tasks = []
@@ -242,6 +247,34 @@ def get_incident_data(incident: dict, custom_scripts_map_id_and_name: dict[str, 
         return task_outputs, tasks_error_entries_number
     else:
         return [], 0
+
+
+def filter_playbooks_failures(response: list | None) -> list | None:
+    """
+    Filters out tasks of type "playbook" from the response if their name appears
+    in the ancestors of any other task in the list. This ensures that only errors
+    where the playbook itself failed to start are captured, avoiding duplication
+    when errors occur within internal tasks of the playbook.
+
+    Args:
+        response (list | None): List of failure tasks.
+
+    Returns:
+        The filtered list of tasks. Tasks of type "playbook" whose names appear in the ancestors of other tasks are removed.
+    """
+
+    if type(response) is not list:
+        return response
+
+    ancestors = set()
+    for task in response:
+        ancestors.update(task.get("ancestors", []))
+
+    filtered_response = [
+        task for task in response
+        if not (task.get("type") == "playbook" and task.get("task", {}).get("name") in ancestors)
+    ]
+    return filtered_response
 
 
 def main():
