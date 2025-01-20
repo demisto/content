@@ -7,6 +7,20 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def test_empty_get_event_format(mocker):
+    from decyfirEventCollector import Client
+    mock_decyfir_event_response = []
+    mock_pa_event_response = []
+
+    client = Client(
+        base_url='test_url',
+        verify=False,
+    )
+
+    data = client.get_event_format(mock_decyfir_event_response, '')
+    assert data == mock_pa_event_response
+
+
 def test_get_event_format(mocker):
     from decyfirEventCollector import Client, VAR_ACCESS_LOGS
     mock_decyfir_event_response = util_load_json('test_data/decyfir_events_data.json')
@@ -31,6 +45,7 @@ def test_get_dr_event_format(mocker):
     )
     dr_data = client.get_event_format(mock_decyfir_dr_event_response, VAR_DR_KEYWORDS_LOGS)
     assert dr_data[0] == mock_dr_pa_event_response[0]
+    assert dr_data[1] == mock_dr_pa_event_response[1]
 
 
 def test_fetch_events(mocker):

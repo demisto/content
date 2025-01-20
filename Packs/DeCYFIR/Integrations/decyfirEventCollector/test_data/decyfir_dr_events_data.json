@@ -10,5 +10,17 @@
 		"modified_date": "2025-01-06T03:48:12",
 		"version": "",
 		"created_by": ""
+	},
+    {
+		"event_action": "ORG_ASSETS_UPDATE",
+		"asset_comments": "",
+		"asset_name": "Ubuntu",
+		"vendor": "Ubuntu",
+		"asset_type": "OS",
+		"modified_by": "acme@acme.com",
+		"created_date": "",
+		"modified_date": "2024-01-16T09:19:28",
+		"version": "16",
+		"created_by": ""
 	}
 ]

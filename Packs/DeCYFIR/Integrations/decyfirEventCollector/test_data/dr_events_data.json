@@ -1,5 +1,5 @@
 [
-      {
+    {
         "event_type": "Digital Risk Keywords Logs",
         "action_type": "ORG_ASSETS_CREATE",
         "asset_comments": "acme",
@@ -9,5 +9,16 @@
         "modified_by": "acme.com",
         "event_date": "2025-01-06T03:48:12",
         "version": ""
+    },
+    {
+        "event_type": "Digital Risk Keywords Logs",
+        "action_type": "ORG_ASSETS_CREATE",
+        "asset_comments": "",
+        "vendor": "Ubuntu",
+        "asset_type": "OS",
+        "asset_name": "Ubuntu",
+        "modified_by": "acme@acme.com",
+        "event_date": "2024-01-16T09:19:28",
+        "version": "16"
     }
 ]
