@@ -618,6 +618,7 @@ def generate_incidents(last_run):
 
     for _ in range(num_of_incident_to_create):
         email, email_object = create_email()
+        sanitize_email_headers(email)
         incidents.append({
             'name': email_object.get('Subject'),
             'details': email.as_string(),
@@ -626,6 +627,11 @@ def generate_incidents(last_run):
             'rawJSON': json.dumps(email_object)
         })
     return num_of_incident_to_create, incidents
+
+def sanitize_email_headers(email_obj):
+    for key, value in email_obj.items():
+        sanitized_value = re.sub(r'\n+', ' ', value.strip())
+        email_obj.replace_header(key, sanitized_value)
 
 
 '''MAIN FUNCTIONS'''
