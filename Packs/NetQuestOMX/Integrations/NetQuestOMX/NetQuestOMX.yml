@@ -80,7 +80,7 @@ script:
       description: A boolean field that indicates whether overlapping IP address ranges are present in the address list.
       type: boolean
     - contextPath: NetQuest.AddressList.MergedAddresses
-      description: A list contains consolidated IP address ranges, combining overlapping or contiguous addresses into a unified set.
+      description: A list that contains consolidated IP address ranges, combining overlapping or contiguous addresses into a unified set.
       type: list
     - contextPath: NetQuest.AddressList.MergesPresent
       description: A boolean field that indicates whether any address ranges in the list have been merged to eliminate overlaps or contiguous entries.
