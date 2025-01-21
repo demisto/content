@@ -1,5 +1,6 @@
 {
 	"cacheVersn": 0,
+    "fromVersion": "6.0.0",
 	"close": {
 		"sections": [
 			{
