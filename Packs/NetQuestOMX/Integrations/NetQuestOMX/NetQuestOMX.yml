@@ -57,6 +57,10 @@ configuration:
   display: Trust any certificate (not secure)
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 description: NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
 display: NetQuest OMX
 name: NetQuestOMX
