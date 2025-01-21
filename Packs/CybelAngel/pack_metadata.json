@@ -14,5 +14,42 @@
     "keywords": [],
     "marketplaces": [
         "marketplacev2"
-    ]
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "minVersion": "1.12.53",
+            "name": "Common Scripts",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "minVersion": "3.3.93",
+            "name": "Common Types",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "minVersion": "1.2.41",
+            "name": "Filters And Transformers",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "ThreatIntelReports": {
+            "mandatory": true,
+            "minVersion": "1.0.11",
+            "name": "Threat Intel Reports (BETA)",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "rasterize": {
+            "mandatory": true,
+            "minVersion": "1.2.28",
+            "name": "Rasterize",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        }
+    }
 }

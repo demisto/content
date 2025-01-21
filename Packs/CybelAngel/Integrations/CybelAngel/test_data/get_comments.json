@@ -1,0 +1,23 @@
+{
+    "total": 1,
+    "new": 0,
+    "comments": [
+        {
+            "author": {
+                "firstname": "John",
+                "lastname": "Doe",
+                "id": "google-oauth2|112361861605444479803",
+                "notFound": true
+            },
+            "content": "Body of the comment",
+            "created_at": "2019-08-24",
+            "discussion_id": "3500bb64-6081-4cf5-8e6f-dca82dab4982:cybelangel",
+            "discussion_tenant_name": "Cybelangel",
+            "id": "3500bb64-6081-4cf5-8e6f-dca82dab4982",
+            "isNew": true,
+            "last_updated_at": "2019-08-24",
+            "parent_id": "3500bb64-6081-4cf5-8e6f-dca82dab4982",
+            "assigned": true
+        }
+    ]
+}
