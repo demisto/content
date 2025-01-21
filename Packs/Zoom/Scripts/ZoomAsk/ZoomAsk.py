@@ -111,6 +111,7 @@ def main():
 
     args = {
         'ignoreAddURL': 'true',
+        'using-brand': 'Zoom'
     }
 
     user_options = [option1, option2]
