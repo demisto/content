@@ -688,6 +688,29 @@ def test_get_asset(mocker, prisma_cloud_v2_client):
     )
 
 
+def test_get_asset_generic(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-generic-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_generic_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_generic_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
 ''' HELPER FUNCTIONS TESTS '''
 
 
