@@ -4,6 +4,9 @@ commonfields:
 name: Druva Ransomware Response
 display: Druva Ransomware Response
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 configuration:
 - display: Druva API URL
@@ -11,14 +14,17 @@ configuration:
   defaultvalue: https://apis.druva.com
   type: 0
   required: true
+  section: Connect
 - display: Client ID
   name: clientId
   type: 4
   required: true
+  section: Connect
 - display: Secret Key
   name: secretKey
   type: 4
   required: true
+  section: Connect
 script:
   script: ''
   type: python
