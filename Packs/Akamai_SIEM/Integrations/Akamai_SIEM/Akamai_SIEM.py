@@ -558,6 +558,18 @@ def decode_url(headers: str) -> dict:
     return decoded_dict
 
 
+def post_latest_event_time(latest_event, base_msg):
+    try:
+        if isinstance(latest_event, str):
+            latest_event = json.loads(latest_event)
+        latest_event_time = date_format_converter(
+            from_format='epoch', date_before=latest_event.get("httpMessage", {}).get("start", "0"))
+        demisto.info(f"{base_msg} latest event time is: {latest_event_time}")
+    except Exception as e:
+        demisto.debug(f"caught an exception when attempting to execute latest_event_time {e}")
+        demisto.info(base_msg)
+
+
 ############################################## Beginning of beta part ##############################################
 BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
 MAX_ALLOWED_CONCURRENT_TASKS = 10000
@@ -702,7 +714,10 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
                 demisto.debug(f"Couldn't decode {event=}, reason: {e}")
             finally:
                 processed_events.append(event)
-    demisto.info(f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam.")
+    post_latest_event_time(
+        latest_event=processed_events[-1],
+        base_msg=f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam."
+    )
     tasks = send_events_to_xsiam_akamai(processed_events, VENDOR, PRODUCT, should_update_health_module=False,
                                         chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True,
                                         url_key="host", data_format="json", data_size_expected_to_split_evenly=True,
@@ -1189,8 +1204,10 @@ def main():  # pragma: no cover
                 should_skip_decode_events=should_skip_decode_events
             )):
                 if events:
-                    demisto.info(f"Sending {len(events)} events to xsiam using multithreads."
-                                 f"latest event time is: {events[-1]['_time']}")
+                    post_latest_event_time(
+                        latest_event=events[-1],
+                        base_msg=f"Sending {len(events)} events to xsiam using multithreads."
+                    )
                     futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
                                                    chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
                                                    multiple_threads=True, data_format="json")
