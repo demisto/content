@@ -5,6 +5,9 @@ name: SumoLogic
 display: SumoLogic
 category: Analytics & SIEM
 description: Cloud-based service for logs & metrics management.
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: 'Sumo Logic URL (region specific), for example: https://api.us2.sumologic.com/api/'
   name: url
