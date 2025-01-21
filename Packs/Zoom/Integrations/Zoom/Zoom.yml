@@ -68,6 +68,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
