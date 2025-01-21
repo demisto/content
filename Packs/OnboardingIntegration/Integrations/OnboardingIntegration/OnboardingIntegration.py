@@ -564,7 +564,7 @@ def create_email():
     bcc = [fake.email() for _ in range(random.randint(0, 2))]  # pylint: disable=no-member
     the_time = datetime.now()
     received = 'from ' + fake.hostname() + ' (' + fake.ipv4_public()  # pylint: disable=no-member
-    received += ')\r\n' + 'by ' + fake.domain_word() + '.'  # pylint: disable=no-member
+    received += ')' + 'by ' + fake.domain_word() + '.'  # pylint: disable=no-member
     received += fake.free_email_domain() + ' with '  # pylint: disable=no-member
     received += EMAIL_PROTOCOLS[random.randint(0, len(EMAIL_PROTOCOLS) - 1)]
     received += '; ' + the_time.strftime('%c')
@@ -618,7 +618,7 @@ def generate_incidents(last_run):
 
     for _ in range(num_of_incident_to_create):
         email, email_object = create_email()
-        sanitize_email_headers(email)
+        # sanitize_email_headers(email)
         incidents.append({
             'name': email_object.get('Subject'),
             'details': email.as_string(),
