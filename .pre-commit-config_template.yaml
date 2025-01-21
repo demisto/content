@@ -129,7 +129,7 @@ repos:
     - --implicit-optional
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-    skip: true  #  skip until the https://github.com/demisto/demisto-sdk/pull/4468 will merge
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs

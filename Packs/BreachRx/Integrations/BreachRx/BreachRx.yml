@@ -110,7 +110,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/graphql:1.0.0.87379
+  dockerimage: demisto/graphql:1.0.0.117182
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

@@ -3199,7 +3199,7 @@ script:
     - contextPath: CiscoNXOS.NxosVxlanVtepVni.commands
       description: commands sent to the device
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.115040
+  dockerimage: demisto/ansible-runner:1.0.0.2024530
   script: ''
   subtype: python3
   type: python
