@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -32,7 +32,7 @@ class Client(BaseClient):
         return result
 
     def get_accounts_id(self, id, params):
-        result = self._http_request(method="GET", url_suffix=f"/account/{id}", params=params,  headers=self._headers)
+        result = self._http_request(method="GET", url_suffix=f"/account/{id}", params=params, headers=self._headers)
         return result
 
 
@@ -63,7 +63,7 @@ def test_module(client: Client) -> str:  # pragma: no cover
     return message
 
 
-def impartner_get_account_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def impartner_get_account_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     query = args.get('query', '')
     fields = args.get('fields', 'name, id, recordLink, tech_BD_Assigned_for_XSOAR__cf')
@@ -84,7 +84,7 @@ def impartner_get_account_list_command(client: Client, args: Dict[str, Any]) -> 
         outputs=parsed_result)
 
 
-def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def impartner_get_account_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     id = args.get('id')
     fields = args.get('fields')
@@ -115,7 +115,7 @@ def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> Co
                           'account_Integration_Status__cf': parsed_result.get('account_Integration_Status__cf'),
                           'accountTimeline': parsed_result.get('if_there_is_a_timeline_to_complete_the_integration_please_enter'
                                                                '_the_date__cf')
-        }
+                          }
     else:
         context_result = {'name': parsed_result.get('name'), 'id': parsed_result.get('id'),
                           'link': parsed_result.get('recordLink'),

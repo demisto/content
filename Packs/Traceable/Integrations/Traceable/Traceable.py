@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 import urllib3
 from urllib import parse
 from string import Template
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, UTC
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -1063,8 +1063,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time.replace(
-            tzinfo=timezone.utc
-        ) > latest_created_time.replace(tzinfo=timezone.utc):
+            tzinfo=UTC
+        ) > latest_created_time.replace(tzinfo=UTC):
             latest_created_time = incident_created_time
 
     next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}

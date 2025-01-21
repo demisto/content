@@ -68,7 +68,7 @@ def extractVulnDetails(requestfromconnection):
         'CVSS Availability Impact': ['cvssData.availabilityImpact', 'availabilityImpact']
     }
 
-    if (not ('vulns') in req):
+    if ('vulns' not in req):
         for i in req['vulnerabilities']:
             pretty_dict = {}
             pretty_dict['CVE ID'] = i['cve']['id']
@@ -87,25 +87,28 @@ def extractVulnDetails(requestfromconnection):
             if ('metrics' in list(i['cve'].keys())):
                 cvssmetricslist = []
 
-                for cvssmetrickey, cvssmetric in i['cve']['metrics'].items():
+                for _cvssmetrickey, cvssmetric in i['cve']['metrics'].items():
                     cvssmetricsdict = {}
                     cvssmetric = cvssmetric[0]
 
                     for key, locations in key_locations.items():
-                        cvssmetricsdict[key] = next((get_value_from_hierarchy(cvssmetric, loc) \
-                                                    for loc in locations if get_value_from_hierarchy(cvssmetric, loc) is not None)
-                                                    , None)
+                        cvssmetricsdict[key] = next(
+                            (
+                                get_value_from_hierarchy(cvssmetric, loc)
+                                for loc in locations
+                                if get_value_from_hierarchy(cvssmetric, loc) is not None
+                            ),
+                            None,
+                        )
                     cvssmetricslist.append(cvssmetricsdict)
 
             pretty_dict['metrics'] = cvssmetricslist
             pretty_list.append(pretty_dict)
-    elif ('vulns') in req:
-        if (not len(req['vulns'])):
-            demisto.results("Vendor name may be wrong or no CPE added")
+    elif ('vulns') in req and (not len(req['vulns'])):
+        demisto.results("Vendor name may be wrong or no CPE added")
 
-    if (('result') in req):
-        if (not len(req['result']['CVE_Items'])):
-            demisto.results("There were no vulnerability in the criteria you were looking for.")
+    if (('result') in req) and (not len(req['result']['CVE_Items'])):
+        demisto.results("There were no vulnerability in the criteria you were looking for.")
     return pretty_list
 
 
@@ -118,7 +121,7 @@ def generalSearch():
     end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
                              "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
 
     generalSearchRequest = connection(base_url, additional_parameters)
@@ -149,7 +152,7 @@ def keywordSearch():
     end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
                              "keywordSearch": keyword, "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
     if isExactMatch:
         additional_parameters["keywordExactMatch"] = None
@@ -188,7 +191,7 @@ def cvssSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
                              f"{searchParameters}": f"{value}", "startIndex": f"{startIndex}",
                              "resultsPerPage": f"{resultsPerPage}"}
     generalSearchRequest = connection(base_url, additional_parameters)
@@ -220,7 +223,7 @@ def cweSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
                              "cweId": f"{cweId}", "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
@@ -251,7 +254,7 @@ def cpeSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
                              "cpeName": f"{cpeName}", "startIndex": f"{str(startIndex)}",
                              "resultsPerPage": f"{str(resultsPerPage)}"}
     generalSearchRequest = connection(base_url, additional_parameters)
@@ -307,7 +310,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
 
     ''' EXECUTION '''
-    demisto.info('command is %s' % (demisto.command(), ))
+    demisto.info(f'command is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             demisto.results(test_module())
