@@ -51,6 +51,18 @@ configuration:
   name: historical_days
   required: false
   type: 0
+  - display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 contentitemexportablefields:
   contentitemfields:
     definitionid: ""
