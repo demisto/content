@@ -423,7 +423,7 @@ def test_validate_indicators(indicator):
     assert sdv.validate_xml(tree)
 
 
-@pytest.mark.parametrize('request_headers, url_scheme, expected, is_xsoar_8',
+@pytest.mark.parametrize('request_headers, url_scheme, expected, is_xsiam',
                          [
                              ({}, 'http', 'http://host:9000', False),
                              ({'X-Request-URI': 'http://host/instance/execute'}, 'https',
@@ -432,7 +432,7 @@ def test_validate_indicators(indicator):
                               'https://ext-host/xsoar/instance/execute/eyy', True)
                          ]
                          )
-def test_get_url(mocker, request_headers, url_scheme, expected, is_xsoar_8):
+def test_get_url(mocker, request_headers, url_scheme, expected, is_xsiam):
     """
     Given:
         - Case 1: Empty requests headers and http URL scheme
