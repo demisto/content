@@ -269,7 +269,7 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
 
 def doppel_get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    id: str = args.get('id', None)
+    id: str = args.get('id', "")
     entity: str = args.get('entity', None)
     if not id and not entity:
         raise ValueError('Neither id nor the entity is specified. We need exactly single input for this command')
