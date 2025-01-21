@@ -1730,8 +1730,8 @@ class Client(BaseClient):
         self._headers.update({"Content-Type": 'application/json'})
 
         params: dict[str, Any] = assign_params(
-            host_metadata='all',  # includes more fields in response
-            show_cloud_tags=1,
+            # host_metadata='all',  # includes more fields in response
+            # show_cloud_tags=1,
             ids=asset_qids,
             last_modified_after=since_datetime,
         )
@@ -3621,7 +3621,7 @@ def main():  # pragma: no cover
                     last_run=last_run,
                     fetch_vulnerabilities_by_asset_qids=fetch_vulnerabilities_by_asset_qids,
                 )
-                demisto.debug('sending vulnerabilities to XSIAM.')
+                demisto.debug(f'sending {len(vulnerabilities)} vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
                 demisto.setAssetsLastRun(new_last_run)
 
