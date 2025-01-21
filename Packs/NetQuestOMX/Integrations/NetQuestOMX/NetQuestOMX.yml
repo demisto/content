@@ -29,7 +29,7 @@ configuration:
   type: 0
   required: true
   section: Collect
-  additionalinfo: Target NetQuest device port number
+  additionalinfo: Target NetQuest device port number.
 - display: Fetch Events
   name: isFetchEvents
   type: 8
