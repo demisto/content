@@ -15,7 +15,7 @@ def UpdateEmbeddings(workspace: str):
         }
         embedds.append(gridrow)
 
-    grid = json.dumps({"llmembeddings": embedds})
+    grid = json.dumps({"anythingllmembeddings": embedds})
     execute_command("setIncident", {'customFields': grid, 'version': -1})
 
 
@@ -28,7 +28,7 @@ def main():
             return
 
         folder = 'custom-documents'
-        workspace = demisto.incident()["CustomFields"].get("llmworkspace", "")
+        workspace = demisto.incident()["CustomFields"].get("anythingllmworkspace", "")
         if workspace == "":
             raise Exception("Workspace not defined")
 
@@ -55,7 +55,7 @@ def main():
 
         if embeds:
             UpdateEmbeddings(workspace)
-        grid = json.dumps({'llmdocuments': newgrid})
+        grid = json.dumps({'anythingllmdocuments': newgrid})
         execute_command("setIncident", {'customFields': grid, 'version': -1})
     except Exception as ex:
         demisto.error(traceback.format_exc())

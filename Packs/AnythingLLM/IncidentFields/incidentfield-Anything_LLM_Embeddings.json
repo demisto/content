@@ -1,11 +1,7 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "AI Playground",
-        "LLM Document Management"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "llmembeddings",
+    "cliName": "anythingllmembeddings",
     "closeForm": false,
     "columns": [
         {
@@ -19,9 +15,9 @@
             "script": "",
             "selectValues": [
                 "",
+                "Remove",
                 "Pin",
-                "Unpin",
-                "Remove"
+                "Unpin"
             ],
             "type": "singleSelect",
             "width": 100
@@ -30,20 +26,20 @@
             "displayName": "Title",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "title",
             "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 380
+            "width": 444
         },
         {
             "displayName": "Pinned",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "pinned",
             "orgType": "shortText",
             "required": false,
@@ -58,10 +54,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_llmembeddings",
-    "isReadOnly": true,
+    "id": "incident_anythingllmembeddings",
+    "isReadOnly": false,
     "locked": false,
-    "name": "LLM Embeddings",
+    "name": "Anything LLM Embeddings",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

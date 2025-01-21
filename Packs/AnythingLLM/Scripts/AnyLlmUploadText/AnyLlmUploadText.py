@@ -11,7 +11,7 @@ def main():
             raise Exception("The title or text parameter was not provided")
         args['title'] += ".txt"
         return_results(fileResult(args['title'], args['text']))
-        execute_command("setIncident", {'customFields': {'llmupload': json.dumps(args)}})
+        execute_command("setIncident", {'customFields': {'anythingllmupload': json.dumps(args)}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmUploadText: error - {ex}')

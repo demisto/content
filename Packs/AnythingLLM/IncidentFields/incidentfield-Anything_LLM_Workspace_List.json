@@ -1,11 +1,10 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "AI Playground",
-        "LLM Document Management"
+        "AI Playground"
     ],
     "caseInsensitive": true,
-    "cliName": "llmworkspacelist",
+    "cliName": "anythingllmworkspacelist",
     "closeForm": false,
     "columns": [
         {
@@ -28,14 +27,14 @@
             "displayName": "Name",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "name",
             "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 191
+            "width": 214
         },
         {
             "displayName": "Temperature",
@@ -48,7 +47,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 100
+            "width": 139
         },
         {
             "displayName": "Similarity",
@@ -61,7 +60,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 100
+            "width": 140
         },
         {
             "displayName": "Top N Results",
@@ -74,7 +73,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 107
+            "width": 176
         }
     ],
     "content": true,
@@ -82,10 +81,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_llmworkspacelist",
-    "isReadOnly": true,
+    "id": "incident_anythingllmworkspacelist",
+    "isReadOnly": false,
     "locked": false,
-    "name": "LLM Workspace List",
+    "name": "Anything LLM Workspace List",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

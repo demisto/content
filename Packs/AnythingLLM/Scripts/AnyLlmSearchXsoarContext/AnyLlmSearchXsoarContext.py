@@ -39,7 +39,7 @@ def main():
                         value = GetJsonByDot(value, k[1])
                     text += f"{key}:{value} "
 
-        execute_command("setIncident", {'customFields': {'llmsearchresults': text}})
+        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmSearchXsoarContext: error is - {ex}')

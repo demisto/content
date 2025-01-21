@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         inci = demisto.incident()['CustomFields']
-        convo = inci.get("llmconversation", "")
+        convo = inci.get("anythingllmconversation", "")
         if convo != "":
             return_results({
                 'ContentsFormat': EntryFormat.MARKDOWN,

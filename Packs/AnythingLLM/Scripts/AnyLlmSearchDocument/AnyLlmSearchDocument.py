@@ -28,13 +28,20 @@ def main():
                 entry_id = eid
                 break
 
+        res = []
         if entry_id != "":
             file_path = demisto.getFilePath(entry_id)['path']
             f = open(file_path, 'rb')
             data = f.read().decode("utf-8")
             f.close()
-            results = re.findall(pattern, data)
-            execute_command("setIncident", {'customFields': {'llmsearchresults': "\n".join(results)}})
+            results = re.findall(pattern, data, re.MULTILINE)
+            if len(results) > 0:
+                if isinstance(results[0], str):
+                    execute_command("setIncident", {'customFields': {'anythingllmsearchresults': "\n".join(results)}})
+                elif isinstance(results[0], tuple):
+                    for r in results:
+                        res.append(" ".join(r))
+                    execute_command("setIncident", {'customFields': {'anythingllmsearchresults': "\n".join(res)}})
         else:
             raise Exception(f"Document [{title}] not found")
 

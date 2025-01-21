@@ -53,7 +53,7 @@ def main():
                         value = ",".join(value)
                     text += f"{fld}:{value} "
 
-        execute_command("setIncident", {'customFields': {'llmsearchresults': text}})
+        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmSearchXsoarIndicators: error is - {ex}')

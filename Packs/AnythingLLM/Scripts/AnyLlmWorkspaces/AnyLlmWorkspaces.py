@@ -14,7 +14,7 @@ def main():
 
         for w in workspaces['workspaces']:
             if w['openAiTemp'] is None:
-                w['openAiTemp'] = 0.7
+                w['openAiTemp'] = 0.1
             gridrow = {
                 "action": " ",
                 "name": w['name'],

@@ -13,7 +13,7 @@ def main():
         args = {'title': name, 'description': "", 'author': "", 'source': ""}
         files = demisto.context().get("File", "")
         if files == "":
-            raise Exception("No File key found in context for war room file entries")
+            raise Exception(f"No File key found in context for war room file entries")
         if isinstance(files, dict):
             files = [files]
 
@@ -32,7 +32,7 @@ def main():
         shutil.rmtree(file_name, ignore_errors=True)
         args['text'] = text
 
-        execute_command("setIncident", {'customFields': {'llmupload': json.dumps(args)}})
+        execute_command("setIncident", {'customFields': {'anythingllmupload': json.dumps(args)}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmUploadFileEntry: error is - {ex}')

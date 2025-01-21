@@ -87,9 +87,9 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "llmconversation",
+								"fieldId": "anythingllmconversation",
 								"height": 44,
-								"id": "b67221b0-a5c8-11ef-90dd-7d9fbf69e3b5",
+								"id": "7abc8100-d77e-11ef-a195-cfbf921bdc63",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -97,7 +97,7 @@
 							{
 								"args": {
 									"text": {
-										"simple": "${incident.llmconversation}"
+										"simple": "${incident.anythingllmconversation}"
 									}
 								},
 								"buttonClass": "success",
@@ -189,33 +189,50 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 1,
+								"args": {
+									"categories": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"maxcontensize": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"tags": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "success",
+								"dropEffect": "move",
+								"endCol": 2,
 								"fieldId": "",
 								"height": 44,
-								"id": "276d7210-ab42-11ef-a088-b94b66d055e4",
+								"id": "93403fa0-66e5-11ef-bfe6-a56bcce2b945",
 								"index": 3,
+								"listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
+								"name": "Text Search XSOAR Incident War Room",
+								"scriptId": "606aa4a0-2562-42f7-8036-a3a32b46e021",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "llmworkspace",
+								"fieldId": "anythingllmworkspace",
 								"height": 22,
-								"id": "6d5d4ea0-87fa-11ef-98f9-f58bce660987",
+								"id": "72692800-d77e-11ef-a195-cfbf921bdc63",
 								"index": 4,
 								"listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "llmsearchresults",
+								"fieldId": "anythingllmsearchresults",
 								"height": 44,
-								"id": "b7f5e3a0-ab3b-11ef-9e3c-5fb52a3fe350",
+								"id": "6e831430-d77e-11ef-a195-cfbf921bdc63",
 								"index": 5,
-								"listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -263,34 +280,6 @@
 								"scriptId": "AnyLlmSearchXsoarIndicators",
 								"sectionItemType": "button",
 								"startCol": 1
-							},
-							{
-								"args": {
-									"categories": {
-										"simple": "",
-										"userMarkedRequired": true
-									},
-									"maxcontensize": {
-										"simple": "",
-										"userMarkedRequired": true
-									},
-									"tags": {
-										"simple": "",
-										"userMarkedRequired": true
-									}
-								},
-								"buttonClass": "success",
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "93403fa0-66e5-11ef-bfe6-a56bcce2b945",
-								"index": 3,
-								"listId": "emoz7dgron-213e1020-5f07-11ef-a83b-2b9945e1341d",
-								"name": "Text Search XSOAR Incident War Room",
-								"scriptId": "AnyLlmSearchXsoarEntries",
-								"sectionItemType": "button",
-								"startCol": 1
 							}
 						],
 						"maxH": null,
@@ -319,9 +308,9 @@
 						"items": [
 							{
 								"endCol": 4,
-								"fieldId": "llmdocuments",
+								"fieldId": "anythingllmdocuments",
 								"height": 106,
-								"id": "ddd05180-4a9e-11ef-944c-f1c433e7c245",
+								"id": "405491b0-d77e-11ef-a195-cfbf921bdc63",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -344,21 +333,19 @@
 						"i": "h6kfxmusqj-e015b690-720f-11ef-ad75-11253a7d0f9a",
 						"items": [
 							{
-								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "llmworkspace",
+								"fieldId": "anythingllmworkspace",
 								"height": 22,
-								"id": "923e6300-8681-11ef-b1d9-b147d87fcafd",
+								"id": "1fb40f80-d77e-11ef-a195-cfbf921bdc63",
 								"index": 0,
-								"listId": "h6kfxmusqj-da560e00-49d1-11ef-8304-7b7389a57df4",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "llmembeddings",
+								"fieldId": "anythingllmembeddings",
 								"height": 106,
-								"id": "2851c7c0-a5d5-11ef-b7a9-f1ebb72358b3",
+								"id": "34c93f30-d77e-11ef-a195-cfbf921bdc63",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -521,9 +508,9 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "llmworkspacelist",
+								"fieldId": "anythingllmworkspacelist",
 								"height": 22,
-								"id": "f8c05e00-a691-11ef-a690-d3e6c9fe8824",
+								"id": "3a5c8dd0-d77e-11ef-a195-cfbf921bdc63",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0

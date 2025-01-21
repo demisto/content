@@ -1,20 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "AI Playground",
-        "LLM Document Management"
+        "AI Playground"
     ],
     "caseInsensitive": true,
-    "cliName": "llmworkspace",
+    "cliName": "anythingllmcurthread",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_llmworkspace",
+    "id": "incident_anythingllmcurthread",
     "isReadOnly": false,
     "locked": false,
-    "name": "LLM Workspace",
+    "name": "anythingllmcurthread",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -25,7 +24,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "longText",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,

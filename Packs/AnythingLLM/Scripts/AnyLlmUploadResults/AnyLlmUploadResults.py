@@ -6,12 +6,12 @@ def main():
     try:
         args = demisto.args()
         # These lines are also in AnyLlmUploadText
-        args['text'] = demisto.incident()['CustomFields']['llmsearchresults']
+        args['text'] = demisto.incident()['CustomFields']['anythingllmsearchresults']
         if args['text'] == "" or args['title'] == "":
             raise Exception("The title or text parameter was not provided")
         args['title'] += ".txt"
         return_results(fileResult(args['title'], args['text']))
-        execute_command("setIncident", {'customFields': {'llmupload': json.dumps(args)}})
+        execute_command("setIncident", {'customFields': {'anythingllmupload': json.dumps(args)}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmUploadResults: error is - {ex}')

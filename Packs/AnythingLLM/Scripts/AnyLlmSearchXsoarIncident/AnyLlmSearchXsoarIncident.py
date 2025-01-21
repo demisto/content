@@ -19,8 +19,8 @@ def GetJsonByDot(value: dict, field: str):
 
 def ConvertLabels(labels):
     value = {}
-    for lab in labels:
-        value[lab['type']] = lab['value']
+    for l in labels:
+        value[l['type']] = l['value']
     return value
 
 
@@ -57,7 +57,7 @@ def main():
                 if value != "":
                     text += f"{fld}:{value} "
 
-        execute_command("setIncident", {'customFields': {'llmsearchresults': text}})
+        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmSearchXsoarIncident: error is - {ex}')

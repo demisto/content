@@ -10,7 +10,7 @@ def main():
             return
         newgrid = json.loads(args.get('new', ""))
         folder = 'custom-documents'
-        workspace = demisto.incident()["CustomFields"].get("llmworkspace", "")
+        workspace = demisto.incident()["CustomFields"].get("anythingllmworkspace", "")
         if workspace == "":
             raise Exception("Workspace not defined")
 
@@ -43,7 +43,7 @@ def main():
             index += 1
 
         if updated:
-            grid = json.dumps({'llmembeddings': newgrid})
+            grid = json.dumps({'anythingllmembeddings': newgrid})
             execute_command("setIncident", {'customFields': grid, 'version': -1})
     except Exception as ex:
         demisto.error(traceback.format_exc())

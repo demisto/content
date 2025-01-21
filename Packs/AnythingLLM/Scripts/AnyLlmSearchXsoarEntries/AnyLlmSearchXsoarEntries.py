@@ -29,11 +29,9 @@ def main():
             for entry in results:
                 if FilterEntries(entry, maxsize) == "":
                     continue
-                text += f"{entry['Metadata']['category']} {entry['Metadata'].get('dbotCreatedBy', '')} "
-                text += f"{entry['Metadata']['created']} {entry.get('Contents', '')} "
-                text += f"{entry.get('HumanReadable','')} {entry['Metadata'].get('tags', '')} \n"
+                text += f"{entry['Metadata']['category']} {entry['Metadata'].get('dbotCreatedBy', '')} {entry['Metadata']['created']} {entry.get('Contents', '')} {entry.get('HumanReadable', '')} {entry['Metadata'].get('tags', '')} \n"
 
-        execute_command("setIncident", {'customFields': {'llmsearchresults': text}})
+        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmSearchXsoarEntries: error is - {ex}')

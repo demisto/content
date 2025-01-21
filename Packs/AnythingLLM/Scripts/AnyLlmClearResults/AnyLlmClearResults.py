@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        execute_command("setIncident", {'customFields': {'llmsearchresults': ""}})
+        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': ""}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmClearResults: error is - {ex}')

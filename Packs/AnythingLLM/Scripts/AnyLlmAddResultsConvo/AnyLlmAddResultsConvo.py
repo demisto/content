@@ -5,9 +5,9 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         inci = demisto.incident()['CustomFields']
-        search_results = inci.get("llmsearchresults", "")
+        search_results = inci.get("anythingllmsearchresults", "")
         if search_results != "":
-            execute_command("setIncident", {'customFields': {'llmnewcontext': search_results}})
+            execute_command("setIncident", {'customFields': {'anythingllmnewcontext': search_results}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmAddResultsConvo: error is - {ex}')

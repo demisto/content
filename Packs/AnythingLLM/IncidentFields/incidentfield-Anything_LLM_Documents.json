@@ -1,11 +1,10 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "AI Playground",
-        "LLM Document Management"
+        "AI Playground"
     ],
     "caseInsensitive": true,
-    "cliName": "llmdocuments",
+    "cliName": "anythingllmdocuments",
     "closeForm": false,
     "columns": [
         {
@@ -18,6 +17,7 @@
             "required": false,
             "script": "",
             "selectValues": [
+                "",
                 "Embed",
                 "Delete"
             ],
@@ -28,59 +28,59 @@
             "displayName": "Title",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "title",
             "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 375
+            "width": 419
         },
         {
             "displayName": "Author",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "author",
             "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 186
+            "width": 262
         },
         {
             "displayName": "Source",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "source",
             "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 224
+            "width": 238
         },
         {
             "displayName": "Description",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "description",
             "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 306
+            "width": 204
         },
         {
             "displayName": "Link",
             "fieldCalcScript": "",
             "isDefault": true,
-            "isReadOnly": true,
+            "isReadOnly": false,
             "key": "link",
             "orgType": "shortText",
             "required": false,
@@ -95,10 +95,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_llmdocuments",
-    "isReadOnly": true,
+    "id": "incident_anythingllmdocuments",
+    "isReadOnly": false,
     "locked": false,
-    "name": "LLM Documents",
+    "name": "Anything LLM Documents",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

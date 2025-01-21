@@ -15,21 +15,21 @@ def UpdateEmbeddings(workspace: str):
         }
         embedds.append(gridrow)
 
-    grid = json.dumps({"llmembeddings": embedds})
+    grid = json.dumps({"anythingllmembeddings": embedds})
     execute_command("setIncident", {'customFields': grid, 'version': -1})
 
 
 def UpdateConversation(workspace: str):
     inci = demisto.incident()['CustomFields']
-    t = inci.get("llmcurthread", "")
+    t = inci.get("anythingllmcurthread", "")
     threads = {}
     if t != "":
         threads = json.loads(t)
     thread = threads.get(workspace, "")
 
     if thread != "":
-        response = execute_command("anyllm-workspace-thread-chats",
-                                   {'workspace': workspace, 'thread': thread}, extract_contents=True)
+        response = execute_command("anyllm-workspace-thread-chats", {'workspace': workspace, 'thread': thread},
+                                   extract_contents=True)
         convo = ""
         for h in response.get("history", []):
             if h['role'] == "user":
@@ -42,9 +42,9 @@ def UpdateConversation(workspace: str):
                 convo += "\n**Embedded Chunks Used**\n"
                 for s in h['sources']:
                     convo += f"* {s['score']:0.2f},  {s['title']}\n"
-        execute_command("setIncident", {'customFields': {'llmconversation': convo}})
+        execute_command("setIncident", {'customFields': {'anythingllmconversation': convo}})
     else:
-        execute_command("setIncident", {'customFields': {'llmconversation': ""}})
+        execute_command("setIncident", {'customFields': {'anythingllmconversation': ""}})
 
 
 def main():
@@ -61,7 +61,7 @@ def main():
             if 'action' in new:
                 if new['action'] == "Current" and old['action'] != "Current":
                     workspace = new['name']
-                    execute_command("setIncident", {'customFields': {'llmworkspace': workspace}})
+                    execute_command("setIncident", {'customFields': {'anythingllmworkspace': workspace}})
                     break
 
         index = 0
@@ -72,16 +72,16 @@ def main():
             else:
                 workspace = new['name']
                 settings = {
-                    'openAiTemp': new['temperature'],           # 0.0 .. 1.0
-                    'similarityThreshold': new['similarity'],   # vector DB similarity (0.0, 0.25, 0.50, 0.75)
-                    'topN': new['topnresults']                  # top N similar results to return to chat context (1 - 12)
+                    'openAiTemp': new['temperature'],  # 0.0 .. 1.0
+                    'similarityThreshold': new['similarity'],  # vector DB similarity (0.0, 0.25, 0.50, 0.75)
+                    'topN': new['topnresults']  # top N similar results to return to chat context (1 - 12)
                 }
                 execute_command("anyllm-workspace-settings", {'workspace': workspace, 'settings': settings})
             index += 1
             updated = True
 
         if workspace != "" and updated:
-            grid = json.dumps({'llmworkspacelist': newgrid})
+            grid = json.dumps({'anythingllmworkspacelist': newgrid})
             execute_command("setIncident", {'customFields': grid, 'version': -1})
             UpdateEmbeddings(workspace)
             UpdateConversation(workspace)

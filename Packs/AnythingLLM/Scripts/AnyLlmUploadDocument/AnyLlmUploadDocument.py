@@ -4,9 +4,9 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        llmupload = demisto.incident()['CustomFields'].get("llmupload", "").strip()
+        llmupload = demisto.incident()['CustomFields'].get("anythingllmupload", "").strip()
         if llmupload == "":
-            raise Exception(f"No processed document found in [{llmupload}] incident field ready for upload")
+            raise Exception(f"No processed document found in anythingllmupload incident field ready for upload")
 
         args = json.loads(llmupload)
         title = args.get("title", "")
@@ -21,8 +21,7 @@ def main():
             if ff['Name'] == title:
                 args['title'] = f"{ff['EntryID']}_{title}"
                 execute_command("anyllm-document-upload-text", args)
-                execute_command("setIncident", {'customFields': {'llmupload': ""}, 'version': -1})
-                # execute_command("AnyLlmDocuments", {'documentsfield': "llmdocuments"})
+                execute_command("setIncident", {'customFields': {'anythingllmupload': ""}, 'version': -1})
                 return
 
         raise Exception(f"Processed document {title} not found in File context key")

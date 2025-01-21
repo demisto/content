@@ -1,20 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "LLM Document Management",
         "AI Playground"
     ],
     "caseInsensitive": true,
-    "cliName": "llmnewcontext",
+    "cliName": "anythingllmnewcontext",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_llmnewcontext",
+    "id": "incident_anythingllmnewcontext",
     "isReadOnly": false,
     "locked": false,
-    "name": "llmnewcontext",
+    "name": "anythingllmnewcontext",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

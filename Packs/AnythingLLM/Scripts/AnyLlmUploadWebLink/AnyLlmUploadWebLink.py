@@ -15,7 +15,7 @@ def main():
         if cargs['title'] == "" or cargs['link'] == "":
             raise Exception("The title or link parameter was not provided")
         execute_command("anyllm-document-upload-link", cargs)
-        execute_command("AnyLlmDocuments", {'customFields': {'documentsfield': "llmdocuments"}})
+        execute_command("AnyLlmDocuments", {'customFields': {'documentsfield': "anythingllmdocuments"}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'AnyLlmUploadWebLink: error - {ex}')
