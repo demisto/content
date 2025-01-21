@@ -128,7 +128,7 @@ def test_build_ticket_contains_id_in_headers():
     """
     from RTIR import build_ticket
     ticket = build_ticket(['ThisIsAID: ofNotID'])
-    assert {} == ticket
+    assert ticket == {}
 
 
 RAW_ATTACHMENTS_LIST = """
