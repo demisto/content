@@ -20,7 +20,11 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
 | Colletions to fetch            | Type\(s\) of incidents to fetch from the third party API. | False |
 | Incidents first fetch          | Date to start fetching incidents from. | False |
 | Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
+| Hunting Rules | To enable the collection of data using hunting rules, please select this parameter. | False |
 
+
+## Note:
+Requests to the following collections come with the Hunting Rules parameter by default: `osi/git_repository, osi/public_leak, compromised/breached`
 
 ## Commands
 
@@ -250,7 +254,7 @@ Command performs Group IB event lookup in compromised/account collection with pr
 ### gibtia-get-compromised-card-info
 
 ***
-Command performs Group IB event lookup in compromised/card collection with provided ID.
+Command performs Group IB event lookup in compromised/card collection with provided ID (DEPR).
 
 
 #### Base Command
@@ -724,7 +728,7 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 ### gibtia-get-compromised-imei-info
 
 ***
-Command performs Group IB event lookup in compromised/imei collection with provided ID.
+Command performs Group IB event lookup in compromised/imei collection with provided ID (DEPR).
 
 
 #### Base Command
@@ -1318,7 +1322,7 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 ### gibtia-get-phishing-kit-info
 
 ***
-Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit collections with provided ID.
+Command performs Group IB event lookup in bp/phishing_kit (DEPR) and attacks/phishing_kit collections with provided ID.
 
 
 #### Base Command
@@ -1436,7 +1440,7 @@ Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_k
 ### gibtia-get-phishing-info
 
 ***
-Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID.
+Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID (DEPR).
 
 
 #### Base Command
@@ -2638,7 +2642,7 @@ Command performs Group IB event lookup in suspicious_ip/socks_proxy collection w
 ### gibtia-get-malware-targeted-malware-info
 
 ***
-Command performs Group IB event lookup in malware/targeted_malware collection with provided ID.
+Command performs Group IB event lookup in malware/targeted_malware collection with provided ID (DEPR).
 
 
 #### Base Command
