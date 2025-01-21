@@ -1,0 +1,239 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Create a calendar invite using the given playbook inputs and send it to the provided recipient using send-mail.
+id: Create and send calendar invite
+inputs:
+- description: The email address of the recipient
+  key: calendar_event_recipient
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The title for the even
+  key: title
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The start date in the format YYYY/MM/DD
+  key: start_date
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The start time in the format HH:MM
+  key: start_time
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The time zone of the start date/time
+  key: start_time_zone
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Europe/Berlin
+- description: The end date in the format YYYY/MM/DD
+  key: end_date
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The end time in the format HH:MM
+  key: end_time
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: The time zone of the end date/time
+  key: end_time_zone
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Europe/Berlin
+- description: An optional description for the event
+  key: description
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: An optional URL to be added to the event. In case none is provided, the script will try to determine the URL of the incident to create a direct link
+  key: url
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Optional argument allowing to override the email UID. Use in case the invite may need to be updated.
+  key: uid
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Create and send calendar invite
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5223adb7-87e6-46ec-89d1-3ba4b398e151
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5223adb7-87e6-46ec-89d1-3ba4b398e151
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: ${inputs.description}
+      end_date:
+        simple: ${inputs.end_date}
+      end_time:
+        simple: ${inputs.end_time}
+      start_date:
+        simple: ${inputs.start_date}
+      start_time:
+        simple: ${inputs.start_time}
+      title:
+        simple: ${inputs.title}
+      uid:
+        simple: ${inputs.uid}
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates an iCal event and stores it as a file object within XSOAR
+      id: 4bb9e7e0-1bb3-4699-8237-a1d893374fbc
+      iscommand: false
+      name: Create calendar entry
+      scriptName: iCalEntryCreate
+      type: regular
+      version: -1
+    taskid: 4bb9e7e0-1bb3-4699-8237-a1d893374fbc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachIDs:
+        simple: ${InfoFile.EntryID}
+      body:
+        simple: |-
+          Hello ${inputs.calendar_event_recipient},
+
+          attached please find a calendar entry for a recent task that has been assigned to you in XSOAR.
+
+          You friendly SOC team
+      bodyType:
+        simple: Text
+      subject:
+        simple: XSOAR Event - ${inputs.title}
+      to:
+        simple: ${inputs.calendar_event_recipient}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email.
+      id: 039e366c-3f63-4619-8a32-fefa1162c275
+      iscommand: true
+      name: Send calendar entry
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 039e366c-3f63-4619-8a32-fefa1162c275
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3d882c18-cda1-4b04-81c0-a582926de1ee
+      iscommand: false
+      name: Fin.
+      type: title
+      version: -1
+      description: ''
+    taskid: 3d882c18-cda1-4b04-81c0-a582926de1ee
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
