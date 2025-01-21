@@ -497,7 +497,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 def get_mapping_fields_command(client: Client, args: Dict[str, Any]):
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
     xdr_incident_type_scheme.add_field(name='queue_state', description='Queue State of the Doppel Alert')
-    return GetMappingFieldsResponse(xdr_incident_type_scheme)
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(xdr_incident_type_scheme)
+    return mapping_response
 
 
 ''' MAIN FUNCTION '''
