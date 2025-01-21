@@ -97,6 +97,7 @@ configuration:
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
+  section: Collect
 description: Fetched the MISP threat actor galaxy and builds it into Threat Actor indicators within TIM.
 display: Feed MISP Threat Actors
 name: FeedMISPThreatActors
