@@ -1,0 +1,1692 @@
+{
+  "execution_id": "3271852efd0c48_98992_inv",
+  "number_of_results": 240,
+  "query_cost": {
+    "3204872200335": 0.002020277777777778
+  },
+  "query_name": "",
+  "remaining_quota": 64.89007194444445,
+  "results": [
+    {
+      "_time": 1734202800000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "ocsp",
+      "count": 155,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "ssl",
+      "count": 446,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "insufficient-data",
+      "count": 436,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "insufficient-data",
+      "count": 354,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "incomplete",
+      "count": 264,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "pan-db-cloud",
+      "count": 74,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "splunk",
+      "count": 207,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "pan-db-cloud",
+      "count": 91,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "pan-db-cloud",
+      "count": 77,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "incomplete",
+      "count": 262,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "traps-management-service",
+      "count": 150,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "dns-base",
+      "count": 1848,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "pan-db-cloud",
+      "count": 76,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "netbios-ns",
+      "count": 43,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "splunk",
+      "count": 193,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "pan-db-cloud",
+      "count": 77,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "dns-base",
+      "count": 1901,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "incomplete",
+      "count": 265,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "paloalto-shared-services",
+      "count": 62,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "traps-management-service",
+      "count": 147,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "ocsp",
+      "count": 152,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "paloalto-shared-services",
+      "count": 58,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "paloalto-shared-services",
+      "count": 62,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "ocsp",
+      "count": 153,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "netbios-ns",
+      "count": 41,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "ldap",
+      "count": 43,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "ms-update",
+      "count": 229,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "ocsp",
+      "count": 152,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "ocsp",
+      "count": 152,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "netbios-ns",
+      "count": 43,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "incomplete",
+      "count": 281,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "ocsp",
+      "count": 152,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "ssl",
+      "count": 371,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "dns-base",
+      "count": 1883,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "dns-base",
+      "count": 1848,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "insufficient-data",
+      "count": 450,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "splunk",
+      "count": 199,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "dns-base",
+      "count": 1830,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "incomplete",
+      "count": 284,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "insufficient-data",
+      "count": 509,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "dns-base",
+      "count": 1853,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "paloalto-shared-services",
+      "count": 61,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "ssl",
+      "count": 375,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "traps-management-service",
+      "count": 153,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "insufficient-data",
+      "count": 356,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "incomplete",
+      "count": 264,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "pan-db-cloud",
+      "count": 63,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "ocsp",
+      "count": 155,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "paloalto-shared-services",
+      "count": 61,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "insufficient-data",
+      "count": 454,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "incomplete",
+      "count": 304,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "ssl",
+      "count": 393,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "splunk",
+      "count": 187,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "ocsp",
+      "count": 149,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "incomplete",
+      "count": 275,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "insufficient-data",
+      "count": 437,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "insufficient-data",
+      "count": 618,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "paloalto-shared-services",
+      "count": 62,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "ssl",
+      "count": 560,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "paloalto-shared-services",
+      "count": 61,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "splunk",
+      "count": 203,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "incomplete",
+      "count": 274,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "splunk",
+      "count": 210,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "pan-db-cloud",
+      "count": 82,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "ocsp",
+      "count": 149,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "insufficient-data",
+      "count": 472,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "dns-base",
+      "count": 1834,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "traps-management-service",
+      "count": 152,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "splunk",
+      "count": 215,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "pan-db-cloud",
+      "count": 76,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "pan-db-cloud",
+      "count": 81,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "splunk",
+      "count": 201,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "ssl",
+      "count": 393,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "insufficient-data",
+      "count": 444,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "ssl",
+      "count": 394,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "traps-management-service",
+      "count": 150,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "dns-base",
+      "count": 1853,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "traps-management-service",
+      "count": 152,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "ocsp",
+      "count": 153,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "ssl",
+      "count": 370,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "pan-db-cloud",
+      "count": 75,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "insufficient-data",
+      "count": 526,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "ldap",
+      "count": 44,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "pan-db-cloud",
+      "count": 79,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "netbios-ns",
+      "count": 43,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "incomplete",
+      "count": 285,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "pan-db-cloud",
+      "count": 78,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "dns-base",
+      "count": 1860,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "ocsp",
+      "count": 152,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "traps-management-service",
+      "count": 145,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "pan-db-cloud",
+      "count": 80,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "splunk",
+      "count": 205,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "ssl",
+      "count": 399,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "ocsp",
+      "count": 153,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "splunk",
+      "count": 196,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "splunk",
+      "count": 206,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "insufficient-data",
+      "count": 515,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "netbios-ns",
+      "count": 43,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "dns-base",
+      "count": 1826,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "insufficient-data",
+      "count": 452,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "ssl",
+      "count": 382,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "traps-management-service",
+      "count": 147,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "ssl",
+      "count": 395,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "paloalto-shared-services",
+      "count": 58,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "incomplete",
+      "count": 308,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "dns-base",
+      "count": 1849,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "ldap",
+      "count": 46,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "web-browsing",
+      "count": 46,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "insufficient-data",
+      "count": 359,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "traps-management-service",
+      "count": 151,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "incomplete",
+      "count": 273,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "incomplete",
+      "count": 282,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "netbios-ns",
+      "count": 43,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "traps-management-service",
+      "count": 148,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "traps-management-service",
+      "count": 146,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "netbios-ns",
+      "count": 43,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "incomplete",
+      "count": 276,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "ssl",
+      "count": 389,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "ssl",
+      "count": 383,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "splunk",
+      "count": 198,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "incomplete",
+      "count": 288,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "insufficient-data",
+      "count": 358,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "splunk",
+      "count": 201,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "incomplete",
+      "count": 273,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "dns-base",
+      "count": 1876,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "pan-db-cloud",
+      "count": 80,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "ssl",
+      "count": 390,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "splunk",
+      "count": 199,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "ocsp",
+      "count": 146,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "ocsp",
+      "count": 151,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "traps-management-service",
+      "count": 157,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "ssl",
+      "count": 376,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "splunk",
+      "count": 204,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "dns-base",
+      "count": 2250,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "incomplete",
+      "count": 275,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "pan-db-cloud",
+      "count": 80,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "splunk",
+      "count": 200,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "insufficient-data",
+      "count": 367,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "ssl",
+      "count": 400,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "insufficient-data",
+      "count": 565,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "ssl",
+      "count": 385,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "insufficient-data",
+      "count": 390,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "pan-db-cloud",
+      "count": 68,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "splunk",
+      "count": 208,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "pan-db-cloud",
+      "count": 80,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "splunk",
+      "count": 196,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "ssl",
+      "count": 386,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "traps-management-service",
+      "count": 155,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "dns-base",
+      "count": 1818,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "incomplete",
+      "count": 270,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "ocsp",
+      "count": 162,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "ocsp",
+      "count": 152,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "paloalto-shared-services",
+      "count": 59,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "ssl",
+      "count": 394,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "incomplete",
+      "count": 271,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "ocsp",
+      "count": 152,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "incomplete",
+      "count": 271,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "ocsp",
+      "count": 149,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734228000000,
+      "app": "ocsp",
+      "count": 150,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "insufficient-data",
+      "count": 437,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "insufficient-data",
+      "count": 421,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "dns-base",
+      "count": 1825,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "pan-db-cloud",
+      "count": 68,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "ocsp",
+      "count": 153,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "dns-base",
+      "count": 1876,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "ssl",
+      "count": 387,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734188400000,
+      "app": "netbios-ns",
+      "count": 43,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "traps-management-service",
+      "count": 145,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734210000000,
+      "app": "splunk",
+      "count": 199,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "splunk",
+      "count": 201,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734195600000,
+      "app": "ocsp",
+      "count": 201,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "ocsp",
+      "count": 155,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "dns-base",
+      "count": 1858,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "traps-management-service",
+      "count": 147,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "insufficient-data",
+      "count": 557,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "ssl",
+      "count": 390,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "pan-db-cloud",
+      "count": 82,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734253200000,
+      "app": "ssl",
+      "count": 441,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "dns-base",
+      "count": 1819,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734264000000,
+      "app": "traps-management-service",
+      "count": 146,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "pan-db-cloud",
+      "count": 76,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "insufficient-data",
+      "count": 366,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734220800000,
+      "app": "traps-management-service",
+      "count": 145,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "dns-base",
+      "count": 1852,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "pan-db-cloud",
+      "count": 84,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "traps-management-service",
+      "count": 150,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "insufficient-data",
+      "count": 389,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "dns-base",
+      "count": 1862,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "splunk",
+      "count": 203,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "paloalto-shared-services",
+      "count": 59,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "traps-management-service",
+      "count": 148,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "dns-base",
+      "count": 1868,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "traps-management-service",
+      "count": 148,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "splunk",
+      "count": 190,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "traps-management-service",
+      "count": 145,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "ssl",
+      "count": 410,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734192000000,
+      "app": "insufficient-data",
+      "count": 610,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "incomplete",
+      "count": 289,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "ocsp",
+      "count": 149,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734231600000,
+      "app": "incomplete",
+      "count": 269,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734199200000,
+      "app": "ocsp",
+      "count": 149,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734246000000,
+      "app": "traps-management-service",
+      "count": 152,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "pan-db-cloud",
+      "count": 78,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734271200000,
+      "app": "dns-base",
+      "count": 1858,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "incomplete",
+      "count": 293,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734217200000,
+      "app": "traps-management-service",
+      "count": 148,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734249600000,
+      "app": "dns-base",
+      "count": 1836,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "dns-base",
+      "count": 1829,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "paloalto-shared-services",
+      "count": 60,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "app": "splunk",
+      "count": 202,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734256800000,
+      "app": "traps-management-service",
+      "count": 150,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734267600000,
+      "app": "splunk",
+      "count": 202,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734224400000,
+      "app": "pan-db-cloud",
+      "count": 81,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "netbios-ns",
+      "count": 47,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734242400000,
+      "app": "pan-db-cloud",
+      "count": 77,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734238800000,
+      "app": "incomplete",
+      "count": 263,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "app": "ssl",
+      "count": 376,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734260400000,
+      "app": "netbios-ns",
+      "count": 42,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    }
+  ],
+  "status": "SUCCESS"
+}

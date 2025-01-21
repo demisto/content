@@ -1,0 +1,82 @@
+{
+  "execution_id": "xxxxxxxxx",
+  "number_of_results": 1,
+  "query_name": "",
+  "results": [
+    {
+      "__type": "null",
+      "app": "dns-base",
+      "count": null
+    },
+    {
+      "__type": "null",
+      "app": "dns-base",
+      "count": null
+    },
+    {
+      "__type": "bool",
+      "app": "dns-base",
+      "count": true
+    },
+    {
+      "__type": "bool",
+      "app": "dns-base",
+      "count": false
+    },
+    {
+      "__type": "int",
+      "app": "dns-base",
+      "count": 123
+    },
+    {
+      "__type": "int",
+      "app": "dns-base",
+      "count": 456
+    },
+    {
+      "__type": "float",
+      "app": "dns-base",
+      "count": 1.234
+    },
+    {
+      "__type": "float",
+      "app": "dns-base",
+      "count": 3.456
+    },
+    {
+      "__type": "str",
+      "app": "dns-base",
+      "count": "value1"
+    },
+    {
+      "__type": "str",
+      "app": "dns-base",
+      "count": "value2"
+    },
+    {
+      "__type": "dict",
+      "app": "dns-base",
+      "count": {
+        "a": "x"
+      }
+    },
+    {
+      "__type": "dict",
+      "app": "dns-base",
+      "count": {
+        "b": "y"
+      }
+    },
+    {
+      "__type": "list",
+      "app": "dns-base",
+      "count": [1,2,3]
+    },
+    {
+      "__type": "list",
+      "app": "dns-base",
+      "count": [4,5,6]
+    }
+  ],
+  "status": "SUCCESS"
+}
