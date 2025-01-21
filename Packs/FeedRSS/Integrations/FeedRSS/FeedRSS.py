@@ -7,6 +7,7 @@ HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 INTEGRATION_NAME = 'RSS Feed'
 
+
 class Client(BaseClient):
     """Client for RSS Feed - gets Reports from the website
     Attributes:
