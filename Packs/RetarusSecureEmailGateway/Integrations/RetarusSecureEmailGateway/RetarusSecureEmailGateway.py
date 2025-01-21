@@ -102,12 +102,23 @@ def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: 
                 connection=ws,
                 fetch_interval=fetch_interval
             )
+            set_the_integration_context("last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}")
             yield connection
 
     except Exception as e:
-        raise DemistoException(f"{str(e)}\nAuthentication failed. Please check the URL, channel name and access token.")
+        set_the_integration_context("last_run_results",
+                                   f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
+        raise DemistoException(f"{str(e)}\n")
 
 
+def set_the_integration_context(key: str, val: str):
+    """Given a key and value the functions adds them to the integration context dict.
+    """
+    cnx = get_integration_context()
+    cnx[key] = val
+    set_integration_context(cnx)
+    
+    
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     """This function checks if the given interval has passed since the given start time
 
@@ -178,7 +189,13 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
 
 
 def test_module():
-    raise DemistoException("No test option available. Save the configured instance to test the connection. If you encounter an 'Authentication failed' error, check your configuration.")
+    raise DemistoException("No test option available do to api limitation.")
+
+
+def get_last_run_results_command():
+    last_run_results = get_integration_context()["last_run_results"]
+    return CommandResults(readable_output=last_run_results)
+    
 
 
 def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
@@ -202,26 +219,36 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         try:
             event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
-            # if we didn't receive an event for `fetch_interval` seconds, finish fetching
             continue
+        except Exception as e:
+            set_the_integration_context("last_run_results",
+                                   f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
+            raise DemistoException(str(e))
+        
         event_id = event.get("rmxId")
         event_ts = event.get("ts")
         if not event_ts:
             # if timestamp is not in the response, use the current time
             demisto.debug(f"{LOG_PREFIX} Event {event_id} does not have a timestamp, using current time")
             event_ts = datetime.now().isoformat()
+        
         date = dateparser.parse(event_ts)
         if not date:
             demisto.debug(f"{LOG_PREFIX} Event {event_id} has an invalid timestamp, using current time")
             # if timestamp is not in correct format, use the current time
             date = datetime.now()
+        
         event["_time"] = date.astimezone(timezone.utc).isoformat()
         event["SOURCE_LOG_TYPE"] = event.get("type")
+        
         events.append(event)
         event_ids.add(event_id)
-        
-    demisto.debug(f"{LOG_PREFIX} Fetched {len(events)} events")
+    
+    num_events = len(events)
+    demisto.debug(f"{LOG_PREFIX} Fetched {num_events} events")
     demisto.debug(f"{LOG_PREFIX} The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
+    set_the_integration_context("last_run_results",
+                                f"Got from connection {num_events} events starting at {str(fetch_start_time)} untill {datetime.now().astimezone(timezone.utc)}")
     
     return events
 
@@ -239,6 +266,8 @@ def main():  # pragma: no cover
     try:
         if command == "long-running-execution":
             return_results(long_running_execution_command(url, token_id, fetch_interval, channel, verify_ssl))
+        elif command == "retarus-get-last-run-results":
+            return_results(get_last_run_results_command())
         elif command == "test-module":
             return_results(test_module())
         else:
