@@ -3,26 +3,33 @@ defaultEnabled: true
 commonfields:
   id: Cortex Core - IR
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Connect
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key
   name: apikey
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key ID
   name: credentials
   defaultvalue: ""
@@ -36,6 +43,7 @@ configuration:
   name: timeout
   type: 0
   required: false
+  section: Connect
 description: The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Investigation & Response
 name: Cortex Core - IR
@@ -1837,26 +1845,34 @@ script:
     - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `||`, `&&`, `;` separators for controlling the flow of multiple commands).
+    - description: Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. Set the `is_chained_command` argument to `true` when using `||`, `&&`, `;` separators for controlling the flow of multiple commands.
       name: commands
       required: true
     - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
       name: is_raw_command
-      type: Boolean
       required: false
+      type: Boolean
+    - description: Whether or not the command has chained commands. When true, the command overrides validation for `||`, `&&`, `;` separators.
+      name: is_chained_command
+      required: false
+      type: Boolean
+    - description: Whether or not to override input validation. WARNING - only use this flag if you are sure of what you are doing as it removes an important feature.
+      name: override_validation
+      required: false
+      type: Boolean
     - description: Type of shell command.
-      auto: PREDEFINED
       name: command_type
+      auto: PREDEFINED
       predefined:
       - 'powershell'
       - 'native'
       required: false
-    - defaultValue: '600'
-      description: The timeout in seconds for this execution.
+    - description: The timeout in seconds for this execution.
       name: timeout
+      defaultValue: '600'
     - description: For polling use.
-      isArray: true
       name: action_id
+      isArray: true
       deprecated: true
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
@@ -2280,8 +2296,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
       name: events_from_decider_format
       auto: PREDEFINED
