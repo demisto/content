@@ -241,4 +241,3 @@ def test_fetch_with_same_time(mocker):
     assert 'ids' in new_last_run
     assert len(new_last_run.get('ids')) == 1
     assert new_last_run.get('start_date') == '2025-01-04T19:44:35Z'
-
