@@ -53,6 +53,7 @@ configuration:
   display: Use system proxy settings
   type: 8
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
