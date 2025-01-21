@@ -530,7 +530,7 @@ def main() -> None:
         'doppel-create-abuse-alert': doppel_create_abuse_alert_command,
     }
     current_command: str = demisto.command()
-    demisto.info(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {current_command}')
     try:
         client = Client(
             base_url=base_url,
