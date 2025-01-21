@@ -1,0 +1,54 @@
+commonfields:
+  id: Retarus Secure Email Gateway
+  version: -1
+name: Retarus Secure Email Gateway
+display: Retarus Secure Email Gateway
+category: Email
+description: Integrate RetarusSecureEmailGateway to seamlessly fetch events and enhance email security.
+configuration:
+- defaultvalue: events.retarus.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: Token ID
+  additionalinfo: The Token ID to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- defaultvalue: default
+  display: Channel name
+  section: Collect
+  name: channel
+  type: 0
+- display: Fetch interval in seconds
+  name: fetch_interval
+  type: 0
+  defaultvalue: 60
+  required: true
+  section: Collect
+  advanced: true
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+script:
+  script: ""
+  type: python
+  commands: []
+  subtype: python3
+  dockerimage: demisto/netutils:1.0.0.115452
+  longRunning: true
+marketplaces:
+- marketplacev2
+fromversion: 6.9.0
+tests:
+- No tests
