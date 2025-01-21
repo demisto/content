@@ -11,17 +11,14 @@ configuration:
   defaultvalue: https://apis.druva.com
   type: 0
   required: true
-  section: Connect
 - display: Client ID
   name: clientId
   type: 4
   required: true
-  section: Connect
 - display: Secret Key
   name: secretKey
   type: 4
   required: true
-  section: Connect
 script:
   script: ''
   type: python
@@ -44,7 +41,7 @@ script:
       description: The name of the resource user for a device or server.
       type: string
     - contextPath: Druva.Resource.orgID
-      description: 'The Organisation ID of device.'
+      description: 'The Organisation ID of device '
     description: Finds device information for a specific hostname.
   - name: druva-list-quarantine-ranges
     arguments: []
@@ -79,7 +76,7 @@ script:
       required: true
       description: 'The resource type to quarantine. Can be: "Endpoint", "File Server", or "NAS".'
     - name: org_id
-      description: 'Specify your org id for NAS and File server for End points set org_id to -1.'
+      description: 'Specify your org id for NAS and File server for End points set org_id to -1'
     - name: from_date
       description: 'Date from which a quarantine range should start. If not provided, it is considered open ended. For example, 2020-10-25.'
     - name: to_date
@@ -189,7 +186,7 @@ script:
       description: 'Select a Resource ID in which to restore.'
     - name: restore_location
       required: true
-      description: 'Specify the target Restore Location. Can be: "Desktop" - if you want to restore the data to the desktop on the target device, "Original" - if you want to restore data to the same location from which it was backed up, or to restore the data to a custom location, specify the absolute path of the location. For example,  /Users/username/Desktop.'
+      description: 'Specify the target Restore Location. Can be: "Desktop" - if you want to restore the data to the desktop on the target device, "Original" - if you want to restore data to the same location from which it was backed up, or to restore the data to a custom location, specify the absolute path of the location. For example,  /Users/username/Desktop'
     description: 'Restores data to a replacement device and deletes a quarantined Snapshot. This command restores your endpoint data from a day prior to the snapshot. Any changes made after the snapshot date may be lost.'
     execution: true
   - name: druva-endpoint-check-restore-status
@@ -202,14 +199,14 @@ script:
     arguments:
     - name: resource_id
       required: true
-      description: ID of endpoint resource to be decommissioned.
+      description: ID of endpoint resource to be decommissioned
     description: 'Wipes remotely an infected Endpoint Resource and deletes a quarantined Snapshot. This command remote wipes data from the endpoint. This action cannot be undone.'
     execution: true
   - name: druva-find-user
     arguments:
     - name: user_string
       required: true
-      description: Complete user name or p.
+      description: Complete user name or p
     outputs:
     - contextPath: Druva.User.userID
       description: The full string or prefix from the user name to search.
@@ -237,7 +234,7 @@ script:
       description: The ID of the Resource.
     - contextPath: Druva.Resource.resourceType
       description: The type of the Resource.
-    description: 'Find all share point resources with given user name.'
+    description: 'Find all share point resources with given user name '
   - name: druva-find-sharedDrives
     arguments:
     - name: search_string
@@ -248,7 +245,7 @@ script:
       description: The ID of the Resource.
     - contextPath: Druva.Resource.resourceType
       description: The type of the Resource.
-    description: Finds shared drives resources specific to share drive name.
+    description: Finds shared drives resources specific to share drive name
   dockerimage: demisto/python3:3.11.10.116439
   runonce: false
   subtype: python3
@@ -256,6 +253,3 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-sectionOrder:
-- Connect
-- Collect
