@@ -701,9 +701,10 @@ def get_port(params: dict = demisto.params()) -> int:
     """
     Gets port from the integration parameters.
     """
-    if not params.get('longRunningPort'):
-        params['longRunningPort'] = '1111'
     try:
+        if not params.get('longRunningPort'):
+            params['longRunningPort'] = '1111'
+            # The default is for the autogeneration port feature before port allocation.
         port = int(params.get('longRunningPort', ''))
     except ValueError as e:
         raise ValueError(f'Invalid listen port - {e}')
@@ -858,7 +859,7 @@ def taxii_poll_service() -> Response:
 
 def test_module(taxii_server: TAXIIServer):
     run_server(taxii_server, is_test=True)
-    return 'ok'
+    return 'ok', {}, {}
 
 
 def run_server(taxii_server: TAXIIServer, is_test=False):
@@ -918,6 +919,10 @@ def main():
     """
     params = demisto.params()
     command = demisto.command()
+    port = get_port(params)
+    collections = get_collections(params)
+    server_links = demisto.demistoUrls()
+    server_link_parts: ParseResult = urlparse(server_links.get('server'))
 
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
@@ -928,26 +933,22 @@ def main():
     elif certificate and private_key:
         http_server = False
 
+    global SERVER
+    scheme = 'http'
+    host_name = server_link_parts.hostname
+    if not http_server:
+        scheme = 'https'
+
+    service_address = params.get('service_address')
+    SERVER = TAXIIServer(scheme, str(host_name), port, collections,
+                         certificate, private_key, http_server, credentials, service_address)
+
     demisto.debug(f'Command being called is {command}')
-    commands: dict = {}
+    commands = {
+        'test-module': test_module
+    }
     try:
-        port = get_port(params)
-        collections = get_collections(params)
-        server_links = demisto.demistoUrls()
-        server_link_parts: ParseResult = urlparse(server_links.get('server'))
-
-        global SERVER
-        scheme = 'http'
-        host_name = server_link_parts.hostname
-        if not http_server:
-            scheme = 'https'
-
-        service_address = params.get('service_address')
-        SERVER = TAXIIServer(scheme, str(host_name), port, collections,
-                             certificate, private_key, http_server, credentials, service_address)
-        if command == 'test-module':
-            return_results(test_module(SERVER))
-        elif command == 'long-running-execution':
+        if command == 'long-running-execution':
             run_server(SERVER)
         else:
             readable_output, outputs, raw_response = commands[command](SERVER)
