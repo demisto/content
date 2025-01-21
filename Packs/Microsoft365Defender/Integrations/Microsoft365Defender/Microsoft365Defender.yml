@@ -7,13 +7,31 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: |-
-    The United States: api-us.security.microsoft.com
-    Europe: api-eu.security.microsoft.com
-    The United Kingdom: api-uk.security.microsoft.co
-  defaultvalue: https://api.security.microsoft.com
-  display: Endpoint URI
+    The endpoint type. When selecting the Custom option, the Server URL parameter must be filled.
+  defaultvalue: Worldwide
+  display: Endpoint Type
+  name: endpoint_type
+  required: false
+  type: 15
+  section: Connect
+  options:
+    - Worldwide
+    - US Geo Proximity
+    - EU Geo Proximity
+    - UK Geo Proximity
+    - AU Geo Proximity
+    - SWA Geo Proximity
+    - INA Geo Proximity
+    - US GCC
+    - US GCC-High
+    - DoD
+    - Custom
+  advanced: true
+- additionalinfo: |-
+    Custom Server URL. Required when Endpoint Type is Custom.
+  display: Server URL
   name: base_url
-  required: true
+  required: false
   type: 0
   section: Connect
 - name: creds_client_id

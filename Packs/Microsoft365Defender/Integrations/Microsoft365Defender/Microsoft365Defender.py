@@ -22,7 +22,9 @@ class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
                  enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: Optional[str] = None,
+                 endpoint: str = 'com',
+                 azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD):
         if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -35,7 +37,7 @@ class Client:
             verify=verify,
             proxy=proxy,
             ok_codes=(200, 201, 202, 204),
-            scope='offline_access https://security.microsoft.com/mtp/.default',
+            scope=f'offline_access {MICROSOFT_365_DEFENDER_SCOPES.get(endpoint)}/mtp/.default',
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
@@ -44,8 +46,9 @@ class Client:
             grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
 
             # used for device code flow
-            resource='https://api.security.microsoft.com' if not client_credentials else None,
-            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not client_credentials else None,
+            resource=MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
+            token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
+                                f'/organizations/oauth2/v2.0/token',
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
@@ -53,6 +56,8 @@ class Client:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.security,
+            endpoint=endpoint,
+            azure_cloud=azure_cloud,
             command_prefix="microsoft-365-defender",
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
@@ -600,6 +605,9 @@ def main() -> None:
     proxy = params.get('proxy', False)
     app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
+    endpoint_type = params.get('endpoint_type', 'Worldwide')
+    endpoint = MICROSOFT_365_DEFENDER_TYPE.get(endpoint_type, 'com')
+    base_url = microsoft_defender_get_base_url(base_url, endpoint_type)
 
     tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
@@ -623,6 +631,7 @@ def main() -> None:
         if not managed_identities_client_id and not app_id:
             raise Exception('Application ID must be provided.')
 
+        azure_cloud = AZURE_CLOUDS.get(endpoint)
         client = Client(
             app_id=app_id,
             verify=verify_certificate,
@@ -633,7 +642,9 @@ def main() -> None:
             client_credentials=client_credentials,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            managed_identities_client_id=managed_identities_client_id
+            managed_identities_client_id=managed_identities_client_id,
+            endpoint=endpoint,
+            azure_cloud=azure_cloud,
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
