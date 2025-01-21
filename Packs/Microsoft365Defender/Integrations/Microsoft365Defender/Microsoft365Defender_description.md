@@ -86,3 +86,4 @@ Using a national cloud endpoint is supported by setting the *Endpoint Type* para
 * US Government GCC Endpoint: `https://api-gcc.security.microsoft.us`
 * US Government GCC-High Endpoint: `https://api-gov.security.microsoft.us`
 * US Government Department of Defence (DoD) Endpoint: `https://api-gov.security.microsoft.us`
+When using **US Government GCC-High Endpoint** with **Device Code** Flow, tenant ID is a required parameter in the instance configuration.
