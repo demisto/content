@@ -3,6 +3,9 @@ defaultEnabled: true
 commonfields:
   id: Cortex Core - IR
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Incident type
   name: incidentType
