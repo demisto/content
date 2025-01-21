@@ -209,3 +209,39 @@ def test_first_time_fetch(mocker):
     assert 'ids' in new_last_run
     assert new_last_run['ids'] == []
     assert 'start_date' in new_last_run
+
+
+def test_fetch_with_same_time(mocker):
+    """
+    Given: A mock Proofpoint client with event data and no previous run data.
+    When: Fetching events multiple times with a specified limit.
+    Then: Ensure each fetch returns the correct number of events, and `lastRun` updates correctly with unique event IDs.
+    """
+    from ProofpointIsolationEventCollector import fetch_events
+    client = create_client()
+    mocked_events = util_load_json('test_data/get_events_same_time_raw_response.json')
+
+    return_values_events = [
+        mocked_events,
+        {'data': mocked_events.get('data')[4:]}
+    ]
+
+    mocker.patch('ProofpointIsolationEventCollector.Client.get_events', side_effect=return_values_events)
+    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value={})
+    limit = 5
+
+    events, new_last_run = fetch_events(client, limit)  # first time calling fetch-events
+
+    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value=new_last_run)
+    events, new_last_run = fetch_events(client, limit)
+    assert len(events) == limit
+    assert 'ids' in new_last_run
+    assert len(new_last_run.get('ids')) == 3
+    assert new_last_run.get('start_date') == '2025-01-03T19:44:35Z'
+
+    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value=new_last_run)
+    events, new_last_run = fetch_events(client, limit)
+    assert len(events) == limit
+    assert 'ids' in new_last_run
+    assert len(new_last_run.get('ids')) == 1
+    assert new_last_run.get('start_date') == '2025-01-04T19:44:35Z'
