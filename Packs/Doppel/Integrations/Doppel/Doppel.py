@@ -537,7 +537,7 @@ def main() -> None:
             api_key=api_key)
 
         if current_command in supported_commands:
-            demisto.info(f'Command run successful: {demisto.command()}')
+            demisto.info(f'Command run successful: {current_command}')
             return_results(supported_commands[current_command](client, demisto.args()))
         else:
             demisto.error(f'Command is not implemented: {demisto.command()}')
