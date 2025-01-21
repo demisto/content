@@ -2595,8 +2595,17 @@ def code_issues_list_command(client, args):
                           )
 
 
-def get_asset_command(client: Client, args: Dict[str, Any]):
+def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset using the provided client.
 
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset.
+    """
     asset_id = args.get('asset_id')
     finding_type = args.get('finding_type')
     risk_factors = argToList(args.get('risk_factors'))
@@ -2640,8 +2649,17 @@ def get_asset_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_asset_generic_command(client: Client, args: Dict[str, Any]):
+def get_asset_generic_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Retrieve specific information about an asset using the provided client.
 
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - Dict[str, Any]: A dictionary containing the specific information about the asset.
+    """
     asset_id = args.get('asset_id')
     asset_type = args.get('type')
     finding_type = args.get('finding_type')
@@ -2674,8 +2692,17 @@ def get_asset_generic_command(client: Client, args: Dict[str, Any]):
     return response
 
 
-def get_asset_findings_command(client: Client, args: Dict[str, Any]):
+def get_asset_findings_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset findings using the provided client.
 
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset findings.
+    """
     asset_id = args.get('asset_id')
     finding_type = args.get('finding_type')
     risk_factors = argToList(args.get('risk_factors'))
@@ -2719,8 +2746,17 @@ def get_asset_findings_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_asset_vulnerabilities_command(client: Client, args: Dict[str, Any]):
+def get_asset_vulnerabilities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset vulnerabilities using the provided client.
 
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset vulnerabilities.
+    """
     asset_id = args.get('asset_id')
     finding_type = args.get('finding_type')
     risk_factors = argToList(args.get('risk_factors'))
@@ -2764,8 +2800,17 @@ def get_asset_vulnerabilities_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_asset_alerts_command(client: Client, args: Dict[str, Any]):
+def get_asset_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset alerts using the provided client.
 
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset alerts.
+    """
     asset_id = args.get('asset_id')
     finding_type = args.get('finding_type')
     risk_factors = argToList(args.get('risk_factors'))
@@ -2809,8 +2854,17 @@ def get_asset_alerts_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_asset_relationships_command(client: Client, args: Dict[str, Any]):
+def get_asset_relationships_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset relationships using the provided client.
 
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset relationships.
+    """
     asset_id = args.get('asset_id')
     finding_type = args.get('finding_type')
     risk_factors = argToList(args.get('risk_factors'))
@@ -2854,8 +2908,17 @@ def get_asset_relationships_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_asset_network_command(client: Client, args: Dict[str, Any]):
+def get_asset_network_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset network using the provided client.
 
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset network.
+    """
     asset_id = args.get('asset_id')
     finding_type = args.get('finding_type')
     risk_factors = argToList(args.get('risk_factors'))
