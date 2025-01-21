@@ -54,7 +54,7 @@
 	"toServerVersion": "",
 	"type": "shortText",
 	"unmapped": false,
-	"unsearchable": false,
+	"unsearchable": true,
 	"useAsKpi": false,
 	"validatedError": "ce08360d623c7147d2e224b52c30bf2e",
 	"validationRegex": "",

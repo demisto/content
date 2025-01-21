@@ -54,7 +54,7 @@
 	"toServerVersion": "",
 	"type": "url",
 	"unmapped": false,
-	"unsearchable": false,
+	"unsearchable": true,
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
