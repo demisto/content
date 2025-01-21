@@ -309,7 +309,7 @@ class TAXIIServer:
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
 
             if is_xsiam_or_xsoar_saas():
-                prefix = 'edl-' if is_xsiam() else 'ext-'
+                prefix = 'ext-'
                 xsoar_path = '/xsoar'
         else:
             endpoint = f':{self.port}'
@@ -939,6 +939,8 @@ def main():
         global SERVER
         scheme = 'http'
         host_name = server_link_parts.hostname
+        if is_xsiam():
+            host_name = str(server_link_parts.hostname).replace('xdr', 'crtx')
         if not http_server:
             scheme = 'https'
 

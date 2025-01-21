@@ -23,15 +23,10 @@ Use one of the following options to access the TAXII service:
 - `https://<xsoar_address>/instance/execute/<instance_name>/taxii-discovery-service`
 - `http://<xsoar_address>:<listen_port>/taxii-discovery-service`
 
-### For Cortex XSOAR 8 On-prem or Cortex XSOAR 8 Cloud:  
+### For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
 Use one of the following options to access the TAXII service:
 - `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
 - When using an engine: `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
-
-### For Cortex XSIAM:  
-Use one of the following options to access the TAXII service:
-- `https://edl-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
-- When using an engine: `http://<xsiam_address>:<listen_port>/<taxii2_api_endpoint>/`
   
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
@@ -50,10 +45,8 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
    - For Cortex XSOAR 6.x:  
      `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`.  
      For example, `https://my.xsoar.live/instance/execute/taxiiserver`. 
-   - For Cortex XSOAR 8 On-prem or Cortex XSOAR 8 Cloud:  
-     `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
-   - For Cortex XSIAM:  
-     `https://edl-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   - For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
+     `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`  
      **Note**:
      The string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
 
