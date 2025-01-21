@@ -82,14 +82,12 @@ Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
    
 7. If mirroring is enabled in the integration configuration or using `ZoomAsk`:
    - **Endpoint URL Requirements:**
-   
    According to the [Zoom requirements](https://developers.zoom.us/docs/api/webhooks/#webhook-endpoint-requirements) in order to receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
-     
-     - Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
-     - Employ the `https://` scheme.
-     - Be able to accept HTTP POST requests containing JSON payloads.
-     - Be a fully qualified domain name (FQDN).
-     -  be able to respond with an HTTP Status Code.
+       - Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
+       - Employ the `https://` scheme.
+       - Be able to accept HTTP POST requests containing JSON payloads.
+       - Be a fully qualified domain name (FQDN).
+       -  be able to respond with an HTTP Status Code.
 
    - **Zoom Configurations:**
      
