@@ -486,7 +486,7 @@ def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> 
             'type': 'Threat Actor',
             'fields': {
                 'description': threat_actor.get('description', ''),
-                'tlp_color': tlp_color,
+                'trafficlightprotocol': tlp_color,
                 'tags': [tag for tag in feed_tags.split(',') + [f'MISP_ID: {(threat_actor.get("uuid"))}'] if tag]
             },
         }
@@ -509,7 +509,7 @@ def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> 
             indicator['fields']['geocountry'] = full_country_name
             relationships.extend(build_relationships(indicator['value'], [full_country_name], 'Location', 'attributed-to'))
 
-        if goals := meta.get('cfr-type-of-incident', []):
+        if goals := meta.get('cfr-type-of-incident', ''):
             indicator['fields']['goals'] = goals
 
         indicator['relationships'] = relationships
@@ -532,7 +532,6 @@ def main():
     reliability = params.get('integrationReliability', 'B - Usually reliable')
     tlp_color = params.get('tlp_color') or 'WHITE'
     feed_tags = params.get('feedTags', '')
-    commands = {"mispthreatactors-get-indicators": get_indicators_command}
 
     if not DBotScoreReliability.is_valid_type(reliability):
         raise Exception(
@@ -566,8 +565,8 @@ def main():
 
             demisto.setLastRun({'version': f'{version}'})
 
-        elif command in commands:
-            return_results(commands[command](client, demisto.args()))
+        elif command == "mispthreatactors-get-indicators":
+            return_results(get_indicators_command(client, demisto.args()))
 
         else:
             raise NotImplementedError(f'Command "{command}" was not implemented.')
