@@ -126,7 +126,7 @@ script:
       isArray: true
       defaultValue: "Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats"
       required: true
-    description: This command gets events from NetQuest OMX. Each event is a report for the specified statistic type. Available only for Cortex XSIAM.
+    description: Gets events from NetQuest OMX. Each event is a report for the specified statistic type. Available only for Cortex XSIAM.
     execution: false
     name: get-events
   runonce: false
