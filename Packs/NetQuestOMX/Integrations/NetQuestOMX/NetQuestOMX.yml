@@ -59,7 +59,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
+description: NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet and flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
 display: NetQuest OMX
 name: NetQuestOMX
 script:
