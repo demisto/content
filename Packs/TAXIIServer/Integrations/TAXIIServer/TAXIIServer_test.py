@@ -454,44 +454,6 @@ def test_get_url(mocker, request_headers, url_scheme, expected, is_xsoar_8):
     if request_headers:
         mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
         mocker.patch('TAXIIServer.is_xsiam_or_xsoar_saas', return_value=is_xsoar_8)
-        mocker.patch('TAXIIServer.is_xsiam', return_value=False)
-    assert taxii_server.get_url(request_headers) == expected
-
-
-@pytest.mark.parametrize('request_headers, url_scheme, expected, is_xsoar_8, isxsiam',
-                         [
-                             ({}, 'http', 'http://host:9000', False, False),
-                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https',
-                              'https://ext-host/xsoar/instance/execute/eyy', True, False),
-                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https',
-                              'https://edl-host/xsoar/instance/execute/eyy', True, True)
-                         ]
-                         )
-def test_get_url_xsiam(mocker, request_headers, url_scheme, expected, is_xsoar_8, isxsiam):
-    """
-    Given:
-        - Case 1: XSOAR 6
-        - Case 2: XSOAR SAAS
-        - Case 3: XSIAM
-
-    When:
-        - Getting server URL address
-
-    Then:
-        - Case 1: Ensure server URL address contain the port and the http URL scheme
-        - Case 2: Ensure server URL address contain the /instance/execute endpoint, the https URL scheme, and the ext suffix.
-        - Case 3: Ensure server URL address contain the /instance/execute endpoint, the https URL scheme, and the edl suffix.
-    """
-    import TAXIIServer
-    taxii_server = TAXIIServer.TAXIIServer(
-        url_scheme='http', host='host', port=9000, collections={},
-        certificate='', private_key='', http_server=False, credentials={}
-    )
-    TAXIIServer.SERVER = taxii_server
-    if request_headers:
-        mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
-        mocker.patch('TAXIIServer.is_xsiam_or_xsoar_saas', return_value=is_xsoar_8)
-        mocker.patch('TAXIIServer.is_xsiam', return_value=isxsiam)
     assert taxii_server.get_url(request_headers) == expected
 
 
