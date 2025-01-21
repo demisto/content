@@ -22,7 +22,7 @@ configuration:
   type: 0
   required: true
   section: Collect
-  additionalinfo: Target NetQuest device slot number
+  additionalinfo: Target NetQuest device slot number.
   defaultvalue: '1'
 - display: Port number
   name: port
