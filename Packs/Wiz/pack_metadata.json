@@ -2,7 +2,7 @@
     "name": "Wiz",
     "description": "Integrate with Wiz for bidirectional Issue management and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "1.3.3",
+    "currentVersion": "1.3.4",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",

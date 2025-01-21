@@ -2291,11 +2291,11 @@ script:
       description: "The comma-separated list of risk levels.\n\nSupported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: risk_levels
       predefined:
-        - UNKNOWN_RISK
-        - HIGH_RISK
-        - MEDIUM_RISK
-        - LOW_RISK
-        - NO_RISK
+      - UNKNOWN_RISK
+      - HIGH_RISK
+      - MEDIUM_RISK
+      - LOW_RISK
+      - NO_RISK
     - description: 'Specify the group ID to filter with.'
       name: group_id
     - auto: PREDEFINED
@@ -2310,10 +2310,10 @@ script:
       description: "Specify the principal summary category to filter with.\n\nSupported values are: PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED, USERS_WITH_SENSITIVE_ACCESS, NEW_USERS_WITH_SENSITIVE_ACCESS, USERS_WITH_RISK_LEVEL_INCREASE.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: principal_summary_category
       predefined:
-        - PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED
-        - USERS_WITH_SENSITIVE_ACCESS
-        - NEW_USERS_WITH_SENSITIVE_ACCESS
-        - USERS_WITH_RISK_LEVEL_INCREASE
+      - PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED
+      - USERS_WITH_SENSITIVE_ACCESS
+      - NEW_USERS_WITH_SENSITIVE_ACCESS
+      - USERS_WITH_RISK_LEVEL_INCREASE
     - defaultValue: 50
       description: Number of results to retrieve in the response. The maximum allowed size is 1000.
       name: limit
@@ -2325,13 +2325,13 @@ script:
       description: "Specify the field to use for sorting the response.\n\nSupported values are: RISK_LEVEL, RISK_SENSITIVE_FILES, RISK_SENSITIVE_HITS, TOTAL_SENSITIVE_HITS, TOTAL_SENSITIVE_FILES, SID, TOTAL_SENSITIVE_OBJECTS.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: sort_by
       predefined:
-        - RISK_LEVEL
-        - RISK_SENSITIVE_FILES
-        - RISK_SENSITIVE_HITS
-        - TOTAL_SENSITIVE_HITS
-        - TOTAL_SENSITIVE_FILES
-        - SID
-        - TOTAL_SENSITIVE_OBJECTS
+      - RISK_LEVEL
+      - RISK_SENSITIVE_FILES
+      - RISK_SENSITIVE_HITS
+      - TOTAL_SENSITIVE_HITS
+      - TOTAL_SENSITIVE_FILES
+      - SID
+      - TOTAL_SENSITIVE_OBJECTS
     - auto: PREDEFINED
       defaultValue: DESC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
@@ -2746,21 +2746,21 @@ script:
       description: "Specify the field to use for sorting the response.\n\nSupported values are: HITS, NAME, DAILY_CHANGE, LAST_ACCESS_TIME, OPEN_ACCESS_TYPE, FILES_WITH_HITS, FILES_WITH_OPEN_ACCESS_HITS, STALE_FILES_WITH_HITS, CLUSTER, OBJECT_NAME, OBJECT_LOCATION, SNAPSHOT_TIME, NUM_ACTIVITIES, NUM_ACTIVITIES_DELTA, NATIVE_PATH.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: sort_by
       predefined:
-        - HITS
-        - NAME
-        - DAILY_CHANGE
-        - LAST_ACCESS_TIME
-        - OPEN_ACCESS_TYPE
-        - FILES_WITH_HITS
-        - FILES_WITH_OPEN_ACCESS_HITS
-        - STALE_FILES_WITH_HITS
-        - CLUSTER
-        - OBJECT_NAME
-        - OBJECT_LOCATION
-        - SNAPSHOT_TIME
-        - NUM_ACTIVITIES
-        - NUM_ACTIVITIES_DELTA
-        - NATIVE_PATH
+      - HITS
+      - NAME
+      - DAILY_CHANGE
+      - LAST_ACCESS_TIME
+      - OPEN_ACCESS_TYPE
+      - FILES_WITH_HITS
+      - FILES_WITH_OPEN_ACCESS_HITS
+      - STALE_FILES_WITH_HITS
+      - CLUSTER
+      - OBJECT_NAME
+      - OBJECT_LOCATION
+      - SNAPSHOT_TIME
+      - NUM_ACTIVITIES
+      - NUM_ACTIVITIES_DELTA
+      - NATIVE_PATH
     - auto: PREDEFINED
       defaultValue: DESC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
@@ -3396,7 +3396,7 @@ script:
       description: The status of the domain.
       type: Datte
     - contextPath: Domain.NameServers
-      description: (List<String>) Name servers of the domain.  
+      description: (List<String>) Name servers of the domain.
       type: Unknown
     - contextPath: Domain.Organization
       description: The organization of the domain.
