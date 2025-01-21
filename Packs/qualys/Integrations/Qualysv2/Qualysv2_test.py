@@ -3,6 +3,7 @@ import re
 import Qualysv2
 import pytest
 import requests
+from requests_mock import Mocker as RequestsMocker
 from Qualysv2 import (
     is_empty_result,
     format_and_validate_response,
@@ -23,6 +24,8 @@ from Qualysv2 import (
     get_simple_response_from_raw,
     validate_required_group,
     get_activity_logs_events_command,
+    get_fetched_assets_qids,
+    get_unfetched_vulnerabilities_qids,
     fetch_events, get_activity_logs_events, fetch_assets, fetch_vulnerabilities, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT,
     HOST_LIMIT,
     API_SUFFIX,
@@ -45,6 +48,11 @@ WARNING
 "1980","17 record limit exceeded. Use URL to get next batch of results.","https://server_url/api/2.0/fo/activity_log/
 ?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
 ----END_RESPONSE_FOOTER_CSV"""
+
+
+def util_load_json(path: str):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_get_activity_logs_events_command(requests_mock):
@@ -199,22 +207,36 @@ def test_fetch_assets_command_time_out(requests_mock, mocker):
     assert set_new_limit
 
 
-def test_fetch_vulnerabilities_command(requests_mock):
+@pytest.mark.parametrize(
+    'query_param, fetch_by_asset_qids',
+    [
+        pytest.param(
+            f'last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
+            False,
+            id="Fetch by modified after timestamp",
+        ),
+        pytest.param(
+            'ids=A,B',
+            True,
+            id="Fetch by QIDs",
+        ),
+    ]
+)
+def test_fetch_vulnerabilities_command(requests_mock: RequestsMocker, query_param: str, fetch_by_asset_qids: bool):
     """
     Given:
-    - fetch_vulnerabilities_command
+    - last_run dictionary and fetch_by_asset_qids boolean flag.
     When:
-    - Want to list all existing incidents
-    Then:
-    - Ensure List vulnerabilities.
+    - Calling fetch_vulnerabilities.
+    Assert:
+    - Ensure correct next_run and length of vulnerabilities consistent with mock response text.
     """
     base_url = 'https://server_url/'
     with open('./test_data/vulnerabilities_raw.xml') as f:
         vulnerabilities = f.read()
 
-    requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
-                       f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
-                       text=vulnerabilities)
+    # call to Client.get_vulnerabilities method will raise requests_mock.exceptions.NoMockAddress if incorrect query param
+    requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/?action=list&{query_param}', text=vulnerabilities)
 
     client = Client(base_url=base_url,
                     verify=True,
@@ -223,11 +245,15 @@ def test_fetch_vulnerabilities_command(requests_mock):
                     username='demisto',
                     password='demisto',
                     )
-    last_run = {'since_datetime': {arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}}
-    vulnerabilities, last_run = fetch_vulnerabilities(client=client, last_run=last_run)
+    last_run = {'since_datetime': arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT), 'asset_qids': ['A', 'B']}
+    vulnerabilities, next_run = fetch_vulnerabilities(
+        client=client,
+        last_run=last_run,
+        fetch_vulnerabilities_by_asset_qids=fetch_by_asset_qids,
+    )
     assert len(vulnerabilities) == 2
-    assert last_run['next_page'] == ''
-    assert last_run['stage'] == 'assets'
+    assert next_run['next_page'] == ''
+    assert next_run['stage'] == 'assets'
 
 
 class TestIsEmptyResult:
@@ -1105,6 +1131,25 @@ class TestClientClass:
             "show_qds_factors": 1
         }
 
+    def test_get_vulnerabilities(self, mocker):
+        since_datetime = "2024-12-12"
+        asset_qids = "A,B"
+
+        client_http_request = mocker.patch.object(self.client, "_http_request")
+        self.client.get_vulnerabilities(since_datetime, asset_qids)
+
+        http_request_kwargs = client_http_request.call_args.kwargs
+
+        assert client_http_request.called_once
+        assert http_request_kwargs["method"] == "POST"
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, 'knowledge_base/vuln/?action=list')
+        assert http_request_kwargs["params"] == {
+            "host_metadata": "all",
+            "show_cloud_tags": 1,
+            "ids": asset_qids,
+            "last_modified_after": since_datetime,
+        }
+
 
 class TestInputValidations:
     DEPENDANT_ARGS = {
@@ -1558,3 +1603,41 @@ def test_truncate_asset_size(mocker, asset, expected_truncated):
 
     # Reset mock_debug for the next test case
     mock_debug.reset_mock()
+
+
+def test_get_fetched_assets_qids():
+    """
+    Given:
+        - A list of fetched assets.
+    When:
+        - Calling get_fetched_assets_qids.
+    Assert:
+        - The list of QIDs is expanded to include newly fetched ones.
+    """
+    # has 'NEWLY_FETCHED_QID_A' and 'NEWLY_FETCHED_QID_B'
+    assets = util_load_json('test_data/fetched_assets.json')
+
+    last_run = {'asset_qids': ['LAST_RUN_QID_A', 'LAST_RUN_QID_B']}
+
+    fetched_qids = get_fetched_assets_qids(assets, last_run)
+
+    assert sorted(fetched_qids) == ['LAST_RUN_QID_A', 'LAST_RUN_QID_B', 'NEWLY_FETCHED_QID_A', 'NEWLY_FETCHED_QID_B']
+
+
+def test_get_unfetched_vulnerabilities_qids():
+    """
+    Given:
+        - A list of fetched vulnerabilities.
+    When:
+        - Calling get_unfetched_vulnerabilities_qids.
+    Assert:
+        - The list of QIDs excludes already fetched ones.
+    """
+    # has 'ALREADY_FETCHED_VULN_QID_X' and 'ALREADY_FETCHED_VULN_QID_Y'
+    vulnerabilities = util_load_json('test_data/fetched_vulnerabilities.json')
+
+    last_run = {'asset_qids': ['NOT_YET_FETCHED_VULN_QID_A', 'NOT_YET_FETCHED_VULN_QID_A', 'ALREADY_FETCHED_VULN_QID_X']}
+
+    unfetched_qids = get_unfetched_vulnerabilities_qids(vulnerabilities, last_run)
+
+    assert sorted(unfetched_qids) == ['NOT_YET_FETCHED_VULN_QID_A', 'NOT_YET_FETCHED_VULN_QID_A']

@@ -73,6 +73,16 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- display: Fetch all vulnerabilities for assets
+  additionalinfo: This will fetch unique QIDs relevant to the assets regardless of the vulnerability modified time.
+  name: fetch_vulnerabilities_by_asset_qids
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
 description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
 name: QualysV2
