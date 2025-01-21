@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Digital Guardian'
 PRODUCT = 'ARC'
+SUPPORTED_EXPORT_PROFILES = ('defaultExportProfile', 'demisto')
 
 ''' CLIENT CLASS '''
 
@@ -230,25 +231,30 @@ def get_events_command(client: Client, args: dict, export_profile: str) -> tuple
     return events, last_run, CommandResults(readable_output=human_readable)
 
 
-def push_events(client: Client, events: list[dict], last_run: dict, export_profile: str, *, set_export_bookmark: bool) -> None:
+def push_events(client: Client, events: list[dict], export_profile: str) -> None:
     """
-    Pushes events to XSIAM and (optionally) moves internal bookmark in the API for the next time fetch-events is invoked.
+    Pushes events from a specific export profile to XSIAM.
 
     Args:
         client (Client): Digital Guardian client.
         events (list[dict]): Events get_events_command or fetch_events.
-        last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
         export_profile (str): Export profile name.
-        set_export_bookmark (bool): Whether to set the API-managed bookmark (saves us the need to set `last run`).
     """
     demisto.debug(f'Sending {len(events)} events to XSIAM from profile: {export_profile}.')
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
-    if set_export_bookmark:
-        demisto.debug(f'Setting export bookmark after run: {last_run} for profile: {export_profile}.')
-        client.set_export_bookmark(export_profile)
-    else:
-        demisto.debug('Skipped setting export bookmark.')
+
+def set_export_bookmark(client: Client, last_run: dict, export_profile: str) -> None:
+    """
+    Moves internal bookmark in the API for the next time fetch-events is invoked (API equivalent of `demisto.setLastRun`).
+
+    Args:
+        client (Client): Digital Guardian client.
+        last_run (dict): Dictionary with 'bookmark_values' and 'search_after_values' from raw API response.
+        export_profile (str): Export profile name.
+    """
+    demisto.debug(f'Setting export bookmark after run: {last_run} for profile: {export_profile}.')
+    client.set_export_bookmark(export_profile)
 
 
 def main() -> None:  # pragma: no cover
@@ -267,6 +273,13 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
 
     demisto.debug(f'{base_url=}')
+
+    custom_export_profiles = [
+        export_profile for export_profile in export_profiles
+        if export_profile not in SUPPORTED_EXPORT_PROFILES
+    ]
+    if custom_export_profiles:
+        demisto.debug(f'Detected custom (unsupported) export profiles: {", ".join(custom_export_profiles)}.')
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -292,12 +305,13 @@ def main() -> None:  # pragma: no cover
                 return_results(command_results)
 
                 if should_push_events:
-                    push_events(client, events, last_run, export_profile, set_export_bookmark=False)
+                    push_events(client, events, export_profile)
 
         elif command == 'fetch-events':
             for export_profile in export_profiles:
                 events, last_run = fetch_events(client, export_profile)
-                push_events(client, events, last_run, export_profile, set_export_bookmark=True)
+                push_events(client, events, export_profile)
+                set_export_bookmark(client, last_run, export_profile)
 
         else:
             raise NotImplementedError(f'Unknown command: {command}')
