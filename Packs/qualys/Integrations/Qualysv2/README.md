@@ -21505,6 +21505,8 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_PROCESSED_DATETIME | Date | Date detection was last processed. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.PORT | String | Detection port. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL | String | Detection protocol. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS | Object | Detection score. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS_FACTORS | Object | Factors affecting detection score. |
 
 #### Command example
 ```!qualys-host-list-detection truncation_limit=2```
@@ -21526,6 +21528,22 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
                             "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
                             "PORT": "3389",
                             "PROTOCOL": "tcp",
+                            "QDS": {
+                                "#text": "25",
+                                "@severity": "LOW"
+                            },
+                            "QDS_FACTORS": {
+                                "QDS_FACTOR": [
+                                    {
+                                        "#text": "No_Patch",
+                                        "@name": "RTI"
+                                    },
+                                    {
+                                        "#text": "2.6",
+                                        "@name": "CVSS"
+                                    },
+                                ]
+                            },
                             "QID": "38170",
                             "RESULTS": "Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve",
                             "SEVERITY": "2",
