@@ -13,9 +13,30 @@ configuration:
   required: true
   hidden: false
   type: 4
+- display: Session ID
+  name: session_id
+  defaultvalue: dt-cortex-feeds
+  required: false
+  hidden: false
+  type: 0
+  additionalinfo: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
+- display: After
+  name: after
+  defaultvalue: "-3600"
+  required: false
+  hidden: false
+  type: 0
+  additionalinfo: The start of the query window in seconds, relative to the current time, inclusive.
+- display: Top
+  name: top
+  defaultvalue: 100000
+  required: false
+  hidden: false
+  type: 0
+  additionalinfo: Limits the number of results in the response payload.
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Indicator Reputation
@@ -65,7 +86,7 @@ configuration:
   required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -86,7 +107,7 @@ script:
   commands:
   - arguments:
     - name: limit
-      defaultValue: '10'
+      defaultValue: 10
       description: The maximum number of results to return.
       isArray: false
       default: false
@@ -103,7 +124,8 @@ script:
       - nod
       - nad
     - name: session_id
-      description: The session id.
+      description: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
+      defaultValue: dt-cortex-feeds
       isArray: false
       default: false
       required: false
@@ -115,13 +137,21 @@ script:
       required: false
       secret: false
     - name: after
-      description: The timestamp filter.
+      description: The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h).
+      defaultValue: "-3600"
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: before
+      description: The end of the query window in seconds, relative to the current time, inclusive.
       isArray: false
       default: false
       required: false
       secret: false
     - name: top
-      description: The top items to return from the API.
+      description: Limits the number of results in the response payload.
+      defaultValue: 100000
       isArray: false
       default: false
       required: false

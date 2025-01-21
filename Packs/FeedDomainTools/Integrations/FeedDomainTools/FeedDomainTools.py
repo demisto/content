@@ -12,13 +12,11 @@ urllib3.disable_warnings()
 """
 GLOBALS
 """
-PROXIES = handle_proxy()
 
 
-class Client:
+class DomainToolsClient(BaseClient):
     """
-    Client to use in the DomainTools Feed integration. Overrides BaseClient.
-    Uses the domaintools sdk to wrap the API call to DomainTools.
+    Client to use in the DomainTools Feed integration.
     """
 
     APP_PARTNER = "cortex_xsoar_feed"
@@ -28,14 +26,15 @@ class Client:
     NOD_FEED = "nod"
     NAD_FEED = "nad"
 
-    FEED_API_BASE_URL = "https://api.domaintools.com/v1/feed"
+    FEED_URL = "/v1/feed"
+    DOMAINTOOLS_API_BASE_URL = "https://api.domaintools.com"
 
     def __init__(
         self,
         api_username: str,
         api_key: str,
         verify_ssl: bool = True,
-        always_sign_api_key: bool = False,
+        proxy: bool = False
     ):
         self.feed_type = "nod"  # default to NOD feeds
 
@@ -44,61 +43,58 @@ class Client:
                 "The 'API Username' and 'API Key' parameters are required."
             )
 
-        self.proxy_url = (
-            PROXIES.get("https") if PROXIES.get("https") != "" else PROXIES.get("http")
-        )
-
         self.api_username = api_username
         self.api_key = api_key
-        self.verify_ssl = verify_ssl
 
-    def _http_request(self, params, **kwargs) -> list:
-        headers = {"Content-Type": "application/json"}
-
-        query_params = {
-            **params,
-            "api_key": self.api_key,
-            "api_username": self.api_username,
-            "app_partner": self.APP_PARTNER,
-            "app_name": self.APP_NAME,
-        }
-
-        res = requests.request(
-            method="GET",
-            url=f"{self.FEED_API_BASE_URL}/{self.feed_type}/",
-            params=query_params,
-            headers=headers,
-            verify=self.verify_ssl,
-            timeout=60,
-            proxies=self.proxy_url,
-        )
-        res.raise_for_status()
-        response = res.text.strip().split("\n") if res.text else []
-
-        demisto.info(f"Fetched {len(response)} of {self.feed_type} feeds.")
-
-        return response
+        super().__init__(base_url=self.DOMAINTOOLS_API_BASE_URL, headers={
+            "Content-Type": "application/json"}, verify=verify_ssl, proxy=proxy)
 
     def _get_dt_feeds(
         self,
         session_id: str | None = None,
         domain: str | None = None,
         after: str | None = None,
+        before: str | None = None,
         top: int | None = None,
-    ):
+    ) -> list[str]:
         feed_type_name = self.feed_type.upper()
-        params = {
+
+        query_params = {
+            "api_key": self.api_key,
+            "api_username": self.api_username,
+            "app_partner": self.APP_PARTNER,
+            "app_name": self.APP_NAME,
             "top": top,
             "sessionID": session_id,
             "after": after,
+            "before": before,
             "domain": domain,
         }
 
         demisto.info(
-            f"Fetching DomainTools {feed_type_name} feed type with params: {params}"
+            f"Fetching DomainTools {feed_type_name} feed type with params: {query_params}"
         )
 
-        return self._http_request(params=params)
+        response = self._http_request("GET", url_suffix=f"{self.FEED_URL}/{self.feed_type}/", params=query_params, headers={
+                                      "Content-Type": "application/json"}, resp_type="text", raise_on_status=True)
+
+        results = response.strip().split("\n") if response else []
+        return results
+
+    def _format_parameter(self, key: str, value: Any) -> Any:
+        """Format the parameter value based on the given key
+
+        Args:
+            key (str): The parameter key.
+            value (Any): The value of the parameter
+
+        Returns:
+            Any: The formatted value.
+        """
+        if key in ("after", "before") and "-" not in value:
+            value = "-" + value
+
+        return value
 
     def build_iterator(
         self, feed_type: str = "nod", limit: int | None = None, **kwargs
@@ -119,22 +115,36 @@ class Client:
         self.feed_type = feed_type
 
         # DomainTools feeds optional arguments
-        session_id = kwargs.get("session_id") or "dt-{}-cortex-integration".format(
-            self.feed_type
-        )
-        top = kwargs.get("top") or 100_000  # default to 100_000
+        session_id = kwargs.get("session_id") or "dt-cortex-feeds"
+        top = int(kwargs.get("top") or "100000")
         domain = kwargs.get("domain") or None
-        after = kwargs.get("after") or None
+        after = kwargs.get("after") or "-3600"
+        before = kwargs.get("before") or None
 
         demisto.info(f"Start building list of indicators for {self.feed_type} feed.")
+
         limit_counter = 0
+        processed_feeds = 0
+
         try:
+            # format the after parameter first make sure to append "-" if not given
+            if after is not None:
+                after = self._format_parameter(key="after", value=after)
+
+            if before is not None:
+                before = self._format_parameter(key="before", value=before)
+
             dt_feeds = self._get_dt_feeds(
                 session_id=session_id,
                 domain=domain,
                 after=after,
+                before=before,
                 top=top,
             )
+
+            total_dt_feeds = len(dt_feeds)
+            demisto.info(f"Fetched {total_dt_feeds} of {self.feed_type} feeds.")
+
             for feed in dt_feeds:
                 if limit and limit_counter >= limit:
                     break
@@ -154,21 +164,23 @@ class Client:
                     }
 
                     limit_counter += 1
+                    processed_feeds += 1
 
-        except ValueError as err:
+            demisto.info(f"Done processing {processed_feeds} out of {total_dt_feeds} {self.feed_type} feeds.")
+        except Exception as err:
             demisto.debug(str(err))
             raise ValueError(
-                f"Could not parse returned data as indicator. \n\nError massage: {err}"
+                f"Could not parse returned data as indicator. \n\nError massage: {str(err)}"
             )
 
 
 def fetch_indicators(
-    client: Client, feed_type: str = "nod", limit: int | None = None, **kwargs
+    client: DomainToolsClient, feed_type: str = "nod", limit: int | None = None, **kwargs
 ) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
-        client (Client): Client object with request.
+        client (DomainToolsClient): DomainToolsClient object with request.
         feed_type (str): The feed type to fetch.
         limit (int): limit the results.
 
@@ -178,7 +190,7 @@ def fetch_indicators(
     indicators = []
     try:
         # extract values from iterator
-        for item in client.build_iterator(feed_type=feed_type, limit=limit, **kwargs):
+        for idx, item in enumerate(client.build_iterator(feed_type=feed_type, limit=limit, **kwargs), start=1):
             value_ = item.get("value")
             type_ = item.get("type")
             timestamp_ = item.get("timestamp")
@@ -202,31 +214,35 @@ def fetch_indicators(
                 "rawJSON": raw_data,
             }
             indicators.append(indicator_obj)
+
+            if idx % 1000 == 0 or (idx < 1000 and idx % 100 == 0):
+                demisto.info(f"Processed {idx} indicator obj from {feed_type.upper()} feeds.")
     except Exception as e:
         raise Exception(f"Unable to fetch feeds from DomainTools. Reason: {str(e)}")
 
     return indicators
 
 
-def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResults:
+def get_indicators_command(client: DomainToolsClient, args: dict[str, str], params: dict[str, str]) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
-        client: Client object with request
+        client: DomainToolsClient object with request
         args: demisto.args()
     Returns:
         Outputs.
     """
-
-    limit = int(args.get("limit", "10"))
-    feed_type = args.get("feed_type") or ""
+    limit = int(args.get("limit", 10))
+    feed_type = args.get("feed_type") or "nod"
     session_id = args.get("session_id")
     domain = args.get("domain")
     after = args.get("after")
+    before = args.get("before") or None
     top = args.get("top")
 
     dt_feeds_kwargs = {
         "session_id": session_id,
         "after": after,
+        "before": before,
         "domain": domain,
         "top": top,
     }
@@ -248,41 +264,42 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResul
         outputs_prefix="",
         outputs_key_field="",
         raw_response=indicators,
-        outputs={},
+        outputs={}
     )
 
 
-def fetch_indicators_command(client: Client, **kwargs) -> list[dict]:
+def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
-        client: Client object with request
+        client: DomainToolsClient object with request
     Returns:
         Indicators.
     """
 
-    DEFAULT_FEEDS_TO_PROCESS = {
-        client.NOD_FEED: {"session_id": "dt-nod-cortex-integrations", "top": 10},
-        client.NAD_FEED: {"session_id": "dt-nad-cortex-integrations", "top": 10},
+    session_id = params.get("session_id")
+    after = params.get("after")
+    top = params.get("top")
+
+    FEEDS_TO_PROCESS = {
+        client.NOD_FEED: {"top": top, "after": after, "session_id": session_id},
+        client.NAD_FEED: {"top": top, "after": after, "session_id": session_id},
     }
 
     fetched_indicators = []
-    for feed_type, params in DEFAULT_FEEDS_TO_PROCESS.items():
-        demisto.info(
-            f"Fetching DomainTools {feed_type} feeds using `fetch_indicators_command`. {params}"
-        )
-        indicators = fetch_indicators(client, feed_type=feed_type, limit=10, **params)
 
+    for feed_type, dt_feed_kwargs in FEEDS_TO_PROCESS.items():
+        indicators = fetch_indicators(client, feed_type=feed_type, **dt_feed_kwargs)
         fetched_indicators.extend(indicators)
 
     return fetched_indicators
 
 
-def test_module(client: Client, *_) -> str:
+def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[str, str]) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
-        client: Client object.
+        client: DomainToolsClient object.
     Returns:
         Outputs.
     """
@@ -314,13 +331,14 @@ def main():
     api_username = params.get("api_username")
     api_key = params.get("api_key")
     insecure = not params.get("insecure", False)
+    proxy = params.get('proxy', False)
 
     try:
-        client = Client(api_username=api_username, api_key=api_key, verify_ssl=insecure)
+        client = DomainToolsClient(api_username=api_username, api_key=api_key, verify_ssl=insecure, proxy=proxy)
 
         demisto.debug(f"Command being called is {command}")
         if command in commands:
-            return_results(commands[command](client, args))
+            return_results(commands[command](client, args, params))
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, **params)

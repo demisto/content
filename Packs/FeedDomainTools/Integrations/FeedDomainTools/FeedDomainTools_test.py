@@ -24,7 +24,7 @@ demisto-sdk lint -i Packs/FeedDomainTools/Integrations/FeedDomainTools
 import pytest
 
 from CommonServerPython import *
-from FeedDomainTools import Client, fetch_indicators_command, get_indicators_command
+from FeedDomainTools import DomainToolsClient, fetch_indicators, fetch_indicators_command, get_indicators_command, main
 
 
 from test_data import feed_mock_response
@@ -32,7 +32,7 @@ from test_data import feed_mock_response
 
 @pytest.fixture()
 def dt_feeds_client():
-    return Client(api_username="test", api_key="test", verify_ssl=False)
+    return DomainToolsClient(api_username="test", api_key="test", verify_ssl=False)
 
 
 class TestDTClient:
@@ -100,6 +100,34 @@ class TestDTClient:
         assert len(indicators) == 5
 
 
+def test_conversion_feed_to_indicato_obj(mocker, dt_feeds_client):
+    """
+    Given:
+        - Output of the feeds and convert to an indicator object
+    When:
+        - Fetching indicators from the API and calling the build_iterator
+    Then:
+        - Create list of indicator objects
+    """
+    mocker.patch.object(
+        dt_feeds_client,
+        "_get_dt_feeds",
+        return_value=feed_mock_response.NOD_FEED_RESPONSE,
+    )
+
+    mock_dt_feeds_kwargs = {
+        "session_id": "test-session-1",
+        "before": "-60",
+    }
+
+    indicators = fetch_indicators(
+        dt_feeds_client, feed_type="nod", **mock_dt_feeds_kwargs
+    )
+
+    assert len(indicators) == 10
+    assert indicators == feed_mock_response.NOD_PARSED_INDICATOR_RESPONSE
+
+
 @pytest.mark.parametrize(
     "feed_type",
     [
@@ -128,7 +156,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "_get_dt_feeds",
         return_value=mock_feed_response[feed_type],
     )
-    results = get_indicators_command(dt_feeds_client, args={"feed_type": feed_type})
+    results = get_indicators_command(dt_feeds_client, args={"feed_type": feed_type}, params={})
 
     expected_indicator_results = {
         "nod": feed_mock_response.NOD_PARSED_INDICATOR_RESPONSE,
@@ -155,16 +183,25 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
         - Create indicator objects list
 
     """
-
-    expected_result = (
-        feed_mock_response.NAD_FEED_RESPONSE + feed_mock_response.NOD_FEED_RESPONSE
-    )
-
     mocker.patch.object(
         dt_feeds_client,
         "_get_dt_feeds",
-        return_value=expected_result,
+        return_value=feed_mock_response.NAD_FEED_RESPONSE + feed_mock_response.NOD_FEED_RESPONSE,
     )
     results = fetch_indicators_command(dt_feeds_client)
 
-    assert len(results) == len(expected_result)
+    assert len(results) == 40
+
+
+def test_calling_command_using_main(mocker, dt_feeds_client):
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value={"api_username": "test_username", "api_key": "test_key"})
+    mocker.patch(
+        "FeedDomainTools.DomainToolsClient._get_dt_feeds",
+        return_value=feed_mock_response.NAD_FEED_RESPONSE,
+    )
+
+    mocker.patch.object(demisto, "results")
+    main()
+    results = demisto.results.call_args[0]
+    assert results[0] == 'ok'
