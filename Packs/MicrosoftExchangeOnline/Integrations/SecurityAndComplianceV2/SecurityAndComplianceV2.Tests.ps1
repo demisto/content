@@ -1,10 +1,14 @@
+# uses dot-sourcing in BeforeAll to make functions in the script-file available for the tests.
 BeforeAll {
     . $PSScriptRoot\demistomock.ps1
     . $PSScriptRoot\SecurityAndComplianceV2.ps1
 }
 
+ # Describe Creates a logical group of tests.
 Describe 'StringRegexParse' {
+    # Provides logical grouping of It blocks within a single Describe block
     Context "SuccesResults" {
+        # Validates the results of a test inside of a Describe block.
         It "No SuccesResults" {
             $string = ''
             $parsed_object = ParseSuccessResults $string -1
@@ -161,5 +165,32 @@ Describe 'StringRegexParse' {
                 Compare-Object $expected_objects[$i] $parsed_objects[$i] -Property Location
             }
         }
+    }
+
+    Context "Olds Credentials" {
+        BeforeAll {
+            Mock CreateClientFromIntegrationContext
+            Mock StartAuthCommand
+        }  
+        $demisto.command = "o365-sc-auth-start"
+        $demisto.Params = @{json = '{"credentials_app_id": "{"identifier": "test", "password": "test"}",
+        "credentials_app_secret": "{"identifier": "test", "password": "test"}", 
+        "credentials_tenant_id": "{"identifier": "test", "password": "test"}", "tenant_id": "test", "app_id": "test", "app_secret": "test"}'}
+        Main
+        Assert-MockCalled StartAuthCommand
+    }
+},
+Describe 'Credentials test' {
+    Context "Olds Credentials" {
+        BeforeAll {
+            Mock CreateClientFromIntegrationContext
+            Mock StartAuthCommand
+        }  
+        $demisto.command = "o365-sc-auth-start"
+        $demisto.Params = @{json = '{"credentials_app_id": "{"identifier": "test", "password": "test"}",
+        "credentials_app_secret": "{"identifier": "test", "password": "test"}", 
+        "credentials_tenant_id": "{"identifier": "test", "password": "test"}", "tenant_id": "testX", "app_id": "test", "app_secret": "test"}'}
+        Main
+        Assert-MockCalled StartAuthCommand
     }
 }
