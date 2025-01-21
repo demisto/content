@@ -618,7 +618,6 @@ def generate_incidents(last_run):
 
     for _ in range(num_of_incident_to_create):
         email, email_object = create_email()
-        # sanitize_email_headers(email)
         incidents.append({
             'name': email_object.get('Subject'),
             'details': email.as_string(),
@@ -628,36 +627,6 @@ def generate_incidents(last_run):
         })
     return num_of_incident_to_create, incidents
 
-
-def sanitize_email_headers(email_obj):
-    """
-    Cleans up email headers by removing extra newline characters and leading/trailing spaces.
-
-    This function iterates through all headers in the given email object, replacing any occurrences 
-    of multiple newline characters with a single space and trimming leading or trailing whitespace. 
-    The sanitized values are then updated in the email object.
-
-    Args:
-        email_obj (email.message.EmailMessage): The email message object containing headers to sanitize.
-
-    Returns:
-        None: The function modifies the email object in place.
-
-    Example:
-        from email.message import EmailMessage
-
-        email_obj = EmailMessage()
-        email_obj['Subject'] = 'Test\nEmail\nSubject '
-        email_obj['From'] = ' sender@example.com '
-
-        sanitize_email_headers(email_obj)
-
-        print(email_obj['Subject'])  # Output: 'Test Email Subject'
-        print(email_obj['From'])     # Output: 'sender@example.com'
-    """
-    for key, value in email_obj.items():
-        sanitized_value = re.sub(r'\n+', ' ', value.strip())
-        email_obj.replace_header(key, sanitized_value)
 
 
 '''MAIN FUNCTIONS'''
