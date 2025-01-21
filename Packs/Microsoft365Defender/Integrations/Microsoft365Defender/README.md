@@ -24,6 +24,14 @@ In order to use the Cortex XSOAR application, use the default application ID.
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
+### Using National Cloud
+Using a national cloud endpoint is supported by setting the *Endpoint Type* parameter to one of the following options:
+* US Government GCC Endpoint: `https://api-gcc.security.microsoft.us`
+* US Government GCC-High Endpoint: `https://api-gov.security.microsoft.us`
+* US Government Department of Defence (DoD) Endpoint: `https://api-gov.security.microsoft.us`
+When using **US Government GCC-High Endpoint** with **Device Code** Flow, tenant ID is a required parameter in the instance configuration.
+
+
 #### Required Permissions
 The required API permissions are for the ***Microsoft Threat Protection*** app.
  * offline_access - Delegate
