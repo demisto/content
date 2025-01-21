@@ -536,7 +536,6 @@ def main() -> None:
             base_url=base_url,
             api_key=api_key)
 
-        current_command: str = demisto.command()
         if current_command in supported_commands:
             demisto.info(f'Command run successful: {demisto.command()}')
             return_results(supported_commands[current_command](client, demisto.args()))
