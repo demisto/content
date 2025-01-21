@@ -1023,11 +1023,11 @@ INCIDENT_1 = {'name': 'incident1', 'rawJSON': json.dumps({})}
 INCIDENT_2 = {'name': 'incident2', 'rawJSON': json.dumps({})}
 
 
-@pytest.mark.parametrize('integration_context, incidents, output', [
-    ({}, [], []),
-    ({}, [INCIDENT_1, INCIDENT_2], [INCIDENT_1, INCIDENT_2])
+@pytest.mark.parametrize('incidents, output', [
+    ([], []),
+    ([INCIDENT_1, INCIDENT_2], [INCIDENT_1, INCIDENT_2])
 ])
-def test_store_incidents_for_mapping(integration_context, incidents, output):
+def test_store_incidents_for_mapping(incidents, output):
     """
     Scenario: Store ready incidents in integration context, to be retrieved by a user configuring a mapper
      and selecting "Fetch from instance" when the enrichment mechanism is working.
@@ -1042,8 +1042,10 @@ def test_store_incidents_for_mapping(integration_context, incidents, output):
     Then:
     - Return the expected result
     """
-    splunk.store_incidents_for_mapping(incidents, integration_context)
-    assert integration_context.get(splunk.INCIDENTS, []) == output
+    splunk.set_integration_context({})
+    splunk.store_incidents_for_mapping(incidents)
+    assert splunk.get_integration_context().get(splunk.INCIDENTS, []) == output
+    # assert integration_context.get(splunk.INCIDENTS, []) == output
 
 
 @pytest.mark.parametrize('notable_data, raw, earliest, latest', [

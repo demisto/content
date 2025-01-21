@@ -66,6 +66,7 @@ NOT_YET_SUBMITTED_NOTABLES = 'not_yet_submitted_notables'
 INFO_MIN_TIME = "info_min_time"
 INFO_MAX_TIME = "info_max_time"
 INCIDENTS = 'incidents'
+MIRRORED_ENRICHED_NOTABLES = 'MIRRORED_ENRICHED_NOTABLES'
 DUMMY = 'dummy'
 NOTABLE = 'notable'
 ENRICHMENTS = 'enrichments'
@@ -930,7 +931,8 @@ class Cache:
     def load_from_integration_context(cls, integration_context):
         return Cache.from_json(json.loads(integration_context.get(CACHE, "{}")))
 
-    def dump_to_integration_context(self, integration_context):
+    def dump_to_integration_context(self):
+        integration_context = get_integration_context()
         integration_context[CACHE] = json.dumps(self, default=lambda obj: obj.__dict__)
         set_integration_context(integration_context)
 
@@ -1152,7 +1154,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
              [(query_name, query_search, splunk_job)]
     """
     jobs_and_queries = []
-    demisto.debug(f"notable data is: {notable_data}")
+    extensive_log(f"notable data is: {notable_data}")
     if searches := get_drilldown_searches(notable_data):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
 
@@ -1324,6 +1326,37 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object: 
         demisto.debug(f"Handled {len(handled_notables)}/{total} notables.")
 
 
+def handle_submitted_notables_v1(service: client.Service, cache_object: Cache) -> list[Notable]:
+    """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
+     it moves to the next submitted notable.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+        cache_object (Cache): The enrichment mechanism cache object
+
+    Returns:
+        handled_notables (list[Notable]): The handled Notables
+    """
+    handled_notables = []
+    if not (enrichment_timeout := arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))):
+        enrichment_timeout = 5
+    notables = cache_object.submitted_notables
+    total = len(notables)
+    demisto.debug(f"Trying to handle {len(notables[:MAX_HANDLE_NOTABLES])}/{total} open enrichments")
+
+    for notable in notables[:MAX_HANDLE_NOTABLES]:
+        if handle_submitted_notable(
+            service, notable, enrichment_timeout
+        ):
+            handled_notables.append(notable)
+
+    cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
+
+    if handled_notables:
+        demisto.debug(f"Handled {len(handled_notables)}/{total} notables.")
+    return handled_notables
+
+
 def handle_submitted_notable(service: client.Service, notable: Notable, enrichment_timeout: int) -> bool:
     """ Handles submitted notable. If enrichment process timeout has reached, creates an incident.
 
@@ -1421,6 +1454,50 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
         )
 
 
+def submit_notables_v1(service: client.Service, cache_object: Cache) -> tuple[list[Notable], list[Notable]]:
+    """ Submits fetched notables to Splunk for an enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        cache_object (Cache): The enrichment mechanism cache object
+
+    Returns:
+        tuple[list[Notable], list[Notable]]: failed_notables, submitted_notables
+    """
+    failed_notables, submitted_notables = [], []
+    num_enrichment_events = arg_to_number(str(demisto.params().get('num_enrichment_events', '20')))
+    notables = cache_object.not_yet_submitted_notables
+    total = len(notables)
+    if notables:
+        demisto.debug(f'Enriching {len(notables[:MAX_SUBMIT_NOTABLES])}/{total} fetched notables')
+
+    for notable in notables[:MAX_SUBMIT_NOTABLES]:
+        if submit_notable(
+            service, notable, num_enrichment_events
+        ):
+            cache_object.submitted_notables.append(notable)
+            submitted_notables.append(notable)
+            demisto.debug(f'Submitted enrichment request to Splunk for notable {notable.id}')
+        else:
+            failed_notables.append(notable)
+            demisto.debug(f'Created incident from notable {notable.id} as each enrichment submission failed')
+
+    cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
+
+    if submitted_notables:
+        demisto.debug(f'Submitted {len(submitted_notables)}/{total} notables successfully.')
+
+    if failed_notables:
+        demisto.debug(
+            f'The following {len(failed_notables)} notables failed the enrichment process: \
+            {[notable.id for notable in failed_notables]}, \
+            creating incidents without enrichment.'
+        )
+    return failed_notables, submitted_notables
+
+
+
+
 def submit_notable(service: client.Service, notable: Notable, num_enrichment_events) -> bool:
     """ Submits fetched notable to Splunk for an Enrichment. Three enrichments possible: Drilldown, Asset & Identity.
      If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
@@ -1452,6 +1529,49 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
     return notable.submitted()
 
 
+def create_incidents_from_notables(notables_to_be_created: list[Notable], mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
+    """Create the actual incident from the handled Notables
+        in addition, taking in account the data from the integration_context (from mirror-in process)
+        about Notables which was updated by mirror-in during the Enrichment time.
+
+    Args:
+        notables_to_be_created (list[Notable]): The Notables to create incidents from (handled + failed enrichment Notables).
+        mapper (UserMappingObject): a UserMappingObject object
+        comment_tag_to_splunk (str): a tag indicating a comment are from XSOAR
+        comment_tag_from_splunk (str): a tag indicating a comment are from Splunk
+
+    Returns:
+        incidents (list[dict]): The created incidents.
+    """
+    integration_context = None
+    mirrored_in_notables = {}
+    incidents: list[dict] = []
+    
+    if is_mirror_in_enabled():
+        integration_context = get_integration_context()
+        mirrored_in_notables = integration_context.get(MIRRORED_ENRICHED_NOTABLES, {})
+        demisto.debug(f'found {len(mirrored_in_notables)} enriched notables updated in mirror-in')
+        demisto.debug(f'{mirrored_in_notables=}')
+        
+    for notable in notables_to_be_created:
+
+        # in case the Notable was updated in Splunk between the time of fetch and create incident, we need to take the updated delta
+        if notable.id in mirrored_in_notables:
+            delta = mirrored_in_notables[notable.id]
+            notable.data |= delta
+            del mirrored_in_notables[notable.id]
+
+        incidents.append(notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk))
+    if integration_context:
+        set_integration_context(integration_context)
+    return incidents
+
+
+def is_mirror_in_enabled():
+    params = demisto.params()
+    return MIRROR_DIRECTION.get(params.get('mirror_direction', '')) in ['Both', 'In']
+
+
 def run_enrichment_mechanism(service: client.Service, integration_context, mapper: UserMappingObject,
                              comment_tag_to_splunk, comment_tag_from_splunk):
     """ Execute the enriching fetch mechanism
@@ -1469,13 +1589,21 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
     cache_object = Cache.load_from_integration_context(integration_context)
 
     try:
-        handle_submitted_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        # handle_submitted_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        handled_notables = handle_submitted_notables_v1(service, cache_object)
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper,
                            comment_tag_to_splunk=comment_tag_to_splunk,
                            comment_tag_from_splunk=comment_tag_from_splunk)
-        submit_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+            if is_mirror_in_enabled():
+                # if mirror-in enabled, we need to store in cache the fetched notables ASAP, 
+                # as they need to be able to update by the mirror in process
+                demisto.debug('dumping the cache object direct after fetch as mirror-in enabled')
+                cache_object.dump_to_integration_context()
 
+        # submit_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        failed_notables, _ = submit_notables_v1(service, cache_object)
+        incidents = create_incidents_from_notables(handled_notables + failed_notables, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
     except Exception as e:
         err = f'Caught an exception while executing the enriching fetch mechanism. Additional Info: {str(e)}'
         demisto.error(err)
@@ -1484,24 +1612,25 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
             raise e
 
     finally:
-        store_incidents_for_mapping(incidents, integration_context)
+        store_incidents_for_mapping(incidents)
         handled_but_not_created_incidents = cache_object.organize()
-        cache_object.dump_to_integration_context(integration_context)
+        cache_object.dump_to_integration_context()
         incidents += [notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
                       for notable in handled_but_not_created_incidents]
         demisto.incidents(incidents)
 
 
-def store_incidents_for_mapping(incidents, integration_context):
+def store_incidents_for_mapping(incidents):
     """ Stores ready incidents in integration context to allow the mapping to pull the incidents from the instance.
     We store at most 20 incidents.
 
     Args:
         incidents (list): The incidents
-        integration_context (dict): The integration context
     """
     if incidents:
+        integration_context = get_integration_context()
         integration_context[INCIDENTS] = incidents[:20]
+        set_integration_context(integration_context)
 
 
 def fetch_incidents_for_mapping(integration_context):
@@ -1520,7 +1649,7 @@ def reset_enriching_fetch_mechanism():
     """ Resets all the fields regarding the enriching fetch mechanism & the last run object """
 
     integration_context = get_integration_context()
-    for field in (INCIDENTS, CACHE):
+    for field in (INCIDENTS, CACHE, MIRRORED_ENRICHED_NOTABLES):
         if field in integration_context:
             del integration_context[field]
     set_integration_context(integration_context)
@@ -1591,6 +1720,42 @@ def get_comments_data(service: client.Service, notable_id: str, comment_tag_from
             demisto.debug(f'Update new comment-{comment}')
     demisto.debug(f'notes={notes}')
     return notes
+
+
+def handle_enriched_notables(modified_notables: dict[str, dict]):
+    """Update the notables which not yet created because of enrichment mechanism.
+
+    Args:
+        modified_notables (dict[str, str]): The Notables changes from get-modified-remote-data
+    """
+    try:
+        integration_context = get_integration_context()
+        cache_object = Cache.load_from_integration_context(integration_context)
+        if enriched_notables := (cache_object.submitted_notables + cache_object.not_yet_submitted_notables):
+            enriched_and_changed = [
+                notable for notable in enriched_notables if notable.id in modified_notables
+            ]
+            if enriched_and_changed:
+                demisto.debug(f'mirror-in: found {len(enriched_and_changed)} submitted notables, updating delta in cache.')
+                delta_map = integration_context.get(MIRRORED_ENRICHED_NOTABLES, {})
+                for notable in enriched_and_changed:
+                    updated_notable = modified_notables[notable.id]
+                    delta = delta_map.get(notable.id, {})
+                    delta |= {k:v for k,v in updated_notable.items() if notable.data.get(k) != v}
+                    delta_map[notable.id] = delta
+                    # delete it from the modified_notables as it still not exist in the server as incident
+                    del modified_notables[notable.id]
+                
+                integration_context[MIRRORED_ENRICHED_NOTABLES] = delta_map
+                extensive_log(f'delate map after mirror update: {delta_map}')
+                set_integration_context(integration_context)
+                demisto.debug(f'mirror-in: updated delta for the submitted notables - {[n.id for n in enriched_and_changed]}')
+            else:
+                demisto.debug('mirror-in: enrichment submitted notables was not updated in remote.')
+        else:
+            demisto.debug('mirror-in: no enrichment submitted notables found.')
+    except Exception as e:
+        demisto.error(f'Failed to check for updated submitted notables, {e}')
 
 
 def get_modified_remote_data_command(service: client.Service, args: dict,
@@ -1683,7 +1848,11 @@ def get_modified_remote_data_command(service: client.Service, args: dict,
                     comments = comment if isinstance(comment, list) else [comment]
                     modified_notables_map[notable_id]['SplunkComments'] = [{'Comment': comment} for comment in comments]
 
+        if ENABLED_ENRICHMENTS:
+            handle_enriched_notables(modified_notables_map)
+
         demisto.debug(f'mirror-in: updated notable ids: {list(modified_notables_map.keys())}')
+
     else:
         demisto.debug(f'mirror-in: no notables was changed since {last_update_splunk_timestamp}')
     if len(modified_notables_map) >= MIRROR_LIMIT:
