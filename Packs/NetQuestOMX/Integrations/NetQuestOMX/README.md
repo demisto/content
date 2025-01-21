@@ -121,7 +121,7 @@ There is no context output for this command.
 ### get-events
 
 ***
-This command gets events from NetQuest OMX. Each event is a report for the specified statistic type. Available only for Cortex XSIAM.
+Gets events from NetQuest OMX. Each event is a report for the specified statistic type. Available only for Cortex XSIAM.
 
 #### Base Command
 
