@@ -6,7 +6,7 @@ This integration was integrated and tested with version 3.7.5a of NetQuest OMX.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The IP of the 5G device using NetQuest OMX , formatted as https://X.X.X.X | True |
+| Server URL | The IP of the 5G device using NetQuest OMX, formatted as https://X.X.X.X | True |
 | Username |  | True |
 | Password |  | True |
 | Slot number | Target NetQuest device slot number | True |
