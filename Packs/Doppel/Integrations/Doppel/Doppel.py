@@ -545,7 +545,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {current_command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
