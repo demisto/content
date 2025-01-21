@@ -703,8 +703,8 @@ async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
     "%20GMT%0AConnection%3A%20keep-alive%0AServer-Timing%3A%20cdn-cache%3B%20desc%3DMISS%0AServer-Timing%3A%20edge%3B"
     "%20dur%3D23%0AServer-Timing%3A%20origin%3B%20dur%3D72%0AServer-Timing%3A%20intid%3Bdesc%3Ddd%0A"
     "Strict-Transport-Security%3A%20max-age%3D31536000%20%3B%20includeSubDomains%20%3B%20preload%0A"
-    events = [f'{{"id": 1, "httpMessage": {{"start": 1, "requestHeaders": "{requestHeaders}"}}}}',
-              f'{{"id": 2, "httpMessage": {{"start": 2, "requestHeaders": "{requestHeaders}"}}}}']
+    events = [f'{{"id": 1, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}',
+              f'{{"id": 2, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}']
     demisto_info = mocker.patch.object(demisto, 'info')
     send_events_to_xsiam_akamai = mocker.patch("Akamai_SIEM.send_events_to_xsiam_akamai",
                                                side_effect=Exception("Interrupted execution"))  # to break endless loop.
@@ -716,7 +716,8 @@ async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
     demisto_info.assert_has_calls([
         mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
         mocker.call("Running in interval = 1. Skipping decode events."),
-        mocker.call(f"Running in interval = 1. Sending {len(events)} events to xsiam.")
+        mocker.call(f"Running in interval = 1. Sending {len(events)} events to xsiam. "
+                    "latest event time is: 2020-06-04T20:43:42Z")
     ])
 
 
@@ -736,8 +737,8 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
     "%20GMT%0AConnection%3A%20keep-alive%0AServer-Timing%3A%20cdn-cache%3B%20desc%3DMISS%0AServer-Timing%3A%20edge%3B"
     "%20dur%3D23%0AServer-Timing%3A%20origin%3B%20dur%3D72%0AServer-Timing%3A%20intid%3Bdesc%3Ddd%0A"
     "Strict-Transport-Security%3A%20max-age%3D31536000%20%3B%20includeSubDomains%20%3B%20preload%0A"
-    events = [f'{{"id": 1, "httpMessage": {{"start": 1, "requestHeaders": "{requestHeaders}"}}}}',
-              f'{{"id": 2, "httpMessage": {{"start": 2, "requestHeaders": "{requestHeaders}"}}}}']
+    events = [f'{{"id": 1, "httpMessage": {{"start": 1491303422, "requestHeaders": "{requestHeaders}"}}}}',
+              f'{{"id": 2, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}']
     demisto_info = mocker.patch.object(demisto, 'info')
     send_events_to_xsiam_akamai = mocker.patch("Akamai_SIEM.send_events_to_xsiam_akamai",
                                                side_effect=Exception("Interrupted execution"))  # to break endless loop.
@@ -745,17 +746,20 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
         await Akamai_SIEM.process_and_send_events_to_xsiam(events, should_skip_decode_events=False, offset="test", counter=1)
     assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
     processed_events = [
-        {"id": 1, "httpMessage": {"start": 1, "requestHeaders": {'Content_Type': 'application/json;charset=UTF-8',
-                                                                 'user': 'test@test.com', 'client': ''}, "responseHeaders": {}}},
-        {"id": 2, "httpMessage": {"start": 2, "requestHeaders": {'Content_Type': 'application/json;charset=UTF-8',
-                                                                 'user': 'test@test.com', 'client': ''}, "responseHeaders": {}}}
+        {"id": 1, "httpMessage": {"start": 1491303422, "requestHeaders": {'Content_Type': 'application/json;charset=UTF-8',
+                                                                          'user': 'test@test.com', 'client': ''},
+                                  "responseHeaders": {}}},
+        {"id": 2, "httpMessage": {"start": 1591303422, "requestHeaders": {'Content_Type': 'application/json;charset=UTF-8',
+                                                                          'user': 'test@test.com', 'client': ''},
+                                  "responseHeaders": {}}}
     ]
     assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == processed_events
     assert isinstance(send_events_to_xsiam_akamai.call_args_list[0][0][0][0], dict)
     demisto_info.assert_has_calls([
         mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
         mocker.call("Running in interval = 1. decoding events."),
-        mocker.call(f"Running in interval = 1. Sending {len(events)} events to xsiam.")
+        mocker.call(f"Running in interval = 1. Sending {len(events)} events to xsiam. "
+                    "latest event time is: 2020-06-04T20:43:42Z")
     ])
 
 
