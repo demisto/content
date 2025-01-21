@@ -119,3 +119,41 @@ def test_parsed_indicators_from_response_no_publish_field(mocker, parse_response
     mocker.patch.object(Client, 'get_url_content', return_value='test description')
     indicators = fetch_indicators(client)
     assert indicators == expected_output
+
+
+def test_parsed_indicators_from_response_with_links_field(mocker):
+    """
+    Given:
+    - RSS feed url
+
+    When:
+    - After parsing the feed content, we hold a list of items and create a Report indicator from each one of them
+
+    Then:
+    - Ensure all the links extracted properly to the publications field
+    """
+
+    from unittest.mock import MagicMock
+    example_link = MagicMock()
+    example_link.href = "https://example.com"
+
+    FEED_DATA[0][0]['entries'][0]['links'] = [example_link]
+
+    client = mock_client(mocker, FEED_DATA[0][0])
+
+    mocker.patch.object(Client, 'get_url_content', return_value='test description')
+    indicators = fetch_indicators(client)
+
+    expected_output = [{
+        "timestamp": "2021-06-18T15:35:41",
+        "link": "https://test-article.com/",
+        "source": "test.com",
+        "title": "Test Article, with comma"
+    }, {
+        "timestamp": "2021-06-18T15:35:41",
+        "link": "https://example.com",
+        "source": "test.com",
+        "title": "Test Article, with comma"
+    }]
+
+    assert indicators[0]['fields']['publications'] == expected_output
