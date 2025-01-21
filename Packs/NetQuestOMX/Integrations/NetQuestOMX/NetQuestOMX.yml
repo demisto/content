@@ -104,7 +104,7 @@ script:
     - description: The name of the address list that you want to modify.
       name: existing_name
       required: true
-    description: This command renames an address list. This is only meant to change the name of the list. If you try to give the value of the new_name argument to an existing address list, the command will fail.
+    description: Renames an address list. This is only meant to change the name of the list. If you try to give the value of the new_name argument to an existing address list, the command will fail.
     name: netquest-address-list-rename
   - arguments:
     - description: 'The name of the address list to delete.'
