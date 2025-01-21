@@ -1,0 +1,204 @@
+{
+    "corelight_zeek_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "_path": {
+            "type": "string",
+            "is_array": false
+        },
+        "uid": {
+            "type": "string",
+            "is_array": false
+        },
+        "proto": {
+            "type": "string",
+            "is_array": false
+        },
+        "rtt": {
+            "type": "string",
+            "is_array": false
+        },
+        "rejected": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "query": {
+            "type": "string",
+            "is_array": false
+        },
+        "qtype_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "rcode": {
+            "type": "int",
+            "is_array": false
+        },
+        "rcode_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "answers": {
+            "type": "string",
+            "is_array": false
+        },
+        "trans_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "referrer": {
+            "type": "string",
+            "is_array": false
+        },
+        "uri": {
+            "type": "string",
+            "is_array": false
+        },
+        "tags": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_agent": {
+            "type": "string",
+            "is_array": false
+        },
+        "method": {
+            "type": "string",
+            "is_array": false
+        },
+        "status_code": {
+            "type": "int",
+            "is_array": false
+        },
+        "origin": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_body_len": {
+            "type": "string",
+            "is_array": false
+        },
+        "host": {
+            "type": "string",
+            "is_array": false
+        },
+        "response_body_len": {
+            "type": "string",
+            "is_array": false
+        },
+        "username": {
+            "type": "string",
+            "is_array": false
+        },
+        "hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "domainname": {
+            "type": "string",
+            "is_array": false
+        },
+        "server_dns_computer_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "server_tree_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "success": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "facility": {
+            "type": "string",
+            "is_array": false
+        },
+        "conn_state": {
+            "type": "string",
+            "is_array": false
+        },
+        "service": {
+            "type": "string",
+            "is_array": false
+        },
+        "duration": {
+            "type": "string",
+            "is_array": false
+        },
+        "orig_bytes": {
+            "type": "string",
+            "is_array": false
+        },
+        "orig_pkts": {
+            "type": "string",
+            "is_array": false
+        },
+        "resp_bytes": {
+            "type": "string",
+            "is_array": false
+        },
+        "resp_pkts": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "client": {
+            "type": "string",
+            "is_array": false
+        },
+        "_system_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "named_pipe": {
+            "type": "string",
+            "is_array": false
+        },
+        "endpoint": {
+            "type": "string",
+            "is_array": false
+        },
+        "operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "version": {
+            "type": "string",
+            "is_array": false
+        },        
+        "cipher": {
+            "type": "string",
+            "is_array": false
+        },
+        "id_orig_h": {
+            "type": "string",
+            "is_array": false
+        },
+        "id_resp_h": {
+            "type": "string",
+            "is_array": false
+        },
+        "id_orig_p": {
+            "type": "string",
+            "is_array": false
+        },
+        "id_resp_p": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

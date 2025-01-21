@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Breaking changes intended for XSIAM v2.6: All 'User' related fields are replaced by 'Identity' related fields (eg. xdm.source.user.username -> xdm.identity.user, xdm.source.user.user_type -> xdm.identity.type)"
+}

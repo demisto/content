@@ -1,0 +1,6 @@
+fromversion: 8.10.0
+id: Microsoft_Defender_for_Endpoint_ModelingRule
+name: Microsoft Defender for Endpoint Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft 365 Defender

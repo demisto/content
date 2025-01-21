@@ -1,0 +1,50 @@
+[RULE: rsa_common_fields]
+alter 
+    log_level = arrayindex(log_array,4),
+    client_ip = arrayindex(log_array,7),
+    server_ip = arrayindex(log_array,8),
+    result = arrayindex(log_array,11)
+| alter
+    client_ipv4 = regextract(client_ip, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),
+    server_ipv4 = regextract(server_ip, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),
+    client_ipv6 = regextract(client_ip, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),
+    server_ipv6 = regextract(server_ip, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})")
+| alter
+    xdm.event.original_event_type = arrayindex(log_array,3),
+    xdm.event.log_level =  if(log_level ~= "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level~="ERROR", XDM_CONST.LOG_LEVEL_ERROR, log_level ~="WARN",XDM_CONST.LOG_LEVEL_WARNING,log_level),
+    xdm.event.id = arrayindex(log_array,5),
+    xdm.source.ipv4 = arrayindex(client_ipv4,0),
+    xdm.source.ipv6 = arrayindex(client_ipv6,0),
+    xdm.source.host.ipv4_addresses = server_ipv4,
+    xdm.source.host.ipv6_addresses = server_ipv6,
+    xdm.alert.name = arrayindex(log_array,9),
+    xdm.alert.original_alert_id = arrayindex(log_array,10),
+    xdm.event.outcome = if(result ~= "SUCCESS",XDM_CONST.OUTCOME_SUCCESS, result ~= "fail", XDM_CONST.OUTCOME_FAILED, result ~= "warn", XDM_CONST.OUTCOME_SUCCESS, result),
+    xdm.event.outcome_reason = arrayindex(log_array,12),
+    xdm.network.session_id = to_string(arrayindex(log_array,13)); //validation returned type of data
+
+/* Extracts all the fields from _raw_log, fields are separated with a comma delimiter
+This mapping refers to Admin audit events */
+[MODEL: dataset="rsa_securid_raw"]
+ alter log_array = split(_raw_log, ",")
+| alter event_type = arrayindex(log_array,3)
+| filter event_type contains "audit.admin"
+| call rsa_common_fields
+| alter
+    xdm.source.identity.identifier = to_string(arrayindex(log_array,15)), 
+    xdm.source.identity.username = arrayindex(log_array,18),
+    xdm.source.identity.first_name = arrayindex(log_array,19),
+    xdm.source.identity.last_name = arrayindex(log_array,20),
+    xdm.source.identity.domain = arrayindex(log_array,25);
+
+//Mapping of Runtime audit events
+ alter log_array = split(_raw_log, ",")
+| alter event_type = arrayindex(log_array,3)
+| filter event_type contains "audit.runtime"
+| call rsa_common_fields
+| alter
+    xdm.source.identity.identifier = to_string(arrayindex(log_array,14)), 
+    xdm.source.identity.username = arrayindex(log_array,17),
+    xdm.source.identity.first_name = arrayindex(log_array,18),
+    xdm.source.identity.last_name = arrayindex(log_array,19),
+    xdm.source.agent.identifier = arrayindex(log_array, 20);

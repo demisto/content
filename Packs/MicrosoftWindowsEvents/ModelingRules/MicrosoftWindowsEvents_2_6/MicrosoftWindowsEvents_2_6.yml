@@ -1,0 +1,5 @@
+fromversion: 8.10.0
+id: Microsoft_Windows_Event_Logs_ModelingRule
+name: Microsoft Windows Event Logs Modeling Rule
+rules: ''
+schema: ''
