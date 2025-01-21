@@ -1833,7 +1833,8 @@ def get_modified_remote_data_command(service: client.Service, args: dict,
 
     if modified_notables_map:
         notable_ids_with_quotes = [f'"{notable_id}"' for notable_id in modified_notables_map]
-        notable_search = f'search `notable` | where {EVENT_ID} in ({",".join(notable_ids_with_quotes)}) | expandtoken'
+        # filter out the owner field as it's already set in the `incident_review` search results
+        notable_search = f'search `notable` | where {EVENT_ID} in ({",".join(notable_ids_with_quotes)}) | expandtoken | fields - owner'
         kwargs = {'query': notable_search, 'earliest_time': '-3d', 'output_mode': OUTPUT_MODE_JSON}
         demisto.debug(f'mirror-in: performing `notable` search with the kwargs: {kwargs}')
         for item in results.JSONResultsReader(service.jobs.oneshot(**kwargs)):
