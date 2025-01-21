@@ -8,7 +8,7 @@ from freezegun import freeze_time
 import demistomock as demisto
 from CommonServerPython import CommandResults, urljoin, DemistoException
 from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR, XSOAR_RESOLVED_STATUS_TO_XDR
-from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR, get_xsoar_close_reasons
+from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR, get_xsoar_close_reasons, XDR_OPEN_STATUS_TO_XSOAR
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -412,7 +412,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries == []
+    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
 
 
 def test_get_remote_data_command_with_rate_limit_exception(mocker):
@@ -603,7 +603,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert response.entries == []
+    assert response.entries[0].get('Contents') == {'dbotIncidentReopen': True}
 
 
 @pytest.mark.parametrize('last_update',
@@ -1003,7 +1003,7 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     Then
         - The resolved XSOAR statuses match the expected statuses for all possible XDR close-reasons.
     """
-    from CortexXDRIR import handle_incoming_closing_incident
+    from CortexXDRIR import handle_incoming_incident
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
 
@@ -1017,7 +1017,7 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
         # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
         with capfd.disabled():
-            close_entry = handle_incoming_closing_incident(incident_data)
+            close_entry = handle_incoming_incident(incident_data)
         assert close_entry["Contents"]["closeReason"] == expected_resolved_status[i]
 
 
@@ -2055,3 +2055,36 @@ def test_get_distribution_url_command_without_download_not_supported_type():
         get_distribution_url_command(client, args)
     client.get_distribution_url.assert_called_once_with("12345", "sh")
     assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
+
+
+def test_handle_incoming_incident(capfd, mocker):
+    """
+    Given:
+        - incident data of resolved incident
+    When
+        - Handling incoming closing-incident (handle_incoming_closing_incident(...) executed).
+    Then
+        - a resolved entry is being added
+    """
+    from CortexXDRIR import handle_incoming_incident
+    from CommonServerPython import EntryType, EntryFormat
+    custom_mapping = ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
+                      "True Positive=Resolved,Security Testing=Other,Other=Other")
+    mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
+                                                         "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
+
+    for xdr_reopen_reason in XDR_OPEN_STATUS_TO_XSOAR:
+        incident_data = load_test_data('./test_data/resolved_incident_data.json')
+        # Set incident status to be tested reopen-reason.
+        incident_data["status"] = xdr_reopen_reason
+
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        with capfd.disabled():
+            reopen_entry = handle_incoming_incident(incident_data)
+        assert reopen_entry == {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentReopen': True
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
