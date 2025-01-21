@@ -95,7 +95,7 @@ script:
     - description: The name for the new address list.
       name: name
       required: true
-    description: This command creates a new address list.  This list will replace and override the old list entity.
+    description: Creates a new address list.  This list will replace and override the old list entity.
     name: netquest-address-list-create
   - arguments:
     - description: The new name for an existing address list.
