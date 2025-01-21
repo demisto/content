@@ -49,8 +49,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -89,9 +88,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -100,6 +97,14 @@ configuration:
   name: proxy
   type: 8
   required: false
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 display: FeedDomainTools
 description: DomainTools NOD/NAD Feed integration.
 name: FeedDomainTools
@@ -110,56 +115,53 @@ script:
     description: Gets indicators from the feed.
     execution: false
     arguments:
-      - name: limit
-        defaultValue: 10
-        description: The maximum number of results to return.
-        isArray: false
-        default: false
-        required: false
-        secret: false
-      - name: feed_type
-        defaultValue: 'nod'
-        description: The DomainTools integration feed type to fetch.
-        isArray: false
-        default: false
-        required: false
-        secret: false
-        options:
-        - nod
-        - nad
-      - name: session_id
-        description: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
-        defaultValue: dt-cortex-feeds
-        isArray: false
-        default: false
-        required: false
-        secret: false
-      - name: domain
-        description: The top level domain to query (e.g. `*.com`).
-        isArray: false
-        default: false
-        required: false
-        secret: false
-      - name: after
-        description: The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h).
-        defaultValue: "-3600"
-        isArray: false
-        default: false
-        required: false
-        secret: false
-      - name: before
-        description: The end of the query window in seconds, relative to the current time, inclusive.
-        isArray: false
-        default: false
-        required: false
-        secret: false
-      - name: top
-        description: Limits the number of results in the response payload.
-        defaultValue: 100000
-        isArray: false
-        default: false
-        required: false
-        secret: false
+    - name: limit
+      defaultValue: 10
+      description: The maximum number of results to return.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: feed_type
+      defaultValue: 'nod'
+      description: The DomainTools integration feed type to fetch.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: session_id
+      description: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
+      defaultValue: dt-cortex-feeds
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: domain
+      description: The top level domain to query (e.g. `*.com`).
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: after
+      description: The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h).
+      defaultValue: "-3600"
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: before
+      description: The end of the query window in seconds, relative to the current time, inclusive.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: top
+      description: Limits the number of results in the response payload.
+      defaultValue: 100000
+      isArray: false
+      default: false
+      required: false
+      secret: false
   dockerimage: demisto/vendors-sdk:1.0.0.1876031
   feed: true
   isfetch: false
