@@ -1454,8 +1454,12 @@ class MicrosoftClient(BaseClient):
     def device_auth_request(self) -> dict:
         response_json = {}
         try:
+            if self.tenant_id:
+                url = f'{self.azure_ad_endpoint}/{self.tenant_id}/oauth2/v2.0/devicecode'
+            else:
+                url = f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
             response = requests.post(
-                url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
+                url=url,
                 data={
                     'client_id': self.client_id,
                     'scope': self.scope

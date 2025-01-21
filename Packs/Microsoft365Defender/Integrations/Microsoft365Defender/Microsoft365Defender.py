@@ -31,6 +31,15 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
+        if client_credentials:
+            token_retrieval_url = None
+        else:
+            base_url = MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)
+            if endpoint == 'gcc-high':
+                token_retrieval_url = f'{base_url}/{tenant_id}/oauth2/v2.0/token'
+            else:
+                token_retrieval_url = f'{base_url}/organizations/oauth2/v2.0/token'
+
         self.client_credentials = client_credentials
         client_args = assign_params(
             base_url=base_url,
@@ -47,10 +56,7 @@ class Client:
 
             # used for device code flow
             resource=MICROSOFT_365_DEFENDER_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
-            # token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
-            #                     f'/organizations/oauth2/v2.0/token' if not client_credentials else None,
-            token_retrieval_url=f'{MICROSOFT_365_DEFENDER_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
-                                f'/{tenant_id}/oauth2/v2.0/token' if not client_credentials else None,
+            token_retrieval_url=token_retrieval_url,
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
@@ -60,7 +66,6 @@ class Client:
             managed_identities_resource_uri=Resources.security,
             endpoint=endpoint,
             azure_cloud=azure_cloud,
-            # azure_ad_endpoint=azure_cloud.endpoints.active_directory,
             command_prefix="microsoft-365-defender",
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
