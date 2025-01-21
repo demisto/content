@@ -19,12 +19,14 @@ configuration:
   type: 0
   required: true
   section: Collect
+  additionalinfo: Target NetQuest device slot number
   defaultvalue: '1'
 - display: Port number
   name: port
   type: 0
   required: true
   section: Collect
+  additionalinfo: Target NetQuest device port number
 - display: Fetch Events
   name: isFetchEvents
   type: 8
@@ -41,6 +43,7 @@ configuration:
   - Export Peaks FPS
   - Optimization Stats
   type: 16
+  defaultvalue: Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats
   section: Collect
   required: true
 - name: proxy
@@ -52,7 +55,7 @@ configuration:
   type: 8
   required: false
 description: NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet & flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
-display: NetQuestOMX
+display: NetQuest OMX
 name: NetQuestOMX
 script:
   commands:
@@ -60,9 +63,9 @@ script:
     - description: The entry ID of the file to upload.
       name: entry_id
       required: true
-    description: Uploads a .txt file with the address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
+    description: This command uploads a .txt file with the address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
     name: netquest-address-list-upload
-  - description: Optimize the updated address list. If the traffic elements are IP addresses, the integration will optimize the list by compressing IP addresses into CIDR groups.
+  - description: This command optimizes the updated address list. If the traffic elements are IP addresses, the integration will optimize the list by compressing IP addresses into CIDR groups.
     name: netquest-address-list-optimize
     outputs:
     - contextPath: NetQuest.AddressList.OverlappingAddresses
@@ -87,7 +90,7 @@ script:
     - description: The name for the new address list.
       name: name
       required: true
-    description: Create a new address list.  This list will replace and override the old list entity.
+    description: This command creates a new address list.  This list will replace and override the old list entity.
     name: netquest-address-list-create
   - arguments:
     - description: The new name for an existing address list.
@@ -96,13 +99,13 @@ script:
     - description: The name of the address list that you want to modify.
       name: existing_name
       required: true
-    description: Rename an address list. This is only meant to change the name of the list. If you try to give the value of the new_name argument to an existing address list, the command will fail.
+    description: This command renames an address list. This is only meant to change the name of the list. If you try to give the value of the new_name argument to an existing address list, the command will fail.
     name: netquest-address-list-rename
   - arguments:
     - description: 'The name of the address list to delete.'
       name: name
       required: true
-    description: Delete the address list of the name provided.
+    description: This command deletes the address list of the name provided.
     name: netquest-address-list-delete
   - arguments:
     - auto: PREDEFINED
@@ -118,7 +121,7 @@ script:
       isArray: true
       defaultValue: "Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats"
       required: true
-    description: Gets events from NetQuest OMX. Each event is a report for the specified statistic type. Available only for Cortex XSIAM.
+    description: This command gets events from NetQuest OMX. Each event is a report for the specified statistic type. Available only for Cortex XSIAM.
     execution: false
     name: get-events
   runonce: false
