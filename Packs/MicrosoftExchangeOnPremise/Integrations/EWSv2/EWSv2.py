@@ -602,6 +602,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
         for attachment in attachments:
             m.attach(attachment)
         m.send_and_save()
+    demisto.debug(f"Sent email to mailbox {m}")
     return m
 
 
@@ -614,22 +615,24 @@ def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     attachments = []
     clean_body = ''
     last_index = 0
-    for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
-        name = f'image{i}'
-        cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
-        attachment = {
-            'data': b64_decode(m.group(3)),
-            'name': name
-        }
-        attachment['cid'] = cid
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
-        last_index = m.end() - 1
-        new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
-                                        content_id=attachment.get('cid'), is_inline=True)
-        attachments.append(new_attachment)
+    demisto.debug(f"handle_html: Received HTML body  {html_body=}")
+    # for i, m in enumerate(
+    #         re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
+    #     name = f'image{i}'
+    #     cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
+    #     attachment = {
+    #         'data': b64_decode(m.group(3)),
+    #         'name': name
+    #     }
+    #     attachment['cid'] = cid
+    #     clean_body += html_body[last_index:m.start(1)] + 'cid:' + str(attachment['cid'])
+    #     last_index = m.end() - 1
+    #     new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+    #                                     content_id=attachment.get('cid'), is_inline=True)
+    #     attachments.append(new_attachment)
 
     clean_body += html_body[last_index:]
+    demisto.debug(f"handle_html: Cleaned HTML body {clean_body=} and {attachments=}")
     return clean_body, attachments
 
 
@@ -655,44 +658,27 @@ def get_message_for_body_type(body, body_type, html_body):
     return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
-def send_email_reply_to_mailbox(account:Account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
+def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=None, from_mailbox=None):  # pragma: no cover
     if attachments is None:
         attachments = []
-    item_to_reply_to: Message = account.inbox.get(id=in_reply_to)
+    item_to_reply_to = account.inbox.get(id=in_reply_to)
     if isinstance(item_to_reply_to, ErrorItemNotFound):
         raise Exception(item_to_reply_to)
 
     subject = subject or item_to_reply_to.subject
     # `reply-mail` command does not support body_type, so we will use the html_body if it exists.
     message_body = HTMLBody(html_body) if html_body else body
-
-    # Create the reply
-    reply = item_to_reply_to.create_reply(
-        subject='Re: ' + subject,
-        body=message_body,
-        to_recipients=to,
-        cc_recipients=cc,
-        bcc_recipients=bcc,
-        author=from_mailbox
-    )
-    bulk_created_results = reply.save(account.drafts)
-    msg = account.inbox.get(id=bulk_created_results.id)
-    # Add inline images and other attachments from the original email
-    for attachment in item_to_reply_to.attachments:
-        if isinstance(attachment, FileAttachment) and attachment.is_inline:
-            # Re-add inline attachments
-            msg.attach(attachment)
-
-    # Add any new attachments
+    reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
+                                          bcc_recipients=bcc, author=from_mailbox)
+    reply = reply.save(account.drafts)
+    m = account.inbox.get(id=reply.id)
 
     for attachment in attachments:
-        msg.attach(attachment)
-
-    # Send the email
-    msg.send()
-
-    return msg
+        m.attach(attachment)
+    m.send()
+    demisto.debug(f"Sent email reply to mailbox {m}")
+    return m
 
 
 class GetSearchableMailboxes(EWSService):  # pragma: no cover
