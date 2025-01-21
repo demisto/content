@@ -1,0 +1,106 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "AI Playground",
+        "LLM Document Management"
+    ],
+    "caseInsensitive": true,
+    "cliName": "llmworkspacelist",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Action",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "action",
+            "orgType": "singleSelect",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "",
+                "Current"
+            ],
+            "type": "singleSelect",
+            "width": 100
+        },
+        {
+            "displayName": "Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": true,
+            "key": "name",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 191
+        },
+        {
+            "displayName": "Temperature",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "temperature",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 100
+        },
+        {
+            "displayName": "Similarity",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "similarity",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 100
+        },
+        {
+            "displayName": "Top N Results",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "topnresults",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 107
+        }
+    ],
+    "content": true,
+    "defaultRows": [],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_llmworkspacelist",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "LLM Workspace List",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "AnyLlmWorkspaceUpdate",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

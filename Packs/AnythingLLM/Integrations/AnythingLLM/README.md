@@ -265,7 +265,7 @@ There is no context output for this command.
 ### anyllm-workspace-chat
 
 ***
-Send a chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general
+Send a chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
 
 #### Base Command
 
@@ -277,7 +277,8 @@ Send a chat message to a workspace (default thread). Query mode is based on embe
 | --- | --- | --- |
 | workspace | Name of the workspace. | Required | 
 | message | Message to send. | Required | 
-| mode | Mode to chat, query or chat. Possible values are: query, chat. | Optional | 
+| mode | Mode to chat, query or chat. Possible values are: query, chat. | Required | 
+| format | No description provided. Possible values are: markdown, dictionary. Default is dictionary. | Optional | 
 
 #### Context Output
 
@@ -355,6 +356,84 @@ Set the pinned status of a document embedding
 | folder | Folder the document originated from. | Required | 
 | document | Document name. | Required | 
 | status | Set pin status to true or false. Possible values are: true, false. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### anyllm-workspace-thread-chats
+
+***
+Get the conversation for a workspace thread
+
+#### Base Command
+
+`anyllm-workspace-thread-chats`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workspace | No description provided. | Required | 
+| thread | No description provided. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### anyllm-workspace-thread-chat
+
+***
+Send a chat a message to a conversation thread
+
+#### Base Command
+
+`anyllm-workspace-thread-chat`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workspace | Name of the workspace. | Required | 
+| thread | Name of the conversation thread. | Required | 
+| message | Message to send. | Required | 
+| mode | Mode to chat, query or chat. Possible values are: query, chat. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### anyllm-workspace-thread-new
+
+***
+Create a new conversation thread
+
+#### Base Command
+
+`anyllm-workspace-thread-new`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workspace | Name of the workspace. | Required | 
+| thread | Name of the new conversation thread. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### anyllm-workspace-thread-delete
+
+***
+Delete a thread in a workspace
+
+#### Base Command
+
+`anyllm-workspace-thread-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workspace | Name of the workspace. | Optional | 
+| thread | Name of the thread. | Optional | 
 
 #### Context Output
 

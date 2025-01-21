@@ -1,0 +1,33 @@
+args:
+- description: The question or message to send to the LLM.
+  name: question
+  required: true
+- auto: PREDEFINED
+  description: "\"chat\" mode uses the LLMs full training data and \"query\" mode requires some results found in the embedded documents in addition to the LLM's conversation  context."
+  name: mode
+  predefined:
+  - chat
+  - query
+  required: true
+comment: Sends a message to the LLM.  If any search results have been added to the conversation, they are added to the LLM workspace thread's context just before the latest message is added. The pending search results buffer is then cleared.
+commonfields:
+  id: AnyLlmQuestion
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmQuestion
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 600ns
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
