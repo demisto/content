@@ -15,7 +15,8 @@ alter
                 category = "FunctionAppLogs", "Function App Logs",
                 category = "AppServiceAuditLogs", "App Service Audit Logs",
                 category = "WorkflowRuntime", "Work flow Runtime",
-                category = "AppServiceEnvironmentPlatformLogs", "App Service Environment Platform Logs"
+                category = "AppServiceEnvironmentPlatformLogs", "App Service Environment Platform Logs",
+                category),
         xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
         xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 1),
         xdm.source.cloud.region = location,
@@ -69,8 +70,6 @@ filter category = "AppServiceHTTPLogs"
         xdm.source.user_agent = properties -> UserAgent,
         xdm.source.user.username = properties -> CsUsername,
         xdm.source.sent_bytes = to_number(properties -> CsBytes),
-        xdm.source.ipv4 = if(properties -> CIp ~= "^(?:\d{1,3}\.){3}\d{1,3}$", properties -> CIp, null),
-        xdm.source.ipv6 = if(properties -> CIp ~= "^(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}$", properties -> CIp, null),
         xdm.target.sent_bytes = to_number(properties -> ScBytes),
         xdm.target.port = to_number(properties -> SPort);
 
@@ -141,8 +140,8 @@ filter category = "AppServiceAuditLogs"
         xdm.source.ipv4 = if(properties -> UserAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(properties -> UserAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0), null),
 		xdm.source.ipv6 = if(properties -> UserAddress ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(properties -> UserAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), null);
 
-config case_sensitive = true
 // Azure App Service - "Workflow Runtime"
+config case_sensitive = true
 | filter category = "WorkflowRuntime"
 | call msft_azure_app_service_map_common_event_fields
 | alter
