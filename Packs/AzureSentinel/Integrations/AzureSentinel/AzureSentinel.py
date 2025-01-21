@@ -204,6 +204,7 @@ def error_handler(response: requests.Response):
                     'message': response.text
                 }
             }
+
         error_kind = error_json.get('error', {}).get('code', 'BadRequest')
         error_msg = error_json.get('error', {}).get('message', error_json)
         raise ValueError(
@@ -214,6 +215,7 @@ def error_handler(response: requests.Response):
 def format_date(date):
     if not date:
         return None
+
     return dateparser.parse(date).strftime(DATE_FORMAT)  # type:ignore
 
 
