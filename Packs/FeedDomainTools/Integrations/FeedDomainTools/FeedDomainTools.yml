@@ -105,61 +105,61 @@ description: DomainTools NOD/NAD Feed integration.
 name: FeedDomainTools
 script:
   commands:
-  - arguments:
-    - name: limit
-      defaultValue: 10
-      description: The maximum number of results to return.
-      isArray: false
-      default: false
-      required: false
-      secret: false
-    - name: feed_type
-      defaultValue: 'nod'
-      description: The DomainTools integration feed type to fetch.
-      isArray: false
-      default: false
-      required: false
-      secret: false
-      options:
-      - nod
-      - nad
-    - name: session_id
-      description: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
-      defaultValue: dt-cortex-feeds
-      isArray: false
-      default: false
-      required: false
-      secret: false
-    - name: domain
-      description: The top level domain to query (e.g. `*.com`).
-      isArray: false
-      default: false
-      required: false
-      secret: false
-    - name: after
-      description: The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h).
-      defaultValue: "-3600"
-      isArray: false
-      default: false
-      required: false
-      secret: false
-    - name: before
-      description: The end of the query window in seconds, relative to the current time, inclusive.
-      isArray: false
-      default: false
-      required: false
-      secret: false
-    - name: top
-      description: Limits the number of results in the response payload.
-      defaultValue: 100000
-      isArray: false
-      default: false
-      required: false
-      secret: false
+  - name: dtfeeds-get-indicators
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
-    name: dtfeeds-get-indicators
+    arguments:
+      - name: limit
+        defaultValue: 10
+        description: The maximum number of results to return.
+        isArray: false
+        default: false
+        required: false
+        secret: false
+      - name: feed_type
+        defaultValue: 'nod'
+        description: The DomainTools integration feed type to fetch.
+        isArray: false
+        default: false
+        required: false
+        secret: false
+        options:
+        - nod
+        - nad
+      - name: session_id
+        description: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
+        defaultValue: dt-cortex-feeds
+        isArray: false
+        default: false
+        required: false
+        secret: false
+      - name: domain
+        description: The top level domain to query (e.g. `*.com`).
+        isArray: false
+        default: false
+        required: false
+        secret: false
+      - name: after
+        description: The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h).
+        defaultValue: "-3600"
+        isArray: false
+        default: false
+        required: false
+        secret: false
+      - name: before
+        description: The end of the query window in seconds, relative to the current time, inclusive.
+        isArray: false
+        default: false
+        required: false
+        secret: false
+      - name: top
+        description: Limits the number of results in the response payload.
+        defaultValue: 100000
+        isArray: false
+        default: false
+        required: false
+        secret: false
   dockerimage: demisto/vendors-sdk:1.0.0.1876031
   feed: true
   isfetch: false
