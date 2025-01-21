@@ -287,11 +287,8 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     priority = data.get('priority')
     if priority:
         if isinstance(priority, dict):
-            if priority.get('value', ''):
-                context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))),
-                                                          str(int(priority.get('value', '')))),
-            else:
-                context['Priority'] = ''
+            value = priority.get('value', '')
+            context['Priority'] = TICKET_PRIORITY.get(str(int(value)), str(int(value))) if value else ''
         else:
             context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
