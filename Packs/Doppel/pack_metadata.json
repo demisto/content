@@ -1,11 +1,11 @@
 {
     "name": "Doppel",
-    "description": "XSOAR pack for Doppel features",
-    "support": "xsoar",
+    "description": "This Content pack for Doppel mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.",
+    "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "author": "Doppel Inc",
+    "url": "https://www.doppel.com/",
+    "email": "integrations@doppel.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -13,6 +13,7 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }

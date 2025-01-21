@@ -724,9 +724,6 @@
 									"queue_state": {
 										"simple": "actioned",
 										"userMarkedRequired": false
-									},
-									"using": {
-										"simple": "Doppel_Mirroring_Test_instance_1"
 									}
 								},
 								"endCol": 2,
@@ -735,7 +732,7 @@
 								"id": "5519ca81-081e-4b00-9d88-fadabc959528",
 								"index": 0,
 								"name": "Request Takedown",
-								"scriptId": "Doppel_Mirroring_Test|||doppel-update-alert",
+								"scriptId": "Doppel|||doppel-update-alert",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
@@ -753,9 +750,6 @@
 									},
 									"queue_state": {
 										"simple": "doppel_review"
-									},
-									"using": {
-										"simple": "Doppel_Mirroring_Test_instance_1"
 									}
 								},
 								"dropEffect": "move",
@@ -766,7 +760,7 @@
 								"index": 1,
 								"listId": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
 								"name": "Safelist the Asset",
-								"scriptId": "Doppel_Mirroring_Test|||doppel-update-alert",
+								"scriptId": "Doppel|||doppel-update-alert",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
@@ -785,9 +779,6 @@
 									},
 									"queue_state": {
 										"simple": "doppel_review"
-									},
-									"using": {
-										"simple": "Doppel_Mirroring_Test_instance_1"
 									}
 								},
 								"dropEffect": "move",
@@ -798,7 +789,7 @@
 								"index": 2,
 								"listId": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
 								"name": "False Positive",
-								"scriptId": "Doppel_Mirroring_Test|||doppel-update-alert",
+								"scriptId": "Doppel|||doppel-update-alert",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
@@ -817,9 +808,6 @@
 									},
 									"queue_state": {
 										"simple": "archived"
-									},
-									"using": {
-										"simple": "Doppel_Mirroring_Test_instance_1"
 									}
 								},
 								"endCol": 2,
@@ -828,7 +816,7 @@
 								"id": "1c5f3d2d-8098-42b7-bfb1-d7fb61f3438e",
 								"index": 3,
 								"name": "Archive",
-								"scriptId": "Doppel_Mirroring_Test|||doppel-update-alert",
+								"scriptId": "Doppel|||doppel-update-alert",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
@@ -847,9 +835,6 @@
 									},
 									"queue_state": {
 										"simple": "monitoring"
-									},
-									"using": {
-										"simple": "Doppel_Mirroring_Test_instance_1"
 									}
 								},
 								"dropEffect": "move",
@@ -860,7 +845,7 @@
 								"index": 4,
 								"listId": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
 								"name": "Monitor",
-								"scriptId": "Doppel_Mirroring_Test|||doppel-update-alert",
+								"scriptId": "Doppel|||doppel-update-alert",
 								"sectionItemType": "button",
 								"startCol": 0
 							}
