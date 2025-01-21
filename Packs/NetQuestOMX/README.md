@@ -9,7 +9,7 @@ Key product capabilities include:
 ## What does this pack do?
 Using the NetQuest OMX integration you can:
 
-- Uploads a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
+- Upload a .txt file with address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
 - Optimize updated address list - If the traffic elements are IP addresses, the integration will optimize the list by compressing IP addresses into CIDR groups.
 - Create a new address list.
 - Change the name of an existing address list.  
