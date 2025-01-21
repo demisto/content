@@ -72,19 +72,19 @@ script:
       description: A list of overlapping addresses in the address list.
       type: list
     - contextPath: NetQuest.AddressList.OverlapsPresent
-      description: OverlapsPresent.
+      description: A boolean field that indicates whether overlapping IP address ranges are present in the address list.
       type: boolean
     - contextPath: NetQuest.AddressList.MergedAddresses
-      description: MergedAddresses.
+      description: A list contains consolidated IP address ranges, combining overlapping or contiguous addresses into a unified set.
       type: list
     - contextPath: NetQuest.AddressList.MergesPresent
-      description: MergesPresent.
+      description: A boolean field that indicates whether any address ranges in the list have been merged to eliminate overlaps or contiguous entries.
       type: boolean
     - contextPath: NetQuest.AddressList.CountsBefore
-      description: CountsBefore.
+      description:  A dictionary that stores the number of occurrences of each IP address or address range before any processing or modifications were applied.
       type: Dictionary
     - contextPath: NetQuest.AddressList.CountsAfter
-      description: CountsAfter.
+      description: A dictionary that stores the number of occurrences of each IP address or address range after processing or modifications have been applied.
       type: Dictionary
   - arguments:
     - description: The name for the new address list.
