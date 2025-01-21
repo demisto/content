@@ -230,9 +230,6 @@ def test_fetch_with_same_time(mocker):
     limit = 5
 
     events, new_last_run = fetch_events(client, limit)  # first time calling fetch-events
-
-    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value=new_last_run)
-    events, new_last_run = fetch_events(client, limit)
     assert len(events) == limit
     assert 'ids' in new_last_run
     assert len(new_last_run.get('ids')) == 3
@@ -244,3 +241,4 @@ def test_fetch_with_same_time(mocker):
     assert 'ids' in new_last_run
     assert len(new_last_run.get('ids')) == 1
     assert new_last_run.get('start_date') == '2025-01-04T19:44:35Z'
+
