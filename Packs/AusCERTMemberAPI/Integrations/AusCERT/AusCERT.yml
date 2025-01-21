@@ -1,0 +1,82 @@
+category: Network Security
+commonfields:
+  id: AusCERT
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: ''
+  displaypassword: API Key from MSIN AusCERT Portal
+  hiddenusername: true
+  name: API_Key
+  required: false
+  type: 9
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: true
+  section: Collect
+  type: 0
+- defaultvalue: '30'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Integration for polling the AusCERT API for Member Security Incident Notifications and threat intelligence.
+display: AusCERT
+name: AusCERT
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Time range to fetch indicators for.
+      name: time_range
+      predefined:
+      - '1'
+      - '7'
+      required: true
+    description: Fetches indicators from the combined threat feed.
+    name: auscert_get_combined_feed
+    outputs:
+    - contextPath: auscertIndicators
+  - arguments:
+    - auto: PREDEFINED
+      name: time_range
+      predefined:
+      - '1'
+      - '7'
+      required: true
+    description: Fetches indicators from the Malware threat feed.
+    name: auscert_get_malware_feed
+    outputs:
+    - contextPath: auscertIndicators
+  - arguments:
+    - name: time_range
+      required: true
+    description: Fetches indicators from the Phishing threat feed.
+    name: auscert_get_phishing_feed
+    outputs:
+    - contextPath: auscertIndicators
+      type: unknown
+  dockerimage: demisto/python3:3.11.11.1940698
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

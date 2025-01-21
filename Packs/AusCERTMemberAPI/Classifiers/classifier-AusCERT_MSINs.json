@@ -1,0 +1,134 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "AusCERT MSINs",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 4,
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"complex": {
+						"filters": [],
+						"root": "AusCERT MSIN",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": false
+									},
+									"defaultValue": {
+										"isContext": false,
+										"value": {
+											"simple": "AusCERT MSIN"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							}
+						]
+					}
+				},
+				"External Link": {
+					"simple": "source_documentation"
+				},
+				"External System ID": {
+					"simple": "id"
+				},
+				"Hostnames": {
+					"simple": "endpoint_hostname"
+				},
+				"Source Hostname": {
+					"simple": "endpoint_hostname"
+				},
+				"Source IP": {
+					"simple": "endpoint_ip"
+				},
+				"Source Port": {
+					"simple": "endpoint_port"
+				},
+				"Srcs": {
+					"simple": "endpoint_ip"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "endpoint_hostname",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": "AusCERT MSIN - "
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"simple": " has 1 exposed service"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"simple": "low,medium,high"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"simple": "1,2,3"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"name": "AusCERT MSINs",
+	"nameRaw": "AusCERT MSINs",
+	"packID": "e049e659-000d-4cb4-88ce-473293a7a368",
+	"packName": "AusCERT Member API",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "35fd98e3-0f72-4717-8b31-40fea41fb8bb",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
