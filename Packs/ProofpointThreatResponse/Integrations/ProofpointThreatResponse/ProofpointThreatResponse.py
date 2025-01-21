@@ -845,7 +845,7 @@ def search_quarantine():
                     found['mid'] = True
                     demisto.debug('PTR: Found the email, adding the alert')
                     emailTRAPtimestamp = int(message_delivery_time / 1000)
-                    demisto.debug(f'PTR: {emailTRAPtimestamp=}, {emailTAPtime=}')
+                    demisto.debug(f'PTR: {emailTRAPtimestamp=}, {emailTAPtime=}, {incidentTAPtime=}')
                     if ((emailTAPtime and emailTAPtime == emailTRAPtimestamp)
                         or (not emailTAPtime and incidentTAPtime == emailTRAPtimestamp)):
                         demisto.debug(f'PTR: Adding the alert with id {alert.get("id")}')
