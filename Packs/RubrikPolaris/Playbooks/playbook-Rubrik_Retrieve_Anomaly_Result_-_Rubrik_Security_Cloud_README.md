@@ -22,6 +22,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * rubrik-gps-snapshot-files-download
 * rubrik-radar-suspicious-file-list
 * rubrik-event-list
+* rubrik-radar-anomaly-csv-analysis
 
 ## Playbook Inputs
 
@@ -31,6 +32,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | file_paths | The absolute path of the file\(s\) for which a downloadable link needs to be generated. |  | Optional |
 | snapshot_id | The snapshot ID for which to retrieve the anomaly results. Default can be received from incident \(activity series ID\) if present.<br/><br/>Note: Users can get the list of the snapshot IDs by executing the "rubrik-polaris-object-snapshot-list" command. For the Activity Series ID, the users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | incident.rubrikpolarisactivityseriesid | Optional |
+| download_csv_file | If set to True, the playbook downloads the anomaly analysis csv file directly on XSOAR server. | True | Optional |
 
 ## Playbook Outputs
 
