@@ -64,7 +64,7 @@ MALOP_HEADERS = [
     'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']
 
 SINGLE_MALOP_HEADERS = [
-    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash']
+    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash', 'Severity',  'Machines', 'Users', "DecisionStatuses", "DetectionTypes", "DetectionEngines" ,"MitreTechniques", "MalopCloserName"]
 
 DOMAIN_HEADERS = [
     'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious',
@@ -2185,11 +2185,28 @@ def query_malop_management_command(client: Client, args: dict):
             involved_hashes = single_malop.get("rootCauseElementHashes", [])
             malop_severity = single_malop.get("severity","")
             machines = single_malop.get("machines",[])
+            filtered_machines = [
+                {
+                    "guid": machine.get("guid"),
+                    "displayName": machine.get("displayName"),
+                    "pylumId": machine.get("pylumId"),
+                }
+                for machine in machines
+            ]
+
             users = single_malop.get("users",[])
+            filtered_users = [
+                {
+                    "guid": user.get("guid"),
+                    "displayName": user.get("displayName"),
+                }
+                for user in users
+            ]
             decision_statuses = single_malop.get("decisionStatuses",[])
             dectection_types = single_malop.get("detectionTypes",[])
             detection_engines = single_malop.get("detectionEngines", [])
             mitre_techniques = single_malop.get("mitreTechniques")
+            closer_name = single_malop.get("closerName")
             if single_malop["isEdr"]:
                 link = SERVER + '/#/malop/' + guid
             else:
@@ -2202,12 +2219,13 @@ def query_malop_management_command(client: Client, args: dict):
                 'Status': management_status,
                 'InvolvedHash': involved_hashes,
                 'Severity' : malop_severity,
-                'Machines' : machines,
-                'Users' : users,
+                'Machines' : filtered_machines,
+                'Users' : filtered_users,
                 "DecisionStatuses" : decision_statuses,
                 "DetectionTypes" : dectection_types,
                 "DetectionEngines" : detection_engines,
                 "MitreTechniques" : mitre_techniques,
+                "MalopCloserName" : closer_name
 
             }
             outputs.append(malop_output)
