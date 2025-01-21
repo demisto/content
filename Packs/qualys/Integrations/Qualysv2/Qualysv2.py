@@ -2969,14 +2969,13 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client, since_datetime, next_page='', limit=HOST_LIMIT, is_test=False) -> tuple:
+def get_host_list_detections_events(client, since_datetime, next_page='', limit=HOST_LIMIT) -> tuple:
     """ Get host list detections from qualys
     Args:
         client: Qualys client
         next_page: pagination marking
         since_datetime: The start fetch date.
         limit: The limit of the host list detections
-        is_test: Indicates whether it's test-module run or regular run.
     Returns:
         Host list detections assets
     """
@@ -2988,8 +2987,10 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
     if not set_new_limit:
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
 
-        assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (
-            host_list_assets and not is_test) else []
+        if host_list_assets:
+            assets, set_new_limit = get_detections_from_hosts(host_list_assets)
+        else:
+            assets, set_new_limit = [], True
         demisto.debug(f'Parsed detections from hosts, created {len(assets)=} assets.')
 
         if not set_new_limit:
@@ -3210,7 +3211,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
             )
         if is_fetch_assets:
             since_datetime = arg_to_datetime('1 hour').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-            get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, is_test=True)
+            get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1)
     else:
         build_args_dict({'launched_after_datetime': TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
         client.command_http_request(COMMANDS_API_DATA["test-module"])
