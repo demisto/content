@@ -3001,3 +3001,382 @@ Retrieves the code errors detected by Application Security during periodic scans
 | PrismaCloud.CodeIssue.resourceId | String | The identifier of the resource related to the code issue. | 
 | PrismaCloud.CodeIssue.riskFactors | String | Risk factors associated with the code issue, such as high-impact areas or sensitive data. | 
 | PrismaCloud.CodeIssue.isIndirectPackage | String | Indicates whether the issue is from an indirect package \(true/false\). | 
+
+### prisma-cloud-asset-findings-get
+
+***
+Returns detailed information for the asset findings with the given id.
+
+#### Base Command
+
+`prisma-cloud-asset-findings-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Unified Asset Id or RRN (Restricted Resource Name). | Required | 
+| finding_type | External Finding Types. Possible values are: COMPLIANCE_CIS, GUARD_DUTY_HOST, GUARD_DUTY_IAM, INSPECTOR_RBA, INSPECTOR_SBP, NETWORK_REACHABILITY, AZURE_SECURITY_CENTER_ALERTS, UNCLASSIFIED, COMMAND_AND_CONTROL, CREDENTIAL_ACCESS, CROSS_ACCOUNT_TRUST, DATA_EXFILTRATION, DEFENSE_EVASION, DISCOVERY, HIGH_PRIVILEGED_ROLE, INITIAL_ACCESS, INTERNET_EXPOSURE, KEYS_AND_SECRETS, LATERAL_MOVEMENT, MALWARE, MFA, MISCONFIGURATION, NETWORK_ANOMALY, PRIVILEGE_ESCALATION, RECONNAISSANCE, RESOURCE_HIJACKING, SSH_BRUTE_FORCE, UNAUTHORIZED_ACCESS, UNENCRYPTED_DATA, UNUSED_PRIVILEGES, USER_ANOMALY, WEAK_PASSWORD, SENSITIVE_DATA_EXPOSURE, INJECTIONS, VULNERABILITY_SCANNING, SHELLSHOCK, KNOWN_BOTS, UNKNOWN_BOTS, VIRTUAL_PATCHES, WEB_ATTACK, BOT_ACTIVITY, WEB_SCRAPING, CUSTOM, VULNERABILITY, HOST_VULNERABILITY_CVE, CONTAINER_IMAGE_VULNERABILITY_CVE, VIRTUAL_IMAGE_VULNERABILITY_CVE, SERVERLESS_VULNERABILITY, PACKAGE_VULNERABILITY. | Optional | 
+| risk_factors | External finding risk factors. Possible values are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE, DOS_LOW, DOS_HIGH, EXPLOIT_EXISTS_IN_THE_WILD, EXPLOIT_EXISTS_POC, SENSITIVE_INFORMATION, ROOT_MOUNT, RUNTIME_SOCKET, HOST_ACCESS. | Optional | 
+| timeline_item_id | Timeline Item ID. | Optional | 
+| alert_ids | List of Alert Ids. | Optional | 
+| limit | Limit number of records. | Optional | 
+| permission_type | Permissions Type. | Optional | 
+| page_token | Next Page Token. | Optional | 
+| prisma_cloud_findings_only | Filter Hyperion Findings. Possible values are: true, false. | Optional | 
+| vulnerability_info_type_id | CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls. | Optional | 
+| vulnerability_info_type | Supported Vuln Info Types: Package, layer and CVE. Possible values are: CVE, PACKAGE, LAYER. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.AssetFindings.problem.title | String |  | 
+| PrismaCloud.AssetFindings.problem.status.statusCode | Number |  | 
+| PrismaCloud.AssetFindings.problem.status.reasonPhrase | String |  | 
+| PrismaCloud.AssetFindings.problem.detail | String |  | 
+| PrismaCloud.AssetFindings.problem.instance | String |  | 
+| PrismaCloud.AssetFindings.problem.type | String |  | 
+| PrismaCloud.AssetFindings.problem.parameters | Unknown |  | 
+| PrismaCloud.AssetFindings.accountId | String |  | 
+| PrismaCloud.AssetFindings.count | String |  | 
+| PrismaCloud.AssetFindings.createdOn | Number |  | 
+| PrismaCloud.AssetFindings.customerId | Number |  | 
+| PrismaCloud.AssetFindings.cveId | String |  | 
+| PrismaCloud.AssetFindings.description | String |  | 
+| PrismaCloud.AssetFindings.externalId | Number |  | 
+| PrismaCloud.AssetFindings.id | String |  | 
+| PrismaCloud.AssetFindings.normalizedName | String |  | 
+| PrismaCloud.AssetFindings.normalizedNames | String |  | 
+| PrismaCloud.AssetFindings.nvdUrl | String |  | 
+| PrismaCloud.AssetFindings.link | String |  | 
+| PrismaCloud.AssetFindings.rawData | String |  | 
+| PrismaCloud.AssetFindings.regionId | String |  | 
+| PrismaCloud.AssetFindings.resourceCloudId | String |  | 
+| PrismaCloud.AssetFindings.resourceId | Number |  | 
+| PrismaCloud.AssetFindings.resourceUrl | String |  | 
+| PrismaCloud.AssetFindings.riskFactors | String |  | 
+| PrismaCloud.AssetFindings.rlUpdatedOn | Number |  | 
+| PrismaCloud.AssetFindings.scanId | String |  | 
+| PrismaCloud.AssetFindings.score | String |  | 
+| PrismaCloud.AssetFindings.severity | String |  | 
+| PrismaCloud.AssetFindings.source | String |  | 
+| PrismaCloud.AssetFindings.sourceData | Unknown |  | 
+| PrismaCloud.AssetFindings.status | String |  | 
+| PrismaCloud.AssetFindings.title | String |  | 
+| PrismaCloud.AssetFindings.type | String |  | 
+| PrismaCloud.AssetFindings.packageName | String |  | 
+| PrismaCloud.AssetFindings.updatedOn | Number |  | 
+
+### prisma-cloud-asset-relationships-get
+
+***
+Returns detailed information for the asset relationships with the given id.
+
+#### Base Command
+
+`prisma-cloud-asset-relationships-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Unified Asset Id or RRN (Restricted Resource Name). | Required | 
+| finding_type | External Finding Types. Possible values are: COMPLIANCE_CIS, GUARD_DUTY_HOST, GUARD_DUTY_IAM, INSPECTOR_RBA, INSPECTOR_SBP, NETWORK_REACHABILITY, AZURE_SECURITY_CENTER_ALERTS, UNCLASSIFIED, COMMAND_AND_CONTROL, CREDENTIAL_ACCESS, CROSS_ACCOUNT_TRUST, DATA_EXFILTRATION, DEFENSE_EVASION, DISCOVERY, HIGH_PRIVILEGED_ROLE, INITIAL_ACCESS, INTERNET_EXPOSURE, KEYS_AND_SECRETS, LATERAL_MOVEMENT, MALWARE, MFA, MISCONFIGURATION, NETWORK_ANOMALY, PRIVILEGE_ESCALATION, RECONNAISSANCE, RESOURCE_HIJACKING, SSH_BRUTE_FORCE, UNAUTHORIZED_ACCESS, UNENCRYPTED_DATA, UNUSED_PRIVILEGES, USER_ANOMALY, WEAK_PASSWORD, SENSITIVE_DATA_EXPOSURE, INJECTIONS, VULNERABILITY_SCANNING, SHELLSHOCK, KNOWN_BOTS, UNKNOWN_BOTS, VIRTUAL_PATCHES, WEB_ATTACK, BOT_ACTIVITY, WEB_SCRAPING, CUSTOM, VULNERABILITY, HOST_VULNERABILITY_CVE, CONTAINER_IMAGE_VULNERABILITY_CVE, VIRTUAL_IMAGE_VULNERABILITY_CVE, SERVERLESS_VULNERABILITY, PACKAGE_VULNERABILITY. | Optional | 
+| risk_factors | External finding risk factors. Possible values are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE, DOS_LOW, DOS_HIGH, EXPLOIT_EXISTS_IN_THE_WILD, EXPLOIT_EXISTS_POC, SENSITIVE_INFORMATION, ROOT_MOUNT, RUNTIME_SOCKET, HOST_ACCESS. | Optional | 
+| timeline_item_id | Timeline Item ID. | Optional | 
+| alert_ids | List of Alert Ids. | Optional | 
+| limit | Limit number of records. | Optional | 
+| permission_type | Permissions Type. | Optional | 
+| page_token | Next Page Token. | Optional | 
+| prisma_cloud_findings_only | Filter Hyperion Findings. Possible values are: true, false. | Optional | 
+| vulnerability_info_type_id | CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls. | Optional | 
+| vulnerability_info_type | Supported Vuln Info Types: Package, layer and CVE. Possible values are: CVE, PACKAGE, LAYER. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.AssetRelationships.assetId | String |  | 
+| PrismaCloud.AssetRelationships.relationshipType | String |  | 
+| PrismaCloud.AssetRelationships.assetTypeId | Number |  | 
+| PrismaCloud.AssetRelationships.assetType | String |  | 
+| PrismaCloud.AssetRelationships.assetName | String |  | 
+| PrismaCloud.AssetRelationships.externalAssetId | String |  | 
+| PrismaCloud.AssetRelationships.cloudId | String |  | 
+| PrismaCloud.AssetRelationships.cloudName | String |  | 
+| PrismaCloud.AssetRelationships.pseudoAsset | Boolean |  | 
+| PrismaCloud.AssetRelationships.region | String |  | 
+| PrismaCloud.AssetRelationships.cloudAccountId | String |  | 
+| PrismaCloud.AssetRelationships.assetClassId | String |  | 
+| PrismaCloud.AssetRelationships.assetClass | String |  | 
+| PrismaCloud.AssetRelationships.alertsCount.severity | String |  | 
+| PrismaCloud.AssetRelationships.alertsCount.count | Number |  | 
+| PrismaCloud.AssetRelationships.alertCountBySeverity.severity | String |  | 
+| PrismaCloud.AssetRelationships.alertCountBySeverity.count | Number |  | 
+| PrismaCloud.AssetRelationships.vulnerabilityCounts | Unknown |  | 
+| PrismaCloud.AssetRelationships.problem.title | String |  | 
+| PrismaCloud.AssetRelationships.problem.status.statusCode | Number |  | 
+| PrismaCloud.AssetRelationships.problem.status.reasonPhrase | String |  | 
+| PrismaCloud.AssetRelationships.problem.detail | String |  | 
+| PrismaCloud.AssetRelationships.problem.instance | String |  | 
+| PrismaCloud.AssetRelationships.problem.type | String |  | 
+| PrismaCloud.AssetRelationships.problem.parameters | Unknown |  | 
+
+### prisma-cloud-asset-network-get
+
+***
+Returns detailed information for the asset network with the given id.
+
+#### Base Command
+
+`prisma-cloud-asset-network-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Unified Asset Id or RRN (Restricted Resource Name). | Required | 
+| finding_type | External Finding Types. Possible values are: COMPLIANCE_CIS, GUARD_DUTY_HOST, GUARD_DUTY_IAM, INSPECTOR_RBA, INSPECTOR_SBP, NETWORK_REACHABILITY, AZURE_SECURITY_CENTER_ALERTS, UNCLASSIFIED, COMMAND_AND_CONTROL, CREDENTIAL_ACCESS, CROSS_ACCOUNT_TRUST, DATA_EXFILTRATION, DEFENSE_EVASION, DISCOVERY, HIGH_PRIVILEGED_ROLE, INITIAL_ACCESS, INTERNET_EXPOSURE, KEYS_AND_SECRETS, LATERAL_MOVEMENT, MALWARE, MFA, MISCONFIGURATION, NETWORK_ANOMALY, PRIVILEGE_ESCALATION, RECONNAISSANCE, RESOURCE_HIJACKING, SSH_BRUTE_FORCE, UNAUTHORIZED_ACCESS, UNENCRYPTED_DATA, UNUSED_PRIVILEGES, USER_ANOMALY, WEAK_PASSWORD, SENSITIVE_DATA_EXPOSURE, INJECTIONS, VULNERABILITY_SCANNING, SHELLSHOCK, KNOWN_BOTS, UNKNOWN_BOTS, VIRTUAL_PATCHES, WEB_ATTACK, BOT_ACTIVITY, WEB_SCRAPING, CUSTOM, VULNERABILITY, HOST_VULNERABILITY_CVE, CONTAINER_IMAGE_VULNERABILITY_CVE, VIRTUAL_IMAGE_VULNERABILITY_CVE, SERVERLESS_VULNERABILITY, PACKAGE_VULNERABILITY. | Optional | 
+| risk_factors | External finding risk factors. Possible values are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE, DOS_LOW, DOS_HIGH, EXPLOIT_EXISTS_IN_THE_WILD, EXPLOIT_EXISTS_POC, SENSITIVE_INFORMATION, ROOT_MOUNT, RUNTIME_SOCKET, HOST_ACCESS. | Optional | 
+| timeline_item_id | Timeline Item ID. | Optional | 
+| alert_ids | List of Alert Ids. | Optional | 
+| limit | Limit number of records. | Optional | 
+| permission_type | Permissions Type. | Optional | 
+| page_token | Next Page Token. | Optional | 
+| prisma_cloud_findings_only | Filter Hyperion Findings. Possible values are: true, false. | Optional | 
+| vulnerability_info_type_id | CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls. | Optional | 
+| vulnerability_info_type | Supported Vuln Info Types: Package, layer and CVE. Possible values are: CVE, PACKAGE, LAYER. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.AssetNetwork.problem.title | String |  | 
+| PrismaCloud.AssetNetwork.problem.status.statusCode | Number |  | 
+| PrismaCloud.AssetNetwork.problem.status.reasonPhrase | String |  | 
+| PrismaCloud.AssetNetwork.problem.detail | String |  | 
+| PrismaCloud.AssetNetwork.problem.instance | String |  | 
+| PrismaCloud.AssetNetwork.problem.type | String |  | 
+| PrismaCloud.AssetNetwork.problem.parameters | Unknown |  | 
+| PrismaCloud.AssetNetwork.id | Number |  | 
+| PrismaCloud.AssetNetwork.access | String |  | 
+| PrismaCloud.AssetNetwork.direction | String |  | 
+| PrismaCloud.AssetNetwork.ips | String |  | 
+| PrismaCloud.AssetNetwork.ports | String |  | 
+| PrismaCloud.AssetNetwork.protocol | String |  | 
+| PrismaCloud.AssetNetwork.priority | Number |  | 
+
+### prisma-cloud-asset-alerts-get
+
+***
+Returns detailed information for the asset alerts with the given id.
+
+#### Base Command
+
+`prisma-cloud-asset-alerts-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Unified Asset Id or RRN (Restricted Resource Name). | Required | 
+| finding_type | External Finding Types. Possible values are: COMPLIANCE_CIS, GUARD_DUTY_HOST, GUARD_DUTY_IAM, INSPECTOR_RBA, INSPECTOR_SBP, NETWORK_REACHABILITY, AZURE_SECURITY_CENTER_ALERTS, UNCLASSIFIED, COMMAND_AND_CONTROL, CREDENTIAL_ACCESS, CROSS_ACCOUNT_TRUST, DATA_EXFILTRATION, DEFENSE_EVASION, DISCOVERY, HIGH_PRIVILEGED_ROLE, INITIAL_ACCESS, INTERNET_EXPOSURE, KEYS_AND_SECRETS, LATERAL_MOVEMENT, MALWARE, MFA, MISCONFIGURATION, NETWORK_ANOMALY, PRIVILEGE_ESCALATION, RECONNAISSANCE, RESOURCE_HIJACKING, SSH_BRUTE_FORCE, UNAUTHORIZED_ACCESS, UNENCRYPTED_DATA, UNUSED_PRIVILEGES, USER_ANOMALY, WEAK_PASSWORD, SENSITIVE_DATA_EXPOSURE, INJECTIONS, VULNERABILITY_SCANNING, SHELLSHOCK, KNOWN_BOTS, UNKNOWN_BOTS, VIRTUAL_PATCHES, WEB_ATTACK, BOT_ACTIVITY, WEB_SCRAPING, CUSTOM, VULNERABILITY, HOST_VULNERABILITY_CVE, CONTAINER_IMAGE_VULNERABILITY_CVE, VIRTUAL_IMAGE_VULNERABILITY_CVE, SERVERLESS_VULNERABILITY, PACKAGE_VULNERABILITY. | Optional | 
+| risk_factors | External finding risk factors. Possible values are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE, DOS_LOW, DOS_HIGH, EXPLOIT_EXISTS_IN_THE_WILD, EXPLOIT_EXISTS_POC, SENSITIVE_INFORMATION, ROOT_MOUNT, RUNTIME_SOCKET, HOST_ACCESS. | Optional | 
+| timeline_item_id | Timeline Item ID. | Optional | 
+| alert_ids | List of Alert Ids. | Optional | 
+| limit | Limit number of records. | Optional | 
+| permission_type | Permissions Type. | Optional | 
+| page_token | Next Page Token. | Optional | 
+| prisma_cloud_findings_only | Filter Hyperion Findings. Possible values are: true, false. | Optional | 
+| vulnerability_info_type_id | CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls. | Optional | 
+| vulnerability_info_type | Supported Vuln Info Types: Package, layer and CVE. Possible values are: CVE, PACKAGE, LAYER. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.AssetAlerts.problem.title | String |  | 
+| PrismaCloud.AssetAlerts.problem.status.statusCode | Number |  | 
+| PrismaCloud.AssetAlerts.problem.status.reasonPhrase | String |  | 
+| PrismaCloud.AssetAlerts.problem.detail | String |  | 
+| PrismaCloud.AssetAlerts.problem.instance | String |  | 
+| PrismaCloud.AssetAlerts.problem.type | String |  | 
+| PrismaCloud.AssetAlerts.problem.parameters | Unknown |  | 
+| PrismaCloud.AssetAlerts.id | String |  | 
+| PrismaCloud.AssetAlerts.severity | String |  | 
+| PrismaCloud.AssetAlerts.policyId | String |  | 
+| PrismaCloud.AssetAlerts.isHyperionPolicy | Boolean |  | 
+| PrismaCloud.AssetAlerts.policyType | String |  | 
+| PrismaCloud.AssetAlerts.policyName | String |  | 
+| PrismaCloud.AssetAlerts.policyDescription | String |  | 
+| PrismaCloud.AssetAlerts.alertTime | Number |  | 
+
+### prisma-cloud-asset-get
+
+***
+Returns detailed information for the asset with the given id.
+
+#### Base Command
+
+`prisma-cloud-asset-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Unified Asset Id or RRN (Restricted Resource Name). | Required | 
+| finding_type | External Finding Types. Possible values are: COMPLIANCE_CIS, GUARD_DUTY_HOST, GUARD_DUTY_IAM, INSPECTOR_RBA, INSPECTOR_SBP, NETWORK_REACHABILITY, AZURE_SECURITY_CENTER_ALERTS, UNCLASSIFIED, COMMAND_AND_CONTROL, CREDENTIAL_ACCESS, CROSS_ACCOUNT_TRUST, DATA_EXFILTRATION, DEFENSE_EVASION, DISCOVERY, HIGH_PRIVILEGED_ROLE, INITIAL_ACCESS, INTERNET_EXPOSURE, KEYS_AND_SECRETS, LATERAL_MOVEMENT, MALWARE, MFA, MISCONFIGURATION, NETWORK_ANOMALY, PRIVILEGE_ESCALATION, RECONNAISSANCE, RESOURCE_HIJACKING, SSH_BRUTE_FORCE, UNAUTHORIZED_ACCESS, UNENCRYPTED_DATA, UNUSED_PRIVILEGES, USER_ANOMALY, WEAK_PASSWORD, SENSITIVE_DATA_EXPOSURE, INJECTIONS, VULNERABILITY_SCANNING, SHELLSHOCK, KNOWN_BOTS, UNKNOWN_BOTS, VIRTUAL_PATCHES, WEB_ATTACK, BOT_ACTIVITY, WEB_SCRAPING, CUSTOM, VULNERABILITY, HOST_VULNERABILITY_CVE, CONTAINER_IMAGE_VULNERABILITY_CVE, VIRTUAL_IMAGE_VULNERABILITY_CVE, SERVERLESS_VULNERABILITY, PACKAGE_VULNERABILITY. | Optional | 
+| risk_factors | External finding risk factors. Possible values are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE, DOS_LOW, DOS_HIGH, EXPLOIT_EXISTS_IN_THE_WILD, EXPLOIT_EXISTS_POC, SENSITIVE_INFORMATION, ROOT_MOUNT, RUNTIME_SOCKET, HOST_ACCESS. | Optional | 
+| timeline_item_id | Timeline Item ID. | Optional | 
+| alert_ids | List of Alert Ids. | Optional | 
+| limit | Limit number of records. | Optional | 
+| permission_type | Permissions Type. | Optional | 
+| page_token | Next Page Token. | Optional | 
+| prisma_cloud_findings_only | Filter Hyperion Findings. Possible values are: true, false. | Optional | 
+| vulnerability_info_type_id | CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls. | Optional | 
+| vulnerability_info_type | Supported Vuln Info Types: Package, layer and CVE. Possible values are: CVE, PACKAGE, LAYER. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.Asset.problem.title | String |  | 
+| PrismaCloud.Asset.problem.status.statusCode | Number |  | 
+| PrismaCloud.Asset.problem.status.reasonPhrase | String |  | 
+| PrismaCloud.Asset.problem.detail | String |  | 
+| PrismaCloud.Asset.problem.instance | String |  | 
+| PrismaCloud.Asset.problem.type | String |  | 
+| PrismaCloud.Asset.problem.parameters | Unknown |  | 
+| PrismaCloud.Asset.id | String |  | 
+| PrismaCloud.Asset.prismaId | String |  | 
+| PrismaCloud.Asset.appName | String |  | 
+| PrismaCloud.Asset.externalAssetId | String |  | 
+| PrismaCloud.Asset.assetTypeId | Number |  | 
+| PrismaCloud.Asset.cloudType | String |  | 
+| PrismaCloud.Asset.createdTs | Number |  | 
+| PrismaCloud.Asset.insertTs | Number |  | 
+| PrismaCloud.Asset.data | Unknown |  | 
+| PrismaCloud.Asset.dynamicData | Unknown |  | 
+| PrismaCloud.Asset.riskGrade | String |  | 
+| PrismaCloud.Asset.stateId | String |  | 
+| PrismaCloud.Asset.name | String |  | 
+| PrismaCloud.Asset.regionId | String |  | 
+| PrismaCloud.Asset.regionName | String |  | 
+| PrismaCloud.Asset.altAssetId | String |  | 
+| PrismaCloud.Asset.url | String |  | 
+| PrismaCloud.Asset.vpcId | String |  | 
+| PrismaCloud.Asset.vpcExternalAssetId | String |  | 
+| PrismaCloud.Asset.vpcName | String |  | 
+| PrismaCloud.Asset.tags | Unknown |  | 
+| PrismaCloud.Asset.relationshipCounts | Number |  | 
+| PrismaCloud.Asset.vulnerabilityCounts | Unknown |  | 
+| PrismaCloud.Asset.accountName | String |  | 
+| PrismaCloud.Asset.assetType | String |  | 
+| PrismaCloud.Asset.serviceName | String |  | 
+| PrismaCloud.Asset.resourceType | String |  | 
+| PrismaCloud.Asset.deleted | Boolean |  | 
+| PrismaCloud.Asset.assetClassId | String |  | 
+| PrismaCloud.Asset.assetClass | String |  | 
+| PrismaCloud.Asset.attributes | Unknown |  | 
+| PrismaCloud.Asset.alertsCount.severity | String |  | 
+| PrismaCloud.Asset.alertsCount.count | Number |  | 
+| PrismaCloud.Asset.ipAddresses | String |  | 
+| PrismaCloud.Asset.trueInternetExposure | String |  | 
+| PrismaCloud.Asset.dataSecurity | Unknown |  | 
+
+### prisma-cloud-asset-vulnerabilities-get
+
+***
+Returns detailed information for the asset vulnerabilities with the given id.
+
+#### Base Command
+
+`prisma-cloud-asset-vulnerabilities-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Unified Asset Id or RRN (Restricted Resource Name). | Required | 
+| finding_type | External Finding Types. Possible values are: COMPLIANCE_CIS, GUARD_DUTY_HOST, GUARD_DUTY_IAM, INSPECTOR_RBA, INSPECTOR_SBP, NETWORK_REACHABILITY, AZURE_SECURITY_CENTER_ALERTS, UNCLASSIFIED, COMMAND_AND_CONTROL, CREDENTIAL_ACCESS, CROSS_ACCOUNT_TRUST, DATA_EXFILTRATION, DEFENSE_EVASION, DISCOVERY, HIGH_PRIVILEGED_ROLE, INITIAL_ACCESS, INTERNET_EXPOSURE, KEYS_AND_SECRETS, LATERAL_MOVEMENT, MALWARE, MFA, MISCONFIGURATION, NETWORK_ANOMALY, PRIVILEGE_ESCALATION, RECONNAISSANCE, RESOURCE_HIJACKING, SSH_BRUTE_FORCE, UNAUTHORIZED_ACCESS, UNENCRYPTED_DATA, UNUSED_PRIVILEGES, USER_ANOMALY, WEAK_PASSWORD, SENSITIVE_DATA_EXPOSURE, INJECTIONS, VULNERABILITY_SCANNING, SHELLSHOCK, KNOWN_BOTS, UNKNOWN_BOTS, VIRTUAL_PATCHES, WEB_ATTACK, BOT_ACTIVITY, WEB_SCRAPING, CUSTOM, VULNERABILITY, HOST_VULNERABILITY_CVE, CONTAINER_IMAGE_VULNERABILITY_CVE, VIRTUAL_IMAGE_VULNERABILITY_CVE, SERVERLESS_VULNERABILITY, PACKAGE_VULNERABILITY. | Optional | 
+| risk_factors | External finding risk factors. Possible values are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE, DOS_LOW, DOS_HIGH, EXPLOIT_EXISTS_IN_THE_WILD, EXPLOIT_EXISTS_POC, SENSITIVE_INFORMATION, ROOT_MOUNT, RUNTIME_SOCKET, HOST_ACCESS. | Optional | 
+| timeline_item_id | Timeline Item ID. | Optional | 
+| alert_ids | List of Alert Ids. | Optional | 
+| limit | Limit number of records. | Optional | 
+| permission_type | Permissions Type. | Optional | 
+| page_token | Next Page Token. | Optional | 
+| prisma_cloud_findings_only | Filter Hyperion Findings. Possible values are: true, false. | Optional | 
+| vulnerability_info_type_id | CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls. | Optional | 
+| vulnerability_info_type | Supported Vuln Info Types: Package, layer and CVE. Possible values are: CVE, PACKAGE, LAYER. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.AssetVulnerabilities.problem.title | String |  | 
+| PrismaCloud.AssetVulnerabilities.problem.status.statusCode | Number |  | 
+| PrismaCloud.AssetVulnerabilities.problem.status.reasonPhrase | String |  | 
+| PrismaCloud.AssetVulnerabilities.problem.detail | String |  | 
+| PrismaCloud.AssetVulnerabilities.problem.instance | String |  | 
+| PrismaCloud.AssetVulnerabilities.problem.type | String |  | 
+| PrismaCloud.AssetVulnerabilities.problem.parameters | Unknown |  | 
+| PrismaCloud.AssetVulnerabilities.accountId | String |  | 
+| PrismaCloud.AssetVulnerabilities.count | String |  | 
+| PrismaCloud.AssetVulnerabilities.createdOn | Number |  | 
+| PrismaCloud.AssetVulnerabilities.customerId | Number |  | 
+| PrismaCloud.AssetVulnerabilities.cveId | String |  | 
+| PrismaCloud.AssetVulnerabilities.description | String |  | 
+| PrismaCloud.AssetVulnerabilities.externalId | Number |  | 
+| PrismaCloud.AssetVulnerabilities.id | String |  | 
+| PrismaCloud.AssetVulnerabilities.normalizedName | String |  | 
+| PrismaCloud.AssetVulnerabilities.normalizedNames | String |  | 
+| PrismaCloud.AssetVulnerabilities.nvdUrl | String |  | 
+| PrismaCloud.AssetVulnerabilities.link | String |  | 
+| PrismaCloud.AssetVulnerabilities.rawData | String |  | 
+| PrismaCloud.AssetVulnerabilities.regionId | String |  | 
+| PrismaCloud.AssetVulnerabilities.resourceCloudId | String |  | 
+| PrismaCloud.AssetVulnerabilities.resourceId | Number |  | 
+| PrismaCloud.AssetVulnerabilities.resourceUrl | String |  | 
+| PrismaCloud.AssetVulnerabilities.riskFactors | String |  | 
+| PrismaCloud.AssetVulnerabilities.rlUpdatedOn | Number |  | 
+| PrismaCloud.AssetVulnerabilities.scanId | String |  | 
+| PrismaCloud.AssetVulnerabilities.score | String |  | 
+| PrismaCloud.AssetVulnerabilities.severity | String |  | 
+| PrismaCloud.AssetVulnerabilities.source | String |  | 
+| PrismaCloud.AssetVulnerabilities.sourceData | Unknown |  | 
+| PrismaCloud.AssetVulnerabilities.status | String |  | 
+| PrismaCloud.AssetVulnerabilities.title | String |  | 
+| PrismaCloud.AssetVulnerabilities.type | String |  | 
+| PrismaCloud.AssetVulnerabilities.packageName | String |  | 
+| PrismaCloud.AssetVulnerabilities.updatedOn | Number |  | 
+
+### prisma-cloud-asset-generic-get
+
+***
+Returns detailed information for the asset with the given id.
+
+#### Base Command
+
+`prisma-cloud-asset-generic-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Unified Asset Id or RRN (Restricted Resource Name). | Required | 
+| type | Asset Domain Service query type. Possible values are: external_finding, asset, asset_lite, alerts, alerts_counts, alert_summary, finding_summary, attack_path, attack_path_summary, raw_config, network, timeline, external_integration, asset_data_indicators, relationships, findings, vulnerabilities, permissions, package_info, labels, vulnerability_aggregates, process_info, vulnerabilities_group_by_type, asset_cwp_vulns, app_contexts, attributes, data_security, data_security_summary. Default is asset. | Required | 
+| finding_type | External Finding Types. Possible values are: COMPLIANCE_CIS, GUARD_DUTY_HOST, GUARD_DUTY_IAM, INSPECTOR_RBA, INSPECTOR_SBP, NETWORK_REACHABILITY, AZURE_SECURITY_CENTER_ALERTS, UNCLASSIFIED, COMMAND_AND_CONTROL, CREDENTIAL_ACCESS, CROSS_ACCOUNT_TRUST, DATA_EXFILTRATION, DEFENSE_EVASION, DISCOVERY, HIGH_PRIVILEGED_ROLE, INITIAL_ACCESS, INTERNET_EXPOSURE, KEYS_AND_SECRETS, LATERAL_MOVEMENT, MALWARE, MFA, MISCONFIGURATION, NETWORK_ANOMALY, PRIVILEGE_ESCALATION, RECONNAISSANCE, RESOURCE_HIJACKING, SSH_BRUTE_FORCE, UNAUTHORIZED_ACCESS, UNENCRYPTED_DATA, UNUSED_PRIVILEGES, USER_ANOMALY, WEAK_PASSWORD, SENSITIVE_DATA_EXPOSURE, INJECTIONS, VULNERABILITY_SCANNING, SHELLSHOCK, KNOWN_BOTS, UNKNOWN_BOTS, VIRTUAL_PATCHES, WEB_ATTACK, BOT_ACTIVITY, WEB_SCRAPING, CUSTOM, VULNERABILITY, HOST_VULNERABILITY_CVE, CONTAINER_IMAGE_VULNERABILITY_CVE, VIRTUAL_IMAGE_VULNERABILITY_CVE, SERVERLESS_VULNERABILITY, PACKAGE_VULNERABILITY. | Optional | 
+| risk_factors | External finding risk factors. Possible values are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE, DOS_LOW, DOS_HIGH, EXPLOIT_EXISTS_IN_THE_WILD, EXPLOIT_EXISTS_POC, SENSITIVE_INFORMATION, ROOT_MOUNT, RUNTIME_SOCKET, HOST_ACCESS. | Optional | 
+| timeline_item_id | Timeline Item ID. | Optional | 
+| alert_ids | List of Alert Ids. | Optional | 
+| limit | Limit number of records. | Optional | 
+| permission_type | Permissions Type. | Optional | 
+| page_token | Next Page Token. | Optional | 
+| prisma_cloud_findings_only | Filter Hyperion Findings. Possible values are: true, false. | Optional | 
+| vulnerability_info_type_id | CVE Id, or Package Id or Layer Id. The value needs to be fetched from one of the group by api calls. | Optional | 
+| vulnerability_info_type | Supported Vuln Info Types: Package, layer and CVE. Possible values are: CVE, PACKAGE, LAYER. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
