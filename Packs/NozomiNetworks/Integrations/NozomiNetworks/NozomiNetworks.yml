@@ -71,10 +71,10 @@ configuration:
   required: false
 - display: Incidents per run
   name: incidentPerRun
-  defaultvalue: '20'
+  defaultvalue: '100'
   type: 0
   required: false
-  additionalinfo: Specifies the maximum number of incidents to retrieve during each fetch operation. This value determines the size of the result set fetched from the source system. Default is 20.
+  additionalinfo: Specifies the maximum number of incidents to retrieve during each fetch operation. This value determines the size of the result set fetched from the source system. Default is 100.
 script:
   script: ''
   type: python
