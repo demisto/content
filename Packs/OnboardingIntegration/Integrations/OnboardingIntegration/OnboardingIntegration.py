@@ -628,7 +628,6 @@ def generate_incidents(last_run):
     return num_of_incident_to_create, incidents
 
 
-
 '''MAIN FUNCTIONS'''
 
 
