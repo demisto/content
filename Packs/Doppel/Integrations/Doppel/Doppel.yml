@@ -41,6 +41,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  - None
   required: false
   type: 15
 - additionalinfo: For the first time fetch (or on reset of "Last Run" timestamp),
