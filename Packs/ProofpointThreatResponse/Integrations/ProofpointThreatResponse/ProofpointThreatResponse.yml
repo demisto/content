@@ -712,7 +712,7 @@ script:
     - description: 'The creation time of the incident in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z.'
       name: time
       required: true
-    - description: Retrieve alerts the the time difference between their delivery time and quarantined time is less then the specified. The time is in seconds.
+    - description: Retrieve alerts which the time difference between their delivery time and quarantined time is less then the specified. The time is in seconds.
       name: delivery_quarantined_limit
       required: false
       defaultValue: '120'

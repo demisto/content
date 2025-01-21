@@ -450,9 +450,9 @@ Verify if an email has been quarantined.
 | **Argument Name** | **Description**                           | **Required** |
 |-------------------|-------------------------------------------| --- |
 | message_id        | The ID value of an email.                  | True | 
-| time              | The incident created time (ISO8601 format).      | True | 
+| time              | The creation time of the incident in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | True | 
 | recipient         | The email recipient. | True | 
-| delivery_quarantined_limit | The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. If not provided, will use the value if the time argument. | False |
+| delivery_quarantined_limit | Retrieve alerts which the time difference between their delivery time and quarantined time is less then the specified. The time is in seconds. Default behavior is 120  | False |
 | mail_delivered_time | The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. If not provided, will use the value if the time argument. | False|
 
 
