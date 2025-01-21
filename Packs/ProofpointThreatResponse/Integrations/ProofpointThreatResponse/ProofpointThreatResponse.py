@@ -800,13 +800,16 @@ def format_datetime(date) -> int | None:
 def search_quarantine():
     args = demisto.args()
     arg_time = dateparser.parse(args.get('time'))
+    demisto.debug(f"{arg_time=}")
     incidentTAPtime = format_datetime(arg_time)
+    demisto.debug(f"{incidentTAPtime=}")
     lstAlert = []
     mid = args.get('message_id')
     recipient = args.get('recipient')
     mail_delivered_time = dateparser.parse(args.get('mail_delivered_time'))
     emailTAPtime = format_datetime(mail_delivered_time) if mail_delivered_time else None
     delivery_quarantined_limit = arg_to_number(args.get('delivery_quarantined_limit', 120))
+    demisto.debug(f"{mid=}, {recipient=}, {mail_delivered_time=}, {emailTAPtime=}, {delivery_quarantined_limit=}")
 
     request_params = {
         'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
@@ -821,7 +824,9 @@ def search_quarantine():
 
     # Collecting emails inside alert to find those with same recipient and messageId
     for incident in incidents_list:
+        demisto.debug(f"{incident=}")
         for alert in incident.get('events'):
+            demisto.debug(f"{alert=}")
             for email in alert.get('emails'):
                 message_delivery_time = email.get('messageDeliveryTime', {})
                 demisto.debug(f'PTR: Got {message_delivery_time=} with type {type(message_delivery_time)}')
