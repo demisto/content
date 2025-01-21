@@ -93,7 +93,7 @@ name: Doppel
 script:
   commands:
   - arguments:
-    - description: The ID of the alert to retrieve details for
+    - description: The ID of the alert to retrieve details for.
       name: id
     - description: The alerted entity to retrieve details for
       name: entity
