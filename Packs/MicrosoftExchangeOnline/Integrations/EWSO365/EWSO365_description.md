@@ -1,4 +1,4 @@
-## Retirement of RBAC Application Impersonation
+## Important note: Retirement of RBAC Application Impersonation
 
 As of February 2025, the Impersonation access type of the integration is deprecated by Microsoft, read about it [here](https://techcommunity.microsoft.com/blog/exchange/critical-update-applicationimpersonation-rbac-role-deprecation-in-exchange-onlin/4295762).
 To avoid disruptions, it is imperative that administrators begin transitioning their applications immediately.
