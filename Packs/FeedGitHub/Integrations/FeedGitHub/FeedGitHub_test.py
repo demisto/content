@@ -1,3 +1,5 @@
+import base64
+
 import pytest
 
 
@@ -48,7 +50,20 @@ def test_get_content_files_from_repo(mocker):
     client = mock_client()
     params = {"feedType": "IOCs", "extensions_to_fetch": ["txt"]}
     relevant_files = util_load_json("test_data/relevant-files.json")
-    return_data = util_load_json("test_data/content_files_from_repo.json")
+    return_data = {
+        "content": base64.b64encode(
+            b"2023-02-08 (WEDNESDAY) - COBALT STRIKE FROM ICEDID (BOKBOT) INFECTION\n\n"
+            b"REFERENCE:\n\n"
+            b"- https://twitter.com/Unit42_Intel/status/1623707361184477185\n\n"
+            b"NOTES:\n\n"
+            b"- IcedID infection generated using a OneNote file reported earlier today\n\n"
+            b"ICEDID TRAFFIC:\n\n"
+            b"- 80.66.88[.]143 port 80 - ehonlionetodo[.]com\n"
+            b"- GET /\n"
+            b"COBALT STRIKE TRAFFIC:\n\n"
+            b"- 167.172.154[.]189 port 80 - GET /36.ps1\n"
+        ).decode('utf-8')
+    }
     mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
     assert content_files == util_load_json(
@@ -88,7 +103,7 @@ def test_get_commit_files(mocker):
 def test_filter_out_files_by_status():
     """
     Given:
-     - A list of dictionaries representing commit files, each containing a status and a raw_url.
+     - A list of dictionaries representing commit files, each containing a status and a filename.
     When:
      - Filtering out files by their status using the filter_out_files_by_status function.
     Then:
@@ -97,11 +112,11 @@ def test_filter_out_files_by_status():
     from FeedGitHub import filter_out_files_by_status
 
     commits_files = [
-        {"status": "added", "raw_url": "http://example.com/file1"},
-        {"status": "modified", "raw_url": "http://example.com/file2"},
-        {"status": "removed", "raw_url": "http://example.com/file3"},
-        {"status": "renamed", "raw_url": "http://example.com/file4"},
-        {"status": "added", "raw_url": "http://example.com/file5"},
+        {"status": "added", "filename": "http://example.com/file1"},
+        {"status": "modified", "filename": "http://example.com/file2"},
+        {"status": "removed", "filename": "http://example.com/file3"},
+        {"status": "renamed", "filename": "http://example.com/file4"},
+        {"status": "added", "filename": "http://example.com/file5"},
     ]
 
     expected_output = [
