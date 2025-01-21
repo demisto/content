@@ -790,20 +790,23 @@ def close_incident_command():
 
     return_outputs(f'The incident {incident_id} was successfully closed', {}, {})
 
+def format_datetime(date) -> int | None:
+    if isinstance(date, datetime):
+        return int(date.timestamp())
+    else:
+        return_error("Timestamp was bad")
+        return None
 
 def search_quarantine():
     args = demisto.args()
     arg_time = dateparser.parse(args.get('time'))
-    emailTAPtime = 0
-    if isinstance(arg_time, datetime):
-        emailTAPtime = int(arg_time.timestamp())
-    else:
-        return_error("Timestamp was bad")
+    incidentTAPtime = format_datetime(arg_time)
     lstAlert = []
     mid = args.get('message_id')
     recipient = args.get('recipient')
-    creation_quarantined_limit = arg_to_number(args.get('creation_quarantined_limit', 120))
-    
+    mail_delivered_time = dateparser.parse(args.get('mail_delivered_time'))
+    emailTAPtime = format_datetime(mail_delivered_time) if mail_delivered_time else None
+    delivery_quarantined_limit = arg_to_number(args.get('delivery_quarantined_limit', 120))
 
     request_params = {
         'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
@@ -837,7 +840,9 @@ def search_quarantine():
                     found['mid'] = True
                     demisto.debug('PTR: Found the email, adding the alert')
                     emailTRAPtimestamp = int(message_delivery_time / 1000)
-                    if emailTAPtime == emailTRAPtimestamp:
+                    demisto.debug(f'PTR: {emailTRAPtimestamp=}, {emailTAPtime=}')
+                    if ((emailTAPtime and emailTAPtime == emailTRAPtimestamp)
+                        or (not emailTAPtime and incidentTAPtime == emailTRAPtimestamp)):
                         demisto.debug(f'PTR: Adding the alert with id {alert.get("id")}')
                         found['email'] = True
                         lstAlert.append({
@@ -861,7 +866,7 @@ def search_quarantine():
                 if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
                     diff = (tsquarantine - tsalert).total_seconds()
                     # we want to make sure quarantine starts 2 minuts after creating the alert.
-                    if creation_quarantined_limit and 0 < diff < creation_quarantined_limit:
+                    if delivery_quarantined_limit and 0 < diff < delivery_quarantined_limit:
                         demisto.debug(f'PTR: final results- Adding the quarantined alert with id {alert.get("id")}')
                         resQ.append({
                             'quarantine': quarantine,

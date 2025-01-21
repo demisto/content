@@ -709,13 +709,16 @@ script:
     - description: The recipient of the email.
       name: recipient
       required: true
-    - description: 'The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z.'
+    - description: 'The creation time of the incident in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z.'
       name: time
       required: true
-    - description: Retrieve alerts the the time difference between their creation time and quarantined time is less then the specified.
-      name: creation_quarantined_limit
+    - description: Retrieve alerts the the time difference between their delivery time and quarantined time is less then the specified. The time is in seconds.
+      name: delivery_quarantined_limit
       required: false
       defaultValue: '120'
+    - description: 'The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. If not provided, will use the value if the time argument.'
+      name: mail_delivered_time
+      required: false
     outputs:
     - contextPath: ProofPointTRAP.Quarantine
       description: Results of the email quarantine operation.
