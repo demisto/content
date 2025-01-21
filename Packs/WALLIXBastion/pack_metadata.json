@@ -1,6 +1,6 @@
 {
     "name": "WALLIX Bastion",
-    "description": "Integrations for WALLIX Bastion appliances",
+    "description": "Centralized Control and Monitoring of Privileged Access to Sensitive Assets.",
     "support": "partner",
     "currentVersion": "3.1.0",
     "author": "WALLIX",
