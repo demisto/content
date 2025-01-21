@@ -66,7 +66,7 @@ script:
   subtype: python3
   isFetchSamples: true
   isfetch: true
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.11.11.1940698
   commands:
   - name: securityscorecard-portfolios-list
     description: List all Portfolios.
@@ -296,9 +296,8 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-    - name: portfolios
-      isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
+    - name: portfolio
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. 
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
       description: Alert ID.
@@ -326,9 +325,8 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-    - name: portfolios
-      isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
+    - name: portfolio
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`. 
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
       description: Alert ID.
@@ -339,13 +337,6 @@ script:
     - name: alert_id
       description: Alert ID.
       required: true
-    - name: alert_type
-      description: Type of Alert to delete.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "score"
-      - "grade"
   - name: securityscorecard-alerts-list
     description: List alerts triggered in the last week.
     arguments:
