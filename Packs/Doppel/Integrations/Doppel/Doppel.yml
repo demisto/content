@@ -95,14 +95,14 @@ script:
   - arguments:
     - description: The ID of the alert to retrieve details for.
       name: id
-    - description: The alerted entity to retrieve details for
+    - description: The alerted entity to retrieve details for.
       name: entity
     description: Retrieves the alert details by ID or entity. Must include exactly
       one of either id or entity.
     name: doppel-get-alert
     outputs:
-    - contextPath: Doppel.doppel_link
-      description: Link to the alert in the Doppel portal
+    - contextPath: Doppel.Alert
+      description: Alert details in the Doppel portal
       type: String
   - arguments:
     - description: The entity for which the alert should be created.
@@ -117,11 +117,10 @@ script:
         relevant metadata.
       type: string
   - arguments:
-    - description: The id of the alert to update
+    - description: The id of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
       name: alert_id
-    - description: The entity of the alert to update
+    - description: The entity of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
       name: entity
-      type: unknown
     - auto: PREDEFINED
       description: Status of which queue the alert is in.
       name: queue_state
@@ -132,7 +131,6 @@ script:
       - monitoring
       - taken_down
       - archived
-      type: textArea
     - auto: PREDEFINED
       description: State of the alert.
       name: entity_state
@@ -140,10 +138,8 @@ script:
       - active
       - down
       - parked
-      type: textArea
     - name: comment
-      type: textArea
-    description: Updates an alert in the Doppel platform.
+    description: Updates an alert in the Doppel platform. Either 'alert_id' or 'entity' must be specified.
     name: doppel-update-alert
     outputs:
     - contextPath: Doppel.UpdatedAlert
@@ -163,11 +159,10 @@ script:
         and other relevant metadata.
       type: string
   - arguments:
-    - description: Currently only supports search by url
+    - description: Currently only supports search by url.
       name: search_key
-      type: textArea
     - auto: PREDEFINED
-      description: New queue status to update alert with (id required)
+      description: New queue status to update alert with (id required).
       name: queue_state
       predefined:
       - actioned
@@ -187,35 +182,32 @@ script:
       - crypto
       - emails
       - paid_adds
-    - description: Filter alerts created before this date. '2024-01-05T13:45:30' --
-        Represents the 5th of January 2024, at 1:45:30 PM
+    - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. 
+        For durations, enter values like '12 hours' or '7 days'.
       name: created_before
-      type: textArea
-    - description: Filter alerts created after this date. '2024-01-05T13:45:30' --
-        Represents the 5th of January 2024, at 1:45:30 PM
+    - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. 
+        For durations, enter values like '12 hours' or '7 days'.
       name: created_after
-      type: textArea
     - auto: PREDEFINED
       description: The field to sort the reports by. Defaults to date_sourced.
+      defaultValue: date_sourced
       name: sort_type
       predefined:
       - date_sourced
       - date_last_actioned
-      type: textArea
     - auto: PREDEFINED
       description: The order to sort the reports by. Defaults to desc.
+      defaultValue: desc
       name: sort_order
       predefined:
       - asc
       - desc
-      type: textArea
-    - description: Page number for pagination; defaults to 0
+    - description: Page number for pagination; defaults to 0.
+      defaultValue: '0'
       name: page
-      type: textArea
-    - description: List of tags to filter alerts
+    - description: List of tags to filter alerts.
       isArray: true
       name: tags
-      type: textArea
     description: Retrieves a list of alerts. The result can be filtered by provided
       parameters.
     name: doppel-get-alerts
@@ -229,4 +221,6 @@ script:
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
+  ismappable:true
   runonce: false
+  fromversion: 6.0.0
