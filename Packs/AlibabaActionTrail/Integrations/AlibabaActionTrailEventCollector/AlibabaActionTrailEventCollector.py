@@ -175,7 +175,7 @@ def main():
               'query': query}
 
     demisto_params['method'] = Method.GET
-    demisto_params['url'] = f'http://{project_name}.{endpoint}:80/logstores/{logstore_name}'
+    demisto_params['url'] = f'https://{project_name}.{endpoint}:443/logstores/{logstore_name}'
     demisto_params['headers'] = headers
 
     request = IntegrationHTTPRequest(**demisto_params)
