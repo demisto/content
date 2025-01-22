@@ -111,13 +111,14 @@ def cleanup(path):
     if os.path.exists(path):
         shutil.rmtree(path)
         demisto.debug(f"Temporary directory {path} cleaned up.")
-            
+
+
 @contextmanager
 def ConstantTemporaryDirectory(path):
     """ Creates a temporary directory with a constant name. """
     os.makedirs(path, exist_ok=True)
     yield path
-    
+
 
 def log_demisto_sdk_version():
     try:
@@ -595,7 +596,7 @@ def read_pre_commit_results(pre_commit_dir: Path):
                 # 'check-ast' details value has to be treated individually as regex does not capture it properly.
                 if hook_id == 'check-ast':
                     result['details'] = stdout.splitlines()[5:]  # Trimming error metadata info (5 lines of it).
-                details = result['details'] if 'details' in result else ''
+                details = result.get("details", "")
                 results.append(
                     ValidationResult(
                         filePath=file_path,
