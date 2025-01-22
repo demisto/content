@@ -108,7 +108,8 @@ DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
 
 SEIM_EVENTS_PAGE_SIZE = 1000
 CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
-
+VENDOR = 'Absolute'
+PRODUCT = 'Secure Endpoint'
 
 class Client(BaseClient):
     def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, headers: dict, proxy: bool,
@@ -334,7 +335,7 @@ class Client(BaseClient):
 
 
 class ClientV3(BaseClient):
-    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool):
+    def __init__(self, base_url: str, token_id: str, secret_key: str, verify: bool, proxy: bool, headers: dict):
         """
         Client to use in the Absolute integration for API v3. Overrides BaseClient.
 
@@ -346,8 +347,8 @@ class ClientV3(BaseClient):
             proxy (bool): Whether the client should use proxies.
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._base_url = base_url
         self._token_id = token_id
+        self._headers = headers
         self._secret_key = secret_key
         self._jws = JsonWebSignature()
 
@@ -383,10 +384,14 @@ class ClientV3(BaseClient):
         return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
 
     def perform_request(self, signed: bytes) -> Response:
-        try:
-            return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
-        except Exception as e:
-            demisto.error(f'Failed to perform request: {e}')
+        return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
+        # return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
+        #                           return_empty_response=True)
+        # return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL, headers=self._headers)
+        # try:
+        # return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
+        # except Exception as e:
+        #     demisto.error(f'Failed to perform request: {e}')
 
     def fetch_events(self, query_string: str) -> dict:
         signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
@@ -879,7 +884,9 @@ def parse_geo_location_outputs(response):
 
 def prepare_query_string_for_fetch_events(page_size: int = None, start_date: datetime = None, end_date: datetime = None,
                                           next_page: str = None) -> str:
-    query = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+    from_date_time_utc = f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+    to_date_time_utc = f'toDateTimeUtc={end_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+    query = f'{from_date_time_utc}&{to_date_time_utc}'
     if page_size:
         query += f'&pageSize={page_size}'
     if next_page:
@@ -991,9 +998,11 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {next_page_token=}, {last_run=}')
     all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
     if not all_events:
-        return [], {'next_page_token': '', 'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    'latest_events_id': []}
+        return [], {
+            'next_page_token': '',
+            'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
+            'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"),
+            'latest_events_id': []}
 
     if last_run_latest_events:  # handle duplication
         filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
@@ -1003,8 +1012,11 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
 
     events, latest_events_id = add_time_field_to_events_and_get_latest_events(all_events)
     demisto.debug(f'fetch_events: {latest_events_id=}')
-    return events, {'next_page_token': next_page_token, 'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"), 'latest_events_id': latest_events_id}
+    return events, {
+        'next_page_token': next_page_token,
+        'start_date': start_date.strftime("%Y-%m-%d %H:%M:%S"),
+        'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"),
+        'latest_events_id': latest_events_id}
 
 
 def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> \
@@ -1081,10 +1093,14 @@ def main() -> None:  # pragma: no cover
             x_abs_date=x_abs_date,
         )
 
+        headers_v3: dict = {"content-type": "text/plain"}
+
+
         client_v3 = ClientV3(
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
+            headers=headers_v3,
             token_id=token_id,
             secret_key=secret_key
         )
@@ -1146,8 +1162,8 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f'Fetching Absolute Device events with the following parameters: {args}')
             should_push_events = argToBoolean(args.get('should_push_events', False))
             events, command_result = get_events(args=args, client=client_v3)
-            if should_push_events:
-                send_events_to_xsiam(events=events, vendor="Absolute", product="Secure Endpoint")
+            if should_push_events and events:
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         else:
