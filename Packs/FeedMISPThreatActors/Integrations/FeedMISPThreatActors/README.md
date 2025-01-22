@@ -9,7 +9,7 @@ This integration fetches threat actor information from the MISP Threat Actors Ga
 - Create relationships between threat actors and their targets or aliases
 
 ## Configuration
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for MISP Threat Actors Feed.
 3. Click **Add instance** to create and configure a new integration instance.
     - **Name**: A meaningful name for the integration instance.
@@ -20,6 +20,7 @@ This integration fetches threat actor information from the MISP Threat Actors Ga
     - **Feed Tags**: Tags to be added to each indicator fetched from the feed.
     - **Bypass exclusion list**: Whether to bypass XSOAR's exclusion list when creating indicators.
 4. Click **Test** to validate the URLs and connection.
+5. Save and exit the integration instance.
 
 ## Commands
 This integration works in the background to fetch indicators and does not have any specific commands to execute manually.

@@ -98,7 +98,7 @@ configuration:
   type: 0
   additionalinfo: Supports CSV values.
   section: Collect
-description: Fetched the MISP threat actor galaxy and builds it into Threat Actor indicators within TIM.
+description: Fetches the MISP threat actor galaxy and builds it into Threat Actor indicators in Cortex Threat Intel Management (TIM).
 display: Feed MISP Threat Actors
 name: FeedMISPThreatActors
 script:

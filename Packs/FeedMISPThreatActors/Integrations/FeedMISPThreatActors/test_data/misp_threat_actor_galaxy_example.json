@@ -1,7 +1,7 @@
 {
     "authors": [],
     "category": "actor",
-    "description": "Known or estimated adversary groups targeting organizations and employees. Adversary groups are regularly confused with their initial operation or campaign. threat-actor-classification meta can be used to clarify the understanding of the threat-actor if also considered as operation, campaign or activity group.",
+    "description": "Known or estimated adversary groups targeting organizations and employees. Adversary groups are regularly confused with their initial operation or campaign. Threat-actor-classification meta can be used to clarify the understanding of the threat-actor, if also considered as operation, campaign or activity group.",
     "name": "Threat Actor",
     "source": "MISP Project",
     "type": "threat-actor",
