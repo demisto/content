@@ -1,32 +1,43 @@
-category: Cloud Services
 commonfields:
   id: Dynatrace
   version: -1
+sectionOrder:
+- Connect
+- Collect
+name: Dynatrace
+display: Dynatrace
+category: Cloud Services
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
 configuration:
 - display: Server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   additionalinfo: Required If using OAuth 2 as authentication method.
   name: client_id
   required: false
   type: 4
+  section: Connect
 - display: Client Secret
   additionalinfo: Required If using OAuth 2 as authentication method.
   name: client_secret
   required: false
   type: 4
+  section: Connect
 - display: Account UUID
   additionalinfo: Required If using OAuth 2 as authentication method.
   name: uuid
   required: false
   type: 4
+  section: Connect
 - display: Access Token
   additionalinfo: Required If using Personal Access Token.
   name: token
   required: false
   type: 4
+  section: Connect
 - display: Fetch Events
   name: isFetchEvents
   type: 8
@@ -66,14 +77,15 @@ configuration:
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: Dynatrace
-name: Dynatrace
+  section: Connect
 script:
+  script: ""
+  type: python
   commands:
     arguments:
     - name: events_types_to_get
@@ -109,7 +121,6 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: dynatrace-get-events
-  type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.8.24399
 fromversion: 6.1.0
