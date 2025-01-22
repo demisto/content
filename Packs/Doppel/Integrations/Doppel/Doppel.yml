@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The Doppel server URL that will be used for calling the APIs
-  defaultvalue: https://<your-doppel-tenant>.com/
+  defaultvalue: https://api.doppel.com/
   display: Doppel Tenant URL
   name: url
   required: true
