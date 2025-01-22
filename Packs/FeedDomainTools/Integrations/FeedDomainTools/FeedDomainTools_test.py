@@ -100,7 +100,7 @@ class TestDTClient:
             "_get_dt_feeds",
             return_value=feed_mock_response.NOD_FEED_RESPONSE,
         )
-        indicators = list(dt_feeds_client.build_iterator(feed_type="nod", limit=5))
+        indicators = list(dt_feeds_client.build_iterator(feed_type="nod", top=5))
         [indicator.get("value") for indicator in indicators]
 
         assert len(indicators) == 5

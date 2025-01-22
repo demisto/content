@@ -29,7 +29,7 @@ configuration:
   additionalinfo: The start of the query window in seconds, relative to the current time, inclusive.
 - display: Top
   name: top
-  defaultvalue: 100000
+  defaultvalue: 5000
   required: false
   hidden: false
   type: 0
@@ -122,13 +122,6 @@ script:
     description: Gets indicators from the feed.
     execution: false
     arguments:
-    - name: limit
-      defaultValue: 10
-      description: The maximum number of results to return.
-      isArray: false
-      default: false
-      required: false
-      secret: false
     - name: feed_type
       defaultValue: 'nod'
       description: The DomainTools integration feed type to fetch.
@@ -164,7 +157,7 @@ script:
       secret: false
     - name: top
       description: Limits the number of results in the response payload.
-      defaultValue: 100000
+      defaultValue: 50
       isArray: false
       default: false
       required: false

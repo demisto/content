@@ -97,15 +97,13 @@ class DomainToolsClient(BaseClient):
         return value
 
     def build_iterator(
-        self, feed_type: str = "nod", limit: int | None = None, **kwargs
+        self, feed_type: str = "nod", **kwargs
     ) -> Iterator:
         """
         Retrieves all entries from the feed.
 
         Args:
             feed_type (str): The feed type to fetch. (e.g: "nod", "nad")
-            limit (Optional[int], optional): The limit of result to return. Defaults to None.
-
         Raises:
             ValueError
 
@@ -116,7 +114,7 @@ class DomainToolsClient(BaseClient):
 
         # DomainTools feeds optional arguments
         session_id = kwargs.get("session_id") or "dt-cortex-feeds"
-        top = int(kwargs.get("top") or "100000")
+        top = int(kwargs.get("top") or "5000")
         domain = kwargs.get("domain") or None
         after = kwargs.get("after") or "-3600"
         before = kwargs.get("before") or None
@@ -146,7 +144,7 @@ class DomainToolsClient(BaseClient):
             demisto.info(f"Fetched {total_dt_feeds} of {self.feed_type} feeds.")
 
             for feed in dt_feeds:
-                if limit and limit_counter >= limit:
+                if top and limit_counter >= top:
                     break
 
                 json_feed = json.loads(feed)
@@ -175,14 +173,13 @@ class DomainToolsClient(BaseClient):
 
 
 def fetch_indicators(
-    client: DomainToolsClient, feed_type: str = "nod", custom_tags: str = "", limit: int | None = None, **kwargs
+    client: DomainToolsClient, feed_type: str = "nod", custom_tags: str = "", **kwargs
 ) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
         client (DomainToolsClient): DomainToolsClient object with request.
         feed_type (str): The feed type to fetch.
-        limit (int): limit the results.
 
     Returns:
         Indicators.
@@ -190,7 +187,7 @@ def fetch_indicators(
     indicators = []
     try:
         # extract values from iterator
-        for idx, item in enumerate(client.build_iterator(feed_type=feed_type, limit=limit, **kwargs), start=1):
+        for idx, item in enumerate(client.build_iterator(feed_type=feed_type, **kwargs), start=1):
             value_ = item.get("value")
             type_ = item.get("type")
             timestamp_ = item.get("timestamp")
@@ -233,7 +230,6 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
     Returns:
         Outputs.
     """
-    limit = int(args.get("limit", 10))
     feed_type = args.get("feed_type") or "nod"
     session_id = args.get("session_id")
     domain = args.get("domain")
@@ -253,7 +249,7 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
 
     demisto.debug(f"Fetching feed indicators by feed_type: {feed_type}")
     indicators = fetch_indicators(
-        client, feed_type=feed_type, custom_tags=user_given_tags, limit=limit, **dt_feeds_kwargs
+        client, feed_type=feed_type, custom_tags=user_given_tags, **dt_feeds_kwargs
     )
 
     human_readable = tableToMarkdown(
@@ -309,7 +305,7 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
         Outputs.
     """
     try:
-        next(client.build_iterator(limit=1, top=1))
+        next(client.build_iterator(top=1))
     except Exception as e:
         raise Exception(
             "Could not fetch DomainTools Feed\n"
