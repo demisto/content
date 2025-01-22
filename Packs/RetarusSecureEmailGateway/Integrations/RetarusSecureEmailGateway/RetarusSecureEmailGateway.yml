@@ -1,6 +1,9 @@
 commonfields:
   id: Retarus Secure Email Gateway
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Retarus Secure Email Gateway
 display: Retarus Secure Email Gateway
 category: Email

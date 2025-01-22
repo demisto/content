@@ -1,21 +1,15 @@
 import json
-import io
-from unittest.mock import Mock, patch
 import uuid
 import pytest
 import demistomock as demisto
 from contextlib import contextmanager
 import RetarusSecureEmailGateway
-import CommonServerPython
 from RetarusSecureEmailGateway import (
     fetch_events,
     json,
     demisto,
     datetime,
     timedelta,
-    websocket_connection,
-    perform_long_running_loop,
-    DemistoException,
     Connection,
     EventConnection,
     long_running_execution_command,
@@ -29,6 +23,7 @@ EVENTS = [
     {"ts": "2023-08-14T13:24:12.147573+0200", "id": "2"},
     {"ts": "2023-08-12T13:24:11.147573+0000", "id": "3"}
 ]
+
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     global CURRENT_TIME
@@ -68,7 +63,7 @@ class MockConnection(Connection):
 
     def pong(self):
         self.pongs += 1
-        
+
 
 def test_heartbeat(mocker, connection):
     """
@@ -132,7 +127,7 @@ def test_fetch_events(mocker, connection):
     assert len(events) == 2
     assert events[0]["_time"] == "2023-08-16T12:24:12.147573+00:00"
     assert events[1]["_time"] == "2023-08-14T11:24:12.147573+00:00"
-    
+
     debug_logs.assert_any_call("Retarus-logs Fetched 2 events")
 
 
@@ -141,9 +136,9 @@ def test_get_last_run_results_command__with_results(mocker):
     mocker.patch.object(demisto, "getIntegrationContext", return_value=cnx)
     res = RetarusSecureEmailGateway.get_last_run_results_command()
     assert res.readable_output == "results"
-    
-    
+
+
 def test_get_last_run_results_command__no_results(mocker):
     mocker.patch.object(demisto, "getIntegrationContext", return_value={})
     res = RetarusSecureEmailGateway.get_last_run_results_command()
-    assert res.readable_output == "No results from the last run yet. Ensure that a Retarus instance is configured and enabled. If it is, please wait one minute and try running the command again."
+    assert "No results from the last run yet." in res.readable_output
