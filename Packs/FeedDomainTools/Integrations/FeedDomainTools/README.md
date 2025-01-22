@@ -1,5 +1,5 @@
 Real-Time Threat Intelligence Feeds provide data on the different stages of the domain lifecycle from first-observed in the wild, to newly re-activated after a period of quiet. Newly Active Domains (NAD) Apex-level domains (e.g. `example.com` but not `www.example.com`) that we observe based on the latest lifecycle of the domain. A domain may be seen either for the first time ever, or again after at least 10 days of inactivity (no observed resolutions in DNS). Populated with our global passive DNS (pDNS) sensor network. Newly Observed Domains (NOD) Apex-level domains (e.g. `example.com` but not `www.example.com`) that we observe for the first time, and have not observed previously with our global DNS sensor network.
-This integration was integrated and tested with version xx of FeedDomainTools.
+This integration was integrated and tested with version 1.0.0 of FeedDomainTools.
 
 ## Configure FeedDomainTools in Cortex
 
