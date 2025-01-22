@@ -2632,7 +2632,7 @@ def sub_main():  # pragma: no cover
         params['default_target_mailbox'] = params.get('upn_mailbox')
     if params.get('access_type') == 'Impersonation':
         demisto.info(
-            'Note: The access type Impersonation you are using is deprecated. For more information, ' \
+            'Note: The access type Impersonation you are using is deprecated. For more information, '
             'please refer to the integration description.')
     try:
         client = EWSClient(**params)
