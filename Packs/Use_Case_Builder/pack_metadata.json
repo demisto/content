@@ -2,7 +2,7 @@
     "name": "Use Case Builder",
     "description": "To streamline the Use Case Design process and provide tools to help you get into production faster!",
     "support": "community",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.12",
     "author": "Joe Cosgrove",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "jcosgrove@paloaltonetworks.com",

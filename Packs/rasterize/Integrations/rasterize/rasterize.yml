@@ -74,6 +74,7 @@ script:
       description: The URL to rasterize. Must be the full URL, including the http prefix.
       name: url
       required: true
+      isArray: true
     - defaultValue: 1024px
       description: The page width, for example, 1024px. Specify with or without the px suffix.
       name: width
@@ -99,6 +100,7 @@ script:
     - defaultValue: url
       description: The name the file will be saved as.
       name: file_name
+      isArray: true
     - auto: PREDEFINED
       defaultValue: "False"
       description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
@@ -168,8 +170,7 @@ script:
       - Headless CLI - Preferred
       - Headless CLI - Only
       deprecated: true
-    - defaultValue: email
-      description: The name the file will be saved as.
+    - description: The name the file will be saved as.
       name: file_name
     - auto: PREDEFINED
       defaultValue: "False"
@@ -337,7 +338,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
-  dockerimage: demisto/chromium:131.0.6778.116585
+  dockerimage: demisto/chromium:131.0.6778.117810
   runonce: false
   script: "-"
   subtype: python3

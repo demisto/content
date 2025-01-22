@@ -15,7 +15,8 @@ Depending on the authentication method that you use, the integration parameters 
 
 To use the **Cortex XSOAR application** and allow Cortex XSOAR access to Microsoft Management Activity API, you will be required to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-management-api)**.
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
-Note: These credentials are valid for a single instance only.
+
+**Note**: These credentials are valid for a single instance only.
 
 
 ### Self-Deployed Configuration

@@ -18,7 +18,7 @@ script:
       required: true
     description: Send message/notification to LINE Group
     name: line-send-message
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

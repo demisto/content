@@ -218,7 +218,7 @@ TEST_DATA = [
 def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
     res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
-    assert type(res) == list
+    assert type(res) is list
     assert len(res) == expected_length
 
 
@@ -780,7 +780,7 @@ def test_rasterize_mailto(capfd, mocker):
 
     assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.' \
                                                               '\nURL: [\'mailto:some.person@gmail.com\']'
-    assert excinfo.type == SystemExit
+    assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
 
 
@@ -886,3 +886,207 @@ def test_chrome_manager_one_port_open_new_port(mocker):
     assert generate_new_chrome_instance_mocker.call_count == 1
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
+
+
+def test_rasterize_email_command_default_arge(mocker):
+    """
+    Given: A valid HTML email body
+    When: The rasterize_email_command function is called
+    Then: The function should generate a PNG (default) image and return it as a file result
+    """
+    from rasterize import rasterize_email_command
+
+    mock_args = {
+        'htmlBody': '<p>Test email body</p>',
+        'width': '1000px',
+        'height': '1500px',
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
+    mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
+    mock_uuid = mocker.patch('rasterize.uuid.uuid4', return_value='abcd-1234')
+    mocker.patch.object(demisto, 'results')
+
+    rasterize_email_command()
+
+    mock_file_result.assert_called_once_with(filename=f'{mock_uuid.return_value}.png', data='image_data')
+    mock_perform_rasterize.assert_called_once_with(
+        path=mocker.ANY,
+        rasterize_type=RasterizeType.PNG,
+        width=1000,
+        height=1500,
+        offline_mode=False,
+        navigation_timeout=180,
+        full_screen=False
+    )
+
+
+def test_rasterize_email_command_png(mocker):
+    """
+    Given: A valid HTML email body and PNG output type
+    When: The rasterize_email_command function is called
+    Then: The function should generate a PNG image and return it as a file result
+    """
+    from rasterize import rasterize_email_command
+
+    mock_args = {
+        'htmlBody': '<p>Test email body</p>',
+        'width': '800',
+        'height': '600',
+        'file_name': 'test_email'
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
+    mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
+    mock_results = mocker.patch.object(demisto, 'results')
+
+    rasterize_email_command()
+
+    mock_file_result.assert_called_once_with(filename='test_email.png', data='image_data')
+    mock_results.assert_called_once()
+
+
+def test_rasterize_email_command_pdf(mocker):
+    """
+    Given: A valid HTML email body and PDF output type
+    When: The rasterize_email_command function is called
+    Then: The function should generate a PDF file and return it as a file result
+    """
+    from rasterize import rasterize_email_command
+
+    mock_args = {
+        'htmlBody': '<p>Test email body</p>',
+        'width': '800',
+        'height': '600',
+        'type': 'pdf',
+        'file_name': 'test_email'
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker.patch('rasterize.perform_rasterize', return_value=[('pdf_data', None)])
+    mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'file'})
+    mock_results = mocker.patch.object(demisto, 'results')
+
+    rasterize_email_command()
+
+    mock_file_result.assert_called_once_with(filename='test_email.pdf', data='pdf_data')
+    mock_results.assert_called_once()
+
+
+def test_rasterize_email_command_full_screen(mocker):
+    """
+    Given: A valid HTML email body and full_screen option set to true
+    When: The rasterize_email_command function is called
+    Then: The perform_rasterize function should be called with full_screen=True
+    """
+    from rasterize import rasterize_email_command
+
+    mock_args = {
+        'htmlBody': '<p>Test email body</p>',
+        'full_screen': 'true',
+        'type': 'png',
+        'file_name': 'test_email'
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
+    mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
+    mocker.patch.object(demisto, 'results')
+
+    rasterize_email_command()
+
+    mock_file_result.assert_called_once_with(filename='test_email.png', data='image_data')
+    mock_perform_rasterize.assert_called_once_with(
+        path=mocker.ANY,
+        rasterize_type=mocker.ANY,
+        width=mocker.ANY,
+        height=mocker.ANY,
+        offline_mode=mocker.ANY,
+        navigation_timeout=mocker.ANY,
+        full_screen=True
+    )
+
+
+def test_rasterize_email_command_offline_mode(mocker):
+    """
+    Given: A valid HTML email body and offline mode set to true
+    When: The rasterize_email_command function is called
+    Then: The perform_rasterize function should be called with offline_mode=True
+    """
+    from rasterize import rasterize_email_command
+
+    mock_args = {
+        'htmlBody': '<p>Test email body</p>',
+        'offline': 'true',
+        'type': 'png',
+        'file_name': 'test_email'
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
+    mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
+    mocker.patch.object(demisto, 'results')
+
+    rasterize_email_command()
+
+    mock_perform_rasterize.assert_called_once_with(
+        path=mocker.ANY,
+        rasterize_type=mocker.ANY,
+        width=mocker.ANY,
+        height=mocker.ANY,
+        offline_mode=True,
+        navigation_timeout=mocker.ANY,
+        full_screen=mocker.ANY
+    )
+
+
+def test_rasterize_email_command_custom_navigation_timeout(mocker):
+    """
+    Given: A valid HTML email body and a custom navigation timeout
+    When: The rasterize_email_command function is called
+    Then: The perform_rasterize function should be called with the specified navigation_timeout
+    """
+    from rasterize import rasterize_email_command
+
+    mock_args = {
+        'htmlBody': '<p>Test email body</p>',
+        'max_page_load_time': '30',
+        'type': 'png',
+        'file_name': 'test_email'
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
+    mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
+    mocker.patch.object(demisto, 'results')
+
+    rasterize_email_command()
+
+    mock_perform_rasterize.assert_called_once_with(
+        path=mocker.ANY,
+        rasterize_type=mocker.ANY,
+        width=mocker.ANY,
+        height=mocker.ANY,
+        offline_mode=mocker.ANY,
+        navigation_timeout=30,
+        full_screen=mocker.ANY
+    )
+
+
+def test_rasterize_email_command_error_handling(mocker):
+    """
+    Given: A scenario where perform_rasterize raises an exception
+    When: The rasterize_email_command function is called
+    Then: The function should log the error and return an error message
+    """
+    from rasterize import rasterize_email_command
+
+    mock_args = {
+        'htmlBody': '<p>Test email body</p>',
+        'type': 'png',
+        'file_name': 'test_email'
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker.patch('rasterize.perform_rasterize', side_effect=Exception('Test error'))
+    mock_error = mocker.patch.object(demisto, 'error')
+
+    with pytest.raises(SystemExit):
+        rasterize_email_command()
+
+    mock_error.assert_called_once_with('Test error')

@@ -27,7 +27,7 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Tuple, Callable, ValuesView, Iterator, TYPE_CHECKING
+from typing import Tuple, Callable, ValuesView, Iterator, Literal, TYPE_CHECKING
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
@@ -2222,11 +2222,21 @@ def panorama_edit_address_group_command(args: dict):
     element_to_remove = argToList(
         args['element_to_remove']) if 'element_to_remove' in args else None
 
+    match_path: str
+    match_param: str
+    addresses_param: str
+    addresses_path: str
+    result: Any
+    addresses = []
     if type_ == 'dynamic':
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
         match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
+    else:
+        match_param = ""
+        match_path = ""
+        demisto.debug(f"{type_=} -> {match_param=} {match_path=}")
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -2240,7 +2250,7 @@ def panorama_edit_address_group_command(args: dict):
         if element_to_add:
             addresses = list(set(element_to_add + address_group_list))
         else:
-            addresses = [item for item in address_group_list if item not in element_to_remove]
+            addresses = [item for item in address_group_list if item not in element_to_remove]  # type: ignore[operator]
             if not addresses:
                 raise DemistoException(
                     f'cannot remove {address_group_list} addresses from address group {address_group_name}, '
@@ -2248,6 +2258,10 @@ def panorama_edit_address_group_command(args: dict):
                 )
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
+    else:
+        addresses_param = ""
+        addresses_path = ""
+        demisto.debug(f"{type_=} -> {addresses_param=} {addresses_path=}")
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -2265,6 +2279,7 @@ def panorama_edit_address_group_command(args: dict):
     if DEVICE_GROUP:
         address_group_output['DeviceGroup'] = DEVICE_GROUP
 
+    result = None
     if type_ == 'dynamic' and match:
         params['xpath'] = match_path
         params['element'] = match_param
@@ -2718,7 +2733,7 @@ def panorama_create_service_group_command(args: dict):
     services = argToList(args['services'])
     tags = argToList(args['tags']) if 'tags' in args else None
 
-    result = panorama_create_service_group(service_group_name, services, tags)
+    result = panorama_create_service_group(service_group_name, services, tags)  # type: ignore[arg-type]
 
     service_group_output = {
         'Name': service_group_name,
@@ -2790,7 +2805,7 @@ def panorama_edit_service_group(service_group_name: str, services: List[str], ta
         'element': '',
         'key': API_KEY,
     }
-
+    result: Any
     if services:
         services_xpath = XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']/members"
         services_element = '<members>' + add_argument_list(services, 'member', False) + '</members>'
@@ -2839,12 +2854,12 @@ def panorama_edit_service_group_command(args: dict):
         if services_to_add:
             services = list(set(services_to_add + service_group_list))
         else:
-            services = [item for item in service_group_list if item not in services_to_remove]
+            services = [item for item in service_group_list if item not in services_to_remove]  # type: ignore[operator]
 
         if len(services) == 0:
             raise Exception('A Service group must have at least one service.')
 
-    result = panorama_edit_service_group(service_group_name, services, tag)
+    result = panorama_edit_service_group(service_group_name, services, tag)  # type: ignore[arg-type]
 
     service_group_output = {'Name': service_group_name}
     if DEVICE_GROUP:
@@ -4268,7 +4283,7 @@ def panorama_custom_block_rule_command(args: dict):
     tags = argToList(args['tags']) if 'tags' in args else None
     where = args.get('where', 'bottom')
     dst = args.get('dst')
-
+    result: Any
     if not DEVICE_GROUP:
         if target:
             raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
@@ -14317,7 +14332,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
     ip_duration_sec = args.get('ip_duration_sec', '')
     exception_id = ""
     exception_name = ""
-
+    params: dict
     if xpath_action == 'block-ip' and (not ip_track_by or not ip_duration_sec):
         raise DemistoException(
             "ip_track_by and ip_duration_sec are required when action is 'Block IP'."
@@ -14349,6 +14364,9 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
             'xpath': xpath,
             'key': API_KEY,
         }
+    else:
+        params = {}
+        demisto.debug(f"{action_type=} -> {params=}")
 
     try:
         raw_response = http_request(URL, 'GET', params=params)
@@ -14508,6 +14526,122 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         ),
         outputs_prefix=context_path,
         outputs_key_field='Name'
+    )
+
+
+def build_master_key_create_or_update_cmd(args: dict, action: Literal['create', 'update']) -> str:
+    """Builds the XML command for creating or updating the default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+        action ('create'| 'update'): Whether to create a new master key or update an existing one.
+
+    Returns:
+        str: XML string of the master key create or update command.
+    """
+    xml_args = [
+        add_argument(arg=args.get('lifetime_in_hours'), field_name='lifetime', member=False),
+        add_argument(arg=args.get('reminder_in_hours'), field_name='reminder', member=False),
+    ]
+
+    match action:
+        case 'create':
+            xml_args.append(
+                add_argument(arg=args.get('master_key'), field_name='new-master-key', member=False),
+            )
+        case 'update':
+            xml_args.extend(
+                [
+                    add_argument(arg=args.get('new_master_key'), field_name='new-master-key', member=False),
+                    add_argument(arg=args.get('current_master_key'), field_name='current-master-key', member=False),
+                ]
+            )
+        case _:
+            raise ValueError(f"Invalid action value: '{action}'. Expected 'create' or 'update'.")
+
+    # Whether to encrypt the master key using a Hardware Security Module (HSM) encryption key; currently a static value by demand
+    xml_args.append(add_argument_yes_no(arg='no', field_name='on-hsm'))
+    master_key_element = add_argument(arg=''.join(xml_args), field_name='master-key', member=False)
+
+    return add_argument(arg=master_key_element, field_name='request', member=False)
+
+
+def create_or_update_master_key(args: dict, action: Literal['create', 'update']) -> CommandResults:
+    """Builds an XML command and sends a request to create or update the master key based on the given action.
+
+    Args:
+        args (dict): The command arguments.
+        action ('create'| 'update'): Whether to create a new master key or update an existing one.
+
+    Returns:
+        CommandResults: Contains readable output and raw response.
+    """
+    master_key_cmd = build_master_key_create_or_update_cmd(args, action=action)
+    raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': master_key_cmd})
+    response_result = raw_response['response']['result']  # human readable message
+
+    # Creating or updating the encryption master key by definition invalidates the current API key, refer to the integration docs.
+    demisto.info(f'The master key of {URL} has been {action}d. The current API key has been invalidated.')
+
+    return CommandResults(
+        readable_output=f'{response_result}. \n\n⚠️ The current API key is no longer valid! (by design) '
+        'Generate a new API key and update it in the integration instance configuration to keep using the integration.',
+        raw_response=raw_response,
+    )
+
+
+def pan_os_create_master_key_command(args: dict) -> CommandResults:
+    """Creates a new default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: Contains readable output and raw response.
+    """
+    return create_or_update_master_key(args, action='create')
+
+
+def pan_os_update_master_key_command(args: dict) -> CommandResults:
+    """Updates the default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: Contains readable output and raw response.
+    """
+    return create_or_update_master_key(args, action='update')
+
+
+def pan_os_get_master_key_details_command() -> CommandResults:
+    """Shows the details of the default master key on Panorama / PAN-OS.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: Contains context output, readable output, and raw response.
+    """
+    system_element = add_argument(arg='<masterkey-properties/>', field_name='system', member=False)
+    show_master_key_cmd = add_argument(arg=system_element, field_name='show', member=False)
+
+    raw_response: dict = http_request(URL, 'GET', params={'type': 'op', 'key': API_KEY, 'cmd': show_master_key_cmd})
+    response_result = raw_response['response']['result']
+
+    result_to_human_readable = {'auto-renew-mkey': 'Auto-renew master key', "on-hsm": "Encryption on HSM"}
+    human_readable = tableToMarkdown(
+        'Master Key Details',
+        response_result,
+        headers=['auto-renew-mkey', 'on-hsm', 'remind-at', 'expire-at'],
+        headerTransform=lambda key: result_to_human_readable.get(key, ' '.join(key.split('-')).capitalize()),
+    )
+
+    return CommandResults(
+        outputs_prefix='Panorama.MasterKey',
+        outputs=response_result,
+        raw_response=raw_response,
+        readable_output=human_readable,
     )
 
 
@@ -15695,6 +15829,12 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_profile_exception_command(args))
         elif command == 'pan-os-list-profile-exception':
             return_results(pan_os_list_profile_exception_command(args))
+        elif command == 'pan-os-create-master-key':
+            return_results(pan_os_create_master_key_command(args))
+        elif command == 'pan-os-update-master-key':
+            return_results(pan_os_update_master_key_command(args))
+        elif command == 'pan-os-get-master-key-details':
+            return_results(pan_os_get_master_key_details_command())
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

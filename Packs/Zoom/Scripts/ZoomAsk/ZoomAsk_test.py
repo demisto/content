@@ -110,7 +110,8 @@ def test_main(mocker):
         'message':
             '{"blocks": "{\\"head\\": {\\"type\\": \\"message\\", \\"text\\": \\"Test Message\\"}, \\"body\\": [{\\"type\\": \\"actions\\", \\"items\\": [{\\"value\\": \\"Option1\\", \\"style\\": \\"Default\\", \\"text\\": \\"Option1\\"}, {\\"value\\": \\"Option2\\", \\"style\\": \\"Default\\", \\"text\\": \\"Option2\\"}]}]}", "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8@22", "reply": "Test Reply", "expiry": "2019-09-26 18:38:25", "default_response": "Default Response"}',  # noqa: E501
         'to': 'test@example.com',
-        'zoom_ask': 'true'
+        'zoom_ask': 'true',
+        'using-brand': 'Zoom'
     }
 
     assert call_args[1] == expected_args

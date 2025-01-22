@@ -138,7 +138,10 @@ def remove_space_from_args(args):
     :param args: Dictionary of arguments.
     :return: New dictionary with whitespace-stripped string values.
     """
-    return {key: value.strip() if isinstance(value, str) else value for key, value in args.items()}
+    for key in args.keys():
+        if isinstance(args[key], str):
+            args[key] = args[key].strip()
+    return args
 
 
 def validate_response(client: Client, url, method='GET', body=None):
@@ -1043,6 +1046,7 @@ def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # initialize configuration parameter
     params = remove_space_from_args(demisto.params())
+    remove_nulls_from_dictionary(params)
     proxy = params.get('proxy')
     disable_ssl = params.get('insecure', False)
     command = demisto.command()

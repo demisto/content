@@ -11,7 +11,7 @@ comment: randomly select elements from a list in Python
 commonfields:
   id: RandomElementFromList
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: RandomElementFromList
 runas: DBotWeakRole

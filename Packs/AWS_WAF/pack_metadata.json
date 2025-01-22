@@ -2,7 +2,7 @@
     "name": "AWS WAF",
     "description": "Amazon Web Services Web Application Firewall (WAF)",
     "support": "xsoar",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -11,13 +11,13 @@ The Getting Started with XSOAR content pack accelerates the onboarding process b
 
 
 ## Getting Started / How to Set up the Pack
-For better user experience and easier onboarding, use the [**Deployment Wizard**](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Set-up-Your-Use-Case-with-the-Deployment-Wizard) after installing the content pack on the Marketplace page in Cortex XSOAR (Available for version 6.8).
+For better user experience and easier onboarding, use the [Deployment Wizard (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Set-up-Your-Use-Case-with-the-Deployment-Wizard) or [Deployment Wizard (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Set-up-your-use-case-with-the-Deployment-Wizard) or [Deployment Wizard (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Set-up-your-use-case-with-the-Deployment-Wizard) after installing the content pack on the Marketplace page in Cortex XSOAR (Available from version 6.8).
 
 For manual configuration, it is recommended to configure your integration instance to use: 
 - Primary Playbook: **Case Management - Generic v2**
 - Primary Incident Type: **Case**
 
-![image](https://raw.githubusercontent.com/joe-cosgrove/content/gettingstartedwithxsoarwizard/Packs/GettingStartedWithXSOAR/doc_files/image.png)
+![image](doc_files/image.png)
 
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/index).
 

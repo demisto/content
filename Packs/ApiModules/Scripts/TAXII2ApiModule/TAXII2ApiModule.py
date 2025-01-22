@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
-from CommonServerUserPython import *
 
 from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
@@ -1655,6 +1654,8 @@ class STIX2XSOARParser(BaseClient):
         Args:
             autonomous_system_obj (dict): indicator as an observable object of type autonomous-system.
         """
+        if isinstance(autonomous_system_obj, dict) and 'number' in autonomous_system_obj:
+            autonomous_system_obj['number'] = str(autonomous_system_obj.get('number', ''))
         autonomous_system_indicator = self.parse_general_sco_indicator(autonomous_system_obj, value_mapping='number')
         autonomous_system_indicator[0]['fields']['name'] = autonomous_system_obj.get('name')
 

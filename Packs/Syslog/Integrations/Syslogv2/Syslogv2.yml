@@ -59,7 +59,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/syslog:1.0.0.87503
+  dockerimage: demisto/syslog:1.0.0.117331
   longRunning: true
   longRunningPort: true
   isFetchSamples: true

@@ -20,7 +20,7 @@
 <p class="wysiwyg-indent8"><strong>Incident type:</strong> Specify the Cortex XSOAR incident type that will be set for incidents from this integration.</p>
 <p class="wysiwyg-indent8"><strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.</p>
 <p class="wysiwyg-indent8"><strong>Cortex XSOAR engine:</strong> If relevant, select the engine that acts as a proxy to the server.  </p>
-<p class="wysiwyg-indent8">Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br><br>For more information on Cortex XSOAR engines see:<br><a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines">https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines</a></p>
+<p class="wysiwyg-indent8">Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br><br>For more information on Cortex XSOAR engines see:<br><a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Engines">Cortex XSOAR 6.13 - Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines">Cortex XSOAR 8 Cloud- Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Engines">Cortex XSOAR 8.7 On-prem - Engines</a></p>
 <ol start="4">
 <li>Press the ‘Test’ button to validate connection.</li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
@@ -89,9 +89,11 @@
 [Brand] ProtectWise
 [Instance] ProtectWise_instance_1
 </code></pre>
-<p><a href="https://user-images.githubusercontent.com/3792355/29264877-6cc04a82-80e7-11e7-8494-7c4860763995.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/3792355/29264877-6cc04a82-80e7-11e7-8494-7c4860763995.png" alt="image" width="751" height="269"></a></p>
-<p><a href="https://user-images.githubusercontent.com/3792355/29264909-98cc9644-80e7-11e7-97ec-abb5c5b55f98.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/3792355/29264909-98cc9644-80e7-11e7-97ec-abb5c5b55f98.png" alt="image" width="752" height="180"></a></p>
-<p><a href="https://user-images.githubusercontent.com/3792355/29264939-bd54d472-80e7-11e7-95de-22bd3990ea52.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/3792355/29264939-bd54d472-80e7-11e7-95de-22bd3990ea52.png" alt="image" width="751" height="404"></a><br><a href="https://user-images.githubusercontent.com/3792355/29264957-c4ba11be-80e7-11e7-818d-e5fda28ff83c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/3792355/29264957-c4ba11be-80e7-11e7-818d-e5fda28ff83c.png" alt="image" width="751" height="277"></a></p>
-<p> <a href="https://user-images.githubusercontent.com/3792355/29265449-b8e6d618-80e9-11e7-8547-f81014ce3630.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/3792355/29265449-b8e6d618-80e9-11e7-8547-f81014ce3630.png" alt="image" width="750" height="275"></a></p>
+
+
+<p><a href="../../doc_files/protectwise_event_search.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_event_search.png" alt="image" width="751" height="269"></a></p>
+<p><a href="../../doc_files/protectwith_sensors.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwith_sensors.png" alt="image" width="752" height="180"></a></p>
+<p><a href="../../doc_files/protectwise_event_info.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_event_info.png" alt="image" width="751" height="404"></a><br><a href="../../doc_files/netflows.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/netflows.png" alt="image" width="751" height="277"></a></p>
+<p> <a href="../../doc_files/protectwise_uploaded_file.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_uploaded_file.png" alt="image" width="750" height="275"></a></p>
 <p> </p>
 <p> </p>
