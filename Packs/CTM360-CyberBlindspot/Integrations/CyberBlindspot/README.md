@@ -49,8 +49,11 @@ Get the list of incidents from CBS.
 | CyberBlindspot.IncidentList | unknown | List of all CBS incidents. | 
 
 #### Command example
+
 ```!ctm360-cbs-incident-list dateFrom="23-10-2023 07:00" dateTo="23-10-2023 23:00" order=asc maxHits=2```
+
 #### Context Example
+
 ```json
 {
     "CyberBlindspot": {
@@ -107,6 +110,7 @@ Get the list of incidents from CBS.
 #### Human Readable Output
 
 >### Results
+
 >|CustomFields|externalstatus|name|occurred|rawJson|severity|type|xsoar_mirroring|
 >|---|---|---|---|---|---|---|---|
 >| cbs_status: Member Feedback<br/>cbs_subject: 2 customer credentials compromised (5d65815)<br/>cbs_class: Link<br/>cbs_type: Leaked Credential<br/>cbs_coa: Member Side Action<br/>cbs_timestamp: 1698049692779<br/>cbs_updated_date: 2023-10-23T08:00:00+00:00 | Member Feedback | New leaked_credential with severity High found | 2023-10-23T08:00:00+00:00 | {"name": "New leaked_credential with severity High found", "occurred": "2023-10-23T08:00:00+00:00", "type": "Leaked Credential", "externalstatus": "Member Feedback", "severity": 3, "CustomFields": {"cbs_status": "Member Feedback", "cbs_subject": "2 customer credentials compromised (5d65815)", "cbs_class": "Link", "cbs_type": "Leaked Credential", "cbs_coa": "Member Side Action", "cbs_timestamp": 1698049692779, "cbs_updated_date": "2023-10-23T08:00:00+00:00"}, "xsoar_mirroring": {"mirror_direction": "Both", "mirror_id": "COMY123642991153", "mirror_instance": "CTM360_CyberBlindspot_instance_1"}} | 3 | Leaked Credential | mirror_direction: Both<br/>mirror_id: COMY123642991153<br/>mirror_instance: CTM360_CyberBlindspot_instance_1 |
@@ -131,8 +135,11 @@ Close a CBS incident.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ctm360-cbs-incident-close ticketId="COMX41148897294"```
+
 #### Human Readable Output
 
 >Incident closed successfully
@@ -155,8 +162,11 @@ Request a takedown of the asset where the incident was found.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ctm360-cbs-incident-request-takedown ticketId="COMX415993788418"```
+
 #### Human Readable Output
 
 >Takedown request executed successfully
@@ -178,6 +188,7 @@ Returns the list of fields for an incident type.
 #### Context Output
 
 There is no context output for this command.
+
 ### ctm360-cbs-incident-details
 
 ***
@@ -208,8 +219,8 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.remarks | unknown | Remarks about the incident. | 
 | CyberBlindspot.RemoteIncident.first_seen | unknown | The creation date of the incident. | 
 | CyberBlindspot.RemoteIncident.last_seen | unknown | The date the incident last got updated. | 
-| CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident. (legacy) | 
-| CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated. (legacy) | 
+| CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident (legacy). | 
+| CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated (legacy). | 
 | CyberBlindspot.RemoteIncident.timestamp | unknown | The timestamp of when the record was created. | 
 | CyberBlindspot.RemoteIncident.card_number | unknown | The compromised card's number. | 
 | CyberBlindspot.RemoteIncident.cvv | unknown | The compromised card's Card Verification Value (CVV). | 
@@ -244,6 +255,7 @@ Gets remote data from a remote incident. This method does not update the current
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -262,6 +274,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
@@ -280,10 +293,12 @@ Updates the remote system with local changes.
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and CTM360 CyberBlindspot corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 

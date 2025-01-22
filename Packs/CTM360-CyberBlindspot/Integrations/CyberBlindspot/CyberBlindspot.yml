@@ -16,37 +16,37 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: "Choose the module you want to use: Incidents, or Leaks."
-  defaultvalue: Incidents
+- defaultvalue: Incidents
   display: Module To Use
+  additionalinfo: "Choose the module you want to use: Incidents, or Leaks."
   name: module_to_use
+  required: false
+  type: 15
   options:
   - Incidents
   - Compromised Cards
   - Breached Credentials
   - Domain Infringement
   - Subdomain Infringement
-  type: 15
   hidden:
   - marketplacev2
-  required: false
-- defaultvalue: 7 days
-  display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
-  additionalinfo: The time the incidents should be fetched starting from.
+- additionalinfo: The time the incidents should be fetched starting from.
   name: first_fetch
   required: false
   type: 0
-- displaypassword: API Key
-  additionalinfo: The CTM360 CyberBlindspot API Key to use for fetching data.
-  name: api_key
-  required: true
-  hiddenusername: true
+  defaultvalue: 7 days
+  display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
+- name: api_key
   type: 9
-- name: max_fetch
-  display: Maximum Number of Incidents per Fetch
-  defaultvalue: "25"
+  required: true
+  additionalinfo: The CTM360 CyberBlindspot API Key to use for fetching data.
+  displaypassword: API Key
+  hiddenusername: true
+- display: Maximum Number of Incidents per Fetch
+  name: max_fetch
   type: 0
   required: true
+  defaultvalue: "25"
   additionalinfo: Default is 25. Maximum is 200.
 - display: Fetch incidents
   name: isFetch
@@ -130,9 +130,9 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.remarks
       description: Remarks about the incident.
     - contextPath: CyberBlindspot.RemoteIncident.created_date
-      description: The creation date of the incident. (legacy)
+      description: The creation date of the incident (legacy).
     - contextPath: CyberBlindspot.RemoteIncident.updated_date
-      description: The date the incident last got updated. (legacy)
+      description: The date the incident last got updated (legacy).
     - contextPath: CyberBlindspot.RemoteIncident.first_seen
       description: The creation date of the incident.
     - contextPath: CyberBlindspot.RemoteIncident.last_seen
@@ -194,7 +194,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
