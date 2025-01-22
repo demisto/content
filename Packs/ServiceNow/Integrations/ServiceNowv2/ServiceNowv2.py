@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterable
 
 import mimetypes
 
-# disable insecure warnings
+# disable  insecure warnings
 import urllib3
 urllib3.disable_warnings()
 
