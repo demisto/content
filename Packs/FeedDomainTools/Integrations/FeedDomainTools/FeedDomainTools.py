@@ -175,7 +175,7 @@ class DomainToolsClient(BaseClient):
 
 
 def fetch_indicators(
-    client: DomainToolsClient, feed_type: str = "nod", limit: int | None = None, **kwargs
+    client: DomainToolsClient, feed_type: str = "nod", custom_tags: str = "", limit: int | None = None, **kwargs
 ) -> list[dict]:
     """Retrieves indicators from the feed
 
@@ -194,14 +194,15 @@ def fetch_indicators(
             value_ = item.get("value")
             type_ = item.get("type")
             timestamp_ = item.get("timestamp")
-            tags_ = item.get("tags")
+            tags_ = item.get("tags") or []
+
+            custom_tags_ = [tag.strip() for tag in custom_tags.split(",")]
+            indicator_tags = ",".join(tags_ + custom_tags_)
 
             raw_data = {
                 "value": value_,
                 "type": type_,
                 "timestamp": timestamp_,
-                "service": "DomainTools Feeds",
-                "tags": ",".join(tags_),
             }
 
             # Create indicator object for each value.
@@ -209,7 +210,8 @@ def fetch_indicators(
                 "value": value_,
                 "type": type_,
                 "fields": {
-                    "tags": tags_,
+                    "tags": indicator_tags,
+                    "service": "DomainTools Feeds",
                 },
                 "rawJSON": raw_data,
             }
@@ -247,9 +249,11 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
         "top": top,
     }
 
+    user_given_tags = params.get("feedTags") or ""
+
     demisto.debug(f"Fetching feed indicators by feed_type: {feed_type}")
     indicators = fetch_indicators(
-        client, feed_type=feed_type, limit=limit, **dt_feeds_kwargs
+        client, feed_type=feed_type, custom_tags=user_given_tags, limit=limit, **dt_feeds_kwargs
     )
 
     human_readable = tableToMarkdown(
@@ -281,6 +285,7 @@ def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
     session_id = params.get("session_id")
     after = params.get("after")
     top = params.get("top")
+    user_given_tags = params.get("feedTags") or ""
 
     FEEDS_TO_PROCESS = {
         client.NOD_FEED: {"top": top, "after": after, "session_id": session_id},
@@ -290,7 +295,7 @@ def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
     fetched_indicators = []
 
     for feed_type, dt_feed_kwargs in FEEDS_TO_PROCESS.items():
-        indicators = fetch_indicators(client, feed_type=feed_type, **dt_feed_kwargs)
+        indicators = fetch_indicators(client, feed_type=feed_type, custom_tags=user_given_tags, **dt_feed_kwargs)
         fetched_indicators.extend(indicators)
 
     return fetched_indicators
@@ -342,7 +347,7 @@ def main():
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, **params)
-            for iter_ in batch(indicators, batch_size=1000):
+            for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
             raise NotImplementedError(f"Command {command} is not supported")

@@ -24,7 +24,13 @@ demisto-sdk lint -i Packs/FeedDomainTools/Integrations/FeedDomainTools
 import pytest
 
 from CommonServerPython import *
-from FeedDomainTools import DomainToolsClient, fetch_indicators, fetch_indicators_command, get_indicators_command, main
+from FeedDomainTools import (
+    DomainToolsClient,
+    fetch_indicators,
+    fetch_indicators_command,
+    get_indicators_command,
+    main,
+)
 
 
 from test_data import feed_mock_response
@@ -156,7 +162,9 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "_get_dt_feeds",
         return_value=mock_feed_response[feed_type],
     )
-    results = get_indicators_command(dt_feeds_client, args={"feed_type": feed_type}, params={})
+    results = get_indicators_command(
+        dt_feeds_client, args={"feed_type": feed_type}, params={}
+    )
 
     expected_indicator_results = {
         "nod": feed_mock_response.NOD_PARSED_INDICATOR_RESPONSE,
@@ -186,7 +194,8 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
     mocker.patch.object(
         dt_feeds_client,
         "_get_dt_feeds",
-        return_value=feed_mock_response.NAD_FEED_RESPONSE + feed_mock_response.NOD_FEED_RESPONSE,
+        return_value=feed_mock_response.NAD_FEED_RESPONSE
+        + feed_mock_response.NOD_FEED_RESPONSE,
     )
     results = fetch_indicators_command(dt_feeds_client)
 
@@ -195,7 +204,11 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
 
 def test_calling_command_using_main(mocker, dt_feeds_client):
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(demisto, "params", return_value={"api_username": "test_username", "api_key": "test_key"})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"api_username": "test_username", "api_key": "test_key"},
+    )
     mocker.patch(
         "FeedDomainTools.DomainToolsClient._get_dt_feeds",
         return_value=feed_mock_response.NAD_FEED_RESPONSE,
@@ -204,4 +217,4 @@ def test_calling_command_using_main(mocker, dt_feeds_client):
     mocker.patch.object(demisto, "results")
     main()
     results = demisto.results.call_args[0]
-    assert results[0] == 'ok'
+    assert results[0] == "ok"
