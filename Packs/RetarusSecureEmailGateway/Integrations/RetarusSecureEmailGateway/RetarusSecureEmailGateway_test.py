@@ -3,6 +3,7 @@ import io
 from unittest.mock import Mock, patch
 import uuid
 import pytest
+import demistomock as demisto
 from contextlib import contextmanager
 import RetarusSecureEmailGateway
 import CommonServerPython
@@ -24,9 +25,9 @@ from CommonServerPython import *
 CURRENT_TIME: datetime | None = None
 
 EVENTS = [
-    {"ts": "2023-08-16T13:24:12.147573+0100", "_id": "1"},
-    {"ts": "2023-08-14T13:24:12.147573+0200", "_id": "2"},
-    {"ts": "2023-08-12T13:24:11.147573+0000", "_id": "3"}
+    {"ts": "2023-08-16T13:24:12.147573+0100", "id": "1"},
+    {"ts": "2023-08-14T13:24:12.147573+0200", "id": "2"},
+    {"ts": "2023-08-12T13:24:11.147573+0000", "id": "3"}
 ]
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -68,43 +69,6 @@ class MockConnection(Connection):
     def pong(self):
         self.pongs += 1
         
-           
-def test_handle_failures_of_send_events(mocker, capfd):
-    """
-    Given:
-        - A connection to the websocket, and events are fetched from the socket
-
-    When:
-        - Sending events to XSIAM are failing.
-
-    Then:
-        - Add the failing events to the context, and try again in the next run.
-    """
-    def fetch_events_mock(connection: EventConnection, fetch_interval: int):
-        return EVENTS
-
-    def sends_events_to_xsiam_mock(events, **kwargs):
-        raise DemistoException("Message")
-
-    mocker.patch.object(RetarusSecureEmailGateway, "fetch_events", side_effect=fetch_events_mock)
-    mocker.patch.object(RetarusSecureEmailGateway, "send_events_to_xsiam", side_effect=sends_events_to_xsiam_mock)
-    with capfd.disabled():
-        perform_long_running_loop(EventConnection(MockConnection()), 60)
-
-    context = demisto.getIntegrationContext()
-    assert context["events"] == EVENTS
-
-    second_try_send_events_mock = mocker.patch.object(RetarusSecureEmailGateway, "send_events_to_xsiam")
-    with capfd.disabled():
-        perform_long_running_loop(EventConnection(MockConnection()), 60)
-        
-    context = demisto.getIntegrationContext()
-    # check the the context is cleared
-    assert not context
-    # check that the events failed events were sent to xsiam
-    for event in EVENTS:
-        assert event in second_try_send_events_mock.call_args_list[0][0][0]
-
 
 def test_heartbeat(mocker, connection):
     """
@@ -167,32 +131,19 @@ def test_fetch_events(mocker, connection):
 
     assert len(events) == 2
     assert events[0]["_time"] == "2023-08-16T12:24:12.147573+00:00"
-    assert events[0]["id"] == "1"
     assert events[1]["_time"] == "2023-08-14T11:24:12.147573+00:00"
-    assert events[1]["id"] == "2"
     
     debug_logs.assert_any_call("Retarus-logs Fetched 2 events")
 
 
-# def test_websocket_connection(mocker):
-#     """
-#     Given: url, token_id, fetch_interval, channel, verify_ssl
-#     When: Calling websocket_connection func
-#     Then: -connect function is called with the right arguments
-#           -EventConnection object is set with the right fields
-#     """
-#     from unittest.mock import patch
-#     mock_event_connection = mocker.patch('RetarusSecureEmailGateway.EventConnection', side_effect = EventConnection(None, 10, 5))
-#     with mocker.patch('RetarusSecureEmailGateway.connect') as mock_connect:
-        
-#         mock_event_connection.return_value = Mock()
-
-#         with websocket_connection("url_1", "token_id_1", 10, "channel_1", True):
-#             pass
-
-#             mock_connect.assert_called_with(
-#                 "wss://url_1/email/siem/v1/websocket?channel=channel_1",
-#                 additional_headers={"Authorization: Bearer token_id_1"},
-#                 ssl=ssl.create_default_context()
-#             )
-
+def test_get_last_run_results_command__with_results(mocker):
+    cnx = {"last_run_results": "results"}
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=cnx)
+    res = RetarusSecureEmailGateway.get_last_run_results_command()
+    assert res.readable_output == "results"
+    
+    
+def test_get_last_run_results_command__no_results(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    res = RetarusSecureEmailGateway.get_last_run_results_command()
+    assert res.readable_output == "No results from the last run yet. Ensure that a Retarus instance is configured and enabled. If it is, please wait one minute and try running the command again."

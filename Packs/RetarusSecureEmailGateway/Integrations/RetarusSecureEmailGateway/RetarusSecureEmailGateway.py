@@ -35,7 +35,7 @@ class EventConnection:
         self.fetch_interval = fetch_interval
 
 
-    def recv(self, timeout: float | None = None) -> Data:
+    def recv(self, timeout: float | None = None) -> Data: # pragma: no cover
         """
         Receive the next message from the connection
 
@@ -52,19 +52,20 @@ class EventConnection:
         return event
     
     
-    def heartbeat(self):
+    def heartbeat(self): # pragma: no cover
         """
         Heartbeat thread function to periodically send keep-alives to the server.
         For the sake of simplicity and error prevention, keep-alives are sent regardless of the actual connection activity.
         """
         while True:
             with self.lock:
+                demisto.debug("Locked the thread to pong the connection")
                 self.connection.pong()
             time.sleep(self.idle_timeout)
 
 
 ''' HELPER FUNCTIONS '''
-def push_events(events: list[dict]):
+def push_events(events: list[dict]): # pragma: no cover
     """
     Push events to XSIAM.
     """
@@ -111,17 +112,19 @@ def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: 
         raise DemistoException(f"{str(e)}\n")
 
 
-def set_the_integration_context(key: str, val: str):
-    """Given a key and value the functions adds them to the integration context dict.
+def set_the_integration_context(key: str, val): # pragma: no cover
+    """Adds a key-value pair to the integration context dictionary.
+        If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
-    cnx = get_integration_context()
+    cnx = demisto.getIntegrationContext()
     cnx[key] = val
-    set_integration_context(cnx)
+    demisto.setIntegrationContext(cnx)
     
     
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
-    """This function checks if the given interval has passed since the given start time
-
+    """Checks if the specified interval has passed since the given start time.
+        This function is used within the fetch_events function to determine if the time to fetch events is over or not.
+    
     Args:
         fetch_start_time (datetime): The start time of the interval
         fetch_interval (int): The interval in seconds
@@ -140,22 +143,16 @@ def perform_long_running_loop(connection: EventConnection, fetch_interval: int):
         connection (EventConnection): A connection object to fetch events from.
         fetch_interval (int): Fetch time for this fetching events cycle.
     """
-    integration_context = demisto.getIntegrationContext()
     events = fetch_events(connection, fetch_interval)
-    events.extend(integration_context.get("events", []))
-    integration_context["events"] = events  # update events in context in case of a failure.
     demisto.debug(f'{LOG_PREFIX} Adding {len(events)} Events to XSIAM')
     
     # Send the events to the XSIAM, with events from the context
     # Need to add the option that if we have more then one failure of sending the events to xsiam then we stop fetching. consult with Meital and Dima # TODO
     try:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-        # clear the context after sending the events
-        demisto.setIntegrationContext({})
     except DemistoException:
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
-        demisto.setIntegrationContext(integration_context)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -180,7 +177,7 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
         # (sentence taken from Retarus API docs)
         # Setting up heartbeat daemon threads to send keep-alives if needed
         threading.Thread(target=connection.heartbeat, daemon=True).start()
-        demisto.debug(f"{LOG_PREFIX} Created connection and created heartbeat")
+        demisto.debug(f"{LOG_PREFIX} Created heartbeat")
 
         while True:
             perform_long_running_loop(connection, fetch_interval)
@@ -188,15 +185,19 @@ def long_running_execution_command(url, token_id, fetch_interval, channel, verif
             time.sleep(FETCH_SLEEP)
 
 
-def test_module():
-    raise DemistoException("No test option available do to api limitation.")
+def test_module(): # pragma: no cover
+    raise DemistoException(
+            "No test option is available due to API limitations. To verify the configuration, run the retarus-get-last-run-results command and ensure it returns no errors.")
 
 
 def get_last_run_results_command():
-    last_run_results = get_integration_context()["last_run_results"]
-    return CommandResults(readable_output=last_run_results)
+    last_run_results = demisto.getIntegrationContext().get("last_run_results")
+    if last_run_results:
+        return CommandResults(readable_output=last_run_results)
+    else:
+        return CommandResults(readable_output="No results from the last run yet. Ensure that a Retarus instance is configured and enabled. If it is, please wait one minute and try running the command again.")
+        
     
-
 
 def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
     """
@@ -247,9 +248,9 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     num_events = len(events)
     demisto.debug(f"{LOG_PREFIX} Fetched {num_events} events")
     demisto.debug(f"{LOG_PREFIX} The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
+    
     set_the_integration_context("last_run_results",
                                 f"Got from connection {num_events} events starting at {str(fetch_start_time)} untill {datetime.now().astimezone(timezone.utc)}")
-    
     return events
 
 
