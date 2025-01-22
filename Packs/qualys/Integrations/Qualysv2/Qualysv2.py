@@ -793,7 +793,8 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-host-list-detection": {
-        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list",
+        # show detection score `QDS` and score contributing factors `QDS_FACTORS`
+        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -1670,10 +1671,18 @@ class Client(BaseClient):
 
         return response.text
 
-    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[Union[str, bytes], bool]:
+    def get_host_list_detection(
+        self,
+        since_datetime: str,
+        next_page: str | None = None,
+        limit: int = HOST_LIMIT,
+    ) -> tuple[Union[str, bytes], bool]:
         """
         Make a http request to Qualys API to get assets
         Args:
+            since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
+            next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
+            limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
         Returns:
             response from Qualys API
         Raises:
@@ -1684,6 +1693,8 @@ class Client(BaseClient):
         params: dict[str, Any] = {
             "truncation_limit": limit,
             "vm_scan_date_after": since_datetime,
+            "show_qds": 1,  # Show host detection score `QDS` and score contributing factors `QDS_FACTORS`
+            "show_qds_factors": 1,
         }
         timeout = (60, 150)  # (Connection Timeout, Read Timeout)
         if next_page:
