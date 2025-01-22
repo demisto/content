@@ -20,7 +20,7 @@ The value can be found under the **Access Gateway Base URL** field on the **Clou
 
 #### Auth Server URL
 
-The value can be found under the **Authentication Server URL** field on the **Cloud Service** screen.
+The value can be found under the **Authorization Server URL** field on the **Cloud Service** screen.
 
 #### Export Profiles
 
