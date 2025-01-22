@@ -1,4 +1,4 @@
-name: Squid Parsing Rule
+id: Squid_ParsingRule
 id: Squid_ParsingRule
 fromversion: 8.4.0
 tags: []

@@ -1,5 +1,5 @@
 name: FireEyeNX Parsing Rule
-id: FireEyeNX Parsing Rule
+id: FireEye_Network_Security_(NX)_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''
