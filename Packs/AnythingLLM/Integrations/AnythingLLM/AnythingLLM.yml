@@ -252,9 +252,11 @@ script:
     description: Delete a thread in a workspace.
     name: anyllm-workspace-thread-delete
   - arguments:
-    - name: workspace
+    - description: Name of the workspace
+      name: workspace
       required: true
-    - name: thread
+    - description: Thread to delete
+      name: thread
     description: Get the conversation for a workspace thread.
     name: anyllm-workspace-thread-chats
   dockerimage: demisto/python3:3.11.10.116949
