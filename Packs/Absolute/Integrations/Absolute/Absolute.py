@@ -400,6 +400,23 @@ class ClientV3(BaseClient):
         events = json.loads(response_content_json_str)
         return events
 
+    def fetch_events_with_pagination(self, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> tuple[
+        List[Dict[str, Any]], str]:
+        all_events = []
+        while len(all_events) < fetch_limit:
+            page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
+            query_string = prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date, end_date=end_date,
+                                                                 next_page=next_page_token)
+            response = self.fetch_events(query_string=query_string)
+            events = response.get('data', [])
+            all_events.extend(events)
+            next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
+            if not next_page_token:
+                break
+
+        demisto.debug(f'run_fetch_mechanism: Fetched {len(all_events)} events')
+        return all_events, next_page_token
+
 
 def sign(key, msg):
     return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
@@ -987,16 +1004,21 @@ def get_device_location_command(args, client) -> CommandResults:
 
 def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     next_page_token = last_run.get('next_page_token', '')
-    last_run_latest_events = last_run.get('latest_events_id')
+    last_run_latest_events_id = last_run.get('latest_events_id')
     last_end_date = last_run.get('end_date', '')
     last_start_date = last_run.get('start_date', '')
     end_date = datetime.utcnow()
 
+    # start_date = datetime.strptime(last_start_date, "%Y-%m-%d %H:%M:%S") if next_page_token else (
+    #     datetime.strptime(last_end_date, "%Y-%m-%d %H:%M:%S") if last_end_date else end_date - timedelta(minutes=1))
+
+    # TODO: remove this temp start_date
     start_date = datetime.strptime(last_start_date, "%Y-%m-%d %H:%M:%S") if next_page_token else (
-        datetime.strptime(last_end_date, "%Y-%m-%d %H:%M:%S") if last_end_date else end_date - timedelta(minutes=1))
+        datetime.strptime(last_end_date, "%Y-%m-%d %H:%M:%S") if last_end_date else end_date - timedelta(minutes=7))
+    # TODO: remove this temp start_date
 
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {next_page_token=}, {last_run=}')
-    all_events, next_page_token = run_fetch_mechanism(client, fetch_limit, next_page_token, start_date, end_date)
+    all_events, next_page_token = client.fetch_events_with_pagination(client, fetch_limit, next_page_token, start_date, end_date)
     if not all_events:
         return [], {
             'next_page_token': '',
@@ -1004,13 +1026,8 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
             'end_date': end_date.strftime("%Y-%m-%d %H:%M:%S"),
             'latest_events_id': []}
 
-    if last_run_latest_events:  # handle duplication
-        filtered_events = [event for event in all_events if event['id'] not in last_run_latest_events]
-        all_events = filtered_events
-        demisto.debug(
-            f'Handle duplicate events: Found {len(all_events) - len(filtered_events)} duplicated events. Exist {len(filtered_events)} new events')
-
-    events, latest_events_id = add_time_field_to_events_and_get_latest_events(all_events)
+    events, latest_events_id = handle_duplication_and_add_time_field_to_events_and_get_latest_events(all_events,
+                                                                                                     last_run_latest_events_id)
     demisto.debug(f'fetch_events: {latest_events_id=}')
     return events, {
         'next_page_token': next_page_token,
@@ -1019,50 +1036,45 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
         'latest_events_id': latest_events_id}
 
 
-def run_fetch_mechanism(client: ClientV3, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> \
-    tuple[List[Dict[str, Any]], str]:
-    all_events = []
-    while len(all_events) < fetch_limit:
-        page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
-        query_string = prepare_query_string_for_fetch_events(page_size=page_size, start_date=start_date, end_date=end_date,
-                                                             next_page=next_page_token)
-        response = client.fetch_events(query_string=query_string)
-        events = response.get('data', [])
-        all_events.extend(events)
-        next_page_token = response.get('metadata', {}).get('pagination', {}).get('nextPage', '')
-        if not next_page_token:
-            break
-
-    demisto.debug(f'run_fetch_mechanism: Fetched {len(all_events)} events')
-    return all_events, next_page_token
-
-
-def add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]], should_get_latest_events: bool = True) -> tuple[
+def handle_duplication_and_add_time_field_to_events_and_get_latest_events(events: List[Dict[str, Any]],
+                                                                          last_run_latest_events_id: List[str],
+                                                                          should_get_latest_events: bool = True) -> tuple[
     List[Dict[str, Any]], List[str]]:
-    demisto.debug("Adding _time field to events and optionally getting the latest events id")
+
+    demisto.debug("Handle duplicate events, adding _time field to events and optionally getting the latest events id")
+    earliest_event_time = events[0].get('eventDateTimeUtc')
     latest_event_time = events[-1].get('eventDateTimeUtc')
     latest_events_id = []
+    filtered_events = []
     for event in events:
-        # adding time field
         event_time = event.get('eventDateTimeUtc')
+        # handle duplication
+        if event_time == earliest_event_time and event.get('id') in last_run_latest_events_id:
+            continue
+        # adding time field
         event['_time'] = event_time
         # latest events batch
         if should_get_latest_events and event_time == latest_event_time:
             latest_events_id.append(event.get('id'))
+        filtered_events.append(event)
 
-    return events, latest_events_id
+    return filtered_events, latest_events_id
 
 
-def get_events(args, client) -> tuple[List[Dict[str, Any]], CommandResults]:
+def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
     end_date = arg_to_datetime(args.get('end_date', "now"))
-    start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
+    # start_date = arg_to_datetime(args.get('start_date', "one minute ago"))
+    # TODO: remove this temp start_date
+    start_date = arg_to_datetime(args.get('start_date', "7 days ago"))
+    # TODO: remove this temp start_date
     fetch_limit = int(args.get('limit', 50))
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
 
-    events, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
-    events, _ = add_time_field_to_events_and_get_latest_events(events, should_get_latest_events=False)
+    events, _ = client.fetch_events_with_pagination(client, fetch_limit, '', start_date, end_date)
     demisto.debug(f'get_events: Found {len(events)} events. {events=}')
+    if events:
+        events, _ = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events, should_get_latest_events=False)
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
 
 
@@ -1161,7 +1173,7 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'absolute-device-get-events':
             demisto.debug(f'Fetching Absolute Device events with the following parameters: {args}')
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events, command_result = get_events(args=args, client=client_v3)
+            events, command_result = get_events(client=client_v3, args=args)
             if should_push_events and events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)

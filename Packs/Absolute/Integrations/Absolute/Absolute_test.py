@@ -152,7 +152,9 @@ def absolute_client_v3():
                     verify=False,
                     base_url='https://api.absolute.com',
                     token_id='token',
-                    secret_key='secret')
+                    secret_key='secret',
+                    headers={}
+                    )
 
 
 def util_load_json(path):
