@@ -44,6 +44,7 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 script:
   script: ""
   type: python

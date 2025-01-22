@@ -74,7 +74,7 @@ def push_events(events: list[dict]):  # pragma: no cover
 
 
 @contextmanager
-def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: str, verify_ssl: bool):
+def websocket_connection(url: str, token_id: str, fetch_interval: int, channel: str, verify_ssl: bool):  # pragma: no cover
     """
     Create a connection to the api.
 
