@@ -145,7 +145,7 @@ class TestsActiveDirectory:
 
         ad_username = client._get_ad_username(user_logon_name)
         assert ad_username == expected_ad_username
-    
+
     @pytest.mark.parametrize('user_logon_name', [
         ('test*'),
         ('test?test'),
@@ -166,7 +166,6 @@ class TestsActiveDirectory:
             client._has_wildcards_in_ad_logon(user_logon_name)
         assert 'Wildcards were detected in the user logon name' in e.value.args[0]
         assert user_logon_name in e.value.args[0]
-
 
     @pytest.mark.parametrize('connection_type, expected_auto_bind_value', [
         ('Start TLS', 'TLS_BEFORE_BIND'),
@@ -244,8 +243,7 @@ class TestsOpenLDAP:
         with pytest.raises(Exception) as e:
             client._is_valid_dn(dn, client.USER_IDENTIFIER_ATTRIBUTE)
         assert e.value.args[0] == f'OpenLDAP {user_identifier_attribute} attribute was not found in user DN : {dn}'
-    
-    
+
     @pytest.mark.parametrize('user_logon_name, user_dn', [
         ('test*', 'uid=test,cn=Users,dc=openldaptest'),
         ('tes?t', 'uid=test,cn=Users,dc=openldaptest')
