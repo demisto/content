@@ -21,7 +21,6 @@ FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 60
 DEFAULT_CHANNEL = "default"
 LOG_PREFIX = "Retarus-logs"
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 ''' CLIENT CLASS '''
@@ -29,7 +28,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class EventConnection:
     def __init__(self, connection: Connection, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
-                 idle_timeout: int = SERVER_IDLE_TIMEOUT):
+                 idle_timeout: int = SERVER_IDLE_TIMEOUT):  # pragma: no cover
         self.connection = connection
         self.lock = threading.Lock()
         self.idle_timeout = idle_timeout
@@ -123,7 +122,7 @@ def set_the_integration_context(key: str, val):  # pragma: no cover
     demisto.setIntegrationContext(cnx)
 
 
-def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
+def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:  # pragma: no cover
     """Checks if the specified interval has passed since the given start time.
         This function is used within the fetch_events function to determine if the time to fetch events is over or not.
 

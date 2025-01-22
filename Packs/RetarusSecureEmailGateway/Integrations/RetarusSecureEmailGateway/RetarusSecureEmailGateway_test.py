@@ -1,4 +1,3 @@
-import json
 import uuid
 import pytest
 import demistomock as demisto
@@ -7,7 +6,6 @@ import RetarusSecureEmailGateway
 from RetarusSecureEmailGateway import (
     fetch_events,
     json,
-    demisto,
     datetime,
     timedelta,
     Connection,

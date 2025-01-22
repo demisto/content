@@ -21,6 +21,7 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - defaultvalue: default
   display: Channel name
   section: Collect
