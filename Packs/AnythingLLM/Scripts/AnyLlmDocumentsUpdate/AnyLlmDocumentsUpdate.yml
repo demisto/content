@@ -1,8 +1,8 @@
 args:
 - name: new
-  description: field new value
+  description: field new value.
 - name: old
-  description: field old value
+  description: field old value.
 comment: When an action is requested in the documents grid field, executes the requested action (Embed or Delete) on a document in the LLM. "Delete" removes the document from the LLM's document catalog, and "Embed" adds the vector embedding of the document to the current workspace.
 commonfields:
   id: AnyLlmDocumentsUpdate
