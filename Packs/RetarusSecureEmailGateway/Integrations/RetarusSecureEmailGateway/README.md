@@ -1,4 +1,4 @@
-Integrate RetarusSecureEmailGateway to seamlessly fetch events and enhance email security.
+Integrate Retarus Secure Email Gateway to seamlessly fetch events and enhance email security.
 
 ## Configure RetarusSecureEmailGateway Event Collector on Cortex XSIAM
 

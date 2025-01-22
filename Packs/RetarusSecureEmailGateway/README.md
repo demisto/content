@@ -2,6 +2,6 @@
 # Retarus Secure Email Gateway
 This pack includes Cortex XSIAM content. 
 
-Integrate RetarusSecureEmailGateway to seamlessly fetch events from SecureEmailGateway by Retarus and enhance email security.
+Integrate Retarus Secure Email Gateway to seamlessly fetch events from Secure Email Gateway by Retarus and enhance email security.
 
 </~XSIAM>
