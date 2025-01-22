@@ -974,8 +974,9 @@ def test_get_built_in_query_results_polling_command(mocker):
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'
 
-
 @patch('XQLQueryingEngine.get_nonce')
+@patch('CoreXQLApiModule.datetime')
+@patch('CoreXQLApiModule.hashlib.sha256')
 @patch('CoreXQLApiModule.demisto.debug')
 @patch('CoreXQLApiModule.demisto.command')
 @patch('CoreXQLApiModule.demisto.args')
@@ -984,7 +985,7 @@ def test_get_built_in_query_results_polling_command(mocker):
 @patch('CoreXQLApiModule.return_results')
 @patch('CoreXQLApiModule.return_error')
 def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_demisto_params, mock_demisto_args,
-                      mock_demisto_command, mock_demisto_debug, mock_get_nonce):
+                      mock_demisto_command, mock_demisto_debug, mock_sha256, mock_datetime, mock_get_nonce):
     """
     Given:
     - demisto.params().
@@ -995,11 +996,10 @@ def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_
     - Calling main().
 
     Then:
-    - Ensure the main() is called properly.
-
+    - Ensure the main() is called properly and the Client is initialized with the expected parameters.
     """
-    import hashlib
     from XQLQueryingEngine import main
+
     mock_demisto_params.return_value = {
         'apikey': {'password': 'test_apikey'},
         'apikey_id': {'password': 'test_apikey_id'},
@@ -1007,31 +1007,38 @@ def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_
         'insecure': False,
         'proxy': False
     }
-    mock_demisto_command.return_value = 'some_command'
     mock_demisto_args.return_value = {'arg1': 'value1'}
-    mock_get_nonce.return_value = 'random_nonce'
-    mock_Client.return_value = MagicMock()
     mock_demisto_command.return_value = 'test-module'
-    mock_return_results.return_value = None
 
-    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = f'test_apikeyrandom_nonce{timestamp}'.encode()
-    api_key_hash = hashlib.sha256(auth_key).hexdigest()
+    mock_get_nonce.return_value = 'mocked_nonce'
 
+    fixed_timestamp = 1700000000000
+    mock_datetime.now.return_value = datetime(2025, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+    mock_datetime.now().timestamp.return_value = fixed_timestamp / 1000
+
+    mock_sha256.return_value.hexdigest.return_value = 'mocked_hash'
+
+    expected_headers = {
+        'x-xdr-timestamp': str(fixed_timestamp),
+        'x-xdr-nonce': 'mocked_nonce',
+        'x-xdr-auth-id': 'test_apikey_id',
+        'Authorization': 'mocked_hash',
+    }
+
+    # Call the main function
     main()
 
+    # Assertions
     mock_demisto_debug.assert_called_once_with('Command being called is test-module')
     mock_Client.assert_called_once_with(
         base_url='http://example.com/public_api/v1',
         verify=True,
-        headers={'x-xdr-timestamp': timestamp,
-                 'x-xdr-nonce': 'random_nonce',
-                 'x-xdr-auth-id': 'test_apikey_id',
-                 'Authorization': api_key_hash},
+        headers=expected_headers,
         proxy=False,
         is_core=False
     )
     mock_return_error.assert_not_called()
+
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
