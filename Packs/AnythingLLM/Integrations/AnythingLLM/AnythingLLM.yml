@@ -252,10 +252,10 @@ script:
     description: Delete a thread in a workspace.
     name: anyllm-workspace-thread-delete
   - arguments:
-    - description: Name of the workspace
+    - description: Name of the workspace.
       name: workspace
       required: true
-    - description: Thread to delete
+    - description: Thread to delete.
       name: thread
     description: Get the conversation for a workspace thread.
     name: anyllm-workspace-thread-chats
