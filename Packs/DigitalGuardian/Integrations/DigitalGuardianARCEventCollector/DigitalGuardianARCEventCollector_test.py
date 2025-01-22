@@ -124,7 +124,7 @@ def test_get_events_command(mocker: MockerFixture, authenticated_client: Client)
     assert table_to_markdown_kwargs['t'] == expected_events
 
 
-def test_push_events(mocker: MockerFixture, authenticated_client: Client):
+def test_push_events(mocker: MockerFixture):
     """
     Given:
         - Digital Guardian ARC client and parsed events
@@ -139,7 +139,7 @@ def test_push_events(mocker: MockerFixture, authenticated_client: Client):
 
     send_events_to_xsiam = mocker.patch('DigitalGuardianARCEventCollector.send_events_to_xsiam')
 
-    push_events(authenticated_client, events, EXPORT_PROFILE)
+    push_events(events, EXPORT_PROFILE)
     send_events_to_xsiam_kwargs: dict = send_events_to_xsiam.call_args.kwargs
 
     assert send_events_to_xsiam.call_count == 1

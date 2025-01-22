@@ -112,17 +112,21 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, export_profiles: list[str]) -> str:
+def test_module(client: Client, export_profiles: list[str], export_calls_per_fetch: int) -> str:
     """
-    Tests API connectivity and authentication and validates export profiles.
+    Tests API connectivity and authentication and validates configuration parameters.
     Args:
         client (Client): Digital Guardian client to use.
         export_profiles (list): List of export profile names.
+        export_calls_per_fetch (int): Number of API calls to export events.
     Returns:
-        str: 'ok' if connection to the service is successful, an error message otherwise.
+        str: 'ok' if valid parameters and connection to the service is successful, an error message otherwise.
     Raises:
         DemistoException | Exception: If request failed.
     """
+    if export_calls_per_fetch < 0 or export_calls_per_fetch > 4:
+        return 'The number of export requests per fetch should be set to between 1 and 4'
+
     invalid_export_profiles = set()
 
     for export_profile in export_profiles:
@@ -231,7 +235,7 @@ def get_events_command(client: Client, args: dict, export_profile: str) -> tuple
     return events, last_run, CommandResults(readable_output=human_readable)
 
 
-def push_events(client: Client, events: list[dict], export_profile: str) -> None:
+def push_events(events: list[dict], export_profile: str) -> None:
     """
     Pushes events from a specific export profile to XSIAM.
 
@@ -241,7 +245,8 @@ def push_events(client: Client, events: list[dict], export_profile: str) -> None
         export_profile (str): Export profile name.
     """
     demisto.debug(f'Sending {len(events)} events to XSIAM from profile: {export_profile}.')
-    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+    # Module health updated in main() once all events from all export profiles are fetched and sent to XSIAM
+    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, should_update_health_module=False)
 
 
 def set_export_bookmark(client: Client, last_run: dict, export_profile: str) -> None:
@@ -271,6 +276,7 @@ def main() -> None:  # pragma: no cover
     # optional
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    export_calls_per_fetch = arg_to_number(params.get('export_calls_per_fetch')) or 1
 
     demisto.debug(f'{base_url=}')
 
@@ -294,7 +300,7 @@ def main() -> None:  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, export_profiles)
+            result = test_module(client, export_profiles, export_calls_per_fetch)
             return_results(result)
 
         elif command == 'digital-guardian-get-events':
@@ -305,13 +311,17 @@ def main() -> None:  # pragma: no cover
                 return_results(command_results)
 
                 if should_push_events:
-                    push_events(client, events, export_profile)
+                    push_events(events, export_profile)
 
         elif command == 'fetch-events':
-            for export_profile in export_profiles:
-                events, last_run = fetch_events(client, export_profile)
-                push_events(client, events, export_profile)
-                set_export_bookmark(client, last_run, export_profile)
+            events_count = 0
+            for _ in range(export_calls_per_fetch):
+                for export_profile in export_profiles:
+                    events, last_run = fetch_events(client, export_profile)
+                    push_events(events, export_profile)
+                    set_export_bookmark(client, last_run, export_profile)
+                    events_count += len(events)
+            demisto.updateModuleHealth({'eventsPulled': events_count})
 
         else:
             raise NotImplementedError(f'Unknown command: {command}')
