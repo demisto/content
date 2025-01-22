@@ -1025,10 +1025,8 @@ def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_
         'Authorization': 'mocked_hash',
     }
 
-    # Call the main function
     main()
 
-    # Assertions
     mock_demisto_debug.assert_called_once_with('Command being called is test-module')
     mock_Client.assert_called_once_with(
         base_url='http://example.com/public_api/v1',
