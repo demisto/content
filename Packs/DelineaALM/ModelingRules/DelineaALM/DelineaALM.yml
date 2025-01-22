@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: DelineaALM
-name: DelineaALM
+id: DelineaALM_ModelingRule
+name: DelineaALM Modeling Rule
 rules: ''
 schema: ''
 tags: ''

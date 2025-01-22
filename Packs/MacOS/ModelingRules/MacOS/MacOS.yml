@@ -1,6 +1,6 @@
 fromversion: 8.2.0
-id: MacOS
-name: MacOS
+id: MacOS_ModelingRule
+name: MacOS Modeling Rule
 rules: ''
 schema: ''
 tags: ''

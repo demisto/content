@@ -1,5 +1,5 @@
 name: GitLab Parsing Rule
-id: GitLab Parsing Rule
+id: GitLab_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

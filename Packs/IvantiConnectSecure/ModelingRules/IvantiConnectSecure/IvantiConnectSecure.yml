@@ -1,5 +1,5 @@
 fromversion: 8.2.0  # Will be updated with XSIAM version updates
-id: Ivanti_Connect_Secure_Modeling_Rules
+id: Ivanti_Connect_Secure_ModelingRule
 name: Ivanti Connect Secure Modeling Rules
 rules: ''
 schema: ''
