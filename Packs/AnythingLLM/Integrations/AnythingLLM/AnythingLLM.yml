@@ -6,6 +6,9 @@ display: AnythingLLM
 category: Utilities
 description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
 configuration:
+  sectionOrder:
+    - Connect
+    - Collect
 - section: Connect
   display: AnythingLLM URL (e.g., http://<url to local AnythingLLM>:3001) or https://<Anything LLM cloud url>
   name: url
