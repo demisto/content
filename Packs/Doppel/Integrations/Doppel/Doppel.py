@@ -269,8 +269,8 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
 
 def doppel_get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    id: str = args.get('id', None)
-    entity: str = args.get('entity', None)
+    id: str = args.get('id', "")
+    entity: str = args.get('entity', "")
     if not id and not entity:
         raise ValueError('Neither id nor the entity is specified. We need exactly single input for this command')
     if id and entity:
@@ -497,7 +497,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 def get_mapping_fields_command(client: Client, args: Dict[str, Any]):
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
     xdr_incident_type_scheme.add_field(name='queue_state', description='Queue State of the Doppel Alert')
-    return GetMappingFieldsResponse(xdr_incident_type_scheme)
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(xdr_incident_type_scheme)
+    return mapping_response
 
 
 ''' MAIN FUNCTION '''
@@ -529,16 +531,15 @@ def main() -> None:
         'doppel-create-alert': doppel_create_alert_command,
         'doppel-create-abuse-alert': doppel_create_abuse_alert_command,
     }
-    
-    demisto.info(f'Command being called is {demisto.command()}')
+    current_command: str = demisto.command()
+    demisto.info(f'Command being called is {current_command}')
     try:
         client = Client(
             base_url=base_url,
             api_key=api_key)
 
-        current_command: str = demisto.command()
         if current_command in supported_commands:
-            demisto.info(f'Command run successful: {demisto.command()}')
+            demisto.info(f'Command run successful: {current_command}')
             return_results(supported_commands[current_command](client, demisto.args()))
         else:
             demisto.error(f'Command is not implemented: {demisto.command()}')
@@ -546,7 +547,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {current_command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

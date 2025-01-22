@@ -41,6 +41,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  - None
   required: false
   type: 15
 - additionalinfo: For the first time fetch (or on reset of "Last Run" timestamp),
@@ -50,6 +51,18 @@ configuration:
   name: historical_days
   required: false
   type: 0
+  - display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 contentitemexportablefields:
   contentitemfields:
     definitionid: ""
@@ -80,7 +93,7 @@ name: Doppel
 script:
   commands:
   - arguments:
-    - description: The ID of the alert to retrieve details for
+    - description: The ID of the alert to retrieve details for.
       name: id
     - description: The alerted entity to retrieve details for
       name: entity
