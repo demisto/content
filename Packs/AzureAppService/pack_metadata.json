@@ -15,7 +15,8 @@
     "useCases": [],
     "keywords": [
         "Azure",
-        "App Service"
+        "App Service",
+        "Azure App Service"
     ],
     "marketplaces": [
         "marketplacev2"
