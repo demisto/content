@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "CyberInt Incident"
+        "Cyberint Incident"
     ],
     "caseInsensitive": true,
     "cliName": "cyberintclosurereason",

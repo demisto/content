@@ -1145,7 +1145,7 @@
     },
     "group": "incident",
     "id": "Cyberint Incident Layout",
-    "name": "CyberInt Incident Layout",
+    "name": "Cyberint Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "Cyberint incident layout",

@@ -6,12 +6,32 @@
         "Cyberint Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "CyberInt Alert URL ID": {
+                "Alert ID": {
                     "simple": "id"
                 },
-                "Cyberint Alert ID": {
+                "CyberInt Alert ID": {
                     "simple": "ref_id"
                 },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "CyberInt Alert Data": {
+					"complex": {
+						"filters": [],
+						"root": "alert_data",
+						"transformers": [
+							{
+								"args": {
+									"headers": {},
+									"is_auto_json_transform": {},
+									"json_transform_properties": {},
+									"title": {}
+								},
+								"operator": "JsonToTable"
+							}
+						]
+					}
+				},
                 "CyberInt Attachments": {
                     "complex": {
                         "filters": [],
@@ -19,13 +39,13 @@
                         "transformers": []
                     }
                 },
-                "Cyberint Closure reason": {
+                "CyberInt Closure reason": {
                     "simple": "closure_reason"
                 },
                 "CyberInt Closure reason Description": {
                     "simple": "closure_reason_description"
                 },
-                "Cyberint Confidence": {
+                "CyberInt Confidence": {
                     "simple": "confidence"
                 },
                 "CyberInt Created by": {
@@ -42,7 +62,7 @@
                         "transformers": []
                     }
                 },
-                "Cyberint Description": {
+                "CyberInt Description": {
                     "complex": {
                         "filters": [],
                         "root": "description",
@@ -59,7 +79,7 @@
                 "CyberInt File Type": {
                     "simple": "attachments.mimetype"
                 },
-                "CyberInt Impact": {
+                "CyberInt Impacts": {
                     "complex": {
                         "filters": [],
                         "root": "impacts",
@@ -90,7 +110,7 @@
                 "CyberInt Related IOCs": {
                     "simple": "iocs"
                 },
-                "CyberInt Related entities": {
+                "CyberInt Related Entity": {
                     "simple": "related_entities"
                 },
                 "CyberInt Source": {
@@ -102,29 +122,35 @@
                 "CyberInt Status": {
                     "simple": "status"
                 },
-                "Cyberint Tags": {
+                "CyberInt Tags": {
                     "simple": "tags"
                 },
-                "CyberInt Targeted Brand": {
+                "CyberInt Descriptors": {
+                    "simple": "tags"
+                },
+                "CyberInt Targeted Brands": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_brands",
                         "transformers": []
                     }
                 },
-                "CyberInt Targeted Vector": {
+                "CyberInt Targeted Vectors": {
                     "simple": "targeted_vectors"
                 },
-                "Cyberint Threat Actor": {
+                "CyberInt Threat Actor": {
                     "simple": "threat_actor"
                 },
-                "Cyberint Ticket ID": {
+                "name": {
+                    "simple": "alert_name"
+                },
+                "CyberInt Ticket ID": {
                     "simple": "ticket_id"
                 },
-                "Cyberint Title": {
+                "CyberInt Title": {
                     "simple": "title"
                 },
-                "Cyberint Type": {
+                "CyberInt Type": {
                     "simple": "type"
                 },
                 "Cyberint Category": {
@@ -220,11 +246,14 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "CyberInt Alert URL ID": {
+                "Alert ID": {
                     "simple": "id"
                 },
-                "Cyberint Alert ID": {
+                "CyberInt Alert ID": {
                     "simple": "ref_id"
+                },
+                "Alert Name": {
+                    "simple": "title"
                 },
                 "CyberInt Attachments": {
                     "complex": {
@@ -233,13 +262,13 @@
                         "transformers": []
                     }
                 },
-                "Cyberint Closure reason": {
+                "CyberInt Closure reason": {
                     "simple": "closure_reason"
                 },
                 "CyberInt Closure reason Description": {
                     "simple": "closure_reason_description"
                 },
-                "Cyberint Confidence": {
+                "CyberInt Confidence": {
                     "simple": "confidence"
                 },
                 "CyberInt Created by": {
@@ -248,7 +277,7 @@
                 "CyberInt Created date": {
                     "simple": "created_date"
                 },
-                "Cyberint Description": {
+                "CyberInt Description": {
                     "complex": {
                         "filters": [],
                         "root": "description",
@@ -262,7 +291,7 @@
                 "CyberInt Expert Analysis": {
                     "simple": "analysis_report.name"
                 },
-                "CyberInt Impact": {
+                "CyberInt Impacts": {
                     "complex": {
                         "filters": [],
                         "root": "impacts",
@@ -289,7 +318,7 @@
                 "CyberInt Related IOCs": {
                     "simple": "iocs"
                 },
-                "CyberInt Related entities": {
+                "CyberInt Related Entity": {
                     "complex": {
                         "filters": [],
                         "root": "related_entities",
@@ -305,14 +334,21 @@
                 "CyberInt Status": {
                     "simple": "status"
                 },
-                "Cyberint Tags": {
+                "CyberInt Tags": {
                     "complex": {
                         "filters": [],
                         "root": "tags",
                         "transformers": []
                     }
                 },
-                "CyberInt Targeted Brand": {
+                "CyberInt Descriptors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "CyberInt Targeted Brands": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_brands",
@@ -323,28 +359,31 @@
                         ]
                     }
                 },
-                "CyberInt Targeted Vector": {
+                "CyberInt Targeted Vectors": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_vectors",
                         "transformers": []
                     }
                 },
-                "Cyberint Threat Actor": {
+                "CyberInt Threat Actor": {
                     "simple": "threat_actor"
                 },
-                "Cyberint Ticket ID": {
+                "CyberInt Ticket ID": {
                     "complex": {
                         "filters": [],
                         "root": "ticket_id",
                         "transformers": []
                     }
                 },
-                "Cyberint Title": {
+                "CyberInt Title": {
                     "simple": "title"
                 },
-                "Cyberint Type": {
+                "CyberInt Type": {
                     "simple": "type"
+                },
+                "CyberInt Vulnerable CName Record": {
+                    "simple": "alert_data.vulnerable_cname_record"
                 },
                 "Cyberint Category": {
                     "simple": "category"
