@@ -1,6 +1,5 @@
 id: IPv6 extraction test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: IPv6 extraction test
 description: Test the flow of IPv6 extraction in XSOAR.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -80,6 +80,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -359,7 +360,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: fe80::123::5678
+              simple: 'fe80::123::5678'
     continueonerrortype: ""
     view: |-
       {
@@ -1046,4 +1047,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
-dirtyInputs: true
+fromversion: 6.5.0
