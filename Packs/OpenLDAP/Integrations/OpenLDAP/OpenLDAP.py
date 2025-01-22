@@ -514,14 +514,13 @@ class LdapClient:
         """
         err_msg = f"Wildcards were detected in the user logon name - Input Username: {logon_name}."\
             f" Wildcards are not permitted for user authentication purposes."
-        
+
         wildcards = ['*', '?']
         for wildcard in wildcards:
             if wildcard in logon_name:
                 demisto.debug(f"LDAP Authentication - User login attempt failed - {err_msg}")
                 raise Exception(f"LDAP Authentication - Authentication failed - {err_msg}")
-                
-                
+
     def _get_auto_bind_value(self) -> str:
         """
             Returns the proper auto bind value according to the desirable connection type.
@@ -663,7 +662,7 @@ class LdapClient:
         Background:
         LDAP servers support the use of wildcards primarily through the '*' and the '?' symbols for searching entries in the
         directory. In addition, '*' and '?' are valid characters for OpenLdap usernames.
-        
+
         When the username provided by the user differs from the one retrieved from the DN in the LDAP server,
         it typically indicates that wildcards were used in the input username.
         Example: for input username: 'test*', the Base DN returned from the ldap search could be user_dn:
@@ -713,7 +712,7 @@ class LdapClient:
         """
             Implements authenticate and roles command for Active Directory.
         """
-        self._has_wildcards_in_ad_logon(username) # fail login attempt when a wildcard is used
+        self._has_wildcards_in_ad_logon(username)  # fail login attempt when a wildcard is used
         ad_username = self._get_ad_username(username)
         auto_bind = self._get_auto_bind_value()
 
@@ -816,9 +815,9 @@ class LdapClient:
             user_dn = user_data_entry.entry_dn
             self.validate_exact_username_match(username, user_dn)  # fail authentication when a wildcard is used
             username = user_dn
-        
+
         elif self._ldap_server_vendor == self.ACTIVE_DIRECTORY:
-            self._has_wildcards_in_ad_logon(username) # fail authentication when a wildcard is used
+            self._has_wildcards_in_ad_logon(username)  # fail authentication when a wildcard is used
 
         return self.authenticate_ldap_user(username, password)
 
