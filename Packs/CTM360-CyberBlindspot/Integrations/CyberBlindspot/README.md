@@ -208,6 +208,8 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.remarks | unknown | Remarks about the incident. | 
 | CyberBlindspot.RemoteIncident.first_seen | unknown | The creation date of the incident. | 
 | CyberBlindspot.RemoteIncident.last_seen | unknown | The date the incident last got updated. | 
+| CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident. (legacy) | 
+| CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated. (legacy) | 
 | CyberBlindspot.RemoteIncident.timestamp | unknown | The timestamp of when the record was created. | 
 | CyberBlindspot.RemoteIncident.card_number | unknown | The compromised card's number. | 
 | CyberBlindspot.RemoteIncident.cvv | unknown | The compromised card's Card Verification Value (CVV). | 
