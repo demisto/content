@@ -103,13 +103,13 @@ configuration:
   additionalinfo: Supports CSV values.
 - name: tlp_color
   display: Traffic Light Protocol Color
-  type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
+  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   required: false
   section: Collect
 display: FeedDomainTools
