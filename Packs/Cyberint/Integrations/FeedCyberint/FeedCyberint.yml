@@ -1,3 +1,6 @@
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Cyberint Feed
   version: -1

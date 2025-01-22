@@ -79,7 +79,7 @@
                 "CyberInt File Type": {
                     "simple": "attachments.mimetype"
                 },
-                "CyberInt Impacts": {
+                "CyberInt Impact": {
                     "complex": {
                         "filters": [],
                         "root": "impacts",
@@ -110,7 +110,7 @@
                 "CyberInt Related IOCs": {
                     "simple": "iocs"
                 },
-                "CyberInt Related Entity": {
+                "CyberInt Related entities": {
                     "simple": "related_entities"
                 },
                 "CyberInt Source": {
@@ -128,14 +128,14 @@
                 "CyberInt Descriptors": {
                     "simple": "tags"
                 },
-                "CyberInt Targeted Brands": {
+                "CyberInt Targeted Brand": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_brands",
                         "transformers": []
                     }
                 },
-                "CyberInt Targeted Vectors": {
+                "CyberInt Targeted Vector": {
                     "simple": "targeted_vectors"
                 },
                 "CyberInt Threat Actor": {
@@ -291,7 +291,7 @@
                 "CyberInt Expert Analysis": {
                     "simple": "analysis_report.name"
                 },
-                "CyberInt Impacts": {
+                "CyberInt Impact": {
                     "complex": {
                         "filters": [],
                         "root": "impacts",
@@ -318,7 +318,7 @@
                 "CyberInt Related IOCs": {
                     "simple": "iocs"
                 },
-                "CyberInt Related Entity": {
+                "CyberInt Related entities": {
                     "complex": {
                         "filters": [],
                         "root": "related_entities",
@@ -348,7 +348,7 @@
                         "transformers": []
                     }
                 },
-                "CyberInt Targeted Brands": {
+                "CyberInt Targeted Brand": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_brands",
@@ -359,7 +359,7 @@
                         ]
                     }
                 },
-                "CyberInt Targeted Vectors": {
+                "CyberInt Targeted Vector": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_vectors",
