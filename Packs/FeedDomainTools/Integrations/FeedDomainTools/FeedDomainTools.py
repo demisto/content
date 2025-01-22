@@ -75,8 +75,8 @@ class DomainToolsClient(BaseClient):
             f"Fetching DomainTools {feed_type_name} feed type with params: {query_params}"
         )
 
-        response = self._http_request("GET", url_suffix=f"{self.FEED_URL}/{self.feed_type}/", params=query_params, headers={
-                                      "Content-Type": "application/json"}, resp_type="text", raise_on_status=True)
+        response = self._http_request("GET", url_suffix=f"{self.FEED_URL}/{self.feed_type}/",
+                                      params=query_params, resp_type="text", raise_on_status=True)
 
         results = response.strip().split("\n") if response else []
         return results
