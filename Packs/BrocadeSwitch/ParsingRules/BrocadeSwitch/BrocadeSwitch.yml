@@ -1,4 +1,4 @@
-name: BrocadeSwitch Parsing Rule
+name: Brocade Switch Parsing Rule
 id: Brocade_Switch_ParsingRule
 fromversion: 6.10.0
 tags: []
