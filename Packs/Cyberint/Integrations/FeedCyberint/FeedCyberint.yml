@@ -15,22 +15,26 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Company Name
   additionalinfo: Company (client) name associated with Cyberint instance.
   name: client_name
   required: true
   type: 0
+  section: Connect
 - display: API Key (Leave empty. Fill in the API Key in the password field.)
   displaypassword: API access token
   name: access_token
   hiddenusername: true
   type: 9
   required: true
+  section: Connect
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"
   type: 8
   required: false
+  section: Collect
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Good
@@ -42,6 +46,7 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
   required: false
+  section: Collect
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -55,6 +60,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -65,6 +71,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Which indicator types to fetch
   defaultvalue: All
   display: Indicator Type
@@ -77,6 +84,7 @@ configuration:
   - File
   required: true
   type: 16
+  section: Collect
 - display: Feed Name
   name: feed_name
   defaultvalue: All
@@ -92,18 +100,21 @@ configuration:
   - anonymization
   required: true
   type: 16
+  section: Collect
 - additionalinfo: Confidence about the indicator details. The value of confidence to fetch indicators from. The value between 0-100.
   display: Confidence
   name: confidence_from
   defaultvalue: "0"
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Severity about the indicator details. The value of severity to fetch indicators from. The value between 0-100.
   display: Severity
   name: severity_from
   defaultvalue: "0"
   type: 0
   required: false
+  section: Collect
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -114,35 +125,42 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
+  section: Collect
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
   required: false
+  section: Collect
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "240"
   type: 19
   required: false
+  section: Collect
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: "true"
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
