@@ -2,7 +2,7 @@
     "name": "Server Message Block (SMB)",
     "description": "File exchange with an SMB server.",
     "support": "xsoar",
-    "currentVersion": "2.0.18",
+    "currentVersion": "2.0.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
