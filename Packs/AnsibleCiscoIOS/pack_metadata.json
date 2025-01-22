@@ -2,7 +2,7 @@
     "name": "Ansible Cisco IOS",
     "description": "Manage and control Cisco IOS based network devices.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
