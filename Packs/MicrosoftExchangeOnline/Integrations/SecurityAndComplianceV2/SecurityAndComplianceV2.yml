@@ -47,6 +47,7 @@ configuration:
   name: credentials_app_id
   required: false
   type: 9
+  section: Connect
   displaypassword: Password
   hiddenpassword: true
 - display: Trust any certificate (not secure)
