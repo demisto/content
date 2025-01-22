@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = "Dynatrace"
 PRODUCT = "Platform"
-EVENTS_TYPE_DICT = {"Vulnerability": ("securityProblems", "vul_limit"), "Audit logs": ("auditLogs", "audit_limit"), "APM": ("events", "apm_limit")}
+EVENTS_TYPE_DICT = {"Audit logs": ("auditLogs", "audit_limit"), "APM": ("events", "apm_limit")}
 
 
 """ CLIENT CLASS """
@@ -35,8 +35,6 @@ class Client(BaseClient):
         
         scopes = []
         
-        if "Vulnerability" in events_to_fetch:
-            scopes.append("securityProblems.read")
         if "Audit logs" in events_to_fetch:
             scopes.append("auditLogs.read")
         if "APM" in events_to_fetch:
@@ -60,10 +58,6 @@ class Client(BaseClient):
         return raw_response  # TODO test how response returns and return the token within it
     
     
-    def get_vulnerability_events(self, params: dict):
-        return self._http_request("GET", "/api/v2/securityProblems", json_data=params, headers=self._headers)
-    
-    
     def get_audit_logs_events(self, params: dict):
         return self._http_request("GET", "/api/v2/auditlogs", json_data=params, headers=self._headers)
     
@@ -74,14 +68,12 @@ class Client(BaseClient):
 
 """ HELPER FUNCTIONS """
 
-def validate_params(url, client_id, client_secret, uuid, token, events_to_fetch, vul_max, audit_max, apm_max):
+def validate_params(url, client_id, client_secret, uuid, token, events_to_fetch, audit_max, apm_max):
     
     if not ((client_id and client_secret and uuid and not token) or (token and not client_id and not client_secret and not uuid)):
         raise DemistoException("When using OAuth 2, ensure to specify the client ID, client secret, and Account UUID. When using a personal access token, make sure to specify the access token. It's important to include only the required parameters for each type and avoid including any extra parameters.")
     if not events_to_fetch:
         raise DemistoException("Please specify at least one event type to fetch.")
-    if not vul_max > 0 and not vul_max <= 2500:
-        raise DemistoException("Thee maximum number of vulnerability events per fetch needs to be grater than 0 and not more than 2500")
     if not audit_max > 0 and not audit_max <= 2500:
         raise DemistoException("The maximum number of audit logs events per fetch needs to be grater then 0 and not more then then 25000")
     if not apm_max > 0 and not apm_max <= 25000:
@@ -90,7 +82,7 @@ def validate_params(url, client_id, client_secret, uuid, token, events_to_fetch,
 
 """ COMMAND FUNCTIONS """
 
-def fetch_events(client: Client, events_to_fetch: list, vul_limit: int, audit_limit: int, apm_limit: int):
+def fetch_events(client: Client, events_to_fetch: list, audit_limit: int, apm_limit: int):
     
     integration_context = demisto.getIntegrationContext()
     
@@ -101,14 +93,13 @@ def fetch_events(client: Client, events_to_fetch: list, vul_limit: int, audit_li
     
     integration_context_to_save = {}
     events_to_return = []
-    vul_count, audit_count, apm_count = 0, 0, 0
+    audit_count, apm_count = 0, 0
     
     for _ in range(0, 5):
         
         # TODO In the first time integration_context will be empty and there won't be a next page value in it, in this case the query function will not send an empty arg in the json body, the api has a default from date that can be used in the first fetch, need to see what happens when I send a nextPage, the api adds a from date? which one does it look at?
         
-        args = {"vul_limit": min(vul_limit-vul_count, 500), "audit_limit": min(audit_limit-audit_count, 5000), "apm_limit": min(apm_limit-apm_count,1000),
-          "Vulnerability_next_page": integration_context.get("Vulnerability_next_page"),
+        args = {"audit_limit": min(audit_limit-audit_count, 5000), "apm_limit": min(apm_limit-apm_count,1000),
           "Audit logs_next_page": integration_context.get("Audit logs_next_page"),
           "APM_next_page": integration_context.get("APM_next_page")}
         
@@ -129,7 +120,6 @@ def add_fields_to_events(events, event_type):
     # TODO ask sara if we need the word 'events' in the end of the type, I don't think we usually do so.
     
     field_mapping = {
-        "Vulnerability": {"SOURCE_LOG_TYPE": "Vulnerability events", "_time": "firstSeenTimestamp"},
         "Audit logs": {"SOURCE_LOG_TYPE": "Audit logs events", "_time": "timestamp"},
         "APM events": {"SOURCE_LOG_TYPE": "APM events", "_time": "startTime"}
     }
@@ -150,18 +140,13 @@ def get_events_command(client: Client, args: dict):
         response = events_query(client, args, event_type)
         events = add_fields_to_events(response[EVENTS_TYPE_DICT[event_type[0]]], event_type)
         events_to_return.extend(events)
-        # send_events_to_xsiam(events_to_return, vendor=VENDOR, product=PRODUCT) move this to main
     
     return events_to_return  # Make a human readable
 
 
 def test_module(client: Client, events_to_fetch: List[str]) -> str:
-    
-    # TODO change this function to use query function
-    
+
     try:
-        if "Vulnerability" in events_to_fetch:
-            client.get_vulnerability_events({"pageSize": 1})
         if "Audit logs" in events_to_fetch:
             client.get_audit_logs_events({"pageSize": 1})
         if "APM" in events_to_fetch:
@@ -174,14 +159,10 @@ def test_module(client: Client, events_to_fetch: List[str]) -> str:
 
 
 def events_query(client: Client, args: dict, event_type: str):
-    #
-    if event_type == "Vulnerability":
-        events = client.get_vulnerability_events({key: value for key, value in {"pageSize": args.get("vul_limit"), "from": args.get("vul_from"), "nextPageKey": args.get("Vulnerability_next_page")}.items() if value})
-    elif event_type == "Audit logs":
+    if event_type == "Audit logs":
         events = client.get_audit_logs_events({key: value for key, value in {"pageSize": args.get("audit_limit"), "from": args.get("audit_from"), "nextPageKey": args.get("Audit logs_next_page")}.items() if value})
     elif event_type == "APM":
         events = client.get_audit_logs_events({key: value for key, value in {"pageSize": args.get("apm_limit"), "from": args.get("apm_from"), "nextPageKey": args.get("APM_next_page")}.items() if value})
-    # TODO add needed fields for every event with calling a new function
     return events
 
 
@@ -196,7 +177,6 @@ def main():
     uuid = params.get('uuid')
     token = params.get('token')
     events_to_fetch = argToList(params.get('events_to_fetch'))
-    vul_limit = arg_to_number(params.get('vul_limit')) or 1000
     audit_limit = arg_to_number(params.get('audit_limit'))  or 25000
     apm_limit = arg_to_number(params.get('apm_limit'))  or 25000
     validate_params(url, client_id, client_secret, uuid, token, events_to_fetch, vul_limit, audit_limit, apm_limit)
@@ -220,12 +200,12 @@ def main():
         elif command == "dynatrace-get-events":
             result = get_events_command(client, args)
         elif command == "fetch-events":
-            result = fetch_events(client, events_to_fetch, vul_limit, audit_limit, apm_limit)
+            result = fetch_events(client, events_to_fetch, audit_limit, apm_limit)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
         return_results(
             result
-        )  # Returns either str, CommandResults and a list of CommandResults
+        )
     
     # Log exceptions and return errors
     except Exception as e:

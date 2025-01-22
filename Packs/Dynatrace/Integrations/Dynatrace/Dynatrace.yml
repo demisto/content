@@ -43,20 +43,13 @@ configuration:
 - display: Event types to fetch
   name: events_to_fetch
   type: 16
-  defaultvalue: Vulnerability,Audit logs,APM
+  defaultvalue: Audit logs,APM
   required: true
   section: Collect
   advanced: true
   options:
-  - Vulnerability
   - Audit logs
   - APM
-- display: The maximum number of vulnerability events per fetch
-  section: Collect
-  advanced: true
-  default: 2500
-  type: 0
-  name: vul_limit
 - display: The maximum number of audit logs events per fetch
   section: Collect
   advanced: true
@@ -87,14 +80,9 @@ script:
       description: comma separated list of events types to get
       auto: PREDEFINED
       predefined:
-      - Vulnerability
       - Audit logs
       - APM
       required: true
-    - name: vul_from
-      description: The start date for searching vulnerability events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
-    - name: vul_to
-      description: The end date for retrieving vulnerability events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
     - name: audit_logs_from
       description: The start date for searching audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
     - name: audit_logs_to
@@ -103,17 +91,13 @@ script:
       description: The start date for searching apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
     - name: apm_to
       description: The end date for retrieving apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/application-security/vulnerabilities/get-vulnerabilities fpr more information.
-    - name: vul_limit
-      required: true
-      description: Number of vulnerability events to fetch from each event type that was chosen.
-      defaultValue: "1"
     - name: audit_limit
       required: true
-      description: Number of audit_logs events to fetch from each event type that was chosen.
+      description: Number of audit_logs events to fetch.
       defaultValue: "1"
     - name: apm_limit
       required: true
-      description: Number of apm events to fetch from each event type that was chosen.
+      description: Number of apm events to fetch.
       defaultValue: "1"
     - auto: PREDEFINED
       defaultValue: "False"
