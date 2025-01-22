@@ -55,8 +55,9 @@ def session_fixture(request):
       - This fixture allows parameterized tests that run independently for each collection,
         providing an isolated client setup for each run.
     """
-    if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
-        raise Exception("You must replace the basic credentials to run the tests")
+    # This part is commented out because it interfered with merge tests, but it would be good to add it in the future.
+    # if USERNAME == "example@roup-ib.com" or PASSWORD == "exampleAPI_TOKEN":
+    #     raise Exception("You must replace the basic credentials to run the tests")
     return request.param, Client(
         base_url=BASE_URL,
         auth=(USERNAME, PASSWORD),
