@@ -2,7 +2,7 @@
     "name": "Beyond Trust Remote Support",
     "description": "enables support organizations to access and support nearly any remote computer or mobile device.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["Remote Support", "Remote" , "Bomgar"],
+    "keywords": [
+        "Remote Support",
+        "Remote",
+        "Bomgar"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
