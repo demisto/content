@@ -1,88 +1,204 @@
 {
-    "schemaVersion": "1.3",
-    "id": "WB-9002-20220909-00111",
+    "schemaVersion": "1.12",
+    "id": "WB-9002-20220906-00025",
     "investigationStatus": "New",
+    "status": "Open",
+    "investigationResult": "No Findings",
     "workbenchLink": "https://THE_WORKBENCH_URL",
-    "alertProvider": "TI",
-    "modelId": "report--12ea4e6c-2b13-44e4-94a9-4cc8da461258",
-    "model": "Threat Intelligence Sweeping",
+    "alertProvider": "SAE",
+    "modelId": "1ebd4f91-4b28-40b4-87f5-8defee4791d8",
+    "model": "Possible Credential Dumping via Registry",
     "modelType": "preset",
-    "campaign": "null",
-    "industry": "null",
-    "regionAndCountry": "null",
-    "createdBy": "n/a",
-    "totalIndicatorCount": 9,
-    "matchedIndicatorCount": 1,
-    "reportLink": "https://THE_TI_REPORT_URL",
-    "score": 42,
-    "severity": "medium",
-    "createdDateTime": "2022-09-09T09:04:36Z",
-    "updatedDateTime": "2022-09-09T09:04:36Z",
+    "description": "A user obtained account logon information that can be used to access remote systems via Windows Registry.",
+    "score": 64,
+    "severity": "high",
+    "firstInvestigatedDateTime": "2022-10-06T02:30:31Z",
+    "createdDateTime": "2022-09-06T02:49:33Z",
+    "updatedDateTime": "2022-09-06T02:49:52Z",
+    "incidentId": "IC-1-20230706-00001",
+    "caseId": "CL-1-20230706-00001",
+    "ownerIds": [
+        "12345678-1234-1234-1234-123456789012"
+    ],
     "impactScope": {
-        "desktopCount": 2,
+        "desktopCount": 1,
         "serverCount": 0,
-        "accountCount": 0,
-        "emailAddressCount": 0,
-        "containerCount": 0,
+        "accountCount": 1,
+        "emailAddressCount": 1,
+        "containerCount": 1,
+        "cloudIdentityCount": 1,
         "entities": [
             {
-                "entityType": "host",
-                "entityValue": {
-                    "guid": "2E7EC0A5-6686-4BE0-BAF8-AD3C2DA19A0D",
-                    "name": "M1-Max",
-                    "ips": ["10.64.25.134"]
-                },
-                "entityId": "2E7EC0A5-6686-4BE0-BAF8-AD3C2DA19A0D",
-                "managementScopeGroupId": "deadbeef-292e-42ae-86be-d2fef483a248",
-                "relatedEntities": [],
-                "relatedIndicatorIds": [1],
-                "provenance": ["Alert"]
+                "entityType": "account",
+                "entityValue": "shockwave\\sam",
+                "entityId": "shockwave\\sam",
+                "relatedEntities": [
+                    "35FA11DA-A24E-40CF-8B56-BAF8828CC15E"
+                ],
+                "relatedIndicatorIds": [],
+                "provenance": [
+                    "Alert"
+                ]
             },
             {
                 "entityType": "host",
                 "entityValue": {
-                    "guid": "D7E9EC75-4072-2D48-01EF-7A6A95FAD384",
-                    "name": "testdeMacBook-Pro",
-                    "ips": ["10.64.18.27"]
+                    "guid": "35FA11DA-A24E-40CF-8B56-BAF8828CC15E",
+                    "name": "nimda",
+                    "ips": [
+                        "10.10.58.51"
+                    ]
                 },
-                "entityId": "D7E9EC75-4072-2D48-01EF-7A6A95FAD384",
+                "entityId": "35FA11DA-A24E-40CF-8B56-BAF8828CC15E",
                 "managementScopeGroupId": "deadbeef-292e-42ae-86be-d2fef483a248",
+                "managementScopeInstanceId": "1babc299-52de-44f4-a1d2-8a224f391eee",
+                "managementScopePartitionKey": "4c1850c0-8a2a-4637-9f88-6afbab54dd79",
+                "relatedEntities": [
+                    "shockwave\\sam"
+                ],
+                "relatedIndicatorIds": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ],
+                "provenance": [
+                    "Alert"
+                ]
+            },
+            {
+                "entityType": "emailAddress",
+                "entityValue": "support@pctutordetroit.com",
+                "entityId": "SUPPORT@PCTUTORDETROIT.COM",
                 "relatedEntities": [],
-                "relatedIndicatorIds": [1],
-                "provenance": ["Alert"]
+                "relatedIndicatorIds": [],
+                "provenance": [
+                    "Alert"
+                ]
+            },
+            {
+                "entityType": "container",
+                "entityValue": "k8s_democon_longrunl_default_09451f51-7124-4aa5-a5c4-ada24efe9da9_0",
+                "entityId": "7d1e00176d78b2b1db0744a187314bf2ce39f3a7d43137c366ae6785e8a4f496",
+                "relatedEntities": [],
+                "relatedIndicatorIds": [],
+                "provenance": [
+                    "Alert"
+                ]
+            },
+            {
+                "entityType": "cloudIdentity",
+                "entityValue": "arn:aws:sts::985266316733:assumed-role/aad-admin/loki",
+                "entityId": "arn:aws:sts::985266316733:assumed-role/aad-admin/loki",
+                "relatedEntities": [],
+                "relatedIndicatorIds": [],
+                "provenance": [
+                    "Alert"
+                ]
             }
         ]
     },
     "indicators": [
         {
             "id": 1,
-            "type": "filename",
-            "fields": [[]],
-            "value": "goog-phish-proto-1.vlpset",
+            "type": "command_line",
+            "field": "objectCmd",
+            "value": "c:\\windows\\system32\\reg.exe save hklm\\security security.hive /y",
             "relatedEntities": [
-                "2E7EC0A5-6686-4BE0-BAF8-AD3C2DA19A0D",
-                "D7E9EC75-4072-2D48-01EF-7A6A95FAD384"
+                "35FA11DA-A24E-40CF-8B56-BAF8828CC15E"
             ],
-            "matchedIndicatorPatternIds": [
-                "3d206434-58eb-42e4-8355-44ddd394850c"
+            "filterIds": [
+                "f4b062e6-f363-4620-8473-eb929bc9f134"
             ],
-            "firstSeenDateTimes": [
-                "2022-07-27T03:00:47.000Z",
-                "2022-08-16T09:15:06.000Z"
+            "provenance": [
+                "Alert"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "command_line",
+            "field": "processCmd",
+            "value": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe -nop -noni -w hidden -enc .......wasqbfafga",
+            "relatedEntities": [
+                "35FA11DA-A24E-40CF-8B56-BAF8828CC15E"
             ],
-            "lastSeenDateTimes": [
-                "2022-07-28T01:25:52.000Z",
-                "2022-08-17T07:05:34.000Z"
+            "filterIds": [
+                "f4b062e6-f363-4620-8473-eb929bc9f134"
             ],
-            "provenance": ["Alert"]
+            "provenance": [
+                "Alert"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "command_line",
+            "field": "parentCmd",
+            "value": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe -nop -noni -w hidden -c $x=$((gp hkcu:software\\microsoft\\windows update).update); powershell -nop -noni -w hidden -enc $x",
+            "relatedEntities": [
+                "35FA11DA-A24E-40CF-8B56-BAF8828CC15E"
+            ],
+            "filterIds": [
+                "f4b062e6-f363-4620-8473-eb929bc9f134"
+            ],
+            "provenance": [
+                "Alert"
+            ]
+        },
+        {
+            "id": 4,
+            "type": "fullpath",
+            "field": "processFilePath",
+            "value": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe",
+            "relatedEntities": [
+                "35FA11DA-A24E-40CF-8B56-BAF8828CC15E"
+            ],
+            "filterIds": [
+                "f4b062e6-f363-4620-8473-eb929bc9f134"
+            ],
+            "provenance": [
+                "Alert"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "text",
+            "field": "endpointHostName",
+            "value": "Nimda",
+            "relatedEntities": [
+                "35FA11DA-A24E-40CF-8B56-BAF8828CC15E"
+            ],
+            "filterIds": [
+                "f4b062e6-f363-4620-8473-eb929bc9f134"
+            ],
+            "provenance": [
+                "Alert"
+            ]
         }
     ],
-    "matchedIndicatorPatterns": [
+    "matchedRules": [
         {
-            "id": "3d206434-58eb-42e4-8355-44ddd394850c",
-            "pattern": "[file:name = 'goog-phish-proto-1.vlpset']",
-            "tags": ["STIX2.malicious-activity"],
-            "matchedLogs": ["Lengthy log string"]
+            "id": "b23bc903-ecfb-4052-90a0-167adb93abb7",
+            "name": "Potential Credential Dumping via Registry",
+            "matchedFilters": [
+                {
+                    "id": "f4b062e6-f363-4620-8473-eb929bc9f134",
+                    "name": "Possible Credential Dumping via Registry Hive",
+                    "matchedDateTime": "2022-09-05T03:38:48.000Z",
+                    "mitreTechniqueIds": [
+                        "V9.T1003.004",
+                        "V9.T1003.002",
+                        "T1003"
+                    ],
+                    "matchedEvents": [
+                        {
+                            "uuid": "79c65387-271b-4335-a02d-06aa12b7c5c6",
+                            "matchedDateTime": "2022-09-05T03:38:48.000Z",
+                            "type": "TELEMETRY_PROCESS"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

@@ -16,31 +16,27 @@ The SolarWinds integration requires installation of SolarWinds Orion Platform wh
 
 Follow this [link](https://documentation.solarwinds.com/en/success_center/orionplatform/content/install-new-deployment.htm) to view a comprehensive guide on how to install Orion and the managed products.
 
-## Configure SolarWinds on Cortex XSOAR
+## Configure SolarWinds in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SolarWinds.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Name or IP address of the Orion server | Name or IP address of the Orion server you want to connect to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2 | True |
-    | Username of the account | Admin can create users such as guests from the Orion platform and provide access permission according to need. | True |
-    | Type of incident to be fetched | Note: 'Type of incident to be fetched' and 'Incident type' should be the same to fetch similar types of incidents. | False |
-    | Maximum number of incidents per fetch | The maximum limit is 1000. | False |
-    | First fetch time interval | Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. \( Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
-    | Severity levels | Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.<br/>Note: Severity level is only available for alerts. | False |
-    | Object Types | Filter alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query command. | False |
-    | Event Types | Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use query 'SELECT Name FROM Orion.EventTypes' in swis-query command. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Name or IP address of the Orion server | Name or IP address of the Orion server you want to connect to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2 | True |
+| Username of the account | Admin can create users such as guests from the Orion platform and provide access permission according to need. | True |
+| Type of incident to be fetched | Note: 'Type of incident to be fetched' and 'Incident type' should be the same to fetch similar types of incidents. | False |
+| Maximum number of incidents per fetch | The maximum limit is 1000. | False |
+| First fetch time interval | Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. \( Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
+| Severity levels | Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.<br/>Note: Severity level is only available for alerts. | False |
+| Object Types | Filter alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query command. | False |
+| Event Types | Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use query 'SELECT Name FROM Orion.EventTypes' in swis-query command. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### swis-event-list
@@ -378,4 +374,3 @@ There is no context output for this command.
 >| 18543 | 2021-04-20T06:39:32.4330000Z |
 >| 18542 | 2021-04-19T18:45:11.7730000Z |
 >| 18541 | 2021-04-19T18:44:10.5730000Z |
-

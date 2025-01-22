@@ -7,36 +7,22 @@ from taxii2client import v20, v21
 import pytest
 import json
 
-with open('test_data/stix_envelope_no_indicators.json') as f:
-    STIX_ENVELOPE_NO_IOCS = json.load(f)
-
-with open('test_data/stix_envelope_17-19.json') as f:
-    STIX_ENVELOPE_17_IOCS_19_OBJS = json.load(f)
-
-with open('test_data/stix_envelope_complex_20-19.json') as f:
-    STIX_ENVELOPE_20_IOCS_19_OBJS = json.load(f)
-
-with open('test_data/cortex_parsed_indicators_17-19.json') as f:
-    CORTEX_17_IOCS_19_OBJS = json.load(f)
-
-with open('test_data/cortex_parsed_indicators_complex_20-19.json') as f:
-    CORTEX_COMPLEX_20_IOCS_19_OBJS = json.load(f)
-
-with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json') as f:
-    CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
-with open('test_data/id_to_object_test.json') as f:
-    id_to_object = json.load(f)
-with open('test_data/parsed_stix_objects.json') as f:
-    parsed_objects = json.load(f)
-with open('test_data/objects_envelopes_v21.json') as f:
-    envelopes_v21 = json.load(f)
-with open('test_data/objects_envelopes_v20.json') as f:
-    envelopes_v20 = json.load(f)
-
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(f'test_data/{path}.json', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+STIX_ENVELOPE_NO_IOCS = util_load_json('stix_envelope_no_indicators')
+STIX_ENVELOPE_17_IOCS_19_OBJS = util_load_json('stix_envelope_17-19')
+STIX_ENVELOPE_20_IOCS_19_OBJS = util_load_json('stix_envelope_complex_20-19')
+CORTEX_17_IOCS_19_OBJS = util_load_json('cortex_parsed_indicators_17-19')
+CORTEX_COMPLEX_20_IOCS_19_OBJS = util_load_json('cortex_parsed_indicators_complex_20-19')
+CORTEX_COMPLEX_14_IOCS_19_OBJS = util_load_json('cortex_parsed_indicators_complex_skipped_14-19')
+id_to_object = util_load_json('id_to_object_test')
+parsed_objects = util_load_json('parsed_stix_objects')
+envelopes_v21 = util_load_json('objects_envelopes_v21')
+envelopes_v20 = util_load_json('objects_envelopes_v20')
 
 
 class MockCollection:
@@ -734,7 +720,7 @@ class TestParsingIndicators:
 
         xsoar_expected_response_with_update_custom_fields = [
             {
-                'value': 15139,
+                'value': "15139",
                 'score': Common.DBotScore.NONE,
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',
@@ -751,7 +737,7 @@ class TestParsingIndicators:
         ]
         xsoar_expected_response = [
             {
-                'value': 15139,
+                'value': "15139",
                 'score': Common.DBotScore.NONE,
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',
@@ -1696,8 +1682,8 @@ def test_create_entity_b_stix_objects_with_file_object(mocker):
     cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
                               namespace_uuid=uuid_for_cilent)
     ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
-    relationships = util_load_json('test_data/relationship_report_file.json')
-    iocs = util_load_json('test_data/ioc_for_report_relationship.json')
+    relationships = util_load_json('relationship_report_file')
+    iocs = util_load_json('ioc_for_report_relationship')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     cilent.create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
 
@@ -1718,8 +1704,8 @@ def test_create_entity_b_stix_objects_with_revoked_relationship(mocker):
     cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
                               namespace_uuid=uuid_for_cilent)
     ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
-    relationships = util_load_json('test_data/relationship_report_file.json')
-    iocs = util_load_json('test_data/ioc_for_report_relationship.json')
+    relationships = util_load_json('relationship_report_file')
+    iocs = util_load_json('ioc_for_report_relationship')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     cilent.create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
 
@@ -1735,8 +1721,8 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
         Then
             Validating the result
     """
-    xsoar_indicator = util_load_json('test_data/sco_indicator_file.json').get('objects', {})[0]
-    ioc = util_load_json('test_data/objects21_file.json').get('objects', {})[0]
+    xsoar_indicator = util_load_json('sco_indicator_file').get('objects', {})[0]
+    ioc = util_load_json('objects21_file').get('objects', {})[0]
     mocker.patch.object(XSOAR2STIXParser, 'create_sdo_stix_uuid', return_value={})
     uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
     cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(),
@@ -1747,8 +1733,8 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     assert 'pattern_type' in output
 
 
-XSOAR_INDICATORS = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
-SCO_INDICATORS = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
+XSOAR_INDICATORS = util_load_json('xsoar_sco_indicators').get('iocs', {})
+SCO_INDICATORS = util_load_json('stix_sco_indicators').get('objects', {})
 
 
 @pytest.mark.parametrize('indicator, sco_indicator', [
@@ -2147,7 +2133,7 @@ def test_get_indicator_publication():
     - run the get_indicator_publication
     Validate The grid field extracted successfully.
     """
-    data = util_load_json('test_data/indicator_publication_test.json')
+    data = util_load_json('indicator_publication_test')
     assert STIX2XSOARParser.get_indicator_publication(data.get("attack_pattern_data")[0],
                                                       ignore_external_id=True) == data.get("publications")
 
@@ -2185,8 +2171,8 @@ def test_create_relationships_objects(mocker):
     mocker.patch.object(demisto, 'getLicenseID', return_value='test')
     cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'},
                               types_for_indicator_sdo=[], namespace_uuid=uuid.uuid5(PAWN_UUID, demisto.getLicenseID()))
-    data = util_load_json('test_data/create_relationships_test.json')
-    mock_search_relationships_response = util_load_json('test_data/searchRelationships-response.json')
+    data = util_load_json('create_relationships_test')
+    mock_search_relationships_response = util_load_json('searchRelationships-response')
     mocker.patch.object(demisto, 'searchRelationships', return_value=mock_search_relationships_response)
     relationships = cilent.create_relationships_objects(data.get("iocs"), [])
     assert relationships == data.get("relationships")
@@ -2201,9 +2187,9 @@ def test_create_indicators(mocker):
     Then
     - Validates that the method properly create the indicator objects.
     """
-    mock_iocs = util_load_json('test_data/sort_ip_iocs.json')
-    mock_entity_b_iocs = util_load_json('test_data/entity_b_iocs.json')
-    expected_result = util_load_json('test_data/create_indicators_test_results.json')
+    mock_iocs = util_load_json('sort_ip_iocs')
+    mock_entity_b_iocs = util_load_json('entity_b_iocs')
+    expected_result = util_load_json('create_indicators_test_results')
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
     mocker.patch.object(demisto, 'searchIndicators', side_effect=[mock_iocs,
                                                                   mock_entity_b_iocs])
@@ -2368,3 +2354,70 @@ def test_get_mitre_attack_id_and_value_from_name(indicator_name, expected_result
     Validate The ID and value fields extracted successfully.
     """
     assert STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_name) == expected_result
+
+
+@pytest.mark.parametrize(
+    "pattern, value",
+    [
+        pytest.param("[domain-name:value = 'www.example.com']", 'www.example.com', id='case: domain'),
+        pytest.param("[file:hashes.'SHA-256' = '0000000000000000000000000000000000000000000000000000000000000000']",
+                     '0000000000000000000000000000000000000000000000000000000000000000', id='case: file hashed with SHA-256'),
+        pytest.param("[file:hashes.'MD5' = '00000000000000000000000000000000']", '00000000000000000000000000000000',
+                     id='case: file hashed with MD5'),
+        pytest.param("A regular name with no pattern", None, id='A regular name with no pattern'),
+        pytest.param(
+            ("([ipv4-addr:value = '1.1.1.1/32' OR ipv4-addr:value = '8.8.8.8/32'] "
+             "FOLLOWEDBY [domain-name:value = 'example.com']) WITHIN 600 SECONDS"),
+            '1.1.1.1/32', id='Complex pattern with multiple values'
+        ),
+    ],
+)
+def test_get_single_pattern_value(pattern, value):
+    """
+    Given
+    - A pattern with a single key-value pair.
+    When
+    - Parsing a stix pattern with the get_single_pattern_value function.
+    Then
+    - Retrieve the value from the pattern.
+    """
+    assert STIX2XSOARParser.get_single_pattern_value(pattern) == value
+
+
+def test_get_supported_pattern_comparisons():
+    """
+    Given
+    - A parsed STIX pattern.
+    When
+    - Using a parsed STIX pattern.
+    Then
+    - Retrieve only the supported patterns.
+    """
+    parsed_pattern = {
+        'ipv4-addr': [(['value'], '=', "'1.1.1.1/32'"), (['non-supported-type'], '=', "'8.8.8.8/32'")],
+        'domain-name': [(['value'], '=', "'example.com'")],
+        'non-supported-field': [(['value'], '=', "'example.com'")]
+    }
+
+    res = STIX2XSOARParser.get_supported_pattern_comparisons(parsed_pattern)
+
+    assert res == {
+        'ipv4-addr': [(['value'], '=', "'1.1.1.1/32'")],
+        'domain-name': [(['value'], '=', "'example.com'")]
+    }
+
+
+def test_extract_ioc_value():
+    """
+    Given
+    - A STIX pattern.
+    When
+    - Extracted an IOC value from a pattern.
+    Then
+    - Retrieve the IOC value.
+    """
+    pattern = "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])"
+
+    res = STIX2XSOARParser.extract_ioc_value({'pattern': pattern}, 'pattern')
+
+    assert res == '1111'

@@ -2,7 +2,7 @@
     "name": "Azure WAF",
     "description": "Azure Web Application Firewall is used to detect web related attacks targeting your web servers hosted in azure and allow quick respond to threats",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,16 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Azure",
+        "WAF",
+        "Web Application Firewall"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

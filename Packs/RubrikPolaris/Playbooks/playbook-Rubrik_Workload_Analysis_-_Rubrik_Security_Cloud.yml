@@ -1,0 +1,697 @@
+id: Rubrik Workload Analysis - Rubrik Security Cloud
+version: -1
+name: Rubrik Workload Analysis - Rubrik Security Cloud
+description: This playbook fetches workload information for the provided IPs or domains, and then increases the XSOAR incident severity based on the workload risk levels and threat information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 26498228-85c0-425c-8dc2-0c0368407ed8
+    type: start
+    task:
+      id: 26498228-85c0-425c-8dc2-0c0368407ed8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ffc3a86f-c4e3-4db4-8716-f5969a59c476
+    type: condition
+    task:
+      id: ffc3a86f-c4e3-4db4-8716-f5969a59c476
+      version: -1
+      name: Is Rubrik Security Cloud integration enabled?
+      description: Checks whether Rubrik Security Cloud integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5600df97-3517-4bf1-8ee8-1053355d9cc8
+    type: regular
+    task:
+      id: 5600df97-3517-4bf1-8ee8-1053355d9cc8
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: FoundIndicators,threatMonitoringMalicious,threatHuntMalicious,anomalySeverity,riskLevel
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 962d42be-66a6-4b12-830a-6717d28c0e9a
+    type: regular
+    task:
+      id: 962d42be-66a6-4b12-830a-6717d28c0e9a
+      version: -1
+      name: Get Indicators
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1872b686-b785-45a4-821f-0ad0ab8f4b95
+    type: regular
+    task:
+      id: 1872b686-b785-45a4-821f-0ad0ab8f4b95
+      version: -1
+      name: Check for IP indicator
+      description: Return all the detailed information available for the given IP address(es).
+      script: RubrikPolaris|||ip
+      type: regular
+      iscommand: true
+      brand: RubrikPolaris
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      extend-context:
+        simple: anomalySeverity=anomalyInfo.severity::threatHuntMalicious=threatHuntInfo.latestMaliciousThreatHunt.isMalicious::threatMonitoringMalicious=threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious::riskLevel=sensitiveInfo.riskLevel
+      ip:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.ip_addresses
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ea61438f-5e3d-4d2f-89be-f531a7e644cd
+    type: regular
+    task:
+      id: ea61438f-5e3d-4d2f-89be-f531a7e644cd
+      version: -1
+      name: Set XSOAR Incident Severity
+      description: Script used to set the XSOAR incident severity using the risk level(s) provided from the argument.
+      scriptName: RubrikSetIncidentSeverityUsingWorkLoadRiskLevel
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      anomaly_severities:
+        complex:
+          root: anomalySeverity
+      increase_severity_by:
+        complex:
+          root: inputs.increase_severity_by
+      risk_levels:
+        complex:
+          root: riskLevel
+      threat_hunt_malicious:
+        complex:
+          root: threatHuntMalicious
+      threat_monitoring_malicious:
+        complex:
+          root: threatMonitoringMalicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1075cb4a-58ad-4ce9-89f3-025627ffa221
+    type: title
+    task:
+      id: 1075cb4a-58ad-4ce9-89f3-025627ffa221
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 83eb8f64-fe43-46c8-8d74-237a17d60b1b
+    type: condition
+    task:
+      id: 83eb8f64-fe43-46c8-8d74-237a17d60b1b
+      version: -1
+      name: Check whether IPs or domains are available in playbook input
+      description: Check whether ips or domains are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ip_addresses
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.domains
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: be556a30-526d-430f-824f-e863a90f85b8
+    type: regular
+    task:
+      id: be556a30-526d-430f-824f-e863a90f85b8
+      version: -1
+      name: Check for domain indicator
+      description: Retrieve the sensitive information available for the given domain(s).
+      script: RubrikPolaris|||domain
+      type: regular
+      iscommand: true
+      brand: RubrikPolaris
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      domain:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.domains
+                iscontext: true
+      extend-context:
+        simple: anomalySeverity=anomalyInfo.severity::threatHuntMalicious=threatHuntInfo.latestMaliciousThreatHunt.isMalicious::threatMonitoringMalicious=threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious::riskLevel=sensitiveInfo.riskLevel
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c09e4bfd-0a78-49ea-8515-2569a992e090
+    type: title
+    task:
+      id: c09e4bfd-0a78-49ea-8515-2569a992e090
+      version: -1
+      name: Check for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 97143252-e0a0-4dc5-8b56-00ea7c455cc8
+    type: condition
+    task:
+      id: 97143252-e0a0-4dc5-8b56-00ea7c455cc8
+      version: -1
+      name: Check that IP indicators are present or not
+      description: Check that IP address(es) is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ip_addresses
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ad618db1-0cf1-45bc-8e9b-f61085bc12f3
+    type: condition
+    task:
+      id: ad618db1-0cf1-45bc-8e9b-f61085bc12f3
+      version: -1
+      name: Check that domain indicators are present or not
+      description: Check that domain(s) is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.domains
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c1a2dd6a-f918-49bd-857a-40f5a4be5f7e
+    type: condition
+    task:
+      id: c1a2dd6a-f918-49bd-857a-40f5a4be5f7e
+      version: -1
+      name: Check that any workload data found or not
+      description: Check that any workload data(riskLevel, threatMonitoringMalicious, threatHuntMalicious, anomalySeverity) found or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Found:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: riskLevel
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: threatMonitoringMalicious
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: threatHuntMalicious
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: anomalySeverity
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_yes": 0.46,
+      "11_6_#default#": 0.2,
+      "12_6_#default#": 0.28,
+      "12_9_yes": 0.49,
+      "13_5_Found": 0.44,
+      "13_6_#default#": 0.44,
+      "1_2_yes": 0.58,
+      "1_6_#default#": 0.23,
+      "8_10_yes": 0.32,
+      "8_3_#default#": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1805,
+        "width": 1072.5,
+        "x": 377.5,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: increase_severity_by
+  value:
+    simple: "1"
+  required: false
+  description: "Specify the level in number by which to increase the XSOAR incident severity. Only applicable if match found for the malicious threat hunt or for the malicious threat monitoring of workload.\n\nNote: The value can range from 1 to 4.\n\nExample: If the current XSOAR incident severity is 1 (Low) and the playbook is set to increase the severity by 2, the XSOAR incident severity will be set to 3 (high)."
+  playbookInputQuery:
+- key: ip_addresses
+  value: {}
+  required: false
+  description: The optional comma-separated list of IP address(es) for which to use workload information to increase the XSOAR incident severity.
+  playbookInputQuery:
+- key: domains
+  value: {}
+  required: false
+  description: The optional comma-separated list of domain(s) for which to use workload information to increase the XSOAR incident severity.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

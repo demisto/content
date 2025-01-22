@@ -1,54 +1,63 @@
 {
-  "name": "AppNovi",
-  "description": "Search your combined security data in appNovi via simplified search or search via the appNovi security graph.",
-  "support": "partner",
-  "currentVersion": "1.0.25",
-  "author": "appNovi",
-  "url": "https://appnovi.com/support",
-  "email": "",
-  "categories": ["Analytics & SIEM"],
-  "tags": [],
-  "useCases": [],
-  "keywords": [
-    "Asset intelligence",
-    "Asset attribution",
-    "Cybersecurity mesh",
-    "Cybersecurity mesh architecture",
-    "CSMA",
-    "CAASM",
-    "SIEM integration",
-    "vulnerability prioritization",
-    "vulnerability correlation",
-    "attack surface mapping",
-    "attack surface identification",
-    "Incident response enrichment",
-    "Incident response analysis",
-    "Excel replacement",
-    "Incident response reporting",
-    "CIS control 1",
-    "CIS control 2",
-    "CIS control 7",
-    "CIS control 13",
-    "Security data visualization",
-    "Security data analysis",
-    "Security data",
-    "Asset reporting"
-  ],
-  "marketplaces": ["xsoar", "marketplacev2"],
-  "githubUser": [],
-  "dependencies": {
-    "CommonTypes": {
-      "mandatory": true,
-      "display_name": "Common Types"
+    "name": "AppNovi",
+    "description": "Search your combined security data in appNovi via simplified search or search via the appNovi security graph.",
+    "support": "partner",
+    "currentVersion": "1.0.27",
+    "author": "appNovi",
+    "url": "https://appnovi.com/support",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Asset intelligence",
+        "Asset attribution",
+        "Cybersecurity mesh",
+        "Cybersecurity mesh architecture",
+        "CSMA",
+        "CAASM",
+        "SIEM integration",
+        "vulnerability prioritization",
+        "vulnerability correlation",
+        "attack surface mapping",
+        "attack surface identification",
+        "Incident response enrichment",
+        "Incident response analysis",
+        "Excel replacement",
+        "Incident response reporting",
+        "CIS control 1",
+        "CIS control 2",
+        "CIS control 7",
+        "CIS control 13",
+        "Security data visualization",
+        "Security data analysis",
+        "Security data",
+        "Asset reporting"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
     },
-    "CoreAlertFields": {
-      "mandatory": true,
-      "display_name": "Core Alert Fields"
-    },
-    "CommonScripts": {
-      "mandatory": true,
-      "display_name": "Common Scripts"
-    }
-  },
-  "displayedImages": ["CommonTypes", "CoreAlertFields", "CommonScripts"]
+    "displayedImages": [
+        "CommonTypes",
+        "CoreAlertFields",
+        "CommonScripts"
+    ]
 }

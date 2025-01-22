@@ -1200,11 +1200,15 @@ def search_applications_command(client: Client, args: dict[str, str]):
     limit = args.get("limit")
     endpoint_url = f"{API_ENDPOINT}/core/system/application/"
 
+    res: dict | list[dict] = {}
     if app_id:
         endpoint_url = f"{API_ENDPOINT}/core/system/application/{app_id}"
         res = client.do_rest_request("GET", endpoint_url)
     elif limit:
         res = client.do_rest_request("GET", endpoint_url, params={"$top": limit})
+    else:
+        res = {}
+        demisto.debug(f"No condition was met {res=}")
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1491,9 +1495,22 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
             "Found arguments to associate an attachment to a record, but not all required arguments supplied"
         )
 
-    attachment_id = upload_file_command(client, args)
+    entry_ids: list = argToList(args.get("entryId"))
+    attachment_ids: list = []
+    for entry_id in entry_ids:
+        attachment_ids.append(upload_file_command(client, {"entryId": entry_id}))
+    demisto.debug(f'All new uploaded {attachment_ids=}')
+
     if should_associate_to_record:
-        args["fieldsToValues"] = json.dumps({associate_field: [attachment_id]})
+        # Check if there are already attachments associated with this record.
+        record, _, errors = client.get_record(app_id, content_id, 0)
+        if errors:
+            return_error(errors)
+        record_attachments = record.get("Attachments", [])
+        demisto.debug(f'Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well')
+        attachment_ids.extend(record_attachments)
+        demisto.debug(f'All {attachment_ids=}')
+        args["fieldsToValues"] = json.dumps({associate_field: attachment_ids})
         update_record_command(client, args)
 
 

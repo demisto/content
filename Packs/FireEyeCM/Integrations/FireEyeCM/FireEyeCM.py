@@ -256,7 +256,7 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
         md_ = f'{INTEGRATION_NAME} released emails successfully.'
     return CommandResults(
         readable_output=md_,
-        raw_response=raw_response
+        raw_response=""
     )
 
 
@@ -273,7 +273,7 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=md_,
-        raw_response=raw_response
+        raw_response=""
     )
 
 

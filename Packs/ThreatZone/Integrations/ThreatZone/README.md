@@ -1,25 +1,21 @@
 ThreatZone malware analysis sandboxing.
 This integration was integrated and tested with ThreatZone
 
-## Configure ThreatZone on Cortex XSOAR
+## Configure ThreatZone in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ThreatZone.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. <https://app.threat.zone>) |  | True |
-    | ThreatZone API Key |  | True |
-    | Source Reliability | Reliability of the source. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. <https://app.threat.zone>) |  | True |
+| ThreatZone API Key |  | True |
+| Source Reliability | Reliability of the source. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### tz-sandbox-upload-sample

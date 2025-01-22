@@ -1,33 +1,29 @@
 ReversingLabs A1000 advanced Malware Analysis Platform.
 
 
-## Configure ReversingLabs A1000 v2 on Cortex XSOAR
+## Configure ReversingLabs A1000 v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ReversingLabs A1000 v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | ReversingLabs A1000 instance URL | True |
-    | API Token | True |
-    | Verify host certificates | False |
-    | Reliability | False |
-    | Wait time between report fetching retries (seconds). Deafult is 2 seconds. | False |
-    | Number of report fetching retries. Default is 30. | False |
-    | HTTP proxy address with the protocol and port number. | False |
-    | HTTP proxy username | False |
-    | HTTP proxy password | False |
-    | HTTPS proxy address with the protocol and port number. | False |
-    | HTTPS proxy username | False |
-    | HTTPS proxy password | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| ReversingLabs A1000 instance URL | True |
+| API Token | True |
+| Verify host certificates | False |
+| Reliability | False |
+| Wait time between report fetching retries (seconds). Deafult is 2 seconds. | False |
+| Number of report fetching retries. Default is 30. | False |
+| HTTP proxy address with the protocol and port number. | False |
+| HTTP proxy username | False |
+| HTTP proxy password | False |
+| HTTPS proxy address with the protocol and port number. | False |
+| HTTPS proxy username | False |
+| HTTPS proxy password | False |
     
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### reversinglabs-a1000-get-results
@@ -5744,6 +5740,7 @@ Retrieve classification report for a sample
 | --- | --- | --- |
 | hash | The hash of a desired sample. | Required | 
 | localOnly | Return only local classification data for the sample, without falling back to querying TitaniumCloud. Default is False. | Optional | 
+| avScanners | Return AV scanner data from TitaniumCloud. | Optional | 
 
 #### Context Output
 
@@ -10969,6 +10966,5 @@ Actions for uploading a sample from a URL and fetching the analysis results.
 >|code|detail|message|
 >|---|---|---|
 >| 201 | id: 419<br/>user: 1<br/>created: 2024-06-05T15:50:40.409482Z<br/>filename: https:<span>//</span>download.sublimetext.com/sublime_text_build_4169_x64_setup.exe | Done. |
-
 
 

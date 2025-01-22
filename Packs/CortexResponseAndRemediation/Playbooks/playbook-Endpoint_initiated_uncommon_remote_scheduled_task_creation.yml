@@ -1,0 +1,1350 @@
+id: Endpoint initiated uncommon remote scheduled task creation
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Endpoint initiated uncommon remote scheduled task creation
+description: |-
+  This playbook handles "Uncommon remote scheduled task creation" alert, which is generated on the source host that created the remote scheduled task.
+
+  Playbook Stages:
+
+  Analysis:
+
+  - The playbook verifies whether the causality process is signed and prevalent. If the process is not signed and not prevalent, it proceeds with remediation actions; otherwise, it continues investigating the alert.
+
+  Investigation:
+  
+  During the alert investigation, the playbook will perform the following:
+
+  - Searches for related Cortex XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.
+  - Searches for related Cortex XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.
+  - Searches for suspicious command-line parameters indicating a malicious scheduled task.
+
+  Remediation:
+
+  - Automatically disable the malicious scheduled task on the remote host.
+  - Automatically terminate the causality process.
+  - Automatically close the alert.
+tags:
+- TA0002 - Execution
+- T1053 - Scheduled Task/Job
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e27de70b-ada6-422e-81fe-6950a566b050
+    type: start
+    task:
+      id: e27de70b-ada6-422e-81fe-6950a566b050
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+    type: title
+    task:
+      id: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3ddedabb-1395-4234-81f5-a3b098a10721
+    type: condition
+    task:
+      id: 3ddedabb-1395-4234-81f5-a3b098a10721
+      version: -1
+      name: Is the causality process unsigned and not prevalent?
+      description: Determines the appropriate verdict based on the signature and prevalence of the causality process.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "Yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.cgosignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ababf146-0f9f-4621-8323-18c3256738ee
+    type: title
+    task:
+      id: ababf146-0f9f-4621-8323-18c3256738ee
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d6cce08c-349e-44db-807d-b6348886db73
+    type: title
+    task:
+      id: d6cce08c-349e-44db-807d-b6348886db73
+      version: -1
+      name: No evidence of malicious activity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 287b6585-4340-4fd2-8134-6ee815f90846
+    type: condition
+    task:
+      id: 287b6585-4340-4fd2-8134-6ee815f90846
+      version: -1
+      name: Found any alerts indicating this is a malicious scheduled task?
+      description: Determines whether the alert contains agent alerts indicating that the alert was part of an attack pattern.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a376a415-7a05-4085-85ff-e80b02660456
+    type: regular
+    task:
+      id: a376a415-7a05-4085-85ff-e80b02660456
+      version: -1
+      name: Close Alert - No evidence of malicious activity
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      closeNotes:
+        simple: |-
+          No Evidence of Malicious Activity:
+          - The causality process is signed and prevalent.
+          - No related alerts indicating malicious activity were found on the source host.
+          - No malicious parameters were identified in the command line.
+          - No related alerts indicating malicious activity were found on the remote host.
+      closeReason:
+        simple: Resolved - Handled by the playbook "Endpoint initiated uncommon remote scheduled task creation"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: da448fc0-16d7-49b4-892f-493b725ca59a
+    type: regular
+    task:
+      id: da448fc0-16d7-49b4-892f-493b725ca59a
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious scheduled task detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Endpoint initiated uncommon remote scheduled task creation"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9de4fea1-2efe-427d-83e7-5ca0c0ffaff1
+    type: regular
+    task:
+      id: 9de4fea1-2efe-427d-83e7-5ca0c0ffaff1
+      version: -1
+      name: Disable the scheduled task on the remote host
+      description: Disable the malicious scheduled task by executing shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "22"
+      '#none#':
+      - "69"
+    scriptarguments:
+      commands:
+        simple: powershell.exe schtasks /change /tn "${ExtractedTaskName}" /disable
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.endpoint_status
+                iscontext: true
+              right:
+                value:
+                  simple: CONNECTED
+              ignorecase: true
+          accessor: endpoint_id
+      timeout:
+        simple: "120"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 93c5df93-c13b-4e70-8ba4-8d0d405c5e56
+    type: regular
+    task:
+      id: 93c5df93-c13b-4e70-8ba4-8d0d405c5e56
+      version: -1
+      name: Disable the scheduled task manually
+      description: |-
+        Dear Analyst,
+
+        During the remediation process the playbook failed to disable the scheduled task: ${Core.OriginalAlert.event.scheduled_task_path}
+        on the remote host: ${Core.OriginalAlert.raw_abioc.event.schtasks_remote_host}
+
+        Please manually disable this scheduled task.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ff18f72c-0256-4776-823c-90dd05fdba39
+    type: title
+    task:
+      id: ff18f72c-0256-4776-823c-90dd05fdba39
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 91b0123e-c227-465b-84d6-a3c53e9a8eb4
+    type: regular
+    task:
+      id: 91b0123e-c227-465b-84d6-a3c53e9a8eb4
+      version: -1
+      name: Get scheduled task details
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+      - "77"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 5aad16e6-ce1d-45b5-8104-fd02073c0d4b
+    type: playbook
+    task:
+      id: 5aad16e6-ce1d-45b5-8104-fd02073c0d4b
+      version: -1
+      name: Command-Line Analysis
+      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n7. Suspicious path and arguments in the command line\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: alert
+          accessor: osparentcmd
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.targetprocesscmd
+                iscontext: true
+          - operator: uniq
+      StringSimilarityThreshold:
+        simple: "0.5"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b6d11f6e-a28a-459a-8004-bec570e4b02a
+    type: title
+    task:
+      id: b6d11f6e-a28a-459a-8004-bec570e4b02a
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6d96992e-fe69-4b71-8e3c-9f64ce6a2aec
+    type: title
+    task:
+      id: 6d96992e-fe69-4b71-8e3c-9f64ce6a2aec
+      version: -1
+      name: Investigation on remote host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: c9cda634-644d-4c93-8cc6-e1fa36a29e2f
+    type: condition
+    task:
+      id: c9cda634-644d-4c93-8cc6-e1fa36a29e2f
+      version: -1
+      name: Found any alerts of malicious activity on the remote host?
+      description: Determines if there are agent alerts on the remote host indicating that the alert was part of an attack pattern.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: e9832b8f-c70f-45f0-8ba4-d7f746daa77b
+    type: title
+    task:
+      id: e9832b8f-c70f-45f0-8ba4-d7f746daa77b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a62156c1-5f66-4cc7-8cf5-53be739b6549
+    type: regular
+    task:
+      id: a62156c1-5f66-4cc7-8cf5-53be739b6549
+      version: -1
+      name: Search for related alerts by name and MITRE Technique
+      description: "This task searches for related suspicious alerts by MITRE technique and specific alert names to determine if this alert is part of an attack pattern. \nFocus on identifying alerts from the past 5 hours on the endpoint associated with:\n\nMITRE Technique: \n- T1018 - Remote System Discovery\n\nAlerts:\n- \"WildFire Malware\"\n- \"Local Analysis Malware\"\n- \"Behavioral Threat\"\n\nThe findings may indicate whether this alert is part of an attack pattern."
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      fromdate:
+        simple: 5 hours ago
+      query:
+        simple: (mitreattcktechnique:*T1018* or name:"WildFire Malware" or name:"Local Analysis Malware" or name:"Behavioral Threat") and agentid:${alert.agentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 3dca7f38-a58c-4c1c-8a67-e28182e1216a
+    type: title
+    task:
+      id: 3dca7f38-a58c-4c1c-8a67-e28182e1216a
+      version: -1
+      name: Command-line Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: be97ffb8-982a-489c-8d0a-c45eb6618a1f
+    type: condition
+    task:
+      id: be97ffb8-982a-489c-8d0a-c45eb6618a1f
+      version: -1
+      name: Found any malicious Command-line parameters?
+      description: Determines the appropriate verdict based on the results of the command-line analysis.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "Yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.AMSI
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.maliciousTools
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.networkActivity
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.SuspiciousLolbinExecution
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict.SuspiciousCmdPathAndArguments
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: e2846c17-8044-43e0-881e-17219cfa784c
+    type: regular
+    task:
+      id: e2846c17-8044-43e0-881e-17219cfa784c
+      version: -1
+      name: Notify to War Room - Scheduled Task Disabled
+      description: Prints text to War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      value:
+        simple: "Dear Analyst,\n\nDuring the remediation process the playbook executed a shell command to disable the following scheduled task: \n${ExtractedTaskName}\n\nThe task was disabled on the following remote endpoint: \n${Core.OriginalAlert.raw_abioc.event.schtasks_remote_host}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: ba4fa808-bf46-4d09-8491-24e0aa59c3ee
+    type: regular
+    task:
+      id: ba4fa808-bf46-4d09-8491-24e0aa59c3ee
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 1666967d-c2af-4352-82f0-0d17d99b391f
+    type: condition
+    task:
+      id: 1666967d-c2af-4352-82f0-0d17d99b391f
+      version: -1
+      name: Has the script disabled the task successfully?
+      description: Verify if the script successfully disabled the task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: Core.ScriptResult.results.standard_output
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: dfc8da1d-2f1d-4c5a-8de9-d2381c34b396
+    type: regular
+    task:
+      id: dfc8da1d-2f1d-4c5a-8de9-d2381c34b396
+      version: -1
+      name: Extract the name and path of the scheduled task
+      description: Extract the name and path of the malicious scheduled task and sets the value in context key 'ExtractedTaskName'.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: ExtractedTaskName
+      value:
+        complex:
+          root: alert
+          accessor: targetprocesscmd
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i).*tn\s(.*?)\s\/
+              unpack_matches: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 8ef473cd-2dc1-46a1-805e-fa179910603d
+    type: regular
+    task:
+      id: 8ef473cd-2dc1-46a1-805e-fa179910603d
+      version: -1
+      name: Search for related alerts by name and MITRE Technique
+      description: |
+        This task searches for suspicious related alerts on the remote endpoint using MITRE techniques. It focuses on identifying alerts from the past 3 hours associated with the following techniques:
+        - T1202 - Indirect Command Execution
+        - T1021 - Remote Services
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      fromdate:
+        simple: 3 hours ago
+      query:
+        simple: (mitreattcktechnique:*T1202* or mitreattcktechnique:*T1021*) and -name:"Uncommon remote scheduled task created" and agentid:${Core.Endpoint.endpoint_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 4be27c4b-ad83-46b4-868b-795a35647cd0
+    type: regular
+    task:
+      id: 4be27c4b-ad83-46b4-868b-795a35647cd0
+      version: -1
+      name: Get remote endpoint details
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of the endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      hostname:
+        simple: ${Core.OriginalAlert.raw_abioc.event.schtasks_remote_host}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: a2bad801-d912-45ec-8ac6-5ece49400caa
+    type: condition
+    task:
+      id: a2bad801-d912-45ec-8ac6-5ece49400caa
+      version: -1
+      name: Is the XDR agent installed on the remote endpoint?
+      description: Checks whether the Cortex XDR agent is installed on the remote endpoint.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 36164015-8f07-4e5b-873d-024f66adb228
+    type: condition
+    task:
+      id: 36164015-8f07-4e5b-873d-024f66adb228
+      version: -1
+      name: Is the XDR agent install and connected on the remote endpoint?
+      description: Checks whether the Cortex XDR agent is installed and connected on the remote endpoint.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.endpoint_status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CONNECTED
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: f54e9a6f-1a23-438f-8fbb-69aa1bab715e
+    type: regular
+    task:
+      id: f54e9a6f-1a23-438f-8fbb-69aa1bab715e
+      version: -1
+      name: Get Causality process prevalence
+      description: Get the prevalence of a process, identified by process_name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      process_name:
+        simple: ${alert.cgoname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 5ec26302-ebf5-44f0-820f-608303db5477
+    type: regular
+    task:
+      id: 5ec26302-ebf5-44f0-820f-608303db5477
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "79"
+      '#none#':
+      - "13"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 008355c5-1a8d-4320-89be-537f43d295e8
+    type: regular
+    task:
+      id: 008355c5-1a8d-4320-89be-537f43d295e8
+      version: -1
+      name: Terminate Causality Process Manually
+      description: |
+        Dear Analyst,
+
+        During the remediation process, the playbook failed to terminate the causality process: ${alert.cgoname}
+        Please investigate this before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 3790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 15daefa9-4061-4aed-845a-473010c4b749
+    type: title
+    task:
+      id: 15daefa9-4061-4aed-845a-473010c4b749
+      version: -1
+      name: Remediation on the Remote Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 74d0a222-b7d3-487e-8904-027e7a972231
+    type: title
+    task:
+      id: 74d0a222-b7d3-487e-8904-027e7a972231
+      version: -1
+      name: Remediation on the Source Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_22_#error#": 0.37,
+      "2_3_Yes": 0.12,
+      "32_3_yes": 0.29,
+      "66_3_Yes": 0.19,
+      "70_22_#default#": 0.66,
+      "70_67_yes": 0.52,
+      "75_5_#default#": 0.6,
+      "75_73_yes": 0.41,
+      "76_22_#default#": 0.27,
+      "76_72_yes": 0.47,
+      "78_79_#error#": 0.51,
+      "8_3_yes": 0.13
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4425,
+        "width": 1780,
+        "x": 0,
+        "y": -240
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0

@@ -20,7 +20,8 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
     list_alert_rule_template_command, delete_alert_rule_command, validate_required_arguments_for_alert_rule, \
-    create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command
+    create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command, \
+    extract_classification_reason
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1660,8 +1661,8 @@ def test_update_remote_system_command(mocker):
     (IncidentStatus.DONE, False, {}, False),  # delta is empty
     (IncidentStatus.DONE, False, {'classification': 'FalsePositive'}, False),  # delta have only closing fields
     (IncidentStatus.DONE, False, {'title': 'Title'}, True),  # delta have fields except closing fields
-    (IncidentStatus.ACTIVE, True, {}, True),
-    (IncidentStatus.ACTIVE, False, {}, True),
+    (IncidentStatus.ACTIVE, True, {}, False),  # delta is empty and close_incident_in_remote is False
+    (IncidentStatus.ACTIVE, False, {'title': 'Title'}, True),
     (IncidentStatus.PENDING, True, {}, False),
 ])
 def test_update_remote_incident(mocker, incident_status, close_incident_in_remote, delta, expected_update_call):
@@ -1707,42 +1708,57 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
 
 @pytest.mark.parametrize("data, delta, mocked_fetch_data, expected_response, close_ticket", [
     (   # Update description of active incident.
-        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 1},
+        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc'},
         {'title': 'Title', 'description': 'old desc', 'severity': 'Medium', 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'severity': 'Medium', 'status': 'Active'},
         False
     ),
+    (   # Update runStatus (not mirror field) of active incident - shouldn't run the update,
+        # and will return {}
+        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 'New'},
+        {'runStatus': 'running'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Medium', 'status': 'New'},
+        {},
+        False
+    ),
+    (   # Update runStatus (not mirror field) of Closed incident - should close the ticket,
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 'New'},
+        {'runStatus': 'running', 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+        True
+    ),
     (   # Update description and classification and close incident.
-        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
         {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
     (   # Update description and classification of active incident without closing. Result in description update only.
-        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
         {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
         {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Active'},
         False
     ),
     (   # Update title and close incident with classification already in data. Result in closing with classification.
-        {'title': 'Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 1, 'status': 'Active', 'classification': 'Undetermined'},
         {'title': 'Title'},
         {'title': 'Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
         {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
     (  # Update labels of active incident when no labels exist.
-        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': []},
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 'Active', 'tags': []},
         {'title': 'Title', 'tags': ['Test']},
         {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active'},
         {'title': 'Title', 'severity': 'Medium', 'status': 'Active', 'labels': [{'labelName': 'Test', 'type': 'User'}]},
         False
     ),
     (   # Update labels of active incident when a label already exist.
-        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': ['Test']},
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 'Active', 'tags': ['Test']},
         {'title': 'Title', 'tags': ['Test2']},
         {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active',
          'properties': {'labels': [{'labelName': 'Test', 'type': 'User'}]}},
@@ -1766,7 +1782,7 @@ def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expecte
     mocker.patch.object(client, 'http_request', return_value=mocked_fetch_data)
 
     update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
-    assert client.http_request.call_args[1]['data'].get('properties') == expected_response
+    assert not expected_response or client.http_request.call_args[1]['data'].get('properties') == expected_response
 
 
 @pytest.mark.parametrize("args", [
@@ -2112,3 +2128,45 @@ def test_update_incident_with_client_changed_etag(mocker):
 
     assert http_request_mock.call_count == 2
     assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
+
+
+@pytest.mark.parametrize(
+    "delta, data, expected",
+    [
+        (
+            {
+                "classification": "FalsePositive",
+                "classificationReason": "InaccurateData",
+            },
+            {},
+            "InaccurateData",
+        ),
+        (
+            {"classification": "FalsePositive"},
+            {"classificationReason": "SystemError"},
+            "SystemError",
+        ),
+        ({"classification": "FalsePositive"}, {}, "InaccurateData"),
+        (
+            {
+                "classification": "TruePositive",
+                "classificationReason": "InaccurateData",
+            },
+            {},
+            "SuspiciousActivity",
+        ),
+        ({}, {"classification": "BenignPositive"}, "SuspiciousButExpected"),
+        ({}, {}, ""),
+    ],
+    ids=[
+        "FalsePositive classification with specific reason in delta",
+        "FalsePositive classification with reason in data",
+        "FalsePositive classification without specific reason",
+        "TruePositive classification with default reason",
+        "No classification in delta, but classification in data",
+        "No classification in delta or data",
+    ],
+)
+def test_extract_classification_reason(delta, data, expected):
+    result = extract_classification_reason(delta, data)
+    assert result == expected

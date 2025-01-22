@@ -1,26 +1,22 @@
 Use the Google Maps API. This integration was integrated and tested with version 3.43 of the Google Maps API. This integration always uses the latest API version.
-## Configure GoogleMaps on Cortex XSOAR
+## Configure GoogleMaps in Cortex
 
 ### Note
 In order to use the embedded Google Maps view, make sure a Google Maps Geocoding API key is set in Cortex XSOAR.
 
 ---
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GoogleMaps.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
-   | Google Maps API Key | The API key to use for the connection. | True |
-   | Raise error an empty result | Whether to consider empty results as an error. | False |
-   | Base URL |  | True |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Google Maps API Key | The API key to use for the connection. | True |
+| Raise error an empty result | Whether to consider empty results as an error. | False |
+| Base URL |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-maps-geocode
 ***

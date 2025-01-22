@@ -42,4 +42,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tufin - Enrich IP Address(es)](https://raw.githubusercontent.com/demisto/content/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Enrich%20a%20Single%20IP%20Address.png)
+![Tufin - Enrich IP Address(es)](../doc_files/tufin_-_Enrich_a_single_ip_address.png)

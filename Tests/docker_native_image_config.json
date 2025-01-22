@@ -330,8 +330,56 @@
             "ignored_native_images": [
                 "native:8.6"
             ]
+        },
+        {
+            "id": "DateStringToISOFormat",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Forescout",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FireEye ETP Event Collector",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FormattedDateToEpoch",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "TimeComponents",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DarktraceMBs",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "OnePassword",
+            "reason": "CIAC-12024, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
         }
-
     ],
     "flags_versions_mapping": {
         "native:dev": "native:dev",

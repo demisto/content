@@ -275,7 +275,7 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
@@ -284,13 +284,13 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.User.kind
-      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj
+      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj.
       type: String
     - contextPath: CiscoASA.Rules.User.value
       description: The user value.
@@ -375,7 +375,7 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
@@ -384,13 +384,13 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.User.kind
-      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj
+      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj.
       type: String
     - contextPath: CiscoASA.Rules.User.value
       description: The user value.
@@ -521,7 +521,7 @@ script:
     - auto: PREDEFINED
       description: Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range.
       name: time_range
-    - description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object
+    - description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object.
       name: user
     - auto: PREDEFINED
       description: The type of the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj.
@@ -530,7 +530,7 @@ script:
       - LocalUserObjGroup
       - UserGroupObj
       - UserObj
-    - description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
+    - description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group.
       name: source_security
     - auto: PREDEFINED
       description: The source security type.
@@ -539,7 +539,7 @@ script:
       - SecurityName
       - SecurityTag
       - SecurityObjGroup
-    - description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
+    - description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group.
       name: destination_security
     - auto: PREDEFINED
       description: The destination security type.
@@ -609,7 +609,7 @@ script:
       description: The object ID of objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.User.kind
-      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj
+      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj.
       type: String
     - contextPath: CiscoASA.Rules.User.value
       description: The user value.
@@ -754,7 +754,7 @@ script:
       - LocalUserObjGroup
       - UserGroupObj
       - UserObj
-    - description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
+    - description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group.
       name: source_security
     - auto: PREDEFINED
       description: The source security type.
@@ -763,7 +763,7 @@ script:
       - SecurityName
       - SecurityTag
       - SecurityObjGroup
-    - description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
+    - description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group.
       name: destination_security
     - auto: PREDEFINED
       description: The destination security type.
@@ -833,7 +833,7 @@ script:
       description: The object ID of objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.User.kind
-      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj
+      description: One of AnyUser, NoneUser, objectRef#LocalUserObjGroup, objectRef#UserGroupObj, objectRef#UserObj.
       type: String
     - contextPath: CiscoASA.Rules.User.value
       description: The user value.
@@ -913,7 +913,7 @@ script:
     - contextPath: CiscoASA.Interface.Type
       description: The type of interface.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   type: python

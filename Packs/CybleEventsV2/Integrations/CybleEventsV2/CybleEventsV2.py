@@ -219,8 +219,8 @@ def format_incidents(alerts, hide_cvv_expiry):
     :return: incidents to feed into XSOAR
     """
     events: List[dict[str, Any]] = []
-    try:
-        for alert in alerts:
+    for alert in alerts:
+        try:
             if hide_cvv_expiry and alert['service'] == 'compromised_cards':
                 alert['data_message']['data']['bank']['card']['cvv'] = "xxx"
                 alert['data_message']['data']['bank']['card']['expiry'] = "xx/xx/xxxx"
@@ -255,10 +255,7 @@ def format_incidents(alerts, hide_cvv_expiry):
                     "card_type": card_details.get('type')
                 })
             elif alert.get('service') == 'stealer_logs':
-
-                data_message = alert.get('data_message')
-                data_message1 = data_message.get('data')
-                content = data_message1.get('content')
+                content = alert['data_message']['data'].get('content')
                 if content:
                     alert_details.update({
                         "application": content.get('Application'),
@@ -271,11 +268,10 @@ def format_incidents(alerts, hide_cvv_expiry):
                 })
 
             events.append(alert_details)
-
-        return events
-    except Exception as e:
-        demisto.debug(f'Unable to format incidents, error: {e}')
-        raise Exception(f"Error: [{e}] for response [{alerts}]")
+        except Exception as e:
+            demisto.debug(f'Unable to format incidents, error: {e}')
+            continue
+    return events
 
 
 def fetch_service_details(client, base_url, token):

@@ -173,6 +173,9 @@ def create_id(event: dict, log_type: str) -> str:
         src_asset_id = event.get("src", {}).get("assetId", "")
         dst_asset_id = event.get("dst", {}).get("assetId", "")
         combined_string = f"{timestamp}-{src_asset_id}-{dst_asset_id}"
+    else:
+        combined_string = ""
+        demisto.debug(f"{log_type=} didn't match any condition. {combined_string=}")
 
     hash_object = hashlib.sha256(combined_string.encode())
     return hash_object.hexdigest()

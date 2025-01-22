@@ -8,7 +8,7 @@ import traceback
 from abc import ABC
 from datetime import datetime
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Union
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -55,7 +55,7 @@ class Client(BaseClient):
         self.min_severity = min_severity
         self.host_incident_limit = host_incident_limit
 
-    def get_project_issues(self, snapshot: str) -> Dict:
+    def get_project_issues(self, snapshot: str) -> dict:
         """
         Gets all the issues triggered for a particular snapshot
 
@@ -69,7 +69,7 @@ class Client(BaseClient):
             url_suffix=f'/rules/{self.project_id}/{snapshot}/issues'
         )
 
-    def get_recent_issues(self, last_run: Union[str, int]) -> Dict:
+    def get_recent_issues(self, last_run: str | int) -> dict:
         """
         Lookup the added issues after a certain date
 
@@ -84,7 +84,7 @@ class Client(BaseClient):
                        f'classification={MIN_SEVERITY_MAPPING[self.min_severity]}'
         )
 
-    def get_recent_issues_by_host(self, last_run: Union[str, int]) -> Dict:
+    def get_recent_issues_by_host(self, last_run: str | int) -> dict:
         """
         Lookup the hosts that have added issues after a certain date by host
 
@@ -119,15 +119,15 @@ class IncidentBuilder:
         self.incident_created_time = 0 if not snapshot else datetime.strptime(snapshot, DATE_FORMAT).timestamp()
         self.incident_created_time_ms = self.incident_created_time * 1000
 
-    def parse_rule(self, rule: Dict) -> Optional[Dict]:
+    def parse_rule(self, rule: dict) -> Optional[dict]:
         """
         Takes a rule from the ASI API and formats it into a better format for XSOAR
 
         :return: optionally a transformed Dict (None if rule gets filtered out)
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
-    def parse_rules(self, rules: List[Dict]) -> List[Dict]:
+    def parse_rules(self, rules: list[dict]) -> list[dict]:
         """
         Given an array of rules, parse out relevant info and filter out ones to skip
 
@@ -153,16 +153,16 @@ class IncidentBuilder:
             transformed.append(parsed_rule)
         return transformed
 
-    def build_incident(self, parsed_rule: Dict) -> Dict:
+    def build_incident(self, parsed_rule: dict) -> dict:
         """
         Takes a standardized rule and builds an incident from it
 
         :param parsed_rule: standardized rule from ASI API
         :return: XSOAR Incident format
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
-    def build_incidents(self, parsed_rules: List[Dict]) -> List[Dict]:
+    def build_incidents(self, parsed_rules: list[dict]) -> list[dict]:
         """
         Takes in parsed_rules and formats them as XSOAR Incident
 
@@ -172,7 +172,7 @@ class IncidentBuilder:
         return [self.build_incident(issue) for issue in parsed_rules]
 
     @staticmethod
-    def _format_references(refs: List[str]) -> str:
+    def _format_references(refs: list[str]) -> str:
         """
         Formats references as bulleted Long Text
 
@@ -182,7 +182,7 @@ class IncidentBuilder:
         return '\n\n'.join([f'◦ {r}' for r in refs])
 
     @staticmethod
-    def _use_severity_titles(rules: List[Dict]) -> List[Dict]:
+    def _use_severity_titles(rules: list[dict]) -> list[dict]:
         """
         Swap out classifications to use CRITICALITY_TITLES instead
 
@@ -214,7 +214,7 @@ class ByHostIncidentBuilder(IncidentBuilder, ABC):
         self.previous_snapshot = previous_snapshot
         self.previous_score = previous_score or 0
 
-    def parse_rule(self, rule: Dict) -> Optional[Dict]:
+    def parse_rule(self, rule: dict) -> Optional[dict]:
         return {
             'name': rule['name'],
             'details': rule['description'],
@@ -225,7 +225,7 @@ class ByHostIncidentBuilder(IncidentBuilder, ABC):
 
 
 class ByIssueIncident(IncidentBuilder):
-    def parse_rule(self, rule: Dict) -> Optional[Dict]:
+    def parse_rule(self, rule: dict) -> Optional[dict]:
         hosts = self._build_examples(rule['example_entities'].get('domains', [])) + \
             self._build_examples(rule['example_entities'].get('ips', []))
         return {
@@ -237,7 +237,7 @@ class ByIssueIncident(IncidentBuilder):
             'hosts': hosts
         }
 
-    def build_incident(self, parsed_rule: Dict) -> Dict:
+    def build_incident(self, parsed_rule: dict) -> dict:
         count_copy = '\n\nThis rule triggered for '
         entity_counts = parsed_rule.pop('entity_counts')
         examples = parsed_rule.pop('hosts', [])
@@ -264,7 +264,7 @@ class ByIssueIncident(IncidentBuilder):
         }
 
     @staticmethod
-    def _build_examples(examples: List[Dict]) -> List[Dict]:
+    def _build_examples(examples: list[dict]) -> list[dict]:
         """
         Parses out useful info from list of examples
 
@@ -275,10 +275,10 @@ class ByIssueIncident(IncidentBuilder):
 
 
 class ByHostIncident(ByHostIncidentBuilder):
-    def build_incident(self, parsed_rule: Dict) -> Dict:
+    def build_incident(self, parsed_rule: dict) -> dict:
         raise NotImplementedError('Cannot use this method for this type of issue. Use build_grouped_incident instead')
 
-    def build_grouped_incident(self, parsed_rules: List[Dict]) -> Dict:
+    def build_grouped_incident(self, parsed_rules: list[dict]) -> dict:
         """
         ByHost incidents group all rules into a single incident
 
@@ -297,14 +297,14 @@ class ByHostIncident(ByHostIncidentBuilder):
             'rawJSON': json.dumps({
                 '_incident_type': 'by_host',
                 'affected_hosts': [{'id': self.host, 'metadata': ''}],
-                'rules': self._use_severity_titles(list(sorted(parsed_rules,
-                                                               key=lambda r: SEVERITY_MAPPINGS[r['classification']],
-                                                               reverse=True)))
+                'rules': self._use_severity_titles(sorted(parsed_rules,
+                                                          key=lambda r: SEVERITY_MAPPINGS[r['classification']],
+                                                          reverse=True))
             }),
             'severity': severity
         }
 
-    def build_incidents(self, parsed_rules: List[Dict]) -> List[Dict]:
+    def build_incidents(self, parsed_rules: list[dict]) -> list[dict]:
         """
         Takes in parsed_rules and formats them as XSOAR Incident
 
@@ -314,7 +314,7 @@ class ByHostIncident(ByHostIncidentBuilder):
         return [self.build_grouped_incident(parsed_rules)]
 
     @staticmethod
-    def _group_by_classification(rules: List[Dict]) -> Dict[str, List[Dict]]:
+    def _group_by_classification(rules: list[dict]) -> dict[str, list[dict]]:
         """
         Groups rules by their classification
 
@@ -326,7 +326,7 @@ class ByHostIncident(ByHostIncidentBuilder):
             by_classification[rule['classification']].append(rule)
         return by_classification
 
-    def _incident_title_and_severity(self, by_classification: Dict[str, List[Dict]]) -> Tuple[str, int]:
+    def _incident_title_and_severity(self, by_classification: dict[str, list[dict]]) -> tuple[str, int]:
         """
         Generates a title for the incident
 
@@ -343,7 +343,7 @@ class ByHostIncident(ByHostIncidentBuilder):
                 f'({self.previous_score} --> {self.risk_score})'
         return title, severity
 
-    def _incident_description(self, by_classification: Dict[str, List[Dict]], added_rule_count: int) -> str:
+    def _incident_description(self, by_classification: dict[str, list[dict]], added_rule_count: int) -> str:
         """
         Builds description for the incident
 
@@ -368,7 +368,7 @@ class ByHostIncident(ByHostIncidentBuilder):
 
 
 class ByHostByIssueIncident(ByHostIncidentBuilder):
-    def build_incident(self, parsed_rule: Dict) -> Dict:
+    def build_incident(self, parsed_rule: dict) -> dict:
         return {
             'severity': SEVERITY_MAPPINGS[parsed_rule['classification']],
             'name': f'{parsed_rule["name"]} [{self.host}]',
@@ -404,7 +404,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def _fetch_project_incidents(client: Client) -> Tuple[List[Dict], int]:
+def _fetch_project_incidents(client: Client) -> tuple[list[dict], int]:
     """
     Fetches the most recent set of issues for a project to initialize incidents
 
@@ -423,7 +423,7 @@ def _fetch_project_incidents(client: Client) -> Tuple[List[Dict], int]:
 
 
 def _fetch_recent_incidents_by_host(client: Client, start_timestamp: int,
-                                    expand_incidents: bool) -> Tuple[List[Dict], int]:
+                                    expand_incidents: bool) -> tuple[list[dict], int]:
     """
     Fetch recent incidents after a certain timestamp grouped by hosts that changed
 
@@ -436,7 +436,7 @@ def _fetch_recent_incidents_by_host(client: Client, start_timestamp: int,
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     for diff in issues_resp.get('data', []):
         diff_snapshot = diff.get('snapshot')
@@ -452,7 +452,7 @@ def _fetch_recent_incidents_by_host(client: Client, start_timestamp: int,
     return incidents, issues_resp.get('meta', {}).get('counts', {}).get('hosts', {}).get('total', 0)
 
 
-def _fetch_recent_incidents(client: Client, start_timestamp: int) -> Tuple[List[Dict], int]:
+def _fetch_recent_incidents(client: Client, start_timestamp: int) -> tuple[list[dict], int]:
     """
     Fetch recent incidents after a certain timestamp
 
@@ -464,7 +464,7 @@ def _fetch_recent_incidents(client: Client, start_timestamp: int) -> Tuple[List[
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     for diff in issues_resp.get('data', []):
         diff_snapshot = diff.get('snapshot')
@@ -477,8 +477,8 @@ def _fetch_recent_incidents(client: Client, start_timestamp: int) -> Tuple[List[
     return incidents, len(incidents)
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int], is_by_host: bool,
-                    expand_issues: bool) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, last_run: dict[str, int], is_by_host: bool,
+                    expand_issues: bool) -> tuple[dict[str, int], list[dict]]:
     """
     This function retrieves new alerts every interval (default is 24 hours).
 
@@ -507,7 +507,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], is_by_host: bool,
     max_count = max(len(incidents), total)
     if max_count > incident_limit:
         # NOTE :: Make sure the highest severity incidents aren't trimmed
-        incidents = list(sorted(incidents, key=lambda i: i['severity'], reverse=True))
+        incidents = sorted(incidents, key=lambda i: i['severity'], reverse=True)
         if len(incidents) >= incident_limit:
             # NOTE :: Need to add an incident warning of the limit being hit so trimming incidents to limit (minus 1)
             trim = max(incident_limit - 1, 0)

@@ -17,6 +17,7 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
+INDEXES_REGEX = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -660,7 +661,8 @@ class Notable:
                     'Comment': comment})
         labels.append({'type': 'SplunkComments', 'value': str(comment_entries)})
         incident['labels'] = labels
-        incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
+        if notable_data.get(EVENT_ID):
+            incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
         notable_data['SplunkComments'] = comment_entries
         incident["rawJSON"] = json.dumps(notable_data)
         incident['SplunkComments'] = comment_entries
@@ -2498,7 +2500,10 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     total_parsed_results: list[dict[str, Any]] = []
     dbot_scores: list[dict[str, Any]] = []
 
-    while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
+    while (
+        len(total_parsed_results) < int(num_of_results_from_query)  # type: ignore[arg-type]
+        and len(total_parsed_results) < results_limit
+    ):
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
         max_results_to_add = results_limit - len(total_parsed_results)
         parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,
@@ -2667,27 +2672,22 @@ def parse_fields(fields):
     return None
 
 
-def convert_to_json_for_validation(events: str | dict):
-    """Converts a batch of events to a valid JSON format for two validation purposes:
-        - Ensure the batch of events is in the the correct format expected by the Splunk API (not a Json format).
-        - To enable extraction of the indexes from the string to validate their existence in the Splunk instance.
-    Args:
-        events (str): The batch of events to be formatted as JSON.
-    Raises:
-        DemistoException: Raised if the input does not match the format expected by the Splunk API.
-    Returns:
-        list: A list of JSON objects derived from the input events.
+def extract_indexes(events: str | dict):
     """
-    try:
-        events_str = str(events)
+    Extracts indexes from the provided events.
 
-        events_str = events_str.replace("'", '"')
-        rgx = re.compile(r"}[\s]*{")
-        valid_json_events = rgx.sub("},{", events_str)
-        valid_json_events = json.loads(f"[{valid_json_events}]")
-        return valid_json_events
-    except Exception as e:
-        raise DemistoException(f'{str(e)}\nMake sure that the events are in the correct format.')
+    Args:
+        events (str | dict): The input events from which indexes will be extracted.
+        For example: "{"index": "index1", "event": "something happened1"} {"index": "index2", "event": "something happened2"}"
+
+    Returns:
+        List[str]: A list of extracted indexes.
+        For example: ["index1", "index2"]
+
+    """
+    events_str = str(events)
+    indexes = re.findall(INDEXES_REGEX, events_str)
+    return indexes
 
 
 def splunk_submit_event_hec(
@@ -2727,12 +2727,12 @@ def splunk_submit_event_hec(
             source=source,
             time=time_
         )
-    valid_json_events = convert_to_json_for_validation(events)  # only used for extracting indices
-
-    indexes = [d.get('index') for d in valid_json_events if d.get('index')]
+    indexes = extract_indexes(events)
 
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
+
+    demisto.debug("All indexes are valid, sending events to Splunk.")
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
@@ -2746,8 +2746,6 @@ def splunk_submit_event_hec(
         data = events
     else:
         data = json.dumps(events)
-
-    demisto.debug(f'{INTEGRATION_LOG} sending {len(valid_json_events)}')
 
     return requests.post(
         f'{baseurl}/services/collector/event',
@@ -3163,6 +3161,8 @@ def get_connection_args(params: dict) -> dict:
         'port': params['port'],
         'app': app or "-",
         'verify': VERIFY_CERTIFICATE,
+        'retries': 3,
+        'retryDelay': 3,
     }
 
 

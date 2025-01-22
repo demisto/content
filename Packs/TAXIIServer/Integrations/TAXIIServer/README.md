@@ -2,6 +2,8 @@
 
 This integration provides TAXII Services for system indicators (Outbound feed).
 
+The TAXII Service integration is a long-running integration. For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) documentation.
+
 ## Configure Collections
 
 Each TAXII collection in the integration is represented by a Cortex XSOAR indicator query.
@@ -18,13 +20,13 @@ The collections are defined by a JSON object in the following format:
 
 ### For Cortex XSOAR 6.x  
 Use one of the following options to access the TAXII service:
-- `https://<demisto_address>/instance/execute/<instance_name>/taxii-discovery-service`
-- `http://<demisto_address>:<listen_port>/taxii-discovery-service`
+- `https://<xsoar_address>/instance/execute/<instance_name>/taxii-discovery-service`
+- `http://<xsoar_address>:<listen_port>/taxii-discovery-service`
 
 ### For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
 Use one of the following options to access the TAXII service:
 - `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
-- When using an engine: `http://<demisto_address>:<listen_port>/<taxii2_api_endpoint>/`
+- When using an engine: `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
   
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
@@ -42,7 +44,7 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 2. Trigger the TAXII Service URL:
    - For Cortex XSOAR 6.x:  
      `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`.  
-     For example, `https://my.demisto.live/instance/execute/taxiiserver`. 
+     For example, `https://my.xsoar.live/instance/execute/taxiiserver`. 
    - For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
      `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`  
      **Note**:

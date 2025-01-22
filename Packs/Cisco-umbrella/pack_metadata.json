@@ -2,7 +2,7 @@
     "name": "Cisco Umbrella Investigate",
     "description": "Cisco Umbrella Investigate",
     "support": "xsoar",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

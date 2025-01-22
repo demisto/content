@@ -1,5 +1,6 @@
 Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
-For Cortex XSOAR 8, see [Manage External Dynamic Lists in the Cortex XSOAR Administrator Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Manage-External-Dynamic-Lists).
+
+The Generic Export Indicators Service integration is a long-running integration. For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) documentation.
 
 ## PAN-OS EDL Management to Export Indicators Service (PAN-OS EDL Service) migration steps
 
@@ -8,7 +9,7 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 1. Convert existing EDL lists to indicators in Cortex XSOAR. This can be done automatically:
     1. Extract your EDL as a text file from the web server it's currently hosted on.
     2. Upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g., `!ExtractIndicatorsFromTextFile entryID=<entry_id>`
-2. Go to the `Indicators` page and [filter](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicators) to find all of the indicators you extracted from the text file.
+2. Go to the `Indicators` page in [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicators), [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-concepts), [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-concepts), or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) to find all of the indicators you extracted from the text file.
 3. If needed, batch select the indicators and add a tag to the indicators you want to host as a specific EDL. Use this tag in the `Indicator Query` integration parameter when configuring the integration. For example, if you want to create an allowed list of indicators and a blocked list of indicators.
 4. Edit the EDL object on the PAN-OS device to pull from the `Export Indicators Service (PAN-OS EDL Service)` instance, as explained in [Access the Export Indicators Service by Instance Name (HTTPS)](#access-the-export-indicators-service-by-instance-name-https). You can edit the EDL object using the [panorama-edit-edl](https://xsoar.pan.dev/docs/reference/integrations/panorama#panorama-edit-edl) command in the `Palo Alto Networks PAN-OS` integration.
 5. Commit and push the configuration from the Panorama device to its respective Firewalls using the [PAN-OS Commit Configuration](https://xsoar.pan.dev/docs/reference/playbooks/pan-os-commit-configuration) playbook.
@@ -45,8 +46,9 @@ For Cortex XSOAR On-prem -
 
 
 For Cortex XSIAM - 
-`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
-
+`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
+or 
+`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the url to `crtx`.
 
 ## Use Cases
 
@@ -69,7 +71,7 @@ For Cortex XSIAM -
 | **Parameter**                      | **Description**                                                                                                                                                                                                                                      | **Required** |
 |------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | Update list on demand only         | Enabling this prevents automatic list refresh.                                                                                                                                                                                                   | False        |
-| Indicator Query                    | The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>` (Field names in your query should match the [machine name](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Custom-Indicator-Field) for each field.)                                                                          | False        |
+| Indicator Query                    | The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>` (Field names in your query should match the [Machine name (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Create-a-Custom-Indicator-Field) or [Machine name (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-an-indicator-field) or [Machine name (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-an-indicator-field) for each field.)                                                                          | False        |
 | Outbound Format                    | The format of the exported list.                                                                                                                                                                                                     | True         |
 | Exported Fields                    | For use with JSON and CSV formats - select specific Cortex XSOAR fields to export. If given the value 'all' - all Cortex XSOAR fields are exported. If empty - only value and type are exported.                                                      | False        |
 | List Size                          | Maximum number of items in the list.                                                                                                                                                                                                                 | True         |
@@ -193,10 +195,11 @@ For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map th
 For example, `ext-xsoar.mycompany.com`.
   
 For Cortex XSOAR 8 Cloud, Cortex XSOAR On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
-- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`
-   
+- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`  
+  Note: For Cortex XSIAM, you can use the `edl-` prefix. Alternatively, if using the `ext-` prefix, replace the `xdr` in the url to `crtx`.  
+
   For example: `curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
-- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`
+- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`  
      
   For example: `curl -v -u user:pass http://<engine_address>:<listen_port>?n=50`
 

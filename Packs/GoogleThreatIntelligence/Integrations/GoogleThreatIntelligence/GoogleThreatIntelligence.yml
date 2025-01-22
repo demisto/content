@@ -2383,6 +2383,6 @@ script:
     - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
       description: Targeted industries of the curated threat actors.
       type: list
-  dockerimage: demisto/python3:3.11.9.101916
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - GoogleThreatIntelligence-test

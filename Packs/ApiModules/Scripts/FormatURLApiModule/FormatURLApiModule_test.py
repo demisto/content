@@ -66,6 +66,7 @@ BRACKETS_URL_TO_FORMAT = [
     ('[[https://www.test.com', 'https://www.test.com'),  # disable-secrets-detection
     ('\'https://www.test.com/test\'', 'https://www.test.com/test'),  # disable-secrets-detection
     ('\'https://www.test.com/?a=\'b\'\'', 'https://www.test.com/?a=\'b\''),  # disable-secrets-detection
+    ('https://www.test.com/?q=((A)%20and%20(B))', 'https://www.test.com/?q=((A) and (B))'),  # disable-secrets-detection)
 ]
 
 ATP_REDIRECTS = [

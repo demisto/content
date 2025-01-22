@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PAN-OS_Delete_Static_Routes](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Delete_Static_Routes.png)
+![PAN-OS_Delete_Static_Routes](../doc_files/PAN-OS_Delete_Static_Routes.png)

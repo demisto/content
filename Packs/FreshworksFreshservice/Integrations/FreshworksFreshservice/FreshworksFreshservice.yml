@@ -3460,7 +3460,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.11.9.105369
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   ismappable: true
   isremotesyncin: true

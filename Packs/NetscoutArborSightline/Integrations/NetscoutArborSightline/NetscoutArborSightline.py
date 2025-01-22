@@ -5,8 +5,7 @@ from CommonServerUserPython import *  # noqa
 
 from copy import deepcopy
 import requests
-from typing import Dict, Tuple
-from datetime import timezone
+from datetime import UTC
 import urllib3
 
 # Disable insecure warnings
@@ -186,7 +185,7 @@ class NetscoutClient(BaseClient):
         Returns:
             (dict): Netscout relationships object
         """
-        relationships: Dict[str, Any] = {}
+        relationships: dict[str, Any] = {}
         for key, val in kwargs.items():
             if val:
                 # In some cases the name of the relationships is not the same as the type (most cases it is)
@@ -239,7 +238,7 @@ class NetscoutClient(BaseClient):
                 param_list.append(f'/data/attributes/{key + operator + val}')
         return ' AND '.join(param_list)
 
-    def fetch_incidents(self, params_dict: dict) -> Tuple[list, str]:
+    def fetch_incidents(self, params_dict: dict) -> tuple[list, str]:
         """
         Perform fetch incidents process.
         1.  We first save the current time to know what was the time at the beginning of the incidents counting process.
@@ -263,7 +262,7 @@ class NetscoutClient(BaseClient):
 
         # We calculate the page size to query, by performing an incidents query with page size = 1, the amount of
         # returned pages will equal to amount of incidents
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         amount_of_incidents = self.calculate_amount_of_incidents(start_time=last_start_time, params_dict=params_dict)
         incidents: list = []
 
@@ -294,7 +293,7 @@ class NetscoutClient(BaseClient):
                     })
         return incidents, new_last_start_time
 
-    def fetch_incidents_loop(self) -> Tuple[list, str]:
+    def fetch_incidents_loop(self) -> tuple[list, str]:
         """
         Calls the fetch incidents function to pull incidents with for each alert_type/alert_class separately.
 
@@ -313,8 +312,13 @@ class NetscoutClient(BaseClient):
         elif self.alert_class:
             key = 'alert_class'
             class_type_list = self.alert_class
+        else:
+            key = ''
+            class_type_list = []
+            demisto.debug(f"No condition was matched {key=} {class_type_list=}")
 
         if self.alert_class or self.alert_type:
+            new_last_start_time = ''
             for item in class_type_list:
                 params_dict[key] = item
 
@@ -474,7 +478,7 @@ def build_human_readable(data: dict) -> dict:
 
 def build_output(data: dict, extend_data: bool = False, key_to_flat: str = 'attributes',
                  keys_to_remove: list = None) -> dict:
-    keys_to_remove = ['relationships'] if not keys_to_remove else keys_to_remove
+    keys_to_remove = keys_to_remove if keys_to_remove else ['relationships']
     data_copy = deepcopy(data)
     clean_links(data_copy)
     if key_to_flat:
@@ -627,7 +631,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def mitigation_delete_command(client: NetscoutClient, args: Dict[str, str]):
+def mitigation_delete_command(client: NetscoutClient, args: dict[str, str]):
     mitigation_id = args.get('mitigation_id', '')
     client.delete_mitigation(mitigation_id)
     hr = f'### Mitigation {mitigation_id} was deleted'
@@ -726,7 +730,7 @@ def main() -> None:
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
-        headers: Dict = {
+        headers: dict = {
             'X-Arbux-APIToken': api_token
         }
 
