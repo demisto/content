@@ -22,7 +22,7 @@ tasks:
       '#none#':
       - "1"
     note: false
-    quietmode: 0
+    quietmode: 1
     separatecontext: false
     skipunavailable: false
     task:

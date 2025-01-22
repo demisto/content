@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+# import demistomock as demisto  # noqa: F401
+# from CommonServerPython import *  # noqa: F401
 import datetime as dt
 import requests
 import urllib3
@@ -174,10 +174,9 @@ class Client(BaseClient):
             'end-date': dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M"),
             'start-date': (dt.datetime.utcnow() - dt.timedelta(minutes=interval)).strftime("%Y-%m-%dT%H:%M")}
         try:
-            demisto.info('Fetching incidents at interval :{}'.format(interval))
+            demisto.info(f'Fetching incidents at interval :{interval}')
 
-            response = json.loads(requests.get('{}api/v2/reports'.format(self.base_url), headers=headers, params=params).text)
-            # self._http_request(method="GET", url_suffix="",headers=headers, params=params, resp_type='json')
+            response = json.loads(requests.get(f'{self.base_url}api/v2/reports', headers=headers, params=params).text)
             reports = []
             for report in response['reports']:
                 reports.append(report)
@@ -195,12 +194,10 @@ class Client(BaseClient):
             'end-date': dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M"),
             'start-date': "2000-01-02T01:01:01"}
         try:
-            response = json.loads(requests.get('{}api/v2/reports'.format(self.base_url), headers=headers, params=params).text)
-            # demisto.debug(response)
+            response = json.loads(requests.get(f'{self.base_url}api/v2/reports', headers=headers, params=params).text)
             reports = []
             for report in response['reports']:
                 reports.append(report)
-                # reports.append(ReportModel(**report))
             return reports
 
         except:
@@ -212,7 +209,7 @@ class Client(BaseClient):
         headers = {'Content-Type': "application/json",
                    'Authorization': self.token}
 
-        url = '{}api/v2/reports/{}'.format(self.base_url, report_id)
+        url = f'{self.base_url}api/v2/reports/{report_id}'
         try:
             response = requests.request(
                 "GET", url, headers=headers).json()
@@ -221,7 +218,7 @@ class Client(BaseClient):
             demisto.info(type(result))
             return result
         except:
-            return {"msg": "Error getting report {}".format(report_id)}
+            return {"msg": f"Error getting report {report_id}"}
 
     def get_report_attachment(self, report_id: str, attachment_id: str):
         self.check_token()
@@ -278,7 +275,7 @@ class Client(BaseClient):
     def post_comment(self, comment: str, report_id: str, tenant_id: str, assigned: bool = True, parent_id=None):
         self.check_token()
         url = f"{self.base_url}api/v1/reports/{report_id}/comments"
-        if parent_id:  # Allow use of parent id for conversation.
+        if parent_id:  
             payload = {
                 "content": comment,
                 "discussion_id": f"{report_id}:{tenant_id}",
@@ -368,27 +365,6 @@ def _datetime_helper(last_run_date):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_command(client: Client):
-    incidents = []
-    # for r in reports:
-
-    #     incident = {
-    #         'name': f"CybelAngel Report - {r.get('incident_id')}",
-    #         'occurred': r.get('created_at'),
-    #         'severity': r.get('severity'),
-    #         'category': r.get('category'),
-    #         'details': r.get('abstract'),
-    #         'rawJSON': json.dumps(r)
-    #     }
-    # incidents.append(incident)
-
-    test_creds = f"client ID: {client.client_id}"
-
-    return_results(test_creds)
-    # demisto.incidents(incidents)
-
-
-# TODO: Check report mapping & extra data to add to each report object
 def fetch_incidents(client: Client, first_fetch: bool, last_run, first_fetch_interval: int):
     """ Fetches reports from specific time range """
 
@@ -450,7 +426,6 @@ def get_report_by_id_command(client: Client, args):
             readable_output=error_message
         )
 
-# TODO: Need validation
 
 
 def get_report_attachment_command(client: Client, args):
@@ -558,7 +533,7 @@ def get_report_pdf_command(client: Client, args: Dict):
         return fileResult(filename=filename, data=report_pdf)
 
     except Exception as e:
-        demisto.error(f"An error occurred while fetching the PDF: {str(e)}")  # Use demisto.error to log errors
+        demisto.error(f"An error occurred while fetching the PDF: {str(e)}")  
         return CommandResults(
             readable_output=f'Error downloading the report: {str(e)}'
         )
@@ -580,22 +555,11 @@ def test_module(client: Client) -> str:
 
     message = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        TEST_REPORT_ID = "29afc920-2ea2-436f-9a72-b2aea5994679"
-        # client.fetch_token()
-        # reports = client.get_all_reports()
-        message = 'ok'
-        report = client.get_report_by_id(TEST_REPORT_ID)
-
-        if hasattr(report, "id"):
-            return message
-
-        # demisto.debug(message)
-        # demisto.debug(client.token)
+        result = client.get_reports(500)
+        if result:
+            return 'ok'
     except DemistoException as e:
-        if 'Forbidden' in e or 'Authorization' in e:  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in e or 'Authorization' in e: 
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             message = e
@@ -611,12 +575,7 @@ def main() -> None:
     :return:
     :rtype:
     """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-
+    
    # Get Cybelangel credentials
     client_id = demisto.params().get('client_id')
     client_secret = demisto.params().get('client_secret')
@@ -633,9 +592,7 @@ def main() -> None:
     auth_token = demisto.getIntegrationContext().get('token')
     expiry = demisto.getIntegrationContext().get('expiry')
 
-    # demisto.info(f'Token information ***** Time: {expiry} **** Token: {auth_token}')
-
-    demisto.debug('Command being called is {}'.format(demisto.command()))
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
         args = demisto.args()
@@ -651,8 +608,6 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
-            # return_results(result)
 
         if demisto.command() == "fetch-incidents":
             fetch_incidents(client, first_fetch=first_fetch, last_run=last_run, first_fetch_interval=first_fetch_interval)
@@ -670,20 +625,14 @@ def main() -> None:
             return_results(update_status_command(client, args))
         elif demisto.command() == 'cybelangel-get-report-pdf':
             return_results(get_report_pdf_command(client, args))
-        # TODO: REMOVE the following dummy command case
-        # elif demisto.command() == 'CybelAngel-get-report-by-id':
-        #     return_results(get_report_by_id_command(client,report_id=demisto.args()))
-
         if demisto.command() == "test_command":
             test_command(client)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error('Failed to execute {} command.\nError:\n{}'.format(demisto.command(), str(e)))
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
-
-
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
