@@ -49,7 +49,8 @@ class Client(BaseClient):
             demisto.debug(f"There are many comites currently bringing them all...,  currently exist:{response}")
         return all_commits
 
-    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list[dict[str, str]], str]:  # pragma: no cover  # noqa: E501
+    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[
+        list[dict[str, str]], str]:  # pragma: no cover  # noqa: E501
         """
         Retrieves the list of files changed between two commits and the SHA of the base commit.
 
@@ -104,7 +105,7 @@ def filter_out_files_by_status(commits_files: list, statuses=("added", "modified
     relevant_files: list[dict] = []
     for file in commits_files:
         if file.get("status") in statuses:
-            relevant_files.append(file.get("raw_url"))
+            relevant_files.append(file.get("filename"))
     return relevant_files
 
 
@@ -120,10 +121,11 @@ def get_content_files_from_repo(client: Client, relevant_files: list[str], param
         list: A list of file contents fetched via HTTP requests.
     """
     global RAW_RESPONSE
-    resp_type = "json" if params.get("feedType") == "STIX" else "text"
     extensions_to_fetch = argToList(params.get("extensions_to_fetch") or [])
     relevant_files = [file for file in relevant_files if any(file.endswith(ext) for ext in extensions_to_fetch)]
-    raw_data_files = [{file: client._http_request("GET", full_url=file, resp_type=resp_type)} for file in relevant_files]
+    raw_data_files = [
+        {file: base64.b64decode(client._http_request("GET", url_suffix=f"/contents/{file}")["content"]).decode("utf-8")} for file
+        in relevant_files]
     demisto.debug(f"list of all files raw_data :{raw_data_files}")
     RAW_RESPONSE = [list(file.values()) for file in raw_data_files]
     return raw_data_files
