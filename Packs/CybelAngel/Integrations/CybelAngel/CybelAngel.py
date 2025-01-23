@@ -585,7 +585,7 @@ def main() -> None:
     last_run = demisto.getLastRun().get('start_time')
 
     # Manage first fetch from client
-    first_fetch_interval = int(demisto.params().get('first_fetch'))
+    first_fetch_interval = arg_to_number(demisto.params().get('first_fetch'))
     first_fetch = False if "first_pull" in demisto.getIntegrationContext().keys() else True
 
     # Get token and token time if it exists
