@@ -4937,6 +4937,7 @@
                 "Demisto Lock",
                 "EWS v2"
             ],
+            "scripts": ["SearchIncidentsV2"],
             "instance_names": [
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
