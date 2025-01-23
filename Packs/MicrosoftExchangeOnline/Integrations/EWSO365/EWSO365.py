@@ -1725,7 +1725,7 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
         name = f'image{i}'
         cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
-            'data': base64.b64decode(m.group(3)),
+            'data': b64_decode(m.group(3)),
             'name': name
         }
         attachment['cid'] = cid
@@ -2165,7 +2165,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
     2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
     If no necessary changes identified the original 'message_id' argument value is returned.
     """
-    if re.search("\<\[.*\]\>", message_id):
+    if re.search(r"\<\[.*\]\>", message_id):
         # find and replace "<[" with "<" and "]>" with ">"
         fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
         demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
@@ -2201,11 +2201,15 @@ def decode_email_data(email_obj: Message):
 def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+
     if isinstance(mime_content, str) and not mime_content.isascii():
         mime_content = mime_content.encode()
-    message = email.message_from_bytes(mime_content, policy=email_policy) \
-        if isinstance(mime_content, bytes) \
-        else email.message_from_string(mime_content, policy=email_policy)
+
+    if isinstance(mime_content, bytes):
+        message = email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
+    else:
+        message = email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
+
     return message
 
 
@@ -2470,16 +2474,17 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
 
                     if len(incidents) >= client.max_fetch:
                         break
-            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
-                if skip_unparsable_emails:
-                    error_msg = (
-                        "Encountered email parsing issue while fetching. "
-                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
-                    )
-                    demisto.debug(error_msg + f", Error: {str(e)}")
-                    demisto.updateModuleHealth(error_msg, is_error=False)
-                else:
-                    raise e
+            except Exception as e:
+                if not skip_unparsable_emails:  # default is to raise and exception and fail the command
+                    raise
+
+                # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
+                error_msg = (
+                    "Encountered email parsing issue while fetching. "
+                    f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
+                )
+                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
+                demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 

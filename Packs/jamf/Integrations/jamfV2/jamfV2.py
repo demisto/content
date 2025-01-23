@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
 import dateparser
 import requests
 import traceback
@@ -401,6 +400,22 @@ class Client(BaseClient):
 
         json_response = json.loads(xml2json(res.content))
         return json_response
+
+    def get_mobiledeviceconfigurationprofiles_by_id(self, jamf_id):
+        """
+        API link: https://developer.jamf.com/jamf-pro/reference/findmobiledeviceconfigurationprofilesbyid
+        """
+        uri = f'/mobiledeviceconfigurationprofiles/id/{jamf_id}'
+        res = self._classic_api_get(url_suffix=uri, error_handler=self._generic_error_handler)
+        return res
+
+    def get_osxconfigurationprofiles_by_id(self, jamf_id):
+        """
+        API link: https://developer.jamf.com/jamf-pro/reference/findosxconfigurationprofilesbyid
+        """
+        uri = f'/osxconfigurationprofiles/id/{jamf_id}'
+        res = self._classic_api_get(url_suffix=uri, error_handler=self._generic_error_handler)
+        return res
 
 
 ''' HELPER FUNCTIONS '''
@@ -1337,6 +1352,36 @@ def check_authentication_parameters(client_id: str | None, client_secret: str | 
     return None
 
 
+def get_profile_configuration_osx(client: Client, args: dict[str, Any]) -> CommandResults:
+    profile_id = args.get('id')
+    profile_response = client.get_osxconfigurationprofiles_by_id(profile_id)
+    readable_output = profile_response.get('os_x_configuration_profile')
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            f'Jamf get profile configuration result for profile ID:{profile_id}',
+            readable_output, removeNull=True
+        ),
+        outputs_prefix='JAMF.OSX.ProfileConfiguration',
+        outputs=readable_output,
+        raw_response=profile_response
+    )
+
+
+def get_profile_configuration_mobile(client: Client, args: dict[str, Any]) -> CommandResults:
+    profile_id = args.get('id')
+    profile_response = client.get_mobiledeviceconfigurationprofiles_by_id(profile_id)
+    readable_output = profile_response.get('configuration_profile')
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            f'Jamf get profile configuration result for profile ID:{profile_id}',
+            readable_output, removeNull=True
+        ),
+        outputs_prefix='JAMF.Mobile.ProfileConfiguration',
+        outputs=readable_output,
+        raw_response=profile_response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1478,6 +1523,12 @@ def main() -> None:
 
         elif demisto.command() == 'endpoint':
             return_results(endpoint_command(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-mobile-configuration-profiles-by-id':
+            return_results(get_profile_configuration_mobile(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-computer-configuration-profiles-by-id':
+            return_results(get_profile_configuration_osx(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

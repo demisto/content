@@ -1,0 +1,26 @@
+!opencti-get-observables score_start=20 score_end=70 observable_types=Domain
+!opencti-observable-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test value="TestDomainDocs.com" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648
+!opencti-observable-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57
+!opencti-observable-field-add id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=label value=07cfae2d-6cc9-42c5-9fd0-32eff8142404
+!opencti-observable-field-remove id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
+!opencti-observable-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100
+!opencti-external-reference-create source_name=source_name url=www.url.com
+!opencti-label-list limit=2
+!opencti-label-create name=docsTest
+!opencti-marking-definition-list limit=2
+!opencti-organization-list limit=2
+!opencti-label-list limit=2
+!opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"
+!opencti-incident-create name=ExampleIncident description="create incident" incident_types=Test
+!opencti-incident-delete id=7bb1e29c-0d3a-4fcf-960b-beae280558e3
+!opencti-get-incidents limit=2 label_id=07cfae2d-6cc9-42c5-9fd0-32eff8142404
+!opencti-incident-types-list
+!opencti-relationship-create from=7bb1e29c-0d3a-4fcf-960b-beae280558e3 to=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b relationship_type=related-to
+!opencti-relationship-list from_id=7bb1e29c-0d3a-4fcf-960b-beae280558e3
+!opencti-relationship-delete id=7bb1e29c-0d3a-4fcf-960b-beae280558e3
+!opencti-indicator-create name=ExampleIndicator indicator="1.1.1.1" main_observable_type=ip
+!opencti-indicator-update id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b name=ExampleIndicator2
+!opencti-indicator-field-add field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
+!opencti-indicator-field-remove field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
+!opencti-get-indicators limit=2 label_id=07cfae2d-6cc9-42c5-9fd0-32eff8142404
+!opencti-indicator-types-list

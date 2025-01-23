@@ -21,6 +21,41 @@ test_client = CoreClient(
 
 Core_URL = 'https://api.xdrurl.com'
 
+POWERSHELL_COMMAND_CASES = [
+    pytest.param(
+        "Write-Output 'Hello, world, it`s me!'",
+        "powershell -Command 'Write-Output ''Hello, world, it`s me!'''",
+        id='Hello World message',
+    ),
+    pytest.param(
+        r"New-Item -Path 'C:\Users\User\example.txt' -ItemType 'File'",
+        "powershell -Command 'New-Item -Path ''C:\\Users\\User\\example.txt'' -ItemType ''File'''",
+        id='New file in path with backslashes',
+    ),
+    pytest.param(
+        "$message = 'This is a test with special chars: `&^%$#@!'; Write-Output $message",
+        "powershell -Command '$message = ''This is a test with special chars: `&^%$#@!''; Write-Output $message'",
+        id='Special characters message',
+    ),
+    pytest.param(
+        (
+            "$users = @(JohnDoe) -split ';'; query user | Select-Object -Skip 1 | "
+            "ForEach-Object { $sessionInfo = $_ -split '\s+' | "
+            "Where-Object { $_ -ne '' -and $_ -notlike 'Disc' }; "
+            "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart('>'); "
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }"
+        ),
+        (
+            "powershell -Command '$users = @(JohnDoe) -split '';''; query user | Select-Object -Skip 1 | "
+            "ForEach-Object { $sessionInfo = $_ -split ''\\s+'' | "
+            "Where-Object { $_ -ne '''' -and $_ -notlike ''Disc'' }; "
+            "if ($sessionInfo.Length -ge 6) { $username = $sessionInfo[0].TrimStart(''>''); "
+            "$sessionId = $sessionInfo[2]; if ($users -contains $username) { logoff $sessionId } } }'"
+        ),
+        id='End RDP session for users',
+    ),
+]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -388,16 +423,52 @@ def test_get_distribution_url(requests_mock):
         'package_type': 'x86'
     }
 
-    readable_output, outputs, _ = get_distribution_url_command(client, args)
+    result = get_distribution_url_command(client, args)
     expected_url = get_distribution_url_response.get('reply').get('distribution_url')
-    assert outputs == {
-        'CoreApiModule.Distribution(val.id == obj.id)': {
-            'id': '1111',
-            'url': expected_url
-        }
+    assert result.outputs == {
+        'id': '1111',
+        'url': expected_url
     }
 
-    assert readable_output == f'[Distribution URL]({expected_url})'
+    assert result.readable_output == f'[Distribution URL]({expected_url})'
+
+
+def test_download_distribution(requests_mock):
+    """
+    Given:
+        - Core client
+        - Distribution ID and package type
+    When
+        - Running xdr-download-distribution command
+    Then
+        - Verify filename
+        - Verify readable output is as expected
+    """
+    from CoreIRApiModule import get_distribution_url_command, CoreClient
+
+    get_distribution_url_response = load_test_data('./test_data/get_distribution_url.json')
+    dummy_url = "https://xdrdummyurl.com/11111-distributions/11111/sh"
+    requests_mock.post(
+        f'{Core_URL}/public_api/v1/distributions/get_dist_url/',
+        json=get_distribution_url_response
+    )
+    requests_mock.get(
+        dummy_url,
+        content=b'\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1'
+    )
+    installer_file_name = "xdr-agent-install-package.msi"
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'distribution_id': '1111',
+        'package_type': 'x86',
+        'download_package': 'true'
+    }
+    result = get_distribution_url_command(client, args)
+    assert result[0]['File'] == installer_file_name
+    assert result[1].readable_output == "Installation package downloaded successfully."
 
 
 def test_get_audit_management_logs(requests_mock):
@@ -947,7 +1018,7 @@ def test_handle_outgoing_issue_closure_close_reason(mocker):
     request_data_log = mocker.patch.object(demisto, 'debug')
     handle_outgoing_issue_closure(remote_args)
 
-    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in \
+    assert "handle_outgoing_issue_closure Closing Remote incident ID: None with status resolved_security_testing" in \
            request_data_log.call_args[  # noqa: E501
                0][0]
 
@@ -1310,7 +1381,7 @@ def test_get_script_code_command(requests_mock):
     assert raw_response == get_script_code_command_reply.get("reply")
 
 
-def test_action_status_get_command(requests_mock):
+def test_action_status_get_command(mocker):
     """
         Given:
             - An action_id
@@ -1325,6 +1396,7 @@ def test_action_status_get_command(requests_mock):
     action_status_get_command_command_reply = load_test_data('./test_data/action_status_get.json')
 
     data = action_status_get_command_command_reply.get('reply').get('data')
+    error_reasons = action_status_get_command_command_reply.get('reply').get('errorReasons') or {}
     result = []
     for item in data:
         result.append({
@@ -1332,11 +1404,13 @@ def test_action_status_get_command(requests_mock):
             'endpoint_id': item,
             'status': data.get(item)
         })
+        if error_reason := error_reasons.get(item):
+            result[-1]['error_description'] = error_reason['errorDescription']
+            result[-1]['ErrorReasons'] = error_reason
+
     action_status_get_command_expected_result = result
 
-    requests_mock.post(f'{Core_URL}/public_api/v1/actions/get_action_status/',
-                       json=action_status_get_command_command_reply)
-
+    mocker.patch.object(CoreClient, '_http_request', return_value=action_status_get_command_command_reply)
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
@@ -1345,7 +1419,8 @@ def test_action_status_get_command(requests_mock):
     }
 
     res = action_status_get_command(client, args)
-    assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True)
+    assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                                  headers=['action_id', 'endpoint_id', 'status', 'error_description'])
     assert res.outputs == action_status_get_command_expected_result
     assert res.raw_response == result
 
@@ -1956,6 +2031,26 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     response = get_script_execution_result_files_command(client, args)
     assert response['File'] == zip_filename
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
+
+
+@pytest.mark.parametrize('command_input, expected_command', POWERSHELL_COMMAND_CASES)
+def test_form_powershell_command(command_input: str, expected_command: str):
+    """
+    Given:
+        - An unescaped command containing characters like ', `, ", \
+
+    When:
+        - Calling the form_powershell_command function
+
+    Assert:
+        - Command starts with 'powershell -Command' and is properly escaped.
+    """
+    from CoreIRApiModule import form_powershell_command
+
+    command = form_powershell_command(command_input)
+
+    assert not command_input.startswith('powershell -Command ')
+    assert command == expected_command
 
 
 def test_run_script_execute_commands_command(requests_mock):
@@ -4420,7 +4515,6 @@ def test_run_polling_command_values_raise_error(mocker):
     """
     Given -
         - run_polling_command arguments.
-        -
 
     When -
         - Running the run_polling_command
@@ -4441,6 +4535,7 @@ def test_run_polling_command_values_raise_error(mocker):
     mock_command_results.raw_response = {"status": "TIMEOUT"}
     mock_command_results.return_value = mock_command_results
     client.get_command_results.return_value = mock_command_results
+    mocker.patch('CoreIRApiModule.return_results')
 
     with pytest.raises(DemistoException) as e:
         run_polling_command(client=client,

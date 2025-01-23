@@ -2,7 +2,7 @@
     "name": "Symantec Managed Security Services",
     "description": "Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

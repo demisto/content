@@ -1414,6 +1414,7 @@ def test_update_status(mocker):
         "workbench_id": "WB-20837-20220418-00000",
         "if_match": "d41d8cd98f00b204e9800998ecf8427e",
         "status": "in_progress",
+        "inv_result": "no_findings",
     }
     result = update_status(client, args)
     assert result.outputs["code"] == 204
@@ -1566,11 +1567,9 @@ def test_delete_custom_script(mocker):
 
 # Mock function to add custom script
 def add_custom_script_mock_response(*args, **kwargs):
-    with open("./test_data/add_custom_script.json") as f:
-        return_value: dict[str, str] = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=AddCustomScriptResp(**return_value),
+        response=AddCustomScriptResp(script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1"),
     )
 
 

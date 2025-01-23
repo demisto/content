@@ -250,6 +250,7 @@ def get_event_status(args: Dict[str, Any], client: Client, default_job_id) -> Co
                "bucket_state", "result", "confidence_score", "outlier", "arcanna_label"]
     return_data = CommandResults(
         outputs_prefix='Arcanna.Event',
+        outputs_key_field='event_id',
         outputs=outputs,
         readable_output=tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result),
         raw_response=result

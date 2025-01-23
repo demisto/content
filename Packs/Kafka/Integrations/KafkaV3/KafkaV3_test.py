@@ -1,4 +1,3 @@
-
 from CommonServerPython import DemistoException, demisto
 
 from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
@@ -59,7 +58,7 @@ def create_cluster_metadata(topic_partitions):
     """
     cluster_metadata = ClusterMetadata()
     topics_dict = {}
-    for topic in topic_partitions.keys():
+    for topic in topic_partitions:
         topic_metadata = TopicMetadata()
         partitions = topic_partitions[topic]
         partitions_dict = {}
@@ -198,7 +197,7 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
     result = print_topics(KAFKA, demisto_args)
     assert type(result) is CommandResults  # for Pylance
     assert type(result.outputs) is list  # for Pylance
-    for topic in cluster_tree.keys():
+    for topic in cluster_tree:
         topic_partitions = [{'ID': partition} for partition in cluster_tree[topic]]
         assert {'Name': topic, 'Partitions': topic_partitions} in result.outputs
 
@@ -262,7 +261,7 @@ def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     result = fetch_partitions(KAFKA, demisto_args)
-    assert {'Name': topic, 'Partition': cluster_tree[topic]} == result.outputs
+    assert result.outputs == {'Name': topic, 'Partition': cluster_tree[topic]}
 
 
 @pytest.mark.parametrize('demisto_args', [{'topic': 'some-topic'}, {'topic': None}])
@@ -282,7 +281,7 @@ def test_fetch_partitions_no_topics(mocker, demisto_args):
     assert f'Topic {demisto_args["topic"]} was not found in Kafka' in str(exception_info.value)
 
 
-class MessageMock(object):
+class MessageMock:
     """Mocked message class for easier mocking"""
     message = None
     offset_value = None
@@ -765,6 +764,113 @@ def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_p
         assert called_topic_partitions[partition_num].offset == topic_partitions[partition_num].offset
 
     assert len(polled_msgs) == poll_mock.call_count
+    close_mock.assert_called_once()
+    incidents_mock.assert_called_once_with(incidents)
+    set_last_run_mock.assert_called_once_with(next_run)
+
+
+@pytest.mark.parametrize(
+    "demisto_params, last_run, cluster_tree, topic_partitions, incidents, next_run, polled_msgs, offsets",
+    [
+        pytest.param(
+            {
+                "topic": "some-topic",
+                "partition": "",
+                "first_fetch": "0",
+                "max_fetch": "2",
+                "stop_consuming_upon_timeout": True,
+            },
+            {},
+            {"some-topic": [0]},
+            [TopicPartition(topic="some-topic", partition=0, offset=1)],
+            [
+                {
+                    "name": "Kafka some-topic partition:0 offset:1",
+                    "details": "polled_msg",
+                    "rawJSON": '{"Topic": "some-topic", "Partition": 0, "Offset": 1, '
+                    '"Message": "polled_msg"}',
+                }
+            ],
+            {"last_fetched_offsets": {"0": 1}, "last_topic": "some-topic"},
+            [
+                MessageMock(
+                    message="polled_msg",
+                    partition=0,
+                    offset=1,
+                    timestamp=(TIMESTAMP_NOT_AVAILABLE, 0),
+                ),
+                None,
+            ],
+            [(0, 2), (0, 2), (0, 2)],
+            id="first run, offset is 0,stop_consuming_upon_timeout is true",
+        )
+    ],
+)
+def test_fetch_incidents_stop_consuming_upon_timeout_is_true(
+    mocker,
+    demisto_params,
+    last_run,
+    cluster_tree,
+    topic_partitions,
+    incidents,
+    next_run,
+    polled_msgs,
+    offsets,
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+        - demisto_params
+        - last_run dict
+        - available cluster tree
+        - stop_consuming_upon_timeout
+    When:
+        - fetching incidents
+    Then:
+        - Assert the relevant topicPartitions are assigned to the consumer
+        - Assert the polled messages are the right amount
+        - Assert the created incidents are as expected
+        - Assert setting the last run
+        - Assert break method was called
+        - Assert poll method was called with timeout 10.0
+    """
+    mocker.patch.object(KConsumer, "__init__", return_value=None)
+    cluster_metadata = create_cluster_metadata(cluster_tree)
+    mocker.patch.object(KConsumer, "list_topics", return_value=cluster_metadata)
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    assign_mock = mocker.patch.object(KConsumer, "assign")
+    poll_mock = mocker.patch.object(KConsumer, "poll", side_effect=polled_msgs)
+    mocker.patch.object(KConsumer, "get_watermark_offsets", side_effect=offsets)
+    close_mock = mocker.patch.object(KConsumer, "close")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+    debug = mocker.patch.object(demisto, "debug")
+
+    fetch_incidents(KAFKA, demisto_params)
+
+    assign_mock.assert_called_once_with(topic_partitions)
+    called_topic_partitions = assign_mock.call_args.args[0]
+    for partition_num in range(len(topic_partitions)):
+        assert (
+            called_topic_partitions[partition_num].topic
+            == topic_partitions[partition_num].topic
+        )
+        assert (
+            called_topic_partitions[partition_num].partition
+            == topic_partitions[partition_num].partition
+        )
+        assert (
+            called_topic_partitions[partition_num].offset
+            == topic_partitions[partition_num].offset
+        )
+
+    assert len(polled_msgs) == poll_mock.call_count
+    debug.assert_called_with(f"Fetching finished, setting last run to {next_run}")
+    assert (
+        debug.call_args_list[-2][0][0]
+        == "Didn't get a message after 10.0 seconds, stop_consuming_upon_timeout is true, break the loop. num_polled_msg=1"
+    )
+    poll_mock.assert_any_call(10.0)
     close_mock.assert_called_once()
     incidents_mock.assert_called_once_with(incidents)
     set_last_run_mock.assert_called_once_with(next_run)

@@ -21,7 +21,7 @@ APP_NAME = 'ms-azure-sentinel'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DATE_FORMAT_WITH_MILLISECONDS = '%Y-%m-%dT%H:%M:%S.%fZ'
 
-API_VERSION = '2022-11-01'
+API_VERSION = '2024-03-01'
 
 NEXT_LINK_DESCRIPTION = 'NextLink for listing commands'
 
@@ -30,10 +30,11 @@ XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n' \
                           'The response from the server did not contain the expected content.'
 
-INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
-                    'AssigneeEmail', 'AssigneeObjectID', 'AssigneeUPN', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC',
-                    'LastModifiedTimeUTC', 'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount',
-                    'AlertProductNames', 'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
+INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'ProviderIncidentUrl',
+                    'AssigneeName', 'AssigneeEmail', 'AssigneeObjectID', 'AssigneeUPN', 'Label', 'FirstActivityTimeUTC',
+                    'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount',
+                    'CommentsCount', 'AlertProductNames', 'Tactics', 'FirstActivityTimeGenerated',
+                    'LastActivityTimeGenerated']
 
 COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
@@ -67,15 +68,16 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
-                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
-                                  'classificationComment', 'alerts', 'entities', 'comments', 'relations']
+                                  'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'ProviderIncidentUrl',
+                                  'classification', 'classificationReason', 'classificationComment', 'alerts', 'entities',
+                                  'comments', 'relations']
+
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
-CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity',
-                         'BenignPositive': 'SuspiciousButExpected'}
+CLASSIFICATION_REASON = {'TruePositive': 'SuspiciousActivity', 'BenignPositive': 'SuspiciousButExpected'}
 
 
 class AzureSentinelClient:
@@ -248,6 +250,7 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
         'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
         'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
+        'ProviderIncidentUrl': properties.get('additionalData', {}).get('providerIncidentUrl'),
         'Tactics': properties.get('additionalData', {}).get('tactics'),
         'Techniques': properties.get('additionalData', {}).get('techniques'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
@@ -670,6 +673,28 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     return demisto.params().get('close_ticket') and bool(closing_reason)
 
 
+def extract_classification_reason(delta: Dict[str, str], data: Dict[str, str]):
+    """
+    Returns the classification reason based on `delta` and `data`.
+
+    Args:
+        delta (dict): Contains potential 'classification' and 'classificationReason' keys.
+        data (dict): Default classification information, with 'classification' and 'classificationReason'.
+
+    Returns:
+        The resolved classification reason.
+    """
+
+    classification: str = delta.get("classification", "") or data.get(
+        "classification", ""
+    )
+    if classification == "FalsePositive":
+        return delta.get("classificationReason") or data.get(
+            "classificationReason", "InaccurateData"
+        )
+    return CLASSIFICATION_REASON.get(classification, "")
+
+
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
                             close_ticket: bool = False) -> Dict[str, Any]:
     """
@@ -684,6 +709,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
+
     fetched_incident_data = get_incident_by_id_command(client, {'incident_id': incident_id}).raw_response
     required_fields = ('severity', 'status', 'title')
     if any(field not in data for field in required_fields):
@@ -691,12 +717,17 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
                                f'API: {required_fields}')
 
     severity = data.get('severity', '')
-
+    status = data.get('status', 'Active')
+    if status == 'Closed' and delta.get('closingUserId') == '':
+        # closingUserId='' it's mean the XSOAR incident was reopen
+        # need to update the remote incident status to Active
+        demisto.debug(f'Reopen remote incident {incident_id}, set status to Active')
+        status = 'Active'
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
         'severity': severity if severity in LEVEL_TO_SEVERITY.values() else LEVEL_TO_SEVERITY[severity],
-        'status': 'Active',
+        'status': status,
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
         'owner': demisto.get(fetched_incident_data, 'properties.owner', {}),
@@ -710,7 +741,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
             'status': 'Closed',
             'classification': delta.get('classification') or data.get('classification'),
             'classificationComment': delta.get('classificationComment') or data.get('classificationComment'),
-            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', '')))
+            'classificationReason': extract_classification_reason(delta, data)
         }
     remove_nulls_from_dictionary(properties)
     data = {
@@ -724,21 +755,23 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
-    if incident_status == IncidentStatus.DONE:
-        if close_incident_in_remote(delta, data):
-            demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
-            return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
-        elif delta.keys() <= {'classification', 'classificationComment'}:
-            demisto.debug(f'Incident with remote ID {incident_id} is closed in XSOAR, '
-                          'but not in the remote system ("Close Mirrored Microsoft Sentinel Ticket" parameter is not set).')
-            return ''
-        else:  # The delta contains fields that are not related to closing the incident and close_incident_in_remote() is False
-            demisto.debug(f'Updating incident with remote ID {incident_id} in remote system (but not closing it).')
-            return str(update_incident_request(client, incident_id, data, delta))
 
-    elif incident_status == IncidentStatus.ACTIVE:
-        demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
-        return str(update_incident_request(client, incident_id, data, delta))
+    # we will run the mirror-out update only if there is relevant changes
+    # (or closingUserId was changed meaning the incident wa reopened) or need to close the remote ticket
+    relevant_keys_delta = OUTGOING_MIRRORED_FIELDS.keys() | {'closingUserId'}
+    relevant_keys_delta &= delta.keys()
+    # those fields are close incident fields and handled separately in close_incident_in_remote
+    relevant_keys_delta -= {'classification', 'classificationComment'}
+
+    if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
+        if incident_status == IncidentStatus.DONE and close_incident_in_remote(delta, data):
+            demisto.debug(f'XSOAR incident closed, closing incident with remote ID {incident_id} in remote system.')
+            return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
+        if relevant_keys_delta:
+            demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
+            return str(update_incident_request(client, incident_id, data, delta))
+        else:
+            demisto.debug(f'No relevant changes detected for the incident with remote ID {incident_id}, not updating.')
 
     demisto.debug(f'Incident with remote ID {incident_id} is not Active or Closed, not updating. (status: {incident_status})')
     return ''
@@ -1749,7 +1782,7 @@ def list_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -
 
     url_suffix = 'alertRules' + (f'/{rule_id}' if rule_id else '')
 
-    raw_results = []
+    raw_results: list = []
     next_link = True
     while next_link:
         full_url = next_link if isinstance(next_link, str) else None
@@ -1791,7 +1824,7 @@ def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str
 
     url_suffix = 'alertRuleTemplates' + (f'/{template_id}' if template_id else '')
 
-    raw_results = []
+    raw_results: list = []
     next_link = True
     while next_link:
         full_url = next_link if isinstance(next_link, str) else None

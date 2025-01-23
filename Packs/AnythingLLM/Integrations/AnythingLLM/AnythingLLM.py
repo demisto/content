@@ -14,8 +14,8 @@ class Client(BaseClient):
         self._http_request("GET", "/v1/auth")
 
     def document_list(self):
-        results = self._list("documents")
-        return results
+        return self._list("documents")
+
 
     def document_get(self, folder: str, document: str):
         try:
@@ -169,7 +169,8 @@ class Client(BaseClient):
                     method='POST',
                     headers=headers,
                     url_suffix="/v1/document/upload",
-                    files={'file': (f"{entry_id}_{file_name}", open(file_name, 'rb'))}
+
+                    files={'file': (f"{entry_id}_{file_name}", open(file_name, 'rb'))
                 )
             finally:
                 if exists:  # pylint: disable=E0601
@@ -260,6 +261,7 @@ class Client(BaseClient):
 
         return {"message": {"success": True, "message": "Workspace removed successfully"}}
 
+
     def workspace_thread_new(self, workspace: str, thread: str):
         try:
             wslug = workspace_slug(workspace, self.workspace_list())
@@ -289,8 +291,8 @@ class Client(BaseClient):
         try:
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="GET",
-                url_suffix=f"/v1/workspace/{slug}/thread/{thread + '_slug'}/chats"
+                method = "GET",
+                url_suffix = f"/v1/workspace/{slug}/thread/{thread + '_slug'}/chats"
             )
         except Exception as e:
             msg = f"AnythingLLM: workspace_thread_chats: exception chatting - {e}"
@@ -299,13 +301,31 @@ class Client(BaseClient):
 
         return response
 
-    def workspace_thread_delete(self, workspace: str, thread: str):
+    def workspace_settings(self, workspace: str, settings: dict):
+        try:
+            settings = validate_workspace_settings(settings)
+            if len(settings) == 0:
+                raise Exception("Invalid workspace settings")
+            slug = workspace_slug(workspace, self.workspace_list())
+            response = self._http_request(
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/update",
+                json_data = settings
+            )
+        except Exception as e:
+            msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {e}"
+            demisto.debug(msg)
+            raise Exception(msg)
+
+        return response
+
+    def workspace_thread_delete(self, workspace:str, thread:str):
         try:
             wslug = workspace_slug(workspace, self.workspace_list())
             tslug = thread_slug(thread, self.thread_list(workspace))
             self._http_request(
-                method="DELETE",
-                url_suffix=f"/v1/workspace/{wslug}/thread/{tslug}",
+                method = "DELETE",
+                url_suffix = f"/v1/workspace/{wslug}/thread/{tslug}",
                 resp_type='bytes'
             )
         except Exception as e:
@@ -373,16 +393,16 @@ class Client(BaseClient):
             }
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/{ttype}",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/{ttype}",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: _chat: exception chatting - {e}"
             demisto.debug(msg)
             raise Exception(msg)
 
-        return response
+        return responsee
 
     def _tchat(self, workspace: str, thread: str, message: str, mode: str, ttype: str):
         try:
@@ -393,9 +413,9 @@ class Client(BaseClient):
             wslug = workspace_slug(workspace, self.workspace_list())
             tslug = thread_slug(thread, self.thread_list(workspace))
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{wslug}/thread/{tslug}/{ttype}",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{wslug}/thread/{tslug}/{ttype}",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: _tchat: exception chatting - {e}"
@@ -403,7 +423,7 @@ class Client(BaseClient):
             raise Exception(msg)
 
         return response
-
+                           
     def _list(self, items: str):
         try:
             response = self._http_request(
@@ -425,14 +445,14 @@ class Client(BaseClient):
             try:
                 ws = self.workspace_get(workspace)
             except Exception:
-                raise Exception("workspace not found")
+                raise Exception(f"workspace not found")
 
             if action == "adds":
                 if embedding_exists(ws, document):
-                    raise Exception("already embedded")
+                    raise Exception(f"already embedded")
             elif action == "deletes":
                 if not embedding_exists(ws, document):
-                    raise Exception("not embedded")
+                    raise Exception(f"not embedded")
             else:
                 raise Exception(f"action [{action}] not 'adds' or 'deletes' ")
 
@@ -441,9 +461,9 @@ class Client(BaseClient):
             }
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/update-embeddings",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/update-embeddings",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding [{document}] in [{workspace}] - {e}"
@@ -516,7 +536,7 @@ def validate_workspace_settings(settings: dict):
     new_settings = {}
     if "name" in settings:
         new_settings['name'] = settings['name']
-    # if "vectorTag" in settings:
+    #if "vectorTag" in settings:
     #    new_settings['vectorTag'] = settings['vectorTag']
     if "openAiTemp" in settings:
         value = float(settings['openAiTemp'])
@@ -532,9 +552,9 @@ def validate_workspace_settings(settings: dict):
         if value not in [0.0, 0.25, 0.50, 0.75]:
             return {}
         new_settings['similarityThreshold'] = value
-    # if "chatProvider" in settings:
+    #if "chatProvider" in settings:
     #    new_settings['chatProvider'] = settings['chatProvider']
-    # if "chatModel" in settings:
+    #if "chatModel" in settings:
     #    new_settings['chatModel'] = settings['chatModel']
     if "topN" in settings:
         value = int(settings['topN'])
@@ -728,24 +748,24 @@ def workspace_list_command(client: Client, args: dict) -> CommandResults:
 def workspace_new_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_new(args['workspace'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_new',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix ='AnythingLLM.workspace_new',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
-
+                           
 def workspace_chat_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_chat(args['workspace'], args['message'], args['mode'])
     if args['format'] == "dictionary":
         return CommandResults(
-            outputs_prefix='AnythingLLM.workspace_chat',
-            outputs=response
+            outputs_prefix ='AnythingLLM.workspace_chat',
+            outputs = response
         )
     else:
         return CommandResults(
-            outputs_prefix='AnythingLLM.workspace_chat',
-            readable_output=DictMarkdown(response, ""),
-            outputs=response
+            outputs_prefix ='AnythingLLM.workspace_chat',
+            readable_output = DictMarkdown(response, ""),
+            outputs = response
         )
 
 
@@ -797,36 +817,36 @@ def workspace_settings_command(client: Client, args: dict) -> CommandResults:
 def workspace_thread_new_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_thread_new(args['workspace'], args['thread'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_settings',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_thread_chat_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_thread_chat(args['workspace'], args['thread'], args['message'], args['mode'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_settings',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_thread_chats_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_thread_chats(args['workspace'], args['thread'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_settings',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_thread_delete_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_thread_delete(args['workspace'], args['thread'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_settings',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 

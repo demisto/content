@@ -2012,7 +2012,7 @@ def test_list_events_command(client):
 
     hr, ec, json_data = gcb_list_events_command(client, {})
 
-    event = 'GoogleChronicleBackstory.Events'
+    event = 'GoogleChronicleBackstory.Events(val.id == obj.id)'
     assert ec[event] == dummy_ec[event]
 
     # Test command when no events found
@@ -5195,21 +5195,21 @@ def test_gcb_test_rule_stream_command_invalid_rule_text_provided(client):
     args = {
         "rule_text": """rule demoRuleCreatedFromAPIVersion2 {
                                     meta:
-                                    author = \"Crest Data Systems\"
-                                    severity = \"Medium\"
+                                    author = "Crest Data Systems"
+                                    severity = "Medium"
 
                                     events:
-                                    $event1.metadata.event_type = \"PROCESS_LAUNCH\"
-                                    $full_path = /.*cmd\.exe$/ nocase
+                                    $event1.metadata.event_type = "PROCESS_LAUNCH"
+                                    $full_path = /.*cmd\\.exe$/ nocase
 
                                     $event1.principal.hostname = $hostname
                                     $event2.principal.hostname = $hostname
 
-                                    not $event1.principal.process.file.full_path = /.*explorer\.exe$/ nocase
+                                    not $event1.principal.process.file.full_path = /.*explorer\\.exe$/ nocase
                                     $event1.target.process.file.full_path = $full_path
 
                                     $event2.principal.process.file.full_path = $full_path
-                                    $event2.target.process.file.full_path = /.*reg\.exe$/ nocase
+                                    $event2.target.process.file.full_path = /.*reg\\.exe$/ nocase
 
                                   match:
                                     $full_path over 5m
@@ -5401,3 +5401,238 @@ def test_gcb_user_aliases_list_command_when_valid_arguments_provided(client):
 
     assert hr == expected_hr
     assert ec == expected_ec
+
+
+def test_gcb_verify_value_in_reference_list_command_success(client):
+    """ Test gcb_verify_value_in_reference_list_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_verify_value_in_reference_list_command
+    with open('test_data/gcb_verify_value_in_reference_list_command_response.json') as f:
+        response = json.loads(f.read())
+    with open('test_data/gcb_verify_value_in_reference_list_command_ec.json') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_verify_value_in_reference_list_command_hr.md') as f:
+        expected_hr = f.read()
+
+    args = {
+        'reference_list_names': 'list1,list2,list3, ',
+        'values': 'value1,Value2,value4,value1,[-\\{\\}\\^],0.0.0.1/0',
+        'add_not_found_reference_lists': 'true',
+        'case_insensitive_search': 'true'
+    }
+    with mock.patch('GoogleChronicleBackstory.gcb_get_reference_list') as mock_gcb_get_reference_list:
+        mock_gcb_get_reference_list.side_effect = [
+            ({}, {'lines': ['value1', 'value2', '0.0.0.1/0']}),
+            ({}, {'lines': ['value3', '[-\\{\\}\\^]']}),
+            Exception('Error: Status code: 404\n Error: generic::not_found: list with name xyz not found')
+        ]
+        with mock.patch('GoogleChronicleBackstory.return_warning') as mock_return:
+            hr, ec, data = gcb_verify_value_in_reference_list_command(client, args)
+            assert mock_return.call_args[0][0] == 'The following Reference lists were not found: list3'
+        assert data == response
+        assert ec == expected_ec
+        assert hr == expected_hr
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({'reference_list_names': ' , , ', 'values': 'value1'},
+                           MESSAGES['REQUIRED_ARGUMENT'].format('reference_list_names')),
+                          ({'reference_list_names': 'list1', 'values': '   ,   ,  '},
+                           MESSAGES['REQUIRED_ARGUMENT'].format('values'))])
+def test_gcb_verify_value_in_reference_list_command_invalid_args(client, capfd, args, error_msg):
+    """Test gcb_verify_value_in_reference_list_command when invalid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_verify_value_in_reference_list_command
+
+    with pytest.raises(ValueError) as e:
+        with capfd.disabled():
+            gcb_verify_value_in_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_verify_value_in_reference_list_command_system_exit(capfd, client):
+    """Test gcb_verify_value_in_reference_list_command when all reference lists are not found."""
+    from GoogleChronicleBackstory import gcb_verify_value_in_reference_list_command
+
+    args = {
+        'reference_list_names': 'list1,list2,list3',
+        'values': 'value1,Value2,value4',
+        'case_insensitive_search': 'true'
+    }
+    with mock.patch('GoogleChronicleBackstory.gcb_get_reference_list') as mock_gcb_get_reference_list:
+        mock_gcb_get_reference_list.side_effect = [
+            Exception('Error: Status code: 404\n Error: generic::not_found: list with name list1 not found'),
+            Exception('Error: Status code: 404\n Error: generic::not_found: list with name list2 not found'),
+            Exception('Error: Status code: 404\n Error: generic::not_found: list with name list3 not found')
+        ]
+        with capfd.disabled():
+            with pytest.raises(SystemExit) as err:
+                gcb_verify_value_in_reference_list_command(client, args)
+
+        assert err.value.code == 0
+
+
+def test_gcb_verify_rule_command_with_valid_response(client):
+    """Test gcb_verify_rule command when valid response is returned."""
+    from GoogleChronicleBackstory import gcb_verify_rule_command
+
+    with open('test_data/gcb_verify_rule_response.json') as f:
+        response = f.read()
+
+    with open('test_data/gcb_verify_rule_ec.json') as f:
+        expected_ec = json.loads(f.read())
+
+    with open('test_data/gcb_verify_rule_hr.md') as f:
+        expected_hr = f.read()
+
+    class MockResponse:
+        status_code = 200
+        text = response
+
+        def json():
+            return json.loads(response)
+
+    client.http_client.request.return_value = MockResponse
+
+    args = {
+        'rule_text': """rule singleEventRule2 {
+        meta:
+        author = \"testuser\"
+        description = \"single event rule that should generate detections\"
+
+        events:
+        $e.metadata.event_type = \"NETWORK_DNS\"
+
+        condition:
+        $e
+    }"""
+    }
+
+    hr, ec, json_data = gcb_verify_rule_command(client, args=args)
+
+    assert json.loads(response) == json_data
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+@pytest.mark.parametrize('args,error_msg', [
+    ({'rule_text': """rule demoRuleCreatedFromAPI { meta: author = \"testuser\" description = \"single
+      event rule that should generate detections\" condition:$e }"""}, MESSAGES['INVALID_RULE_TEXT']),
+    ({'rule_text': ''}, MESSAGES['REQUIRED_ARGUMENT'].format('rule_text'))])
+def test_gcb_verify_rule_command_with_invalid_arguments(client, args, error_msg, capfd):
+    """Test gcb_verify_rule command when invalid argument provided."""
+    from GoogleChronicleBackstory import gcb_verify_rule_command
+
+    with pytest.raises(ValueError) as err:
+        with capfd.disabled():
+            gcb_verify_rule_command(client, args)
+
+    assert str(err.value) == error_msg
+
+
+def test_gcb_verify_rule_command_when_rule_text_invalid_yaral_format(client):
+    """Test gcb_create_rule command when rule text has invalid YARA-L format."""
+    from GoogleChronicleBackstory import gcb_verify_rule_command
+
+    args = {
+        'rule_text': DUMMY_RULE_TEXT
+    }
+
+    with open('test_data/gcb_verify_rule_invalid_format_response.json') as f:
+        response = f.read()
+
+    with open('test_data/gcb_verify_rule_invalid_format_ec.json') as f:
+        expected_ec = json.loads(f.read())
+
+    with open('test_data/gcb_verify_rule_invalid_format_hr.md') as f:
+        expected_hr = f.read()
+
+    class MockResponse:
+        status_code = 200
+        text = response
+
+        def json():
+            return json.loads(response)
+
+    client.http_client.request.return_value = MockResponse
+
+    hr, ec, json_data = gcb_verify_rule_command(client, args=args)
+
+    assert json.loads(response) == json_data
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+def test_gcb_get_event_command_success(client):
+    """ Test gcb_get_event_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_get_event_command
+
+    with open('test_data/get_event_response.json') as f:
+        dummy_response = f.read()
+
+    with open('test_data/get_event_ec.json') as f:
+        dummy_ec = json.load(f)
+
+    with open('test_data/get_event_hr.md') as f:
+        dummy_hr = f.read()
+
+    class MockResponse:
+        status_code = 200
+        text = dummy_response
+
+        def json():
+            return json.loads(dummy_response)
+
+    client.http_client.request.return_value = MockResponse
+
+    hr, ec, json_data = gcb_get_event_command(client, {'event_id': 'dummy_id'})
+
+    event = 'GoogleChronicleBackstory.Events(val.id == obj.id)'
+    assert ec[event] == dummy_ec[event]
+    assert hr == dummy_hr
+
+    class MockResponseEmpty:
+        status_code = 200
+        text = '{}'
+
+        def json():
+            return {}
+
+    client.http_client.request.return_value = MockResponseEmpty
+
+    hr, ec, json_data = gcb_get_event_command(client, {'event_id': 'dummy_id'})
+
+    assert ec[event] == [{}]
+    assert json_data == {}
+    assert hr == ''
+
+
+def test_gcb_get_event_command_invalid_args(client, capfd):
+    """Test gcb_get_event_command when invalid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_get_event_command
+    with pytest.raises(ValueError) as e:
+        with capfd.disabled():
+            gcb_get_event_command(client, {'event_id': ""})
+    assert str(e.value) == MESSAGES['REQUIRED_ARGUMENT'].format('event_id')
+
+
+def test_gcb_get_event_command_invalid_event_id(client, capfd):
+    """Test gcb_get_event_command when the given event_id is invalid."""
+    from GoogleChronicleBackstory import gcb_get_event_command
+
+    with open('test_data/gcb_get_event_command_invalid_event_id_400.json') as f:
+        raw_response = f.read()
+
+    class MockResponse:
+        status_code = 400
+        text = raw_response
+
+        def json():
+            return json.loads(raw_response)
+
+    client.http_client.request.return_value = MockResponse
+
+    with pytest.raises(ValueError) as e:
+        with capfd.disabled():
+            gcb_get_event_command(client, {'event_id': 'invalid_event_id'})
+
+    error_m = 'Status code: 400\nError: Invalid value at \'name\' (TYPE_BYTES), Base64 decoding failed for "invalid_event_id"'
+    assert str(e.value) == error_m

@@ -5,11 +5,8 @@ Please read detailed instructions in order to understand how to set the integrat
 https://developer.services.mimecast.com/api-overview#rate-limiting
 Mimecast uses quotas per period of time (i.e. rate limits) that apply to every API function, per registered App. A typical quota is a number of API calls per unit of time (but could also be expressed as the size of data returned, etc.). When the quota has been exhausted, further requests will fail until the new time period restarts the count of API calls. The rate limit reset value is the length of time in milliseconds before a minimum of 1 API will be permitted.
 
-## Configure Mimecast v2 on Cortex XSOAR
+## Configure Mimecast v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Mimecast v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Required** |
    | --- | --- |
@@ -40,11 +37,10 @@ Mimecast uses quotas per period of time (i.e. rate limits) that apply to every A
 
 > **Note:** The fields `User Email Address (Use for auto token refresh)` and `Password` are not mandatory fields. You will only need them if you have expiry set on the auth of the user account you use to create the API keys. They will be used to auto refresh the API key once it expires.
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you
 successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### mimecast-query
@@ -812,6 +808,7 @@ Returns the members list for the specified group.
 |-------------------|------------------------------------------|--------------|
 | group_id          | The Mimecast ID of the group to return.  | Required     | 
 | limit             | The maximum number of results to return. | Optional     | 
+| all_results       | Whether to retrieve all results.         | Optional     |
 
 #### Context Output
 

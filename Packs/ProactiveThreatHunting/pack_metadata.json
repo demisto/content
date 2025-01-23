@@ -2,7 +2,7 @@
     "name": "Proactive Threat Hunting",
     "description": "The XSOAR Threat Hunting Pack enhances analyst capabilities by leveraging threat intelligence to uncover previously undetected threats, empowering proactive identification and mitigation of potential security risks.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

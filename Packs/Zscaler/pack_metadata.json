@@ -2,7 +2,7 @@
     "name": "Zscaler Internet Access",
     "description": "Zscaler is a cloud security solution built for performance and flexible scalability.",
     "support": "xsoar",
-    "currentVersion": "1.3.27",
+    "currentVersion": "1.3.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,16 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "zscaler",
+        "nss",
+        "cloudnss"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

@@ -14,7 +14,13 @@ from ThreatVaultv2 import (
     resp_to_hr,
     parse_date,
     reputation_type_to_hr,
+    ip_command
 )
+
+
+def _open_json_file(path):
+    with open(path) as f:
+        return json.loads(f.read())
 
 
 @pytest.mark.parametrize(
@@ -445,6 +451,88 @@ def test_resp_to_hr(resp, type_, expanded, expected, expected_content):
     for key, value in expected_content:
         assert key in result
         assert result[key] == value
+
+
+@pytest.mark.parametrize(
+    "args, response, expected_results",
+    [
+        pytest.param(
+            {"ip": "8.8.8.8"},
+            {
+                "success": "true",
+                "link": {
+                    "next": "null",
+                    "previous": "null",
+                },
+                "count": 1,
+                "data": [
+                    {
+                        "ipaddr": "8.8.8.8",
+                        "name": "null",
+                        "status": "N/A",
+                        "release": {},
+                        "geo": "US (United States of America)",
+                        "asn": "15169 (GOOGLE, US)",
+                    }
+                ],
+                "message": "Successful",
+            },
+            _open_json_file("test_data/single_ip_result.json"),
+            id="Single IP test",
+        ),
+        pytest.param(
+            {"ip": "8.8.8.8, 9.9.9.9"},
+            {
+                "success": "true",
+                "link": {"next": "null", "previous": "null"},
+                "count": 2,
+                "data": [
+                    {
+                        "ipaddr": "8.8.8.8",
+                        "name": "null",
+                        "status": "N/A",
+                        "release": {},
+                        "geo": "US (United States of America)",
+                        "asn": "15169 (GOOGLE, US)",
+                    },
+                    {
+                        "ipaddr": "9.9.9.9",
+                        "name": "null",
+                        "status": "N/A",
+                        "release": {},
+                        "geo": "CH (Switzerland)",
+                        "asn": "19281 (QUAD9-AS-1, CH)",
+                    },
+                ],
+                "message": "Successful",
+            },
+            _open_json_file("test_data/ip_batch_results.json"),
+            id="IP Batch",
+        ),
+    ]
+)
+def test_ip_command(mocker, args, response, expected_results):
+
+    client = Client(
+        base_url="test",
+        api_key="test",
+        verify=False,
+        proxy=False,
+        reliability="E - Unreliable",
+    )
+
+    mocker.patch.object(
+        client, "ip_feed_get_request", return_value=response
+    )
+
+    mocker.patch.object(
+        client, "ip_feed_batch_post_request", return_value=response
+    )
+
+    results = ip_command(client, args)
+    results = [result.to_context() for result in results]
+
+    assert results == expected_results
 
 
 FILE_COMMAND_ARGS = [

@@ -484,7 +484,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - PagerDuty Test
 fromversion: 5.0.0

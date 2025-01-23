@@ -1,0 +1,64 @@
+{
+    "msft_azure_waf_raw": {
+        "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenantId": {
+            "type": "string",
+            "is_array": false
+        },
+        "operationName": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultType": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultSignature": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultDescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "durationMs": {
+            "type": "string",
+            "is_array": false
+        },
+        "callerIpAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "correlationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "identity": {
+            "type": "string",
+            "is_array": false
+        },
+        "level": {
+            "type": "string",
+            "is_array": false
+        },
+        "location": {
+            "type": "string",
+            "is_array": false
+        },
+        "Tenant": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties": {
+            "type": "string",
+            "is_array": false
+        }              
+    }
+}

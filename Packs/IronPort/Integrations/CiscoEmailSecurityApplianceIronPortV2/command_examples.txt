@@ -1,0 +1,10 @@
+!cisco-esa-dictionary-add dictionary_name=testing ignore_case_sensitive=False whole_words=False words=['test1',5],['test2'],['*credit',5,'prefix']
+!cisco-esa-dictionary-list mode=cluster dictionary_name=testing
+!cisco-esa-dictionary-add dictionary_name=testing1 ignore_case_sensitive=False whole_words=False mode=cluster words=['*credit',2,'prefix'],['test2']
+!cisco-esa-dictionary-add dictionary_name=testing2 words=['*credit',2,'prefix'],['test2']
+!cisco-esa-dictionary-words-add dictionary_name=testing1 mode=cluster words=['test1'],['testing2']
+!cisco-esa-dictionary-words-add dictionary_name=testing words=['*ssn',2,'prefix'],['test3']
+!cisco-esa-dictionary-words-delete dictionary_name=testing words=test1,test2
+!cisco-esa-dictionary-words-delete dictionary_name=testing mode=cluster words=*credit
+!cisco-esa-dictionary-delete dictionary_name=testing1 mode=cluster
+!cisco-esa-dictionary-edit dictionary_name=testing1 words=['*credit',6,'prefix'],['test2']

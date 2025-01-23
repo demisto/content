@@ -1,11 +1,8 @@
 #### Get Agent, Switches and Events from your Sepio Prime
 #### This integration was integrated and tested with version 20.07.22.0958 of Sepio Prime
 
-## Configure Sepio on Cortex XSOAR
+## Configure Sepio in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sepio.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -20,9 +17,8 @@
 | category | Alert category to retrieve. Values are:USB, Network | True |
 | max_alerts | Maximum number of alerts to fetch at a time | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 For the commands sepio-set-agent-mode, sepio-set-peripherals-mode you need user with Manager profile,
 other commands need user with User profile.

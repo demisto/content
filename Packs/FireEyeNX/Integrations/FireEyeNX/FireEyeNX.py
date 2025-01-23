@@ -25,6 +25,7 @@ API_VERSION = 'v2.0.0'
 
 DEFAULT_SESSION_TIMEOUT = 15 * 60  # In Seconds
 DEFAULT_FETCH_LIMIT = '50'
+FORTY_EIGHT_HOURS_IN_SECOND = 172000.0  # Due to API limitations we can retrieve events only from the last 48 hours.
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_ZIP = 'application/zip'
 DATE_FORMAT_OF_YEAR_MONTH_DAY = '%Y-%m-%d'
@@ -575,7 +576,7 @@ def validate_fetch_type(fetch_type):
     :param fetch_type: A list contain types which user want to fetch.
     :return:
     """
-    if type(fetch_type) == list:
+    if type(fetch_type) is list:
         if len(fetch_type) == 0:
             raise ValueError(MESSAGES['INVALID_FETCH_TYPE'])
 
@@ -1095,6 +1096,25 @@ def replace_alert_url_key_domain_to_instance_url(
             )
 
 
+def update_start_time(start_time: float) -> float:
+    """Check that the start time is bigger (later) than the current time - ~48 hours (due to API limitations we can fetch
+        events only from the last 48 hours) if not it returns the current time - ~48 hours
+
+    Args:
+        start_time: The time we use for start fetching.
+
+    Returns:
+        The return value. The time we use for start fetching. Validated it's not less (earlier) than current time - ~48 hours.
+    """
+    current_timestamp = date_to_timestamp(datetime.utcnow(), DATE_FORMAT) / 1000.0
+    if current_timestamp - FORTY_EIGHT_HOURS_IN_SECOND > start_time:
+        updated_start_time = current_timestamp - FORTY_EIGHT_HOURS_IN_SECOND
+        demisto.debug(f'Start time {start_time=} is earlier than [current time {current_timestamp=} - ~ 48 hours], '
+                      f'Start time updated to: {updated_start_time=}')
+        return updated_start_time
+    return start_time
+
+
 """ REQUESTS FUNCTIONS """
 
 
@@ -1361,6 +1381,7 @@ def fetch_incidents(
         if (events_start_time := last_run.get('events', {}).get('start_time')) and \
                 (parsed_start_time := dateparser.parse(events_start_time)):
             start_time = parsed_start_time.timestamp()
+        start_time = update_start_time(start_time)
         demisto.debug(f"FireeyeNX IPS Events Start Time: {start_time}")
         incidents, fetch_count, next_run_events = get_incidents_for_event(
             kwargs['client'],
@@ -1379,6 +1400,7 @@ def fetch_incidents(
         if (alerts_start_time := last_run.get('alerts', {}).get('start_time')) and \
                 (parsed_start_time := dateparser.parse(alerts_start_time)):
             start_time = parsed_start_time.timestamp()
+        start_time = update_start_time(start_time)
         demisto.debug(f"FireeyeNX Alerts Start Time: {start_time}")
         alert_incidents, next_run_alerts = get_incidents_for_alert(
             client=kwargs['client'],
