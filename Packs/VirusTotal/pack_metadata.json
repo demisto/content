@@ -2,7 +2,7 @@
     "name": "VirusTotal",
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
     "support": "partner",
-    "currentVersion": "2.6.25",
+    "currentVersion": "2.6.27",
     "author": "VirusTotal",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",

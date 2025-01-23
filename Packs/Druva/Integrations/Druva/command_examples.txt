@@ -6,7 +6,7 @@
 !druva-list-quarantine-snapshots range_id=415 resource_id=4497505
 !druva-delete-quarantined-snapshot range_id=415 resource_id=4497505 snapshot_id=MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw
 !druva-endpoint-search-file-hash sha1_checksum=cec8ad914b1e9db83626b98e8d98512616975fdf
-!druva-find-sharePointSites search_string="auto_restore_XQ9OBZ"
 !druva-find-userDevice userID=10000135
 !druva-find-user user_string=rit1
 !druva-find-sharedDrives search_string="rahul_drive"
+!druva-find-sharePointSites search_string="auto_restore_XQ9OBZ"
