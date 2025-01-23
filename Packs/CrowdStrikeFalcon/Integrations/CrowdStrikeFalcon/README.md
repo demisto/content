@@ -22,6 +22,11 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Use legacy API | Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.' | False |
 | Use system proxy settings |  | False |
 | Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
+| Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
+| Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
+| Fetch types | Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version. 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
+| Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
+| Incidents Fetch Interval |  | False |
 | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 ### Cortex XSOAR Configuration Parameters
@@ -6586,3 +6591,18 @@ There is no context output for this command.
 - When encountering HTTP 429 errors from CrowdStrike Falcon, install custom engine on the the Cortex tenant and use it in the configuration of the integration instance:
   - [Cortex XSOAR 8 Engines](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines)
   - [Cortex XSIAM Engines](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Engines)
+
+- When encountering missing incidents on the ***fetch-incidents*** command in Cortex XSOAR, make sure that the 'Fetch Type' integration parameter includes the type of the missing incidents.
+  - Optional types are:
+    - Endpoint Incident
+    - Endpoint Detection
+    - IDP Detection
+    - Indicator of Misconfiguration
+    - Indicator of Attack
+    - Mobile Detection
+    - On-Demand Scans Detection
+    - OFP Detection
+
+  - Notes: 
+    - The 'On-Demand Scans Detection' option is not available in the legacy version.
+    - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.

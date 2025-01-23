@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+        "integrations": "qualys_fim",
+        "playbookID": "QualysFIM-Playbook"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
         },
@@ -1297,41 +1301,47 @@
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "6.1.0",
             "timeout": 1500,
-            "nightly": true
+            "nightly": true,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
-            "timeout": 1000
+            "timeout": 1000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 2400
+            "timeout": 2400,
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Panorama",
@@ -1350,7 +1360,8 @@
             "integrations": "Panorama",
             "instance_names": "panorama_instance_best_practice",
             "playbookID": "Panorama Best Practise - Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Tenable.io",
@@ -1413,7 +1424,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Test_EDL",
@@ -1449,13 +1461,15 @@
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Block IP - Generic V3_Test",
@@ -1465,7 +1479,8 @@
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 200
         },
         {
             "playbookID": "Endpoint Malware Investigation - Generic - Test",
@@ -2993,7 +3008,8 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1500
+            "timeout": 1500,
+            "memory_threshold": 200
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
@@ -3002,7 +3018,8 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "timeout": 300
+            "timeout": 300,
+            "memory_threshold": 200
         },
         {
             "integrations": "Snowflake",
@@ -3331,7 +3348,8 @@
             "fromversion": "5.5.0",
             "timeout": 1500,
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama"
+            "instance_names": "palo_alto_panorama",
+            "memory_threshold": 200
         },
         {
             "integrations": "Elasticsearch v2",
@@ -3927,7 +3945,8 @@
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
             "fromversion": "5.5.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "Field polling test",
@@ -4888,10 +4907,11 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 160,
+            "memory_threshold": 250,
             "integrations": [
                 "CrowdStrike Falcon X"
-            ]
+            ],
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
@@ -4911,7 +4931,7 @@
         {
             "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
-            "timeout": 15000,
+            "timeout": 1800,
             "integrations": [
                 "Core REST API",
                 "Demisto Lock",
@@ -5683,7 +5703,8 @@
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
-            "fromversion": "6.9.0"
+            "fromversion": "6.9.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "Secneurx Analysis",
@@ -5890,6 +5911,7 @@
         }
     ],
     "skipped_tests": {
+        "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
@@ -6085,6 +6107,7 @@
         "QRadar Indicator Hunting Test": "CRTX-141972"
     },
     "skipped_integrations": {
+        "qualys_fim": "No Instance",
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
         "RedCanary": "No instance",

@@ -41,3 +41,18 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 
 - When encountering HTTP 429 response error code from CrowdStrike Falcon in Cortex XSOAR 8, use an engine as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
 </~XSOAR_SAAS>
+
+<~XSOAR>
+
+- When encountering missing incidents on the ***fetch-incidents*** command, make sure that the 'Fetch Type' integration parameter includes the type of the missing incidents.
+Optional types are:
+  - Endpoint Incident
+  - Endpoint Detection
+  - IDP Detection
+  - Indicator of Misconfiguration
+  - Indicator of Attack
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+  Records from the detection endpoint of the *CrowdStrike Falcon* UI could be of types: Endpoint Detection and OFP Detection.
+</~XSOAR>

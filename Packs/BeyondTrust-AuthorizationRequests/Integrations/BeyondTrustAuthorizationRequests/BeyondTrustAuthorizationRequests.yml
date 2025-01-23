@@ -1,0 +1,67 @@
+category: Utilities
+commonfields:
+  id: BeyondTrust - Authorization Requests
+  version: -1
+configuration:
+- display: ''
+  hiddenpassword: true
+  name: client_id
+  required: true
+  type: 4
+- display: ''
+  hiddenpassword: true
+  name: client_secret
+  required: true
+  type: 4
+- display: ''
+  name: base_url
+  required: true
+  type: 0
+- display: ''
+  name: token_url
+  required: true
+  type: 0
+display: BeyondTrust - Authorization Requests
+name: BeyondTrust - Authorization Requests
+description: Use this integration to handle Beyond Trust authorization requests through XSOAR.
+script:
+  commands:
+  - arguments:
+    - description: sctask id.
+      name: sys_id
+      required: true
+    - description: PMC record Id.
+      name: record_id
+      required: true
+    - auto: PREDEFINED
+      description: The decision regarding the authorization request.
+      name: decision
+      predefined:
+      - Denied
+      - Approved
+      - Pending
+      required: true
+    - auto: PREDEFINED
+      description: action duration (once or in seconds).
+      name: duration
+      predefined:
+      - Once
+      required: true
+    - name: user
+      description: The request's user.
+    description: approve or deny authorization requests for BT.
+    name: bt-authorize-ticket
+  - arguments:
+    - description: the ticket system ID.
+      name: sys_id
+      required: true
+    description: retrieves an existing ticket.
+    name: bt-get-ticket
+  dockerimage: demisto/python3:3.11.11.1940698
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
