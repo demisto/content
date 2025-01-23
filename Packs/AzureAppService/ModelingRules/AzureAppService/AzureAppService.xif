@@ -145,7 +145,7 @@ config case_sensitive = true
         xdm.event.original_event_type = category,
         xdm.event.type = "Work flow Runtime",
         xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-        xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 1),
+        xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 2),
         xdm.source.cloud.region = location
 | alter
         log_level = uppercase(Level),
