@@ -13,7 +13,7 @@
     "id": "incident_anythingllmupload",
     "isReadOnly": false,
     "locked": false,
-    "name": "anythingllmupload",
+    "name": "Anything LLM Upload",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
