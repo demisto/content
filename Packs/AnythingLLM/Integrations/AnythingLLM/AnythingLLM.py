@@ -384,7 +384,7 @@ class Client(BaseClient):
             demisto.debug(msg)
             raise Exception(msg)
 
-        return responsee
+        return response
 
     def _tchat(self, workspace: str, thread: str, message: str, mode: str, ttype: str):
         try:
