@@ -52,10 +52,11 @@
         },
         "MailSenderNew": {
             "mandatory": false,
-            "display_name": "Mail Sender (New)"
+            "display_name": "Mail Sender (New)",
+            "minVersion": "1.0.27"
         },
         "CommonScripts": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Scripts",
             "minVersion": "1.19.8"
         },
@@ -64,11 +65,11 @@
             "display_name": "Gmail"
         },
         "CommonPlaybooks": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Playbooks"
         },
         "CommonTypes": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Types"
         },
         "GmailSingleUser": {
