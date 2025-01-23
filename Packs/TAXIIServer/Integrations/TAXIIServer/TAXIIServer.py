@@ -941,7 +941,6 @@ def main():
         host_name = server_link_parts.hostname
         if not http_server:
             scheme = 'https'
-
         service_address = params.get('service_address')
         SERVER = TAXIIServer(scheme, str(host_name), port, collections,
                              certificate, private_key, http_server, credentials, service_address)
