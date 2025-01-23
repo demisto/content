@@ -1966,10 +1966,11 @@ async def test_check_and_handle_entitlement(mocker):
     text = "Entitlement Text"
     message_id = "MessageID123"
     user_name = "User123"
+    user_id = "user123@example.com"
 
     # Call the async function and await its result
     from Zoom import check_and_handle_entitlement
-    result = await check_and_handle_entitlement(text, message_id, user_name)
+    result = await check_and_handle_entitlement(text, message_id, user_name, user_id)
 
     assert result == 'thanks'  # Adjust the expected reply as needed
 
