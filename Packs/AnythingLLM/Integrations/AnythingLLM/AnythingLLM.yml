@@ -15,14 +15,15 @@ configuration:
   defaultvalue: http://localhost:3001
   type: 0
   required: true
-- section: Collect
+- section: Connect
   display: AnythingLLM API Key
   displaypassword: AnythingLLM API Key
   name: apikey
   type: 9
   required: true
   hiddenusername: true
-- display: Cloudflare Access Client Id
+- section: Connect
+  display: Cloudflare Access Client Id
   displaypassword: Cloudflare Access Client Secret
   name: cf_auth
   required: false
