@@ -1,10 +1,13 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 # STD Libraries
 from typing import Any
+
+import demistomock as demisto  # noqa: F401
+
 # 3-rd party libraries
 import pandas as pd
 import phrases_case
+from CommonServerPython import *  # noqa: F401
+
 # Local packages
 from CommonServerUserPython import *
 
@@ -408,7 +411,7 @@ def main():  # pragma: no cover
             return_results(f'Set grid {grid_id} using {context_path} successfully.')
 
     except Exception as exc:
-        return_error(f'Failed to execute setGridField. Error: {str(exc)}', error=traceback.format_exc())
+        return_error(f'Failed to execute setGridField. Error: {exc!s}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

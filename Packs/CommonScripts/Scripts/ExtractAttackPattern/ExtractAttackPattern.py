@@ -1,7 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
-
 import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -23,10 +22,10 @@ def is_valid_attack_pattern(items) -> list:
                          'verify you have proper integration (MITRE ATTACK v2) enabled to support it. '
                          'This Is needed in order to auto extract MITRE IDs and translate them to Attack Pattern IOCs')
         else:
-            demisto.info(f'MITRE Attack formatting script, {str(e)}')
+            demisto.info(f'MITRE Attack formatting script, {e!s}')
         return []
     except Exception as e:
-        demisto.info(f'MITRE Attack formatting script, {str(e)}')
+        demisto.info(f'MITRE Attack formatting script, {e!s}')
         return []
 
 

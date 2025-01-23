@@ -1,9 +1,8 @@
+import dateparser
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-
-import dateparser
-
 
 EQUAL = 'equal'
 BEFORE = 'before'
@@ -68,7 +67,7 @@ def main():
     try:
         return_outputs(*time_stamp_compare_command(demisto.args()))
     except Exception as exc:
-        return_error(f'Failed to execute TimeStampCompare. Error: {str(exc)}')
+        return_error(f'Failed to execute TimeStampCompare. Error: {exc!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

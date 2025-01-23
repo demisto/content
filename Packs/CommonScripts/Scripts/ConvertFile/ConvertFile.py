@@ -1,12 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-import subprocess
 import glob
 import os
-import tempfile
 import shutil
+import subprocess
+import tempfile
 import traceback
+
+import demistomock as demisto
+from CommonServerPython import *
 
 
 def find_zombie_processes():

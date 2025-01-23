@@ -40,7 +40,7 @@ def extract_html_table(html, indexes):
     if len(tables) > 0:
         return ({
             'Type': entryTypes['note'],
-            'Contents': 'Found {} tables in HTML.'.format(len(tables)),
+            'Contents': f'Found {len(tables)} tables in HTML.',
             'ContentsFormat': formats['text'],
             'EntryContext': {'HTMLTables': tables if len(tables) > 1 else tables[0]}
         })

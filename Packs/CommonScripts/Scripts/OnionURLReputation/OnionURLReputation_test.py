@@ -1,5 +1,5 @@
-from OnionURLReputation import main
 import demistomock as demisto
+from OnionURLReputation import main
 
 # the onion urls used in the unittests are not a valid ones so they would not be caught as an Onion URL in XSOAR.
 ARGS = {

@@ -1,7 +1,9 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
-import json
 
 
 def string_to_markdown(indicators: str) -> str:
@@ -63,7 +65,7 @@ def extract_indicators_from_file(args):
 
     # Extract indicators (omitting context output, letting auto-extract work)
     indicators_hr = demisto.executeCommand("extractIndicators", {
-        'text': data})[0][u'Contents']
+        'text': data})[0]['Contents']
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],

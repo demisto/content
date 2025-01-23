@@ -25,7 +25,7 @@ def main():
         })
 
     except Exception as ex:
-        return_error(f'Failed to execute calculate entropy script. Error: {str(ex)}')
+        return_error(f'Failed to execute calculate entropy script. Error: {ex!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

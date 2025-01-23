@@ -1,6 +1,7 @@
+from enum import Enum
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from enum import Enum
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 DEFAULT_LIMIT = 100
@@ -52,7 +53,7 @@ def is_valid_args(args: Dict):
                     _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
                 error_msg.append(f'Error while parsing the argument: "{_key}" '
-                                 f'\nError:\n- "{str(ex)}"')
+                                 f'\nError:\n- "{ex!s}"')
 
     if len(error_msg) != 0:
         raise DemistoException('\n'.join(error_msg))

@@ -1,9 +1,10 @@
+import os
+import re
+
 import demistomock as demisto
+import pytest
 from CommonServerPython import entryTypes
 from Ping import main
-import re
-import pytest
-import os
 
 # To run the tests in an editor see: test_data/ping
 

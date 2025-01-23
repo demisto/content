@@ -1,10 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import requests
 import re
+
+import demistomock as demisto
+import requests
+from CommonServerPython import *
 from pkg_resources import parse_version
 
+from CommonServerUserPython import *
 
 ACCEPT_HEADER = {
     'Accept': "application/json, "
@@ -53,8 +54,7 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY, gateway_
             else:
                 demisto.info(f'Failed parsing www-authenticate header: {www_auth}')
         else:
-            demisto.info('Failed extracting www-authenticate header from registry: {}, final url: {}'.format(
-                registry, res.url))
+            demisto.info(f'Failed extracting www-authenticate header from registry: {registry}, final url: {res.url}')
         headers = ACCEPT_HEADER.copy()
         if gateway_creds and registry != DEFAULT_REGISTRY:
             headers['Authorization'] = f"Basic {gateway_creds}"
@@ -191,7 +191,7 @@ def main():
 
         demisto.results(tag)
     except Exception as ex:
-        return_error(f"Failed getting tag for: {docker_full_name}. Err: {str(ex)}")
+        return_error(f"Failed getting tag for: {docker_full_name}. Err: {ex!s}")
 
 
 # python2 uses __builtin__ python3 uses builtins

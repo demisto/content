@@ -1,16 +1,28 @@
+import dateparser
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import dateparser
-
 
 ''' IMPORTS '''
 import json
-from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
-from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
-from stix2 import Tool, CourseOfAction
-from stix2.exceptions import InvalidValueError, MissingPropertiesError
-from typing import Any
 from collections.abc import Callable
+from typing import Any
+
+from stix2 import (
+    AttackPattern,
+    Bundle,
+    Campaign,
+    CourseOfAction,
+    ExternalReference,
+    Indicator,
+    Infrastructure,
+    IntrusionSet,
+    Malware,
+    Report,
+    ThreatActor,
+    Tool,
+    Vulnerability,
+)
+from stix2.exceptions import InvalidValueError, MissingPropertiesError
 
 SCOs: dict[str, str] = {  # pragma: no cover
     "md5": "file:hashes.md5",

@@ -1,6 +1,6 @@
-from GenerateAsBuilt import TableData, SortedTableData
-import pytest
 import demistomock as demisto
+import pytest
+from GenerateAsBuilt import SortedTableData, TableData
 
 
 def test_as_html():
@@ -108,7 +108,7 @@ def test_get_open_incidents(mocker):
         - all open incidents are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_open_incidents, SingleFieldData
+    from GenerateAsBuilt import SingleFieldData, get_open_incidents
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'total': 1000})
     expected = SingleFieldData(f"Open Incidents {7} days", 1000)
     res = get_open_incidents()
@@ -126,7 +126,7 @@ def test_get_closed_incidents(mocker):
         - all closed incidents are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_closed_incidents, SingleFieldData
+    from GenerateAsBuilt import SingleFieldData, get_closed_incidents
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'total': 1000})
     expected = SingleFieldData(f"Closed Incidents {7} days", 1000)
     res = get_closed_incidents()
@@ -144,7 +144,7 @@ def test_get_enabled_integrations(mocker):
         - all enabled integrations are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_enabled_integrations, SortedTableData
+    from GenerateAsBuilt import SortedTableData, get_enabled_integrations
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={
                         'instances': [{'enabled': True, 'name': 'test'}]})
     expected = SortedTableData([{'enabled': True, 'name': 'test'}], "Enabled Instances", "name")
@@ -164,7 +164,7 @@ def test_get_installed_packs(mocker, get_api_request_returned_value):
         - all installed packs are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_installed_packs, SortedTableData
+    from GenerateAsBuilt import SortedTableData, get_installed_packs
     mocker.patch.object(GenerateAsBuilt, 'get_api_request', return_value=get_api_request_returned_value)
 
     result = get_installed_packs()
@@ -184,7 +184,7 @@ def test_get_custom_playbooks(mocker):
         - all custom playbooks are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_custom_playbooks, SortedTableData
+    from GenerateAsBuilt import SortedTableData, get_custom_playbooks
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={
                         'playbooks': [{'name': 'test'}]})
     expected = SortedTableData([{'name': 'test', 'TotalTasks': 0}], "Custom Playbooks", "name")
@@ -203,7 +203,7 @@ def test_get_custom_reports(mocker):
         - all custom reports are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_custom_reports, TableData
+    from GenerateAsBuilt import TableData, get_custom_reports
     mocker.patch.object(GenerateAsBuilt, 'get_api_request', return_value=[{'name': 'test'}])
     expected = TableData([{'name': 'test'}], 'Custom Reports')
     res = get_custom_reports()
@@ -221,7 +221,7 @@ def test_get_custom_dashboards(mocker):
         - all custom dashboards are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_custom_dashboards, TableData
+    from GenerateAsBuilt import TableData, get_custom_dashboards
     mocker.patch.object(GenerateAsBuilt, 'get_api_request', return_value={'dashboard': {'name': 'test'}})
     expected = TableData([{'name': 'test'}], 'Custom dashboards')
     res = get_custom_dashboards()
@@ -239,7 +239,7 @@ def test_get_all_playbooks(mocker):
         - all available playbooks are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_all_playbooks, TableData
+    from GenerateAsBuilt import TableData, get_all_playbooks
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'playbooks': [{'name': 'test'}]})
     expected = TableData([{'name': 'test', 'TotalTasks': 0}], 'All Playbooks')
     res = get_all_playbooks()
@@ -257,7 +257,7 @@ def test_get_playbook_stats(mocker):
         - all available playbooks stats are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_playbook_stats, TableData
+    from GenerateAsBuilt import TableData, get_playbook_stats
     mocker.patch.object(GenerateAsBuilt, 'get_all_incidents', return_value=[
                         {'name': 'test', 'TotalTasks': 0, 'playbookId': '000001'}])
 
@@ -278,7 +278,7 @@ def test_get_playbook_dependencies(mocker):
         - all available playbooks dependencies are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_playbook_dependencies, TableData
+    from GenerateAsBuilt import TableData, get_playbook_dependencies
     mocker.patch.object(GenerateAsBuilt, 'get_all_playbooks', return_value=TableData(
         [{'name': 'test', 'TotalTasks': 0, 'id': '000001'}], 'All Playbooks'))
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'existing': {
@@ -299,7 +299,7 @@ def test_get_custom_automations(mocker):
         - all custom automations are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_custom_automations, TableData
+    from GenerateAsBuilt import TableData, get_custom_automations
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'scripts': [{'name': 'test'}]})
     expected = TableData([{'name': 'test'}], 'Custom Automations')
     res = get_custom_automations()
@@ -317,7 +317,7 @@ def test_get_system_config(mocker):
         - all system configurations are returned
     """
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_system_config, TableData
+    from GenerateAsBuilt import TableData, get_system_config
     mocker.patch.object(GenerateAsBuilt, 'get_api_request', return_value={'config': [{'name': 'test'}]})
     expected = TableData([{'name': 'test'}], 'System Configuration')
     res = get_system_config()

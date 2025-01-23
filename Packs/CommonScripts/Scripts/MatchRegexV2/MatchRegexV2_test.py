@@ -1,29 +1,29 @@
 import re
-import pytest
 
-from MatchRegexV2 import parse_regex_flags, main
+import pytest
+from MatchRegexV2 import main, parse_regex_flags
 
 
 class TestParseRegexFlags:
     @staticmethod
     def test__sanity():
         flags, multiple_matches = parse_regex_flags()
-        assert re.I in flags
-        assert re.M in flags
+        assert re.IGNORECASE in flags
+        assert re.MULTILINE in flags
         assert multiple_matches
 
     @staticmethod
     def test__custom_flags():
         flags, multiple_matches = parse_regex_flags('gi')
-        assert re.I in flags
-        assert re.M not in flags
+        assert re.IGNORECASE in flags
+        assert re.MULTILINE not in flags
         assert multiple_matches
 
     @staticmethod
     def test__custom_flags_without_multiple_match():
         flags, multiple_matches = parse_regex_flags('i')
-        assert re.I in flags
-        assert re.M not in flags
+        assert re.IGNORECASE in flags
+        assert re.MULTILINE not in flags
         assert not multiple_matches
 
     @staticmethod

@@ -1,5 +1,6 @@
-import pytest
 import json
+
+import pytest
 
 
 # About the drop some mean regex right now disable-secrets-detection-start

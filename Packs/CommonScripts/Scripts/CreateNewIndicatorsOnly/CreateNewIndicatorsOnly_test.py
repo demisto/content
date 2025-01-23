@@ -1,8 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa: F401
-import CreateNewIndicatorsOnly
 from typing import Any
+
+import CreateNewIndicatorsOnly
+import demistomock as demisto
 import pytest
+from CommonServerPython import *  # noqa: F401
 
 
 def equals_object(obj1, obj2) -> bool:

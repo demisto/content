@@ -1,11 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-from pathlib import Path
 import shlex
 import subprocess
-from tempfile import mkdtemp
 import zipfile
+from pathlib import Path
+from tempfile import mkdtemp
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def installLibrary(dir_path: Path, library_name: str) -> str:
@@ -47,7 +47,7 @@ def main():
         return_results(result)
 
     except Exception as e:
-        return_error(f"An error occurred: {str(e)}")
+        return_error(f"An error occurred: {e!s}")
 
 
 if __name__ in ('__builtin__', 'builtins'):

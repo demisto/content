@@ -1,9 +1,9 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-from typing import Dict, List
-import json
+from CommonServerUserPython import *
 
 CONTENT_TYPE_MAPPER = {
     "json": "application/json",
@@ -70,8 +70,8 @@ class Client(BaseClient):
             raise DemistoException(f"Bad gateway. Status code: {status_code}. Origin response from server: {res.text}")
 
 
-def create_headers(headers: Dict, request_content_type_header: str, response_content_type_header: str) \
-        -> Dict[str, str]:
+def create_headers(headers: dict, request_content_type_header: str, response_content_type_header: str) \
+        -> dict[str, str]:
     """
     Create a dictionary of headers. It will map the header if it exists in the CONTENT_TYPE_MAPPER.
     Args:
@@ -105,11 +105,11 @@ def get_parsed_response(res, resp_type: str) -> Any:
             res = res.text
         return res
     except ValueError as exception:
-        raise DemistoException('Failed to parse json object from response: {}'
-                               .format(res.content), exception)
+        raise DemistoException(f'Failed to parse json object from response: {res.content}'
+                               , exception)
 
 
-def format_status_list(status_list: list) -> List[int]:
+def format_status_list(status_list: list) -> list[int]:
     """
     Get a status list and format it to a range of status numbers.
     Example:
@@ -132,7 +132,7 @@ def format_status_list(status_list: list) -> List[int]:
     return final_status_list
 
 
-def build_outputs(parsed_res, res: requests.Response) -> Dict:
+def build_outputs(parsed_res, res: requests.Response) -> dict:
     return {'ParsedBody': parsed_res,
             'Body': res.text,
             'StatusCode': res.status_code,
@@ -141,7 +141,7 @@ def build_outputs(parsed_res, res: requests.Response) -> Dict:
             'Headers': dict(res.headers)}
 
 
-def parse_headers(headers: str) -> Dict:
+def parse_headers(headers: str) -> dict:
     """
         Parsing headers from str type to dict.
         The allowed format are:
@@ -227,7 +227,7 @@ def main():
             raw_response={'data': parsed_res}
         )
     except Exception as e:
-        return_error(f'Failed to execute HttpV2 script. Error: {str(e)}')
+        return_error(f'Failed to execute HttpV2 script. Error: {e!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,7 +1,8 @@
-from tempfile import mkdtemp
-from UnzipFile import *
 import os
+from tempfile import mkdtemp
+
 import pytest
+from UnzipFile import *
 
 data_test_unzip_no_password = ['testZip.yml', 'ScanSummary.txt', 'item.png']
 

@@ -1,7 +1,7 @@
+from datetime import datetime, timedelta
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-from datetime import datetime, timedelta
 
 # ##### Help #####
 # This is an example script. The script is used to change the Remediation SLA of an incident,

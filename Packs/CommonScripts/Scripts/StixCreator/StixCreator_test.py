@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import pytest
-from StixCreator import main, guess_indicator_type, add_file_fields_to_indicator, create_stix_sco_indicator
+from CommonServerPython import *  # noqa: F401
+from StixCreator import add_file_fields_to_indicator, create_stix_sco_indicator, guess_indicator_type, main
 
 FILE_INDICATOR = \
     {

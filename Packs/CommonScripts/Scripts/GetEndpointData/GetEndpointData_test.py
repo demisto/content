@@ -1,5 +1,5 @@
-import pytest
 import demistomock as demisto
+import pytest
 from CommonServerPython import CommandResults, EntryType
 from GetEndpointData import *
 

@@ -2,8 +2,9 @@
 Given a CSV file in the War Room by entry ID, searches based on column and value.
 If the column is not present, simply parse the CSV into a list of lists or list of dicts (if header row supplied).
 """
-from CommonServerPython import *
 import csv
+
+from CommonServerPython import *
 
 
 def search_dicts(k, v, data):
@@ -60,8 +61,7 @@ def main():
     file_name = res['name']
     if not file_name.lower().endswith('.csv'):
         return_error(
-            '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension'.format(
-                file_name))
+            f'"{file_name}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension')
 
     csv_data: list = []
     with open(file_path) as csv_file:

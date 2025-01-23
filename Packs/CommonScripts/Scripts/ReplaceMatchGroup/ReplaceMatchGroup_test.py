@@ -1,7 +1,6 @@
 import pytest
 from CommonServerPython import DemistoException
 
-
 test_data = [
     ('[{"Sha1Hash"},{"437"},{"Sha1Hash"}]', r'\{".*?"(\},\{)".*?"\}', '@@@', '[{"Sha1Hash"@@@"437"},{"Sha1Hash"}]'),
     ('{"1"},{"2"},{"3"},{"4"}', r'\{".*?"\}(,)\{".*?"\}', ':', '{"1"}:{"2"},{"3"}:{"4"}'),

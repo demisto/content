@@ -1,11 +1,12 @@
-import subprocess
-from ConvertFile import main, find_zombie_processes
-import demistomock as demisto
-from CommonServerPython import entryTypes
-import logging
-import pytest
 import glob
+import logging
 import os
+import subprocess
+
+import demistomock as demisto
+import pytest
+from CommonServerPython import entryTypes
+from ConvertFile import find_zombie_processes, main
 
 RETURN_ERROR_TARGET = 'ConvertFile.return_error'
 

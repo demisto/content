@@ -1,7 +1,7 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *  # lgtm [py/polluting-import]
-
-import re
 
 # Negative lookahead - Verify the pattern does not end with the listed file extensions. Separated by |
 COMMON_FILE_EXT = ("zip", "jpg", "jpeg", "csv", "png", "gif", "bmp", "txt", "pdf", "ppt", "pptx", "xls", "xlsx", "doc",
@@ -110,7 +110,7 @@ def main():
 
     except Exception as e:
         return_error(
-            f'Failed to execute the automation. Error: \n{str(e)}'
+            f'Failed to execute the automation. Error: \n{e!s}'
         )
 
 

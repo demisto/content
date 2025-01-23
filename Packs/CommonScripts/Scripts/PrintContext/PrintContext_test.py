@@ -1,6 +1,5 @@
-import pytest
-
 import demistomock as demisto  # noqa: F401
+import pytest
 from CommonServerPython import *  # noqa: F401
 from PrintContext import print_context
 

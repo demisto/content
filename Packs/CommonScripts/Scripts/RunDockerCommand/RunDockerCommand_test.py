@@ -1,7 +1,8 @@
 import subprocess
-from RunDockerCommand import main
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from RunDockerCommand import main
 
 
 def test_run_docker_command(mocker):

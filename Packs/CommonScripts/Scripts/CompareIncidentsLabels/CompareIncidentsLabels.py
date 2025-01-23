@@ -7,13 +7,13 @@ try:
     res = demisto.executeCommand("getIncidents", {'id': inc1})
 
     if any(is_error(entry) for entry in res):
-        return_error("Unable to fetch incident {}".format(inc1))
+        return_error(f"Unable to fetch incident {inc1}")
 
     inc1_data = res[0].get('Contents').get('data')
 
     res = demisto.executeCommand("getIncidents", {'id': inc2})
     if any(is_error(entry) for entry in res):
-        return_error("Unable to fetch incident {}".format(inc2))
+        return_error(f"Unable to fetch incident {inc2}")
 
     inc2_data = res[0].get('Contents').get('data')
 
@@ -31,8 +31,8 @@ try:
         if label not in inc1_labels:
             in2not1.append(label)
 
-    md = tableToMarkdown("Labels of incident {} but not of incident {}".format(inc1, inc2), in1not2)
-    md += "\n" + tableToMarkdown("Labels of incident  {1} but not of incident {0}".format(inc1, inc2), in2not1)
+    md = tableToMarkdown(f"Labels of incident {inc1} but not of incident {inc2}", in1not2)
+    md += "\n" + tableToMarkdown(f"Labels of incident  {inc2} but not of incident {inc1}", in2not1)
 
     if not in2not1 and not in1not2:
         md = "No different labels."

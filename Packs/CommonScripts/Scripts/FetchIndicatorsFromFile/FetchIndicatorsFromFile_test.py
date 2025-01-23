@@ -162,8 +162,8 @@ def test_main(mocker):
     Then:
         - Return results to War-Room
     """
-    from FetchIndicatorsFromFile import main
     import demistomock as demisto
+    from FetchIndicatorsFromFile import main
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch('FetchIndicatorsFromFile.fetch_indicators_from_file', return_value=("", {}, []))
     main()

@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # List of empty values that we want to filter out.
 EMPTY_VALUES = ["{}", "[{}]", "[{}, {}]", "[{}, {}, {}]", "0001-01-01T00:00:00Z", "containmentsla", "remediationsla",
                 "detectionsla", "triagesla"]

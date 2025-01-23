@@ -1,8 +1,6 @@
-from IsListExist import main
-
-import pytest
-
 import demistomock as demisto
+import pytest
+from IsListExist import main
 
 
 @pytest.mark.parametrize('list_name,get_list_res,expected', [

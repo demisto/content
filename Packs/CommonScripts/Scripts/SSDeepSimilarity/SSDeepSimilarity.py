@@ -1,8 +1,8 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import tempfile
 import traceback
 
-import tempfile
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 HEADERS = "ssdeep,1.1--blocksize:hash:hash,filename\n"
 
@@ -106,7 +106,7 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to compare ssdeep hashes. Error: {str(ex)}')
+        return_error(f'Failed to compare ssdeep hashes. Error: {ex!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,6 +1,6 @@
-from CommonServerPython import *
-
 import json
+
+from CommonServerPython import *
 
 
 def replace_context(args: dict) -> tuple:

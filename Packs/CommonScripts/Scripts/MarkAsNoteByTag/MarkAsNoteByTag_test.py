@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
-from MarkAsNoteByTag import mark_as_note
 import MarkAsNoteByTag
+from MarkAsNoteByTag import mark_as_note
 
 ENTRIES = [
     {

@@ -1,7 +1,7 @@
+from collections import defaultdict
+
 import demistomock as demisto
 from CommonServerPython import *
-
-from collections import defaultdict
 
 
 def calculate_all_average_scores(context_data: list[dict[str, Any]]) -> CommandResults:

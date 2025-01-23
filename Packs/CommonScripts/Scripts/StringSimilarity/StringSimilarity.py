@@ -1,6 +1,7 @@
+import difflib
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import difflib
 
 
 def stringSimilarity(first_array: str, second_array: str, similarity_threshold: float):
@@ -49,7 +50,7 @@ def main():
         results = stringSimilarity(first_array, second_array, similarity_threshold)
         return_results(results)
     except Exception as e:
-        return_error(f'Failed to check string similarity. Problem: {str(e)}')
+        return_error(f'Failed to check string similarity. Problem: {e!s}')
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:

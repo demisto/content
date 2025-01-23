@@ -1,9 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import cv2   # noqa: F401
-import numpy as np
-from PIL import Image
 import io
+
+import cv2  # noqa: F401
+import demistomock as demisto  # noqa: F401
+import numpy as np
+from CommonServerPython import *  # noqa: F401
+from PIL import Image
 
 
 def sharpened(image: np.ndarray) -> np.ndarray:
@@ -94,7 +95,7 @@ def main():
     try:
         return_results(action_wrap(demisto.args()))
     except Exception as e:
-        return_error(f'Failed to pre-process an image file. Problem: {str(e)}')
+        return_error(f'Failed to pre-process an image file. Problem: {e!s}')
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:

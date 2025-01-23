@@ -1,6 +1,7 @@
+from pprint import pformat
+
 import demistomock as demisto
 from CommonServerPython import *
-from pprint import pformat
 
 
 def main():

@@ -1,8 +1,8 @@
-from GetDomainDNSDetails import make_query, get_domain_dns_details_command
-
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import dns.rdatatype
+from GetDomainDNSDetails import get_domain_dns_details_command, make_query
+
 if TYPE_CHECKING:
     import dns.resolver
 
@@ -22,7 +22,7 @@ class MockAnswer:
         self.rrset = rrset
 
 
-class MockResolver():
+class MockResolver:
     def __init__(self):
         self.nameservers = []
 

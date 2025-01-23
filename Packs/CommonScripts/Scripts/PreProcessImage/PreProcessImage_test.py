@@ -1,9 +1,9 @@
-from CommonServerPython import *
-import pytest
-from PIL import Image
 import io
-import cv2
 
+import cv2
+import pytest
+from CommonServerPython import *
+from PIL import Image
 
 IMAGE_NAME_JPG = 'test_picture_jpg.jpg'
 IMAGE_PATH_JPG = 'test_data/test_picture_jpg.jpg'
@@ -59,8 +59,9 @@ def test_get_file_details(mocker, entry_id, path, name, width, height, format_im
     Then:
         - Validate file details returned as expected
     """
-    from PreProcessImage import get_file_details
     from unittest import mock
+
+    from PreProcessImage import get_file_details
 
     def mock_file(_id):
         return {
@@ -106,8 +107,8 @@ def test_grayscale(mocker, image_path, image_name, format_img):
     Then:
     - Ensure the function successfully converts the image to grayscale.
     """
-    from PreProcessImage import action_wrap
     import PreProcessImage
+    from PreProcessImage import action_wrap
     # Arrange
     args = {
         'action': 'grayscale',
@@ -153,8 +154,9 @@ def test_sharpened(mocker, image_path, image_name, format_img):
     Then:
     - Ensure the function successfully sharpens the image.
     """
-    import PreProcessImage
     import io
+
+    import PreProcessImage
     # Arrange
     args = {
         'action': 'sharpened',
@@ -202,8 +204,9 @@ def test_original(mocker, image_path, image_name, format_img):
     Then:
     - Ensure the function successfully returns the original image (and not preforms sharpening or grayscale).
     """
-    import PreProcessImage
     from unittest import mock
+
+    import PreProcessImage
     # Arrange
     args = {
         'action': 'original',

@@ -1,6 +1,6 @@
+import pytest
 from CommonServerPython import CommandRunner
 from DisableUserWrapper import disable_user
-import pytest
 
 
 def commands_are_equal(command1: CommandRunner.Command, command2: CommandRunner.Command) -> bool:

@@ -1,6 +1,6 @@
-from HTMLtoMD import main
-from CommonServerPython import formats
 import demistomock as demisto
+from CommonServerPython import formats
+from HTMLtoMD import main
 
 
 def test_main(mocker):

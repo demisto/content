@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from pikepdf import Pdf, PasswordError
+from pikepdf import PasswordError, Pdf
 
 
 def unlock_pdf(args: dict):

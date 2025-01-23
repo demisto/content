@@ -13,8 +13,7 @@ def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_val
 
     if len(args_names) != len(args_values):
         raise ValueError('arg names and arg values lists does not match, please check your inputs:\n'
-                         'arg names ({}): {}\narg values ({}): {}'.format(len(args_names), args_names,
-                                                                          len(args_values), args_values)
+                         f'arg names ({len(args_names)}): {args_names}\narg values ({len(args_values)}): {args_values}'
                          )
 
     args = dict(zip(args_names, args_values))
@@ -45,7 +44,7 @@ def main(args):     # pragma: no cover
 
         demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))
     except Exception as exp:
-        return_error('An error occurred: {}'.format(exp), error=exp)
+        return_error(f'An error occurred: {exp}', error=exp)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

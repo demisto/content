@@ -1,6 +1,6 @@
-from EnrichExcludeButton import main
-
 from unittest.mock import patch
+
+from EnrichExcludeButton import main
 
 
 @patch('EnrichExcludeButton.return_error')  # Mock the return_error function in the script module

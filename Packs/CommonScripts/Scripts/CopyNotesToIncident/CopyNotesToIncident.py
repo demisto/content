@@ -55,7 +55,7 @@ def main():
         return_results(copy_notes_to_target_incident(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute CopyNotesToIncident. Error: {str(ex)}')
+        return_error(f'Failed to execute CopyNotesToIncident. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

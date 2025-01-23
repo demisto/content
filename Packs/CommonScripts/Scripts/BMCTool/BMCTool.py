@@ -1,9 +1,9 @@
+# This tool was developed by "https://github.com/ANSSI-FR/bmc-tools" - Thank you for your hardwork!
+from struct import pack, unpack
 from typing import AnyStr, Generic
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# This tool was developed by "https://github.com/ANSSI-FR/bmc-tools" - Thank you for your hardwork!
-
-from struct import pack, unpack
 
 
 class BMCContainer(Generic[AnyStr]):
@@ -496,7 +496,7 @@ def main():
 
         return_results(results)
     except Exception as e:
-        return_error(f'Failed to parse BMC cache file. Problem: {str(e)}')
+        return_error(f'Failed to parse BMC cache file. Problem: {e!s}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

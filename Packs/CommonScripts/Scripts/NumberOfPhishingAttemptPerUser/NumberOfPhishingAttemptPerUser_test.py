@@ -1,6 +1,5 @@
-from NumberOfPhishingAttemptPerUser import get_relevant_incidents
-
 from CommonServerPython import *
+from NumberOfPhishingAttemptPerUser import get_relevant_incidents
 
 incident = [
     {'ModuleName': 'InnerServicesModule', 'Brand': 'Builtin', 'Category': 'Builtin', 'ID': '', 'Version': 0, 'Type': 1,

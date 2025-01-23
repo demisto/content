@@ -1,8 +1,9 @@
+import re
+from urllib.parse import parse_qs, unquote, urlparse
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
-from tld import get_tld, Result
-from urllib.parse import urlparse, parse_qs, unquote
-import re
+from tld import Result, get_tld
 
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/',
                        "https://urldefense.com/"]
@@ -139,7 +140,7 @@ def main():
 
     except Exception as e:
         return_error(
-            f'Failed to execute the automation. Error: \n{str(e)}'
+            f'Failed to execute the automation. Error: \n{e!s}'
         )
 
 

@@ -1,6 +1,5 @@
-import pytest
-
 import demistomock as demisto
+import pytest
 from VerifyCIDR import is_valid_cidr, main
 
 invalid_host_bit = ('190.0.0.0/1', False)

@@ -1,7 +1,6 @@
-import pytest
-import demistomock as demisto
 import CommonServerPython
-
+import demistomock as demisto
+import pytest
 
 GetIndicatorDBotScoreFunc = 'GetIndicatorDBotScore.get_dbot_score_data'
 
@@ -35,7 +34,7 @@ def test_validate_indicator_type(indicator, indicator_type, expected):
         Then:
             - validating the dbotScoreType matches the correct indicator type
     """
-    from GetIndicatorDBotScore import get_dbot_score_data, INDICATOR_TYPES
+    from GetIndicatorDBotScore import INDICATOR_TYPES, get_dbot_score_data
     indicator_type_after_mapping = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
     res = get_dbot_score_data(indicator, indicator_type_after_mapping, 'source', 0)
     assert res.get('Type') == expected

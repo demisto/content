@@ -1,8 +1,7 @@
-from BreachConfirmationHTML import main
-import pytest
 import demistomock as demisto
+import pytest
+from BreachConfirmationHTML import main
 from CommonServerPython import *
-
 
 ARGS_MAIN = [
     ([{}],

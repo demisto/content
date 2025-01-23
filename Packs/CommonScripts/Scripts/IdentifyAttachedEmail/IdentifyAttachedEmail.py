@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-
 # file info types which identify emails
 CONFIDENT_EMAIL_INFOS = {
     'cdfv2 microsoft outlook message',

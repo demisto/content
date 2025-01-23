@@ -1,8 +1,8 @@
-import pytest
 import sys
 
 import CommonServerPython
 import demistomock as demisto
+import pytest
 
 LOC_VALID = ['41.40338,2.17403', '41.40338,2.17403 ', ' 41.40338 ,   2.17403    ', '32.0868197,34.7810571',
              '41.40338:2.17403']

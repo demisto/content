@@ -1,6 +1,7 @@
-from SearchIncidentsV2 import *
-import pytest
 import datetime as dt
+
+import pytest
+from SearchIncidentsV2 import *
 
 data_test_check_if_found_incident = [
     ([], 'failed to get incidents from xsoar.\nGot: []'),

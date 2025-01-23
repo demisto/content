@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-
-from packaging.version import parse, Version
+from packaging.version import Version, parse
 
 SCRIPT_NAME = 'ContentPackInstaller'
 
@@ -174,7 +173,7 @@ class ContentPackInstaller:
             status, res = self._call_execute_command('core-api-install-packs', args)
 
             if not status:
-                demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack_id} - {str(res)}')
+                demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack_id} - {res!s}')
                 self.packs_failed[pack_id] = str(pack['version'])
             else:
                 self.installed_packs[pack_id] = packs_names_versions[pack_id]
