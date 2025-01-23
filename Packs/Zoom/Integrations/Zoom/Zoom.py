@@ -2252,6 +2252,9 @@ def send_notification(client, **args):
         default_response = parsed_message.get('default_response')
     else:
         message = {"head": {"type": "message", "text": args.get("message", "")}}
+        reply = None
+        expiry = None
+        default_response = None
     if channel:  # if channel name provided
         channel_id = get_channel_jid_from_context(channel, investigation_id)
         if not channel_id:
@@ -2505,6 +2508,9 @@ bot client id and secret id""")
             port = int(params.get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
+    else:
+        port = 0
+        demisto.debug(f"Not a longrunning, setting {port=}")
 
     command = demisto.command()
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
@@ -2526,6 +2532,7 @@ bot client id and secret id""")
             bot_client_secret=bot_client_secret,
         )
         CLIENT = client
+        results = CommandResults()
 
         if command == 'test-module':
             return_results(test_module(client=client))

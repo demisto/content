@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-![SOCRadar Incident](../doc_files/SOCRadar_Incident_Playbook_Image.png)
+![SOCRadar Incident](../doc_files/SOCRadar_Incident.png)
