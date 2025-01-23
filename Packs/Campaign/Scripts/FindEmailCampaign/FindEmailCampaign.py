@@ -17,7 +17,6 @@ import tldextract
 import pytz
 
 
-
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=False)  # type: ignore[arg-type]
 utc = pytz.UTC
 
