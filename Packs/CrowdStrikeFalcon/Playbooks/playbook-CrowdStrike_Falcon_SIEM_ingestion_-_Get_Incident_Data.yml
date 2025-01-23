@@ -872,4 +872,3 @@ contentitemexportablefields:
 system: true
 marketplaces:
 - xsoar
-# Should not appear in marketplacev2
