@@ -89,9 +89,9 @@ Newly fetched Cortex XSOAR incidents will be mirrored in the chosen direction. H
    the lookback to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
    If the integration was already set with lookback > 0, and the lookback is not being increased at any point of time, then those incident duplications would not occur.
 
-## Fetch
+## Fetch Incidents (Cortex XSOAR Only)
 
-CrowdStrike Falcon incidents or detections can be fetched as incidents (Cortex XSOAR) or events (Cortex XSIAM).
+CrowdStrike Falcon incidents or detections can be fetched as incidents in Cortex XSOAR.
 Users can specify a fetch query per CrowdStrike Falcon fetch type when configuring the integration instance to control which records are fetched.
 
 ### Indicator of Misconfiguration (IOM) Fetch Query
