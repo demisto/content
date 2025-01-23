@@ -5088,11 +5088,11 @@ script:
   isfetch: true
   isfetch:marketplacev2: false
   ismappable: true
-  ismappable:marketplacev2: false
+  # ismappable:marketplacev2: false  # Not supported by SDK
   isremotesyncin: true
-  isremotesyncin:marketplacev2: false
+  # isremotesyncin:marketplacev2: false  # Not supported by SDK
   isremotesyncout: true
-  isremotesyncout:marketplacev2: false
+  # isremotesyncout:marketplacev2: false  # Not supported by SDK
   script: '-'
   subtype: python3
   type: python
