@@ -170,7 +170,7 @@ class Client(BaseClient):
                     headers=headers,
                     url_suffix="/v1/document/upload",
 
-                    files={'file': (f"{entry_id}_{file_name}", open(file_name, 'rb'))
+                    files={'file': (f"{entry_id}_{file_name}", open(file_name, 'rb'))}
                 )
             finally:
                 if exists:  # pylint: disable=E0601
