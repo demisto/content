@@ -15,7 +15,7 @@ import urllib.parse
 import urllib.request
 import uuid
 import zipfile
-from datetime import datetime, timezone, UTC
+from datetime import datetime
 from email import parser as email_parser
 from enum import Enum
 from tempfile import NamedTemporaryFile

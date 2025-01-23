@@ -4,7 +4,7 @@ import ast
 import hashlib
 import json
 
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 
 
 from laceworksdk import LaceworkClient
