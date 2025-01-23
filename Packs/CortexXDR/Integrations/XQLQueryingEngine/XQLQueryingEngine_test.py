@@ -974,14 +974,18 @@ def test_get_built_in_query_results_polling_command(mocker):
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'
 
+
+@patch('CoreXQLApiModule.Client')
+@patch('CoreXQLApiModule.demisto.params')
 @patch('XQLQueryingEngine.get_nonce')
 @patch('CoreXQLApiModule.demisto.debug')
 @patch('CoreXQLApiModule.demisto.command')
 @patch('CoreXQLApiModule.demisto.args')
 @patch('CoreXQLApiModule.return_results')
 @patch('CoreXQLApiModule.return_error')
-def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_demisto_params, mock_demisto_args,
-                      mock_demisto_command, mock_demisto_debug, mock_get_nonce):
+def test_main_success(mock_return_error, mock_return_results, mock_demisto_args,
+                      mock_demisto_command, mock_demisto_debug, mock_get_nonce,
+                      mock_demisto_params, mock_Client):
     """
     Given:
     - demisto.params().
@@ -1012,13 +1016,14 @@ def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_
     actual_call = mock_Client.call_args
     filtered_kwargs = {k: v for k, v in actual_call.kwargs.items() if k != 'headers'}
     expected_kwargs = {
-    'base_url': 'http://example.com/public_api/v1',
-    'verify': True,
-    'proxy': False,
-    'is_core': False,
+        'base_url': 'http://example.com/public_api/v1',
+        'verify': True,
+        'proxy': False,
+        'is_core': False,
     }
     assert filtered_kwargs == expected_kwargs
     mock_return_error.assert_not_called()
+
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
 @patch('CoreXQLApiModule.BaseClient._http_request')
