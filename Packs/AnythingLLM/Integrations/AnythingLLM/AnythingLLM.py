@@ -335,24 +335,6 @@ class Client(BaseClient):
 
         return {"message": {"success": True, "message": "Conversation thread removed successfully"}}
 
-    def workspace_settings(self, workspace: str, settings: dict):
-        try:
-            settings = validate_workspace_settings(settings)
-            if len(settings) == 0:
-                raise Exception("Invalid workspace settings")
-            slug = workspace_slug(workspace, self.workspace_list())
-            response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/update",
-                json_data=settings
-            )
-        except Exception as e:
-            msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {e}"
-            demisto.debug(msg)
-            raise Exception(msg)
-
-        return response
-
     def workspace_add_embedding(self, workspace: str, folder: str, document: str):
         return self._embedding(workspace, folder, document, "adds")
 
