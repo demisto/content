@@ -35,6 +35,10 @@
         "containerId": {
             "type": "string",
             "is_array": false
+        },
+        "resultType": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
