@@ -3,11 +3,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from CofenseTriagev2 import TriageInboxReports
-from CofenseTriagev2 import TriageReport
-from CofenseTriagev2 import TriageReporter
-from CofenseTriagev2 import TriageRequestFailedError
-from CofenseTriagev2 import TriageNoReportersFoundError
+from CofenseTriagev2 import (
+    TriageInboxReports,
+    TriageNoReportersFoundError,
+    TriageReport,
+    TriageReporter,
+    TriageRequestFailedError,
+)
 from freezegun import freeze_time
 
 
