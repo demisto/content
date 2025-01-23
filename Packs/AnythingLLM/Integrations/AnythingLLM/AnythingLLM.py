@@ -445,14 +445,14 @@ class Client(BaseClient):
             try:
                 ws = self.workspace_get(workspace)
             except Exception:
-                raise Exception(f"workspace not found")
+                raise Exception("workspace not found")
 
             if action == "adds":
                 if embedding_exists(ws, document):
-                    raise Exception(f"already embedded")
+                    raise Exception("already embedded")
             elif action == "deletes":
                 if not embedding_exists(ws, document):
-                    raise Exception(f"not embedded")
+                    raise Exception("not embedded")
             else:
                 raise Exception(f"action [{action}] not 'adds' or 'deletes' ")
 
