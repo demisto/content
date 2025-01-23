@@ -6,7 +6,7 @@ The MISP Threat Actors Feed integration allows you to retrieve and ingest threat
 
 ## Configuring the Integration
 
-- **Fetch Interval**: Set how often the integration should fetch new data.
+**Fetch Interval**: Set how often the integration should fetch new data.
 
 ## Usage
 
