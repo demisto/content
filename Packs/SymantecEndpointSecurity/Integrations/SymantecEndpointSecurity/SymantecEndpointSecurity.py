@@ -38,6 +38,9 @@ class NextPointingNotAvailable(Exception):
     ...
 
 
+class RateLimitFromAPI(Exception):
+    ...
+
 class Client(BaseClient):
     def __init__(
         self,
@@ -105,7 +108,9 @@ class Client(BaseClient):
             params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
             resp_type="text",
             headers=self.headers,
+            stream=True,
         )
+        demisto.debug(f"The raw response from API {res=}")
         # Formats a string into a valid JSON array
         res = res.replace("}\n{", ",")
         if not res.startswith("["):
@@ -331,6 +336,9 @@ def get_events_command(client: Client, integration_context: dict) -> None:
                 raise UnauthorizedToken
             if e.res.status_code == 410:
                 raise NextPointingNotAvailable
+            if e.res.status_code == 429:
+                raise RateLimitFromAPI
+            
         raise
 
     events: list[dict] = list(
@@ -415,6 +423,11 @@ def perform_long_running_loop(client: Client):
             )
             integration_context.pop("next_fetch")
             set_integration_context(integration_context)
+        except RateLimitFromAPI:
+            demisto.info(
+                "Rate limit reached from the API. Sleeping for a few minutes before retrying."
+            )
+            time.sleep(180)
         except Exception as e:
             raise DemistoException("Failed to fetch logs from API") from e
 
