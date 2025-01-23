@@ -13,12 +13,14 @@ class Client(BaseClient):
             url_suffix=suffix
         )
 
+
 def test_module(client: Client, query: str) -> str:
     result = client.query(query)
     if result:
         return 'ok'
     else:
         return 'Test failed: ' + str(result)
+
 
 def create_indicator_output(results: Dict[str, Any], indicator: str, indicatortype: str, reliability: str) -> CommandResults:
     if indicatortype == 'ip':
@@ -52,7 +54,6 @@ def create_indicator_output(results: Dict[str, Any], indicator: str, indicatorty
     )
 
 
-
 def create_output(results: Dict[str, Any], endpoint: str, keyfield: str = '') -> CommandResults:
     human_readable = tableToMarkdown('Hudsonrock results', results)
     return CommandResults(
@@ -61,7 +62,6 @@ def create_output(results: Dict[str, Any], endpoint: str, keyfield: str = '') ->
         outputs=results,
         readable_output=human_readable
     )
-
 
 
 def main():

@@ -3,7 +3,7 @@
     "description": "Deprecated. Use Cortex Xpanse instead.",
     "hidden": true,
     "support": "xsoar",
-    "currentVersion": "1.10.60",
+    "currentVersion": "1.10.61",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

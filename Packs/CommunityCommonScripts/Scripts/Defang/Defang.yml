@@ -38,7 +38,7 @@ comment: Defangs IP, Mail and URL address to prevent them from being recognized.
 commonfields:
   id: Defang
   version: -1
-dockerimage: demisto/python3:3.10.14.99474
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: Defang
 runas: DBotWeakRole

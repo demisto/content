@@ -159,7 +159,7 @@ script:
     - contextPath: CybleEvents.Events.Details
       description: Returns details for given event of specific type.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'
