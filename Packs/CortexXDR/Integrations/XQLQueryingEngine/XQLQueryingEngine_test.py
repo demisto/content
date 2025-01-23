@@ -975,7 +975,7 @@ def test_get_built_in_query_results_polling_command(mocker):
     assert res.call_args.args[1]['time_frame'] == '7 days'
 
 
-@patch('CoreXQLApiModule.Client')
+@patch('XQLQueryingEngine.Client')
 @patch('CoreXQLApiModule.demisto.params')
 @patch('XQLQueryingEngine.get_nonce')
 @patch('CoreXQLApiModule.demisto.debug')
