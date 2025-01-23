@@ -17,7 +17,7 @@ alter
                 category = "AppServiceEnvironmentPlatformLogs", "App Service Environment Platform Logs",
                 category),
         xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-        xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 1),
+        xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 2),
         xdm.source.cloud.region = location,
         xdm.target.resource.name = arrayindex(regextract(resourceId, "/([^\/]+)$"), -1),
         xdm.target.resource.id = resourceId,
