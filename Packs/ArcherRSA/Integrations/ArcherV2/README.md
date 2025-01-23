@@ -23,16 +23,14 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
     | Maximum number of incidents to pull per fetch | Default is 10. | False |
     | First fetch timestamp | Time from which to begin fetching incidents in the `<number> <time unit>` format. For example: 12 hours, 7 days, 3 months, 1 year. | False |
     | List of fields from the application to get into the incident | A comma-separated list of application field names. For example: `Date/Time Occurred,Days Open`. | False |
-    | XML for fetch filtering | Additional XML condition element to use when fetching. Using a "DateComparisonFilterCondition" element is not supported. For more information, check the "Limitations" section of the documentation. | False |
-    | Fetch filtering logic operator | Boolean logic operator to combine the existing fetch date filter condition with the custom "XML for fetch filtering" condition. For example: "AND". Using an "OR" value is not supported. For more information, check the "Limitations" section of the documentation. | False |
+    | XML for fetch filtering | Additional XML condition element(s) to use when fetching. Using a "DateComparisonFilterCondition" element is not supported. For more information, check the "Limitations" section of the documentation. | False |
+    | Fetch filtering logic operator | Boolean logic operator to combine two or more "XML for fetch filtering" conditions (if applicable). For example: AND, AND NOT, OR, XOR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Limitations
 
-- The "XML for fetch filtering" configuration parameter cannot be a "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter. Other types of filtering conditions, such as "TextFilterCondition", are allowed.
-
-- The "Fetch filtering logic operator" configuration parameter cannot have a value of "OR" since it would result in the fetching of duplicate incidents.
+- The "XML for fetch filtering" configuration parameter cannot contain "DateComparisonFilterCondition" XML element since it would interfere with the existing fetch date filter. Other types of filtering conditions, such as "TextFilterCondition", are allowed.
 
 - Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requires credential based authentication.
 

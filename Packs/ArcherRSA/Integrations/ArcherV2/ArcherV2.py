@@ -297,6 +297,7 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
 def construct_operator_logic(logical_operator: str | None, conditions_count: int) -> str:
     """
     Constructs an XML string representing the operator logic that applies to the filtering conditions for searching records.
+    Note that the last condition is always ANDed.
 
     Args:
         logical_operator (str | None): The logical operator (e.g. 'AND', 'OR', 'XOR').
@@ -307,17 +308,21 @@ def construct_operator_logic(logical_operator: str | None, conditions_count: int
 
     Example:
         >>> construct_operator_logic('AND', 4)
-        '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>'
+        '<OperatorLogic>1 OR 2 OR 3 AND 4</OperatorLogic>'
     """
     if not logical_operator or not logical_operator.strip():
         return ''
 
-    # Only two or more conditions can be joined by a logical operator (e.g. '1 AND 2', '1 OR 2 OR 3')
+    # Only two or more conditions can be joined by a logical operator (e.g. '1 AND 2', '1 OR 2 AND 3')
     if conditions_count < 2:
         return ''
 
     root = ET.Element('OperatorLogic')
-    root.text = f' {logical_operator.upper()} '.join([str(num) for num in range(1, conditions_count + 1)])
+
+    text = f' {logical_operator.upper()} '.join(str(num) for num in range(1, conditions_count))
+    text += f' AND {conditions_count}'
+
+    root.text = text
     return ET.tostring(root, encoding='unicode')
 
 
@@ -359,6 +364,9 @@ def search_records_soap_request(
     # Order of conditions important if using non-commutative logical_operator (e.g. 1 AND NOT 2 != 2 AND NOT 1)
     filter_conditions: list[str] = []
 
+    if xml_filter_condition:
+        filter_conditions.append(xml_filter_condition)
+
     if search_value:
         if date_operator:
             filter_conditions.append(
@@ -383,32 +391,28 @@ def search_records_soap_request(
                 )
             )
 
+        elif (
+            field_to_search_by_id
+            and field_to_search_by_id.lower() == field_name.lower()
+        ):
+            filter_conditions.append(
+                construct_content_filter_condition(
+                    operator='Equals',
+                    level_id=level_id,
+                    search_value=search_value,
+                )
+            )
+
         else:
-            if (
-                field_to_search_by_id
-                and field_to_search_by_id.lower() == field_name.lower()
-            ):
-                filter_conditions.append(
-                    construct_content_filter_condition(
-                        operator='Equals',
-                        level_id=level_id,
-                        search_value=search_value,
-                    )
+            filter_conditions.append(
+                construct_generic_filter_condition(
+                    FilterConditionTypes.text,
+                    operator='Contains',
+                    field_name=field_name,
+                    field_id=field_id,
+                    search_value=search_value
                 )
-
-            else:
-                filter_conditions.append(
-                    construct_generic_filter_condition(
-                        FilterConditionTypes.text,
-                        operator='Contains',
-                        field_name=field_name,
-                        field_id=field_id,
-                        search_value=search_value
-                    )
-                )
-
-    if xml_filter_condition:
-        filter_conditions.append(xml_filter_condition)
+            )
 
     if filter_conditions:
         filter_conditions_xml = '\n'.join(filter_conditions)
@@ -1677,25 +1681,27 @@ def list_users_command(client: Client, args: dict[str, str]):
     return_outputs(markdown, context, res)
 
 
-def is_valid_xml(xml_document: str, blacklisted_tags: list[str] | None = None) -> bool:
+def validate_xml_conditions(xml_conditions: str, blacklisted_tags: list[str] | None = None) -> None:
     """
-    Checks if the string is syntactically valid XML document and if the XML contains any forbidden tags.
+    Validates if the string is syntactically valid XML document and if the XML conditions contain any forbidden tags.
 
     Args:
-        xml_document (str): String for checking.
+        xml_conditions (str): String for checking.
         blacklisted_tags (list): List of forbidden XML tags.
 
-    Returns:
-        bool: True if valid XML and no forbidden tags, otherwise False.
+    Raises:
+        ValueError: If invalid syntax or any forbidden XML tag is used,
     """
     blacklisted_tags = blacklisted_tags or []
 
     try:
-        root = ET.fromstring(xml_document)
+        root = ET.fromstring(f'<Conditions>{xml_conditions}</Conditions>')
     except ET.ParseError:
-        return False
+        raise ValueError('Invalid XML filter condition syntax')
 
-    return all(root.tag != blacklisted_tag and root.find(blacklisted_tag) is None for blacklisted_tag in blacklisted_tags)
+    for blacklisted_tag in blacklisted_tags:
+        if root.find(blacklisted_tag) is not None:
+            raise ValueError(f'XML filter condition cannot contain the "{blacklisted_tag}" tag')
 
 
 def search_records_command(client: Client, args: dict[str, str]):
@@ -1714,8 +1720,8 @@ def search_records_command(client: Client, args: dict[str, str]):
     )
     level_id = args.get("levelId")
 
-    if (xml_filter_condition := args.get("xmlForFiltering")) and not is_valid_xml(xml_filter_condition):
-        raise DemistoException(f'Invalid XML filter: {xml_filter_condition}.')
+    if xml_filter_condition := args.get("xmlForFiltering"):
+        validate_xml_conditions(xml_filter_condition)
 
     if fields_to_get and "Id" not in fields_to_get:
         fields_to_get.append("Id")
@@ -1849,15 +1855,8 @@ def fetch_incidents(
     logical_operator = params.get("logical_operator")
 
     # If XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
-    if xml_filter_condition and not is_valid_xml(xml_filter_condition, blacklisted_tags=[FilterConditionTypes.date.value]):
-        raise ValueError(
-            "The 'XML for fetch filtering' parameter either contains a "
-            f"syntax error or is of type '{FilterConditionTypes.date.value}'."
-        )
-
-    # If logical operator is given, verify it is not "or" since it would result in the fetching of duplicate incidents
-    if logical_operator and logical_operator.casefold() == "or":
-        raise ValueError("The 'Fetch filtering logic operator' parameter cannot have a value of 'OR'.")
+    if xml_filter_condition:
+        validate_xml_conditions(xml_filter_condition, blacklisted_tags=[FilterConditionTypes.date.value])
 
     # API Call
     records, _ = client.search_records(

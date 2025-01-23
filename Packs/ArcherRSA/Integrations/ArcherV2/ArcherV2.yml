@@ -76,14 +76,14 @@ configuration:
   section: Collect
   type: 0
   required: false
-- additionalinfo: 'Additional XML condition element to use when fetching. Using a "DateComparisonFilterCondition" element is not supported. For more information, check the "Limitations" section of the documentation.'
+- additionalinfo: 'Additional XML condition element(s) to use when fetching. Using a "DateComparisonFilterCondition" element is not supported. For more information, check the "Limitations" section of the documentation.'
   display: XML for fetch filtering
   name: fetch_xml
   section: Collect
   advanced: true
-  type: 0
+  type: 12  # long text block
   required: false
-- additionalinfo: 'Boolean logic operator to combine the existing fetch date filter condition with the custom "XML for fetch filtering" condition. For example: "AND". Using an "OR" value is not supported. For more information, check the "Limitations" section of the documentation.'
+- additionalinfo: 'Boolean logic operator to combine two or more "XML for fetch filtering" conditions (if applicable). For example: AND, AND NOT, OR, XOR.'
   display: Fetch filtering logic operator
   name: logical_operator
   section: Collect

@@ -5,7 +5,7 @@ from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
-    search_records_soap_request, upload_and_associate_command, is_valid_xml, construct_generic_filter_condition, \
+    search_records_soap_request, upload_and_associate_command, validate_xml_conditions, construct_generic_filter_condition, \
     construct_operator_logic, FilterConditionTypes
 
 BASE_URL = 'https://test.com/'
@@ -989,10 +989,7 @@ class TestArcherV2:
             )
         }
         from_time = datetime(2024, 12, 11)
-        expected_error_message = (
-            "The 'XML for fetch filtering' parameter either contains "
-            "a syntax error or is of type 'DateComparisonFilterCondition'."
-        )
+        expected_error_message = 'XML filter condition cannot contain the "DateComparisonFilterCondition" tag'
         with pytest.raises(ValueError, match=expected_error_message):
             fetch_incidents(client, params, from_time, '204')
 
@@ -1142,23 +1139,38 @@ class TestArcherV2:
             assert not new_token_mocker.called
         assert soap_mocker.call_count == len(http_call_attempt_results)
 
+    def test_validate_xml_conditions_valid(self):
+        """
+        Given:
+            - A string that is meant to represents a valid XML document.
+        When:
+            - Calling validate_xml_conditions.
+        Assert:
+            - Ensure no exception is raised.
+        """
+        xml_conditions = (
+            '<TextFilterCondition>'
+            '<Operator>Equals</Operator>'
+            '<Field name="Job">7</Field>'
+            '<Value>Dev</Value>'
+            '</TextFilterCondition>'
+            '<NumericFilterCondition>'
+            '<Operator>GreaterThan</Operator>'
+            '<Field name="Age">8</Field>'
+            '<Value>25</Value>'
+            '</NumericFilterCondition>'
+        )
+        validate_xml_conditions(xml_conditions)  # if exception raised, test would fail
+
     @pytest.mark.parametrize(
-        'xml_document, blacklisted_tags, expected_is_valid',
+        'xml_document, blacklisted_tags, expected_error_message',
         [
-            pytest.param(
-                # Inputs ↓
-                '<DisplayField name="First Published">7194</DisplayField>',
-                [],
-                # Expected ↓
-                True,
-                id='Valid',
-            ),
             pytest.param(
                 # Inputs ↓
                 '<ShowStatSummaries>false</ShowSummaries>',
                 [],
                 # Expected ↓
-                False,
+                'Invalid XML filter condition syntax',
                 id='Mismatched tags',
             ),
             pytest.param(
@@ -1166,22 +1178,27 @@ class TestArcherV2:
                 '<ModuleCriteria><Module name="appname">5</Module></ModuleCriteria>',
                 ['ModuleCriteria'],
                 # Expected ↓
-                False,
+                'XML filter condition cannot contain the "ModuleCriteria" tag',
                 id='Blacklisted tag',
             ),
         ]
     )
-    def test_is_valid_xml(self, xml_document: str, blacklisted_tags: list[str], expected_is_valid: bool):
+    def test_validate_xml_conditions_raise_exception(
+        self,
+        xml_document: str,
+        blacklisted_tags: list[str],
+        expected_error_message: str,
+    ):
         """
         Given:
-            - A string that is meant to represent an XML document.
+            - A malformed XML document and one that contains a forbidden XML tag.
         When:
-            - Calling is_valid_xml.
+            - Calling validate_xml_conditions.
         Assert:
-            - Ensure the result matches the XML validity.
+            - Ensure a ValueError is raised with the correct error message.
         """
-        is_valid = is_valid_xml(xml_document, blacklisted_tags)
-        assert is_valid == expected_is_valid
+        with pytest.raises(ValueError, match=expected_error_message):
+            validate_xml_conditions(xml_document, blacklisted_tags)
 
     @pytest.mark.parametrize(
         'condition_type, operator, field_name, field_id, search_value, expected_xml_condition',
@@ -1247,7 +1264,7 @@ class TestArcherV2:
     @pytest.mark.parametrize(
         'logical_operator, conditions_count, expected_operator_logic',
         [
-            pytest.param('or', 3, '<OperatorLogic>1 OR 2 OR 3</OperatorLogic>', id='OR with 3 conditions'),
+            pytest.param('or', 3, '<OperatorLogic>1 OR 2 AND 3</OperatorLogic>', id='OR with 3 conditions'),
             pytest.param('AND', 4, '<OperatorLogic>1 AND 2 AND 3 AND 4</OperatorLogic>', id='AND with 4 conditions'),
             pytest.param('XOR', 1, '', id='XOR with 1 condition'),
         ]
