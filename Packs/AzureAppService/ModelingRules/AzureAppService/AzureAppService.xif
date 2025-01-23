@@ -173,7 +173,7 @@ filter category = "AppServiceEnvironmentPlatformLogs"
 | call msft_azure_app_service_map_common_event_fields
 | alter
         xdm.event.operation_sub_type = operationName,
-        xdm.event.outcome = if(lowercase(resultType) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(resultType) = "failure", XDM_CONST.OUTCOME_FAILED, null);
+        xdm.event.outcome = if(lowercase(resultType) contains "succ", XDM_CONST.OUTCOME_SUCCESS, lowercase(resultType) contains "fail", XDM_CONST.OUTCOME_FAILED, null);
 
 
 
