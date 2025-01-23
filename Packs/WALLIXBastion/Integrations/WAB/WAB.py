@@ -280,7 +280,7 @@ class Client(BaseClient):
             domain_real_name=domain_post_domain_real_name,
             description=domain_post_description,
             enable_password_change=domain_post_enable_password_change,
-            kerberos=kerberos,
+            kerberos=kerberos or None,
             password_change_policy=domain_post_password_change_policy,
             password_change_plugin=domain_post_password_change_plugin,
             password_change_plugin_parameters=domain_post_password_change_plugin_parameters,
