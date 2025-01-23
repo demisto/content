@@ -476,14 +476,14 @@ class Client(BaseClient):
             f'private/analyses/{analysis_id}'
         )
 
-    def get_private_file_from_analysis(self, analysis_id: str) -> dict:
+    def get_private_item_from_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
             https://gtidocs.virustotal.com/reference/analysesidrelationship
         """
         return self._http_request(
             'GET',
-            f'private/analyses/{analysis_id}/item?attributes=threat_severity,threat_verdict'
+            f'private/analyses/{analysis_id}/item'
         )
 
     def get_file_sigma_analysis(self, file_hash: str) -> dict:
@@ -2236,12 +2236,12 @@ def private_url_scan_and_get_analysis(
         command_result.scheduled_command = scheduled_command
         return command_result
 
-    command_result = get_analysis_command(client, args)
+    command_result = private_get_analysis_command(client, args)
     outputs = command_result.outputs
     if not isinstance(outputs, dict):
         raise DemistoException('outputs is expected to be a dict')
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
-        return private_url_command(client, args)
+        return command_result
     scheduled_command = ScheduledCommand(
         command=f'{COMMAND_PREFIX}-private-url-scan-and-analysis-get',
         next_run_in_seconds=interval,
@@ -2658,22 +2658,39 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
     raw_response = client.get_private_analysis(analysis_id)
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
-    stats = {
-        'threat_severity_level': '',
-        'popular_threat_category': '',
-        'threat_verdict': '',
-    }
+
     if attributes.get('status', '') == 'completed':
-        file_response = client.get_private_file_from_analysis(analysis_id)
-        file_attributes = file_response.get('data', {}).get('attributes', {})
-        threat_severity = file_attributes.get('threat_severity', {})
-        severity_level = threat_severity.get('threat_severity_level', '')
-        stats['threat_severity_level'] = SEVERITY_LEVELS.get(severity_level, severity_level)
-        threat_severity_data = threat_severity.get('threat_severity_data', {})
-        stats['popular_threat_category'] = threat_severity_data.get('popular_threat_category', '')
-        verdict = file_attributes.get('threat_verdict', '')
-        stats['threat_verdict'] = VERDICTS.get(verdict, verdict)
-    attributes.update(stats)
+        stats = {}
+        item_response = client.get_private_item_from_analysis(analysis_id)
+        item_attributes = item_response.get('data', {}).get('attributes', {})
+
+        # File attributes
+        if threat_severity := item_attributes.get('threat_severity'):
+            if severity_level := threat_severity.get('threat_severity_level'):
+                stats['threat_severity_level'] = SEVERITY_LEVELS.get(severity_level, severity_level)
+            if popular_threat_category := threat_severity.get('threat_severity_data', {}).get('popular_threat_category'):
+                stats['popular_threat_category'] = popular_threat_category
+        if verdict := item_attributes.get('threat_verdict'):
+            stats['threat_verdict'] = VERDICTS.get(verdict, verdict)
+
+        # URL attributes
+        if last_analysis_stats := attributes.get('last_analysis_stats'):
+            if detection_engines := sum(last_analysis_stats.values()):
+                positive_detections = last_analysis_stats.get('malicious', 0)
+                stats['positives'] = f'{positive_detections}/{detection_engines}'
+
+        attributes.update(stats)
+        for field in [
+            # File attributes
+            'sha256'
+            # URL attributes
+            'url',
+            'title',
+            'last_http_response_content_sha256',
+        ]:
+            if value := item_attributes.get(field):
+                attributes[field] = value
+
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.Analysis',
         'id',
@@ -2683,7 +2700,21 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
                 **attributes,
                 'id': analysis_id
             },
-            headers=['id', 'threat_severity_level', 'popular_threat_category', 'threat_verdict', 'status'],
+            headers=[
+                # Common headers
+                'id',
+                'status',
+                # File attributes
+                'sha256'
+                'threat_severity_level',
+                'popular_threat_category',
+                'threat_verdict',
+                # URL attributes
+                'url',
+                'title',
+                'last_http_response_content_sha256',
+                'positives',
+            ],
             removeNull=True,
             headerTransform=string_to_table_header
         ),
