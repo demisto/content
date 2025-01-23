@@ -37,7 +37,6 @@
 	"description": "Playground to test concepts and data engineering and prompt engineering using LLM and Retrieval Augmented Generation (RAG) in the development of use cases",
 	"detached": false,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
