@@ -2,7 +2,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 
 ## Configure CrowdStrike Falcon in Cortex
 
-### Common Configuration Parameters
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
