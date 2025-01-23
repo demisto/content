@@ -1,6 +1,7 @@
-import demistomock as demisto
-from TopMaliciousRatioIndicators import main, find_indicators_with_mal_ratio
 import json
+
+import demistomock as demisto
+from TopMaliciousRatioIndicators import find_indicators_with_mal_ratio, main
 
 
 def util_load_json(path):

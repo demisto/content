@@ -1,8 +1,8 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import base64
 import zlib
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def test_valid_base64_file_in_list(mocker, tmp_path):

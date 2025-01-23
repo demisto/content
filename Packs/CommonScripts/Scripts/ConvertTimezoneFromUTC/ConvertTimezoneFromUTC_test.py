@@ -1,6 +1,6 @@
-from ConvertTimezoneFromUTC import convert_UTC_Timezone_command
-from ConvertTimezoneFromUTC import determine_correct_format
 from datetime import datetime
+
+from ConvertTimezoneFromUTC import convert_UTC_Timezone_command, determine_correct_format
 
 
 def test_convert_UTC_Timezone_command():

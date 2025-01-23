@@ -1,8 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-
 from typing import Any
 
+import demistomock as demisto
+from CommonServerPython import *
 
 OKTA_BRAND = "Okta v2"
 MS_GRAPH_BRAND = "Microsoft Graph User"
@@ -446,7 +445,7 @@ def main():
 
         return_results(command_results_list)
     except Exception as e:
-        return_error(f"Failed to execute clear-user-session. Error: {str(e)}")
+        return_error(f"Failed to execute clear-user-session. Error: {e!s}")
 
 
 """ ENTRY POINT """

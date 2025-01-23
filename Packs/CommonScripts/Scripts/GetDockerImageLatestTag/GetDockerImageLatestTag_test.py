@@ -1,7 +1,7 @@
-import requests_mock
-from GetDockerImageLatestTag import main, find_latest_tag_by_date, lexical_find_latest_tag
 import demistomock as demisto
 import pytest
+import requests_mock
+from GetDockerImageLatestTag import find_latest_tag_by_date, lexical_find_latest_tag, main
 
 RETURN_ERROR_TARGET = 'GetDockerImageLatestTag.return_error'
 

@@ -1,10 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import re
-
-import requests
-
 from functools import reduce
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
 
 
 def ads(html, termlist):

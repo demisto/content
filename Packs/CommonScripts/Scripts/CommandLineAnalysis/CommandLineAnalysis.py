@@ -1,10 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import base64
-import re
 import ipaddress
 import json
+import re
 from typing import Any
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def is_base64(possible_base64: str | bytes) -> bool:
@@ -512,7 +513,7 @@ def extract_indicators(command_line: str) -> list[str]:
                                 continue  # Skip reserved IPs
                             extracted_indicators.append(value)
     except Exception as e:
-        demisto.debug(f"Failed to extract indicators: {str(e)}")
+        demisto.debug(f"Failed to extract indicators: {e!s}")
     return extracted_indicators
 
 

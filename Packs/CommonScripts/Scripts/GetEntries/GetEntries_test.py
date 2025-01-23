@@ -1,7 +1,8 @@
-from CommonServerPython import *
-import demistomock as demisto
-from GetEntries import main
 import json
+
+import demistomock as demisto
+from CommonServerPython import *
+from GetEntries import main
 
 
 class SideEffectExecuteCommand:

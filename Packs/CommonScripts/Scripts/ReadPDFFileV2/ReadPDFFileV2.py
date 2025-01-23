@@ -1,18 +1,18 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-import PyPDF2
-import subprocess
+import contextlib
 import glob
+import html
+import io
+import json
 import os
-import stat
 import re
 import shutil
-import json
-from pikepdf import Pdf, PasswordError
-import contextlib
-import io
-import html
+import stat
+import subprocess
+
+import demistomock as demisto
+import PyPDF2
+from CommonServerPython import *
+from pikepdf import PasswordError, Pdf
 
 URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
@@ -264,7 +264,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
 
     md += "\n### URLs\n"
     md += "* " if urls else ""
-    md += "\n* ".join([f'{str(k["Data"])}' for k in urls])
+    md += "\n* ".join([f'{k["Data"]!s}' for k in urls])
 
     md += "\n### Text"
     md += f"\n{text}"
@@ -679,7 +679,7 @@ def main():  # pragma: no cover
     except ShellException as e:
         file_name = demisto.getFilePath(entry_id).get('name')
         mark_suspicious(
-            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error\n{str(e)}',
+            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error\n{e!s}',
             entry_id=entry_id,
             path=path,
             file_name=file_name,

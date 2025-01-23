@@ -1,8 +1,9 @@
-import pytest
-import demistomock as demisto
 from unittest.mock import patch
+
+import demistomock as demisto
+import pytest
 import SetIndicatorGridField
-from SetIndicatorGridField import parse_rows, main, get_existing_grid_records
+from SetIndicatorGridField import get_existing_grid_records, main, parse_rows
 
 VALID_ROWS_STR = '[[192.168.1.1,"example.com"], [192.168.1.2, ""], ["", "example.net"]]'
 INVALID_ROWS_STR = '[[192.168.1.1, "example.com"],[192.168.1.2],[""]]}'

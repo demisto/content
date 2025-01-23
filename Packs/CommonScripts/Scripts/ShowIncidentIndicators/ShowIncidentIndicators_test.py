@@ -1,5 +1,5 @@
 import demistomock as demisto
-from ShowIncidentIndicators import group_by_type, get_indicators_from_incident
+from ShowIncidentIndicators import get_indicators_from_incident, group_by_type
 
 
 def test_group_by_type():

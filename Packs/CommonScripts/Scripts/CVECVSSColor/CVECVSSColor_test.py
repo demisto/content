@@ -1,5 +1,5 @@
-import pytest
 import demistomock as demisto
+import pytest
 from CVECVSSColor import *
 
 

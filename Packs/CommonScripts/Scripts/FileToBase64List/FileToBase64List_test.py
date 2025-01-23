@@ -1,10 +1,12 @@
+import base64
+import os
+import zlib
+
 import demistomock as demisto
 from CommonServerPython import *
+from FileToBase64List import get_file_data, main
+
 from CommonServerUserPython import *
-from FileToBase64List import main, get_file_data
-import os
-import base64
-import zlib
 
 TEST_FILE_PATH = os.path.join('test_data', 'file.txt')
 

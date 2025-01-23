@@ -1,6 +1,5 @@
-from ExtractDomainFromUrlFormat import extract_domain
-from ExtractDomainFromUrlFormat import unescape_url
 import pytest
+from ExtractDomainFromUrlFormat import extract_domain, unescape_url
 
 
 @pytest.mark.parametrize('input,domain', [

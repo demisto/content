@@ -1,7 +1,7 @@
-import pytest
-from AnalyzeTimestampIntervals import analyze_intervals
 import random
 
+import pytest
+from AnalyzeTimestampIntervals import analyze_intervals
 
 # Consistent intervals (10,000 ms apart, i.e., 1 event every 10 seconds)
 consistent_timestamps = [1609459200000 + i * 10000 for i in range(100)]

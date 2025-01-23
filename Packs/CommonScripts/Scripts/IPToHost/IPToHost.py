@@ -1,6 +1,7 @@
+import socket
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import socket
 
 
 def ip_to_host(ip: str) -> CommandResults:
@@ -35,7 +36,7 @@ def main():
         return_results(ip_to_host(ip))
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Couldn\'t get the IP host info. Error information: {str(e)}')
+        return_error(f'Couldn\'t get the IP host info. Error information: {e!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

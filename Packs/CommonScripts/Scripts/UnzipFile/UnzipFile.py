@@ -1,16 +1,16 @@
+import os
+import shlex
+import shutil
+import sys
+import zipfile as z
+from os.path import isdir, isfile
+from subprocess import PIPE, Popen
+from tempfile import mkdtemp
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-import os
-import sys
-from os.path import isdir
-from os.path import isfile
-from subprocess import Popen, PIPE
-from tempfile import mkdtemp
-import shutil
-import shlex
-import zipfile as z
+from CommonServerUserPython import *
 
 MAX_FILENAME_SIZE_BYTES = 255
 SLICE_FILENAME_SIZE_BYTES = 235

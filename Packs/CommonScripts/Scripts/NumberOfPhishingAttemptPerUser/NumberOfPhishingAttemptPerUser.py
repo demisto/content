@@ -1,4 +1,3 @@
-from typing import Tuple
 
 from CommonServerPython import *
 
@@ -16,7 +15,7 @@ def get_default_from_date(date_range: str) -> str:
     return str_from_date
 
 
-def get_relevant_incidents(email_to, email_from, from_date) -> Tuple[int, int]:
+def get_relevant_incidents(email_to, email_from, from_date) -> tuple[int, int]:
     """
     Gets a email to and from addresses, and a date from string.
     :param email_to: string
@@ -68,7 +67,7 @@ def create_widget_entry(email_to, email_from, email_to_total, email_from_total) 
                     ],
                     "groups": None,
                     "name": str(email_to),
-                    "label": f"To: {str(email_to)}",
+                    "label": f"To: {email_to!s}",
                     "color": "rgb(255, 23, 68)"
                 },
                 {
@@ -77,7 +76,7 @@ def create_widget_entry(email_to, email_from, email_to_total, email_from_total) 
                     ],
                     "groups": None,
                     "name": str(email_from),
-                    "label": f"From: {str(email_from)}",
+                    "label": f"From: {email_from!s}",
                     "color": "rgb(255, 144, 0)"
                 }
             ],

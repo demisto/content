@@ -24,7 +24,7 @@ def main():  # pragma: no cover
         return_results(mapper_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+        return_error(f'Failed to execute BaseScript. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

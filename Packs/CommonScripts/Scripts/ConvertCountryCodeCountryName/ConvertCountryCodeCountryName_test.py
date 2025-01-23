@@ -1,8 +1,6 @@
-import pytest
-
 import ConvertCountryCodeCountryName
 import demistomock as demisto
-
+import pytest
 
 upper_country_code = ('IL', None, 'Israel')
 lower_country_code = ('il', None, 'Israel')

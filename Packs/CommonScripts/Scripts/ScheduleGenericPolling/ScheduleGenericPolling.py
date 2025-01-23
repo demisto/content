@@ -1,6 +1,7 @@
+import uuid
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import uuid
 
 # Constant to verify the minimum build number and version for the new polling feature (stopScheduleEntry feature).
 # MINIMUM_XSIAM_VERSION = '8.3.0'

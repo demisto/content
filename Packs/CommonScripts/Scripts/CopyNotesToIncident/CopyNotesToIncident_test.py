@@ -1,7 +1,8 @@
-from CopyNotesToIncident import copy_notes_to_target_incident
-import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import Any
 import json
+from typing import Any
+
+import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+from CopyNotesToIncident import copy_notes_to_target_incident
 
 MOCK_TARGET_INCIDENT_ID = '99'
 MOCK_TAG = 'Tag1'

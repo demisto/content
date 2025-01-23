@@ -1,8 +1,9 @@
+import base64
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-import base64
+from CommonServerUserPython import *
 
 
 def encode(input):

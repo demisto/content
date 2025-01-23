@@ -1,21 +1,15 @@
+from typing import Any, cast
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
+from cryptography import x509
+
 # mypy: ignore-errors
 from cryptography.hazmat import backends
-from cryptography.hazmat.primitives import (
-    hashes,
-    asymmetric,
-    serialization
-)
-from cryptography import x509
-from cryptography.x509 import (
-    oid,
-    extensions,
-    general_name,
-    certificate_transparency
-)
-from typing import Any, cast
+from cryptography.hazmat.primitives import asymmetric, hashes, serialization
+from cryptography.x509 import certificate_transparency, extensions, general_name, oid
+
+from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 _INSTANCE_TO_TYPE = {
     general_name.OtherName: 'otherName',
@@ -472,7 +466,7 @@ def main():
     try:
         return_results(certificate_extract_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute CertificateExtract. Error: {str(ex)}')
+        return_error(f'Failed to execute CertificateExtract. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

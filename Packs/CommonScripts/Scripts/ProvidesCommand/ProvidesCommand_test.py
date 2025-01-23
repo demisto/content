@@ -1,5 +1,6 @@
-import demistomock as demisto
 import json
+
+import demistomock as demisto
 
 
 def executeCommand(name, args=None):

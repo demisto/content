@@ -1,11 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 import re
 import shutil
-import pyzipper
 from os.path import isfile
+
+import demistomock as demisto
+import pyzipper
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
 

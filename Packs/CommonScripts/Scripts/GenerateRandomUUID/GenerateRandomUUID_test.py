@@ -1,5 +1,6 @@
-from GenerateRandomUUID import generate_random_uuid_command
 import uuid
+
+from GenerateRandomUUID import generate_random_uuid_command
 
 MOCK_UUID = 'dae756a4-304f-42ac-9287-a4546624b3ad'
 MOCK_OUTPUTS = {

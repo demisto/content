@@ -1,5 +1,5 @@
-from CommonServerPython import *
 from CheckContextValue import poll_field
+from CommonServerPython import *
 
 context = {
     'id': 1,

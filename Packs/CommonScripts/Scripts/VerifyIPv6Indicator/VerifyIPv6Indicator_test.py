@@ -1,7 +1,6 @@
+import demistomock as demisto
 import pytest
 from hypothesis import HealthCheck, given, settings, strategies
-
-import demistomock as demisto
 from VerifyIPv6Indicator import is_valid_ipv6_address, main
 
 

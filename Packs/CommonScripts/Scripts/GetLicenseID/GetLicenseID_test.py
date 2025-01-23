@@ -1,5 +1,5 @@
-from GetLicenseID import get_license_id
 import demistomock as demisto
+from GetLicenseID import get_license_id
 
 
 def test_human_readable(mocker):

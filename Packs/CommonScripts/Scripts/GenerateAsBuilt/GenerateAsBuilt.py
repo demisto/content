@@ -1,7 +1,8 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 import jinja2
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 """
 GenerateAsBuilt

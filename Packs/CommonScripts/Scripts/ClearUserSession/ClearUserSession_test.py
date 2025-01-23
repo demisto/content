@@ -1,20 +1,18 @@
-from pytest_mock import MockerFixture
-
 import demistomock as demisto
-from CommonServerPython import *
-
 from ClearUserSession import (
     Command,
-    prepare_human_readable,
-    get_output_key,
-    run_execute_command,
-    remove_system_user,
+    clear_user_sessions,
     extract_usernames_with_ids,
+    get_output_key,
     get_user_data,
     get_user_id,
-    clear_user_sessions,
     main,
+    prepare_human_readable,
+    remove_system_user,
+    run_execute_command,
 )
+from CommonServerPython import *
+from pytest_mock import MockerFixture
 
 
 def test_is_valid_args_with_valid_args():

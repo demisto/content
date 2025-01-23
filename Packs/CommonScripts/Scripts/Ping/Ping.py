@@ -1,7 +1,8 @@
+import re
+import subprocess
+
 import demistomock as demisto
 from CommonServerPython import *
-import subprocess
-import re
 
 
 def main():

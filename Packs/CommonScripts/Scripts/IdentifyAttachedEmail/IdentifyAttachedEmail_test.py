@@ -1,6 +1,6 @@
-from IdentifyAttachedEmail import *
 import IdentifyAttachedEmail
 import pytest
+from IdentifyAttachedEmail import *
 
 
 def execute_command(command, args):

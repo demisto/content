@@ -1,4 +1,5 @@
 import json
+
 import demistomock as demisto
 import pytest
 

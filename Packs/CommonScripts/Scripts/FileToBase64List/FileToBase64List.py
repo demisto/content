@@ -1,8 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 import base64
 import zlib
+
+import demistomock as demisto
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 
 def get_file_data(file_path: str, is_zip: bool = False):

@@ -45,7 +45,7 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
         return technique_names
 
     except Exception as e:
-        demisto.debug(f"Error searching for Attack Pattern indicator: {str(e)}")
+        demisto.debug(f"Error searching for Attack Pattern indicator: {e!s}")
         return {}
 
 

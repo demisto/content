@@ -36,7 +36,7 @@ def main():
             'EntryContext': outputs
         })
     except Exception as expt:
-        return_error(f'Failed to execute HTMLtoMD script. Error: {str(expt)}')
+        return_error(f'Failed to execute HTMLtoMD script. Error: {expt!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

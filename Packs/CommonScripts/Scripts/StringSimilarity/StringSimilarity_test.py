@@ -1,7 +1,8 @@
-import pytest
-import demistomock as demisto
-from StringSimilarity import stringSimilarity, main
 from unittest.mock import patch
+
+import demistomock as demisto
+import pytest
+from StringSimilarity import main, stringSimilarity
 
 
 @pytest.mark.parametrize("first_string, second_string, similarity_threshold, expected_result", [

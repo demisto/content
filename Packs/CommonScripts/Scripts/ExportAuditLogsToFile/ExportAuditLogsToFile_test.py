@@ -1,8 +1,8 @@
 import demistomock as demisto
-import pytest
 import ExportAuditLogsToFile
-from freezegun import freeze_time
+import pytest
 from CommonServerPython import *
+from freezegun import freeze_time
 
 
 def execute_command_side_effect(command: str, args: Dict):

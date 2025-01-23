@@ -1,10 +1,16 @@
-from DockerHardeningCheck import (mem_size_to_bytes, check_pids, check_fd_limits,
-                                  get_default_gateway, check_network, CLOUD_METADATA_URL)
-import os
 import ipaddress
-import requests_mock
-from pytest_mock import MockerFixture
+import os
 
+import requests_mock
+from DockerHardeningCheck import (
+    CLOUD_METADATA_URL,
+    check_fd_limits,
+    check_network,
+    check_pids,
+    get_default_gateway,
+    mem_size_to_bytes,
+)
+from pytest_mock import MockerFixture
 
 # NOTE: Should be fixed in future versions (related to CIAC-11476)
 # def test_check_memory():

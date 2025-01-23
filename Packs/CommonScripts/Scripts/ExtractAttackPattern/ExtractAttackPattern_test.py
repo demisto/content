@@ -1,7 +1,6 @@
-from ExtractAttackPattern import is_valid_attack_pattern
-
-from CommonServerPython import *
 import ExtractAttackPattern as eap
+from CommonServerPython import *
+from ExtractAttackPattern import is_valid_attack_pattern
 
 
 def test_extract_existing_mitre_ids(mocker):

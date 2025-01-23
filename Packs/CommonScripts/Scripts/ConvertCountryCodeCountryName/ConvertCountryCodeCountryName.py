@@ -160,7 +160,7 @@ def main():
             return_results(country_code)
 
     except Exception as ex:
-        return_error(f'Failed to execute ConvertCountryCodeCountryName. Error: {str(ex)}')
+        return_error(f'Failed to execute ConvertCountryCodeCountryName. Error: {ex!s}')
 
 
 ''' ENTRY POINT '''

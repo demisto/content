@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
 import xmltodict
+from CommonServerPython import *
 
 
 def convert_file(entry_id: str, verbose: bool, context_key: str) -> None:
@@ -28,7 +28,7 @@ def main():  # pragma: no cover
     try:
         convert_file(entry_id, verbose, context_key)
     except Exception as e:
-        return_error(f"Convert XML File to Json Failed: Error: {str(e)}")
+        return_error(f"Convert XML File to Json Failed: Error: {e!s}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

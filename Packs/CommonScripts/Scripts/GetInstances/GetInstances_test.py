@@ -1,7 +1,6 @@
 import pytest
 from GetInstances import *
 
-
 ARGS_SYSTEM_FILTER = {'instance_status': 'both'}
 ARGS_BRAND_FILTER = {'brand': 'EWS v2, splunk', 'instance_status': 'both'}
 ARGS_IS_ENABLED_FILTER = {'instance_status': 'active'}
@@ -13,7 +12,7 @@ PREPARED_ARGS_ALL_FILTERS = {
 
 
 def load_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         json_string = json_file.read()
     return json.loads(json_string)
 

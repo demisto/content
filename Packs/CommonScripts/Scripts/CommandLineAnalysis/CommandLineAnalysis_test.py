@@ -1,20 +1,19 @@
 import pytest
 from CommandLineAnalysis import (
-    is_base64,
-    remove_null_bytes,
-    decode_base64,
-    identify_and_decode_base64,
-    reverse_command,
-    check_malicious_commands,
-    check_reconnaissance_temp,
-    check_windows_temp_paths,
-    check_suspicious_content,
+    analyze_command_line,
     check_amsi,
+    check_malicious_commands,
     check_mixed_case_powershell,
     check_powershell_suspicious_patterns,
-    analyze_command_line
+    check_reconnaissance_temp,
+    check_suspicious_content,
+    check_windows_temp_paths,
+    decode_base64,
+    identify_and_decode_base64,
+    is_base64,
+    remove_null_bytes,
+    reverse_command,
 )
-
 
 # Test data
 DOUBLE_ENCODED_STRING = "cmVjdXJzaXZlIGRlY29kZSBaR1ZqYjJSbElGWkhhSEJqZVVKd1kzbENhRWxJVW14ak0xRm5Zek5TZVdGWE5XND0="

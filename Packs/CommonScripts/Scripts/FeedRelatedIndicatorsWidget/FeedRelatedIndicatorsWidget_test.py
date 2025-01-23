@@ -1,5 +1,5 @@
-import pytest
 import demistomock as demisto
+import pytest
 
 FILE_INDICATOR = {'CustomFields': {
     'campaign': ['pickaxe_play2'],

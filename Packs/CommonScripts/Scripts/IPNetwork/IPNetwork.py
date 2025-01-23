@@ -1,14 +1,13 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 # STD imports
 import ipaddress
-from typing import Dict
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Local imports
 
 
-def ip_cidr(cidr: str) -> Dict[str, str]:
+def ip_cidr(cidr: str) -> dict[str, str]:
     """ Gather info regarding the supplied network
 
     Args:
@@ -34,7 +33,7 @@ def ip_cidr(cidr: str) -> Dict[str, str]:
         return {}
 
 
-def cidr_command(args: Dict[str, str]) -> CommandResults:
+def cidr_command(args: dict[str, str]) -> CommandResults:
     """ Perform command on given IP/CIDR
 
     Args:
@@ -59,7 +58,7 @@ def main():
     try:
         return_results(cidr_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute IPNetwork script. Error: {str(ex)}')
+        return_error(f'Failed to execute IPNetwork script. Error: {ex!s}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

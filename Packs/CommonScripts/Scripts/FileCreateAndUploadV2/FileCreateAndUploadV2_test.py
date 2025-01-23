@@ -2,18 +2,17 @@ import json
 import sys
 from pathlib import Path
 
+import demistomock as demisto
 import pytest
+from CommonServerPython import DemistoException
 from FileCreateAndUploadV2 import (
     EntryType,
     decode_data,
+    get_data_entry,
     get_data_from_file,
     main,
-    get_data_entry,
 )
 from pytest_mock import MockerFixture
-
-import demistomock as demisto
-from CommonServerPython import DemistoException
 
 
 def side_effect_sys_exit(code):

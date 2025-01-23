@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
+import pytest
 from CommonServerPython import *  # noqa: F401
 from SetMultipleValues import main
-import pytest
 
 
 def test_main(mocker):

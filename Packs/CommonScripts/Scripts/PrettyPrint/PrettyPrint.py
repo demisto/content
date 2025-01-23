@@ -1,5 +1,6 @@
-import demistomock as demisto
 from pprint import pformat
+
+import demistomock as demisto
 
 
 def main():

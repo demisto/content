@@ -1,10 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 import random
 import secrets
 import string
+
+import demistomock as demisto
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 DEFAULT_MIN = 0
 DEFAULT_MAX = 10

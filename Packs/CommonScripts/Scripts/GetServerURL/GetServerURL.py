@@ -1,6 +1,7 @@
+from urllib.parse import ParseResult, urlparse
+
 import demistomock as demisto
 from CommonServerPython import *
-from urllib.parse import urlparse, ParseResult
 
 
 def main():

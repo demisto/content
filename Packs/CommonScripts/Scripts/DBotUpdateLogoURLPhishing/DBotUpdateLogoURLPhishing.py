@@ -1,10 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import dill
-from PIL import Image
 import io
 import traceback
+
+import demistomock as demisto
+import dill
+from CommonServerPython import *
+from PIL import Image
+
+from CommonServerUserPython import *
 
 MAJOR_VERSION = 1
 MINOR_DEFAULT_VERSION = 0
@@ -286,7 +288,7 @@ def main():
         return msg_list
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute URL Phishing script. Error: {str(ex)}')
+        return_error(f'Failed to execute URL Phishing script. Error: {ex!s}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
