@@ -153,7 +153,7 @@ def test_refresh_token_command_on_premise(mocker):
     mocker.patch.object(demisto, 'results')
     with pytest.raises(SystemExit) as err:
         generate_refresh_token(client, 'args')
-    assert err.type == SystemExit
+    assert err.type is SystemExit
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
