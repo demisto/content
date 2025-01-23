@@ -13,7 +13,7 @@ def main():
         args = {'title': name, 'description': "", 'author': "", 'source': ""}
         files = demisto.context().get("File", "")
         if files == "":
-            raise Exception(f"No File key found in context for war room file entries")
+            raise Exception("No File key found in context for war room file entries")
         if isinstance(files, dict):
             files = [files]
 
