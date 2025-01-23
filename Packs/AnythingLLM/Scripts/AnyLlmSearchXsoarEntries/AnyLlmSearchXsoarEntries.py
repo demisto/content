@@ -29,8 +29,10 @@ def main():
             for entry in results:
                 if FilterEntries(entry, maxsize) == "":
                     continue
-                text += f"{entry['Metadata']['category']} {entry['Metadata'].get('dbotCreatedBy', '')} {entry['Metadata']['created']}"
-                text += f" {entry.get('Contents', '')} {entry.get('HumanReadable', '')} {entry['Metadata'].get('tags', '')} \n"
+                text += f"{entry['Metadata']['category']} {entry['Metadata'].get('dbotCreatedBy', '')}"
+                text += f" {entry['Metadata']['created']}"
+                text += f" {entry.get('Contents', '')} {entry.get('HumanReadable', '')}"
+                text += f" {entry['Metadata'].get('tags', '')} \n"
 
         execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
     except Exception as ex:
