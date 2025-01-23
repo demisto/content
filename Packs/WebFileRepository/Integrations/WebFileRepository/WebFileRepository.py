@@ -3886,7 +3886,7 @@ class FullRepository(AttrsRepository):
 
             # Save the file
             attr = {
-                'last-modified': int(datetime.now(datetime.UTC).timestamp()),
+                'last-modified': int(datetime.now(tz=UTC).timestamp()),
                 'data-id': data_id,
                 'data-type': data_type,
                 'size': data_size,
@@ -4261,7 +4261,7 @@ class ServiceHandler:
     def __handle_get_archive_all(
         self
     ) -> HTTPResponse:
-        filename = datetime.now(datetime.UTC).strftime('archive-%Y%m%d%H%M%S.zip')
+        filename = datetime.now(tz=UTC).strftime('archive-%Y%m%d%H%M%S.zip')
 
         response = HTTPResponse()
         response.content_type = 'application/zip'
