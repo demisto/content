@@ -196,7 +196,7 @@ def test_first_time_fetch(mocker):
     from ProofpointIsolationEventCollector import fetch_events
 
     client = create_client()
-    mocked_events = util_load_json('test_data/get_events_first_time.json')
+    mocked_events = util_load_json('test_data/get_events_raw_response.json')
     mocker.patch('ProofpointIsolationEventCollector.Client.get_events', return_value=mocked_events)
 
     mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value={})
@@ -204,10 +204,10 @@ def test_first_time_fetch(mocker):
 
     events, new_last_run = fetch_events(client, limit)
 
-    assert len(events) == 1
+    assert len(events) == 5
     assert 'ids' in new_last_run
-    assert new_last_run['ids'][0] == 'https://exmaple.k10.com/&user0@example.com'
-    assert new_last_run.get('start_date') == "2025-01-01T19:44:35Z"
+    assert new_last_run['ids'][0] == 'https://exmaple.k6.com/&user3@example.com'
+    assert new_last_run.get('start_date') == '2025-01-04T19:44:35Z'
 
 
 def test_fetch_with_same_time(mocker):
