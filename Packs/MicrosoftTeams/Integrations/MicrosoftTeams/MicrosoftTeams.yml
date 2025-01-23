@@ -135,6 +135,7 @@ configuration:
   name: new_incident_welcome_message
   required: false
   type: 0
+  section: Connect
 - display: Long running instance
   name: longRunning
   type: 8
