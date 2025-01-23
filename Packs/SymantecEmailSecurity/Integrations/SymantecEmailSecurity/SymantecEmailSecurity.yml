@@ -1067,16 +1067,16 @@ script:
     arguments:
     - name: suduls_user
       description: Email address of the user for whom the entry should be added in the allow list.
-      required: True
-      default: True
+      required: true
+      default: true
     - name: item_id
       description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-allow-list` to get a list of items.
     - name: email_or_domain
       description: Email address or domain to be added in the allow list.
-      required: True
+      required: true
     - name: description
       description: Description of the item to be added to the allow list.
-      required: True
+      required: true
   - name: symantec-email-security-item-allow-list-delete
     description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to delete an item from the allow list.
     arguments:
@@ -1130,16 +1130,16 @@ script:
     arguments:
     - name: suduls_user
       description: Email address of the user for whom the entry should be added in the block list.
-      required: True
-      default: True
+      required: true
+      default: true
     - name: item_id
       description: ID of SUDULS item to be added/updated. Only required when updating an existing item. Run `symantec-email-security-item-block-list` to get a list of items.
     - name: email_or_domain
-      required: True
+      required: true
       description: Email address or domain to be added to the block list.
     - name: description
       description: Description of the item to be added to the block list.
-      required: True
+      required: true
   - name: symantec-email-security-item-block-list-delete
     description: Allows a SUDULS (allow quarantine users to maintain their own lists of email addresses or domains) user to delete an item from the block list.
     arguments:
@@ -1149,7 +1149,7 @@ script:
       default: true
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   script: ''
 fromversion: 5.0.0
