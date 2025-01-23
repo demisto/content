@@ -785,7 +785,7 @@ async def handle_zoom_response(request: Request, credentials: HTTPBasicCredentia
             account_id = payload['accountId']
             robot_jid = payload['robotJid']
             to_jid = payload['toJid']
-            user_name = payload['userId']
+            user_name = payload['userName']
             user_id = payload['userId']
             entitlement_reply = await check_and_handle_entitlement(action, message_id, user_name, user_id)
             if entitlement_reply:
