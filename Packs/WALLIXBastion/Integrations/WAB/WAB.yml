@@ -14,41 +14,49 @@ configuration:
   defaultvalue: localhost
   type: 0
   required: true
+  section: Connect
 - name: auth_user
   display: API Auth User
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - name: auth_key
   display: API Auth Key or user password
   defaultvalue: ""
   type: 4
   required: false
+  section: Connect
 - name: is_password
   display: Password authentication mode (set false if you provided an API key)
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 - name: api_version
   display: API version to use. Leave the field empty to use the latest API version available.
   defaultvalue: '3.12'
   type: 0
   required: false
+  section: Connect
 - name: timeout
   display: API requests timeout in seconds. The default value is 60 seconds.
   defaultvalue: '60'
   type: 0
   required: false
+  section: Connect
 script:
   script: ""
   type: python
@@ -9270,3 +9278,5 @@ script:
       contextPath: WAB.version_get.wab_complete_version
       description: The WALLIX Bastion complete version, with hotfix level and build date.
   isfetch: false
+sectionOrder:
+- Connect
