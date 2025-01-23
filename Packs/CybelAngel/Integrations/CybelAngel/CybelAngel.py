@@ -586,7 +586,7 @@ def main() -> None:
 
     # Manage first fetch from client
     first_fetch_interval = arg_to_number(demisto.params().get('first_fetch'))
-    first_fetch = False if "first_pull" in demisto.getIntegrationContext().keys() else True
+    first_fetch = "first_pull" not in demisto.getIntegrationContext().keys()
 
     # Get token and token time if it exists
     auth_token = demisto.getIntegrationContext().get('token')
