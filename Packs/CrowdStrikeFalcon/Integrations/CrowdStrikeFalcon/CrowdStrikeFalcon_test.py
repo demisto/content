@@ -2220,8 +2220,8 @@ class TestFetch:
                                           'last_fetched_incident': '3',
                                           'incident_offset': 4,
                                           })
-        last_run, _ = fetch_incidents()
-        assert last_run == [
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == [
             {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {}, {}, {}]
 
     @freeze_time("2020-09-04T09:16:10Z")
@@ -2246,8 +2246,8 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}],
                                  })
         from CrowdStrikeFalcon import fetch_incidents
-        last_run, _ = fetch_incidents()
-        assert last_run[0] == {
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == {
             'time': '2020-09-04T09:16:11.000000Z', 'limit': 2, 'offset': 0, "found_incident_ids":
                 {'Detection ID: ldt:1': 1599210970}}
 
@@ -2279,12 +2279,12 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}],
                                  })
         from CrowdStrikeFalcon import fetch_incidents
-        last_run, _ = fetch_incidents()
+        fetch_incidents()
         # the offset should be increased to 2, and the time should be stay the same
         expected_last_run = {
             'time': '2020-09-04T09:16:10.000000Z', 'limit': 2, 'offset': 2, "found_incident_ids":
                 {'Detection ID: ldt:1': 1599210970}}
-        assert last_run[0] == expected_last_run
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:3', 'ldt:4'],
                                                                             'meta': {'pagination': {'total': 4}}})
@@ -2298,9 +2298,9 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}],
                                  })
 
-        last_run, _ = fetch_incidents()
+        fetch_incidents()
         # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
-        assert last_run[0] == {
+        assert demisto.setLastRun.mock_calls[1][1][0][0] == {
             'time': '2020-09-04T09:16:13.000000Z', 'limit': 2, 'offset': 0, "found_incident_ids":
                 {'Detection ID: ldt:1': 1599210970,
                  'Detection ID: ldt:2': 1599210970}}
@@ -2321,7 +2321,7 @@ class TestFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=[{
             'time': '2020-09-04T09:16:10Z',
         }, {}, {}])
-        _, incidents = fetch_incidents()
+        incidents = fetch_incidents()
         for incident in incidents:
             assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
 
@@ -2386,7 +2386,7 @@ class TestFetch:
             }
         )
 
-        _, incidents = fetch_incidents()
+        incidents = fetch_incidents()
         assert len(incidents) == incidents_len
 
         if incidents_len == 4:
@@ -2434,8 +2434,9 @@ class TestIncidentFetch:
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{'time': '2020-09-04T09:16:10Z', 'offset': 2},
                                           {'time': '2020-09-04T09:22:10Z', 'offset': 4}])
-        last_run, _ = fetch_incidents()
-        assert last_run == [{'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}]
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
+                                                          {'time': '2020-09-04T09:22:10Z'}]
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -2446,13 +2447,11 @@ class TestIncidentFetch:
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'}]})
         from CrowdStrikeFalcon import fetch_incidents
-        last_run, _ = fetch_incidents()
-        assert last_run[1] == {
-            'time': '2020-09-04T09:16:11Z',
-            'limit': 2,
-            'offset': 0,
-            'found_incident_ids': {'Incident ID: ldt:1': 1598462533}
-        }
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
+                                                             'limit': 2,
+                                                             'offset': 0,
+                                                             'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
     @freeze_time("2020-09-04T09:16:10.000000Z")
     def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
@@ -2482,11 +2481,11 @@ class TestIncidentFetch:
                                                 'max_severity_displayname': 'Low'}],
                                  })
         from CrowdStrikeFalcon import fetch_incidents
-        last_run, _ = fetch_incidents()
+        fetch_incidents()
         # the offset should be increased to 2, and the time should be stay the same
         expected_last_run = {
             'time': '2020-09-04T09:16:10Z', 'limit': 2, 'offset': 2, "found_incident_ids": {'Incident ID: ldt:1': 1599210970}}
-        assert last_run[1] == expected_last_run
+        assert demisto.setLastRun.mock_calls[0][1][0][1] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:3', 'ldt:4'],
                                                                                 'meta': {'pagination': {'total': 4}}})
@@ -2500,9 +2499,9 @@ class TestIncidentFetch:
                                                 'max_severity_displayname': 'Low'}],
                                  })
 
-        last_run, _ = fetch_incidents()
+        fetch_incidents()
         # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
-        assert last_run[1] == {
+        assert demisto.setLastRun.mock_calls[1][1][0][1] == {
             'time': '2020-09-04T09:16:13Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Incident ID: ldt:1': 1599210970,
                                                                                             'Incident ID: ldt:2': 1599210970}}
 
@@ -2519,7 +2518,7 @@ class TestIncidentFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       }])
         from CrowdStrikeFalcon import fetch_incidents
-        _, incidents = fetch_incidents()
+        incidents = fetch_incidents()
         for incident in incidents:
             assert "\"incident_type\": \"incident\"" in incident.get('rawJSON', '')
 
@@ -2675,7 +2674,7 @@ def test_get_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_ioc_command_exists(requests_mock):
@@ -2963,7 +2962,7 @@ def test_get_custom_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_custom_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_custom_ioc_command_by_id(requests_mock):
@@ -6474,7 +6473,7 @@ class TestIOAFetch:
                      return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'},
                                     {'event_id': '3', 'event_created': '2023-01-01T00:00:00Z'}], None))
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
-        _, fetched_incidents = fetch_incidents()
+        fetched_incidents = fetch_incidents()
         assert len(fetched_incidents) == 1
         rawJSON = json.loads(fetched_incidents[0].get('rawJSON'))
         assert rawJSON.get('incident_type') == 'ioa_events'
@@ -6504,8 +6503,9 @@ class TestIOAFetch:
         mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
                      return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'}], 'next_token'))
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
-        last_run, _ = fetch_incidents()
-        assert last_run[4].get('last_event_ids') == ['2', '1']
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
+        fetch_incidents()
+        assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
 
     def test_save_fetched_events_when_starting_pagination(self, mocker: MockerFixture):
         """
@@ -6531,8 +6531,9 @@ class TestIOAFetch:
         mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
                      return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'}], None))
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
-        last_run, _ = fetch_incidents()
-        assert last_run[4].get('last_event_ids') == ['2', '1']
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
+        fetch_incidents()
+        assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
 
     def test_fetch_ioa_events(self, mocker: MockerFixture):
         """
@@ -6560,11 +6561,12 @@ class TestIOAFetch:
         mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
                      return_value=([{'event_id': '3', 'event_created': '2024-01-01T00:00:00Z'},
                                     {'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'}], 'new_next_token'))
-        last_run, fetched_incidents = fetch_incidents()
-        assert last_run[4] == {'ioa_next_token': 'new_next_token',
-                               'last_date_time_since': '2024-01-01T00:00:00Z',
-                               'last_fetch_query': 'last_dummy_query',
-                               'last_event_ids': ['3', '2', '1']}
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
+        fetched_incidents = fetch_incidents()
+        assert set_last_run_mocker.call_args_list[0][0][0][4] == {'ioa_next_token': 'new_next_token',
+                                                                  'last_date_time_since': '2024-01-01T00:00:00Z',
+                                                                  'last_fetch_query': 'last_dummy_query',
+                                                                  'last_event_ids': ['3', '2', '1']}
         assert len(fetched_incidents) == 2
 
 
@@ -6778,7 +6780,7 @@ class TestIOMFetch:
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'},
                                    {'id': '3', 'scan_time': '2023-01-01T00:00:00.00Z'}])
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
-        _, fetched_incidents = fetch_incidents()
+        fetched_incidents = fetch_incidents()
         assert len(fetched_incidents) == 1
         rawJSON = json.loads(fetched_incidents[0].get('rawJSON'))
         assert rawJSON.get('incident_type') == 'iom_configurations'
@@ -6810,8 +6812,9 @@ class TestIOMFetch:
         mocker.patch('CrowdStrikeFalcon.get_iom_resources',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
-        last_run, _ = fetch_incidents()
-        assert last_run[3].get('last_resource_ids') == ['2', '1']
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
+        fetch_incidents()
+        assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']
 
     def test_save_fetched_resources_when_starting_pagination(self, mocker: MockerFixture):
         """
@@ -6839,8 +6842,9 @@ class TestIOMFetch:
         mocker.patch('CrowdStrikeFalcon.get_iom_resources',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
-        last_run, _ = fetch_incidents()
-        assert last_run[3].get('last_resource_ids') == ['2', '1']
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
+        fetch_incidents()
+        assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']
 
     def test_fetch_iom_events(self, mocker: MockerFixture):
         """
@@ -6871,11 +6875,12 @@ class TestIOMFetch:
         mocker.patch('CrowdStrikeFalcon.get_iom_resources',
                      return_value=[{'id': '3', 'scan_time': '2024-01-01T00:00:00.00Z'},
                                    {'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
-        last_run, fetched_incidents = fetch_incidents()
-        assert last_run[3] == {'iom_next_token': 'new_next_token',
-                               'last_scan_time': '2024-01-01T00:00:00.000000Z',
-                               'last_fetch_filter': 'last_dummy_filter',
-                               'last_resource_ids': ['3', '2', '1']}
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
+        fetched_incidents = fetch_incidents()
+        assert set_last_run_mocker.call_args_list[0][0][0][3] == {'iom_next_token': 'new_next_token',
+                                                                  'last_scan_time': '2024-01-01T00:00:00.000000Z',
+                                                                  'last_fetch_filter': 'last_dummy_filter',
+                                                                  'last_resource_ids': ['3', '2', '1']}
         assert len(fetched_incidents) == 2
 
 
@@ -7620,60 +7625,3 @@ def test_enrich_groups_no_resources(mocker):
     mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value={"resources": None})
 
     assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}
-
-
-def test_transform_incidents_to_events():
-    """
-    Given:
-        - An XSOAR incident with 'name', 'occurred', and 'rawJSON' fields.
-    When:
-        - Calling transform_incidents_to_events.
-    Assert:
-        - Ensure the correct XSIAM event fields (e.g. '_time') and that irrelevant mirroring fields are removed.
-    """
-    from CrowdStrikeFalcon import transform_incidents_to_events
-
-    incident = {
-        'name': 'Incident ID: inc:046761c46ec8',
-        'occurred': '2025-01-01T14:01:46Z',
-        'rawJSON': '{"incident_id": "inc:046761c46ec8", "cloud_provider": "AZURE", "mirror_instance": "TEST INSTANCE"}',
-    }
-
-    expected_event = {
-        'name': 'Incident ID: inc:046761c46ec8',
-        '_time': '2025-01-01T14:01:46Z',
-        'incident_id': 'inc:046761c46ec8',
-        'cloud_provider': 'AZURE'
-    }
-
-    events = transform_incidents_to_events([incident])
-    assert events[0] == expected_event
-
-
-def test_get_events_command(mocker):
-    """
-    Given:
-        - A fetch type 'Indicator of Attack' (IOA) in the command arguments.
-    When:
-        - Calling get_events_command.
-    Assert:
-        - Validate that fetch_incidents and table_to_markdown have correct inputs.
-        - Ensure the returned events are as expected.
-    """
-    from CrowdStrikeFalcon import get_events_command, INTEGRATION_NAME
-
-    expected_events = load_json('test_data/ioa_fetch_incidents.json/ioa_events_page_1_raw_response.json')['resources']['events']
-    fetch_events = mocker.patch('CrowdStrikeFalcon.fetch_events', return_value=([], expected_events))
-    table_to_markdown = mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
-
-    fetch_type = 'Indicator of Attack'
-    args = {'fetch_type': fetch_type}
-
-    events, _ = get_events_command(args)
-
-    table_to_markdown_kwargs: dict = table_to_markdown.call_args.kwargs
-
-    assert fetch_events.call_args[0][0] == fetch_type
-    assert table_to_markdown_kwargs['name'] == f'{INTEGRATION_NAME} Events'
-    assert table_to_markdown_kwargs['t'] == expected_events
-    assert events == expected_events

@@ -57,21 +57,20 @@ configuration:
   name: fetch_time
   type: 0
   defaultvalue: '3 days'
-  defaultvalue:marketplacev2: '1 min'
   section: Collect
   required: false
   hidden:
   - marketplacev2
 - display: Max incidents per fetch
-  display:marketplacev2: Max events per fetch
   name: incidents_per_fetch
   type: 0
   section: Collect
   advanced: true
   required: false
   defaultvalue: '15'
-  defaultvalue:marketplacev2: '200'
   additionalinfo: Input a value between 1-500.
+  hidden:
+  - marketplacev2
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
@@ -204,9 +203,10 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  hidden:
+  - marketplacev2
 - additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
-  defaultvalue:marketplacev2: ''
   display: 'Reopen Statuses'
   name: reopen_statuses
   type: 16
@@ -239,6 +239,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -2734,8 +2736,6 @@ script:
   - arguments: []
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported on Cortex XSOAR only.
     name: get-mapping-fields
-    hidden: false
-    hidden:marketplacev2: true
   - arguments:
     - description: The remote incident or detection ID.
       name: id
@@ -2745,20 +2745,14 @@ script:
       name: lastUpdate
     description: Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported on Cortex XSOAR only.
     name: get-remote-data
-    hidden: false
-    hidden:marketplacev2: true
   - arguments:
     - description: Date string representing the local time in UTC timestamp in seconds. The incident or detection is only returned if it was modified after the last update time.
       name: lastUpdate
     description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported on Cortex XSOAR only.
     name: get-modified-remote-data
-    hidden: false
-    hidden:marketplacev2: true
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported on Cortex XSOAR only.
     name: update-remote-system
-    hidden: false
-    hidden:marketplacev2: true
   - arguments:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'.
       name: filter
@@ -5090,45 +5084,11 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      description: Type of incidents or detections. Note that the "On-Demand Scans Detection" option is not available in the legacy version of the API.
-      isArray: false
-      name: fetch_type
-      predefined:
-      - IDP Detection
-      - Endpoint Incident
-      - Endpoint Detection
-      - Indicator of Misconfiguration
-      - Indicator of Attack
-      - Mobile Detection
-      - On-Demand Scans Detection
-      - OFP Detection
-      required: false
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them. Note that pushing events is supported on Cortex XSIAM only.
-      isArray: false
-      name: should_push_events
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      hidden: true
-      hidden:marketplacev2: false
-    description: Get events from CrowdStrike Falcon. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events. Note that pushing events is supported on Cortex XSIAM only.
-    name: cs-falcon-get-events
   dockerimage: demisto/py3-tools:1.0.0.117220
-  # Fetch incidents on XSOAR only
   isfetch: true
   isfetch:marketplacev2: false
-  # Fetch events on XSIAM only
-  isfetchevents: false
-  isfetchevents:marketplacev2: true
-  # Incident mapper on XSOAR only
   ismappable: true
   ismappable:marketplacev2: false
-  # Mirroring in / out on XSOAR only
   isremotesyncin: true
   isremotesyncin:marketplacev2: false
   isremotesyncout: true

@@ -18,8 +18,6 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-VENDOR = 'CrowdStrike'
-PRODUCT = 'Falcon Alert'
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
@@ -341,7 +339,6 @@ class IncidentType(Enum):
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
-MIRRORING_FIELDS = ('mirror_direction', 'mirror_instance')
 
 
 ''' HELPER FUNCTIONS '''
@@ -380,30 +377,6 @@ def modify_detection_outputs(detection):
     })
     detection["behaviors"] = [behavior]
     return detection
-
-
-def transform_incidents_to_events(incidents: list[dict]) -> list[dict]:
-    """Transforms XSOAR incidents to XSIAM events with '_time' field.
-
-    Args:
-        incidents (list): List of XSOAR incidents with 'rawJSON', 'name', and 'occurred' fields.
-
-    Returns:
-        list[dict]: List of event dictionaries.
-    """
-    events = []
-
-    for incident in incidents:
-        raw_incident: dict = json.loads(incident.get('rawJSON', '{}'))
-        event = {key: value for key, value in raw_incident.items() if key not in MIRRORING_FIELDS}
-
-        timestamp = arg_to_datetime(incident.get('occurred'))
-        event['_time'] = timestamp.strftime(DATE_FORMAT) if timestamp else None
-        event['name'] = incident.get('name')
-
-        events.append(event)
-
-    return events
 
 
 def error_handler(res):
@@ -2054,8 +2027,7 @@ def search_device(filter_operator='AND'):
                                                                    arg_filter=arg_filter)
             else:
                 # All args should be a list. this is a fallback
-                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
-                                                                                  inp_arg=k, arg_val=arg)
+                url_filter = f"{url_filter}{op}{k}:'{arg}'"
     raw_res = http_request('GET', '/devices/queries/devices/v1',
                            params={'filter': url_filter, 'limit': limit, 'offset': offset, 'sort': sort})
     device_ids = raw_res.get('resources')
@@ -2946,18 +2918,7 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}, {}, {}]
 
 
-def fetch_incidents(fetch_type: str | None = None) -> tuple[list[dict], list[dict]]:
-    """Fetches incidents from CrowdStrike Falcon incidents and detections.
-
-    Args:
-        fetch_type (str | None): Optional incident or detection type to fetch - takes from params if not given.
-
-    Raises:
-        DemistoException: If using fetch types not supported by the legacy version (pre-Raptor release).
-
-    Returns:
-        tuple[list[dict], list[dict]]: Tuple of next run and fetched incidents.
-    """
+def fetch_incidents():
     incidents: list = []
     detections: list = []
     idp_detections: list = []
@@ -2980,8 +2941,9 @@ def fetch_incidents(fetch_type: str | None = None) -> tuple[list[dict], list[dic
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
-    fetch_incidents_or_detections = fetch_type or params.get('fetch_incidents_or_detections', "")
+    fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
     look_back = int(params.get('look_back') or 1)
+    fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
 
@@ -3219,18 +3181,11 @@ def fetch_incidents(fetch_type: str | None = None) -> tuple[list[dict], list[dic
             detection_name_prefix=OFP_DETECTION_TYPE,
             start_time_key='created_timestamp')
 
-    next_run = [
-        current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
-        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections,
-        current_fetch_ofp_detection
-    ]
-
-    all_incidents: list = (
-        incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections
-        + on_demand_detections + ofp_detections
-    )
-
-    return next_run, all_incidents
+    demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
+                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections,
+                        current_fetch_ofp_detection])
+    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections\
+        + ofp_detections
 
 
 def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
@@ -4223,39 +4178,6 @@ def generate_endpoint_by_contex_standard(single_device, state_data):
         mac_address=single_device.get('mac_address'),
         vendor=INTEGRATION_NAME)
     return endpoint
-
-
-def fetch_events(fetch_type: str | None = None) -> tuple[list[dict], list[dict]]:
-    """Fetches incidents from CrowdStrike Falcon incidents and detections and transforms them to events with '_time' field.
-
-    Args:
-        fetch_type (str | None): Optional incident or detection type to fetch.
-
-    Returns:
-        tuple[list[dict], list[dict]]: Tuple of next run and fetched events.
-    """
-    next_run, incidents = fetch_incidents(fetch_type)
-    events = transform_incidents_to_events(incidents)
-    return next_run, events
-
-
-def get_events_command(args: dict[str, str]):
-    """Implements 'cs-falcon-get-events' command (which calls the `fetch_incidents` function).
-
-    Args:
-        args (dict): The command arguments.
-
-    Raises:
-        DemistoException: If not being run on a Cortex XSIAM tenant.
-
-    Returns:
-        tuple[list[dict], CommandResults]: A tuple of events and CommandResults with human readable output.
-    """
-    fetch_type = args.get('fetch_type')
-    _, events = fetch_events(fetch_type)
-
-    human_readable = tableToMarkdown(name=f'{INTEGRATION_NAME} Events', t=events)
-    return events, CommandResults(readable_output=human_readable)
 
 
 def get_endpoint_command():
@@ -7161,28 +7083,8 @@ def main():
         if command == 'test-module':
             result = module_test()
             return_results(result)
-
-        elif command == 'fetch-incidents':  # XSOAR
-            next_run, incidents = fetch_incidents()
-            demisto.debug(f'Creating {len(incidents)} incidents in XSOAR')
-            demisto.incidents(incidents)
-            demisto.debug(f'Setting next run to {next_run}')
-            demisto.setLastRun(next_run)
-
-        elif command == 'fetch-events':  # XSIAM
-            next_run, events = fetch_events()
-            demisto.debug(f'Creating {len(events)} events in XSIAM')
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f'Setting next run to {next_run}')
-            demisto.setLastRun(next_run)
-
-        elif command == 'cs-falcon-get-events':  # XSIAM
-            should_push_events = argToBoolean(args.pop('should_push_events', False))
-            events, results = get_events_command(args)
-            return_results(results)
-            if should_push_events:
-                demisto.debug(f'Creating {len(events)} events in XSIAM')
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        elif command == 'fetch-incidents':
+            demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
