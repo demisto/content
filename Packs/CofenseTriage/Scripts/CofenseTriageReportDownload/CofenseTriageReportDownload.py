@@ -1,6 +1,5 @@
 from CommonServerPython import *
 
-
 ''' STANDALONE FUNCTION '''
 
 
@@ -56,7 +55,7 @@ def main():
         return_results(results)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute CofenseTriageReportDownload. Error: {str(e)}')
+        return_error(f'Failed to execute CofenseTriageReportDownload. Error: {e!s}')
 
 
 ''' ENTRY POINT '''
