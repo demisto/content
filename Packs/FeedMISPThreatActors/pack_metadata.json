@@ -1,21 +1,19 @@
 {
-    "name": "AWS - Route53",
-    "description": "Amazon Web Services Managed Cloud DNS Service.",
+    "name": "MISP Threat Actors",
+    "description": "This pack downloads and parses the MISP threat actor galaxy into XSOAR TIM.",
     "support": "xsoar",
-    "currentVersion": "1.1.39",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Service Provider"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "xpanse"
+        "marketplacev2"
     ]
 }
