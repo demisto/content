@@ -5803,7 +5803,8 @@
         },
         {
             "integrations": "AWS - Route53",
-            "playbookID": "playbook-create_delete_record_Test"
+            "playbookID": "playbook-create_delete_record_Test",
+            "is_mockable": false
         },
         {
             "integrations": "Cylance Protect v2",
