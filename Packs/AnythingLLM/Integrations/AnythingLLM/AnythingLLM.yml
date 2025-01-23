@@ -171,6 +171,7 @@ script:
       predefined:
       - markdown
       - dictionary
+      description: Markdown or dictionary format output.
     description: Send a chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
   - name: anyllm-workspace-stream-chat
     arguments:
