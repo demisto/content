@@ -7,7 +7,7 @@ sectionOrder:
 name: Retarus Secure Email Gateway
 display: Retarus Secure Email Gateway
 category: Email
-description: Integrate RetarusSecureEmailGateway to seamlessly fetch events from SecureEmailGateway by Retarus and enhance email security.
+description: Integrate Retarus Secure Email Gateway to seamlessly fetch events from Secure Email Gateway by Retarus and enhance email security.
 configuration:
 - defaultvalue: events.retarus.com
   display: Server URL
@@ -16,7 +16,7 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: Token ID
-  additionalinfo: The Token ID to use for connection
+  additionalinfo: The Token ID to use for connection.
   name: credentials
   required: true
   hiddenusername: true

@@ -3,7 +3,7 @@ Integrate Retarus Secure Email Gateway to seamlessly fetch events and enhance em
 ## Configure RetarusSecureEmailGateway Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RetarusSecureEmailGateway.
+2. Search for Retarus.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** | **Description** |
@@ -14,7 +14,7 @@ Integrate Retarus Secure Email Gateway to seamlessly fetch events and enhance em
     | Fetch interval in seconds | True | |
     | Trust any certificate (not secure) | False | |
 
-5. No test button option available due to API limitation. Save the configured instance to test the connection. If you encounter an 'Authentication failed' error, check your configuration.
+5. There is no test option available due to API limitations. To verify the configuration, run the retarus-get-last-run-results command and ensure it returns no errors."
 
 ### Troubleshooting
 
@@ -24,4 +24,4 @@ If you receive an HTTP 400 or HTTP 401 status code when running the command, ver
 
 When opening a support case, include the results you obtained from running the retarus-get-last-run-results command.
 
-Note, due to the Retarus API limitation, only one instance can be configured for each token and channel. It is important to note that while two instances with the same token but different channels are allowed, configuring two instances with the same token and channel may result in encountering errors and/or missing events. 
+Note, due to the Retarus API limitation, only one instance can be configured for each token and channel. It is important to note that while two instances with the same token but different channels are allowed, configuring two instances with the same token and channel may result in errors and/or missing events. 
