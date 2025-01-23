@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "3.6.34",
+    "currentVersion": "3.6.35",
     "serverMinVersion": "6.0.0",
     "videos": [
         "https://www.youtube.com/watch?v=SY-3L348PoY"
@@ -47,7 +47,8 @@
         },
         "rasterize": {
             "mandatory": false,
-            "display_name": "Rasterize"
+            "display_name": "Rasterize",
+            "minVersion": "2.0.34"
         },
         "MailSenderNew": {
             "mandatory": false,
@@ -55,7 +56,8 @@
         },
         "CommonScripts": {
             "mandatory": true,
-            "display_name": "Common Scripts"
+            "display_name": "Common Scripts",
+            "minVersion": "1.19.8"
         },
         "Gmail": {
             "mandatory": false,
