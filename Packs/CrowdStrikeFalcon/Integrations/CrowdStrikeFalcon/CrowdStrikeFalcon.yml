@@ -77,6 +77,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
   additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
@@ -84,6 +86,8 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
@@ -91,6 +95,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: Mobile Detections fetch query
   name: mobile_detections_fetch_query
@@ -98,6 +104,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: IOM fetch query
   name: iom_fetch_query
@@ -105,6 +113,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: IOA fetch query
   name: ioa_fetch_query
@@ -112,6 +122,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments."
 - display: Detections from On-Demand Scans fetch query
   name: on_demand_fetch_query
@@ -119,6 +131,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: OFP Detections fetch query
   name: ofp_detection_fetch_query
@@ -126,6 +140,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: Use the Falcon Query Language. For more information, refer to the FQL syntax documentation.
 - display: Fetch incidents
   name: isFetch
@@ -133,6 +149,8 @@ configuration:
   section: Collect
   required: false
   defaultvalue: 'true'
+  hidden:
+  - marketplacev2
 - display: Incident type
   name: incidentType
   type: 13

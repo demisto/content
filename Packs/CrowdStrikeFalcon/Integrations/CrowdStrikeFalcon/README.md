@@ -10,46 +10,31 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
-| Endpoint Detections fetch query | Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
-| Endpoint Incidents fetch query | Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
-| IDP Detections fetch query | Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
-| Mobile Detections fetch query | Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
-| OFP Detections fetch query | Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
-| IOM fetch query | Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
-| IOA fetch query | In the query parameter format: `cloud_provider=aws&amp;aws_account_id=1234`. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13). | False |
-| Detections from On-Demand Scans fetch query| Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).| False|
 | Trust any certificate (not secure) |  | False |
 | Use legacy API | Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.' | False |
 | Use system proxy settings |  | False |
-| Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
-| Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
-| Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
-| Fetch types | Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version. 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
-| Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
-| Incidents Fetch Interval |  | False |
-| Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
+| Endpoint Detections fetch query | Supported on Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Endpoint Incidents fetch query | Supported on Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IDP Detections fetch query | Supported on Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Mobile Detections fetch query | Supported on Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| OFP Detections fetch query | Supported on Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IOM fetch query | Supported on Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| IOA fetch query | Supported on Cortex XSOAR only. In the query parameter format: `cloud_provider=aws&amp;aws_account_id=1234`. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13). | False |
+| Detections from On-Demand Scans fetch query | Supported on Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).| False|
+| Close Mirrored XSOAR Incident | Supported on Cortex XSOAR only. When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
+| Close Mirrored CrowdStrike Falcon Incident or Detection | Supported on Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
+| Fetch types | Supported on Cortex XSOAR only. Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version. 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
+| Reopen Statuses | Supported on Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
+| Advanced: Time in minutes to look back when fetching incidents and detections | Supported on Cortex XSOAR only. Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported on Cortex XSOAR only. | False |
+| Max incidents per fetch | Supported on Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
+| Fetch incidents | Supported on Cortex XSOAR only. | False |
+| Mirroring Direction | Supported on Cortex XSOAR only. Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
+| Close Mirrored XSOAR Incident | Supported on Cortex XSOAR only. When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
+| Close Mirrored CrowdStrike Falcon Incident or Detection | Supported on Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
+| Reopen Statuses | Supported on Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
+| Incidents Fetch Interval | Supported on Cortex XSOAR only. | False |
 
-### Cortex XSOAR Configuration Parameters
-
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| Max incidents per fetch | Input a value between 1-500. Default is 15. | False |
-| Fetch incidents |  | False |
-| Incident type |  | False |
-| Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
-| Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
-| Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
-| Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
-| Incidents Fetch Interval |  | False |
-
-### Cortex XSIAM Configuration Parameters
-
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Fetch events |  | False |
-| Max events per fetch | Input a value between 1-500. Default is 200. | False |
-| Events Fetch Interval |  | False |
 
 ### Required API client scope
 
