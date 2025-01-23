@@ -552,19 +552,14 @@
 	"fromServerVersion": "",
 	"group": "incident",
 	"id": "AI Playground",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
 	"itemVersion": "",
 	"locked": false,
-	"mobile": null,
 	"name": "AI Playground",
 	"packID": "533c60fe-b1fd-45bd-8496-fe6dac914220",
 	"packName": "Anything LLM 2.0",
 	"propagationLabels": [
 		"all"
 	],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "",
 	"version": -1
