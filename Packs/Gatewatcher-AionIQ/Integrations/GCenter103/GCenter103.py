@@ -1587,9 +1587,9 @@ def convert_event_severity(gw_sev: int) -> float:
 def gw_client_auth(params: dict) -> GwClient:
 
     ip = params.get("ip")
-    token = params.get("token", None)
-    user = params.get("credentials", {}).get("identifier", None)
-    password = params.get("credentials", {}).get("password", None)
+    token = params.get('credentials', {}).get('password')
+    user = params.get('userpass', {}).get('identifier')
+    password = params.get('userpass', {}).get('password')
     check_cert = params.get("check_cert", False)
 
     client = GwClient(ip=ip, check_cert=check_cert)
@@ -2089,9 +2089,9 @@ def main() -> None:
     args = demisto.args()
 
     ip = params.get("ip")
-    token = params.get("token", None)
-    user = params.get("credentials", {}).get("identifier", None)
-    password = params.get("credentials", {}).get("password", None)
+    token = params.get('credentials', {}).get('password')
+    user = params.get('userpass', {}).get('identifier')
+    password = params.get('userpass', {}).get('password')
     check_cert = params.get("check_cert", False)
     proxy = params.get("proxy", False)
 

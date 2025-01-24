@@ -13,23 +13,21 @@ configuration:
   section: Connect
   additionalinfo: The IP of the GCenter from where the events will be fetched.
 - displaypassword: GCenter API token
-  name: token
+  name: credentials
   required: false
   hiddenusername: true
   type: 9
-  additionalinfo: You must provide either an API token or a username and a password.
+  section: Connect
+- name: userpass
+  display: "GCenter account"
+  required: false
+  type: 9
   section: Connect
 - display: GCenter Version
   name: version
   required: false
   type: 0
   defaultvalue: 2.5.3.103
-  section: Connect
-- display: GCenter username
-  displaypassword: GCenter password
-  name: credentials
-  required: false
-  type: 9
   section: Connect
 - display: Check the TLS certificate
   name: check_cert
