@@ -47,8 +47,7 @@ configuration:
   type: 0
   hidden:
   - xsoar
-- display: Fetch Events
-  defaultvalue: 'false'
+- defaultvalue: 'false'
   name: isFetchEvents
   type: 8
   required: false
