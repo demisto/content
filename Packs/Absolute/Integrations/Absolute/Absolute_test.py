@@ -524,8 +524,9 @@ def test_fetch_events_no_events(mocker, absolute_client_v3):
     """
     from Absolute import fetch_events
     mock_response = {'data': [], 'metadata': {}}
-    mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.add_time_field_to_events_and_get_latest_events', return_value=(mock_response.get('data'), []))
+    mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.handle_duplication_and_add_time_field_to_events_and_get_latest_events',
+                 return_value=(mock_response.get('data'), []))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
     assert last_run_object.get('start_date')
@@ -546,8 +547,9 @@ def test_fetch_events_first_fetch(mocker, absolute_client_v3):
     """
     from Absolute import fetch_events
     mock_response = util_load_json('test_data/siem_events.json')
-    mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.add_time_field_to_events_and_get_latest_events', return_value=(mock_response.get('data'), []))
+    mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.handle_duplication_and_add_time_field_to_events_and_get_latest_events',
+                 return_value=(mock_response.get('data'), []))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
     assert events == mock_response.get('data')
     assert last_run_object.get('start_date')
@@ -572,23 +574,24 @@ def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, abso
     mock_response = util_load_json('test_data/siem_events.json')
     Absolute.SEIM_EVENTS_PAGE_SIZE = 8
 
-    def run_fetch_mechanism_side_effect(client, fetch_limit, next_page_token, start_date, end_date):
-        if run_fetch_mechanism_side_effect.call_count == 1:
-            run_fetch_mechanism_side_effect.call_count += 1
+    def run_fetch_events_with_pagination_side_effect(client, fetch_limit, next_page_token, start_date, end_date):
+        if run_fetch_events_with_pagination_side_effect.call_count == 1:
+            run_fetch_events_with_pagination_side_effect.call_count += 1
             return mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE], mock_response.get('metadata').get(
                 'pagination').get('nextPage')
         else:
             return mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:], ''
 
-    run_fetch_mechanism_side_effect.call_count = 1
-    mocker.patch.object(Absolute, 'run_fetch_mechanism', side_effect=run_fetch_mechanism_side_effect)
+    run_fetch_events_with_pagination_side_effect.call_count = 1
+    mocker.patch.object(ClientV3, 'fetch_events_with_pagination',
+                        side_effect=run_fetch_events_with_pagination_side_effect)
     events_first_batch, last_run_object = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, {})
     events_second_batch, _ = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, last_run_object)
     all_events = events_first_batch + events_second_batch
     assert all_events == mock_response.get('data')
 
 
-def test_run_fetch_mechanism_one_fetch(mocker, absolute_client_v3):
+def test_fetch_events_with_pagination_one_fetch(mocker, absolute_client_v3):
     """
     Given:
         - The run_fetch_mechanism function is called with no previous last run.
@@ -599,7 +602,7 @@ def test_run_fetch_mechanism_one_fetch(mocker, absolute_client_v3):
     Then:
         - The fetched events list should contain the expected events.
     """
-    from Absolute import run_fetch_mechanism
+    from Absolute import ClientV3
     from datetime import timedelta
     mock_response = util_load_json('test_data/siem_events.json')
     mock_response['metadata']['pagination']['nextPage'] = ''
@@ -607,12 +610,12 @@ def test_run_fetch_mechanism_one_fetch(mocker, absolute_client_v3):
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(minutes=1)
     fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events')
-    all_events, next_page_token = run_fetch_mechanism(absolute_client_v3, 10000, '', start_date, end_date)
+    all_events, next_page_token = ClientV3.fetch_events_with_pagination(absolute_client_v3, 10000, '', start_date, end_date)
     assert all_events == mock_response.get('data')
     fetch_events_spy.assert_called_once()
 
 
-def test_run_fetch_mechanism_multiple_fetches(mocker, absolute_client_v3):
+def test_fetch_events_with_pagination_multiple_fetches(mocker, absolute_client_v3):
     """
     Given:
         - The run_fetch_mechanism function is called with multiple fetches. It happens when the amount of events
@@ -625,7 +628,7 @@ def test_run_fetch_mechanism_multiple_fetches(mocker, absolute_client_v3):
         - The fetched events list should contain the expected events.
         - The fetch_events method should be called multiple times.
     """
-    from Absolute import run_fetch_mechanism
+    from Absolute import ClientV3
     from datetime import timedelta
     import Absolute
 
@@ -656,7 +659,7 @@ def test_run_fetch_mechanism_multiple_fetches(mocker, absolute_client_v3):
     fetch_events_side_effect.call_count = 1
     mocker.patch.object(absolute_client_v3, 'fetch_events', side_effect=fetch_events_side_effect)
     fetch_events_spy = mocker.spy(absolute_client_v3, 'fetch_events')
-    all_events, next_page_token = run_fetch_mechanism(absolute_client_v3, 10000, '', start_date, end_date)
+    all_events, next_page_token = ClientV3.fetch_events_with_pagination(absolute_client_v3, 10000, '', start_date, end_date)
 
     assert all_events == mock_response.get('data')
     assert fetch_events_spy.call_count == 2
@@ -674,10 +677,11 @@ def test_add_time_field(absolute_client_v3):
     Then:
         - All the events in the list should have a "_time" field.
     """
-    from Absolute import add_time_field_to_events_and_get_latest_events
+    from Absolute import handle_duplication_and_add_time_field_to_events_and_get_latest_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
-    all_events, _ = add_time_field_to_events_and_get_latest_events(events=events)
+    all_events, _ = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events=events,
+                                                                                          last_run_latest_events_id=[])
     for event in all_events:
         assert event.get('_time')
 
@@ -696,10 +700,11 @@ def test_get_latest_events(absolute_client_v3):
         - The IDs in the latest_events_id list should be unique.
         - The IDs in the latest_events_id list should match the expected IDs.
     """
-    from Absolute import add_time_field_to_events_and_get_latest_events
+    from Absolute import handle_duplication_and_add_time_field_to_events_and_get_latest_events
     mock_response = util_load_json('test_data/siem_events.json')
     events = mock_response.get('data')
-    _, latest_events_id = add_time_field_to_events_and_get_latest_events(events=events)
+    _, latest_events_id = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events=events,
+                                                                                                last_run_latest_events_id=[])
     assert len(latest_events_id) == 2
     assert len(set(latest_events_id)) == 2
     assert latest_events_id == ['id14', 'id15']
@@ -720,9 +725,10 @@ def test_get_events_command(mocker, absolute_client_v3):
     """
     from Absolute import get_events
     mock_response = util_load_json('test_data/siem_events.json')
-    mocker.patch('Absolute.run_fetch_mechanism', return_value=(mock_response.get('data'), ''))
-    mocker.patch('Absolute.add_time_field_to_events_and_get_latest_events', return_value=(mock_response.get('data'), ''))
-    events, _ = get_events({}, absolute_client_v3)
+    mocker.patch('Absolute.ClientV3.fetch_events_with_pagination', return_value=(mock_response.get('data'), ''))
+    mocker.patch('Absolute.handle_duplication_and_add_time_field_to_events_and_get_latest_events',
+                 return_value=(mock_response.get('data'), ''))
+    events, _ = get_events(absolute_client_v3, {})
     assert events == mock_response.get('data')
 
 
@@ -743,7 +749,7 @@ def test_get_events_command_wrong_dates(mocker, absolute_client_v3):
     end_date = "one minute ago"
     args = {'start_date': start_date, 'end_date': end_date}
     try:
-        _, _ = get_events(args, absolute_client_v3)
+        _, _ = get_events(absolute_client_v3, args)
     except ValueError as e:
         assert str(e) == "Start date is greater than the end date. Please provide valid dates."
 

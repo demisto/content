@@ -1076,7 +1076,7 @@ def get_device_location_command(args, client) -> CommandResults:
 
 def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     next_page_token = last_run.get('next_page_token', '')
-    last_run_latest_events_id = last_run.get('latest_events_id')
+    last_run_latest_events_id = last_run.get('latest_events_id', [])
     last_end_date = last_run.get('end_date', '')
     last_start_date = last_run.get('start_date', '')
     end_date = datetime.utcnow()
