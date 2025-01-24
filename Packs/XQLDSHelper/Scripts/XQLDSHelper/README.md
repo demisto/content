@@ -24,8 +24,8 @@ The query is executed by the `xdr-xql-generic-query` command.
 | earliest_time | The earliest time at which the time range of the query starts \(Default = 24 hours ago\). |
 | latest_time | The latest time at which the time range of the query ends \(Default = now\). |
 | variable_substitution | The pair of default opening and closing markers that enclose a variable name \(Default = $\{,\}\). |
-| triple_quotes_to_string | Set to true to convert a string within triple quotes in the templates to a JSON string if it is of type string. Set to false to use the templates as they are, without any conversion \(Default = true\). |
-| cache_type | The name of the type that defines which data is stored and retrieved from the cache to create the entry \(Default = dataset\). |
+| triple_quotes_to_string | Set to true to convert a string within triple quotes in the templates to a JSON string if it is of type string. Set to false to use the templates as they are, without any conversion. Both triple single quotes and triple double quotes are supported. \(Default = true\) |
+| cache_type | The name of the type that defines which data is stored and retrieved from the cache to create the entry \(Default = recordset\). |
 | max_retries | The maximum number of retries to query XQL for recoverable errors \(Default = 10\). |
 | retry_interval | The wait time \(in seconds\) between retries \(Default = 10\). |
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
@@ -84,6 +84,8 @@ The summary of the template structure in the templates is provided below.
         "using": "<instance name>"
       },
       "time_range": {
+        "earliest_time": "<earliest time>",
+        "latest_time": "<latest time>",
         "round_time": "<round time>"
       },
       "conditions": <conditions>
@@ -91,6 +93,10 @@ The summary of the template structure in the templates is provided below.
     "entry": {
       "type": "<widget type>",
       "<widget type>": <widget type dependent data>
+      "default": {
+        "scope": "<scope>",
+        "entry": <default entry>
+      }
     }
   }
   :
@@ -111,8 +117,10 @@ The summary of the template structure in the templates is provided below.
 | --- | --- | --- |
 | .query.xql | The XQL query string to retrieve the record set to create an entry. [Variable Substitution](#variable-substitution) is supported. | String |
 | .query.command.using | [Optional] The name of the integration instance to execute the XQL query command. It overrides `xql_query_instance` in the argument parameters. | String |
+| .query.time_range.earliest_time | [Optional] The earliest time at which the time range of the query starts. It overrides `earliest_time` in the argument parameters. | String or Number |
+| .query.time_range.latest_time | [Optional] The latest time at which the time range of the query ends. It overrides `latest_time` in the argument parameters. | String or Number |
 | .query.time_range.round_time | [Optional] The value (in seconds) used to round down the base time. It overrides `round_time` in the argument parameters. | String or Number |
-| .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | Any |
+| .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. [Variable Substitution](#variable-substitution) is supported. | Any |
 
 
 #### Note: .query.conditions
@@ -168,6 +176,7 @@ This dictionary is evaluated as `Condition-A AND Condition-B AND (Condition-X OR
 | .entry.single-bar | [Entry-dependent parameters] This node is required only when `single-bar` is set in `.entry.type`. | Dict |
 | .entry.stacked-bar | [Entry-dependent parameters] This node is required only when `stacked-bar` is set in `.entry.type`. | Dict |
 | .entry.duration | [Entry-dependent parameters] This node is required only when `duration` is set in `.entry.type`. | Dict |
+| .entry.default | [Optional] The default entry settings. | Dict |
 
 The `.entry.type` specifies the type of the entry, as shown below.
 
@@ -191,7 +200,6 @@ This node supports [Variable Substitution](#variable-substitution) for all param
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .text | The markdown text to display. | String |
-| .default | [Optional] The default entry applied when no record set is returned. If not specified, an empty string will be applied. | String or Dict |
 
 A sample structure of `markdown` in an entry node is shown below.
 
@@ -199,8 +207,10 @@ A sample structure of `markdown` in an entry node is shown below.
 "entry": {
   "type": "markdown",
   "markdown": {
-    "text": "## ${.dataset=>val[0].text}",
-    "default": "## No data"
+    "text": "## ${.recordset=>val[0].text}"
+  },
+  "default": {
+    "entry": "## No data"
   }
 }
 ```
@@ -216,7 +226,6 @@ A sample structure of `markdown` in an entry node is shown below.
 | .columns | [Optional] A list of table columns in the specified order. If not specified, all fields in the record set are displayed in the table. | List |
 | .columns.field | [Optional] The name of the field used to display the field value. | String |
 | .columns.label | [Optional] The label for the column. If not specified, the field name is used as the label. | String |
-| .default | [Optional] The default entry applied when no record set is returned. If not specified, an empty string will be applied. | String or Dict |
 
 
 A sample structure of `markdown-table` in an entry node is shown below.
@@ -239,8 +248,10 @@ A sample structure of `markdown-table` in an entry node is shown below.
         "field": "count",
         "label": "# of sessions"
       }
-    ],
-    "default": "## No data"
+    ]
+  },
+  "default": {
+    "entry": "## No data"
   }
 }
 ```
@@ -1202,6 +1213,33 @@ The widget will be displayed as shown below.
 The record set must contain at most one record for the duration widget entry. An error is raised if it contains more than one record.
 
 
+#### Node: entry.default
+---
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| .scope | [Optional] A list of scope. The possible values are `no_recordset` and `query_skipped,` which indicate when no record set is available or when a query is skipped, respectively (Default = ["no_recordset", "query_skipped"]). | String or List |
+| .entry | The default entry that is returned when the conditions specified in `.scope` are met. | String or Dict |
+
+The default entry is a fallback value. Instead of creating an entry from the query results,
+it is used to display a message indicating that the query was not executed or that no record set is available.
+It will be applied if either of the following conditions is met:
+ - `query_skipped` is included in the `.scope`, and the `.query.conditions` in the `query` node evaluates to false.
+ - `no_recordset` is included in the `.scope`, and no record set is returned by the XQL query.
+
+The `.entry` must be of type `str` or `dict`.
+If it is of type `str`, it represents markdown text to be displayed as an entry, as shown below:
+
+```
+{
+  "Type": 1,
+  "ContentsFormat": "markdown",
+  "HumanReadable": <markdown text>
+  "Contents": null
+}
+```
+
+If it is of type `dict`, the value is returned as-is.
+
 
 #### Common Node: .colors
 ---
@@ -1293,7 +1331,7 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
 
 In addition, it supports extended variables that start with `.`. Currently, only one value is defined for those variables.
 
- - ${.dataset}
+ - ${.recordset}
    * It refers to the record set retrieved by the XQL query.
 
 
@@ -1304,7 +1342,7 @@ When caching is enabled, data is stored in the context data and retrieved from i
 It is managed under the `XQLDSHelperCache.<template-name>` path within the context data.
 Caching can be controlled by the `cache_type` argument parameter.
 
- - cache_type: `dataset`
+ - cache_type: `recordset`
    * All the record sets retrieved from the query are stored in the cache. Entries will be correctly created even when only the parameters in the "entry" are modified, as they are rebuilt from the raw record sets in the cache, provided the query parameters remain unchanged.
 
  - cache_type: `entry`

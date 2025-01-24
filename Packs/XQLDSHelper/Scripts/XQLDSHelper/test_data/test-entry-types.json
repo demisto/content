@@ -12,7 +12,7 @@
           "entry": {
             "type": "markdown",
             "markdown": {
-              "text": "## ${.dataset=>val[0].text}"
+              "text": "## ${.recordset=>val[0].text}"
             }
           }
         }
@@ -1999,8 +1999,9 @@
           },
           "entry": {
             "type": "markdown",
-            "markdown": {
-              "default": "## No data"
+            "default": {
+              "scope": "no_recordset",
+              "entry": "## No data"
             }
           }
         }
@@ -2030,8 +2031,10 @@
           },
           "entry": {
             "type": "markdown",
-            "markdown": {
-              "default": {
+            "markdown": {},
+            "default": {
+              "scope": "no_recordset",
+              "entry": {
                 "Type": 1,
                 "ContentsFormat": "markdown",
                 "HumanReadable": "**No entries.**",
@@ -2094,8 +2097,10 @@
           },
           "entry": {
             "type": "markdown-table",
-            "markdown-table": {
-              "default": "## No data"
+            "markdown-table": {},
+            "default": {
+              "scope": "no_recordset",
+              "entry": "## No data"
             }
           }
         }
@@ -2125,8 +2130,10 @@
           },
           "entry": {
             "type": "markdown-table",
-            "markdown-table": {
-              "default": {
+            "markdown-table": {},
+            "default": {
+              "scope": "no_recordset",
+              "entry": {
                 "Type": 1,
                 "ContentsFormat": "markdown",
                 "HumanReadable": "**No entries.**",

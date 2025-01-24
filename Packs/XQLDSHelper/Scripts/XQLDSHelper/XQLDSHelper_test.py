@@ -313,20 +313,20 @@ class MainTester:
         if not func:
             return val
 
-        if path == 'dataset':
-            dataset = self.__get_query_results()
+        if path == 'recordset':
+            recordset = self.__get_query_results()
 
             if m := re.fullmatch(r'>val.length \? val\[0\].([^)]+) : 0', func):
-                return dataset[0].get(m[1]) if dataset else 0
+                return recordset[0].get(m[1]) if recordset else 0
 
             var = '>val[0].text'
             if var == func:
-                return dataset[0].get('text')
+                return recordset[0].get('text')
 
             var = r'>val.map((record) => " - " + record.text).join("\n")'
             if var == func:
                 return '\n'.join(
-                    ' - ' + x.get('text') for x in dataset
+                    ' - ' + x.get('text') for x in recordset
                 )
 
             var = (
@@ -335,7 +335,7 @@ class MainTester:
             )
             if var == ''.join(func.strip().split()):
                 return '\n'.join(
-                    f' - {x[0]+1}: ' + x[1].get('text') for x in enumerate(dataset)
+                    f' - {x[0]+1}: ' + x[1].get('text') for x in enumerate(recordset)
                 )
 
         var = r"""encodeURIComponent(val).replace('"', '%22')"""

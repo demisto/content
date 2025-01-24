@@ -10,7 +10,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -46,7 +46,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -159,7 +159,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -267,7 +267,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -378,7 +378,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -430,7 +430,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -482,7 +482,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -811,7 +811,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -3156,7 +3156,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -3653,7 +3653,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -3769,7 +3769,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -3880,7 +3880,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -3935,7 +3935,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -3990,7 +3990,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -6335,7 +6335,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -6832,7 +6832,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -6875,7 +6875,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -6930,7 +6930,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""
@@ -6988,7 +6988,7 @@
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago",
       "variable_substitution": "${,}",
-      "cache_type": "dataset",
+      "cache_type": "recordset",
       "retry_interval": 10,
       "polling_interval": 10,
       "xql_query_instance": ""

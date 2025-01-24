@@ -35,12 +35,12 @@ args:
   - true
   - false
 - auto: PREDEFINED
-  defaultValue: dataset
-  description: The name of the type that defines which data is stored and retrieved from the cache to create the entry (Default = dataset).
+  defaultValue: recordset
+  description: The name of the type that defines which data is stored and retrieved from the cache to create the entry (Default = recordset).
   name: cache_type
   predefined:
   - none
-  - dataset
+  - recordset
   - entry
 - defaultValue: '10'
   description: The maximum number of retries to query XQL for recoverable errors (Default = 10).
@@ -59,7 +59,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.11.11.1940698
 enabled: true
 engineinfo: {}
 name: XQLDSHelper

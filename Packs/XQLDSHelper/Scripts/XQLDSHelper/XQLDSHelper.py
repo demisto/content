@@ -25,7 +25,7 @@ DEFAULT_RETRY_MAX = 10
 def to_float(
     val: Any
 ) -> float | int:
-    """ Ensure the value is of number type (float or int).
+    """ Ensure the value is of type number (float or int).
 
     :param val: The value.
     :return: A float or int converted from `val`.
@@ -42,7 +42,7 @@ def to_float(
 def to_str(
     val: Any
 ) -> str:
-    """ Ensure the value is of string type.
+    """ Ensure the value is of type string.
 
     :param val: The value.
     :return: A str converted from `val`.
@@ -50,15 +50,15 @@ def to_str(
     return val if isinstance(val, str) else json.dumps(val)
 
 
-class CacheType(str, enum.Enum):
+class CacheType(enum.StrEnum):
     NONE = 'none'
-    DATASET = 'dataset'
+    RECORDSET = 'recordset'
     ENTRY = 'entry'
 
-    def __str__(
-        self
-    ) -> str:
-        return self.value
+
+class DefaultEntryScope(enum.StrEnum):
+    NO_RECORDSET = 'no_recordset'
+    QUERY_SKIPPED = 'query_skipped'
 
 
 class ContextData:
@@ -485,15 +485,15 @@ class Cache:
         name = urllib.parse.quote(name).replace('.', '%2E')
         self.__key = f'XQLDSHelperCache.{name}'
 
-    def save_dataset(
+    def save_recordset(
         self,
         query_params: QueryParams,
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> None:
         self.__save_data(
             query_params=query_params,
             cache_node='CacheDataset',
-            data=dataset,
+            data=recordset,
         )
 
     def save_entry(
@@ -507,15 +507,15 @@ class Cache:
             data=entry,
         )
 
-    def load_dataset(
+    def load_recordset(
         self,
         query_hash: str,
     ) -> list[dict[Hashable, Any]] | None:
-        dataset = self.__load_data(
+        recordset = self.__load_data(
             query_hash=query_hash,
             cache_node='CacheDataset',
         )
-        return dataset if isinstance(dataset, list) else None
+        return recordset if isinstance(recordset, list) else None
 
     def load_entry(
         self,
@@ -608,9 +608,10 @@ class XQLQuery:
             error_message = self.__get_error_message(res)
             if error_message is None:
                 break
-            elif (
-                retry_count >= self.__retry_max or
-                all(
+
+            if (
+                retry_count >= self.__retry_max
+                or all(
                     x not in error_message for x in
                     [
                         'reached max allowed amount of parallel running queries',
@@ -622,8 +623,8 @@ class XQLQuery:
                     'Failed to execute xdr-xql-generic-query.'
                     f' Error details:\n{error_message}'
                 )
-            else:
-                time.sleep(self.__retry_interval)
+
+            time.sleep(self.__retry_interval)
 
         # Poll and retrieve the record set
         response = self.__get_response(res)
@@ -674,20 +675,29 @@ class Query:
         self.__xql_query = xql_query
         self.__cache = cache
 
+    def available(
+        self,
+    ) -> bool:
+        return self.__xql_query is not None
+
     def query(
         self,
     ) -> list[dict[Hashable, Any]]:
+        """ Get the record set by running the query. It will return an empty list if the query is not available,
+
+        :return: List of fields retrieved by the query.
+        """
         if self.__cache:
-            dataset = self.__cache.load_dataset(self.__query_params.query_hash())
+            recordset = self.__cache.load_recordset(self.__query_params.query_hash())
         else:
-            dataset = None
+            recordset = None
 
-        if dataset is None and self.__xql_query:
-            dataset = self.__xql_query.query(self.__query_params)
+        if recordset is None and self.__xql_query:
+            recordset = self.__xql_query.query(self.__query_params)
             if self.__cache:
-                self.__cache.save_dataset(self.__query_params, dataset)
+                self.__cache.save_recordset(self.__query_params, recordset)
 
-        return dataset or []
+        return recordset or []
 
 
 class EntryBuilder:
@@ -696,7 +706,7 @@ class EntryBuilder:
     """
     @staticmethod
     def __enum_fields_by_group(
-        dataset: Iterable[dict[Hashable, Any]],
+        recordset: Iterable[dict[Hashable, Any]],
         sort_by: str,
         group_by: str,
         asc: bool,
@@ -708,15 +718,15 @@ class EntryBuilder:
     ]:
         """ Enumerate fields with a group value by group
 
-        :param dataset: The list of fields.
-        :param sort_by: The field name to sort the dataset before grouping.
+        :param recordset: The list of fields.
+        :param sort_by: The field name to sort the recordset before grouping.
         :param group_by: The name of the field to make groups.
-        :param asc: Set to True to sort the dataset in ascent order, Set to False for descent order.
+        :param asc: Set to True to sort the recordset in ascent order, Set to False for descent order.
         :return: Each group value with fields.
         """
         return itertools.groupby(
             sorted(
-                dataset,
+                recordset,
                 key=lambda v: SortableValue(v.get(sort_by)),
                 reverse=not asc,
             ),
@@ -725,21 +735,21 @@ class EntryBuilder:
 
     @staticmethod
     def __sum_by(
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
         sum_field: str,
         group_by: str,
         order_asc: bool,
     ) -> dict[Hashable, float]:
         """ Sum field values by a field
 
-        :param dataset: The list of fields.
+        :param recordset: The list of fields.
         :param sum_field: The field name of the value to be summed.
         :param group_by: The field name to group the fields.
         :param order_asc: Set to True for ascending order, and False for descending order.
         :return: Mapping of field name with the sum value in order by the sum.
         """
         d: dict[Hashable, float] = defaultdict(float)
-        for fields in dataset:
+        for fields in recordset:
             d[fields.get(group_by)] += to_float(fields.get(sum_field))
         return dict(sorted(d.items(), key=lambda x: x[1], reverse=not order_asc))
 
@@ -772,13 +782,13 @@ class EntryBuilder:
     def __build_singley_chart(
         chart_type: str,
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a single-Y chart entry
 
         :param chart_type: The chart type. (bar or pie)
         :param params: The template parameters for a single-Y chart.
-        :param dataset: The list of fields used to create the single-Y chart.
+        :param recordset: The list of fields used to create the single-Y chart.
         :return: A single-Y chart entry.
         """
         class Template:
@@ -951,7 +961,7 @@ class EntryBuilder:
             sort: Template.Records.Sort = records.sort
 
             names = EntryBuilder.__sum_by(
-                dataset=dataset,
+                recordset=recordset,
                 sum_field=records.data_field,
                 group_by=records.name_field,
                 order_asc=sort.asc,
@@ -968,7 +978,7 @@ class EntryBuilder:
                     data=[to_float(value)],
                     color=colors.get(name),
                 ) for fields in sorted(
-                    dataset,
+                    recordset,
                     key=lambda v: to_float(v.get(sort.by)),
                     reverse=not sort.asc,
                 ) for name, value in [
@@ -980,7 +990,7 @@ class EntryBuilder:
             stats = [
                 {
                     'name': to_str(group.label or field or ''),
-                    'data': [sum(to_float(x.get(field)) for x in dataset)],
+                    'data': [sum(to_float(x.get(field)) for x in recordset)],
                     'color': group.color,
                 } for field, group in fields.items()
             ]
@@ -1002,13 +1012,13 @@ class EntryBuilder:
     def __build_multiy_chart(
         chart_type: str,
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a multi-Y chart entry
 
         :param chart_type: The chart type. (bar or line)
         :param params: The template parameters for a multi-Y chart.
-        :param dataset: The list of fields used to create the multi-Y chart.
+        :param recordset: The list of fields used to create the multi-Y chart.
         :return: A multi-Y chart entry.
         """
         class Template:
@@ -1200,7 +1210,7 @@ class EntryBuilder:
         template = Template(params)
         if records := template.y.records:
             ynames = EntryBuilder.__sum_by(
-                dataset=dataset,
+                recordset=recordset,
                 sum_field=records.data_field,
                 group_by=records.name_field,
                 order_asc=False,
@@ -1212,15 +1222,15 @@ class EntryBuilder:
             )
             # Build stats
             stats = []
-            for x_val, x_dataset in EntryBuilder.__enum_fields_by_group(
-                dataset=dataset,
+            for x_val, x_records in EntryBuilder.__enum_fields_by_group(
+                recordset=recordset,
                 sort_by=template.x.by,
                 group_by=template.x.by,
                 asc=template.x.asc
             ):
                 groups = {k: None for k in ynames}
                 xlabel = ''
-                for y_fields in x_dataset:
+                for y_fields in x_records:
                     data = y_fields.get(records.data_field)
                     name = y_fields.get(records.name_field)
                     name_str = to_str(name)
@@ -1256,12 +1266,12 @@ class EntryBuilder:
                             'color': y_group.color,
                         } for field, y_group in fields.items()
                     ]
-                } for x_val, x_dataset in EntryBuilder.__enum_fields_by_group(
-                    dataset=dataset,
+                } for x_val, x_records in EntryBuilder.__enum_fields_by_group(
+                    recordset=recordset,
                     sort_by=template.x.by,
                     group_by=template.x.by,
                     asc=template.x.asc,
-                ) for y_fields in x_dataset
+                ) for y_fields in x_records
             ]
         else:
             stats = []
@@ -1280,80 +1290,80 @@ class EntryBuilder:
     @staticmethod
     def __build_single_bar(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a single bar entry
 
         :param params: The template parameters for 'single-bar'.
-        :param dataset: The list of fields used to create the single-bar chart.
+        :param recordset: The list of fields used to create the single-bar chart.
         :return: An single bar entry.
         """
         return EntryBuilder.__build_singley_chart(
             chart_type='bar',
             params=params,
-            dataset=dataset,
+            recordset=recordset,
         )
 
     @staticmethod
     def __build_stacked_bar(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a stacked bar entry
 
         :param params: The template parameters for 'stacked-bar'.
-        :param dataset: The list of fields used to create the stacked-bar chart.
+        :param recordset: The list of fields used to create the stacked-bar chart.
         :return: An stacked bar entry.
         """
         return EntryBuilder.__build_multiy_chart(
             chart_type='bar',
             params=params,
-            dataset=dataset,
+            recordset=recordset,
         )
 
     @staticmethod
     def __build_line(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a line entry
 
         :param params: The template parameters for 'line'.
-        :param dataset: The list of fields used to create the line chart.
+        :param recordset: The list of fields used to create the line chart.
         :return: A line entry.
         """
         return EntryBuilder.__build_multiy_chart(
             chart_type='line',
             params=params,
-            dataset=dataset,
+            recordset=recordset,
         )
 
     @staticmethod
     def __build_pie(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a pie entry
 
         :param params: The template parameters for 'pie'.
-        :param dataset: The list of fields used to create the pie chart.
+        :param recordset: The list of fields used to create the pie chart.
         :return: A pie chart entry.
         """
         return EntryBuilder.__build_singley_chart(
             chart_type='pie',
             params=params,
-            dataset=dataset,
+            recordset=recordset,
         )
 
     @staticmethod
     def __build_markdown_table(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a markdown table
 
         :param params: The template parameters for 'markdown-table'.
-        :param dataset: The list of fields used to create the markdown table.
+        :param recordset: The list of fields used to create the markdown table.
         :return: A markdown table.
         """
         class Template:
@@ -1412,11 +1422,6 @@ class EntryBuilder:
                 )
                 self.__sort = self.Sort(sort)
 
-                self.__default = template.get('default') or ''
-                assert isinstance(self.__default, str | dict), (
-                    f'default must be of type str, dict or null - {type(self.__default)}'
-                )
-
             @property
             def title(
                 self,
@@ -1435,18 +1440,14 @@ class EntryBuilder:
             ) -> Sort:
                 return self.__sort
 
-            @property
-            def default(
-                self,
-            ) -> str | dict[Hashable, Any]:
-                return self.__default
-
         template = Template(params)
 
-        if dataset:
+        if not recordset:
+            md = ''
+        else:
             if template.sort.by:
-                dataset = sorted(
-                    dataset,
+                recordset = sorted(
+                    recordset,
                     key=lambda v: SortableValue(v.get(template.sort.by)),
                     reverse=not template.sort.asc,
                 )
@@ -1454,7 +1455,7 @@ class EntryBuilder:
             # Build markdown
             md = tableToMarkdown(
                 template.title,
-                dataset,
+                recordset,
                 headers=[c.field for c in template.columns] if template.columns else None,
                 headerTransform=lambda field: next(
                     (c.label for c in template.columns or [] if c.field == field),
@@ -1462,10 +1463,6 @@ class EntryBuilder:
                 ),
                 sort_headers=False,
             )
-        elif isinstance(template.default, dict):
-            return template.default
-        else:
-            md = template.default
 
         return {
             'Type': EntryType.NOTE,
@@ -1477,19 +1474,19 @@ class EntryBuilder:
     @staticmethod
     def __build_duration(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a duration entry
 
         :param params: The template parameters for 'duration'.
-        :param dataset: The list of fields used to create the duration entry.
+        :param recordset: The list of fields used to create the duration entry.
         :return: A duration entry.
         """
         field = params.get('field')
         if not field or not isinstance(field, str):
             raise DemistoException(f'field must be of type str - {type(field)}')
 
-        if len(dataset) > 1:
+        if len(recordset) > 1:
             raise DemistoException('The duration entry allows at most one record.')
 
         return {
@@ -1499,26 +1496,26 @@ class EntryBuilder:
                 assign_params(
                     params=params.get('params')
                 ),
-                stats=int(to_float((dataset or [{}])[0].get(field))),
+                stats=int(to_float((recordset or [{}])[0].get(field))),
             ),
         }
 
     @staticmethod
     def __build_number(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a number entry
 
         :param params: The template parameters for 'number'.
-        :param dataset: The list of fields used to create the number entry.
+        :param recordset: The list of fields used to create the number entry.
         :return: A number entry.
         """
         field = params.get('field')
         if not field or not isinstance(field, str):
             raise DemistoException(f'field must be of type str - {type(field)}')
 
-        if len(dataset) > 1:
+        if len(recordset) > 1:
             raise DemistoException('The number entry allows at most one record.')
 
         return {
@@ -1528,19 +1525,19 @@ class EntryBuilder:
                 assign_params(
                     params=params.get('params')
                 ),
-                stats=to_float((dataset or [{}])[0].get(field)),
+                stats=to_float((recordset or [{}])[0].get(field)),
             ),
         }
 
     @staticmethod
     def __build_number_trend(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        recordset: list[dict[Hashable, Any]],
     ) -> dict[Hashable, Any]:
         """ Build a number trend entry
 
         :param params: The template parameters for 'number-trend'.
-        :param dataset: The list of fields used to create the number trend entry.
+        :param recordset: The list of fields used to create the number trend entry.
         :return: A number trend entry.
         """
         prev_field = params.get('prev-field')
@@ -1551,10 +1548,10 @@ class EntryBuilder:
         if not curr_field or not isinstance(curr_field, str):
             raise DemistoException(f'curr-field must be of type str - {type(curr_field)}')
 
-        if len(dataset) > 1:
+        if len(recordset) > 1:
             raise DemistoException('The number-trend entry allows at most one record.')
 
-        fields = (dataset or [{}])[0]
+        fields = (recordset or [{}])[0]
 
         return {
             'Type': EntryType.WIDGET,
@@ -1573,29 +1570,17 @@ class EntryBuilder:
     @staticmethod
     def __build_markdown(
         params: dict[Hashable, Any],
-        dataset: list[dict[Hashable, Any]],
+        **kwargs,
     ) -> dict[Hashable, Any]:
         """ Build a markdown entry
 
         :param params: The template parameters for 'markdown'.
-        :param dataset: The list of fields used to create the markdown entry.
         :return: A markdown entry.
         """
-        if not dataset:
-            entry = params.get('default')
-            if isinstance(entry, dict):
-                return entry
-            elif isinstance(entry, str):
-                text = entry
-            else:
-                text = str(params.get('text') or '')
-        else:
-            text = str(params.get('text') or '')
-
         return {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.MARKDOWN,
-            'HumanReadable': text,
+            'HumanReadable': str(params.get('text') or ''),
             'Contents': None,
         }
 
@@ -1623,6 +1608,42 @@ class EntryBuilder:
         ]
         return list(reversed(colors[1::2])) + colors[::2]
 
+    def __get_default_entry(
+        self,
+        scope: DefaultEntryScope,
+        entry_params: dict[Hashable, Any],
+    ) -> dict[Hashable, Any] | None:
+        default = entry_params.get('default')
+        assert default is None or isinstance(default, dict), (
+            f'entry.default must be of type dict or null - {type(default)}'
+        )
+        if not default:
+            return None
+
+        scopes = default.get('scope')
+        assert scopes is None or isinstance(scopes, str | list), (
+            f'default.scope must be of type null, str, or list - {type(scopes)}'
+        )
+        scopes = [str(x) for x in list(DefaultEntryScope)] if scopes is None else scopes
+        scopes = scopes if isinstance(scopes, list) else [scopes]
+        if scope not in scopes:
+            return None
+
+        entry = default.get('entry')
+        if isinstance(entry, dict):
+            return entry
+        elif isinstance(entry, str):
+            return {
+                'Type': EntryType.NOTE,
+                'ContentsFormat': EntryFormat.MARKDOWN,
+                'HumanReadable': entry,
+                'Contents': None,
+            }
+        else:
+            raise DemistoException(
+                f'default.entry must be of type stror dict - {type(entry)}'
+            )
+
     def __init__(
         self,
         formatter: Formatter,
@@ -1633,9 +1654,23 @@ class EntryBuilder:
 
     def build(
         self,
-        query: Query | None,
+        query: Query,
         entry_params: dict[Hashable, Any],
     ) -> dict[Hashable, Any]:
+        if (
+            not query.available()
+            and (
+                entry := self.__get_default_entry(
+                    scope=DefaultEntryScope.QUERY_SKIPPED,
+                    entry_params=self.__formatter.build(
+                        template=entry_params,
+                        context=self.__context,
+                    )
+                )
+            )
+        ):
+            return entry
+
         entry_type = entry_params.get('type')
         if not entry_type:
             raise DemistoException('type is required.')
@@ -1645,57 +1680,73 @@ class EntryBuilder:
             raise DemistoException(f'{entry_type} must be of type dict - {type(params)}.')
 
         build_entry = {
-            'single-bar': lambda params, dataset: self.__build_single_bar(
+            'single-bar': lambda params, recordset: self.__build_single_bar(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'stacked-bar': lambda params, dataset: self.__build_stacked_bar(
+            'stacked-bar': lambda params, recordset: self.__build_stacked_bar(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'line': lambda params, dataset: self.__build_line(
+            'line': lambda params, recordset: self.__build_line(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'pie': lambda params, dataset: self.__build_pie(
+            'pie': lambda params, recordset: self.__build_pie(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'markdown-table': lambda params, dataset: self.__build_markdown_table(
+            'markdown-table': lambda params, recordset: self.__build_markdown_table(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'duration': lambda params, dataset: self.__build_duration(
+            'duration': lambda params, recordset: self.__build_duration(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'number': lambda params, dataset: self.__build_number(
+            'number': lambda params, recordset: self.__build_number(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'number-trend': lambda params, dataset: self.__build_number_trend(
+            'number-trend': lambda params, recordset: self.__build_number_trend(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
-            'markdown': lambda params, dataset: self.__build_markdown(
+            'markdown': lambda params, recordset: self.__build_markdown(
                 params=params,
-                dataset=dataset,
+                recordset=recordset,
             ),
         }.get(entry_type)
 
         if not build_entry:
             raise DemistoException(f'Invalid type - {entry_type}')
 
-        dataset = query.query() if query else []
-        return build_entry(
-            self.__formatter.build(
-                template=params,
-                context=self.__context.inherit({
-                    'dataset': dataset
-                })
-            ),
-            dataset
-        )
+        recordset = query.query()
+        if (
+            not recordset
+            and (
+                entry := self.__get_default_entry(
+                    scope=DefaultEntryScope.NO_RECORDSET,
+                    entry_params=self.__formatter.build(
+                        template=entry_params,
+                        context=self.__context.inherit({
+                            'recordset': []
+                        })
+                    )
+                )
+            )
+        ):
+            return entry
+        else:
+            return build_entry(
+                self.__formatter.build(
+                    template=params,
+                    context=self.__context.inherit({
+                        'recordset': recordset
+                    })
+                ),
+                recordset
+            )
 
 
 ''' MAIN FUNCTION '''
@@ -1891,11 +1942,19 @@ class Main:
                 context=context,
             ),
             earliest_time=Main.__parse_date_time(
-                args.get('earliest_time') or '24 hours ago',
+                demisto.get(
+                    template,
+                    'query.time_range.earliest_time',
+                    args.get('earliest_time', '24 hours ago')
+                ),
                 base_time
             ),
             latest_time=Main.__parse_date_time(
-                args.get('latest_time') or 'now',
+                demisto.get(
+                    template,
+                    'query.time_range.latest_time',
+                    args.get('latest_time', 'now')
+                ),
                 base_time
             )
         )
@@ -1990,8 +2049,8 @@ class Main:
         self.__variable_substitution = self.__get_variable_substitution(
             args, self.__template
         )
-        self.__cache_type: str = args.get('cache_type') or CacheType.DATASET
-        if self.__cache_type not in [x.value for x in list(CacheType)]:
+        self.__cache_type: str = args.get('cache_type') or CacheType.RECORDSET
+        if self.__cache_type not in [str(x) for x in list(CacheType)]:
             raise DemistoException('Invalid cache_type - {self.__cache_type}')
 
         self.__max_retries: int = self.__arg_to_int(
@@ -2030,12 +2089,14 @@ class Main:
             context=self.__context,
         )
         cache = Cache(self.__template_name)
-        if self.__cache_type == CacheType.ENTRY:
-            cache_entry = cache.load_entry(query_params.query_hash())
-        else:
-            cache_entry = None
 
-        entry = cache_entry or EntryBuilder(
+        entry = cache.load_entry(
+            query_params.query_hash()
+        ) if self.__cache_type == CacheType.ENTRY else None
+
+        need_query = not entry and self.__is_query_executable()
+
+        entry = entry or EntryBuilder(
             formatter=formatter,
             context=self.__context,
         ).build(
@@ -2046,7 +2107,7 @@ class Main:
                     polling_interval=self.__polling_interval,
                     retry_interval=self.__retry_interval,
                     retry_max=self.__max_retries,
-                ) if self.__is_query_executable() else None,
+                ) if need_query else None,
                 cache=cache if self.__cache_type != CacheType.NONE else None,
             ),
             entry_params=self.__template.get('entry') or {},
@@ -2062,7 +2123,7 @@ class Main:
             'QueryHash': query_params.query_hash(),
             'Entry': entry
         }
-        if not cache_entry and self.__cache_type == CacheType.ENTRY:
+        if need_query and self.__cache_type == CacheType.ENTRY:
             cache.save_entry(query_params, entry)
 
         return CommandResults(

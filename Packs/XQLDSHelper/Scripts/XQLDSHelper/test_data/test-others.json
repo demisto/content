@@ -31,7 +31,7 @@
       }
     }
   },
-  "######### cache_type: dataset - hit",
+  "######### cache_type: recordset - hit",
   {
     "args": {
       "templates_type": "raw",
@@ -51,7 +51,7 @@
       },
       "earliest_time": "2024-12-14T15:33:34+00:00",
       "latest_time": "2024-12-15T15:33:34+00:00",
-      "cache_type": "dataset"
+      "cache_type": "recordset"
     },
     "context": {
       "XQLDSHelperCache": {
@@ -74,7 +74,7 @@
       }
     }
   },
-  "######### cache_type: dataset - no hit",
+  "######### cache_type: recordset - no hit",
   {
     "args": {
       "templates_type": "raw",
@@ -94,7 +94,7 @@
       },
       "earliest_time": "2024-12-14T15:33:34+00:00",
       "latest_time": "2024-12-15T15:33:34+00:00",
-      "cache_type": "dataset"
+      "cache_type": "recordset"
     },
     "xql": {
       "responses": "./test_data/qr_empty_list.json"
@@ -209,7 +209,7 @@
       }
     }
   },
-  "######### cache_type: dataset - invalid",
+  "######### cache_type: recordset - invalid",
   {
     "args": {
       "templates_type": "raw",
@@ -229,7 +229,7 @@
       },
       "earliest_time": "2024-12-14T15:33:34+00:00",
       "latest_time": "2024-12-15T15:33:34+00:00",
-      "cache_type": "dataset"
+      "cache_type": "recordset"
     },
     "xql": {
       "responses": "./test_data/qr_duration.json"
@@ -404,6 +404,80 @@
       }
     }
   },
+  "######### earliest_time - overwritten by settings",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "earliest_time": "2025-01-01T01:23:45Z"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "round_time": "0",
+      "earliest_time": "2026-01-01T00:00:00Z",
+      "latest_time": "2025-02-01T00:00:00Z"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2025-01-01T01:23:45.000+00:00",
+        "latest_time": "2025-02-01T00:00:00.000+00:00"
+      }
+    }
+  },
+  "######### latest_time - overwritten by settings",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "latest_time": "2025-01-01T01:23:45Z"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "round_time": "0",
+      "earliest_time": "2025-01-01T00:00:00Z",
+      "latest_time": "2024-01-01T00:00:00Z"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2025-01-01T00:00:00.000+00:00",
+        "latest_time": "2025-01-01T01:23:45.000+00:00"
+      }
+    }
+  },
   "######### round_time: 0 (milliseconds without rounding)",
   {
     "args": {
@@ -494,6 +568,44 @@
       },
       "base_time": "2025-01-01T01:23:45.1234Z",
       "round_time": "3600",
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2024-12-31T01:00:00.000+00:00",
+        "latest_time": "2025-01-01T01:00:00.000+00:00"
+      }
+    }
+  },
+  "######### round_time - overwritten by settings",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "time_range": {
+              "round_time": 3600
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "base_time": "2025-01-01T01:23:45.1234Z",
+      "round_time": "1",
       "earliest_time": "24 hours ago",
       "latest_time": "0 seconds ago"
     },
@@ -1682,6 +1794,183 @@
       }
     }
   },
+  "######### xql.conditions: return default entry (scope=null, entry=str)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            },
+            "default": {
+              "entry": "default markdown message"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "default markdown message",
+        "Contents": null
+      }
+    }
+  },
+  "######### xql.conditions: return default entry (scope=query_skipped, entry=str)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            },
+            "default": {
+              "scope": "query_skipped",
+              "entry": "default markdown message"
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "default markdown message",
+        "Contents": null
+      }
+    }
+  },
+  "######### xql.conditions: return default entry (scope=null, entry=dict)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            },
+            "default": {
+              "entry": {
+                "Type": 1,
+                "ContentsFormat": "markdown",
+                "HumanReadable": "default markdown message",
+                "Contents": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "default markdown message",
+        "Contents": null
+      }
+    }
+  },
+  "######### xql.conditions: return default entry (scope=null, entry=str+vars)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            },
+            "default": {
+              "entry": "default markdown ${message} message"
+            }
+          }
+        }
+      }
+    },
+    "context": {
+      "message": "test"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "default markdown test message",
+        "Contents": null
+      }
+    }
+  },
+  "######### xql.conditions: return default entry (scope=null, entry=dict+vars)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "conditions": false
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            },
+            "default": {
+              "entry": {
+                "Type": 1,
+                "ContentsFormat": "markdown",
+                "HumanReadable": "default markdown ${message} message",
+                "Contents": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "context": {
+      "message": "test"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "default markdown test message",
+        "Contents": null
+      }
+    }
+  },
   "######### XQL response: pending > success",
   {
     "args": {
@@ -1738,7 +2027,6 @@
       }
     }
   },
-
   "######### XQL response: reached max allowed amount of parallel running queries > success",
   {
     "args": {
