@@ -14,7 +14,6 @@ import traceback
 import urllib.parse
 from collections import defaultdict
 from collections.abc import Iterable, Hashable
-from typing import Self
 
 
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
@@ -119,7 +118,7 @@ class ContextData:
     def inherit(
         self,
         value: dict[str, Any] | None = None,
-    ) -> Self:  # type: ignore[valid-type]
+    ) -> "ContextData":
         """ Create a ContextData with the new value
 
         :param value: The new value.
