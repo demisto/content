@@ -345,6 +345,7 @@ class ClientV3(BaseClient):
             secret_key (str): User's Absolute secret key
             verify (bool): Whether to check for SSL certificate validity.
             proxy (bool): Whether the client should use proxies.
+            headers (dict): Dictionary of HTTP headers to send with the Request.
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._token_id = token_id
@@ -353,6 +354,18 @@ class ClientV3(BaseClient):
         self._jws = JsonWebSignature()
 
     def prepare_request_data(self, method: str, url_suffix: str, query_string: str) -> dict[str, Any]:
+        """
+        Prepares the request data for making an API call.
+
+        Args:
+            method (str): The HTTP method to be used for the request.
+            url_suffix (str): The endpoint URL suffix for the API call.
+            query_string (str): The query string parameters for the API call.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the prepared request data with keys 'method', 'contentType',
+                           'uri', 'queryString', and 'payload'.
+        """
         return {
             "method": method,
             "contentType": "application/json",
@@ -362,11 +375,29 @@ class ClientV3(BaseClient):
         }
 
     def prepare_request_payload(self, request_data: dict) -> dict[str, Any]:
+        """
+        Prepares the request payload for making an API call.
+
+        Args:
+            request_data (dict): The request data dictionary obtained from the `prepare_request_data` method.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the prepared request payload.
+        """
         return {
             "data": request_data["payload"]
         }
 
     def prepare_request_headers(self, request_data: dict) -> dict[str, Any]:
+        """
+        Prepares the request headers for making an API call.
+
+        Args:
+            request_data (dict): The request data dictionary obtained from the `prepare_request_data` method.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the prepared request headers.
+        """
         return {
             "alg": "HS256",
             "kid": self._token_id,
@@ -378,12 +409,32 @@ class ClientV3(BaseClient):
         }
 
     def prepare_request(self, method: str, url_suffix: str, query_string: str) -> bytes:
+        """
+        Prepares the signed HTTP request data for making an API call.
+
+        Args:
+            method (str): The HTTP method to be used for the request.
+            url_suffix (str): The endpoint URL suffix for the API call.
+            query_string (str): The query string parameters for the API call.
+
+        Returns:
+            bytes: The prepared signed HTTP request data.
+        """
         request_data = self.prepare_request_data(method, url_suffix, query_string)
         request_payload_data = self.prepare_request_payload(request_data)
         headers = self.prepare_request_headers(request_data)
         return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
 
     def perform_request(self, signed: bytes) -> Response:
+        """
+        Performs the HTTP request using the signed request data.
+
+        Args:
+            signed (bytes): The signed HTTP request data.
+
+        Returns:
+            Response: The response object from the HTTP request.
+        """
         return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
         # return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
         #                           return_empty_response=True)
@@ -393,7 +444,16 @@ class ClientV3(BaseClient):
         # except Exception as e:
         #     demisto.error(f'Failed to perform request: {e}')
 
-    def fetch_events(self, query_string: str) -> dict:
+    def fetch_events(self, query_string: str) -> dict[str, Any]:
+        """
+         Fetches events from the API based on the provided query string.
+
+         Args:
+             query_string (str): The query string parameters for the events to be fetched.
+
+         Returns:
+             dict: A dictionary containing the fetched events.
+         """
         signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
         response = self.perform_request(signed)
         response_content_json_str = response.content.decode('utf8').replace("'", '"')
@@ -402,6 +462,18 @@ class ClientV3(BaseClient):
 
     def fetch_events_with_pagination(self, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> tuple[
         List[Dict[str, Any]], str]:
+        """
+        Helper function to fetch events with pagination from the API based on the provided parameters.
+
+        Args:
+            fetch_limit (int): The maximum number of events to fetch.
+            next_page_token (str): The token for the next page of events (used for pagination).
+            start_date (datetime): The start date for the events to be fetched.
+            end_date (datetime): The end date for the events to be fetched.
+
+        Returns:
+            tuple: A tuple containing a list of fetched events and the next page token (if any) for pagination.
+        """
         all_events = []
         while len(all_events) < fetch_limit:
             page_size = min(SEIM_EVENTS_PAGE_SIZE, fetch_limit - len(all_events))
