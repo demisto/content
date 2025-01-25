@@ -597,7 +597,8 @@ def main():
         fetch_index = params.get('fetch_index')
         fetch_time = params.get('fetch_time', '3 days')
         fetch_limit = arg_to_number(params.get('fetch_limit', FETCH_LIMIT))
-        enrichment_excluded = params.get('enrichmentExcluded', False)
+        enrichment_excluded = (params.get('enrichmentExcluded', False) or
+                           (params.get('tlp_color') == 'Red' and is_xsiam_or_xsoar_saas()))
         if not fetch_limit or fetch_limit > 10_000:
             raise DemistoException(f"Fetch limit must be between 1-10,000, got {fetch_limit}")
         query = params.get('es_query')
