@@ -143,7 +143,7 @@ config case_sensitive = true
 // Common fields from general rule
 | alter
         xdm.event.original_event_type = category,
-        xdm.event.type = "Work flow Runtime",
+        xdm.event.type = "Workflow Runtime",
         xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
         xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 2),
         xdm.source.cloud.region = location
