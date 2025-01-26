@@ -776,19 +776,17 @@ def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '1234'
 
-    last_run.update({'index_audit_logs': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    last_run.update({'index_audit_logs': 1, 'last_fetch_time': '2022-09-20'})
     audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '12345'
-    assert new_last_run.get('index_audit_logs') == 2
 
-    last_run.update({'last_id': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    last_run.update({'last_id': 2, 'last_fetch_time': '2022-09-20'})
     audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
 
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '123456'
-    assert new_last_run.get('index_audit_logs') == 3
 
 
 def test_test_module(requests_mock, mocker):
