@@ -133,7 +133,7 @@ class TAXIIServer:
         """
         demisto.debug(f"TS1: The request_headers are {request_headers.to_wsgi_list()}")
         if taxii_message.message_type != MSG_DISCOVERY_REQUEST:
-            raise ValueError(f'Invalid message, invalid Message Type = {taxii_message.message_type}')
+            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
 
         discovery_service_url = self.get_url(request_headers)
         discovery_response = DiscoveryResponse(
@@ -173,7 +173,7 @@ class TAXIIServer:
         url = self.get_url(request_headers)
 
         if taxii_message.message_type != MSG_COLLECTION_INFORMATION_REQUEST:
-            raise ValueError(f'Invalid message, invalid Message Type = {taxii_message.message_type}')
+            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
 
         collection_info_response = CollectionInformationResponse(
             generate_message_id(),
@@ -207,7 +207,7 @@ class TAXIIServer:
             The poll response.
         """
         if taxii_message.message_type != MSG_POLL_REQUEST:
-            raise ValueError(f'Invalid message, invalid Message Type = {taxii_message.message_type}')
+            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
 
         taxii_feeds = list(self.collections.keys())
         collection_name = taxii_message.collection_name
