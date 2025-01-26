@@ -99,57 +99,152 @@ RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"T
 SAMPLE_RESPONSE = [
     results.Message("INFO-TEST", "test message"),
     {
-        '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
-        '_cd': '668:17198',
-        '_indextime': '1596545116',
-        '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
-                'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
-                'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
-                'signature="Trojan.Gen.2"',
-        '_serial': '50',
-        '_si': ['ip-172-31-44-193', 'notable'],
-        '_sourcetype': 'stash',
-        '_time': '2020-08-04T05:45:16.000-07:00',
-        'dest': 'ACME-workstation-012',
-        'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
-        'dest_asset_tag': ['cardholder', 'pci', 'americas'],
-        'dest_bunit': 'americas',
-        'dest_category': ['cardholder', 'pci'],
-        'dest_city': 'Pleasanton',
-        'dest_country': 'USA',
-        'dest_ip': '192.168.3.12',
-        'dest_is_expected': 'TRUE',
-        'dest_lat': '37.694452',
-        'dest_long': '-121.894461',
-        'dest_nt_host': 'ACME-workstation-012',
-        'dest_pci_domain': ['trust', 'cardholder'],
-        'dest_priority': 'medium',
-        'dest_requires_av': 'TRUE',
-        'dest_risk_object_type': 'system',
-        'dest_risk_score': '15680',
-        'dest_should_timesync': 'TRUE',
-        'dest_should_update': 'TRUE',
-        'host': 'ip-172-31-44-193',
-        'host_risk_object_type': 'system',
-        'host_risk_score': '0',
-        'index': 'notable',
-        'linecount': '1',
-        'priorities': 'medium',
-        'priority': 'medium',
-        'risk_score': '15680',
-        'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
-        'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
-        'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
-        'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
-        'severity': 'unknown',
-        'signature': 'Trojan.Gen.2',
-        'source': 'Endpoint - Recurring Malware Infection - Rule',
-        'sourcetype': 'stash',
-        'splunk_server': 'ip-172-31-44-193',
-        'urgency': 'low',
-        'owner': 'unassigned',
-        'event_id': '66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca',
-    }]
+        "_bkt": "notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_cd": "668:17198",
+        "_indextime": "1596545116",
+        "_raw": '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+        'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+        'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+        'signature="Trojan.Gen.2"',
+        "_serial": "50",
+        "_si": ["ip-172-31-44-193", "notable"],
+        "_sourcetype": "stash",
+        "_time": "2020-08-04T05:45:16.000-07:00",
+        "dest": "ACME-workstation-012",
+        "dest_asset_id": "028877d3c80cb9d87900eb4f9c9601ea993d9b63",
+        "dest_asset_tag": ["cardholder", "pci", "americas"],
+        "dest_bunit": "americas",
+        "dest_category": ["cardholder", "pci"],
+        "dest_city": "Pleasanton",
+        "dest_country": "USA",
+        "dest_ip": "192.168.3.12",
+        "dest_is_expected": "TRUE",
+        "dest_lat": "37.694452",
+        "dest_long": "-121.894461",
+        "dest_nt_host": "ACME-workstation-012",
+        "dest_pci_domain": ["trust", "cardholder"],
+        "dest_priority": "medium",
+        "dest_requires_av": "TRUE",
+        "dest_risk_object_type": "system",
+        "dest_risk_score": "15680",
+        "dest_should_timesync": "TRUE",
+        "dest_should_update": "TRUE",
+        "host": "ip-172-31-44-193",
+        "host_risk_object_type": "system",
+        "host_risk_score": "0",
+        "index": "notable",
+        "linecount": "1",
+        "priorities": "medium",
+        "priority": "medium",
+        "risk_score": "15680",
+        "rule_description": "Endpoint - Recurring Malware Infection - Rule",
+        "rule_name": "Endpoint - Recurring Malware Infection - Rule",
+        "rule_title": "Endpoint - Recurring Malware Infection - Rule",
+        "security_domain": "Endpoint - Recurring Malware Infection - Rule",
+        "severity": "unknown",
+        "signature": "Trojan.Gen.2",
+        "source": "Endpoint - Recurring Malware Infection - Rule",
+        "sourcetype": "stash",
+        "splunk_server": "ip-172-31-44-193",
+        "urgency": "low",
+        "owner": "unassigned",
+        "event_id": "66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca",
+    },
+    {
+        "_bkt": "notable~3252~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_cd": "3252:4913",
+        "_eventtype_color": "none",
+        "_indextime": "1737544322",
+        "_raw": '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+        'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+        'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+        'signature="Trojan.Gen.2"',
+        "_serial": "12",
+        "_si": ["ip-1-1-1-1", "notable"],
+        "_sourcetype": "stash",
+        "_time": "2025-01-22T11:12:02.000+00:00",
+        "comment": [
+            "change all fields",
+            "changed to in progress",
+            "changed to pending",
+        ],
+        "count": "1",
+        "drilldown_earliest": "0.000",
+        "drilldown_earliest_offset": "0.000",
+        "drilldown_latest": "+Infinity",
+        "drilldown_latest_offset": "+Infinity",
+        "drilldown_name": "View infections on ACME-code-001",
+        "drilldown_search": '| from datamodel:"Malware"."Malware_Attacks" | search dest="ACME-code-001"',
+        "event_hash": "734b6c7bcd700ccd0449575164772230",
+        "event_id": "test_id",
+        "eventtype": "modnotable_results notable modnotable_results notable",
+        "extract_assets": '["src", "dest", "dvc", "orig_host"]',
+        "extract_identities": '["src_user", "user"]',
+        "host": "ip-172-31-44-193",
+        "host_risk_object_type": "system",
+        "host_risk_score": "0",
+        "index": "notable",
+        "indexer_guid": "66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "info_max_time": "+Infinity",
+        "info_min_time": "0.000",
+        "info_search_time": "1737504174.093091000",
+        "investigation_profiles": "{}",
+        "lastTime": "1737544072",
+        "linecount": "2",
+        "orig_action_name": "notable",
+        "orig_rid": "0.6979",
+        "owner": "test_owner",
+        "owner_realname": "test_owner",
+        "priorities": "critical",
+        "priority": "critical",
+        "review_time": ["1737547610.488234", "1737545623.764639", "1737545033.187136"],
+        "reviewer": ["test_owner", "test_owner", "test_owner"],
+        "risk_score": "24160",
+        "rule_description": "A high or critical priority host (ACME-code-001) was detected with malware.",
+        "rule_id": "test_id",
+        "rule_name": "High Or Critical Priority Host With Malware Detected",
+        "rule_title": "High Or Critical Priority Host With Malware Detected",
+        "savedsearch_description": "Alerts when an infection is noted on a host with high or critical priority.",
+        "search_name": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "security_domain": "endpoint",
+        "severity": "high",
+        "signature": "127",
+        "source": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "sourcetype": "stash",
+        "splunk_server": "ip-1-1-1-1",
+        "status": "3",
+        "status_default": "false",
+        "status_description": "Closure is pending some action.",
+        "status_end": "false",
+        "status_group": "Open",
+        "status_label": "Pending",
+        "tag": ["modaction_result", "test_user"],
+        "tag::eventtype": "modaction_result",
+        "timestamp": "none",
+        "urgency": "informational",
+    },
+]
+
+SAMPLE_INCIDENT_REVIEW_RESPONSE = [
+    {
+        "_key": "test_id_1737547610.49",
+        "comment": "test comment",
+        "last_modified_timestamp": "1737547610.488234",
+        "owner": "test_owner",
+        "owner_realname": "test_owner",
+        "reviewer": "test_owner",
+        "reviewer_realname": "test_owner",
+        "rule_id": "test_id",
+        "rule_name": "High Or Critical Priority Host With Malware Detected",
+        "status": "3",
+        "status_default": "false",
+        "status_description": "Closure is pending some action.",
+        "status_end": "false",
+        "status_group": "Open",
+        "status_label": "Pending",
+        "urgency": "informational",
+    }
+]
 
 EXPECTED = {
     "action": "allowed",
@@ -249,7 +344,7 @@ def test_raw_to_dict():
 
     assert response == EXPECTED
     assert response_with_message == EXPECTED_WITH_MESSAGE_ID
-    assert {} == list_response
+    assert list_response == {}
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
     assert isinstance(raw_message, dict)
@@ -558,8 +653,7 @@ data_test_build_kv_store_query_with_key_val = [
 def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
     mocker.patch('SplunkPy.get_key_type', return_value=_type)
     output = splunk.build_kv_store_query(None, args)
-    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
-                                                                                                     expected_query)
+    assert output == expected_query, f'build_kv_store_query({args})\n\treturns: {output}\n\tinstead: {expected_query}'
 
     test_test_get_key_type = [
         ({'field.key': 'number'}, float),
@@ -575,8 +669,7 @@ def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
         mocker.patch('SplunkPy.get_keys_and_types', return_value=keys_and_types)
 
         output = splunk.get_key_type(None, 'key')
-        assert output == expected_type, 'get_key_type(kv_store, key)\n\treturns: {}\n\tinstead: {}'.format(output,
-                                                                                                           expected_type)
+        assert output == expected_type, f'get_key_type(kv_store, key)\n\treturns: {output}\n\tinstead: {expected_type}'
 
 
 EMPTY_CASE = {}
@@ -844,7 +937,7 @@ def test_fetch_incidents(mocker):
     splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
-    assert len(incidents) == 1
+    assert len(incidents) == 2
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
     assert not incidents[0].get('owner')
@@ -922,7 +1015,7 @@ def test_fetch_notables(mocker):
     splunk.fetch_incidents(service, mapper=mapper, comment_tag_to_splunk='comment_tag_to_splunk',
                            comment_tag_from_splunk='comment_tag_from_splunk')
     incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 1
+    assert len(incidents) == 2
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
     assert not incidents[0].get('owner')
@@ -2505,7 +2598,7 @@ def test_labels_with_non_str_values(mocker):
 
     # validate
     assert demisto.incidents.call_count == 1
-    assert len(incidents) == 1
+    assert len(incidents) == 2
     labels = incidents[0]["labels"]
     assert len(labels) >= 7
     assert all(isinstance(label['value'], str) for label in labels)
@@ -3011,3 +3104,111 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
 def test_extract_indexes(events, expected_result):
     from SplunkPy import extract_indexes
     assert extract_indexes(events) == expected_result
+
+
+@pytest.mark.parametrize(argnames='should_map_user', argvalues=[True, False])
+def test_get_modified_remote_data_command_with_user_mapping(mocker, should_map_user):
+    """ Given:
+        - Different values for the splunk.UserMappingObject.should_map arguments
+        and `notable` query response without 'owner' key
+        When:
+        - Runing test_get_modified_remote_data_command
+        Then:
+        - Verify the correct owner are returned.
+    """
+    notable_without_owner = SAMPLE_RESPONSE[2].copy()
+    del notable_without_owner['owner']
+
+    mapped_user = 'mapped_splunk_user'
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(splunk.UserMappingObject, 'get_xsoar_user_by_splunk', return_value=mapped_user)
+    mocker.patch('SplunkPy.results.JSONResultsReader', side_effect=lambda res: res)
+    mocked_service = mocker.patch('SplunkPy.client.Service')
+    mocked_service.jobs.oneshot = \
+        lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if '`incident_review`' in query else [notable_without_owner]
+
+    splunk.get_modified_remote_data_command(
+        mocked_service,
+        args={'lastUpdate': '2021-02-09T16:41:30.589575+02:00'},
+        mapper=splunk.UserMappingObject(mocked_service, should_map_user),
+        comment_tag_from_splunk='comment_tag_from_splunk',
+        close_incident=True,
+        close_end_statuses=False,
+        close_extra_labels=[]
+    )
+
+    contents = demisto.results.call_args[0][0][0]['Contents']
+    expected_owner = mapped_user if should_map_user else SAMPLE_INCIDENT_REVIEW_RESPONSE[0]['owner']
+    assert len(contents['SplunkComments']) == 3
+    assert contents['owner'] == expected_owner
+
+
+def test_mirror_in_with_enrichment_enabled(mocker):
+    """
+    Given:
+    - Drilldown Enrichmnet enabled in the instance configuration
+    When:
+    - Mirror in run (get-modified-remote-data)
+    Then:
+    - Validate the integration context stored the "delta" for the incident which sent to enrichment but not yet created
+    in order to create the incident with the updated fields.
+    """
+
+    # create an integration context in order to simulate the context in a normal run.
+    integration_context = {
+        splunk.CACHE: json.dumps(
+            {splunk.SUBMITTED_NOTABLES: [splunk.Notable(SAMPLE_RESPONSE[2])]}, default=lambda obj: obj.__dict__),
+    }
+    # cache = splunk.Cache.load_from_integration_context(integration_context)
+    # assert cache.submitted_notables[0].id == SAMPLE_RESPONSE[2]['event_id']
+    mocker.patch('SplunkPy.set_integration_context')
+    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', new=[splunk.DRILLDOWN_ENRICHMENT])
+    mocker.patch('SplunkPy.results.JSONResultsReader', side_effect=lambda res: res)
+    mocker.patch.object(splunk.UserMappingObject, 'get_xsoar_user_by_splunk', return_value='after_mirror_owner')
+    mocked_service = mocker.patch('SplunkPy.client.Service')
+    # the get_modified_remote_data send two queries to Splunk,
+    # the first one used the  `incident_review` macro and the second used the `notable`
+    notable_delta = {'status_label': 'after_mirror_status', 'urgency': 'after_mirror_urgency'}
+    updated_notable = SAMPLE_RESPONSE[2] | notable_delta
+    mocked_service.jobs.oneshot = \
+        lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if '`incident_review`' in query else [updated_notable]
+
+    splunk.get_modified_remote_data_command(
+        mocked_service,
+        args={'lastUpdate': '2021-02-09T16:41:30.589575+02:00'},
+        mapper=splunk.UserMappingObject(mocked_service, True),
+        comment_tag_from_splunk='comment_tag_from_splunk',
+        close_incident=True,
+        close_end_statuses=False,
+        close_extra_labels=[]
+    )
+
+    notable_id = SAMPLE_RESPONSE[2]['event_id']
+    mirrored_enriching_natables = splunk.set_integration_context.call_args[0][0][splunk.MIRRORED_ENRICHING_NOTABLES]
+    actual_mirrored_notable_delta = mirrored_enriching_natables[notable_id]
+
+    # 'SplunkComments' is calculated and added in the mirror process and not returned from Splunk
+    assert 'SplunkComments' not in updated_notable
+    assert len(actual_mirrored_notable_delta['SplunkComments']) == 3
+    assert actual_mirrored_notable_delta['owner'] == 'after_mirror_owner'
+    assert all(actual_mirrored_notable_delta[k] == v for k, v in notable_delta.items())
+
+
+def test_user_mapping_used_cache(mocker):
+    """
+    Given:
+    - A KVStore table exist in SPlunk to map the Splunk user to the XSOAR user.
+    When:
+    - Call to the function to map the user.
+    Then:
+    - Validate that the function use cache to store the mapped values and called only once.
+    """
+    mocked_service = mocker.patch('SplunkPy.client.Service')
+    mapper = splunk.UserMappingObject(mocked_service, True)
+    for _ in range(5):
+        mapper.get_xsoar_user_by_splunk('test_splunk_user')
+    assert mocked_service.kvstore.__getitem__().data.query.call_count == 1
