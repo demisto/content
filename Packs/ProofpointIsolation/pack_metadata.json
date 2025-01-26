@@ -9,7 +9,10 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Browser isolation",
+        "RBI"
+    ],
     "useCases": [],
     "keywords": [
         "event collector"
