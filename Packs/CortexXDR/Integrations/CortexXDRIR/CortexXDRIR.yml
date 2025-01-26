@@ -122,6 +122,13 @@ configuration:
   required: false
   additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
+- display: Maximum number of alerts per incident
+  name: max_alerts_per_incident
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
+  defaultvalue: '50'
 - display: Only fetch starred incidents
   name: starred
   type: 8
