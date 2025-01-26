@@ -18,11 +18,20 @@ import demistomock as demisto
 from CommonServerPython import EntryType, DemistoException, GetMappingFieldsResponse, SchemeTypeMapping, IncidentStatus
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
-    fetch_modified_incident, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR, get_remote_data_command, \
-    get_mapping_fields_command, OUTGOING_MIRRORED_FIELDS, handle_incident_close_out_or_reactivation
+    fetch_modified_incident, get_remote_data_command, \
+    get_mapping_fields_command, handle_incident_close_out_or_reactivation, mirror_out_entries
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
+MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR = "Mirrored from Cortex XSOAR"
+OUTGOING_MIRRORED_FIELDS = {
+    'status': 'Specifies the current status of the incident.',
+    'assignedTo': 'Owner of the incident.',
+    'classification': 'Specification of the incident.',
+    'determination': 'Specifies the determination of the incident.',
+    'tags': 'List of Incident tags.',
+    'comment': 'Comment to be added to the incident.'
+}
 
 
 def util_load_json(path):
@@ -660,3 +669,101 @@ def test_handle_incident_close_out_or_reactivation_no_delta_changes(mocker):
     assert "status" not in delta
     assert "classification" not in delta
     assert "determination" not in delta
+
+
+def test_mirror_out_entries_with_comment_tag(mocker):
+    """
+    Test `mirror_out_entries` where entries contain the comment tag and are mirrored out.
+    """
+    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
+    mocker.patch("demisto.debug")
+
+    comment_tag = "CommentFromXSOAR"
+    entries = [
+        {"id": 1, "type": "note", "tags": [comment_tag], "user": "user1", "contents": "Test content", "format": "text"},
+        {"id": 2, "type": "note", "tags": [comment_tag], "user": "user2", "contents": "Another test content", "format": "html"},
+    ]
+    remote_incident_id = 12345
+
+    mirror_out_entries(client, entries, comment_tag, remote_incident_id)
+
+    # Assert that update_incident was called twice with appropriate payloads
+    assert client.update_incident.call_count == 2
+    client.update_incident.assert_any_call(
+        incident_id=remote_incident_id,
+        timeout=50,
+        comment="(user1): Test content\n\n [XSOAR_COMMENT_TO_MICROSOFT]"
+    )
+    client.update_incident.assert_any_call(
+        incident_id=remote_incident_id,
+        timeout=50,
+        comment="(user2): <br/><br/>[code]Another test content <br/><br/>[/code] [XSOAR_COMMENT_TO_MICROSOFT]"
+    )
+
+
+def test_mirror_out_entries_without_comment_tag(mocker):
+    """
+    Test `mirror_out_entries` where entries do not contain the comment tag.
+    """
+
+    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
+    mocker.patch("demisto.debug")
+
+    comment_tag = "CommentFromXSOAR"
+    entries = [
+        {"id": 1, "type": "note", "tags": [], "user": "user1", "contents": "Test content"},
+        {"id": 2, "type": "note", "tags": ["UnrelatedTag"], "user": "user2", "contents": "Another test content"},
+    ]
+    remote_incident_id = 12345
+
+    mirror_out_entries(client, entries, comment_tag, remote_incident_id)
+
+    # Assert that update_incident was not called
+    client.update_incident.assert_not_called()
+
+
+def test_mirror_out_entries_with_missing_fields(mocker):
+    """
+    Test `mirror_out_entries` where entries have missing fields.
+    """
+    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
+    mocker.patch("demisto.debug")
+
+    comment_tag = "CommentFromXSOAR"
+    entries = [
+        {"id": 1, "tags": [comment_tag]},  # Missing contents
+        {"id": 2, "type": "note", "tags": [comment_tag]},  # Missing user and contents
+    ]
+    remote_incident_id = 12345
+
+    mirror_out_entries(client, entries, comment_tag, remote_incident_id)
+
+    # Assert that update_incident was called with default values
+    assert client.update_incident.call_count == 2
+    client.update_incident.assert_any_call(
+        incident_id=remote_incident_id,
+        timeout=50,
+        comment="(dbot): \n\n [XSOAR_COMMENT_TO_MICROSOFT]"
+    )
+    client.update_incident.assert_any_call(
+        incident_id=remote_incident_id,
+        timeout=50,
+        comment="(dbot): \n\n [XSOAR_COMMENT_TO_MICROSOFT]"
+    )
+
+
+def test_mirror_out_entries_empty_entries(mocker):
+    """
+    Test `mirror_out_entries` with no entries provided.
+    """
+    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
+    mocker.patch("demisto.debug")
+
+    comment_tag = "CommentFromXSOAR"
+    entries = []
+    remote_incident_id = 12345
+
+    mirror_out_entries(client, entries, comment_tag, remote_incident_id)
+
+    # Assert that update_incident was not called
+    client.update_incident.assert_not_called()
