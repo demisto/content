@@ -399,7 +399,8 @@ def test_get_incident_entries(mock_dependencies):
 
     from Microsoft365Defender import get_incident_entries
 
-    entries = get_incident_entries(mirrored_object, last_update, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR, close_incident)
+    entries = get_incident_entries(mirrored_object, last_update, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR,
+                                   close_incident)
 
     assert len(entries) == 2  # Should combine outputs from both mocked functions
     assert {"Type": 1, "Contents": "Mock close/reopen entry"} in entries
@@ -430,6 +431,54 @@ def test_get_determination_value():
     # Test: Edge case with valid classification and determination not matching any key
     with pytest.raises(DemistoException, match="Invalid determination. Please provide one of the following:"):
         get_determination_value('FalsePositive', 'Phishing')
+
+
+def test_get_meta_data_for_incident():
+    """
+    Tests the `_get_meta_data_for_incident` function using the provided raw_incident.json data.
+    """
+    from Microsoft365Defender import _get_meta_data_for_incident
+
+    raw_incident = util_load_json("./test_data/raw_incident.json")
+    metadata = _get_meta_data_for_incident(raw_incident)
+
+    assert metadata["Categories"] == ["SuspiciousActivity"]
+    assert metadata["Impacted entities"] == []
+    assert metadata["Active alerts"] == "0 / 0"
+    assert metadata["Service sources"] == ["MicrosoftDefenderForEndpoint"]
+    assert metadata["Detection sources"] == ["AutomatedInvestigation"]
+    assert metadata["First activity"] == "2021-03-22 12:34:31+00:00"
+    assert metadata["Last activity"] == "2021-03-22 12:59:07+00:00"
+
+    assert len(metadata["Devices"]) > 0
+    assert metadata["Devices"][0]["device name"] == "deviceDnsName"
+    assert metadata["Devices"][0]["risk level"] == "Informational"
+    assert metadata["Devices"][0]["tags"] == "new test,test add tag,testing123"
+
+    assert metadata["Mailboxes"] == []
+
+    assert metadata["comments"] == []
+
+
+def test_get_meta_data_empty_incident():
+    """
+    Tests the function with an empty incident.
+    """
+    from Microsoft365Defender import _get_meta_data_for_incident
+
+    raw_incident = {}
+    metadata = _get_meta_data_for_incident(raw_incident)
+
+    assert metadata["Categories"] == []
+    assert metadata["Impacted entities"] == []
+    assert metadata["Active alerts"] == "0 / 0"
+    assert metadata["Service sources"] == []
+    assert metadata["Detection sources"] == []
+    assert metadata["First activity"] == ""
+    assert metadata["Last activity"] == ""
+    assert metadata["Devices"] == []
+    assert metadata["Mailboxes"] == []
+    assert metadata["comments"] == []
 
 
 def test_fetch_modified_incident(mocker):
