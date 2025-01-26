@@ -3268,7 +3268,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             new_last_run['nextTrigger'] = '0'
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
-            demisto.debug(f'Sending {len(assets)} assets to XSIAM.'
+            demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
                           f'Total assets collected so far: {cumulative_assets_count}')
 
             send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
@@ -3309,7 +3309,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         # Push assets
         cumulative_assets_count: int = new_last_run['total_assets']
 
-        demisto.debug(f'Sending {len(assets)} assets to XSIAM.'
+        demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
                       f'Total assets collected so far: {cumulative_assets_count}')
 
         send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
@@ -3320,7 +3320,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         new_last_run['total_vulnerabilities'] = last_run.get('total_vulnerabilities', 0) + len(vulnerabilities)
         cumulative_vulns_count: int = new_last_run["total_vulnerabilities"]
 
-        demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM.'
+        demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM. '
                       f'Total vulnerabilities collected so far: {cumulative_vulns_count}')
 
         send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets',
@@ -3332,9 +3332,9 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
             demisto.debug('Finished fetching all assets and vulnerabilities. Resetting last run object')
             new_last_run = DEFAULT_LAST_ASSETS_RUN
 
-    demisto.setAssetsLastRun(new_last_run)
-    demisto.updateModuleHealth(f'Pulled {cumulative_assets_count} assets and {cumulative_vulns_count} vulnerabilities so far.')
+        demisto.updateModuleHealth({'assetsPulled': cumulative_assets_count + cumulative_vulns_count})
 
+    demisto.setAssetsLastRun(new_last_run)
     demisto.debug(f'Finished fetch assets and vulnerabilities run (by QIDs). Last assets run object: {new_last_run}')
 
 
