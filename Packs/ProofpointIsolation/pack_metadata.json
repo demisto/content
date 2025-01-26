@@ -9,13 +9,12 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [
-        "Browser isolation",
-        "RBI"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
-        "event collector"
+        "event collector",
+        "Browser isolation",
+        "RBI"
     ],
     "marketplaces": [
         "marketplacev2"
