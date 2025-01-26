@@ -483,14 +483,9 @@ def is_reserved_ip(ip_str: str) -> bool:
 
 def extract_indicators(command_line: str) -> dict:
     """
-    Extracts indicators by type (e.g., 'IP', 'Domain') and returns them as a dictionary:
-      {
-        "IP": [...],
-        "Domain": [...],
-        ...
-      }
+    Extracts indicators by type (e.g., 'IP', 'Domain') and returns them as a dictionary.
     """
-    extracted_by_type = {}  # Plain dict, no defaultdict
+    extracted_by_type = {}
 
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
