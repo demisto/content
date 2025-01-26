@@ -1,5 +1,5 @@
 Run an XQL query and creates an entry for the General Purpose Dynamic Section to display a graph or table widget based on the results.
-The query is executed by the `xdr-xql-generic-query` command.
+The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-results` command.
 
 
 ## Script Data
@@ -29,8 +29,13 @@ The query is executed by the `xdr-xql-generic-query` command.
 | max_retries | The maximum number of retries to query XQL for recoverable errors \(Default = 10\). |
 | retry_interval | The wait time \(in seconds\) between retries \(Default = 10\). |
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
-| xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query. |
+| xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results. |
 
+
+### Query Execution Timeout and Retry Limits
+The XQL query may take some time to return results after it has started.
+This script performs polling at intervals of `retry_interval` seconds while waiting for the query results, with a maximum duration of `max_retries` x `retry_interval` seconds.
+If the query results are not returned within this time frame, it will be treated as an error.
 
 
 ## Outputs
