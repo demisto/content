@@ -783,6 +783,29 @@ def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
     assert audit_logs[0].get('id') == '12345'
 
 
+@pytest.mark.parametrize(
+    'dt_now, dt_start_date, audit_logs, last_index_fetched, new_last_index_fetched',
+    [
+        (datetime(2024, 1, 26), datetime(2024, 1, 25), [{}], 1, 0),
+        (datetime(2024, 1, 26), datetime(2024, 1, 26), [{}], 1, 2),
+        (datetime(2024, 1, 26), datetime(2024, 1, 26), [], 1, 1),
+    ]
+)
+def test_set_index_audit_logs(dt_now: datetime, dt_start_date: datetime, audit_logs: List[dict], last_index_fetched: int,
+                              new_last_index_fetched: int):
+    """
+    Given:
+        - all the arguments are needed for the function
+    When:
+        - Running the set_index_audit_logs function.
+    Then:
+        - Verify the result is correct as expected by the logic which is written there.
+    """
+    from Tenable_io import set_index_audit_logs
+    result = set_index_audit_logs(dt_now, dt_start_date, audit_logs, last_index_fetched)
+    assert new_last_index_fetched == result
+
+
 def test_test_module(requests_mock, mocker):
     """
     Given:
