@@ -19,7 +19,7 @@ from CommonServerPython import EntryType, DemistoException, GetMappingFieldsResp
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
     fetch_modified_incident, get_remote_data_command, \
-    get_mapping_fields_command, handle_incident_close_out_or_reactivation, mirror_out_entries
+    get_mapping_fields_command, handle_incident_close_out_or_reactivation, mirror_out_entries, update_remote_system_command
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
@@ -767,3 +767,129 @@ def test_mirror_out_entries_empty_entries(mocker):
 
     # Assert that update_incident was not called
     client.update_incident.assert_not_called()
+
+
+def test_update_remote_system_with_incident_changes(mocker):
+    """
+    Test `update_remote_system_command` where the incident has changes and is updated.
+    """
+    client = mock_client(mocker, 'update_incident', {"status": "success"})
+    mocker.patch("demisto.debug")
+    mocker.patch("demisto.params", return_value={"comment_tag": "CommentToMicrosoft"})
+
+    args = {
+        "remote_incident_id": "12345",
+        "data": {"name": "incident"},
+        "delta": {"status": "Resolved", "assignedTo": "user1", "tags": "test_tag", "comment": "Test comment"},
+        "incident_changed": True,
+        "inc_status": "DONE",
+        "entries": []
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Assertions
+    assert result == "12345"
+    client.update_incident.assert_called_once_with(
+        incident_id="12345",
+        status="Resolved",
+        assigned_to="user1",
+        classification=None,
+        determination=None,
+        tags=["test_tag"],
+        timeout=50,
+        comment="Test comment"
+    )
+
+
+def test_update_remote_system_without_incident_changes(mocker):
+    """
+    Test `update_remote_system_command` where the incident has no changes and is not updated.
+    """
+    client = mock_client(mocker, 'update_incident', {"status": "success"})
+    mocker.patch("demisto.debug")
+
+    args = {
+        "remote_incident_id": "12345",
+        "data": {"name": "incident"},
+        "delta": None,
+        "incident_changed": False,
+        "inc_status": "DONE",
+        "entries": []
+    }
+
+    result = update_remote_system_command(client, args)
+
+    assert result == "12345"
+    client.update_incident.assert_not_called()
+
+
+def test_update_remote_system_with_entries(mocker):
+    """
+    Test `update_remote_system_command` where new entries are mirrored out.
+    """
+    client = mock_client(mocker, 'update_incident', {"status": "success"})
+    mocker.patch("demisto.debug")
+    mocker.patch("demisto.params", return_value={"comment_tag": "CommentToMicrosoft"})
+    mocker.patch("Microsoft365Defender.mirror_out_entries", return_value=None)
+
+    args = {
+        "remote_incident_id": "12345",
+        "data": {"name": "incident"},
+        "delta": None,
+        "incident_changed": False,
+        "inc_status": "ACTIVE",
+        "entries": [{"id": 1, "tags": ["CommentToMicrosoft"], "contents": "Test entry"}]
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Assertions
+    assert result == "12345"
+    client.update_incident.assert_not_called()
+    from Microsoft365Defender import mirror_out_entries
+    mirror_out_entries.assert_called_once_with(
+        client,
+        [{"id": 1, "tags": ["CommentToMicrosoft"], "contents": "Test entry"}],
+        "CommentToMicrosoft",
+        "12345"
+    )
+
+
+def test_update_remote_system_error_handling(mocker):
+    """
+    Test `update_remote_system_command` error handling when an exception occurs.
+    """
+    client = mock_client(mocker, 'update_incident', {"status": "success"})
+    mocker.patch("demisto.debug")
+    mocker.patch("demisto.error")
+    mocker.patch("Microsoft365Defender.mirror_out_entries", side_effect=Exception("Test error"))
+
+    args = {
+        "remote_incident_id": "12345",
+        "data": {"name": "incident"},
+        "delta": {"status": "Resolved", "assignedTo": "user1", "tags": "test_tag", "comment": "Test comment"},
+        "incident_changed": True,
+        "inc_status": "DONE",
+        "entries": [{"id": 1, "tags": ["CommentToMicrosoft"], "contents": "Test entry"}]
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Assertions
+    assert result == "12345"
+    client.update_incident.assert_called_once_with(
+        incident_id="12345",
+        status="Resolved",
+        assigned_to="user1",
+        classification=None,
+        determination=None,
+        tags=["test_tag"],
+        timeout=50,
+        comment="Test comment"
+    )
+    from Microsoft365Defender import mirror_out_entries
+    mirror_out_entries.assert_called_once()
+    demisto.error.assert_called_once_with(
+        "Microsoft Defender 365 - Error in outgoing mirror for incident 12345 \nError message: Test error"
+    )
