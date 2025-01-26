@@ -2,6 +2,7 @@ category: Endpoint
 sectionorder:
 - Connect
 - Collect
+- Mirroring
 commonfields:
   id: Cortex XDR - IR
   version: -1
