@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Tenable.io - dev
+  id: Tenable.io
   version: -1
 configuration:
 - defaultvalue: https://cloud.tenable.com/
@@ -85,8 +85,8 @@ configuration:
   hidden:
   - xsoar
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
-display: Tenable Vulnerability Management (formerly Tenable.io) - dev
-name: Tenable.io - dev
+display: Tenable Vulnerability Management (formerly Tenable.io)
+name: Tenable.io
 script:
   commands:
   - arguments:
