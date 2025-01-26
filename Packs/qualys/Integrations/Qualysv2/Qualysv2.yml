@@ -80,7 +80,9 @@ configuration:
   options:
   - Fetch by last modified date
   - Fetch by unique QIDs of assets
-  required: true
+  section: Collect
+  advanced: true
+  required: false
   type: 15
   hidden:
   - xsoar
