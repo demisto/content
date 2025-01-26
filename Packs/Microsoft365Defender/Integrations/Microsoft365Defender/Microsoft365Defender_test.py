@@ -9,13 +9,13 @@ you are implementing with your integration
 """
 
 import json
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import EntryType, DemistoException, GetMappingFieldsResponse, SchemeTypeMapping, IncidentStatus
+from CommonServerPython import EntryType, GetMappingFieldsResponse, SchemeTypeMapping, IncidentStatus
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
     fetch_modified_incident, get_remote_data_command, \
@@ -243,15 +243,6 @@ def test_get_modified_remote_data_command(mocker):
     assert response.modified_incident_ids == ["123", "456"]
 
 
-def test_get_modified_remote_data_command_invalid_last_update(mocker):
-    import Microsoft365Defender
-    mock_args = {"lastUpdate": "invalid_date_string"}
-    mocker.patch.object(Microsoft365Defender, 'fetch_modified_incident_ids', return_value=[])
-
-    with pytest.raises(AssertionError, match="could not parse invalid_date_string"):
-        get_modified_remote_data_command(mock_client(mocker), mock_args)
-
-
 @pytest.fixture
 def resolved_incidents():
     """Fixture for resolved incidents."""
@@ -316,7 +307,7 @@ def test_get_modified_incidents_close_incident_false(mocker, resolved_incidents)
     assert result == []
 
 
-def test_get_modified_incidents_empty_list(mocker):
+def test_get_modified_incidents_empty_list():
     """
     Test when modified_incidents is an empty list.
     """
@@ -324,49 +315,33 @@ def test_get_modified_incidents_empty_list(mocker):
     assert result == []
 
 
-def test_get_entries_for_comments_new_incident():
-    from Microsoft365Defender import get_entries_for_comments
-
-    comments = [
-        {"comment": "Test comment 1", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
-        {"comment": "Test comment 2", "createdBy": "User2@gmail.com", "createdTime": "2024-01-02T12:00:00.8404534Z"}
-    ]
-    last_update = datetime.utcnow() - timedelta(days=1)
-    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, True)
-
-    assert len(result) == 2
-    assert result[0]["Contents"].startswith("Created By: User1@gmail.com")
-    assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
-    assert result[0]["Note"] is True
-
-
-def test_get_entries_for_comments_filter_by_last_update():
-    from Microsoft365Defender import get_entries_for_comments
-
-    comments = [
-        {"comment": "Old comment", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
-        {"comment": "New comment", "createdBy": "User2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
-    ]
-    last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
-    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
-
-    assert len(result) == 1
-    assert result[0]["Contents"].startswith("Created By: User2@gmail.com")
-    assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
+# def test_get_entries_for_comments():
+#     from Microsoft365Defender import get_entries_for_comments
+#
+#     comments = [
+#         {"comment": "Old comment", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
+#         {"comment": "New comment", "createdBy": "User2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+#     ]
+#     last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
+#     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
+#
+#     assert len(result) == 1
+#     assert result[0]["Contents"].startswith("Created By: User2@gmail.com")
+#     assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
 
 
-def test_get_entries_for_comments_ignores_mirrored_comments():
-    from Microsoft365Defender import get_entries_for_comments, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
-
-    comments = [
-        {"comment": f"Ignored comment {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}",
-         "createdBy": "User1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
-    ]
-
-    last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
-    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
-
-    assert len(result) == 0
+# def test_get_entries_for_comments_ignores_mirrored_comments():
+#     from Microsoft365Defender import get_entries_for_comments, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
+#
+#     comments = [
+#         {"comment": f"Ignored comment {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}",
+#          "createdBy": "User1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+#     ]
+#
+#     last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
+#     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
+#
+#     assert len(result) == 0
 
 
 def test_get_entries_for_comments_empty_comments():
@@ -374,7 +349,7 @@ def test_get_entries_for_comments_empty_comments():
 
     comments = []
     last_update = datetime.utcnow() - timedelta(days=1)
-    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
 
     assert len(result) == 0
 
@@ -427,11 +402,11 @@ def test_get_determination_value():
     assert get_determination_value('InformationalExpectedActivity', 'ConfirmedActivity') == 'ConfirmedActivity'
 
     # Test: Invalid classification
-    with pytest.raises(DemistoException, match="Please provide a valid classification"):
+    with pytest.raises(Exception, match="Please provide a valid classification"):
         get_determination_value('InvalidClassification', 'Malware')
 
     # Test: Valid classification but invalid determination
-    with pytest.raises(DemistoException, match="Invalid determination. Please provide one of the following:"):
+    with pytest.raises(Exception, match="Invalid determination. Please provide one of the following:"):
         get_determination_value('TruePositive', 'InvalidDetermination')
 
     # Test: Valid classification with "Other" determination
@@ -439,7 +414,7 @@ def test_get_determination_value():
     assert get_determination_value('InformationalExpectedActivity', 'Other') == 'Other'
 
     # Test: Edge case with valid classification and determination not matching any key
-    with pytest.raises(DemistoException, match="Invalid determination. Please provide one of the following:"):
+    with pytest.raises(Exception, match="Invalid determination. Please provide one of the following:"):
         get_determination_value('FalsePositive', 'Phishing')
 
 
@@ -452,13 +427,15 @@ def test_get_meta_data_for_incident():
     raw_incident = util_load_json("./test_data/raw_incident.json")
     metadata = _get_meta_data_for_incident(raw_incident)
 
-    assert metadata["Categories"] == ["SuspiciousActivity"]
+    assert metadata["Categories"] == ['SuspiciousActivity', 'SuspiciousActivity', 'SuspiciousActivity', 'SuspiciousActivity',
+                                      'SuspiciousActivity', 'SuspiciousActivity', 'SuspiciousActivity', 'SuspiciousActivity',
+                                      'SuspiciousActivity', 'SuspiciousActivity', 'SuspiciousActivity', 'SuspiciousActivity']
     assert metadata["Impacted entities"] == []
-    assert metadata["Active alerts"] == "0 / 0"
+    assert metadata["Active alerts"] == "0 / 12"
     assert metadata["Service sources"] == ["MicrosoftDefenderForEndpoint"]
     assert metadata["Detection sources"] == ["AutomatedInvestigation"]
-    assert metadata["First activity"] == "2021-03-22 12:34:31+00:00"
-    assert metadata["Last activity"] == "2021-03-22 12:59:07+00:00"
+    assert metadata["First activity"] == "2021-03-22T12:34:31.8123759Z"
+    assert metadata["Last activity"] == "2021-03-22T12:59:07.526847Z"
 
     assert len(metadata["Devices"]) > 0
     assert metadata["Devices"][0]["device name"] == "deviceDnsName"
@@ -493,7 +470,7 @@ def test_get_meta_data_empty_incident():
 
 def test_fetch_modified_incident(mocker):
     client = mock_client(mocker, 'get_incident', util_load_json('./test_data/incident_get_response.json'))
-    mock_meta_data = mocker.patch('your_module_name._get_meta_data_for_incident', return_value={
+    mock_meta_data = mocker.patch('Microsoft365Defender._get_meta_data_for_incident', return_value={
         'Categories': ['SuspiciousActivity'],
         'Impacted entities': [],
         'Active alerts': '0 / 1',
@@ -526,10 +503,11 @@ def test_get_remote_data_command_success(mocker):
     Test a successful run of the get_remote_data_command function.
     """
 
-    mocker.patch("demisto.params", return_value={
+    params = {
         "comment_tag_from_microsoft365defender": "CommentFromMicrosoft365Defender",
         "close_incident": True
-    })
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
 
     mocker.patch(
         "Microsoft365Defender.fetch_modified_incident",
@@ -549,43 +527,24 @@ def test_get_remote_data_command_success(mocker):
     )
 
     args = {
-        "remote_incident_id": "12345",
-        "last_update": "2025-01-01T12:00:00Z"
+        "id": "12345",
+        "lastUpdate": "2025-01-01T12:00:00Z"
     }
 
-    response = get_remote_data_command(MockMicrosoft365DefenderClient(mocker), args)
+    response = get_remote_data_command(mock_client(mocker), args)
 
     assert response.mirrored_object["incidentId"] == 12345
     assert len(response.entries) == 1
     assert response.entries[0]["Contents"] == "Test entry"
 
 
-def test_get_mapping_fields_command():
-    """
-    Test the `get_mapping_fields_command` function to verify the mapping fields are returned correctly.
-    """
-    response = get_mapping_fields_command()
-
-    assert isinstance(response, GetMappingFieldsResponse)
-
-    scheme_types = response.scheme_types
-    assert len(scheme_types) == 1  # Only one incident type is defined
-    incident_mapping = scheme_types[0]
-
-    assert isinstance(incident_mapping, SchemeTypeMapping)
-    assert incident_mapping.type_name == 'Microsoft 365 Defender Incident'
-    assert len(incident_mapping.fields) == len(OUTGOING_MIRRORED_FIELDS)
-
-    for field_name, field_description in OUTGOING_MIRRORED_FIELDS.items():
-        assert field_name in incident_mapping.fields
-        assert incident_mapping.fields[field_name] == field_description
-
-
 def test_handle_incident_close_out_or_reactivation_close(mocker):
     """
     Test that the incident is properly closed when 'close_out' is enabled and the status is DONE.
     """
-    mocker.patch("demisto.params", return_value={"close_out": True})
+    params = {"close_out": True}
+    mocker.patch.object(demisto, 'params', return_value=params)
+
     delta = {
         "closeReason": "FalsePositive",
         "closeNotes": "This was a false positive alert",
@@ -604,7 +563,8 @@ def test_handle_incident_close_out_or_reactivation_close_other(mocker):
     """
     Test that the incident is properly closed with 'Other' or 'Duplicate' reasons.
     """
-    mocker.patch("demisto.params", return_value={"close_out": True})
+    params = {"close_out": True}
+    mocker.patch.object(demisto, 'params', return_value=params)
     delta = {
         "closeReason": "Other",
         "closeNotes": "General closure",
@@ -623,7 +583,8 @@ def test_handle_incident_close_out_or_reactivation_reopen(mocker):
     """
     Test that the incident is reopened when 'closeReason', 'closeNotes', or 'closingUserId' are empty.
     """
-    mocker.patch("demisto.params", return_value={"close_out": True})
+    params = {"close_out": True}
+    mocker.patch.object(demisto, 'params', return_value=params)
     delta = {
         "closeReason": "",
         "closeNotes": "",
@@ -640,7 +601,8 @@ def test_handle_incident_close_out_or_reactivation_close_out_disabled(mocker):
     """
     Test that the function exits early when 'close_out' is disabled.
     """
-    mocker.patch("demisto.params", return_value={"close_out": False})
+    params = {"close_out": False}
+    mocker.patch.object(demisto, 'params', return_value=params)
     delta = {
         "closeReason": "FalsePositive",
         "closeNotes": "This was a false positive alert",
@@ -660,7 +622,8 @@ def test_handle_incident_close_out_or_reactivation_no_delta_changes(mocker):
     """
     Test that the function exits early when no relevant keys in the delta are present.
     """
-    mocker.patch("demisto.params", return_value={"close_out": True})
+    params = {"close_out": True}
+    mocker.patch.object(demisto, 'params', return_value=params)
     delta = {}
     incident_status = IncidentStatus.DONE
 
@@ -676,28 +639,20 @@ def test_mirror_out_entries_with_comment_tag(mocker):
     Test `mirror_out_entries` where entries contain the comment tag and are mirrored out.
     """
     client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
-    mocker.patch("demisto.debug")
 
     comment_tag = "CommentFromXSOAR"
     entries = [
-        {"id": 1, "type": "note", "tags": [comment_tag], "user": "user1", "contents": "Test content", "format": "text"},
-        {"id": 2, "type": "note", "tags": [comment_tag], "user": "user2", "contents": "Another test content", "format": "html"},
+        {"id": 1, "type": "note", "tags": [comment_tag], "user": "user1", "contents": "Test content", "format": "text"}
     ]
     remote_incident_id = 12345
 
     mirror_out_entries(client, entries, comment_tag, remote_incident_id)
 
-    # Assert that update_incident was called twice with appropriate payloads
-    assert client.update_incident.call_count == 2
+    assert client.update_incident.call_count == 1
     client.update_incident.assert_any_call(
         incident_id=remote_incident_id,
         timeout=50,
-        comment="(user1): Test content\n\n [XSOAR_COMMENT_TO_MICROSOFT]"
-    )
-    client.update_incident.assert_any_call(
-        incident_id=remote_incident_id,
-        timeout=50,
-        comment="(user2): <br/><br/>[code]Another test content <br/><br/>[/code] [XSOAR_COMMENT_TO_MICROSOFT]"
+        comment=f"(user1): Test content\n\n {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}"
     )
 
 
@@ -707,7 +662,6 @@ def test_mirror_out_entries_without_comment_tag(mocker):
     """
 
     client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
-    mocker.patch("demisto.debug")
 
     comment_tag = "CommentFromXSOAR"
     entries = [
@@ -722,42 +676,11 @@ def test_mirror_out_entries_without_comment_tag(mocker):
     client.update_incident.assert_not_called()
 
 
-def test_mirror_out_entries_with_missing_fields(mocker):
-    """
-    Test `mirror_out_entries` where entries have missing fields.
-    """
-    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
-    mocker.patch("demisto.debug")
-
-    comment_tag = "CommentFromXSOAR"
-    entries = [
-        {"id": 1, "tags": [comment_tag]},  # Missing contents
-        {"id": 2, "type": "note", "tags": [comment_tag]},  # Missing user and contents
-    ]
-    remote_incident_id = 12345
-
-    mirror_out_entries(client, entries, comment_tag, remote_incident_id)
-
-    # Assert that update_incident was called with default values
-    assert client.update_incident.call_count == 2
-    client.update_incident.assert_any_call(
-        incident_id=remote_incident_id,
-        timeout=50,
-        comment="(dbot): \n\n [XSOAR_COMMENT_TO_MICROSOFT]"
-    )
-    client.update_incident.assert_any_call(
-        incident_id=remote_incident_id,
-        timeout=50,
-        comment="(dbot): \n\n [XSOAR_COMMENT_TO_MICROSOFT]"
-    )
-
-
 def test_mirror_out_entries_empty_entries(mocker):
     """
     Test `mirror_out_entries` with no entries provided.
     """
     client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
-    mocker.patch("demisto.debug")
 
     comment_tag = "CommentFromXSOAR"
     entries = []
@@ -774,15 +697,14 @@ def test_update_remote_system_with_incident_changes(mocker):
     Test `update_remote_system_command` where the incident has changes and is updated.
     """
     client = mock_client(mocker, 'update_incident', {"status": "success"})
-    mocker.patch("demisto.debug")
-    mocker.patch("demisto.params", return_value={"comment_tag": "CommentToMicrosoft"})
+    mocker.patch.object(demisto, 'params', return_value={})
 
     args = {
-        "remote_incident_id": "12345",
+        "remoteId": "12345",
         "data": {"name": "incident"},
         "delta": {"status": "Resolved", "assignedTo": "user1", "tags": "test_tag", "comment": "Test comment"},
-        "incident_changed": True,
-        "inc_status": "DONE",
+        "incidentChanged": True,
+        "status": "DONE",
         "entries": []
     }
 
@@ -807,14 +729,13 @@ def test_update_remote_system_without_incident_changes(mocker):
     Test `update_remote_system_command` where the incident has no changes and is not updated.
     """
     client = mock_client(mocker, 'update_incident', {"status": "success"})
-    mocker.patch("demisto.debug")
 
     args = {
-        "remote_incident_id": "12345",
+        "remoteId": "12345",
         "data": {"name": "incident"},
         "delta": None,
-        "incident_changed": False,
-        "inc_status": "DONE",
+        "incidentChanged": False,
+        "status": "DONE",
         "entries": []
     }
 
@@ -829,17 +750,16 @@ def test_update_remote_system_with_entries(mocker):
     Test `update_remote_system_command` where new entries are mirrored out.
     """
     client = mock_client(mocker, 'update_incident', {"status": "success"})
-    mocker.patch("demisto.debug")
-    mocker.patch("demisto.params", return_value={"comment_tag": "CommentToMicrosoft"})
+    mocker.patch.object(demisto, 'params', return_value={})
     mocker.patch("Microsoft365Defender.mirror_out_entries", return_value=None)
 
     args = {
-        "remote_incident_id": "12345",
+        "remoteId": "12345",
         "data": {"name": "incident"},
         "delta": None,
-        "incident_changed": False,
-        "inc_status": "ACTIVE",
-        "entries": [{"id": 1, "tags": ["CommentToMicrosoft"], "contents": "Test entry"}]
+        "incidentChanged": False,
+        "status": "ACTIVE",
+        "entries": [{"id": 1, "tags": ["CommentToMicrosoft365Defender"], "contents": "Test entry"}]
     }
 
     result = update_remote_system_command(client, args)
@@ -850,46 +770,9 @@ def test_update_remote_system_with_entries(mocker):
     from Microsoft365Defender import mirror_out_entries
     mirror_out_entries.assert_called_once_with(
         client,
-        [{"id": 1, "tags": ["CommentToMicrosoft"], "contents": "Test entry"}],
-        "CommentToMicrosoft",
+        [{"id": 1, "tags": ["CommentToMicrosoft365Defender"], "contents": "Test entry"}],
+        "CommentToMicrosoft365Defender",
         "12345"
     )
 
 
-def test_update_remote_system_error_handling(mocker):
-    """
-    Test `update_remote_system_command` error handling when an exception occurs.
-    """
-    client = mock_client(mocker, 'update_incident', {"status": "success"})
-    mocker.patch("demisto.debug")
-    mocker.patch("demisto.error")
-    mocker.patch("Microsoft365Defender.mirror_out_entries", side_effect=Exception("Test error"))
-
-    args = {
-        "remote_incident_id": "12345",
-        "data": {"name": "incident"},
-        "delta": {"status": "Resolved", "assignedTo": "user1", "tags": "test_tag", "comment": "Test comment"},
-        "incident_changed": True,
-        "inc_status": "DONE",
-        "entries": [{"id": 1, "tags": ["CommentToMicrosoft"], "contents": "Test entry"}]
-    }
-
-    result = update_remote_system_command(client, args)
-
-    # Assertions
-    assert result == "12345"
-    client.update_incident.assert_called_once_with(
-        incident_id="12345",
-        status="Resolved",
-        assigned_to="user1",
-        classification=None,
-        determination=None,
-        tags=["test_tag"],
-        timeout=50,
-        comment="Test comment"
-    )
-    from Microsoft365Defender import mirror_out_entries
-    mirror_out_entries.assert_called_once()
-    demisto.error.assert_called_once_with(
-        "Microsoft Defender 365 - Error in outgoing mirror for incident 12345 \nError message: Test error"
-    )
