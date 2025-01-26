@@ -804,7 +804,7 @@ def taxii_discovery_service() -> Response:
     """
 
     try:
-        demisto.debug(f"TS1: the taxii_discovery_service data {request.data}")
+        demisto.debug(f"TS1: the taxii_discovery_service data {request.data!r}")
         discovery_response = SERVER.get_discovery_service(get_message_from_xml(request.data), request.headers)
     except Exception as e:
         error = f'Could not perform the discovery request: {str(e)}'
@@ -823,7 +823,7 @@ def taxii_collection_management_service() -> Response:
     """
 
     try:
-        demisto.debug(f"TS1: the taxii_collection_management_service data {request.data}")
+        demisto.debug(f"TS1: the taxii_collection_management_service data {request.data!r}")
         collection_response = SERVER.get_collections(get_message_from_xml(request.data), request.headers)
     except Exception as e:
         error = f'Could not perform the collection management request: {str(e)}'
@@ -844,7 +844,7 @@ def taxii_poll_service() -> Response:
     try:
         taxiicontent_type = request.headers['X-TAXII-Content-Type']
         if taxiicontent_type == 'urn:taxii.mitre.org:message:xml:1.1':
-            demisto.debug(f"TS1: the taxii_poll_service data {request.data}")
+            demisto.debug(f"TS1: the taxii_poll_service data {request.data!r}")
             taxii_message = get_message_from_xml(request.data)
         else:
             raise ValueError('Invalid message')
