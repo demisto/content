@@ -2,7 +2,7 @@
     "name": "Threat Vault by Palo Alto Networks",
     "description": "Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.",
     "support": "xsoar",
-    "currentVersion": "2.0.16",
+    "currentVersion": "2.0.17",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

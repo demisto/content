@@ -5,6 +5,16 @@ args:
 - description: System IDs or names associated with the compute instance.
   isArray: true
   name: asmsystemids
+- defaultValue: asmserviceowner
+  description: The field of the alert or issue in which the owners should be stored.
+  name: ownerrelatedfield
+- defaultValue: "False"
+  description: False will use !setAlert, True will use !setIssue.
+  name: tenantcommand
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
 comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
   id: RankServiceOwners
@@ -22,3 +32,4 @@ fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 runonce: false
+engineinfo: {}
