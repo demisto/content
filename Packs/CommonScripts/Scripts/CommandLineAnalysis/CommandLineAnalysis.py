@@ -498,14 +498,12 @@ def extract_indicators(command_line: str) -> dict:
         if indicators and isinstance(indicators, list):
             contents = indicators[0].get('Contents', {})
 
-            # Parse JSON if 'Contents' is a JSON string
             if isinstance(contents, str):
                 try:
                     contents = json.loads(contents)
                 except json.JSONDecodeError:
                     return {}
 
-            # contents should now be a dict like {"IP": [...], "Domain": [...], ...}
             if isinstance(contents, dict):
                 for indicator_type, values in contents.items():
                     if isinstance(values, list):
