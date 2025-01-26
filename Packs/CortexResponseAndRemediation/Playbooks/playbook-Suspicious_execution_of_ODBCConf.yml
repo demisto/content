@@ -551,7 +551,7 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Permission-Management
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
@@ -712,3 +712,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+marketplaces: ["marketplacev2"]
