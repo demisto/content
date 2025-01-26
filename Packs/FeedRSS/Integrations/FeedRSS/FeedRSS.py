@@ -206,7 +206,7 @@ def main():
                         content_max_size=int(params.get('max_size', '45')),
                         read_timeout=int(params.get('read_timeout', '20')),
                         enrichment_excluded=(argToBoolean(params.get('enrichmentExcluded', False)) or
-                                             (params.get('tlp_color') == 'Red' and is_xsiam_or_xsoar_saas())),
+                                             (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas())),
                         headers=default_headers)
 
         if command == 'test-module':

@@ -538,7 +538,7 @@ def feed_main(feed_name, params=None, prefix=''):
     feed_tags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
     enrichment_excluded = (demisto.params().get('enrichmentExcluded', False) or
-                           (demisto.params().get('tlp_color') == 'Red' and is_xsiam_or_xsoar_saas()))
+                           (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':

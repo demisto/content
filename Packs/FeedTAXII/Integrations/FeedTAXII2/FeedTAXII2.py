@@ -311,7 +311,7 @@ def main():  # pragma: no cover
     default_api_root = params.get('default_api_root')
     update_custom_fields = params.get('update_custom_fields') or False
     enrichment_excluded = (argToBoolean(params.get('enrichmentExcluded', False)) or
-                           (params.get('tlp_color') == 'Red' and is_xsiam_or_xsoar_saas()))
+                           (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
 
     demisto.info(f'{objects_to_fetch=}')
 

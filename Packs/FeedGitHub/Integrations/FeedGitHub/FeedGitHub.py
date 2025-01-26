@@ -495,7 +495,7 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
     """
     limit = arg_to_number(args.get("limit"))
     enrichment_excluded = (argToBoolean(params.get('enrichmentExcluded', False)) or
-                           (params.get('tlp_color') == 'Red' and is_xsiam_or_xsoar_saas()))
+                           (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     indicators: list = []
     try:
         if limit and limit <= 0:
