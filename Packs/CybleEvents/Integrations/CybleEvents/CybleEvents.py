@@ -55,9 +55,9 @@ class Client(BaseClient):
             if resp.get('success') or False:
                 event_type_alias = resp['data']
             else:
-                demisto.error("Error trying to Fetch EventTypess {}".format(resp))
+                demisto.error(f"Error trying to Fetch EventTypess {resp}")
         except Exception as e:
-            demisto.error("Exception with Fetch EventTypes [{}]".format(e))
+            demisto.error(f"Exception with Fetch EventTypes [{e}]")
             raise e
 
         return event_type_alias
@@ -74,7 +74,7 @@ class Client(BaseClient):
         resp = {}
         token = params.get('token', '')
         payload = {
-            'token': '{}'.format(token),
+            'token': f'{token}',
             'from': arg_to_number(params.get('from', '0')),
             'limit': arg_to_number(params.get('limit', '50')),
             'start_date': '{}'.format(params.get('start_date')),
@@ -84,20 +84,20 @@ class Client(BaseClient):
         }
         files: List[Any] = []
         headers = {
-            "Cookie": "XSRF-TOKEN={}".format(token)
+            "Cookie": f"XSRF-TOKEN={token}"
         }
         url = urljoin(self._base_url, iocurl)
 
-        response = requests.request('{}'.format(str(method).upper()), url, headers=headers, data=payload, files=files)
+        response = requests.request(f'{str(method).upper()}', url, headers=headers, data=payload, files=files)
 
         try:
             resp = response.json()
             if resp.get('count'):
                 ioc_data = resp
             else:
-                demisto.error("Error trying to Fetch IOC's {}".format(resp))
+                demisto.error(f"Error trying to Fetch IOC's {resp}")
         except Exception as e:
-            raise Exception("Error: [{}] for response [{}]".format(e, resp))
+            raise Exception(f"Error: [{e}] for response [{resp}]")
 
         return ioc_data
 
@@ -125,7 +125,7 @@ class Client(BaseClient):
         }
 
         url = urljoin(self._base_url, eventurl)
-        response = requests.request('{}'.format(str(method).upper()), url, headers=headers, data=payload)
+        response = requests.request(f'{str(method).upper()}', url, headers=headers, data=payload)
 
         try:
             resp = response.json()
@@ -134,7 +134,7 @@ class Client(BaseClient):
             else:
                 raise Exception(resp)
         except Exception as e:
-            demisto.error("Exception with Fetch Events [{}]".format(e))
+            demisto.error(f"Exception with Fetch Events [{e}]")
             raise e
 
         return events_data
@@ -159,21 +159,21 @@ class Client(BaseClient):
         }
 
         url = urljoin(self._base_url, eventurl)
-        response = requests.request('{}'.format(str(method).upper()), url, headers=headers, data=payload)
+        response = requests.request(f'{str(method).upper()}', url, headers=headers, data=payload)
 
         resp = {}
         try:
             if response.status_code == 200:
                 resp = response.json()
         except Exception as e:
-            demisto.error('Exception while fetching the event details {}'.format(e))
+            demisto.error(f'Exception while fetching the event details {e}')
             raise e
 
         if response.status_code == 200 and (resp.get('success') or False):
             events_data.update(resp)
         else:
             raise Exception(
-                "Fetch event detail error (code:{}, reason:{})".format(response.status_code, response.reason))
+                f"Fetch event detail error (code:{response.status_code}, reason:{response.reason})")
 
 
 def get_test_response(client, method, token):
@@ -275,20 +275,20 @@ def format_incidents(resp, eventTypes):
             for e_type in list(alert_data.get('services', {}).keys()):
                 event_type = eventTypes.get(e_type)
                 alert_details = {
-                    "name": "Cyble Intel Alert on {}".format(event_type),
-                    "eventtype": "{}".format(e_type),
+                    "name": f"Cyble Intel Alert on {event_type}",
+                    "eventtype": f"{e_type}",
                     "severity": INCIDENT_SEVERITY.get(alert_priority.lower()),
-                    "occurred": "{}".format(alert_created_at),
-                    "eventid": "{}".format(alert_id),
-                    "cybleeventsname": "Incident of {} type".format(event_type),
-                    "cybleeventsbucket": "{}".format(alert_bucket_name),
-                    "cybleeventskeyword": "{}".format(alert_keyword),
-                    "cybleeventsalias": "{}".format(event_type)
+                    "occurred": f"{alert_created_at}",
+                    "eventid": f"{alert_id}",
+                    "cybleeventsname": f"Incident of {event_type} type",
+                    "cybleeventsbucket": f"{alert_bucket_name}",
+                    "cybleeventskeyword": f"{alert_keyword}",
+                    "cybleeventsalias": f"{event_type}"
                 }
                 events.append(alert_details)
         return events
     except Exception as e:
-        demisto.debug('Unable to format incidents, error: {}'.format(e))
+        demisto.debug(f'Unable to format incidents, error: {e}')
         return []
 
 
@@ -355,7 +355,7 @@ def fetch_alert_details(client, args):
     if not eventid:
         raise ValueError('Event ID not specified')
 
-    events_url = r'/api/v2/events/{}/{}'.format(eventtype, eventid)
+    events_url = fr'/api/v2/events/{eventtype}/{eventid}'
     results: Dict[str, Any] = {}
     params = {
         'token': args.get('token', None),
@@ -438,7 +438,7 @@ def fetch_incidents(client, method, token, maxResults):
                 incidents.append(inci)
 
         except Exception as e:
-            demisto.error("Error formating incidents, {}".format(e))
+            demisto.error(f"Error formating incidents, {e}")
 
         if last_run['event_pull_start_date'] < date.today().strftime("%Y/%m/%d"):
             last_run['event_pull_start_date'] = date.today().strftime("%Y/%m/%d")
@@ -482,9 +482,9 @@ def validate_input(args, is_iocs=False):
         if _start_date > _end_date:
             raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
 
-        return None
+        return
     except Exception as e:
-        demisto.error("Exception with validating inputs [{}]".format(e))
+        demisto.error(f"Exception with validating inputs [{e}]")
         raise e
 
 
