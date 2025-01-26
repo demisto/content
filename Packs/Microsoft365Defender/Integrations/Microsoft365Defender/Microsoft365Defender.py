@@ -912,6 +912,9 @@ def handle_incident_close_out_or_reactivation(delta: dict, incident_status: Inci
         if any(delta.get(key) for key in ['closeReason', 'closeNotes', 'closingUserId']):
             delta['status'] = 'Resolved'
             demisto.debug("Microsoft Defender 365 - Updating incident status to Resolved")
+            # this functionality awaits https://jira-dc.paloaltonetworks.com/browse/CRTX-151123?filter=-2
+            # once resolved the microsoft365classification field needs to be returned to the close form in order to get
+            # the classification and determination fields in delta.
             if delta.get('closeReason') == 'FalsePositive' and delta.get('classification') != 'FalsePositive':
                 delta.update({'classification': 'FalsePositive', 'determination': 'Other'})
                 demisto.debug("Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other")
