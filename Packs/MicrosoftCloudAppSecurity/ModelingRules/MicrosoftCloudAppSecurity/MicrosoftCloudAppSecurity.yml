@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: microsoft_defender_cloud_apps_ModelingRule
+id: Microsoft_Defender_Cloud_Apps_ModelingRule
 name: Microsoft Defender Cloud Apps Modeling Rule
 rules: ''
 schema: ''
