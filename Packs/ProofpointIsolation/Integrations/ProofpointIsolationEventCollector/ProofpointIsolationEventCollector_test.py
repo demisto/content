@@ -22,8 +22,11 @@ def test_get_and_reorganize_events(mocker):
     """
     Given: A mock Proofpoint client with a set of raw events and a set of event IDs.
     When: Reorganizing events based on date and excluding the last event ID.
-    Then: Ensure the events are sorted in chronological order,the number of reorganized events matches the expected count,
-     and the last event is correctly excluded from the result.
+    Then:
+        - Ensure the events are sorted in chronological order.
+        - The number of reorganized events matches the expected count.
+        - The last event is excluded because it is in ids set.
+
     """
     from ProofpointIsolationEventCollector import get_and_reorganize_events, hash_user_name_and_url
     mocked_events = util_load_json('test_data/get_events_raw_response.json')

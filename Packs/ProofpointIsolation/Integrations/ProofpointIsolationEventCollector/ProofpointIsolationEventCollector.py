@@ -106,12 +106,12 @@ def remove_duplicate_events(start_date, ids: set, events: list) -> None:
     Args:
         start_date (str): The date to check against, in the same format as the event dates.
         ids (set): A set of hashed identifiers for detecting duplicates.
-        events (list): A list of event dictionaries to process.
+        events (list): A list of sorted event dictionaries to process.
     """
     events_copy = events.copy()
     for event in events_copy:
-        current_date = get_and_parse_date(event)
-        if current_date != start_date:
+        event_date = get_and_parse_date(event)
+        if event_date != start_date:
             break
         hashed_id = hash_user_name_and_url(event)
         if hashed_id in ids:
@@ -165,39 +165,39 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     output: list = []
 
     if get_events_args:  # handle get_event command
-        start = get_events_args.get('start_date', '')
+        event_date = get_events_args.get('start_date', '')
         end = get_events_args.get('end_date', '')
         ids: set = set()
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
-        start = last_run.get('start_date', '')
-        if not start:
-            start = get_current_time().strftime(DATE_FORMAT)
+        event_date = last_run.get('start_date', '')
+        if not event_date:
+            event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
         ids = set(last_run.get('ids', []))
 
-    current_start_date = start
+    current_start_date = event_date
     while True:
-        events = get_and_reorganize_events(client, start, end, ids)
+        events = get_and_reorganize_events(client, event_date, end, ids)
         if not events:
             break
 
         for event in events:
             event['_TIME'] = event.get('date')
             output.append(event)
-            start = get_and_parse_date(event)
+            event_date = get_and_parse_date(event)
 
-            if start != current_start_date:
-                current_start_date = start
+            if event_date != current_start_date:
+                current_start_date = event_date
                 ids = set()
             hashed_id = hash_user_name_and_url(event)
             ids.add(hashed_id)
 
             if len(output) >= fetch_limit:
-                new_last_run = {'start_date': start, 'ids': list(ids)}
+                new_last_run = {'start_date': event_date, 'ids': list(ids)}
                 return output, new_last_run
 
-    new_last_run = {'start_date': start, 'ids': list(ids)}
+    new_last_run = {'start_date': event_date, 'ids': list(ids)}
     return output, new_last_run
 
 
@@ -263,11 +263,11 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif command == 'fetch-events':
             events, new_last_run_dict = fetch_events(client, fetch_limit)
-            demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
             if events:
-                demisto.debug(f'Sending {len(events)} events to Cortex XSIAM')
+                demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run_dict)
+            demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == 'proofpoint-isolation-get-events':
             events, command_results = get_events(client, args)
             if events and argToBoolean(args.get('should_push_events')):
