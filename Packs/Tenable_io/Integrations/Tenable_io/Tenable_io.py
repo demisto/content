@@ -1733,6 +1733,7 @@ def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_d
 
 ''' FETCH COMMANDS '''
 
+
 def set_index_audit_logs(dt_now: datetime, dt_start_date: datetime, audit_logs: List[dict], last_index_fetched: int) -> int:
     """
     This function set the new index_audit_logs by the following logic:
@@ -1906,7 +1907,7 @@ def parse_vulnerabilities(vulns):
     for vuln in vulns:
         vuln_str = json.dumps(vuln)
         if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(sys.getsizeof(vuln_str))))
+            demisto.debug(f"found object with size: {sys.getsizeof(sys.getsizeof(vuln_str))}")
             if vuln.get('output'):
                 demisto.debug("replacing output key")
                 vuln['output'] = ""
