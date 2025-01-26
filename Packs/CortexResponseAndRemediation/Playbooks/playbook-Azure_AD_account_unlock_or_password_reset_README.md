@@ -8,7 +8,7 @@
 
 **Investigation**:
 - **Check IP Reputation**:
-  - Analyze the reputation of IP address related to the alert.
+  - Analyze the reputation of the IP address related to the alert.
 - **Check for Azure Alerts**:
   - Extract recent Azure security alerts for the user.
 - **Check if User is Risky**:
@@ -16,8 +16,8 @@
   - Investigate reasons behind any identified risks, including recent detections.
 
 **Containment**:
-- Check if feature sum is grater than 2, if yes, continue to revoke user's active sessions to ensure immediate containment.
-if no, continue to check investigation findings.
+- Check if feature sum is greater than 2. If yes, continue to revoke user's active sessions to ensure immediate containment.
+If no, continue to check investigation findings.
 - Provide a manual task for an analyst to review the findings and decide the next steps.
 - Possible actions:
   - Disable the target user.
