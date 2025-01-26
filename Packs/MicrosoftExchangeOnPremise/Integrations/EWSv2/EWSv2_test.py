@@ -868,34 +868,37 @@ def test_get_message_for_body_type_no_body_type_with_html_body(handle_inline_ima
     assert result[0] == HTMLBody(html_body)
 
 
-@pytest.mark.parametrize(
-    "handle_inline_image, result",
-    [
-        pytest.param(
-            True,
-            '<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>',
-            id="handle_inline_image is True"
-        ),
-        pytest.param(
-            False,
-            '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>',
-            id="handle_inline_image is False"
-        )
-    ]
-)
-def test_get_message_for_body_type_no_body_type_with_html_body_and_image(
-    mocker: MockerFixture,
-    handle_inline_image: bool,
-    result: str
-):
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image_and_handle_image_is_true(mocker: MockerFixture):
     from exchangelib import FileAttachment
     mocker.patch.object(uuid, 'uuid4', return_value='123456')
     body = "This is a plain text body"
     html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
-    result = get_message_for_body_type(body, None, html_body, handle_inline_image)
+    result = get_message_for_body_type(body, None, html_body, True)
     assert isinstance(result[0], HTMLBody)
     assert isinstance(result[1][0], FileAttachment)
-    assert result[0] == HTMLBody(result)
+    assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>')
+
+
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image_and_handle_image_is_false():
+    """Test get_message_for_body_type with no body type, HTML body, and image without handle.
+
+    Given:
+        - A plain text body and an HTML body with an embedded image.
+
+    When:
+        - Calling get_message_for_body_type with no body type and handle set to False.
+
+    Then:
+        - Ensure the result is an instance of HTMLBody.
+        - Ensure the result is a list.
+        - Ensure the HTML body content matches the expected value.
+    """
+    body = "This is a plain text body"
+    html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+    result = get_message_for_body_type(body, None, html_body, False)
+    assert isinstance(result[0], HTMLBody)
+    assert isinstance(result[1], list)
+    assert result[0] == HTMLBody(html_body)
 
 
 def test_get_message_for_body_type_no_body_type_with_no_html_body():
