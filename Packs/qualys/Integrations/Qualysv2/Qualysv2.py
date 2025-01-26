@@ -2987,7 +2987,7 @@ def get_vulnerabilities(client: Client, since_datetime: str | None = None, detec
 
     elif detection_qids is not None:
         vulnerabilities = []
-        for qids_batch in batch(detection_qids, batch_size=QIDS_BATCH_SIZE):
+        for qids_batch in batch(iterable=list(detection_qids), batch_size=QIDS_BATCH_SIZE):
             host_list_detections = client.get_vulnerabilities(detection_qids=",".join(qids_batch))
             vulnerabilities_batch = handle_vulnerabilities_result(host_list_detections) or []
             vulnerabilities.extend(vulnerabilities_batch)
