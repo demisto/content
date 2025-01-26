@@ -18,7 +18,7 @@ import demistomock as demisto
 from CommonServerPython import EntryType, DemistoException
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
-    fetch_modified_incident, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
+    fetch_modified_incident, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR, get_remote_data_command
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
@@ -509,3 +509,45 @@ def test_fetch_modified_incident(mocker):
     assert incident["Devices"][0] == {'device name': 'deviceDnsName', 'risk level': 'Informational',
                                       'tags': 'new test,test add tag,testing123'}
     assert mock_meta_data.called  # Ensure _get_meta_data_for_incident was called
+
+
+
+
+
+def test_get_remote_data_command_success(mocker):
+    """
+    Test a successful run of the get_remote_data_command function.
+    """
+
+    mocker.patch("demisto.params", return_value={
+        "comment_tag_from_microsoft365defender": "CommentFromMicrosoft365Defender",
+        "close_incident": True
+    })
+
+    mocker.patch(
+        "Microsoft365Defender.fetch_modified_incident",
+        return_value={
+            "incidentId": 12345,
+            "status": "Active",
+            "comments": [{"comment": "Test comment", "timestamp": "2025-01-01T12:01:00Z"}],
+            "alerts": [{"alertId": "alert1"}],
+        }
+    )
+
+    mocker.patch(
+        "Microsoft365Defender.get_incident_entries",
+        return_value=[
+            {"Type": 1, "Contents": "Test entry"}
+        ]
+    )
+
+    args = {
+        "remote_incident_id": "12345",
+        "last_update": "2025-01-01T12:00:00Z"
+    }
+
+    response = get_remote_data_command(MockMicrosoft365DefenderClient(mocker), args)
+
+    assert response.mirrored_object["incidentId"] == 12345
+    assert len(response.entries) == 1
+    assert response.entries[0]["Contents"] == "Test entry"
