@@ -18,7 +18,7 @@ import demistomock as demisto
 from CommonServerPython import EntryType, DemistoException
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
-    fetch_modified_incident
+    fetch_modified_incident, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
@@ -367,6 +367,43 @@ def test_get_entries_for_comments_empty_comments():
     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
 
     assert len(result) == 0
+
+
+def mock_get_modified_incidents_close_or_reopen_entries(mirrored_objects, close_incident):
+    return [{"Type": 1, "Contents": "Mock close/reopen entry"}]
+
+
+def mock_get_entries_for_comments(comments, last_update, comment_tag):
+    return [{"Type": 1, "Contents": "Mock comment entry"}]
+
+
+@pytest.fixture
+def mock_dependencies(mocker):
+    mocker.patch(
+        "Microsoft365Defender.get_modified_incidents_close_or_repopen_entries",
+        side_effect=mock_get_modified_incidents_close_or_reopen_entries,
+    )
+    mocker.patch(
+        "Microsoft365Defender.get_entries_for_comments",
+        side_effect=mock_get_entries_for_comments,
+    )
+
+
+def test_get_incident_entries(mock_dependencies):
+    """
+    Test that the function calls both helper functions and combines their outputs into a single list.
+    """
+    mirrored_object = {"id": "12345", "comments": [{"text": "Test comment", "timestamp": "2025-01-25T10:00:00Z"}]}
+    last_update = datetime.strptime("2025-01-20T10:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
+    close_incident = True
+
+    from Microsoft365Defender import get_incident_entries
+
+    entries = get_incident_entries(mirrored_object, last_update, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR, close_incident)
+
+    assert len(entries) == 2  # Should combine outputs from both mocked functions
+    assert {"Type": 1, "Contents": "Mock close/reopen entry"} in entries
+    assert {"Type": 1, "Contents": "Mock comment entry"} in entries
 
 
 def test_get_determination_value():
