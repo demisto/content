@@ -1475,7 +1475,6 @@ Retrieves items by item ID and uploads it's content as eml file.
 ***
 Sends an email using EWS.
 
-
 #### Base Command
 
 `send-mail`
@@ -1491,18 +1490,17 @@ Sends an email using EWS.
 | replyTo | The email address specified in the 'reply to' field. | Optional | 
 | body | The contents (body) of the email to send. This argument overrides the "htmlBody" argument if the "bodyType" argument is Text. | Optional | 
 | htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument if the "bodyType" argument is HTML. | Optional | 
+| bodyType | Whether message response body type is Text, or HTML. Possible values are: Text, HTML. Default is Text. | Optional | 
 | attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
 | attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | raw_message | Raw email message from MimeContent type. | Optional | 
-| from | The email address from which to reply. | Optional | 
-| bodyType | Whether message response body type is Text or HTML. Default is Text. | Required | 
-
+| from | The email address from which to send mail. | Optional | 
+| handle_inline_image |  Possible values are: True, False. Default is True. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### reply-mail
 
 ***
