@@ -141,7 +141,7 @@ def load_old_model(model_data: str) -> Model:
     '''Update the model to the new version'''
     import warnings
     warnings.filterwarnings("ignore", module='sklearn')
-    
+
     old_import = dill._dill._import_module
     dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
     model = decode_model_data(model_data)
@@ -160,6 +160,19 @@ def update_old_model_with_new(old_model: Model, new_model: Model):
         'image'].named_steps.trans.top_domains = old_model.top_domains
     new_model.clf.named_steps.preprocessor.named_transformers_[
         'url'].named_steps.trans.d_top_domains = old_model.top_domains
+
+    new_model.major = MAJOR_VERSION
+    new_model.minor = old_model.minor
+
+
+def update_model(model_data: str, major_version: str) -> Model:
+    '''Align models trained with previous docker images to the new image.'''
+    demisto.debug(f'Model with major version {major_version} found, updating...')
+    old_model = load_old_model(model_data)
+    model = load_model_from_docker()
+    update_old_model_with_new(old_model, model)
+    save_model_in_demisto(model)
+    return model
 
 
 def load_demisto_model() -> Model:
@@ -197,7 +210,7 @@ def load_ootb(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> bytes:
 def load_model_from_docker(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> Model:
     with open(path, 'rb') as f:
         return cast(Model, dill.load(f))  # guardrails-disable-line
-    
+
 
 
 def load_oob_model(path: str) -> str:
@@ -640,7 +653,7 @@ def save_model_in_demisto(model: Model):
                                                    'modelHidden': True,
                                                    'modelType': 'url_phishing',
                                                    'modelExtraInfo': {
-                                                       OOB_MAJOR_VERSION_INFO_KEY: MAJOR_VERSION,
+                                                       OOB_MAJOR_VERSION_INFO_KEY: model.major,
                                                        OOB_MINOR_VERSION_INFO_KEY: model.minor}})
     if is_error(res):
         raise DemistoException(get_error(res))
@@ -711,6 +724,7 @@ def get_urls_to_run(
         return_results(CommandResults(
             readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_urls}'))
 
+
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_results(MSG_NO_URL_GIVEN)
@@ -720,22 +734,6 @@ def get_urls_to_run(
     if debug:
         return_results(urls)
     return urls, msg_list
-
-
-def update_model_docker_from_model(model_docker: Model, model: Model) -> Model:
-    model_docker.logos_dict = model.logos_dict
-    model_docker.top_domains = model.top_domains
-
-    model_docker.clf.named_steps.preprocessor.named_transformers_[
-        'image'].named_steps.trans.logo_dict = model.logos_dict
-
-    model_docker.clf.named_steps.preprocessor.named_transformers_[
-        'url'].named_steps.trans.d_top_domains = model.top_domains
-
-    model_docker.clf.named_steps.preprocessor.named_transformers_[
-        'image'].named_steps.trans.top_domains = model.logos_dict
-
-    return model_docker
 
 
 def update_and_load_model(
@@ -752,11 +750,8 @@ def update_and_load_model(
             demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         msg_list.append(load_oob_model(OUT_OF_THE_BOX_MODEL_PATH))
         model = load_demisto_model()
-    elif demisto_major_version == 1:  # upgrade with old versions
-        old_model = load_old_model(model_data)
-        model = load_ootb()
-        update_old_model_with_new(old_model, model)
-        save_model_in_demisto(model)
+    elif demisto_major_version <= MAJOR_VERSION:  # upgrade new model with old
+        model = update_model(model_data, demisto_major_version)
     elif demisto_major_version == MAJOR_VERSION:
         model = decode_model_data(model_data)
         msg_list.append(MSG_NO_ACTION_ON_MODEL)
@@ -767,6 +762,7 @@ def update_and_load_model(
 
 
 def main():
+    msg_list: list = []
     try:
         args = demisto.args()
         reset_model = args.get('resetModel') == 'True'
@@ -782,14 +778,15 @@ def main():
         )
         protocol = demisto.args().get('defaultRequestProtocol', 'HTTP').lower()
 
-        msg_list: list = []
 
         # Check existing version of the model in demisto
         exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
-
+        demisto.debug(f'{(exist, demisto_major_version, demisto_minor_version, bool(model_data))=}')
+ 
         # Update model if necessary and load the model
         model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version,
                                                 demisto_minor_version, model_data)
+        demisto.debug(f'{model.major=}')
 
         # Get all the URLs on which we will run the model
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
@@ -804,8 +801,12 @@ def main():
                     return_results(msg_list)
                 return general_summary, detailed_summary, msg_list
             return_results('All URLs failed to be rasterized. Skipping prediction.')
+        
     except Exception as e:
         return_error(f'Failed to execute URL Phishing script. Error: {e}')
+    
+    finally:
+        demisto.debug(f'{msg_list=}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
