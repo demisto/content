@@ -17,7 +17,7 @@ import chardet
 import dateparser
 import exchangelib
 from exchangelib import (
-    IMPERSONATION,
+    DELEGATE,
     OAUTH2,
     Body,
     EWSDateTime,
@@ -328,7 +328,7 @@ def get_client_from_params(params: dict) -> EWSClient:
     elif not tenant_id:
         raise Exception('Token / Tenant ID must be provided.')
 
-    access_type = params.get('access_type', IMPERSONATION) or IMPERSONATION
+    access_type = params.get('access_type', DELEGATE) or DELEGATE
     access_type = (access_type[0] if isinstance(access_type, list) else access_type).lower()
     default_target_mailbox = params.get('default_target_mailbox', '')
     max_fetch = min(int(params.get('max_fetch', MAX_INCIDENTS_PER_FETCH)), MAX_INCIDENTS_PER_FETCH)
@@ -2355,6 +2355,10 @@ def sub_main():  # pragma: no cover
     if params.get('upn_mailbox') and not (args.get('target_mailbox')):
         params['default_target_mailbox'] = params.get('upn_mailbox', '')
 
+    if params.get('access_type') == 'Impersonation':
+        demisto.info(
+            'Note: The access type Impersonation you are using is deprecated. For more information, '
+            'please refer to the integration description.')
     try:
         client = get_client_from_params(params)
         start_logging()
