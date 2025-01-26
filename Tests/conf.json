@@ -3545,7 +3545,8 @@
         },
         {
             "integrations": "SaasSecurity",
-            "playbookID": "SaasSecurity-Test"
+            "playbookID": "SaasSecurity-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Recorded Future Feed",

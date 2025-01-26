@@ -414,8 +414,10 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
-            if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '').lower()}:
-                return team_member.get('id')
+            member_properties = [team_member.get('email', '').lower(), team_member.get(
+                'userPrincipalName', '').lower(), team_member.get('name', '').lower()]
+            if requested_team_member.lower() in [value.lower() for value in member_properties]:
+                return team_member.get("id")
 
     raise ValueError(f'Team member {requested_team_member} was not found')
 

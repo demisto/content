@@ -25,7 +25,7 @@ configuration:
   hidden: true
   required: false
 - display: Authentication Type
-  additionalinfo: |- 
+  additionalinfo: |-
     When switching from the 'Client Credentials Flow' to the 'Authorization Code Flow' do as follow: Save the instance, run the 'microsoft-teams-generate-login-url' command and follow the instructions mentioned there. Once done, test the validity of your instance by running the 'microsoft-teams-auth-test' command.
     When switching from the 'Authorization Code Flow' to the 'Client Credentials Flow', test the validity of the instance by clicking the 'Test' button.
   name: auth_type
@@ -135,6 +135,7 @@ configuration:
   name: new_incident_welcome_message
   required: false
   type: 0
+  section: Connect
 - display: Long running instance
   name: longRunning
   type: 8
@@ -721,22 +722,22 @@ script:
     arguments: []
   - description: |-
       Retrieves the API permissions associated with the used graph access token. 
-      
+
       Note: Use this command if you encounter insufficient permissions error when attempting to execute an integration command.
        Compare the permissions list obtained for the token with the permissions required for the desired command (can be found in the integration documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset).
     name: microsoft-teams-token-permissions-list
     arguments: []
   - description: |-
       Generates the messaging endpoint, based on the server URL, the server version, and the instance configurations. 
-      
+
       Note: The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the prerequisites of the integration's setup. For more information, see - https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams.
     name: microsoft-teams-create-messaging-endpoint
     arguments:
-      - description: |-
-         If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`.
-         For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.   
-        name: engine_url
-  dockerimage: demisto/teams:1.0.0.116912
+    - description: |-
+        If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`.
+        For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.   
+      name: engine_url
+  dockerimage: demisto/teams:1.0.0.1860894
   longRunning: true
   longRunningPort: true
   script: ''
