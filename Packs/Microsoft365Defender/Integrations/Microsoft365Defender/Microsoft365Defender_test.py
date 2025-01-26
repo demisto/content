@@ -15,11 +15,11 @@ from unittest.mock import patch
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import EntryType, DemistoException, GetMappingFieldsResponse, SchemeTypeMapping
+from CommonServerPython import EntryType, DemistoException, GetMappingFieldsResponse, SchemeTypeMapping, IncidentStatus
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
     fetch_modified_incident, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR, get_remote_data_command, \
-    get_mapping_fields_command, OUTGOING_MIRRORED_FIELDS
+    get_mapping_fields_command, OUTGOING_MIRRORED_FIELDS, handle_incident_close_out_or_reactivation
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
@@ -570,3 +570,93 @@ def test_get_mapping_fields_command():
     for field_name, field_description in OUTGOING_MIRRORED_FIELDS.items():
         assert field_name in incident_mapping.fields
         assert incident_mapping.fields[field_name] == field_description
+
+
+def test_handle_incident_close_out_or_reactivation_close(mocker):
+    """
+    Test that the incident is properly closed when 'close_out' is enabled and the status is DONE.
+    """
+    mocker.patch("demisto.params", return_value={"close_out": True})
+    delta = {
+        "closeReason": "FalsePositive",
+        "closeNotes": "This was a false positive alert",
+        "closingUserId": "user123"
+    }
+    incident_status = IncidentStatus.DONE
+
+    handle_incident_close_out_or_reactivation(delta, incident_status)
+
+    assert delta["status"] == "Resolved"
+    assert delta["classification"] == "FalsePositive"
+    assert delta["determination"] == "Other"
+
+
+def test_handle_incident_close_out_or_reactivation_close_other(mocker):
+    """
+    Test that the incident is properly closed with 'Other' or 'Duplicate' reasons.
+    """
+    mocker.patch("demisto.params", return_value={"close_out": True})
+    delta = {
+        "closeReason": "Other",
+        "closeNotes": "General closure",
+        "closingUserId": "user123"
+    }
+    incident_status = IncidentStatus.DONE
+
+    handle_incident_close_out_or_reactivation(delta, incident_status)
+
+    assert delta["status"] == "Resolved"
+    assert delta["classification"] == "Unknown"
+    assert delta["determination"] == "NotAvailable"
+
+
+def test_handle_incident_close_out_or_reactivation_reopen(mocker):
+    """
+    Test that the incident is reopened when 'closeReason', 'closeNotes', or 'closingUserId' are empty.
+    """
+    mocker.patch("demisto.params", return_value={"close_out": True})
+    delta = {
+        "closeReason": "",
+        "closeNotes": "",
+        "closingUserId": ""
+    }
+    incident_status = IncidentStatus.ACTIVE
+
+    handle_incident_close_out_or_reactivation(delta, incident_status)
+
+    assert delta["status"] == "Active"
+
+
+def test_handle_incident_close_out_or_reactivation_close_out_disabled(mocker):
+    """
+    Test that the function exits early when 'close_out' is disabled.
+    """
+    mocker.patch("demisto.params", return_value={"close_out": False})
+    delta = {
+        "closeReason": "FalsePositive",
+        "closeNotes": "This was a false positive alert",
+        "closingUserId": "user123"
+    }
+    incident_status = IncidentStatus.DONE
+
+    handle_incident_close_out_or_reactivation(delta, incident_status)
+
+    # Delta should remain unchanged
+    assert "status" not in delta
+    assert "classification" not in delta
+    assert "determination" not in delta
+
+
+def test_handle_incident_close_out_or_reactivation_no_delta_changes(mocker):
+    """
+    Test that the function exits early when no relevant keys in the delta are present.
+    """
+    mocker.patch("demisto.params", return_value={"close_out": True})
+    delta = {}
+    incident_status = IncidentStatus.DONE
+
+    handle_incident_close_out_or_reactivation(delta, incident_status)
+
+    assert "status" not in delta
+    assert "classification" not in delta
+    assert "determination" not in delta
