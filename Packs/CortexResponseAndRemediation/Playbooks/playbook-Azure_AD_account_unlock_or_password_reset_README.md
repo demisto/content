@@ -42,7 +42,10 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* Cortex Core - Investigation and Response
+* Azure Risky Users
+* Microsoft 365 Defender
+* Microsoft Graph User
 
 ### Scripts
 
