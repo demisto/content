@@ -1,6 +1,6 @@
 {
     "name": "Proofpoint Isolation",
-    "description": "This pack provides integration and modeling rules for Proofpoint Isolation",
+    "description": "The Proofpoint Isolation pack enables automatic fetching and modeling rules for security events, such as Browser and Email Isolation logs.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -11,7 +11,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "event collector",
+        "Browser isolation",
+        "RBI"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
