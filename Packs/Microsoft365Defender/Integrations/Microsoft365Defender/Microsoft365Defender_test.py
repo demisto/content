@@ -315,33 +315,33 @@ def test_get_modified_incidents_empty_list():
     assert result == []
 
 
-# def test_get_entries_for_comments():
-#     from Microsoft365Defender import get_entries_for_comments
-#
-#     comments = [
-#         {"comment": "Old comment", "createdBy": "User1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
-#         {"comment": "New comment", "createdBy": "User2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
-#     ]
-#     last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
-#     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
-#
-#     assert len(result) == 1
-#     assert result[0]["Contents"].startswith("Created By: User2@gmail.com")
-#     assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
+def test_get_entries_for_comments():
+    from Microsoft365Defender import get_entries_for_comments
+
+    comments = [
+        {"comment": "Old comment", "createdBy": "fake1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
+        {"comment": "New comment", "createdBy": "fake2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+    ]
+    last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
+
+    assert len(result) == 1
+    assert result[0]["Contents"].startswith("Created By: fake2@gmail.com")
+    assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
 
 
-# def test_get_entries_for_comments_ignores_mirrored_comments():
-#     from Microsoft365Defender import get_entries_for_comments, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
-#
-#     comments = [
-#         {"comment": f"Ignored comment {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}",
-#          "createdBy": "User1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
-#     ]
-#
-#     last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
-#     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
-#
-#     assert len(result) == 0
+def test_get_entries_for_comments_ignores_mirrored_comments():
+    from Microsoft365Defender import get_entries_for_comments, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
+
+    comments = [
+        {"comment": f"Ignored comment {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}",
+         "createdBy": "fake1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+    ]
+
+    last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
+    result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
+
+    assert len(result) == 0
 
 
 def test_get_entries_for_comments_empty_comments():
@@ -764,7 +764,6 @@ def test_update_remote_system_with_entries(mocker):
 
     result = update_remote_system_command(client, args)
 
-    # Assertions
     assert result == "12345"
     client.update_incident.assert_not_called()
     from Microsoft365Defender import mirror_out_entries
