@@ -76,7 +76,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 
 ## Notes
 
-When configuring the integration instance, checking the **Fetch assets and vulnerabilities** checkbox fetches assets and vulnerabilities from the last 90 days only. To fetch vulnerabilities by unique QIDs relevant to the assets regardless of the vulnerability modified time, check the **Fetch all vulnerabilities for assets** checkbox.
+When configuring the integration instance, selecting the "Fetch by last modified date" option in the **Fetch Vulnerabilities Behavior** dropdown fetches assets and vulnerabilities from the last 90 days only. To fetch vulnerabilities by unique QIDs relevant to the assets regardless of the vulnerability modified time, choose the "Fetch by unique QIDs of assets" option.
 
 ## Asset Tag Commands
 
