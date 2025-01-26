@@ -1126,12 +1126,7 @@ class TestClientClass:
         assert client_http_request.called_once
         assert http_request_kwargs["method"] == "POST"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, 'knowledge_base/vuln/?action=list')
-        assert http_request_kwargs["params"] == {
-            # "host_metadata": "all",
-            # "show_cloud_tags": 1,
-            "ids": asset_qids,
-            "last_modified_after": since_datetime,
-        }
+        assert http_request_kwargs["params"] == {'ids': asset_qids, 'last_modified_after': since_datetime}
 
 
 class TestInputValidations:

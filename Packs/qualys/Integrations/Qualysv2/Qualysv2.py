@@ -1736,12 +1736,7 @@ class Client(BaseClient):
         """
         self._headers.update({"Content-Type": 'application/json'})
 
-        params: dict[str, Any] = assign_params(
-            # host_metadata='all',  # includes more fields in response
-            # show_cloud_tags=1,
-            ids=detection_qids,
-            last_modified_after=since_datetime,
-        )
+        params: dict[str, Any] = assign_params(ids=detection_qids, last_modified_after=since_datetime)
 
         response = self._http_request(
             method='POST',
