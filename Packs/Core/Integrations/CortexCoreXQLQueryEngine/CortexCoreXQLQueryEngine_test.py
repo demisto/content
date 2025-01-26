@@ -1085,7 +1085,7 @@ def test_get_xql_quota_is_core_available_false(mock_http_request):
          " 8.7.0-1247804.")
     assert e.value.message == ("Failed due to one of the following options: The integration is cloned, "
                                "please use only the built-in version since it can not be cloned."
-                               " OR the Server version of the tenant is below"
+                               " OR the Server version of the tenant is lower than"
                                " 8.7.0-1247804.")
 
 
@@ -1110,7 +1110,7 @@ def test_start_xql_query_is_core_available_false(mock_api_call):
         CLIENT.start_xql_query({})
     assert e.value.message == ("Failed due to one of the following options: The integration is cloned, "
                                "please use only the built-in version since it can not be cloned."
-                               " OR the Server version of the tenant is below"
+                               " OR the Server version of the tenant is lower than"
                                " 8.7.0-1247804.")
 
 
@@ -1135,7 +1135,7 @@ def test_get_xql_query_results_is_core_available_false(mock_api_call):
         CLIENT.get_xql_query_results({})
     assert e.value.message == ("Failed due to one of the following options: The integration is cloned, "
                                "please use only the built-in version since it can not be cloned."
-                               " OR the Server version of the tenant is below"
+                               " OR the Server version of the tenant is lower than"
                                " 8.7.0-1247804.")
 
 
