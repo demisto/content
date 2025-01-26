@@ -15,10 +15,11 @@ from unittest.mock import patch
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import EntryType, DemistoException
+from CommonServerPython import EntryType, DemistoException, GetMappingFieldsResponse, SchemeTypeMapping
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
-    fetch_modified_incident, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR, get_remote_data_command
+    fetch_modified_incident, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR, get_remote_data_command, \
+    get_mapping_fields_command, OUTGOING_MIRRORED_FIELDS
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
@@ -511,9 +512,6 @@ def test_fetch_modified_incident(mocker):
     assert mock_meta_data.called  # Ensure _get_meta_data_for_incident was called
 
 
-
-
-
 def test_get_remote_data_command_success(mocker):
     """
     Test a successful run of the get_remote_data_command function.
@@ -551,3 +549,24 @@ def test_get_remote_data_command_success(mocker):
     assert response.mirrored_object["incidentId"] == 12345
     assert len(response.entries) == 1
     assert response.entries[0]["Contents"] == "Test entry"
+
+
+def test_get_mapping_fields_command():
+    """
+    Test the `get_mapping_fields_command` function to verify the mapping fields are returned correctly.
+    """
+    response = get_mapping_fields_command()
+
+    assert isinstance(response, GetMappingFieldsResponse)
+
+    scheme_types = response.scheme_types
+    assert len(scheme_types) == 1  # Only one incident type is defined
+    incident_mapping = scheme_types[0]
+
+    assert isinstance(incident_mapping, SchemeTypeMapping)
+    assert incident_mapping.type_name == 'Microsoft 365 Defender Incident'
+    assert len(incident_mapping.fields) == len(OUTGOING_MIRRORED_FIELDS)
+
+    for field_name, field_description in OUTGOING_MIRRORED_FIELDS.items():
+        assert field_name in incident_mapping.fields
+        assert incident_mapping.fields[field_name] == field_description
