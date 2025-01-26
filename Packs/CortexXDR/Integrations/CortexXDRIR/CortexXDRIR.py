@@ -626,7 +626,8 @@ def get_incident_extra_data_command(client, args):
         raise DemistoException(f'Incident {incident_id} is not found')
     if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
-    if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
+    alert_count = raw_incident.get('incident', {}).get('alert_count')
+    if ALERTS_LIMIT_PER_INCIDENTS < alert_count < alerts_limit:
         demisto.debug(f'for incident:{incident_id} using the old call since "\
             "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
             "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
@@ -943,10 +944,12 @@ def get_remote_data_command(client, args):
         # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
         return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
 
-        incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000,
-                                                                 "return_only_updated_incident": return_only_updated_incident,
-                                                                 "last_update": remote_args.last_update})
+        incident_data = get_incident_extra_data_command(client, {
+            "incident_id": remote_args.remote_incident_id,
+            "alerts_limit": int(demisto.params().get('max_alerts_per_incident', 1000)),
+            "return_only_updated_incident": return_only_updated_incident,
+            "last_update": remote_args.last_update
+        })
         if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
@@ -1091,7 +1094,7 @@ def update_related_alerts(client: Client, args: dict):
 
 
 def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool,
-                    last_run: dict, max_fetch: int = 10, statuses: list = [],
+                    last_run: dict, max_fetch: int = 10, max_alerts_per_incident: int = 50, statuses: list = [],
                     starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
@@ -1144,7 +1147,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
-            if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
+            if ALERTS_LIMIT_PER_INCIDENTS < alert_count < max_alerts_per_incident:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
                               "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
@@ -1349,6 +1352,11 @@ def main():  # pragma: no cover
     except ValueError as e:
         demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
         max_fetch = 10
+    try:
+        max_alerts_per_incident = int(params.get('max_alerts_per_incident', 50))
+    except ValueError as e:
+        demisto.debug(f'Failed casting max alerts per incident parameter to int, falling back to 50 - {e}')
+        max_alerts_per_incident = 50
 
     client = Client(
         base_url=base_url,
@@ -1376,6 +1384,7 @@ def main():  # pragma: no cover
                                                   exclude_artifacts=exclude_artifacts,
                                                   last_run=last_run,
                                                   max_fetch=max_fetch,
+                                                  max_alerts_per_incident=max_alerts_per_incident,
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
