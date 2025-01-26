@@ -115,4 +115,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-  Spamhaus_Feed_Test
+- Spamhaus_Feed_Test
