@@ -1733,6 +1733,28 @@ def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_d
 
 ''' FETCH COMMANDS '''
 
+def set_index_audit_logs(dt_now: datetime, dt_start_date: datetime, audit_logs: List[dict], last_index_fetched: int) -> int:
+    """
+    This function set the new index_audit_logs by the following logic:
+        1. if dt_now > dt_start_date that means we're starting a new day (the fetch is per day, so we need to restart the index).
+        2. same day with new audit_logs - adding the amount of the new events to the exists index.
+        3. same day without new audit_logs - leave the index as the same.
+    Args:
+        dt_now: the current datetime
+        dt_start_date: the start day to fetch in the current cycle
+        audit_logs: the audit logs are retrieved in this cycle of fetch
+        last_index_fetched: the last index from the previous cycle
+
+    Returns:
+        The new last index fetched
+    """
+    if dt_now > dt_start_date:
+        return 0
+    elif audit_logs:
+        return len(audit_logs) + last_index_fetched
+    else:
+        return last_index_fetched
+
 
 def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, limit: int = 1000):
     """
@@ -1764,8 +1786,12 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     for audit_log in audit_logs:
         audit_log['_time'] = audit_log.get('received') or audit_log.get('indexed')
 
-    next_run: str = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    last_run.update({'index_audit_logs': len(audit_logs) + last_index_fetched if audit_logs else last_index_fetched,
+    dt_now = datetime.now(tz=timezone.utc)
+    dt_start_date = datetime.strptime(start_date, "%Y-%m-%d")  # converting back the start_date to datetime for comparing with now
+    index_audit_logs = set_index_audit_logs(dt_now, dt_start_date, audit_logs, last_index_fetched)
+
+    next_run: str = dt_now.strftime(DATE_FORMAT)
+    last_run.update({'index_audit_logs': index_audit_logs,
                      'last_fetch_time': next_run})
     demisto.info(f'Done fetching {len(audit_logs)} audit logs, Setting {last_run=}.')
     return audit_logs, last_run
