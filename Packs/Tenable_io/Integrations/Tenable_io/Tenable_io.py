@@ -1786,8 +1786,8 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     for audit_log in audit_logs:
         audit_log['_time'] = audit_log.get('received') or audit_log.get('indexed')
 
-    dt_now = datetime.utcnow().strftime(DATE_FORMAT)
-    dt_start_date = datetime.strptime(start_date, DATE_FORMAT)  # converting back the start_date to datetime for comparing with now
+    dt_now = datetime.utcnow()
+    dt_start_date = datetime.strptime(start_date, DATE_FORMAT)  # convert back the start_date to datetime for comparing with now
     index_audit_logs = set_index_audit_logs(dt_now, dt_start_date, audit_logs, last_index_fetched)
 
     next_run: str = dt_now.strftime(DATE_FORMAT)
