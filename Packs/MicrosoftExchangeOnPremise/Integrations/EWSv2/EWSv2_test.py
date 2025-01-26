@@ -9,6 +9,7 @@ import logging
 
 import dateparser
 import pytest
+from pytest_mock import MockerFixture
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
 from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
@@ -852,44 +853,72 @@ def test_format_identifier(input, output):
     assert EWSv2.format_identifier(input) == output
 
 
-def test_get_message_for_body_type_no_body_type_with_html_body():
+@pytest.mark.parametrize(
+    "handle_inline_image"
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_no_body_type_with_html_body(handle_inline_image: bool):
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type(body, None, html_body)
+    result = get_message_for_body_type(body, None, html_body, handle_inline_image)
     assert isinstance(result[0], HTMLBody)
     assert result[0] == HTMLBody(html_body)
 
-
-def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker):
+@pytest.mark.parametrize(
+    "handle_inline_image, result"
+    [
+        pytest.param(True, '<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>', id="handle_inline_image is True"),
+        pytest.param(False, '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>', id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker: MockerFixture, handle_inline_image: bool, result: str):
     from exchangelib import FileAttachment
     mocker.patch.object(uuid, 'uuid4', return_value='123456')
     body = "This is a plain text body"
     html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
-    result = get_message_for_body_type(body, None, html_body)
+    result = get_message_for_body_type(body, None, html_body, handle_inline_image)
     assert isinstance(result[0], HTMLBody)
     assert isinstance(result[1][0], FileAttachment)
-    assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>')
+    assert result[0] == HTMLBody(result)
 
 
 def test_get_message_for_body_type_no_body_type_with_no_html_body():
     body = "This is a plain text body"
-    result = get_message_for_body_type(body, None, None)
+    result = get_message_for_body_type(body, None, None, True)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
 
-def test_get_message_for_body_type_html_body_type_with_html_body():
+
+@pytest.mark.parametrize(
+    "handle_inline_image"
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_html_body_type_with_html_body(handle_inline_image: bool):
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type(body, 'html', html_body)
+    result = get_message_for_body_type(body, 'html', html_body, handle_inline_image)
     assert isinstance(result[0], HTMLBody)
     assert result[0] == HTMLBody(html_body)
 
 
-def test_get_message_for_body_type_text_body_type_with_html_body():
+@pytest.mark.parametrize(
+    "handle_inline_image"
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_text_body_type_with_html_body(handle_inline_image: bool):
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type(body, 'text', html_body)
+    result = get_message_for_body_type(body, 'text', html_body, handle_inline_image)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
@@ -908,14 +937,21 @@ def test_get_message_for_body_type_text_body_type_with_no_html_body():
     assert result[0] == Body(body)
 
 
-def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
+@pytest.mark.parametrize(
+    "handle_inline_image"
+    [
+        pytest.param(True, id="handle_inline_image is True"),
+        pytest.param(False, id="handle_inline_image is False")
+    ]
+)
+def test_get_message_for_body_type_text_body_type_with_html_body_no_body(handle_inline_image):
     """
     Given: html_body, no body, the default 'text' as body_type.
     When: Constructing the message body.
     Then: Assert that the result is an html body.
     """
     html_body = "<p>This is an HTML body</p>"
-    result = get_message_for_body_type('', 'text', html_body)
+    result = get_message_for_body_type('', 'text', html_body, handle_inline_image)
     assert isinstance(result[0], HTMLBody)
     assert result[0] == HTMLBody(html_body)
 

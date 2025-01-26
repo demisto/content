@@ -558,7 +558,7 @@ class MarkAsJunk(EWSAccountService):
 
 
 def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_to, html_body=None, attachments=None,
-                          raw_message=None, from_address=None):  # pragma: no cover
+                          raw_message=None, from_address=None, handle_inline_image: bool):  # pragma: no cover
     """
     Send an email to a mailbox.
 
@@ -579,7 +579,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     """
     if not attachments:
         attachments = []
-    message_body, inline_attachments = get_message_for_body_type(body, body_type, html_body)
+    message_body, inline_attachments = get_message_for_body_type(body, body_type, html_body, handle_inline_image)
     attachments += inline_attachments
     m = Message(
         account=account,
@@ -633,7 +633,7 @@ def handle_html(html_body: str) -> tuple[str, List[Dict[str, Any]]]:
     return clean_body, attachments
 
 
-def get_message_for_body_type(body, body_type, html_body):
+def get_message_for_body_type(body, body_type, html_body, handle_inline_image: bool):
     """
     Compatibility with Data Collection - where body_type is not provided, we will use the html_body if it exists.
     Compatibility with 'send-mail' command - where body_type should be provided, we will use the body_type to decide.
@@ -645,13 +645,19 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
+    demisto.debug(f"get_message_for_body_type: Received body_type={body_type}, handle_inline_image={handle_inline_image}")
     attachments: list = []
-    if html_body:
+    
+    if html_body and handle_inline_image:
         html_body, attachments = handle_html(html_body)
+        demisto.debug(f"get_message_for_body_type: Processed HTML body with {len(attachments)} attachments")
+
     if body_type is None:  # When called from a data collection task.
         return (HTMLBody(html_body) if html_body else Body(body)), attachments
+
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
         return HTMLBody(html_body), attachments
+
     return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
@@ -2130,6 +2136,7 @@ def send_email(args):
     to = get_none_empty_addresses(argToList(args.get('to')))
     replyTo = get_none_empty_addresses(argToList(args.get('replyTo')))
     render_body = argToBoolean(args.get('renderBody') or False)
+    handle_inline_image: bool = argToBoolean(args.get('handle_inline_image', True))
     subject = args.get('subject')
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
@@ -2140,7 +2147,7 @@ def send_email(args):
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
-        from_address=args.get('from')
+        from_address=args.get('from'), handle_inline_image
     )
     result_object = {
         'from': args.get('from') or account.primary_smtp_address,

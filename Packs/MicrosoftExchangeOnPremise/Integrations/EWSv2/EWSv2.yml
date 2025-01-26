@@ -998,6 +998,12 @@ script:
       name: raw_message
     - description: The email address from which to send mail.
       name: from
+    - description: ""
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Sends an email using EWS.
     name: send-mail
   - arguments:
