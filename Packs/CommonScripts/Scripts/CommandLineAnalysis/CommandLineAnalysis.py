@@ -481,35 +481,50 @@ def is_reserved_ip(ip_str: str) -> bool:
         return False
 
 
-def extract_indicators(command_line: str) -> list[str]:
-    extracted_indicators: list[str] = []
+def extract_indicators(command_line: str) -> dict:
+    """
+    Extracts indicators by type (e.g., 'IP', 'Domain') and returns them as a dictionary:
+      {
+        "IP": [...],
+        "Domain": [...],
+        ...
+      }
+    """
+    extracted_by_type = {}  # Plain dict, no defaultdict
+
     try:
         indicators = demisto.executeCommand("extractIndicators", {"text": command_line})
 
         if indicators and isinstance(indicators, list):
             contents = indicators[0].get('Contents', {})
 
-            # Parse contents if it's a JSON string
+            # Parse JSON if 'Contents' is a JSON string
             if isinstance(contents, str):
                 try:
                     contents = json.loads(contents)
                 except json.JSONDecodeError:
-                    return []
+                    return {}
 
-            # Process all keys in the contents dictionary
+            # contents should now be a dict like {"IP": [...], "Domain": [...], ...}
             if isinstance(contents, dict):
-                for key, values in contents.items():
+                for indicator_type, values in contents.items():
                     if isinstance(values, list):
                         for value in values:
                             if value == "::":
                                 continue
-                            if key == "IP" and is_reserved_ip(value):
+                            if indicator_type == "IP" and is_reserved_ip(value):
                                 continue  # Skip reserved IPs
-                            extracted_indicators.append(value)
+
+                            # If this indicator type isn't in the dict yet, create a list
+                            if indicator_type not in extracted_by_type:
+                                extracted_by_type[indicator_type] = []
+
+                            extracted_by_type[indicator_type].append(value)
+
     except Exception as e:
         demisto.debug(f"Failed to extract indicators: {str(e)}")
-    return extracted_indicators
 
+    return extracted_by_type
 
 def calculate_score(results: Dict[str, Any]) -> Dict[str, Any]:
     # Define weights for base scoring
