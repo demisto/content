@@ -439,7 +439,7 @@ class Client(CoreClient):
                 'value': statuses
             })
         demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}, {exclude_artifacts=}")
-        if exclude_artifacts:  # relevant in cases when the command is executed
+        if exclude_artifacts:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE
         if excluded_alert_fields:
             request_data['alert_fields_to_exclude'] = excluded_alert_fields
