@@ -39,12 +39,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* Cortex Core - IR
+This playbook does not use any integrations.
 
 ### Scripts
 
 * AnyMatch
 * BetweenHours
+* IsIntegrationAvailable
 * SetAndHandleEmpty
 
 ### Commands
@@ -58,6 +59,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * gsuite-user-get
 * gsuite-user-signout
 * gsuite-user-update
+* ip
 * send-mail
 
 ## Playbook Inputs
