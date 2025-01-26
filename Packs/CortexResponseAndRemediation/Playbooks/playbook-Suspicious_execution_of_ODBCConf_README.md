@@ -1,0 +1,70 @@
+  This playbook handles "Suspicious execution of ODBCConf" alerts.
+
+  Playbook Stages:
+
+  Analysis:
+  During the analysis, the playbook will perform the following:
+
+  - Checks if the causality process (CGO) is signed and prevalent.
+  - Checks for the host's risk score.
+
+  If the CGO is unsigned and not prevalent or either of them plus with a high-risk score, it proceeds to remediation actions; otherwise, it continues to the investigation phase.
+
+  Investigation:
+  During the alert investigation, the playbook will perform the following:
+
+  - Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :
+- Evasion Technique - 3048798454
+- An uncommon LOLBIN added to startup-related Registry keys
+- Behavioral Threat
+- An uncommon file was created in the startup folder
+- Unsigned process running from a temporary directory
+- Execution From a Restricted Location
+- Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
+
+  The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. If related insights are found, it will proceed to remediation actions only if the host score is listed as high.; otherwise, it closes the alert with the message "No indication of malicious activity was found".
+
+
+  Remediation:
+
+  - Automatically terminate the causality process.
+  - Automatically Close the alert.
+
+## Dependencies
+
+This playbook uses the following sub-playbooks, integrations, and scripts.
+
+### Sub-playbooks
+
+This playbook does not use any sub-playbooks.
+
+### Integrations
+
+This playbook does not use any integrations.
+
+### Scripts
+
+* SearchAlertsV2
+
+### Commands
+
+* core-get-process-analytics-prevalence
+* core-terminate-causality
+* core-list-risky-hosts
+* closeInvestigation
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Suspicious execution of ODBCConf](../doc_files/Suspicious_execution_of_ODBCConf.png)
