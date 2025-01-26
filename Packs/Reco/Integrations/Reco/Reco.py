@@ -915,7 +915,7 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-        demisto.info(f"Got link: {link}")
+        demisto.info(f"Got link: {link}")  # pylint: disable=E0606
         return link
 
     def add_exclusion_filter(self, key_to_add: str, values_to_add: list[str]):
