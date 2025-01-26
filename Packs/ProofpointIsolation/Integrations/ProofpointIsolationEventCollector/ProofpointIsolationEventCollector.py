@@ -165,12 +165,12 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     output: list = []
 
     if get_events_args:  # handle get_event command
-        start = get_events_args.get('start_date')
-        end = get_events_args.get('end_date')
+        start = get_events_args.get('start_date', '')
+        end = get_events_args.get('end_date', '')
         ids: set = set()
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
-        start = last_run.get('start_date')
+        start = last_run.get('start_date', '')
         if not start:
             start = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
