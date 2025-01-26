@@ -127,7 +127,7 @@ However, Field A cannot be mirrored in both directions simultaneously.
 ### Notes
 
 - Incident mirroring relies on proper field mapping between Cortex XSOAR and Cortex XDR. Ensure that the fields are aligned correctly.
-- `Owner` and `closeReason` mappings are done using the integration code, therefore they are not part of the out-of-the-box mapper and should not be specified in any future mapper.
+- `Owner` and `closeReason` mappings are done using the integration code, therefore they are not part of the out-of-the-box mapper and should not be specified in any custom mapper.
 - The **Mirroring Direction** must be set to match your desired workflow (Incoming, Outgoing, or Both).
 - Only supported incident types with proper schema configuration will mirror successfully.
 - Newly fetched incidents will be mirrored in the chosen direction. Note that this will not effect existing incidents.
@@ -3855,7 +3855,7 @@ There is no context output for this command.
 - **Performance Issues**:
     - Reduce the frequency of incident fetch or mirroring intervals to manage system load.
     - Review Cortex XDR API rate limit logs to ensure compliance with API thresholds.
+    - NOTE: These types of issues can impact performance, leading to slowness in processes such as fetching and mirroring.
 - **Mirroring Scope**:
     - Mirroring only applies to incidents fetched after mirroring is enabled for the instance. Incidents fetched with an incorrect mapper will not be updated retroactively by changing the mapper.
     - To resolve this, reset the last fetch run and re-fetch the incidents. This will create new incidents with the correct mappings, rendering the old ones obsolete.
--  Avoid using the XDRSyncScript automation (deprecated) or any playbook that incorporates it (e.g., Cortex XDR Incident Sync or Cortex XDR Incident Handling v2), as doing so interferes with the proper functioning of the mirroring feature.
