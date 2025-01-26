@@ -1,41 +1,266 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 from demisto_sdk.commands.common.handlers import JSON_Handler
-
 import json
 
+import pytest
+import Dynatrace as dyn
+import demistomock as demisto
+from CommonServerPython import *
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
+# def util_load_json(path):
+#     with open(path, encoding="utf-8") as f:
+#         return json.loads(f.read())
+
+AUDIT_CLIENT = dyn.DynatraceClient(
+    base_url="https://AAAAA.dynatrace.com",
+    client_id=None,
+    client_secret=None,
+    uuid=None,
+    token="AAAAAAAAA.AAAAAAA.AAAAAAA",
+    events_to_fetch=["Audit logs"],
+    verify=True,
+    proxy=None
+    )
+
+APM_CLIENT = dyn.DynatraceClient(
+    base_url="https://AAAAA.dynatrace.com",
+    client_id=None,
+    client_secret=None,
+    uuid=None,
+    token="AAAAAAAAA.AAAAAAA.AAAAAAA",
+    events_to_fetch=["APM"],
+    verify=True,
+    proxy=None
+    )
+
+APM_AUDIT_CLIENT = dyn.DynatraceClient(
+    base_url="https://AAAAA.dynatrace.com",
+    client_id=None,
+    client_secret=None,
+    uuid=None,
+    token="AAAAAAAAA.AAAAAAA.AAAAAAA",
+    events_to_fetch=["APM", "Audit logs"],
+    verify=True,
+    proxy=None
+    )
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_get_audit_logs_events(mocker):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Given: A query
+    When: calling get_audit_logs_events function
+    Then: the http request is called with "GET" arg and with the right url.
+    """
+    http_request = mocker.patch.object(AUDIT_CLIENT, '_http_request', return_value=[])
+    AUDIT_CLIENT.get_audit_logs_events(query="?querykey=queryarg")
+    assert http_request.call_args[0][0] == "GET"
+    assert http_request.call_args[0][1] == "/api/v2/auditlogs?querykey=queryarg"
+    
+    
+def test_get_APM_events(mocker):
+    """
+    Given: A query
+    When: calling get_APM_events function
+    Then: the http request is called with "GET" arg and with the right url.
+    """
+    http_request = mocker.patch.object(APM_CLIENT, '_http_request', return_value=[])
+    APM_CLIENT.get_APM_events(query="?querykey=queryarg")
+    assert http_request.call_args[0][0] == "GET"
+    assert http_request.call_args[0][1] == "/api/v2/events?querykey=queryarg"
+    
+    
+@pytest.mark.parametrize(
+    "client_id, client_secret, uuid, token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message",
+    [
+        # Valid OAuth2 configuration
+        ("client_id", "client_secret", "uuid", None, ["APM"], 25000, 5000, None, None),
+        
+        # Valid token configuration
+        (None, None, None, "token", ["APM"], 25000, 5000, None, None),
+        
+        # Invalid: Both OAuth2 and token parameters provided
+        ("client_id", "client_secret", "uuid", "token", ["APM"], 25000, 5000, DemistoException, "When using OAuth 2"),
+        
+        # Invalid: Missing both OAuth2 and token parameters
+        (None, None, None, None, ["APM"], 25000, 5000, DemistoException, "When using OAuth 2"),
+        
+        # Invalid: No event types specified
+        ("client_id", "client_secret", "uuid", None, [], 25000, 5000, DemistoException, "Please specify at least one event type"),
+        
+        # Invalid: audit_max out of range (too high)
+        ("client_id", "client_secret", "uuid", None, ["Audit logs"], 30000, 5000, DemistoException, "The maximum number of audit logs events"),
+        
+        # Invalid: audit_max out of range (negative)
+        ("client_id", "client_secret", "uuid", None, ["Audit logs"], -1, 5000, DemistoException, "The maximum number of audit logs events"),
+        
+        # Invalid: apm_max out of range (too high)
+        ("client_id", "client_secret", "uuid", None, ["APM"], 25000, 6000, DemistoException, "The maximum number of APM events"),
+        
+        # Invalid: apm_max out of range (negative)
+        ("client_id", "client_secret", "uuid", None, ["APM"], 25000, -1, DemistoException, "The maximum number of APM events"),
+    ],
+)
+def test_validate_params(client_id, client_secret, uuid, token, events_to_fetch, audit_max, apm_max, expected_exception, expected_message):
+    """
+    Given: all instance params
+    When: Calling validate_params function
+    Then: The function doesn't raise an error when params are valid and raises the right exception when params are invalid
+    """
+    from Dynatrace import validate_params
+    if expected_exception:
+        with pytest.raises(expected_exception) as excinfo:
+            validate_params(
+                url="http://example.com",
+                client_id=client_id,
+                client_secret=client_secret,
+                uuid=uuid,
+                token=token,
+                events_to_fetch=events_to_fetch,
+                audit_max=audit_max,
+                apm_max=apm_max,
+            )
+        assert expected_message in str(excinfo.value)
+    else:
+        validate_params(
+            url="http://example.com",
+            client_id=client_id,
+            client_secret=client_secret,
+            uuid=uuid,
+            token=token,
+            events_to_fetch=events_to_fetch,
+            audit_max=audit_max,
+            apm_max=apm_max,
+        )
+        
+        
+@pytest.mark.parametrize(
+    "events, event_type, expected",
+    [
+        # Test case 1: Audit logs
+        (
+            [{"timestamp": 1640995200000}],
+            "Audit logs",
+            [{"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit logs events", "_time": 1640995200000}],
+        ),
+        # Test case 2: APM
+        (
+            [{"startTime": 1640995200000}],
+            "APM",
+            [{"startTime": 1640995200000, "SOURCE_LOG_TYPE": "APM events", "_time": 1640995200000}],
+        ),
+        # Test case 3: Multiple Audit logs events
+        (
+            [
+                {"timestamp": 1640995200000},
+                {"timestamp": 1640995300000},
+            ],
+            "Audit logs",
+            [
+                {"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit logs events", "_time": 1640995200000},
+                {"timestamp": 1640995300000, "SOURCE_LOG_TYPE": "Audit logs events", "_time": 1640995300000},
+            ],
+        ),
+        # Test case 4: Empty events
+        (
+            [],
+            "APM",
+            [],
+        ),
+    ],
+)
+def test_add_fields_to_events(events, event_type, expected):
+    """
+    Given: events and event_type
+    When: Calling add_fields_to_events function
+    Then: The function retrieves the events with the expected added fields.
+    """
+    from Dynatrace import add_fields_to_events
+    assert add_fields_to_events(events, event_type) == expected
+    
+    
+def test_events_query__APM(mocker):
+    """
+    Given: args and event_type=APM
+    When: Calling the events_query function
+    Then: The get_APM_events is called with the right query.
+    """
+    from Dynatrace import events_query
+    request = mocker.patch.object(APM_CLIENT, 'get_APM_events', return_value=[])
+    events_query(APM_CLIENT, {"apm_limit": "100", "apm_from": "1640995200000"}, "APM")
+    assert request.call_args[0][0] == '?pageSize=100&from=1640995200000'
+    
+    
+def test_events_query__audit(mocker):
+    """
+    Given: args and event_type=Audit logs
+    When: Calling the events_query function
+    Then: The get_audit_events is called with the right query.
+    """
+    from Dynatrace import events_query
+    request = mocker.patch.object(AUDIT_CLIENT, 'get_audit_logs_events', return_value=[])
+    events_query(AUDIT_CLIENT, {"audit_limit": "100", "audit_from": "1640995200000"}, "Audit logs")
+    assert request.call_args[0][0] == '?pageSize=100&from=1640995200000'
+    
 
-    client = Client(base_url="some_mock_url", verify=False)
-    args = {"dummy": "this is a dummy response", "dummy2": "a dummy value"}
-    response = baseintegration_dummy_command(client, args)
-
-    assert response.outputs == args
-
-
-# TODO: ADD HERE unit tests for every command
+def test_fetch_events(mocker):
+    """
+    Given: events_to_fetch=["APM", "Audit logs"], audit_limit and apm_limit
+    When: Running fetch-events command
+    Then: The fetch_events function calls all expected functions to be called with the right arguments.
+    """
+    from Dynatrace import fetch_events
+    apm_mock = mocker.patch("Dynatrace.fetch_apm_events", return_value=[])
+    audit_mock = mocker.patch("Dynatrace.fetch_audit_log_events", return_value=[])
+    add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", return_value=[])
+    send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
+    
+    fetch_events(APM_AUDIT_CLIENT, ["APM", "Audit logs"], 200, 100)
+    
+    assert apm_mock.call_args.args[1] == 100
+    assert audit_mock.call_args.args[1] == 200
+    assert add_fields_to_events_mock.call_count == 2
+    send_events_to_xsiam_mock.assert_called_once_with([], "Dynatrace", "Platform")
+    
+    
+def test_get_events_command__APM(mocker):
+    """
+    Given: args = {"events_types_to_get": "APM", "should_push_events": True} and no events are received.
+    When: executing the dynatrace-get-events command
+    Then:
+        - events_query function and send_events_to_xsiam are called once with the right arguments.
+        - The human readable returned is "No events were received".
+    """
+    from Dynatrace import get_events_command
+    events_query_mock = mocker.patch("Dynatrace.events_query", return_value={"events": []})
+    add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events", return_value=[])
+    send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
+    
+    res = get_events_command(APM_CLIENT, {"events_types_to_get": "APM", "should_push_events": True})
+    
+    events_query_mock.assert_called_once_with(APM_CLIENT, {"events_types_to_get": "APM", "should_push_events": True}, "APM")
+    add_fields_to_events_mock.assert_called_once_with([], "APM")
+    send_events_to_xsiam_mock.assert_called_once_with(events=[], vendor="Dynatrace", product="Platform")
+    assert "No events were received" in res.readable_output
+    
+    
+def test_get_events_command__Audit_logs(mocker):
+    """
+    Given: args = {"events_types_to_get": "Audit logs", "should_push_events": False} and events are received.
+    When: executing the dynatrace-get-events command
+    Then:
+        - events_query function is called with the right arguments.
+        - send_events_to_xsiam function is not called.
+        - The human readable includes the received events.
+    """
+    from Dynatrace import get_events_command
+    events_query_mock = mocker.patch("Dynatrace.events_query", return_value={"auditLogs": [{"timestamp": 1640995200000}]})
+    add_fields_to_events_mock = mocker.patch("Dynatrace.add_fields_to_events",
+                                             return_value=[{"timestamp": 1640995200000, "SOURCE_LOG_TYPE": "Audit logs events"}])
+    send_events_to_xsiam_mock = mocker.patch("Dynatrace.send_events_to_xsiam")
+    
+    res = get_events_command(AUDIT_CLIENT, {"events_types_to_get": "Audit logs", "should_push_events": False})
+    
+    events_query_mock.assert_called_once_with(AUDIT_CLIENT,
+                                              {"events_types_to_get": "Audit logs", "should_push_events": False}, "Audit logs")
+    add_fields_to_events_mock.assert_called_once_with([{"timestamp": 1640995200000}], "Audit logs")
+    send_events_to_xsiam_mock.assert_not_called()
+    assert "1640995200000" in res.readable_output
