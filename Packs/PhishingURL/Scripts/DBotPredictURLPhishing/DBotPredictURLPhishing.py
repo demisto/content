@@ -15,7 +15,7 @@ no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)  # type: i
 
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
-MAJOR_VERSION = 1
+MAJOR_VERSION = 2
 MINOR_DEFAULT_VERSION = 0
 
 KEY_IMAGE_RASTERIZE = "image_b64"
@@ -133,8 +133,33 @@ class Model:
     top_domains: dict
     top_domains_path: str
 
-    def predict(self, x_pred: pd.DataFrame):
+    def predict(self, x_pred: pd.DataFrame) -> dict:
         pass
+
+
+def load_old_model(model_data: str) -> Model:
+    '''Update the model to the new version'''
+    import warnings
+    warnings.filterwarnings("ignore", module='sklearn')
+    
+    old_import = dill._dill._import_module
+    dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
+    model = decode_model_data(model_data)
+    dill._dill._import_module = old_import
+    return model
+
+
+def update_old_model_with_new(old_model: Model, new_model: Model):
+    new_model.logos_dict = old_model.logos_dict
+    new_model.top_domains = old_model.top_domains
+    new_model.custom_logo_associated_domain = old_model.custom_logo_associated_domain
+
+    new_model.clf.named_steps.preprocessor.named_transformers_[
+        'image'].named_steps.trans.logo_dict = old_model.logos_dict
+    new_model.clf.named_steps.preprocessor.named_transformers_[
+        'image'].named_steps.trans.top_domains = old_model.top_domains
+    new_model.clf.named_steps.preprocessor.named_transformers_[
+        'url'].named_steps.trans.d_top_domains = old_model.top_domains
 
 
 def load_demisto_model() -> Model:
@@ -159,7 +184,7 @@ def decode_model_data(model_data: str) -> Model:
     return cast(Model, dill.loads(base64.b64decode(model_data.encode('utf-8'))))  # guardrails-disable-line
 
 
-def load_oob(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> bytes:
+def load_ootb(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> bytes:
     """
     Load pickle model from the docker
     :param path: path of the model saved in the docker
@@ -172,6 +197,7 @@ def load_oob(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> bytes:
 def load_model_from_docker(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> Model:
     with open(path, 'rb') as f:
         return cast(Model, dill.load(f))  # guardrails-disable-line
+    
 
 
 def load_oob_model(path: str) -> str:
@@ -180,7 +206,7 @@ def load_oob_model(path: str) -> str:
     :return: None
     """
     try:
-        encoded_model = load_oob(path)
+        encoded_model = load_ootb(path)
     except Exception:
         raise DemistoException(traceback.format_exc())
     res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
@@ -614,7 +640,7 @@ def save_model_in_demisto(model: Model):
                                                    'modelHidden': True,
                                                    'modelType': 'url_phishing',
                                                    'modelExtraInfo': {
-                                                       OOB_MAJOR_VERSION_INFO_KEY: model.major,
+                                                       OOB_MAJOR_VERSION_INFO_KEY: MAJOR_VERSION,
                                                        OOB_MINOR_VERSION_INFO_KEY: model.minor}})
     if is_error(res):
         raise DemistoException(get_error(res))
@@ -726,19 +752,14 @@ def update_and_load_model(
             demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         msg_list.append(load_oob_model(OUT_OF_THE_BOX_MODEL_PATH))
         model = load_demisto_model()
-
+    elif demisto_major_version == 1:  # upgrade with old versions
+        old_model = load_old_model(model_data)
+        model = load_ootb()
+        update_old_model_with_new(old_model, model)
+        save_model_in_demisto(model)
     elif demisto_major_version == MAJOR_VERSION:
         model = decode_model_data(model_data)
         msg_list.append(MSG_NO_ACTION_ON_MODEL)
-
-    elif MINOR_DEFAULT_VERSION < demisto_major_version < MAJOR_VERSION:
-        model_docker = load_model_from_docker()
-        model_docker_minor = model_docker.minor
-        model = load_demisto_model()
-        model_docker = update_model_docker_from_model(model_docker, model)
-        model_docker.minor += 1
-        save_model_in_demisto(model_docker)
-        msg_list.append(MSG_UPDATE_LOGO.format(MAJOR_VERSION, model_docker_minor, model.major, model.minor))
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         raise DemistoException(MSG_WRONG_CONFIG_MODEL)
