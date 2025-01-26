@@ -867,14 +867,27 @@ def test_get_message_for_body_type_no_body_type_with_html_body(handle_inline_ima
     assert isinstance(result[0], HTMLBody)
     assert result[0] == HTMLBody(html_body)
 
+
 @pytest.mark.parametrize(
-    "handle_inline_image, result"
+    "handle_inline_image, result",
     [
-        pytest.param(True, '<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>', id="handle_inline_image is True"),
-        pytest.param(False, '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>', id="handle_inline_image is False")
+        pytest.param(
+            True,
+            '<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>',
+            id="handle_inline_image is True"
+        ),
+        pytest.param(
+            False,
+            '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>',
+            id="handle_inline_image is False"
+        )
     ]
 )
-def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker: MockerFixture, handle_inline_image: bool, result: str):
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image(
+    mocker: MockerFixture,
+    handle_inline_image: bool,
+    result: str
+):
     from exchangelib import FileAttachment
     mocker.patch.object(uuid, 'uuid4', return_value='123456')
     body = "This is a plain text body"
@@ -892,9 +905,8 @@ def test_get_message_for_body_type_no_body_type_with_no_html_body():
     assert result[0] == Body(body)
 
 
-
 @pytest.mark.parametrize(
-    "handle_inline_image"
+    "handle_inline_image",
     [
         pytest.param(True, id="handle_inline_image is True"),
         pytest.param(False, id="handle_inline_image is False")

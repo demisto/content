@@ -557,8 +557,12 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_to, html_body=None, attachments=None,
-                          raw_message=None, from_address=None, handle_inline_image: bool):  # pragma: no cover
+def send_email_to_mailbox(  # pragma: no cover
+    account, to, subject, body, body_type,
+    bcc, cc, reply_to, handle_inline_image: bool,
+    html_body=None, attachments=None,
+    raw_message=None, from_address=None
+):
     """
     Send an email to a mailbox.
 
@@ -647,7 +651,7 @@ def get_message_for_body_type(body, body_type, html_body, handle_inline_image: b
     """
     demisto.debug(f"get_message_for_body_type: Received body_type={body_type}, handle_inline_image={handle_inline_image}")
     attachments: list = []
-    
+
     if html_body and handle_inline_image:
         html_body, attachments = handle_html(html_body)
         demisto.debug(f"get_message_for_body_type: Processed HTML body with {len(attachments)} attachments")
@@ -2146,8 +2150,8 @@ def send_email(args):
     body_type = args.get('bodyType', args.get('body_type'))
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
-        html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
-        from_address=args.get('from'), handle_inline_image
+        handle_inline_image=handle_inline_image, html_body=args.get('htmlBody'), attachments=attachments,
+        raw_message=args.get('raw_message'), from_address=args.get('from')
     )
     result_object = {
         'from': args.get('from') or account.primary_smtp_address,
