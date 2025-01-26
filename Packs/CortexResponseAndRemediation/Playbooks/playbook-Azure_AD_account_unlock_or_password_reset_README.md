@@ -16,7 +16,7 @@
   - Investigate reasons behind any identified risks, including recent detections.
 
 **Containment**:
-- Check if feature sum is greater than 2. If yes, continue to revoke user's active sessions to ensure immediate containment.
+- Check if feature sum is greater than 2 (Possible features:new user agent/new asn/new country). If yes, continue to revoke user's active sessions to ensure immediate containment.
 If no, continue to check investigation findings.
 - Provide a manual task for an analyst to review the findings and decide the next steps.
 - Possible actions:
