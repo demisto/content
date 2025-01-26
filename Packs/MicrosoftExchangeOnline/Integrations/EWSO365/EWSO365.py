@@ -2165,7 +2165,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
     2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
     If no necessary changes identified the original 'message_id' argument value is returned.
     """
-    if re.search("\<\[.*\]\>", message_id):
+    if re.search(r"\<\[.*\]\>", message_id):
         # find and replace "<[" with "<" and "]>" with ">"
         fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
         demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
@@ -2201,11 +2201,15 @@ def decode_email_data(email_obj: Message):
 def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+
     if isinstance(mime_content, str) and not mime_content.isascii():
         mime_content = mime_content.encode()
-    message = email.message_from_bytes(mime_content, policy=email_policy) \
-        if isinstance(mime_content, bytes) \
-        else email.message_from_string(mime_content, policy=email_policy)
+
+    if isinstance(mime_content, bytes):
+        message = email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
+    else:
+        message = email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
+
     return message
 
 
@@ -2626,6 +2630,10 @@ def sub_main():  # pragma: no cover
     params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
     if params.get('upn_mailbox') and not (args.get('target_mailbox')):
         params['default_target_mailbox'] = params.get('upn_mailbox')
+    if params.get('access_type') == 'Impersonation':
+        demisto.info(
+            'Note: The access type Impersonation you are using is deprecated. For more information, '
+            'please refer to the integration description.')
     try:
         client = EWSClient(**params)
         start_logging()

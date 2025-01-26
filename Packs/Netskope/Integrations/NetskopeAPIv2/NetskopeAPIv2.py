@@ -12,6 +12,8 @@ MAX_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 1
 MAX_LIMIT = 50
 MIN_LIMIT = 1
+MAX_FETCH_PER_EVENT_TYPE = 50
+JS_NUMBER_LIMIT = 2 ** 53 - 1
 TIME_FORMAT = "%d-%m-%Y %H:%M"
 
 ALERT_HEADERS = [
@@ -955,6 +957,8 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     alert_query = params.get("alerts_query")
     alert_max_fetch = arg_to_number(params["max_fetch"]) or MAX_LIMIT
 
+    num_event_types = len(event_types) if event_types else 1
+    max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE // num_event_types
     if (event_types and (event_max_fetch := arg_to_number(
             params["max_events_fetch"])) is not None):
         max_fetch_per_event_type = event_max_fetch // (len(event_types))
@@ -1248,6 +1252,11 @@ def parse_incident(
     incident["incident_type"] = incident_type
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
+    for key, value in incident.items():
+        # JavaScript does not work well with large numbers larger than 2^53-1 so need to stringify them.
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+        if isinstance(value, int) and value > JS_NUMBER_LIMIT:
+            incident[key] = str(value)
     return {
         "name": f"{incident_type} ID: {incident_id}",
         "incident_type": incident_type,
