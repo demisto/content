@@ -136,7 +136,7 @@ def handle_chunked_encoding_error(integration_context: dict[str, str], e: Except
     ) == MAX_ALLOWED_CHUNKED_ENCODING_ERRORS:
         raise DemistoException(
             "The API call returned `Response ended prematurely`,"
-            f"reached the maximum allowed errors {chunked_encoding_error_counter}"
+            f" reached the maximum allowed errors {chunked_encoding_error_counter}"
         ) from e
 
     chunked_encoding_error_counter += 1
