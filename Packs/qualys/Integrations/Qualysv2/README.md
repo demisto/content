@@ -70,7 +70,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Events Fetch Interval | Available on Cortex XSIAM only. | False |
     | Fetch Assets and Vulnerabilities | | False |
     | Assets and Vulnerabilities Fetch Interval | Available on Cortex XSIAM only. The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour. | False |
-    | Fetch all vulnerabilities for assets | Available on Cortex XSIAM only. This will fetch unique QIDs relevant to the assets regardless of the vulnerability modified time. | False |
+    | Fetch Vulnerabilities Behavior | Available on Cortex XSIAM only. Selecting "Fetch by unique QIDs of assets" will fetch by unique QIDs relevant to the assets regardless of the vulnerability modified time. Otherwise, vulnerabilities modified in the last 90 days will be fetched. Default is Fetch by last modified date. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

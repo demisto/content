@@ -73,13 +73,15 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-- display: Fetch all vulnerabilities for assets
-  additionalinfo: This will fetch unique QIDs relevant to the assets regardless of the vulnerability modified time.
-  name: fetch_vulnerabilities_by_asset_qids
-  type: 8
-  section: Collect
-  advanced: true
-  required: false
+- additionalinfo: Selecting "Fetch by unique QIDs of assets" will fetch by unique QIDs relevant to the assets regardless of the vulnerability modified time. Otherwise, vulnerabilities modified in the last 90 days will be fetched.
+  defaultvalue: Fetch by last modified date
+  display: Fetch Vulnerabilities Behavior
+  name: fetch_vulnerabilities_behavior
+  options:
+  - Fetch by last modified date
+  - Fetch by unique QIDs of assets
+  required: true
+  type: 15
   hidden:
   - xsoar
   - xpanse

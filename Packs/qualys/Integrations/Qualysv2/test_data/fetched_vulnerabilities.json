@@ -1,6 +1,6 @@
 [
     {
-        "QID": "ALREADY_FETCHED_VULN_QID_X",
+        "QID": "10052",
         "VULN_TYPE": "Vulnerability",
         "SEVERITY_LEVEL": "3",
         "TITLE": "Vtecrm Vtenext Multiple Security Vulnerabilities",
@@ -73,7 +73,7 @@
         }
     },
     {
-        "QID": "ALREADY_FETCHED_VULN_QID_Y",
+        "QID": "10186",
         "VULN_TYPE": "Vulnerability",
         "SEVERITY_LEVEL": "2",
         "TITLE": null,
