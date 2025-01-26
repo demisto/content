@@ -307,6 +307,8 @@ class Client(BaseClient):
                 next=next_page
             )
 
+        demisto.debug(f"fetching event type: '{event_type}' with variables: {variables}")
+
         return self.graphql(query, variables)
 
 
@@ -348,24 +350,24 @@ def get_events(
             - A dictionary representing the page info for pagination.
     """
     events: list[dict] = []
-    has_next = True
     page_info = {}
 
-    while has_next:
-        has_next = False
+    while True:
         if len(events) >= max_fetch:
-            demisto.debug(f"Fetched {len(events)} and returned page info {page_info} "
-                          f"since we reached the max fetch {max_fetch}")
-            return events, page_info
+            demisto.debug(f"Reached max fetch ({max_fetch}).")
+            break
+
         response = client.get_data(event_type, next_page, command_args)
         page_info, parsed_data = parse_response(response=response)
-        if next_page := page_info.get("next"):
-            has_next = True
-        events.extend(parsed_data)
 
-    demisto.debug(
-        f'Fetched {len(events)} events with no next page since we did not reached the max fetch: {max_fetch}'
-    )
+        events.extend(parsed_data)
+        demisto.debug(f"Fetched {len(parsed_data)} events. Total so far: {len(events)}.")
+        next_page = page_info.get("next", "")
+
+        if not next_page:
+            demisto.debug(f"No next page, stopping fetch loop, total fetched: {len(events)}")
+            break
+
     return events, page_info
 
 
@@ -429,18 +431,24 @@ def fetch_events(client: Any, max_fetch_alerts: int, max_fetch_audits: int, last
             - An updated last run state.
             - A combined list of fetched events.
     """
-    demisto.debug(f"Starting fetch with last_run: {last_run}")
-
     events = []
     next_run = {}
     event_types = {"alert": max_fetch_alerts, "audit": max_fetch_audits}
 
     for event_type, max_fetch in event_types.items():
+        next_trigger_for = last_run.get("next_trigger_for", list(event_types.keys()))
+        if event_type not in next_trigger_for:
+            continue  # Skip event types not in the trigger list
+
         fetched_events, updated_last_run = get_events_for_type(client, last_run.get(event_type, {}), event_type, max_fetch)
         events.extend(fetched_events)
         next_run[event_type] = updated_last_run
         if updated_last_run.get("next_page"):
-            next_run["nextTrigger"] = "0"
+            next_run.setdefault("next_trigger_for", []).append(event_type)
+
+    if "next_trigger_for" in next_run:
+        next_run["nextTrigger"] = "0"
+
     return next_run, events
 
 
@@ -464,13 +472,13 @@ def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
 
     fetched_assets, page_info = get_events(client, "computer", max_fetch, next_page)
 
-    new_last_run = {
+    next_run = {
         'next_page': page_info.get("next"),
         'snapshot_id': snapshot_id,
         'nextTrigger': "0"
     } if page_info.get("next") else {}
 
-    return fetched_assets, new_last_run, page_info.get("total", 0), snapshot_id
+    return fetched_assets, next_run, page_info.get("total", 0), snapshot_id
 
 
 def get_events_command(
@@ -657,28 +665,33 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
+            demisto.debug(f'Starting fetch events with last run: {last_run}')
+
             new_last_run, events = fetch_events(
                 client=client,
                 max_fetch_alerts=max_fetch_alerts,
                 max_fetch_audits=max_fetch_audits,
                 last_run=last_run,
             )
-            if events:
-                add_time_field(events)
-                demisto.debug(f'Sending {len(events)} events to XSIAM API')
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            add_time_field(events)
+            demisto.debug(f'Sending {len(events)} events to XSIAM API')
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+
+            demisto.debug(f"Set last run: {new_last_run}")
             demisto.setLastRun(new_last_run)
 
         elif command == 'fetch-assets':
             last_run = demisto.getAssetsLastRun()
-            demisto.debug(f'saved lastrun assets: {last_run}')
-            demisto.debug('Starting fetch for assets')
+            demisto.debug(f'Starting fetch assets with last run: {last_run}')
 
             assets, new_last_run, total_assets_to_report, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
 
+            demisto.debug(
+                f'Sending {len(assets)} assets to XSIAM API with snapshot_id: {snapshot_id} and items_count: {total_assets_to_report}')
             send_data_to_xsiam(data=assets, vendor=VENDOR, product=ASSETS_PRODUCT, data_type='assets',
                                snapshot_id=snapshot_id, items_count=str(total_assets_to_report))
 
+            demisto.debug(f"Set assets last run: {new_last_run}")
             demisto.setAssetsLastRun(new_last_run)
 
     except Exception as e:
