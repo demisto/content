@@ -15,7 +15,7 @@
         "LAST_VM_SCANNED_DURATION": "2130",
         "LAST_PC_SCANNED_DATE": "2022-12-06T12:03:46Z",
         "DETECTION": {
-            "QID": "NEWLY_FETCHED_QID_A",
+            "QID": "QIDa",
             "TYPE": "Confirmed",
             "SEVERITY": "2",
             "PORT": "443",
@@ -50,7 +50,7 @@
         "LAST_VM_SCANNED_DATE": "2023-03-21T03:42:05Z",
         "LAST_VM_SCANNED_DURATION": "404",
         "DETECTION": {
-            "QID": "NEWLY_FETCHED_QID_B",
+            "QID": "QIDb",
             "TYPE": "Confirmed",
             "SEVERITY": "3",
             "PORT": "22",

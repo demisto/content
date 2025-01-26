@@ -3301,6 +3301,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
     detection_qids = {asset.get('DETECTION', {}).get('QID') for asset in assets}
     vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids=detection_qids)
+    has_next_assets_page = bool(new_last_run.get('next_page'))
 
     if set_new_limit or check_fetch_duration_time_exceeded(EXECUTION_START_TIME):
         new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
@@ -3317,18 +3318,19 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
                            should_update_health_module=False)
 
         # Push vulnerabilities
-        new_last_run['total_vulnerabilities'] = last_run.get('total_vulnerabilities', 0) + len(vulnerabilities)
-        cumulative_vulns_count: int = new_last_run["total_vulnerabilities"]
+        cumulative_vulns_count: int = last_run.get('total_vulnerabilities', 0) + len(vulnerabilities)
+        total_vulns_to_report: int = 1 if has_next_assets_page else cumulative_vulns_count  # set 1 if not done pulling
+        new_last_run['total_vulnerabilities'] = cumulative_vulns_count
 
         demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM. '
                       f'Total vulnerabilities collected so far: {cumulative_vulns_count}')
 
         send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets',
-                           snapshot_id=snapshot_id, items_count=str(cumulative_vulns_count),
+                           snapshot_id=snapshot_id, items_count=str(total_vulns_to_report),
                            should_update_health_module=False)
 
         # If no next page (finished fetching assets), then reset last run
-        if not new_last_run.get('next_page'):
+        if not has_next_assets_page:
             demisto.debug('Finished fetching all assets and vulnerabilities. Resetting last run object')
             new_last_run = DEFAULT_LAST_ASSETS_RUN
 

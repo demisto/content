@@ -29,9 +29,9 @@ from Qualysv2 import (
     fetch_events, get_activity_logs_events,
     fetch_assets, fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
+    fetch_assets_and_vulnerabilities_by_qids,
     ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT,
-    HOST_LIMIT,
-    API_SUFFIX,
+    HOST_LIMIT, API_SUFFIX, VENDOR,
     DEFAULT_LAST_ASSETS_RUN,
 )
 
@@ -1585,7 +1585,16 @@ def test_truncate_asset_size(mocker, asset, expected_truncated):
 
 @freeze_time("2025-01-01 00:00:00 UTC")
 def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFixture, client: Client):
+    """
+    Given:
+    - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
 
+    When:
+    - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage.
+
+    Assert:
+    - Ensure correct sending to XSIAM and correctly set next assets run.
+    """
     last_snapshot_id = '1737885000'
     last_total_assets = 100
     last_run = {'stage': 'assets', 'total_assets': last_total_assets, 'snapshot_id': last_snapshot_id}
@@ -1603,21 +1612,30 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     next_run = mock_set_assets_last_run.call_args[0][0]
 
     assert send_data_to_xsiam_kwargs['data'] == expected_assets
-    assert send_data_to_xsiam_kwargs['vendor'] == 'qualys'
+    assert send_data_to_xsiam_kwargs['vendor'] == VENDOR
     assert send_data_to_xsiam_kwargs['product'] == 'assets'
     assert send_data_to_xsiam_kwargs['snapshot_id'] == last_snapshot_id
     assert send_data_to_xsiam_kwargs['items_count'] == str(last_total_assets + len(expected_assets))
     assert not send_data_to_xsiam_kwargs['should_update_health_module']
 
-    assert next_run['stage'] == 'vulnerabilities'
     assert next_run['next_page'] == ''
-    assert next_run['total_assets'] == (last_total_assets + len(expected_assets))
+    assert next_run['stage'] == 'vulnerabilities'  # next fetch stage should be vulnerabilities because no next assets page
+    assert next_run['total_assets'] == last_total_assets + len(expected_assets)
     assert next_run['since_datetime'] == '2024-10-03'  # freezed datetime - 90 days
     assert next_run['snapshot_id'] == last_snapshot_id
 
 
-@freeze_time("2025-01-01 00:00:00 UTC")
 def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: MockerFixture, client: Client):
+    """
+    Given:
+    - Qualys client and last run dictionary with fetch stage, total vulnerabilities count, and snapshot ID.
+
+    When:
+    - Calling fetch_assets_and_vulnerabilities_by_date with the "vulnerabilities" stage.
+
+    Assert:
+    - Ensure correct sending to XSIAM and that next assets run is reset to default (because pulling is finished).
+    """
     last_snapshot_id = '1737885000'
     last_total_vulnerabilities = 153
     last_run = {'stage': 'vulnerabilities', 'total_vulnerabilities': last_total_vulnerabilities, 'snapshot_id': last_snapshot_id}
@@ -1634,7 +1652,69 @@ def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: 
     next_run = mock_set_assets_last_run.call_args[0][0]
 
     assert send_data_to_xsiam_kwargs['data'] == expected_vulnerabilities
-    assert send_data_to_xsiam_kwargs['vendor'] == 'qualys'
+    assert send_data_to_xsiam_kwargs['vendor'] == VENDOR
     assert send_data_to_xsiam_kwargs['product'] == 'vulnerabilities'
 
-    assert next_run == DEFAULT_LAST_ASSETS_RUN
+    assert next_run == DEFAULT_LAST_ASSETS_RUN  # pulling finished, next run stage should be assets
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, client: Client):
+    """
+    Given:
+    - Qualys client and last run dictionary with total assets and vulnerabilities counts, and snapshot ID.
+
+    When:
+    - Calling fetch_assets_and_vulnerabilities_by_qids.
+
+    Assert:
+    - Ensure correct sending of assets to XSIAM.
+    - Ensure correct sending of vulnerabilities to XSIAM.
+    - Ensure correct last run that preserves snapshot ID, sets next trigger to 0, and updates total counts.
+    """
+    last_snapshot_id = '1737885000'
+    last_total_assets = 100
+    last_total_vulns = 66
+    last_run = {'total_assets': last_total_assets, 'total_vulnerabilities': last_total_vulns, 'snapshot_id': last_snapshot_id}
+
+    expected_assets = util_load_json('./test_data/fetched_assets.json')
+    next_page, set_new_limit = f'{BASE_URL}/next/page/abc', False   # has next assets page (so not done pulling assets)
+    mocker.patch('Qualysv2.get_host_list_detections_events', return_value=(expected_assets, next_page, set_new_limit))
+
+    expected_vulnerabilities = util_load_json('./test_data/fetched_vulnerabilities.json')
+    mocker.patch('Qualysv2.fetch_vulnerabilities', return_value=(expected_vulnerabilities, {}))
+
+    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+    mock_set_assets_last_run = mocker.patch('Qualysv2.demisto.setAssetsLastRun')
+
+    fetch_assets_and_vulnerabilities_by_qids(client, last_run)
+
+    # first send_data_to_xsiam call is to send assets, second to send vulnerabilities
+    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
+    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+    next_run = mock_set_assets_last_run.call_args[0][0]
+
+    assert send_data_to_xsiam_assets_kwargs['data'] == expected_assets
+    assert send_data_to_xsiam_assets_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_assets_kwargs['product'] == 'assets'
+    assert send_data_to_xsiam_assets_kwargs['snapshot_id'] == last_snapshot_id
+    assert send_data_to_xsiam_assets_kwargs['items_count'] == '1'  # Not done pulling assets, set reported count to 1
+    assert not send_data_to_xsiam_assets_kwargs['should_update_health_module']
+
+    assert send_data_to_xsiam_vulns_kwargs['data'] == expected_vulnerabilities
+    assert send_data_to_xsiam_vulns_kwargs['vendor'] == VENDOR
+    assert send_data_to_xsiam_vulns_kwargs['product'] == 'vulnerabilities'
+    assert send_data_to_xsiam_vulns_kwargs['snapshot_id'] == last_snapshot_id
+    assert send_data_to_xsiam_vulns_kwargs['items_count'] == '1'  # Not done pulling assets, set reported count to 1
+    assert not send_data_to_xsiam_vulns_kwargs['should_update_health_module']
+
+    assert next_run == {
+        'stage': 'assets',
+        'next_page': next_page,
+        'total_assets': last_total_assets + len(expected_assets),
+        'since_datetime': '2024-10-03',  # freezed datetime - 90 days
+        'snapshot_id': last_snapshot_id,
+        'nextTrigger': '0',
+        'type': 1,
+        'total_vulnerabilities': last_total_vulns + len(expected_vulnerabilities),
+    }
