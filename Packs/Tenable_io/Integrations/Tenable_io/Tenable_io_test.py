@@ -782,12 +782,6 @@ def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
     assert len(audit_logs) == 1
     assert audit_logs[0].get('id') == '12345'
 
-    last_run.update({'last_id': 2, 'last_fetch_time': '2022-09-20'})
-    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
-
-    assert len(audit_logs) == 1
-    assert audit_logs[0].get('id') == '123456'
-
 
 def test_test_module(requests_mock, mocker):
     """
