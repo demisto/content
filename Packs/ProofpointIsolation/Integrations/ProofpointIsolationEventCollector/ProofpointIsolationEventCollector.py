@@ -172,8 +172,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         last_run = demisto.getLastRun() or {}
         start = last_run.get('start_date')
         if not start:
-            # start = get_current_time().strftime(DATE_FORMAT)
-            start = "2025-01-05"
+            start = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
         ids = set(last_run.get('ids', []))
 
