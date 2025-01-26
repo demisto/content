@@ -15,9 +15,10 @@ from unittest.mock import patch
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import EntryType
+from CommonServerPython import EntryType, DemistoException
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
-    get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries
+    get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
+    fetch_modified_incident
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
@@ -366,3 +367,59 @@ def test_get_entries_for_comments_empty_comments():
     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS, False)
 
     assert len(result) == 0
+
+
+def test_get_determination_value():
+    # Test: Valid classification, no determination provided
+    assert get_determination_value('TruePositive', None) == 'Other'
+    assert get_determination_value('Unknown', None) == 'NotAvailable'
+
+    # Test: Valid classification and determination
+    assert get_determination_value('TruePositive', 'Malware') == 'Malware'
+    assert get_determination_value('InformationalExpectedActivity', 'ConfirmedActivity') == 'ConfirmedActivity'
+
+    # Test: Invalid classification
+    with pytest.raises(DemistoException, match="Please provide a valid classification"):
+        get_determination_value('InvalidClassification', 'Malware')
+
+    # Test: Valid classification but invalid determination
+    with pytest.raises(DemistoException, match="Invalid determination. Please provide one of the following:"):
+        get_determination_value('TruePositive', 'InvalidDetermination')
+
+    # Test: Valid classification with "Other" determination
+    assert get_determination_value('TruePositive', 'Other') == 'Other'
+    assert get_determination_value('InformationalExpectedActivity', 'Other') == 'Other'
+
+    # Test: Edge case with valid classification and determination not matching any key
+    with pytest.raises(DemistoException, match="Invalid determination. Please provide one of the following:"):
+        get_determination_value('FalsePositive', 'Phishing')
+
+
+def test_fetch_modified_incident(mocker):
+    client = mock_client(mocker, 'get_incident', util_load_json('./test_data/incident_get_response.json'))
+    mock_meta_data = mocker.patch('your_module_name._get_meta_data_for_incident', return_value={
+        'Categories': ['SuspiciousActivity'],
+        'Impacted entities': [],
+        'Active alerts': '0 / 1',
+        'Service sources': ['MicrosoftDefenderForEndpoint'],
+        'Detection sources': ['AutomatedInvestigation'],
+        'First activity': '2021-03-22T12:34:31.8123759Z',
+        'Last activity': '2021-03-22T12:34:31.8123759Z',
+        'Devices': [{'device name': 'deviceDnsName', 'risk level': 'Informational', 'tags': 'new test,test add tag,testing123'}],
+        'Mailboxes': [],
+        'comments': [],
+    })
+    # Valid incident ID
+    incident_id = 263
+    incident = fetch_modified_incident(client, incident_id)
+
+    assert "incidentId" in incident
+    assert incident["incidentId"] == 263
+    assert "@odata.context" not in incident  # Should be removed
+    # Assert metadata was added
+    assert "Categories" in incident
+    assert incident["Categories"] == ['SuspiciousActivity']
+    assert "Devices" in incident
+    assert incident["Devices"][0] == {'device name': 'deviceDnsName', 'risk level': 'Informational',
+                                      'tags': 'new test,test add tag,testing123'}
+    assert mock_meta_data.called  # Ensure _get_meta_data_for_incident was called
