@@ -1496,11 +1496,12 @@ Sends an email using EWS.
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | raw_message | Raw email message from MimeContent type. | Optional | 
 | from | The email address from which to send mail. | Optional | 
-| handle_inline_image |  Possible values are: True, False. Default is True. | Optional | 
+| handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML and attached to the email as an object.  Note that in some cases, attaching the image as an object may cause the image to disappear when replying to the email. Additionally, sending the image as base64 (inline image) may cause the image to disappear if the image is too large or recognized as malicious and subsequently deleted. Possible values are: True, False. Default is True. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
 ### reply-mail
 
 ***

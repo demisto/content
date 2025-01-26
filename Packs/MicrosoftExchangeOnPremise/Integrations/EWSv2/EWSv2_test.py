@@ -339,12 +339,12 @@ MESSAGES = [
             datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC'))
             ),
 ]
-CASE_FIRST_RUN_NO_INCIDENT = (
+CASE_FIRST_RUN_NO_INCIDENT: tuple = (
     {},
     [],
     {'lastRunTime': None, 'folderName': 'Inbox', 'ids': [], 'errorCounter': 0}
 )
-CASE_FIRST_RUN_FOUND_INCIDENT = (
+CASE_FIRST_RUN_FOUND_INCIDENT: tuple = (
     {},
     MESSAGES[:1],
     {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0}
@@ -358,7 +358,7 @@ CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN = (
 CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN = (
     {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2']}, MESSAGES[1:3],
     {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2', 'message3'], 'errorCounter': 0})
-CASE_SECOND_RUN_NO_INCIDENTS = (
+CASE_SECOND_RUN_NO_INCIDENTS: tuple = (
     {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, [],
     {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
 CASE_SECOND_RUN_DIFFERENT_CREATED_RECEIVED_TIME = (
@@ -731,7 +731,7 @@ def test_parse_item_as_dict_with_empty_field():
 
 def test_get_entry_for_object_empty():
     from EWSv2 import get_entry_for_object
-    obj = {}
+    obj: dict = {}
     assert get_entry_for_object("test", "keyTest", obj) == "There is no output results"
 
 
@@ -744,7 +744,7 @@ def test_get_entry_for_object():
 def test_get_time_zone(mocker):
     """
     When -
-        trying to send/reply an email we check the XOSAR user time zone
+        trying to send/reply an email we check the XSOAR user time zone
 
     Then -
         verify that info returns
@@ -854,7 +854,7 @@ def test_format_identifier(input, output):
 
 
 @pytest.mark.parametrize(
-    "handle_inline_image"
+    "handle_inline_image",
     [
         pytest.param(True, id="handle_inline_image is True"),
         pytest.param(False, id="handle_inline_image is False")
@@ -921,7 +921,7 @@ def test_get_message_for_body_type_html_body_type_with_html_body(handle_inline_i
 
 
 @pytest.mark.parametrize(
-    "handle_inline_image"
+    "handle_inline_image",
     [
         pytest.param(True, id="handle_inline_image is True"),
         pytest.param(False, id="handle_inline_image is False")
@@ -937,20 +937,20 @@ def test_get_message_for_body_type_text_body_type_with_html_body(handle_inline_i
 
 def test_get_message_for_body_type_html_body_type_with_no_html_body():
     body = "This is a plain text body"
-    result = get_message_for_body_type(body, 'html', None)
+    result = get_message_for_body_type(body, 'html', None, True)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_text_body_type_with_no_html_body():
     body = "This is a plain text body"
-    result = get_message_for_body_type(body, 'text', None)
+    result = get_message_for_body_type(body, 'text', None, True)
     assert isinstance(result[0], Body)
     assert result[0] == Body(body)
 
 
 @pytest.mark.parametrize(
-    "handle_inline_image"
+    "handle_inline_image",
     [
         pytest.param(True, id="handle_inline_image is True"),
         pytest.param(False, id="handle_inline_image is False")

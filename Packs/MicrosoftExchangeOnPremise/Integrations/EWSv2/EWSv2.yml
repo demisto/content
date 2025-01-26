@@ -998,7 +998,7 @@ script:
       name: raw_message
     - description: The email address from which to send mail.
       name: from
-    - description: ""
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML and attached to the email as an object.
       predefined:
       - 'True'
       - 'False'
