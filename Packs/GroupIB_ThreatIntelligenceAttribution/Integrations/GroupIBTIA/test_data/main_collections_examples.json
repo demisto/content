@@ -833,7 +833,7 @@
                     "bicRu": null,
                     "bsb": null,
                     "iban": null,
-                    "name": "ОАО АКБ \"УРАЛ ФД\"",
+                    "name": "EXAMPLE OOO",
                     "swift": null,
                     "clabe": null
                 },
@@ -904,7 +904,7 @@
                     "bicRu": null,
                     "bsb": null,
                     "iban": null,
-                    "name": "ОАО АКБ \"УРАЛ ФД\"",
+                    "name": "EXAMPLE OOO",
                     "swift": null,
                     "clabe": null
                 },
@@ -980,7 +980,7 @@
                     "bicRu": null,
                     "bsb": null,
                     "iban": null,
-                    "name": "ОАО АКБ \"УРАЛ ФД\"",
+                    "name": "EXAMPLE OOO",
                     "swift": null,
                     "clabe": null
                 },
@@ -1057,6 +1057,105 @@
             }
         },
         "seqUpdate": 1454699133295
+    },
+    "compromised/breached":{
+        "resultId": "3b87b3624d57ef2591f2a926ce25036832c347a3",
+        "count": 1746463257,
+        "items": [
+            {
+                "addInfo": {
+                    "emailDomain": [
+                        "mail.com"
+                    ],
+                    "updateTimestampLong": [
+                        1727736313973637
+                    ]
+                },
+                "description": null,
+                "downloadLinkList": [],
+                "email": [
+                    "example.user.04@mail.com"
+                ],
+                "evaluation": {
+                    "admiraltyCode": "C3",
+                    "credibility": 50,
+                    "reliability": 50,
+                    "severity": "green",
+                    "tlp": "amber",
+                    "ttl": null
+                },
+                "id": "70b0f7b160866f3a5a351413ce898065",
+                "leakName": "Email collection",
+                "leakPublished": "21.09.2024",
+                "password": [],
+                "reaperMessageId": null,
+                "taName": [],
+                "updateTime": "2024-10-01T01:45:13",
+                "uploadTime": "2024-10-01T01:45:13"
+            },
+            {
+                "addInfo": {
+                    "emailDomain": [
+                        "exampledomain.cz"
+                    ],
+                    "updateTimestampLong": [
+                        1727736313995465
+                    ]
+                },
+                "description": null,
+                "downloadLinkList": [],
+                "email": [
+                    "startuser@exampledomain.cz"
+                ],
+                "evaluation": {
+                    "admiraltyCode": "C3",
+                    "credibility": 50,
+                    "reliability": 50,
+                    "severity": "green",
+                    "tlp": "amber",
+                    "ttl": null
+                },
+                "id": "b2f3b1500376d13c0a74611dd2c95119",
+                "leakName": "Email collection",
+                "leakPublished": "21.09.2024",
+                "password": [],
+                "reaperMessageId": null,
+                "taName": [],
+                "updateTime": "2024-10-01T01:45:13",
+                "uploadTime": "2024-10-01T01:45:13"
+            },
+            {
+                "addInfo": {
+                    "emailDomain": [
+                        "example.fr"
+                    ],
+                    "updateTimestampLong": [
+                        1727736314011414
+                    ]
+                },
+                "description": null,
+                "downloadLinkList": [],
+                "email": [
+                    "useeeerexample@example.fr"
+                ],
+                "evaluation": {
+                    "admiraltyCode": "C3",
+                    "credibility": 50,
+                    "reliability": 50,
+                    "severity": "green",
+                    "tlp": "amber",
+                    "ttl": null
+                },
+                "id": "71a122a99b3925ef8b8f225d2ac76fa8",
+                "leakName": "Email collection",
+                "leakPublished": "21.09.2024",
+                "password": [],
+                "reaperMessageId": null,
+                "taName": [],
+                "updateTime": "2024-10-01T01:45:14",
+                "uploadTime": "2024-10-01T01:45:14"
+            }
+        ]
     },
     "attacks/ddos":{
         "count": 44739317,
@@ -3382,6 +3481,967 @@
         ],
         "seqUpdate": 17272224279604
     },
+    "apt/threat_actor":{
+        "count": 19,
+        "items": [
+            {
+                "addedToThreatLandscapeFor": null,
+                "aliases": [
+                    "CamoFei"
+                ],
+                "country": "CN",
+                "createdAt": "2019-02-20T17:44:21+00:00",
+                "description": "<p>Experts gave the group the name ChamelGang (from the word 'chameleon'), because the group disguised its malware and network infrastructure under legitimate services of Microsoft, TrendMicro, McAfee, IBM, and Google. The attackers employed two methods. They acquired domains that imitate legitimate ones. In addition, the APT group placed SSL certificates that also imitated legitimate ones on its servers. To achieve their goal, the attackers used a trending penetration method—supply chain. The group compromised a subsidiary and penetrated the target company's network through it.</p>",
+                "displayOptions": {
+                    "isFavourite": false,
+                    "isHidden": false
+                },
+                "files": [
+                    {
+                        "hash": "23f780c4ad6cdc16989acdb4f218712ba1d2d038e9c057026e54249b031957a3",
+                        "mime": "image/png",
+                        "name": "23f780c4ad6cdc16989acdb4f218712ba1d2d038e9c057026e54249b031957a3",
+                        "size": 60084
+                    }
+                ],
+                "goals": [],
+                "hasIocs": true,
+                "id": "de70f8194526173b885baf2999f65225927c2f31",
+                "isAPT": true,
+                "labels": [],
+                "langs": [
+                    "en",
+                    "ru"
+                ],
+                "name": "ChamelGang",
+                "oldId": null,
+                "roles": [],
+                "seqUpdate": 17274816349479,
+                "spokenOnLangs": [
+                    "en"
+                ],
+                "stat": {
+                    "allIndicatorsCount": 51,
+                    "allReportsCount": 6,
+                    "contactsCount": 4,
+                    "countries": [
+                        "BR",
+                        "IN",
+                        "JP",
+                        "RU",
+                        "TW",
+                        "US"
+                    ],
+                    "cve": [],
+                    "dateFirstSeen": "2022-11-01",
+                    "dateLastSeen": "2024-09-28",
+                    "expertise": [
+                        "AutoReport",
+                        "Brief Report",
+                        "Ransomware"
+                    ],
+                    "forumsAccountsCount": 0,
+                    "malware": [
+                        "CatB",
+                        "Cobalt Strike"
+                    ],
+                    "regions": [
+                        "america:northern_america",
+                        "america:south_america",
+                        "asia",
+                        "europe"
+                    ],
+                    "relatedThreatActorsCount": 0,
+                    "reports": [
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-28",
+                            "id": "9c8d61663f8e4b2c58d9029238ac9b2e6d65793d",
+                            "name": {
+                                
+                                "en": "ChamelGang - New indicators have been found"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-07",
+                            "id": "fbb2d470aa4530fb2260b14346c4d62353463e29",
+                            "name": {
+                                
+                                "en": "ChamelGang - New indicators have been found"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-07",
+                            "id": "f8624dcf70b33a45e027e7fa68cc9d2ee3120092",
+                            "name": {
+                                
+                                "en": "ChamelGang - New indicators have been found"
+                            }
+                        }
+                    ],
+                    "sectors": [
+                        "government-and-military",
+                        "health-care"
+                    ],
+                    "targetedCompany": [],
+                    "targetedPartnersAndClients": []
+                },
+                "techSeqUpdate": null,
+                "threatLandscapeOptions": [
+                    {
+                        "label": "company",
+                        "value": "company"
+                    },
+                    {
+                        "label": "partner",
+                        "value": "partner"
+                    },
+                    {
+                        "label": "industry",
+                        "value": "industry"
+                    },
+                    {
+                        "label": "other",
+                        "value": "other"
+                    }
+                ],
+                "updatedAt": "2024-09-28T03:00:34+03:00"
+            },
+            {
+                "addedToThreatLandscapeFor": null,
+                "aliases": [
+                    "BARIUM",
+                    "Winnti",
+                    "LEAD",
+                    "WICKED SPIDER",
+                    "WICKED PANDA",
+                    "Blackfly",
+                    "Suckfly",
+                    "Winnti Umbrella",
+                    "Double Dragon",
+                    "HOODOO",
+                    "RedGolf"
+                ],
+                "country": "CN",
+                "createdAt": "2020-05-20T16:23:32+03:00",
+                "description": "<p>A China-sponsored criminal group with dual attack goal (cyber espionage&nbsp;and financial benefit) that has been active since at least 2007.&nbsp;</p><h3>Area of interest</h3><p>APT41 specializes in stealing digital certificates for use in operations involving user data theft&nbsp;(cyber espionage), as well as placing cryptominers and ransomware on devices. Previously, the group's goals were also currency manipulation in online games and theft of intellectual property.</p><h3>Alternative names</h3><p style=\"text-align:justify;\">The network penetration operations are called WICKEDPANDA, while those related to financial gain are called WICKED SPIDER. In the Microsoft classification, attacks on the video game and technology industry are usually called BARIUM, and cyber espionage operations are called LEAD.</p><h3 style=\"text-align:justify;\">C2 servers special character</h3><p style=\"text-align:justify;\">The second-level domains consonant with the name of the legitimate company were used with no routed localhost IP-address in the A-record when inactive. After that, a third-level domain was created, which resolved to the IP address of the attackers' server. At the same time, the address of the legitimate site of the company was used for the second-level domain, as the attackers were mimicking.</p><h3 style=\"text-align:justify;\">General tools characteristics</h3><p style=\"text-align:justify;\">The malware was distributed in the DLL library for a 64-bit version of Windows form&nbsp;and had the functionality of a Remote Administration Tool (RAT). Third-party utilities and frameworks were also used. The use of malware attributed to other groups has been noticed.</p><h3 style=\"text-align:justify;\">Samples feature&nbsp;</h3><p>The use of digital certificates issued for legitimate gaming software and obtained by compromising the manufacturer in attacks is one of the main features of this group. In addition, there is information about the use (including re-use) of such certificates in attacks by other Chinese cyber groups (APT17, APT20, APT31). Certificates are either delivered by agreement with the group, or distributed commercially in the shadow segment of the network.</p><h3>Collaboration</h3><p>APT41 considered to be a few chinese APT groups conglomerate which includes Group 72, PassCV, APT17.</p>",
+                "displayOptions": {
+                    "isFavourite": false,
+                    "isHidden": false
+                },
+                "files": [],
+                "goals": [
+                    "Information",
+                    "Research",
+                    "Financial"
+                ],
+                "hasIocs": true,
+                "id": "59a1326f2bed234dcb864a69e7ab28b2fa4b14e9",
+                "isAPT": true,
+                "labels": [
+                    "hacker",
+                    "spy",
+                    "nation-state"
+                ],
+                "langs": [
+                    "ru",
+                    "en"
+                ],
+                "name": "APT41",
+                "oldId": null,
+                "roles": [
+                    "malware-author",
+                    "infrastructure-architect",
+                    "infrastructure-operator"
+                ],
+                "seqUpdate": 17275680181282,
+                "spokenOnLangs": [
+                    "zh"
+                ],
+                "stat": {
+                    "allIndicatorsCount": 3188,
+                    "allReportsCount": 129,
+                    "contactsCount": 143,
+                    "countries": [
+                        "TW",
+                        "KR",
+                        "US",
+                        "JP",
+                        "IN",
+                        "VN",
+                        "PH",
+                        "CN",
+                        "HK",
+                        "GB",
+                        "MY",
+                        "SG",
+                        "TH",
+                        "RU",
+                        "CA",
+                        "DE",
+                        "AU",
+                        "IT",
+                        "FR",
+                        "ID",
+                        "SA",
+                        "AE",
+                        "BR",
+                        "CH",
+                        "DK",
+                        "FI",
+                        "MX",
+                        "PK",
+                        "PL",
+                        "QA",
+                        "SE",
+                        "UA",
+                        "KG",
+                        "KZ",
+                        "MM",
+                        "NP",
+                        "AF",
+                        "AR",
+                        "BE",
+                        "BH",
+                        "BY",
+                        "CL",
+                        "CZ",
+                        "ES",
+                        "FJ",
+                        "IL",
+                        "KW",
+                        "LK",
+                        "MO",
+                        "NL",
+                        "PE",
+                        "SK",
+                        "TJ",
+                        "UZ"
+                    ],
+                    "cve": [
+                        "CVE-2017-0199",
+                        "CVE-2013-0633",
+                        "CVE-2013-0634",
+                        "CVE-2017-11882",
+                        "CVE-2018-5713",
+                        "CVE-2019-11510",
+                        "CVE-2019-16278",
+                        "CVE-2019-1652",
+                        "CVE-2019-1653",
+                        "CVE-2019-16920",
+                        "CVE-2019-18935",
+                        "CVE-2019-19781",
+                        "CVE-2019-3396",
+                        "CVE-2019-9621",
+                        "CVE-2019-9670",
+                        "CVE-2020-10189",
+                        "CVE-2021-1675",
+                        "CVE-2021-22205",
+                        "CVE-2021-26855",
+                        "CVE-2021-26857",
+                        "CVE-2021-26858",
+                        "CVE-2021-27065",
+                        "CVE-2021-31207",
+                        "CVE-2021-34473",
+                        "CVE-2021-34481",
+                        "CVE-2021-34523",
+                        "CVE-2021-34527",
+                        "CVE-2021-36958",
+                        "CVE-2021-44207",
+                        "CVE-2021-44228",
+                        "CVE-2022-24682",
+                        "CVE-2022-27924",
+                        "CVE-2022-27925",
+                        "CVE-2022-30333",
+                        "CVE-2022-37042",
+                        "CVE-2022-39952",
+                        "CVE-2022-40684"
+                    ],
+                    "dateFirstSeen": "2009-11-27",
+                    "dateLastSeen": "2024-09-29",
+                    "expertise": [
+                        "AutoReport",
+                        "Backdoor",
+                        "Cobalt Strike",
+                        "Windows",
+                        "Active Directory",
+                        "Exploit",
+                        "Access",
+                        "Rootkit",
+                        "Stealer",
+                        "x64",
+                        "Compromised data",
+                        "Metasploit",
+                        "CVE",
+                        "Fileless",
+                        "Loader",
+                        "Shell",
+                        "Unix",
+                        "Android",
+                        "Brief Report",
+                        "Corporate network",
+                        "Keylogger",
+                        "RAT",
+                        "Ransomware",
+                        "Replacer",
+                        "Web-inject"
+                    ],
+                    "forumsAccountsCount": 0,
+                    "malware": [
+                        "Cobalt Strike",
+                        "Winnti",
+                        "ShadowPad",
+                        "PlugX",
+                        "Mimikatz",
+                        "Crosswalk",
+                        "FunnySwitch",
+                        "KEYPLUG",
+                        "Metasploit",
+                        "PHOTO",
+                        "SQLMap",
+                        "9002 RAT",
+                        "China Chopper",
+                        "Cobalt Strike Beacon",
+                        "PWNLNX",
+                        "Pipemon",
+                        "PortReuse",
+                        "Spyder",
+                        "WINNKIT",
+                        "AceHash",
+                        "Bisonal",
+                        "Brute Ratel",
+                        "CRACKSHOT",
+                        "ColdLock",
+                        "DBoxAgent",
+                        "DEPLOYLOG",
+                        "Gh0st",
+                        "HDRoot",
+                        "MESSAGETAP",
+                        "Microcin",
+                        "MoonBounce",
+                        "PRIVATELOG",
+                        "PWNDROID4",
+                        "Poison Ivy",
+                        "PowerSploit",
+                        "RedXOR",
+                        "SPARKLOG",
+                        "STASHLOG",
+                        "ShadowHammer",
+                        "SideWalk",
+                        "SkinnyD",
+                        "Speculoos",
+                        "XMRig",
+                        "ZxShell",
+                        "nmap",
+                        "skip-2.0",
+                        "xDll"
+                    ],
+                    "regions": [
+                        "asia",
+                        "america:northern_america",
+                        "europe",
+                        "europe:european_union",
+                        "oceania",
+                        "middle_east",
+                        "america:south_america",
+                        "america:central_america"
+                    ],
+                    "relatedThreatActorsCount": 0,
+                    "reports": [
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-29",
+                            "id": "5335d2f653b14eabfcd810e4d57e852668623213",
+                            "name": {
+                                
+                                "en": "APT41 - New indicators have been found"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-24",
+                            "id": "d1da0a53543a18e5240ece12d031b6ad711a8202",
+                            "name": {
+                                
+                                "en": "APT41 - New indicators have been found"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-22",
+                            "id": "b4a95fd5b5dd43181865220fc8eb0fba9aba5bfc",
+                            "name": {
+                                
+                                "en": "APT41 - New indicators have been found"
+                            }
+                        }
+                    ],
+                    "sectors": [
+                        "gaming:online-games",
+                        "hardware:telecommunications",
+                        "government-and-military",
+                        "information-technology:information-technology",
+                        "energy:energy",
+                        "government-and-military:government",
+                        "manufacturing:manufacturing",
+                        "other:universities",
+                        "content-and-publishing:news",
+                        "health-care:health-care",
+                        "real-estate:construction",
+                        "software:software",
+                        "transportation:air-transportation",
+                        "manufacturing",
+                        "other:non-profit",
+                        "transportation:transportation",
+                        "education:education",
+                        "financial-services:consumer-lending",
+                        "financial-services:credit",
+                        "gaming:console-games",
+                        "gaming:video-games",
+                        "government-and-military:military",
+                        "professional-services:legal",
+                        "real-estate:real-estate",
+                        "science-and-engineering:aerospace",
+                        "travel-and-tourism:tourism",
+                        "travel-and-tourism:travel",
+                        "financial-services",
+                        "financial-services:financial-services",
+                        "government-and-military:national-security",
+                        "health-care",
+                        "health-care:pharmaceutical",
+                        "transportation:logistics",
+                        "travel-and-tourism:hospitality",
+                        "advertising:social-media-advertising",
+                        "commerce-and-shopping:retail",
+                        "commerce-and-shopping:retail-technology",
+                        "consumer-electronics:computer",
+                        "consumer-electronics:consumer-electronics",
+                        "education",
+                        "financial-services:accounting",
+                        "financial-services:health-insurance",
+                        "financial-services:insurance",
+                        "information-technology",
+                        "media-and-entertainment",
+                        "other:consumer",
+                        "other:infrastructure",
+                        "other:small-and-medium-businesses",
+                        "real-estate:building-maintenance",
+                        "real-estate:property-development",
+                        "sales-and-marketing:digital-marketing",
+                        "science-and-engineering:chemical",
+                        "software",
+                        "transportation",
+                        "transportation:shipping",
+                        "travel-and-tourism:hotel"
+                    ],
+                    "targetedCompany": [
+                        "Air India",
+                        "Apptricity Corporation",
+                        "Changhua Christian Hospital",
+                        "Delta Electronics",
+                        "EC Pay",
+                        "ESTsoft Corp",
+                        "HO CHI MINH NATIONAL POLITICAL ACADEMY",
+                        "Juphoon System Software",
+                        "Mandarin Daily News",
+                        "NCsoft",
+                        "NEXON Corporation",
+                        "NHN Corporation",
+                        "National Development Fund of Taiwan",
+                        "Neowiz CORPORATION",
+                        "Prospera Hotels",
+                        "Royal Thai Air Force",
+                        "Royal Thai Navy",
+                        "TVBS Media",
+                        "YD Online Corp.",
+                        "Arktos Entertainment Group",
+                        "Asiasoft Corporation",
+                        "AsusTek Computer Inc.",
+                        "BASF",
+                        "Battlestate Games",
+                        "CPC Corp.",
+                        "Cayenne Entertainment Technology Co.,Ltd",
+                        "Cebu Technological University",
+                        "Chienkuo Technology University",
+                        "Chunnam Techno University",
+                        "Covestro",
+                        "EPiServer AB",
+                        "EYA soft",
+                        "Electronics Extreme Limited",
+                        "Electronics Extreme Ltd.",
+                        "En Masse Entertainment",
+                        "Fantasy Technology Corp",
+                        "Fortuna Games Co",
+                        "Fortuna Games Co.",
+                        "Fuqing Dawu Technology",
+                        "Fuqing Dawu Technology Co",
+                        "GameUS Inc",
+                        "Garena Online Pte Ltd",
+                        "Garena Online Pvt Ltd",
+                        "Garena online",
+                        "Global Commercial Technology Co.,LTD.",
+                        "Global Commercial Technology Co.,LTD. ",
+                        "Gravity Co., Ltd",
+                        "Guangzhou YuanLuo Technology Co",
+                        "Guangzhou YuanLuo Technology Co.",
+                        "Hammerpoint Interactive",
+                        "Hangame",
+                        "Hangame Japan",
+                        "Henkel",
+                        "Hong Kong Shue Yan University",
+                        "Internap Corporation",
+                        "Kog Co., Ltd.",
+                        "Konkuk University",
+                        "LANXESS",
+                        "Lingnan University",
+                        "Lion Air",
+                        "LivePlex Corp",
+                        "MGAME Corp",
+                        "MGAME Corp.",
+                        "Marriott",
+                        "NOX Entertainment",
+                        "NOX Entertainment Co., Ltd",
+                        "NTC Technology Ltd",
+                        "Nanjing Ranyi Technology Co.",
+                        "Nanjing Ranyi Technology Co., Ltd.",
+                        "Neoact Co",
+                        "NetSarang Computer, Inc.",
+                        "OP Productions, LLC",
+                        "Redduck Inc.",
+                        "Roche",
+                        "Rosso Index KK",
+                        "Royal Thai Armed Forces",
+                        "Runewaker Entertainment",
+                        "SK Broadband Co Ltd",
+                        "Schroders",
+                        "Sesisoft",
+                        "Shanda Games",
+                        "Shin-Etsu",
+                        "Sichuan Qiyu Network Technology",
+                        "Sichuan Qiyu Network Technology Co., Ltd.",
+                        "Siemens",
+                        "Sumitomo",
+                        "THANH TRA CHÍNH PHỦ",
+                        "TeamViewer",
+                        "Trion Worlds",
+                        "VNG Corporation",
+                        "Valve",
+                        "WEBZEN",
+                        "WVT (HK) COMPANY LIMITED",
+                        "Webzen Inc.",
+                        "Wemade Entertainment",
+                        "Wemade Entertainment co.",
+                        "XL Games",
+                        "XL Games Co",
+                        "XL Games Co.,Ltd",
+                        "YNK Japan",
+                        "ZEALOT DIGITAL INTERNATIONAL CORPORATION",
+                        "Zemi Interactive Co",
+                        "Zemi Interactive Inc.",
+                        "Zepetto",
+                        "ZerodinGames Co., Ltd",
+                        "eDong"
+                    ],
+                    "targetedPartnersAndClients": [
+                        "Piriform Ltd."
+                    ]
+                },
+                "techSeqUpdate": null,
+                "threatLandscapeOptions": [
+                    {
+                        "label": "company",
+                        "value": "company"
+                    },
+                    {
+                        "label": "partner",
+                        "value": "partner"
+                    },
+                    {
+                        "label": "industry",
+                        "value": "industry"
+                    },
+                    {
+                        "label": "other",
+                        "value": "other"
+                    }
+                ],
+                "updatedAt": "2024-09-29T03:00:18+03:00"
+            },
+            {
+                "addedToThreatLandscapeFor": null,
+                "aliases": [],
+                "country": null,
+                "createdAt": "2019-02-20T17:44:21+00:00",
+                "description": "<p>BAHAMUT is the name given to a cyberespionage threat actor by researchers writing for Bellingcat in 2017.&nbsp;</p><p>The APT group BAHAMUT is behind a \"staggering\" number of ongoing malicious campaigns against government members and senior business leaders in the Middle East and South Asia. The members of BAHAMUT are allegedly mercenaries who provide services to those who offer the best price. The Bahamut group mainly uses phishing websites, fake news websites, and social networking sites to attack.</p>",
+                "displayOptions": {
+                    "isFavourite": false,
+                    "isHidden": false
+                },
+                "files": [],
+                "goals": [],
+                "hasIocs": true,
+                "id": "abbce934395e21f6669e99f9caf6d741ef8ea7d0",
+                "isAPT": true,
+                "labels": [],
+                "langs": [
+                    "en",
+                    "ru"
+                ],
+                "name": "Bahamut",
+                "oldId": null,
+                "roles": [],
+                "seqUpdate": 17277408454364,
+                "spokenOnLangs": [],
+                "stat": {
+                    "allIndicatorsCount": 63,
+                    "allReportsCount": 35,
+                    "contactsCount": 0,
+                    "countries": [
+                        "IN",
+                        "PK",
+                        "SA"
+                    ],
+                    "cve": [],
+                    "dateFirstSeen": "2022-01-06",
+                    "dateLastSeen": "2024-09-30",
+                    "expertise": [
+                        "AutoReport",
+                        "Brief Report"
+                    ],
+                    "forumsAccountsCount": 0,
+                    "malware": [],
+                    "regions": [
+                        "asia",
+                        "middle_east"
+                    ],
+                    "relatedThreatActorsCount": 0,
+                    "reports": [
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-10-01",
+                            "id": "bb57c20ac0e9c2fdea65676abb90b243b6e2eb9b",
+                            "name": {
+                                
+                                "en": "Bahamut - New indicators have been found"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-28",
+                            "id": "aac4f317e4bf9cdf4162b5650fc784dd78a0efb9",
+                            "name": {
+                                
+                                "en": "Bahamut - New indicators have been found"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-23",
+                            "id": "8dd54f04fbac850457a9b9a1e2cb409d4ea309e6",
+                            "name": {
+                                
+                                "en": "Bahamut - New indicators have been found"
+                            }
+                        }
+                    ],
+                    "sectors": [
+                        "government-and-military"
+                    ],
+                    "targetedCompany": [],
+                    "targetedPartnersAndClients": []
+                },
+                "techSeqUpdate": null,
+                "threatLandscapeOptions": [
+                    {
+                        "label": "company",
+                        "value": "company"
+                    },
+                    {
+                        "label": "partner",
+                        "value": "partner"
+                    },
+                    {
+                        "label": "industry",
+                        "value": "industry"
+                    },
+                    {
+                        "label": "other",
+                        "value": "other"
+                    }
+                ],
+                "updatedAt": "2024-10-01T03:00:45+03:00"
+            }
+        ],
+        "seqUpdate": 17277408454364
+    },
+    "hi/threat_actor":{
+        "count": 152,
+        "items": [
+            {
+                "addedToThreatLandscapeFor": null,
+                "aliases": [],
+                "country": "KH",
+                "createdAt": "2023-07-07T02:24:07+00:00",
+                "description": "<p>&nbsp;</p><p>The group started its activity at the end of spring 2023.</p><figure class=\"image\"><img src=\"/api/v2/hi/threat_actor/af636987c56e51f88cde01da2a2f01c304e21677/file/c2bf203481872210a0a47b4d8958f9a2057ff4bdce7eeb6525bd2e9e4b97b5cd?placeholder=__IMAGE_af636987c56e51f88cde01da2a2f01c304e21677:c2bf203481872210a0a47b4d8958f9a2057ff4bdce7eeb6525bd2e9e4b97b5cd_IMAGE__\"  /></figure><p><br>Among the targets, the group clearly prioritizes Indonesia and Thailand. However, like most hacktivist groups, they also attack states associated with any high-profile newsworthy events.</p><p>In contrast to most similar NDT groupings, NEC pays a lot of attention to attacks that lead to leaks or obtaining and subsequent publication of access to any admin panel. Presumably, the group uses SQLmap as the main tool for such attacks.<br>The group refers to the region of Cambodia and, predominately, to the Khmers. Telegram channel (@ndtgroup_kh) uses English and sometimes Khmer.</p><p>&nbsp;</p>",
+                "displayOptions": {
+                    "isFavourite": false,
+                    "isHidden": false
+                },
+                "files": [],
+                "goals": [],
+                "hasIocs": false,
+                "id": "af636987c56e51f88cde01da2a2f01c304e21677",
+                "isAPT": false,
+                "labels": [],
+                "langs": [
+                    "en"
+                ],
+                "name": "NDT SEC",
+                "oldId": null,
+                "roles": [],
+                "seqUpdate": 17271118627713,
+                "spokenOnLangs": [
+                    "en"
+                ],
+                "stat": {
+                    "allIndicatorsCount": 0,
+                    "allReportsCount": 27,
+                    "contactsCount": 21,
+                    "countries": [
+                        "TH",
+                        "ID",
+                        "FR",
+                        "NZ",
+                        "VN"
+                    ],
+                    "cve": [],
+                    "dateFirstSeen": "2023-05-13",
+                    "dateLastSeen": "2024-09-23",
+                    "expertise": [
+                        "DDOS",
+                        "Hacktivism",
+                        "Hactivism",
+                        "AutoReport",
+                        "Leak",
+                        "Deface",
+                        "Hacktivist",
+                        "mea_tension"
+                    ],
+                    "forumsAccountsCount": 0,
+                    "malware": [],
+                    "regions": [
+                        "asia",
+                        "europe:european_union",
+                        "oceania"
+                    ],
+                    "relatedThreatActorsCount": 0,
+                    "reports": [
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-23",
+                            "id": "d32e021fe8fb389ecb5947b9a644ca05185f0e7e",
+                            "name": {
+                                
+                                "en": "NDT SEC posted message containing data about possible attack targeting Indonesia"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-23",
+                            "id": "f4626c8b0e3e8f0f0cf1ba30fa3cea5256bf0997",
+                            "name": {
+                                
+                                "en": "NDT SEC posted message containing data about possible attack targeting Indonesia"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-23",
+                            "id": "5f255b8924ffd41487ebac0e0a8d0aa4e445a13f",
+                            "name": {
+                                
+                                "en": "NDT SEC posted message containing data about possible attack targeting bali-airport.com"
+                            }
+                        }
+                    ],
+                    "sectors": [
+                        "government-and-military",
+                        "government-and-military:government",
+                        "commerce-and-shopping:retail",
+                        "education",
+                        "energy:electrical-distribution",
+                        "financial-services",
+                        "financial-services:banking"
+                    ],
+                    "targetedCompany": [],
+                    "targetedPartnersAndClients": []
+                },
+                "techSeqUpdate": null,
+                "threatLandscapeOptions": [
+                    {
+                        "label": "company",
+                        "value": "company"
+                    },
+                    {
+                        "label": "partner",
+                        "value": "partner"
+                    },
+                    {
+                        "label": "industry",
+                        "value": "industry"
+                    },
+                    {
+                        "label": "other",
+                        "value": "other"
+                    }
+                ],
+                "updatedAt": "2024-09-23T20:17:42+03:00"
+            },
+            {
+                "addedToThreatLandscapeFor": null,
+                "aliases": [
+                    "grep",
+                    "grepcn",
+                    "grepmoj"
+                ],
+                "country": null,
+                "createdAt": "2024-08-29T17:09:34+05:00",
+                "description": "<p>The user with the alias grep has been active on the underground forum breachforums[.]st since July 3, 2024.</p><figure class=\"image\"><img src=\"/api/v2/hi/threat_actor/6f99ebe40786111b7cceba8dccba662029d1e094/file/d8e3c27ddd39d7cbb9e5adfa037ee4df26f91e0a7d8f7d2f21e34281e29fe31c?placeholder=__IMAGE_6f99ebe40786111b7cceba8dccba662029d1e094:d8e3c27ddd39d7cbb9e5adfa037ee4df26f91e0a7d8f7d2f21e34281e29fe31c_IMAGE__\"  /></figure><p>Link to user's profile:&nbsp;</p><pre><code class=\"language-plaintext\">hxxps://breachforums[.]st/User-grep</code></pre><p>The threat actor's main activity is data and access leakage</p><p><img src=\"/api/v2/hi/threat_actor/6f99ebe40786111b7cceba8dccba662029d1e094/file/47c23bca8feec188cc4d969de751037c57312cf4b7f96769b77e7b021610576b?placeholder=__IMAGE_6f99ebe40786111b7cceba8dccba662029d1e094:47c23bca8feec188cc4d969de751037c57312cf4b7f96769b77e7b021610576b_IMAGE__\"  /></p><p>&nbsp;grep has the same signature as two others threat actors: IntelBroker and EnergyWeaponUser</p><figure class=\"image\"><img src=\"/api/v2/hi/threat_actor/6f99ebe40786111b7cceba8dccba662029d1e094/file/866f3e0549e6dbae926c59e87e8d9506a878820e283f7f32f1b81f4d5f166a43?placeholder=__IMAGE_6f99ebe40786111b7cceba8dccba662029d1e094:866f3e0549e6dbae926c59e87e8d9506a878820e283f7f32f1b81f4d5f166a43_IMAGE__\"  /></figure><p>The actor with the alias grepmoj also joined XSS on September 9, 2024. Link to the profile: hxxps://xss[.]is/members/382722/<br><br><img src=\"/api/v2/hi/threat_actor/6f99ebe40786111b7cceba8dccba662029d1e094/file/46fd1f61dbb3fee5e478c506dcf91713605ad0ad36313df8ce6ef2c6c3c3f022?placeholder=__IMAGE_6f99ebe40786111b7cceba8dccba662029d1e094:46fd1f61dbb3fee5e478c506dcf91713605ad0ad36313df8ce6ef2c6c3c3f022_IMAGE__\" data-mce-src=\"__IMAGE_6f99ebe40786111b7cceba8dccba662029d1e094:46fd1f61dbb3fee5e478c506dcf91713605ad0ad36313df8ce6ef2c6c3c3f022_IMAGE__\" /></p>",
+                "displayOptions": {
+                    "isFavourite": false,
+                    "isHidden": false
+                },
+                "files": [
+                    {
+                        "hash": "d8e3c27ddd39d7cbb9e5adfa037ee4df26f91e0a7d8f7d2f21e34281e29fe31c",
+                        "mime": "image/png",
+                        "name": "d8e3c27ddd39d7cbb9e5adfa037ee4df26f91e0a7d8f7d2f21e34281e29fe31c",
+                        "size": 490571
+                    },
+                    {
+                        "hash": "47c23bca8feec188cc4d969de751037c57312cf4b7f96769b77e7b021610576b",
+                        "mime": "image/png",
+                        "name": "47c23bca8feec188cc4d969de751037c57312cf4b7f96769b77e7b021610576b",
+                        "size": 156035
+                    },
+                    {
+                        "hash": "866f3e0549e6dbae926c59e87e8d9506a878820e283f7f32f1b81f4d5f166a43",
+                        "mime": "image/png",
+                        "name": "866f3e0549e6dbae926c59e87e8d9506a878820e283f7f32f1b81f4d5f166a43",
+                        "size": 84798
+                    },
+                    {
+                        "hash": "46fd1f61dbb3fee5e478c506dcf91713605ad0ad36313df8ce6ef2c6c3c3f022",
+                        "mime": "image/png",
+                        "name": "46fd1f61dbb3fee5e478c506dcf91713605ad0ad36313df8ce6ef2c6c3c3f022",
+                        "size": 40110
+                    }
+                ],
+                "goals": [],
+                "hasIocs": false,
+                "id": "6f99ebe40786111b7cceba8dccba662029d1e094",
+                "isAPT": false,
+                "labels": [],
+                "langs": [
+                    "en"
+                ],
+                "name": "grep",
+                "oldId": null,
+                "roles": [],
+                "seqUpdate": 17271683148763,
+                "spokenOnLangs": [],
+                "stat": {
+                    "allIndicatorsCount": 0,
+                    "allReportsCount": 3,
+                    "contactsCount": 0,
+                    "countries": [
+                        "EG",
+                        "FR",
+                        "ID",
+                        "IN"
+                    ],
+                    "cve": [],
+                    "dateFirstSeen": "2024-08-29",
+                    "dateLastSeen": "2024-09-23",
+                    "expertise": [
+                        "Compromised data",
+                        "Leak",
+                        "Database"
+                    ],
+                    "forumsAccountsCount": 3,
+                    "malware": [],
+                    "regions": [
+                        "asia",
+                        "africa:northern_africa",
+                        "europe:european_union"
+                    ],
+                    "relatedThreatActorsCount": 0,
+                    "reports": [
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-24",
+                            "id": "2f580853070b70a12820e9b5e03f2e3823f5b318",
+                            "name": {
+                                "en": "Publication of data allegedly related to Indonesia's Ministry of Education, Culture, Research, and Technology"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-09-11",
+                            "id": "07793f6779060b7df96ab0960c0b05ad6b9f94a0",
+                            "name": {
+                                "en": "Publication of Capgemini data"
+                            }
+                        },
+                        {
+                            "companyId": [],
+                            "datePublished": "2024-08-30",
+                            "id": "99e0dafd7b780acd0d8366df2bab0660a8c623e4",
+                            "name": {
+                                "en": "Sale of database allegedly belonging to MedicaMall"
+                            }
+                        }
+                    ],
+                    "sectors": [
+                        "commerce-and-shopping:e-commerce",
+                        "education",
+                        "health-care:medical-device",
+                        "information-technology",
+                        "manufacturing:industrial",
+                        "professional-services:consulting"
+                    ],
+                    "targetedCompany": [
+                        "Capgemini",
+                        "Ministry of Education, Culture, Research, and Technology (Indonesia)"
+                    ],
+                    "targetedPartnersAndClients": []
+                },
+                "techSeqUpdate": null,
+                "threatLandscapeOptions": [
+                    {
+                        "label": "company",
+                        "value": "company"
+                    },
+                    {
+                        "label": "partner",
+                        "value": "partner"
+                    },
+                    {
+                        "label": "industry",
+                        "value": "industry"
+                    },
+                    {
+                        "label": "other",
+                        "value": "other"
+                    }
+                ],
+                "updatedAt": "2024-09-24T11:58:34+03:00"
+            }
+        ],
+        "seqUpdate": 17271683148763
+    },
     "hi/threat":{
         "count": 1355,
         "items": [
@@ -4232,6 +5292,312 @@
         ],
         "seqUpdate": 14139216000
     },
+    "malware/malware":{
+        "count": 36,
+        "items": [
+            {
+                "aliases": [],
+                "attachedFile": [],
+                "category": [
+                    "atm-malware"
+                ],
+                "class": null,
+                "deletedIocList": null,
+                "description": "Sorry, no description yet.",
+                "fileIocIdList": [],
+                "fileIocList": [],
+                "geoRegion": [
+                    "asia",
+                    "asia",
+                    "europe",
+                    "america:northern_america",
+                    "europe",
+                    "asia",
+                    "asia",
+                    "asia",
+                    "asia",
+                    "asia",
+                    "europe:european_union",
+                    "asia",
+                    "europe:european_union",
+                    "asia",
+                    "america:south_america",
+                    "europe:european_union",
+                    "middle_east",
+                    "asia",
+                    "asia",
+                    "america:south_america",
+                    "oceania",
+                    "asia",
+                    "america:northern_america",
+                    "africa:northern_africa",
+                    "europe:european_union",
+                    "europe:european_union",
+                    "middle_east",
+                    "europe:european_union",
+                    "europe",
+                    "africa:southern_africa",
+                    "europe:european_union",
+                    "asia",
+                    "middle_east",
+                    "europe:european_union",
+                    "america:central_america",
+                    "europe:european_union",
+                    "asia",
+                    "middle_east",
+                    "europe",
+                    "america:south_america",
+                    "america:south_america",
+                    "europe:european_union",
+                    "europe:european_union",
+                    "europe:european_union",
+                    "europe:european_union",
+                    "europe:european_union",
+                    "africa:western_africa",
+                    "europe",
+                    "oceania",
+                    "america:south_america",
+                    "europe:european_union",
+                    "europe",
+                    "europe",
+                    "europe:european_union",
+                    "europe:european_union",
+                    "europe:european_union",
+                    "america:south_america",
+                    "middle_east",
+                    "asia",
+                    "asia",
+                    "africa:northern_africa",
+                    "asia",
+                    "middle_east",
+                    "europe:european_union",
+                    "europe",
+                    "europe:european_union",
+                    "africa:northern_africa",
+                    "america:south_america",
+                    "america:south_america"
+                ],
+                "id": "d7fde57f6ed2051ffae9257ba6beefe0fc99192f",
+                "isPublished": true,
+                "langs": [
+                    "ru",
+                    "en"
+                ],
+                "linkedMalware": [],
+                "malwareAliasList": [],
+                "mitreMatrix": [],
+                "name": "FASTCash",
+                "networkIocIdList": [],
+                "networkIocList": [],
+                "platform": [
+                    "atm",
+                    "Windows",
+                    "Linux"
+                ],
+                "portalLink": null,
+                "seqUpdate": 16904733083037,
+                "sequenceId": 16269766696153,
+                "shortDescription": "This malware in turn intercepts fraudulent Lazarus cash withdrawal requests and sends fake approval responses, allowing the attackers to steal cash from ATMs.",
+                "signatureIdList": [],
+                "sourceCountry": [
+                    "KP",
+                    "KR",
+                    "RU",
+                    "US",
+                    "GB",
+                    "IN",
+                    "CN",
+                    "VN",
+                    "JP",
+                    "TH",
+                    "FR",
+                    "HK",
+                    "PL",
+                    "SG",
+                    "BR",
+                    "DE",
+                    "IL",
+                    "PK",
+                    "TW",
+                    "AR",
+                    "AU",
+                    "BD",
+                    "CA",
+                    "EG",
+                    "ES",
+                    "IT",
+                    "SA",
+                    "SE",
+                    "TR",
+                    "ZA",
+                    "BE",
+                    "ID",
+                    "IR",
+                    "MT",
+                    "MX",
+                    "NL",
+                    "PH",
+                    "AE",
+                    "CH",
+                    "CL",
+                    "CO",
+                    "CZ",
+                    "EE",
+                    "FI",
+                    "HU",
+                    "IE",
+                    "NG",
+                    "NO",
+                    "NZ",
+                    "PE",
+                    "SK",
+                    "UA",
+                    "AL",
+                    "AT",
+                    "BG",
+                    "DK",
+                    "EC",
+                    "JO",
+                    "KH",
+                    "LK",
+                    "MA",
+                    "MY",
+                    "OM",
+                    "PT",
+                    "RS",
+                    "SI",
+                    "TN",
+                    "UY",
+                    "VE"
+                ],
+                "taList": [
+                    {
+                        "id": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
+                        "name": "Lazarus",
+                        "url": ""
+                    }
+                ],
+                "threatActorList": [],
+                "threatLevel": "High",
+                "updatedAt": "2024-10-22T14:58:02+03:00",
+                "yaraIdList": []
+            },
+            {
+                "aliases": [],
+                "attachedFile": [
+                    {
+                        "hash": "16014bffb0788f55a7eb0ce312642cee58ec5a1153dbf1c9d38b1158abad8e02",
+                        "mime": "image/png",
+                        "name": "16014bffb0788f55a7eb0ce312642cee58ec5a1153dbf1c9d38b1158abad8e02",
+                        "size": 15135
+                    }
+                ],
+                "category": [
+                    "Downloader"
+                ],
+                "class": null,
+                "deletedIocList": null,
+                "description": "Sorry, no description yet.",
+                "fileIocIdList": [],
+                "fileIocList": [],
+                "geoRegion": [],
+                "id": "8b1595ec48c0c21b16cae531bbfac1586ed2a429",
+                "isPublished": true,
+                "langs": [
+                    "en"
+                ],
+                "linkedMalware": [
+                    {
+                        "id": "8f8b2e715cf5990f3e0eb5f6485c0d3fe67b2611",
+                        "name": "Jcookie"
+                    }
+                ],
+                "malwareAliasList": [],
+                "mitreMatrix": [],
+                "name": "CookieTime",
+                "networkIocIdList": [],
+                "networkIocList": [],
+                "platform": [
+                    "Windows"
+                ],
+                "portalLink": null,
+                "seqUpdate": 16904744513932,
+                "sequenceId": 16499459571753,
+                "shortDescription": "CookieTime is a downloader similar to Torisma, and some of the samples are protected with VMProtect packer. In order to deliver the request type to the C2 server, it uses encoded cookie values and fetches command files from the C2 server. Some of the C2 communication takes advantage of steganography techniques, delivered in files exchanged between infected clients and the C2 server. The contents are disguised as GIF image files, but contain encrypted commands from the C2 server and command execution results.",
+                "signatureIdList": [],
+                "sourceCountry": [],
+                "taList": [
+                    {
+                        "id": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
+                        "name": "Lazarus",
+                        "url": ""
+                    }
+                ],
+                "threatActorList": [],
+                "threatLevel": "Medium",
+                "updatedAt": "2024-10-16T11:15:58+03:00",
+                "yaraIdList": []
+            },
+            {
+                "aliases": [],
+                "attachedFile": [
+                    {
+                        "hash": "21473f69324a9cbdd6787101cd6394cec3c472a82ef49d264032db705748009d",
+                        "mime": "image/png",
+                        "name": "21473f69324a9cbdd6787101cd6394cec3c472a82ef49d264032db705748009d",
+                        "size": 17618
+                    }
+                ],
+                "category": [
+                    "Remote Access Trojan",
+                    "Rootkit",
+                    "Trojan"
+                ],
+                "class": null,
+                "deletedIocList": null,
+                "description": "Sorry, no description yet.",
+                "fileIocIdList": [],
+                "fileIocList": [],
+                "geoRegion": [
+                    "asia"
+                ],
+                "id": "e67e9a2a7aa689a1657aa15ee0db1cf6b45c68f2",
+                "isPublished": true,
+                "langs": [
+                    "en"
+                ],
+                "linkedMalware": [],
+                "malwareAliasList": [],
+                "mitreMatrix": [],
+                "name": "Krasue",
+                "networkIocIdList": [],
+                "networkIocList": [],
+                "platform": [
+                    "Linux"
+                ],
+                "portalLink": null,
+                "seqUpdate": 17020334285354,
+                "sequenceId": 16875077457841,
+                "shortDescription": "Krasue is a Linux malware. It has managed to fly  under the radar for a significant period. Its discovery underscores the threat it poses to critical systems and sensitive data. Capable of granting remote access to attackers, Krasue presents a significant risk. The malware also features a rootkit that is embedded inside the binary.",
+                "signatureIdList": [],
+                "sourceCountry": [
+                    "TH"
+                ],
+                "taList": [
+                    {
+                        "id": "038325ee019f51440f8831e2a270603730a36504",
+                        "name": "Unclassified_TA",
+                        "url": ""
+                    }
+                ],
+                "threatActorList": [],
+                "threatLevel": "Medium",
+                "updatedAt": "2024-09-30T11:15:13+03:00",
+                "yaraIdList": []
+            }
+        ],
+        "seqUpdate": 17020334285354
+    },
     "osi/vulnerability":{
         "count": 454062,
         "items": [
@@ -4444,6 +5810,101 @@
             }
         ],
         "seqUpdate": 15677944270178
+    },
+    "osi/public_leak":{
+        "count": 24353999,
+        "items": [
+            {
+                "bind": [],
+                "created": "2022-05-05T20:26:25+03:00",
+                "data": "networks:\r\n  default:\r\n    name: datahub_network\r\nservices:\r\n  broker:\r\n    container_name: broker\r\n    depends_on:\r\n      - zookeeper\r\n    environment:\r\n      - KAFKA_BROKER_ID=1\r\n      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181\r\n      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT\r\n      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092\r\n      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1\r\n      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0\r\n      - KAFKA_HEAP_OPTS=-Xms256m -Xmx256m\r\n    hostname: broker\r\n    image: confluentinc/cp-kafka:5.4.0\r\n    ports:\r\n      - 29092:29092\r\n      - 9092:9092\r\n  datahub-actions:\r\n    depends_on:\r\n      - datahub-gms\r\n    environment:\r\n      - GMS_HOST=datahub-gms\r\n      - GMS_PORT=8080\r\n      - KAFKA_BOOTSTRAP_SERVER=broker:29092\r\n      - SCHEMA_REGISTRY_URL=http://schema-registry:8081\r\n      - METADATA_AUDIT_EVENT_NAME=MetadataAuditEvent_v4\r\n      - METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME=MetadataChangeLog_Versioned_v1\r\n      - DATAHUB_SYSTEM_CLIENT_ID=__datahub_system\r\n      - DATAHUB_SYSTEM_CLIENT_SECRET=JohnSnowKnowsNothing\r\n      - KAFKA_PROPERTIES_SECURITY_PROTOCOL=PLAINTEXT\r\n    hostname: actions\r\n    image: public.ecr.aws/datahub/acryl-datahub-actions:${ACTIONS_VERSION:-head}\r\n    restart: on-failure:5\r\n  datahub-frontend-react:\r\n    container_name: datahub-frontend-react\r\n    depends_on:\r\n      - datahub-gms\r\n    environment:\r\n      - DATAHUB_GMS_HOST=datahub-gms\r\n      - DATAHUB_GMS_PORT=8080\r\n      - DATAHUB_SECRET=YouKnowNothing\r\n      - DATAHUB_APP_VERSION=1.0\r\n      - DATAHUB_PLAY_MEM_BUFFER_SIZE=10MB\r\n      - JAVA_OPTS=-Xms512m -Xmx512m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null\r\n      - KAFKA_BOOTSTRAP_SERVER=broker:29092\r\n      - DATAHUB_TRACKING_TOPIC=DataHubUsageEvent_v1\r\n      - ELASTIC_CLIENT_HOST=elasticsearch\r\n      - ELASTIC_CLIENT_PORT=9200\r\n      - AUTH_OIDC_ENABLED=true\r\n      - AUTH_OIDC_CLIENT_ID=${DATAHUB_IAM_ID}\r\n      - AUTH_OIDC_CLIENT_SECRET=${DATAHUB_IAM_SECRET}\r\n      - AUTH_OIDC_DISCOVERY_URI=${DATAHUB_IAM_URI}\r\n      - AUTH_OIDC_BASE_URL=${DATAHUB_URL}\r\n      #- AUTH_OIDC_SCOPE=\"\"\r\n      - METADATA_SERVICE_AUTH_ENABLED=true\r\n    hostname: datahub-frontend-react\r\n    image: linkedin/datahub-frontend-react:${DATAHUB_VERSION:-head}\r\n    ports:\r\n      - 9002:9002\r\n    volumes:\r\n      - ${HOME}/.datahub/plugins:/etc/datahub/plugins\r\n      - ${HOME}/.datahub/plugins/frontend/auth/user.props:/datahub-frontend/conf/user.props\r\n  datahub-gms:\r\n    container_name: datahub-gms\r\n    depends_on:\r\n      - mysql\r\n    environment:\r\n      - DATASET_ENABLE_SCSI=false\r\n      - EBEAN_DATASOURCE_USERNAME=datahub\r\n      - EBEAN_DATASOURCE_PASSWORD=datahub\r\n      - EBEAN_DATASOURCE_HOST=mysql:3306\r\n      - EBEAN_DATASOURCE_URL=jdbc:mysql://mysql:3306/datahub?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8\r\n      - EBEAN_DATASOURCE_DRIVER=com.mysql.jdbc.Driver\r\n      - KAFKA_BOOTSTRAP_SERVER=broker:29092\r\n      - KAFKA_SCHEMAREGISTRY_URL=http://schema-registry:8081\r\n      - ELASTICSEARCH_HOST=elasticsearch\r\n      - ELASTICSEARCH_PORT=9200\r\n      - GRAPH_SERVICE_IMPL=elasticsearch\r\n      - JAVA_OPTS=-Xms1g -Xmx1g\r\n      - ENTITY_REGISTRY_CONFIG_PATH=/datahub/datahub-gms/resources/entity-registry.yml\r\n      - MAE_CONSUMER_ENABLED=true\r\n      - MCE_CONSUMER_ENABLED=true\r\n      - UI_INGESTION_ENABLED=true\r\n      - UI_INGESTION_DEFAULT_CLI_VERSION=0.8.26.6\r\n      - METADATA_SERVICE_AUTH_ENABLED=true\r\n    hostname: datahub-gms\r\n    image: linkedin/datahub-gms:${DATAHUB_VERSION:-head}\r\n    ports:\r\n      - 8080:8080\r\n    volumes:\r\n      - ${HOME}/.datahub/plugins:/etc/datahub/plugins\r\n  elasticsearch:\r\n    container_name: elasticsearch\r\n    environment:\r\n      - discovery.type=single-node\r\n      - xpack.security.enabled=false\r\n      - ES_JAVA_OPTS=-Xms256m -Xmx256m -Dlog4j2.formatMsgNoLookups=true\r\n    healthcheck:\r\n      retries: 4\r\n      start_period: 2m\r\n      test:\r\n        - CMD-SHELL\r\n        - curl -sS --fail 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=0s' || exit 1\r\n    hostname: elasticsearch\r\n    image: elasticsearch:7.9.3\r\n    mem_limit: 1g\r\n    ports:\r\n      - 9200:9200\r\n    volumes:\r\n      - esdata:/usr/share/elasticsearch/data\r\n  elasticsearch-setup:\r\n    container_name: elasticsearch-setup\r\n    depends_on:\r\n      - elasticsearch\r\n    environment:\r\n      - ELASTICSEARCH_HOST=elasticsearch\r\n      - ELASTICSEARCH_PORT=9200\r\n      - ELASTICSEARCH_PROTOCOL=http\r\n    hostname: elasticsearch-setup\r\n    image: linkedin/datahub-elasticsearch-setup:${DATAHUB_VERSION:-head}\r\n  kafka-setup:\r\n    container_name: kafka-setup\r\n    depends_on:\r\n      - broker\r\n      - schema-registry\r\n    environment:\r\n      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181\r\n      - KAFKA_BOOTSTRAP_SERVER=broker:29092\r\n    hostname: kafka-setup\r\n    image: linkedin/datahub-kafka-setup:${DATAHUB_VERSION:-head}\r\n  mysql:\r\n    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_bin\r\n    container_name: mysql\r\n    environment:\r\n      - MYSQL_DATABASE=datahub\r\n      - MYSQL_USER=datahub\r\n      - MYSQL_PASSWORD=datahub\r\n      - MYSQL_ROOT_PASSWORD=datahub\r\n    hostname: mysql\r\n    image: mysql:5.7\r\n    ports:\r\n      - 3306:3306\r\n    volumes:\r\n      - ../mysql/init.sql:/docker-entrypoint-initdb.d/init.sql\r\n      - mysqldata:/var/lib/mysql\r\n  mysql-setup:\r\n    container_name: mysql-setup\r\n    depends_on:\r\n      - mysql\r\n    environment:\r\n      - MYSQL_HOST=mysql\r\n      - MYSQL_PORT=3306\r\n      - MYSQL_USERNAME=datahub\r\n      - MYSQL_PASSWORD=datahub\r\n      - DATAHUB_DB_NAME=datahub\r\n    hostname: mysql-setup\r\n    image: acryldata/datahub-mysql-setup:head\r\n  schema-registry:\r\n    container_name: schema-registry\r\n    depends_on:\r\n      - zookeeper\r\n      - broker\r\n    environment:\r\n      - SCHEMA_REGISTRY_HOST_NAME=schemaregistry\r\n      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181\r\n    hostname: schema-registry\r\n    image: confluentinc/cp-schema-registry:5.4.0\r\n    ports:\r\n      - 8081:8081\r\n  zookeeper:\r\n    container_name: zookeeper\r\n    environment:\r\n      - ZOOKEEPER_CLIENT_PORT=2181\r\n      - ZOOKEEPER_TICK_TIME=2000\r\n    hostname: zookeeper\r\n    image: confluentinc/cp-zookeeper:5.4.0\r\n    ports:\r\n      - 2181:2181\r\n    volumes:\r\n      - zkdata:/var/opt/zookeeper\r\nversion: '2.3'\r\nvolumes:\r\n  esdata: null\r\n  mysqldata: null\r\n  zkdata: null\r\n",
+                "displayOptions": {
+                    "isFavourite": false,
+                    "isHidden": false
+                },
+                "evaluation": {
+                    "admiralty_code": "C3",
+                    "credibility": 50,
+                    "reliability": 50,
+                    "severity": "green",
+                    "tlp": "amber",
+                    "ttl": 30
+                },
+                "hash": "0083e0516cac929a5f5267f8f5ebebb77063f235",
+                "id": "0083e0516cac929a5f5267f8f5ebebb77063f235",
+                "language": "xml",
+                "linkList": [
+                    {
+                        "author": "",
+                        "hash": "024c788fdacdd8b8827de9e50c13ea0e6dde1988",
+                        "link": "https://pastebin.com/HPjD9kmj",
+                        "title": "",
+                        "source": "pastebin.com",
+                        "dateDetected": "2022-05-05T20:26:25+03:00",
+                        "datePublished": "2022-05-05T17:16:43+00:00",
+                        "itemSource": "api",
+                        "size": 6625,
+                        "status": 1,
+                        "sequenceUpdate": 1651771585142655
+                    }
+                ],
+                "matches": {
+                    "commonKeywords": {
+                        "password": [
+                            "PASSWORD"
+                        ]
+                    }
+                },
+                "seqUpdate": -1651773180003874,
+                "updated": "2022-05-05T20:26:25+03:00"
+            },
+            {
+                "bind": [],
+                "created": "2017-09-17T17:06:08+03:00",
+                "data": "* kicken (~Keith@c-98-238-66-220.hsd1.fl.comcast.net) has joined #php\r\n<ansi> oh? which one?\r\n<poutine> hmm\r\n<poutine> let me finish up the write-up\r\n<poutine> then I'll let you know\r\n<poutine> but google shows me ~50k people who are vulnerable, and it's full db disclosure\r\n<poutine> well, enough db disclosure :)\r\n<ansi> fun fun\r\n<ansi> gimme the url to your write-up when you get it finished\r\n<ansi> im not the publisher, am i?\r\n<ansi> lol\r\n<ansi> s/publisher/plugin author/\r\n<poutine> no ansi\r\n* OscarWeb (~hola@186.59.129.134) has joined #php\r\n* OscarWeb has quit (Quit: zzzzZZzzzzZzzZzZz)\r\n<poutine> ansi, I think I'm going to do the right thing and notify the vendor\r\n<jed> where's the fun in that\r\n<jed> build a botnet\r\n<poutine> does wordpress use bcrypt or something now?\r\n<andjew> responsible poutine is boring",
+                "displayOptions": {
+                    "isFavourite": false,
+                    "isHidden": false
+                },
+                "evaluation": {
+                    "admiralty_code": "C3",
+                    "credibility": 50,
+                    "reliability": 50,
+                    "severity": "orange",
+                    "tlp": "amber",
+                    "ttl": 30
+                },
+                "hash": "c2224f5f81bb375ba7c2871f605b1c6825ef1092",
+                "id": "c2224f5f81bb375ba7c2871f605b1c6825ef1092",
+                "language": "text",
+                "linkList": [
+                    {
+                        "author": "guest",
+                        "hash": "f2a78d1716758091c7df9629d6a5ac81cfa4ee0e",
+                        "link": "https://pastebin.com/7MK8SZww",
+                        "title": "Untitled",
+                        "source": "pastebin.com",
+                        "dateDetected": "2017-09-17T17:06:08+03:00",
+                        "datePublished": "2017-09-17T09:06:06+03:00",
+                        "itemSource": "",
+                        "size": 821,
+                        "status": 1,
+                        "sequenceUpdate": 1505657168596901
+                    }
+                ],
+                "matches": {
+                    "email": {
+                        "email": [
+                            "Keith@c-98-238-66-220.hsd1.fl.comcast.net",
+                            "hola@186.59.129.134"
+                        ]
+                    }
+                },
+                "seqUpdate": 16202106434186,
+                "updated": "2017-09-17T17:06:08+03:00"
+            }
+        ],
+        "seqUpdate": 16202106434186
     },
     "osi/git_repository":{
         "count": 4,

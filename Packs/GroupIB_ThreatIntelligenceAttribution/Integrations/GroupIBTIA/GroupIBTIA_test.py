@@ -43,16 +43,13 @@ COLLECTION_NAMES = [
     "suspicious_ip/scanner",
     "malware/cnc",
     "hi/threat",
-    "apt/threat"
+    "hi/threat_actor",
+    "apt/threat",
+    "apt/threat_actor",
+    "malware/malware",
+    "osi/public_leak",
+    "compromised/breached"
 ]
-# For now, these collections are not available for testing
-# "malware/malware",
-# "hi/threat_actor",
-# "apt/threat_actor",
-# "osi/public_leak",
-
-# "compromised/breached",
-
 
 @pytest.fixture(scope="function", params=COLLECTION_NAMES)
 def session_fixture(request):
