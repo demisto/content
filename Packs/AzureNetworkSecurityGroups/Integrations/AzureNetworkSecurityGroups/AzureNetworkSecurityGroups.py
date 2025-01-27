@@ -769,24 +769,14 @@ def azure_nsg_network_interfaces_create(client: AzureNSGClient, params: Dict, ar
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
-    nsg_name = args.get('nsg_name')
-    ip_config_name = args.get('ip_config_name')
-    private_ip = args.get('private_ip')
-    public_ip_address_name = args.get('public_ip_address_name')
-    vnet_name = args.get('vnet_name')
-    subnet_name = args.get('subnet_name')
-    location = args.get('location')
-    nic_name = args.get('nic_name')
+    nic_name = args.pop('nic_name')
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     
-    data = {'nsg_name': nsg_name, 'ip_config_name': ip_config_name, 'private_ip': private_ip,
-            'public_ip_address_name':public_ip_address_name, 'vnet_name': vnet_name, 'subnet_name': subnet_name,
-            'location': location}
     response = client.create_or_update_network_interface(subscription_id=subscription_id, resource_group_name=resource_group_name,
-                                                        nic_name=nic_name, data=data)
+                                                        nic_name=nic_name, data=args)
     data_from_response = response.get('value', [])
     for data in data_from_response:
         data = extract_inner_dict(data, ['properties'])
