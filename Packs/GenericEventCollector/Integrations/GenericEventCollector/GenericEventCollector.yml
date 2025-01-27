@@ -32,8 +32,9 @@ configuration:
       - Token
       - Username&Password
       - Bearer
-      - No Authorization
       - Api-Key
+      - RawToken
+      - No Authorization
     additionalinfo: Select the authentication method
   - section: Connect
     display: 'HTTP Method'
@@ -45,7 +46,7 @@ configuration:
       - GET
       - POST
   - name: token
-    type: 4
+    type: 9
     displaypassword: API Token
     hiddenusername: true
     required: false
@@ -180,6 +181,19 @@ script:
           required: true
       description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
       name: fetch-events
+    - arguments:
+        - auto: PREDEFINED
+          defaultValue: 'false'
+          description: If true, the command will create events, otherwise it will only display them.
+          name: should_push_events
+          predefined:
+            - 'true'
+            - 'false'
+          required: true
+        - description: Maximum number of results to return.
+          name: limit
+      description: Gets events from 3rd party vendor.
+      name: generic-event-collector-get-events
   runonce: false
   isfetchevents: true
   script: '-'
