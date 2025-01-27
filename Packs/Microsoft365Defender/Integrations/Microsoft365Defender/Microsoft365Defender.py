@@ -162,7 +162,8 @@ class Client:
         PATCH request to update single incident.
         Args:
             incident_id (int): incident's id
-            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or Redirected)
+            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or
+            Redirected)
             assigned_to (str): Owner of the incident.
             classification (str): Specification of the alert. Possible values are: InformationalExpectedActivity, FalsePositive,
              TruePositive.
@@ -452,7 +453,8 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
               - id (int) - incident's id (required)
-              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or Redirected)
+              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved, InProgress or
+              Redirected)
               - assigned_to (str) - Owner of the incident.
               - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
               - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
@@ -558,7 +560,6 @@ def fetch_incidents(client: Client, mirroring_fields: dict, first_fetch_time: st
     if len(incidents_queue) < fetch_limit:
 
         incidents = []
-        comments = []
 
         # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
         # incident we skip (offset) the number of incidents we already fetched.
@@ -789,7 +790,8 @@ def get_entries_for_comments(comments: List[dict[str, str]], last_update: dateti
     Get the entries for the comments of the incident.
     Args:
         comments (List[dict]): The comments of the incident from Microsoft 365 Defender.
-        last_update (datetime): The last run time of the mirroring - should bring in comments that were added afterward to avoid entries duplicates.
+        last_update (datetime): The last run time of the mirroring - should bring in comments that were added afterward to
+         avoid entries duplicates.
         comment_tag (str): The tag to add for the comments entries when mirroring in.
 
     Returns:
@@ -856,7 +858,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     if not last_update:
         raise DemistoException(f"Could not parse {remote_args.last_update}")
     close_incident = argToBoolean(demisto.params().get('close_incident', False))
-    remote_incident_id = arg_to_number(remote_args.remote_incident_id)
+    remote_incident_id: int = arg_to_number(remote_args.remote_incident_id)
     mirrored_object: Dict = {}
     demisto.debug(
         f'Microsoft Defender 365 - Performing get-remote-data command with incident id: {remote_incident_id} and '

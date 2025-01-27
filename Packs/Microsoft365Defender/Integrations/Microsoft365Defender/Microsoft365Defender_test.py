@@ -776,5 +776,3 @@ def test_update_remote_system_with_entries(mocker):
         "CommentToMicrosoft365Defender",
         "12345"
     )
-
-
