@@ -31,7 +31,7 @@ from threading import Lock
 from functools import wraps
 from inspect import currentframe
 
-import demistomock as demisto
+#import demistomock as demisto
 import warnings
 
 

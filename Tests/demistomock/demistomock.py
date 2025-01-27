@@ -1148,7 +1148,7 @@ def get_incidents():
     return {}
 
 
-def internalHttpRequest(method, uri, body=None):
+def internalHttpRequest(method: object, uri: object, body: object = None) -> object:
     """Run an internal HTTP request to the XSOAR server. The request runs with the permissions of the
     executing user, when a command is being executed manually (such as via the War Room or when browsing a widget).
     When run via a playbook, will run with a readonly user with limited permissions isolated to the current incident only.
