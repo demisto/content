@@ -1,30 +1,34 @@
 Collect logs from 3rd party vendors.
 
-## Configure Generic Event Collector in Cortex
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
+## Configure Generic Event Collector (Beta) in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident type |  | False |
-| Vendor | Enter vendor name for dataset | True |
-| Product | Enter product name for dataset | True |
 | Server URL |  | True |
 | Endpoint | Add the endpoint you want to collect data from \(Alert/Events Etc..\) | True |
 | Authentication Type | Select the authentication method | True |
 | HTTP Method |  | True |
-| Token | 3rd party token / 3rd party API key | False |
-| Password |  | False |
+| API Token | API Token | False |
 | Username |  | False |
 | Password |  | False |
 | Add Fields To header | If the product authentication requires more fields to add to the header please add it here in a dictionary format \{unique_field : 286\} if there's a need to add more then one use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
 | Request Parameters | If the product authentication requires more fields to add to the DATA please add it here in a dictionary format \{unique_field : 286\} if there's a need to add more then one use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
-| Query Parameters   | If the product authentication allowes to filter the results using query Parameters please add it here in a dictionary format \{unique_field : 286\} if there's a need to add more then one use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Query Parameters | If the product authentication allows to filter the results using query Parameters please add it here in a dictionary format \{unique_field : 286\} if there's a need to add more then one use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Initial Query Parameters | If the product requires a different initial query parameters for the first fetch call, please add it here in a dictionary format \{unique_field : 286\} if there's a need to add more then one use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
 | Is pagination Needed |  |  |
 | Pagination Field Name |  | False |
 | Pagination Flag | Flag examples: \{has_more: True\}, \{next: True\} etc | False |
-| Connection Test Type | Pick connection if you just want to make sure the authentication is working. Pick push_to_dataset if you want to see the data from the endpoint in your dataset | True |
+| Timestamp format of the event creation time. | e.g. "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S" | False |
+| Timestamp field | The name of the event creation time in the response data, e.g. "timestamp" or "created_at". | True |
+| Events lookup path in the response JSON, dot seperated, e.g. "data.items". | Where within the response object to find the events list. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
+| Vendor | Enter vendor name for dataset | True |
+| Product | Enter product name for dataset | True |
 | First fetch time |  | True |
 | Fetch Events |  | False |
 | Events Fetch Interval |  | False |
@@ -34,20 +38,21 @@ Collect logs from 3rd party vendors.
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### fetch-events
+### generic-event-collector-get-events
 
 ***
-Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+Gets events from 3rd party vendor.
 
 #### Base Command
 
-`fetch-events`
+`generic-event-collector-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+| limit | Maximum number of results to return. | Optional | 
 
 #### Context Output
 
