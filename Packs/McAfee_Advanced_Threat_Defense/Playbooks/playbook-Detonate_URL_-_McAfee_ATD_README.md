@@ -65,4 +65,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Detonate_URL_McAfee_ATD](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_McAfee_ATD.png)
+![Detonate_URL_McAfee_ATD](../doc_files/Detonate_URL_-_McAfee_ATD.png)
