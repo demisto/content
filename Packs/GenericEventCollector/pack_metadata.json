@@ -18,5 +18,6 @@
     "dependencies": {},
     "marketplaces": [
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSource": "GenericEventCollector"
 }
