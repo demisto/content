@@ -155,7 +155,7 @@ def whois_command():
 
 @logger
 def test_module():
-    whois('demisto.com')
+    whois('whois.com')
     demisto.results('ok')
 
 
