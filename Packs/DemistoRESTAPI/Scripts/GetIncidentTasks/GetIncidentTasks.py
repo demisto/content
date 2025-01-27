@@ -93,7 +93,10 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
     tag = args.get('tag')
     states = get_states(argToList(args.get('states')))
     inc_id = args['inc_id']
-    res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
+    acc = get_tenant_account_name()
+    if acc:
+        acc += '/'
+    res = demisto.executeCommand('core-api-get', {'uri': f'/{acc}investigation/{inc_id}/workplan'})
     if not res or isError(res[0]):
         raise Exception(res)
 
