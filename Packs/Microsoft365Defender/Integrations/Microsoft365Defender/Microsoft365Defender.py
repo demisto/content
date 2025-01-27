@@ -427,6 +427,29 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: dict) ->
 
 
 def get_determination_value(classification: Optional[str], determination: Optional[str]) -> Optional[str]:
+    """
+    Determines the appropriate determination value based on the provided classification and determination inputs.
+
+    Args:
+        classification (Optional[str]): The classification of the incident. Must be a valid key in
+            the CLASSIFICATION_DETERMINATION_MAPPING dictionary.
+        determination (Optional[str]): The determination value associated with the classification. Must be
+            a valid value in the corresponding list of determination values for the given classification.
+
+    Returns:
+        Optional[str]:
+            - If both classification and determination are `None`, returns `None`.
+            - If classification is valid but determination is not provided:
+                - Returns "NotAvailable" if the classification is "Unknown".
+                - Returns "Other" for all other classifications.
+            - If both classification and determination are valid, returns the provided determination.
+
+    Raises:
+        DemistoException:
+            - If classification is not provided or not valid (not in CLASSIFICATION_DETERMINATION_MAPPING).
+            - If determination is provided but is not valid for the given classification.
+
+    """
     if classification is None and determination is None:
         return None
 
