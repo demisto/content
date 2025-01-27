@@ -1,0 +1,44 @@
+{
+    "msft_azure_app_service_raw": {
+        "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties": {
+            "type": "string",
+            "is_array": false
+        },
+        "location": {
+            "type": "string",
+            "is_array": false
+        },
+        "Level": {
+            "type": "string",
+            "is_array": false
+        },
+        "Host": {
+            "type": "string",
+            "is_array": false
+        },
+        "operationName": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultDescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "containerId": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultType": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
