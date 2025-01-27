@@ -275,7 +275,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-  section: Collect
+  section: Connect
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
