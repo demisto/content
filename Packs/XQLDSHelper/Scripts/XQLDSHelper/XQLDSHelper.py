@@ -19,7 +19,7 @@ from collections.abc import Iterable, Hashable
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_MAX = 10
-DEFAULT_QUERY_TIMEOUT_DURATION = 180  # in seconds
+DEFAULT_QUERY_TIMEOUT_DURATION = 60  # in seconds
 
 
 def to_float(
@@ -596,8 +596,6 @@ class XQLQuery:
         time_frame = f'between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}'
         demisto.debug(f'Run XQL: {query_params.query_name} {time_frame}: {query_params.query_string}')
 
-        start_time = time.time()
-
         for retry_count in range(self.__retry_max + 1):
             res = demisto.executeCommand(
                 'xdr-xql-generic-query',
@@ -637,12 +635,18 @@ class XQLQuery:
         if not execution_id:
             raise DemistoException('No execution_id in the response.')
 
+        timeout_time = None
+
         while True:
             status = response.get('status', '')
             if status == 'SUCCESS':
                 return response.get('results') or []
             elif status == 'PENDING':
-                remaining_time = self.__query_timeout_duration - (time.time() - start_time)
+                current_time = time.time()
+                if timeout_time is None:
+                    timeout_time = current_time + self.__query_timeout_duration
+
+                remaining_time = timeout_time - current_time
                 if remaining_time <= 0:
                     raise DemistoException(
                         f'Unable to get query results within {self.__query_timeout_duration} seconds.'
