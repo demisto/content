@@ -87,7 +87,12 @@ def convert_to_demisto_severity(severity: str) -> int:
 
 
 def create_paging_header(results_num: int, page: int, size: int) -> str:
-    return f'Showing {results_num} results, Size={size}, from Page {page}\n'
+    header = f'Showing {results_num} results'
+    if size is not None:
+        header += f', Size={size}'
+    if page is not None:
+        header += f', from Page {page}'
+    return header + '\n'
 
 
 def fetch_incidents(

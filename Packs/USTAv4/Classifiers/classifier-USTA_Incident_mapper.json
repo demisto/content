@@ -65,6 +65,28 @@
 				},
 				"USTA Account Takeover Prevention Victim Details Victim OS": {
 					"simple": "content.victim_detail.victim_os"
+				},
+                "Usta Alert URL": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": "https://usta.prodaft.com/intelligence/tickets/"
+										}
+									},
+									"suffix": {
+										"isContext": false
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
 				}
 			}
 		},
@@ -82,7 +104,29 @@
                 },
                 "Usta Stolen Credit Cards Id": {
                     "simple": "id"
-                }
+                },
+                "USTA Alert URL": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": "https://usta.prodaft.com/intelligence/tickets/"
+										}
+									},
+									"suffix": {
+										"isContext": false
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				}
             }
         }
 	},

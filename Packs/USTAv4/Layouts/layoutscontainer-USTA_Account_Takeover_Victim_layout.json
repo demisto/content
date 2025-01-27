@@ -436,10 +436,19 @@
                         "items": [
                             {
                                 "endCol": 2,
+                                "fieldId": "ustaalerturl",
+                                "height": 53,
+                                "id": "c2371a2c-8791-4228-afc0-1daa038f6810",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "ustaaccounttakeoverpreventionusername",
                                 "height": 53,
                                 "id": "8a5235f0-a27d-11ef-bd7a-49b61cd0a4e8",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -448,7 +457,7 @@
                                 "fieldId": "ustaaccounttakeoverpreventionpassword",
                                 "height": 53,
                                 "id": "80ac6c50-a27d-11ef-bd7a-49b61cd0a4e8",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -457,7 +466,7 @@
                                 "fieldId": "ustaaccounttakeoverpreventionurl",
                                 "height": 53,
                                 "id": "84eef800-a27d-11ef-bd7a-49b61cd0a4e8",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -466,7 +475,7 @@
                                 "fieldId": "ustaaccounttakeoverpreventionvictimdetailsinfectiondate",
                                 "height": 26,
                                 "id": "95aed750-a27d-11ef-bd7a-49b61cd0a4e8",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
