@@ -871,6 +871,45 @@ def test_event_list_command(requests_mock, mock_client):
     )
 
 
+def test_file_command(requests_mock, mock_client):
+    """
+    Given:
+        - a file (sha256)
+    When:
+        - executing file_command function
+    Then:
+        - Ensure raw_response is an empty dict.
+        - Ensure readable_output is correct and contains an informative message.
+    """
+    mock_response = {
+        "version": "version",
+        "metadata": {
+            "links": {
+                "self": "metadata_links_self",
+                "next": "metadata_links_next"
+            },
+            "results": {
+                "total": "metadata_results_total",
+                "current_item_count": "metadata_results_current_item_count",
+                "index": "metadata_results_index",
+                "items_per_page": "metadata_results_items_per_page"
+            }
+        },
+        "data": []
+    }
+    requests_mock.get(f"{BASE_URL}/events", json=mock_response)
+
+    args: Dict[str, Any] = {"file": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+
+    from AMPv2 import file_command
+
+    response = file_command(mock_client, args)
+
+    assert response[0].readable_output == 'Cisco AMP: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee not' \
+                                          ' found in Cisco AMP v2.'
+    assert response[0].raw_response == {}
+
+
 @pytest.mark.parametrize(
     "args, expected_number_of_results, start, end",
     [
