@@ -296,12 +296,14 @@ configuration:
   name: comment_tag_from_splunk
   defaultvalue: FROM SPLUNK
   type: 0
+  section: Collect
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment from Splunk.
 - display: Comment tag to Splunk
   name: comment_tag_to_splunk
   defaultvalue: FROM XSOAR
   type: 0
+  section: Collect
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
