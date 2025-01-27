@@ -322,14 +322,14 @@ def test_get_entries_for_comments():
     from Microsoft365Defender import get_entries_for_comments
 
     comments = [
-        {"comment": "Old comment", "createdBy": "fake1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
-        {"comment": "New comment", "createdBy": "fake2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+        {"comment": "Old comment", "createdBy": "test1@gmail.com", "createdTime": "2024-01-01T10:00:00.8404534Z"},
+        {"comment": "New comment", "createdBy": "test2@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
     ]
     last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
 
     assert len(result) == 1
-    assert result[0]["Contents"].startswith("Created By: fake2@gmail.com")
+    assert result[0]["Contents"].startswith("Created By: test2@gmail.com")
     assert result[0]["Tags"] == [COMMENT_TAG_FROM_MS]
 
 
@@ -338,7 +338,7 @@ def test_get_entries_for_comments_ignores_mirrored_comments():
 
     comments = [
         {"comment": f"Ignored comment {MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR}",
-         "createdBy": "fake1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
+         "createdBy": "test1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
     ]
 
     last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
