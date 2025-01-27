@@ -51,7 +51,10 @@ args:
 - defaultValue: '10'
   description: The polling interval (in seconds) to wait for results (Default = 10).
   name: polling_interval
-- description: The name of the integration instance to execute xdr-xql-generic-query.
+- defaultValue: '180'
+  description: The maximum duration (in seconds) allowed for an XQL query to complete before it is considered to have timed out (Default = 180).
+  name: query_timeout_duration
+- description: The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results.
   name: xql_query_instance
 commonfields:
   id: XQLDSHelper

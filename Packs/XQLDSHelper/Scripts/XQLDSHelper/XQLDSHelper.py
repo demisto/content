@@ -19,6 +19,7 @@ from collections.abc import Iterable, Hashable
 DEFAULT_POLLING_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_INTERVAL = 10  # in seconds
 DEFAULT_RETRY_MAX = 10
+DEFAULT_QUERY_TIMEOUT_DURATION = 180  # in seconds
 
 
 def to_float(
@@ -574,11 +575,13 @@ class XQLQuery:
         polling_interval: int = DEFAULT_POLLING_INTERVAL,
         retry_interval: int = DEFAULT_RETRY_INTERVAL,
         retry_max: int = DEFAULT_RETRY_MAX,
+        query_timeout_duration: int = DEFAULT_QUERY_TIMEOUT_DURATION,
     ) -> None:
         self.__xql_query_instance = xql_query_instance
         self.__polling_interval = polling_interval
         self.__retry_interval = retry_interval
         self.__retry_max = max(retry_max, 0)
+        self.__query_timeout_duration = max(query_timeout_duration, 0)
 
     def query(
         self,
@@ -592,6 +595,8 @@ class XQLQuery:
         # Start the query
         time_frame = f'between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}'
         demisto.debug(f'Run XQL: {query_params.query_name} {time_frame}: {query_params.query_string}')
+
+        start_time = time.time()
 
         for retry_count in range(self.__retry_max + 1):
             res = demisto.executeCommand(
@@ -637,7 +642,13 @@ class XQLQuery:
             if status == 'SUCCESS':
                 return response.get('results') or []
             elif status == 'PENDING':
-                time.sleep(self.__polling_interval)
+                remaining_time = self.__query_timeout_duration - (time.time() - start_time)
+                if remaining_time <= 0:
+                    raise DemistoException(
+                        f'Unable to get query results within {self.__query_timeout_duration} seconds.'
+                    )
+
+                time.sleep(min(remaining_time, self.__polling_interval))
 
                 res = demisto.executeCommand(
                     'xdr-xql-get-query-results',
@@ -2064,6 +2075,10 @@ class Main:
             'polling_interval', DEFAULT_POLLING_INTERVAL
         ) or DEFAULT_POLLING_INTERVAL
 
+        self.__query_timeout_duration: int = self.__arg_to_int(
+            'query_timeout_duration', DEFAULT_QUERY_TIMEOUT_DURATION
+        ) or DEFAULT_QUERY_TIMEOUT_DURATION
+
         self.__xql_query_instance: str | None = (
             demisto.get(self.__template, 'query.command.using')
             or args.get('xql_query_instance')
@@ -2106,6 +2121,7 @@ class Main:
                     polling_interval=self.__polling_interval,
                     retry_interval=self.__retry_interval,
                     retry_max=self.__max_retries,
+                    query_timeout_duration=self.__query_timeout_duration,
                 ) if need_query else None,
                 cache=cache if self.__cache_type != CacheType.NONE else None,
             ),

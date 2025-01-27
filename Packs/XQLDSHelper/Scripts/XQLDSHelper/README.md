@@ -29,13 +29,16 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | max_retries | The maximum number of retries to query XQL for recoverable errors \(Default = 10\). |
 | retry_interval | The wait time \(in seconds\) between retries \(Default = 10\). |
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
+| query_timeout_duration | The maximum duration \(in seconds\) allowed for an XQL query to complete before it is considered to have timed out \(Default = 180\). |
 | xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results. |
 
 
 ### Query Execution Timeout and Retry Limits
-The XQL query may take some time to return results after it has started.
-This script performs polling at intervals of `retry_interval` seconds while waiting for the query results, with a maximum duration of `max_retries` x `retry_interval` seconds.
-If the query results are not returned within this time frame, it will be treated as an error.
+Due to limitations on the number of XQL queries that can run in parallel and the possibility that an XQL query may take some time to return results after it starts, the script manages query execution using a polling mechanism.
+
+ - The script polls at intervals of `retry_interval` seconds until the query becomes available to run, with a maximum of `max_retries` attempts.
+ - Once the query starts running, the script continues polling at intervals of `polling_interval` seconds while waiting for the query results.
+ - The total time allowed for the query to complete is limited by the `query_timeout_duration` value. If the query does not return results within this time frame, it will be treated as an error.
 
 
 ## Outputs
