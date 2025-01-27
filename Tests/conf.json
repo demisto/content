@@ -3345,7 +3345,10 @@
                 "VirusTotal",
                 "Zimperium"
             ],
-            "instance_names": "virus_total_general"
+            "instance_names": [
+                "virus_total_general",
+                "Zimperium"
+            ]
         },
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
