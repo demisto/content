@@ -1,8 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
+from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
+from CommonServerPython import BaseClient, CommandResults, datetime
+
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import json
+import uuid
 from datetime import datetime, timedelta
 """Doppel for Cortex XSOAR (aka Demisto)
 
@@ -11,7 +15,7 @@ and the commands to perform different updates on the alerts
 """
 
 import urllib3
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -28,9 +32,9 @@ MIRROR_DIRECTION = {
 }
 DOPPEL_ALERT = 'Doppel Alert'
 DOPPEL_INCIDENT = 'Doppel Incident'
+TIMEOUT = '30'
 
 ''' CLIENT CLASS '''
-
 
 class Client(BaseClient):
     """Client class to interact with the service API
@@ -208,13 +212,29 @@ def _get_mirroring_fields():
     return {
         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
         "mirror_instance": demisto.integrationInstance(),
-        "incident_type": "Doppel_Incident_Test",
+        "incident_type": "Doppel_Incident",
     }
 
 def _get_last_fetch_datetime():
     """
     Fetch the last run (time of the last fetch)
     """
+    last_run = demisto.getLastRun()
+    # creates incidents queue
+    incidents_queue = last_run.get('incidents_queue', [])
+    last_fetch = last_run.get("last_fetch", None)
+    last_fetch_datetime: datetime = datetime.now()
+    if last_fetch and isinstance(last_fetch, float):
+        last_fetch_datetime = datetime.fromtimestamp(last_fetch)
+    else:
+        # If no last run is found
+
+        first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
+        last_fetch_datetime = dateparser.parse(first_fetch_time)
+        assert last_fetch_datetime is not None, f'could not parse {first_fetch_time}'
+    return last_fetch_datetime, incidents_queue
+
+def _get_last_fetch_datetime():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch", None)
     last_fetch_datetime: datetime = datetime.now()
@@ -397,7 +417,7 @@ def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandRe
         'sort_type': args.get('sort_type'),
         'sort_order': args.get('sort_order'),
         'page': args.get('page'),
-        'tags': args.get('tags')
+        'tags': argToList(args.get('tags'), separator=',', transform=None)
     }
 
     # Call the client's `get_alerts` method to fetch data
@@ -480,37 +500,50 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
     """
     demisto.debug("Fetching alerts from Doppel.")
     # Fetch the last run (time of the last fetch)
-    last_fetch_datetime: datetime = _get_last_fetch_datetime()
-    
+    last_fetch_datetime, incidents_queue = _get_last_fetch_datetime()
+
     # Fetch alerts
     page: int = 0
     incidents = []
-    while True:
-        alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
-        if not alerts:
-            demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
-            break
-        last_fetch = last_fetch_datetime.timestamp()
-        new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
-        for alert in alerts:
-            # Building the incident structure
-            created_at_str = alert.get("created_at")
-            created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-            new_last_fetch = created_at_datetime.timestamp()
-            if new_last_fetch > last_fetch:
-                alert.update(_get_mirroring_fields())
-                incident = {
-                    'name': DOPPEL_INCIDENT,
-                    'type': DOPPEL_ALERT,
-                    'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
-                    'rawJSON': json.dumps(alert),
-                }
-                incidents.append(incident)
-        # Update last run with the new_last_fetch value
-        demisto.setLastRun({"last_fetch": new_last_fetch})
-        demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
-        demisto.info(f'Fetched Doppel alerts from page {page} Successfully.')
-        page = page+1
+    timeout = arg_to_number(demisto.params().get('fetch_timeout', TIMEOUT))
+    fetch_limit = arg_to_number(demisto.params().get('max_fetch', 10))
+    start_time = time.time()
+    mirroring_object = _get_mirroring_fields()
+    if len(incidents_queue) < fetch_limit:
+        while True:
+            time_delta = time.time() - start_time
+            if timeout and time_delta > timeout:
+                raise DemistoException(
+                    "Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
+            alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
+            if not alerts:
+                demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
+                break
+            last_fetch = last_fetch_datetime.timestamp()
+            new_last_fetch = last_fetch  # Initialize with the existing last fetch timestamp
+            for alert in alerts:
+                # Building the incident structure
+                created_at_str = alert.get("created_at")
+                created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
+                new_last_fetch = created_at_datetime.timestamp()
+                if new_last_fetch > last_fetch:
+                    alert.update(mirroring_object)
+                    incident = {
+                        'name': f"Doppel Incident {uuid.uuid4()}",
+                        'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
+                        'rawJSON': json.dumps(alert),
+                    }
+                    incidents.append(incident)
+            # Update last run with the new_last_fetch value
+            demisto.setLastRun({"last_fetch": new_last_fetch})
+            demisto.debug(f"Updated last_fetch to: {new_last_fetch}")
+            demisto.info(f'Fetched Doppel alerts from page {page} Successfully.')
+            page = page+1
+    oldest_incidents = incidents_queue[:fetch_limit]
+    new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_fetch_datetime  # newest incident creation time
+    demisto.setLastRun({'last_run': new_last_run,
+                        'incidents_queue': incidents_queue[fetch_limit:]})
+
     # Create incidents in XSOAR
     if incidents and len(incidents) > 0:
         try:
@@ -525,7 +558,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
 def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
     demisto.debug('Command get-modified-remote-data is not implemented')
     raise NotImplementedError('The command "get-modified-remote-data" is not implemented, \
-        as Doppel does provide the API to fetch updated alerts.')
+        as Doppel does not provide the API to fetch updated alerts.')
     
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     """
@@ -589,33 +622,33 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     new_incident_id: str = parsed_args.remote_incident_id
     # We will Update the Doppel Alert only if the XSOAR Incident is closed
-    if parsed_args.delta and parsed_args.delta.get('closeReason'):
-        demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system')
-        if not parsed_args.remote_incident_id or parsed_args.incident_changed:
-            if parsed_args.remote_incident_id:
-                # First, get the incident as we need the version
-                old_incident = client.get_alert(id=parsed_args.remote_incident_id, entity=None)
-                for changed_key in parsed_args.delta.keys():
-                    old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-                parsed_args.data = old_incident
-            else:
-                parsed_args.data['createInvestigation'] = True
+    if parsed_args.inc_status == IncidentStatus.DONE:
+        if parsed_args.delta and any(parsed_args.delta.get(key) for key in ['closeReason', 'closeNotes', 'closingUserId']):
+            demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system')
+            if not parsed_args.remote_incident_id or parsed_args.incident_changed:
+                if parsed_args.remote_incident_id:
+                    # First, get the incident as we need the version
+                    old_incident = client.get_alert(id=parsed_args.remote_incident_id, entity=None)
+                    for changed_key in parsed_args.delta.keys():
+                        old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+                    parsed_args.data = old_incident
+                else:
+                    parsed_args.data['createInvestigation'] = True
 
-            # Update the queue_state value in the Doppel alert, if already not same
-            current_queue_state = parsed_args.data.get('queue_state')
-            target_queue_state = 'archived'
-            if current_queue_state != target_queue_state:
-                client.update_alert(
-                    queue_state=target_queue_state,
-                    entity_state=old_incident['entity_state'], # Keep the old entity_state
-                    alert_id=new_incident_id
-                )
+                # Update the queue_state value in the Doppel alert, if already not same
+                current_queue_state = parsed_args.data.get('queue_state')
+                target_queue_state = 'archived'
+                if current_queue_state != target_queue_state:
+                    client.update_alert(
+                        queue_state=target_queue_state,
+                        entity_state=old_incident['entity_state'],  # Keep the old entity_state
+                        alert_id=new_incident_id
+                    )
+            else:
+                demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
+                              f'not new nor changed.')
         else:
-            demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
-                        f'not new nor changed.')
-    else:
-        demisto.debug(f'The incident changed, but it is not closed. Hence will not update the Doppel alert at this time')
-        
+            demisto.debug(f'The incident changed, but it does not have required closing fields. Hence will not update the Doppel alert at this time')
     return new_incident_id
 
 def get_mapping_fields_command(client: Client, args: Dict[str, Any]):
