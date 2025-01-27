@@ -18,7 +18,7 @@ To successfully set up the Generic Event Collector, you need to provide the foll
    Token Based Authentication (Token key)
    Bearer Token (API key)
    Raw Token (for custom token-based authentication)
-   No Authentication (for publicly accessible data)
+   No Authorization (for publicly accessible data)
 5. HTTP Method
    Specify the HTTP method the collector should use to reach the API endpoint. The supported methods are:
    GET (to retrieve information)
