@@ -653,7 +653,7 @@ def test_handle_incident_close_out_or_reactivation_close(mocker):
          - Handling the incident close-out with the `close_out` flag enabled.
        Then:
          - Ensure the incident status, classification, and determination are updated correctly.
-       """
+    """
 
     params = {"close_out": True}
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -680,8 +680,7 @@ def test_handle_incident_close_out_or_reactivation_close_other(mocker):
          - Handling the incident close-out with the `close_out` flag enabled.
        Then:
          - Ensure the incident status, classification, and determination are updated correctly.
-       """
-
+    """
 
     params = {"close_out": True}
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -701,13 +700,13 @@ def test_handle_incident_close_out_or_reactivation_close_other(mocker):
 
 def test_handle_incident_close_out_or_reactivation_reopen(mocker):
     """
-           Given:
-             - An incident with missing close-out information.
-           When:
-             - Handling the incident reopen process with the `close_out` flag enabled.
-           Then:
-             - Ensure the incident status is set to Active.
-           """
+       Given:
+         - An incident with missing close-out information.
+       When:
+         - Handling the incident reopen process with the `close_out` flag enabled.
+       Then:
+         - Ensure the incident status is set to Active.
+    """
     params = {"close_out": True}
     mocker.patch.object(demisto, 'params', return_value=params)
     delta = {
@@ -745,7 +744,15 @@ def test_handle_incident_close_out_or_reactivation_close_out_disabled(mocker):
 
 def test_handle_incident_close_out_or_reactivation_no_delta_changes(mocker):
     """
-    Test that the function exits early when no relevant keys in the delta are present.
+    Given:
+      - The `close_out` parameter is enabled in the integration's configuration.
+      - An empty `delta` dictionary with no keys indicating incident changes.
+      - An incident status set to DONE.
+    When:
+      - Attempting to handle the close-out or reactivation of the incident.
+    Then:
+      - Ensure the function exits early without modifying the `delta` dictionary.
+      - Verify that the `status`, `classification`, and `determination` keys remain absent from the `delta`.
     """
     params = {"close_out": True}
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -788,7 +795,14 @@ def test_mirror_out_entries_with_comment_tag(mocker):
 
 def test_mirror_out_entries_without_comment_tag(mocker):
     """
-    Test `mirror_out_entries` where entries do not contain the comment tag.
+    Given:
+      - A list of entries where none contain the specified comment tag.
+      - A valid client for updating incidents in Microsoft 365 Defender.
+      - A remote incident ID to update.
+    When:
+      - Executing the `mirror_out_entries` function.
+    Then:
+      - Ensure that the `update_incident` method is not called since none of the entries have the required comment tag.
     """
 
     client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
@@ -802,13 +816,19 @@ def test_mirror_out_entries_without_comment_tag(mocker):
 
     mirror_out_entries(client, entries, comment_tag, remote_incident_id)
 
-    # Assert that update_incident was not called
     client.update_incident.assert_not_called()
 
 
 def test_mirror_out_entries_empty_entries(mocker):
     """
-    Test `mirror_out_entries` with no entries provided.
+    Given:
+      - An empty list of entries to mirror out.
+      - A valid client for updating incidents in Microsoft 365 Defender.
+      - A remote incident ID to update.
+    When:
+      - Executing the `mirror_out_entries` function with no entries.
+    Then:
+      - Ensure that the `update_incident` method is not called since there are no entries to process.
     """
     client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
 
@@ -818,13 +838,19 @@ def test_mirror_out_entries_empty_entries(mocker):
 
     mirror_out_entries(client, entries, comment_tag, remote_incident_id)
 
-    # Assert that update_incident was not called
     client.update_incident.assert_not_called()
 
 
 def test_update_remote_system_with_incident_changes(mocker):
     """
-    Test `update_remote_system_command` where the incident has changes and is updated.
+    Given:
+      - A valid client for updating incidents in Microsoft 365 Defender.
+      - Arguments indicating that the incident has changes (`incidentChanged=True`) and includes details in `delta`.
+    When:
+      - Executing the `update_remote_system_command` function with the provided arguments.
+    Then:
+      - Ensure that the `update_incident` method is called with the correct parameters extracted from `delta`.
+      - Ensure that the function returns the correct remote incident ID.
     """
     client = mock_client(mocker, 'update_incident', {"status": "success"})
     mocker.patch.object(demisto, 'params', return_value={})
@@ -840,7 +866,6 @@ def test_update_remote_system_with_incident_changes(mocker):
 
     result = update_remote_system_command(client, args)
 
-    # Assertions
     assert result == "12345"
     client.update_incident.assert_called_once_with(
         incident_id="12345",
@@ -856,7 +881,14 @@ def test_update_remote_system_with_incident_changes(mocker):
 
 def test_update_remote_system_without_incident_changes(mocker):
     """
-    Test `update_remote_system_command` where the incident has no changes and is not updated.
+    Given:
+      - A valid client for updating incidents in Microsoft 365 Defender.
+      - Arguments indicating that the incident has no changes (`incidentChanged=False`) and `delta` is None.
+    When:
+      - Executing the `update_remote_system_command` function with the provided arguments.
+    Then:
+      - Ensure that the `update_incident` method is not called as there are no changes to apply.
+      - Ensure that the function returns the correct remote incident ID.
     """
     client = mock_client(mocker, 'update_incident', {"status": "success"})
 
@@ -877,7 +909,15 @@ def test_update_remote_system_without_incident_changes(mocker):
 
 def test_update_remote_system_with_entries(mocker):
     """
-    Test `update_remote_system_command` where new entries are mirrored out.
+       Given:
+         - A valid client for updating incidents in Microsoft 365 Defender.
+         - Arguments with entries that need to be mirrored out, but no changes to the incident (`incidentChanged=False`).
+       When:
+         - Executing the `update_remote_system_command` function with entries to mirror.
+       Then:
+         - Ensure the `mirror_out_entries` function is called with the correct arguments.
+         - Ensure that the `update_incident` method is not called as there are no changes to the incident.
+         - Ensure the function returns the correct remote incident ID.
     """
     client = mock_client(mocker, 'update_incident', {"status": "success"})
     mocker.patch.object(demisto, 'params', return_value={})
