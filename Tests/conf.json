@@ -808,7 +808,8 @@
         },
         {
             "integrations": "JsonWhoIs",
-            "playbookID": "JsonWhoIs-Test"
+            "playbookID": "JsonWhoIs-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Maltiverse",
