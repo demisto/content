@@ -5,6 +5,9 @@ name: Symantec Endpoint Security
 display: Symantec Endpoint Security
 category: Analytics & SIEM
 description: "Symantec Endpoint Security Event Collector for Cortex XSIAM."
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Server URL
   name: host
