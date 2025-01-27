@@ -30,6 +30,19 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Fetch Vulnerabilities Behavior
+  defaultvalue: Fetch by last modified date
+  name: fetch_vulnerabilities_behavior
+  options:
+  - Fetch by last modified date
+  - Fetch by unique QIDs of assets
+  section: Collect
+  advanced: true
+  required: false
+  type: 15
+  hidden:
+  - xsoar
+  - xpanse
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
@@ -70,20 +83,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  hidden:
-  - xsoar
-  - xpanse
-- additionalinfo: Selecting "Fetch by unique QIDs of assets" will fetch by unique QIDs relevant to the assets regardless of the vulnerability modified time. Otherwise, vulnerabilities modified in the last 90 days will be fetched.
-  defaultvalue: Fetch by last modified date
-  display: Fetch Vulnerabilities Behavior
-  name: fetch_vulnerabilities_behavior
-  options:
-  - Fetch by last modified date
-  - Fetch by unique QIDs of assets
-  section: Collect
-  advanced: true
-  required: false
-  type: 15
   hidden:
   - xsoar
   - xpanse
