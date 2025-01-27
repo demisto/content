@@ -574,18 +574,11 @@ def test_fetch_events_with_last_run_object_and_handle_deduplication(mocker, abso
     mock_response = util_load_json('test_data/siem_events.json')
     Absolute.SEIM_EVENTS_PAGE_SIZE = 8
 
-    def run_fetch_events_with_pagination_side_effect(client, fetch_limit, next_page_token, start_date, end_date):
-        if run_fetch_events_with_pagination_side_effect.call_count == 1:
-            run_fetch_events_with_pagination_side_effect.call_count += 1
-            return mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE], mock_response.get('metadata').get(
-                'pagination').get('nextPage')
-        else:
-            return mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:], ''
-
-    run_fetch_events_with_pagination_side_effect.call_count = 1
-    mocker.patch.object(ClientV3, 'fetch_events_with_pagination',
-                        side_effect=run_fetch_events_with_pagination_side_effect)
+    first_mock_response = mock_response.get('data')[:Absolute.SEIM_EVENTS_PAGE_SIZE], mock_response.get('metadata').get('pagination').get('nextPage')
+    second_mock_response = mock_response.get('data')[Absolute.SEIM_EVENTS_PAGE_SIZE - 1:], ''
+    mocker.patch.object(ClientV3, 'fetch_events_with_pagination', return_value=first_mock_response)
     events_first_batch, last_run_object = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, {})
+    mocker.patch.object(ClientV3, 'fetch_events_with_pagination', return_value=second_mock_response)
     events_second_batch, _ = fetch_events(absolute_client_v3, Absolute.SEIM_EVENTS_PAGE_SIZE, last_run_object)
     all_events = events_first_batch + events_second_batch
     assert all_events == mock_response.get('data')

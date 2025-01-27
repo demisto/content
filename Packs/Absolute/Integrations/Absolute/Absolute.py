@@ -425,7 +425,7 @@ class ClientV3(BaseClient):
         headers = self.prepare_request_headers(request_data)
         return self._jws.serialize_compact(headers, json.dumps(request_payload_data), self._secret_key)
 
-    def perform_request(self, signed: bytes) -> Response:
+    def perform_request(self, signed: bytes) -> dict[str, Any]:
         """
         Performs the HTTP request using the signed request data.
 
@@ -435,14 +435,8 @@ class ClientV3(BaseClient):
         Returns:
             Response: The response object from the HTTP request.
         """
-        return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
-        # return self._http_request(method=method, url_suffix=url_suffix, headers=self._headers,
-        #                           return_empty_response=True)
-        # return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL, headers=self._headers)
-        # try:
-        # return requests.post(CLIENT_V3_JWS_VALIDATION_URL, signed, headers={"content-type": "text/plain"}, verify=False)
-        # except Exception as e:
-        #     demisto.error(f'Failed to perform request: {e}')
+        return self._http_request(method='POST', data=signed, full_url=CLIENT_V3_JWS_VALIDATION_URL,
+                                  headers={"content-type": "text/plain"}, timeout=60)
 
     def fetch_events(self, query_string: str) -> dict[str, Any]:
         """
@@ -455,10 +449,8 @@ class ClientV3(BaseClient):
              dict: A dictionary containing the fetched events.
          """
         signed = self.prepare_request(method='GET', url_suffix='/v3/reporting/siem-events', query_string=query_string)
-        response = self.perform_request(signed)
-        response_content_json_str = response.content.decode('utf8').replace("'", '"')
-        events = json.loads(response_content_json_str)
-        return events
+        response: dict = self.perform_request(signed)
+        return response
 
     def fetch_events_with_pagination(self, fetch_limit: int, next_page_token: str, start_date: datetime, end_date: datetime) -> tuple[
         List[Dict[str, Any]], str]:
@@ -1090,7 +1082,7 @@ def fetch_events(client: ClientV3, fetch_limit: int, last_run: Dict[str, Any]) -
     # TODO: remove this temp start_date
 
     demisto.debug(f'Starting new fetch: {fetch_limit=}, {start_date=}, {end_date=}, {next_page_token=}, {last_run=}')
-    all_events, next_page_token = client.fetch_events_with_pagination(client, fetch_limit, next_page_token, start_date, end_date)
+    all_events, next_page_token = client.fetch_events_with_pagination(fetch_limit, next_page_token, start_date, end_date)
     if not all_events:
         return [], {
             'next_page_token': '',
@@ -1143,10 +1135,11 @@ def get_events(client, args) -> tuple[List[Dict[str, Any]], CommandResults]:
     if start_date > end_date:
         raise ValueError("Start date is greater than the end date. Please provide valid dates.")
 
-    events, _ = client.fetch_events_with_pagination(client, fetch_limit, '', start_date, end_date)
+    events, _ = client.fetch_events_with_pagination(fetch_limit, '', start_date, end_date)
     demisto.debug(f'get_events: Found {len(events)} events. {events=}')
     if events:
-        events, _ = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events, should_get_latest_events=False)
+        events, _ = handle_duplication_and_add_time_field_to_events_and_get_latest_events(events, [],
+                                                                                          should_get_latest_events=False)
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events))
 
 
