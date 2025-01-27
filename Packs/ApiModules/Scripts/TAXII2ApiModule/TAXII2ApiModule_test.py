@@ -1911,8 +1911,8 @@ TEST_CREATE_STIX_OBJECT_PARAM = [
             "id": "attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e",
             "type": "attack-pattern",
             "spec_version": "2.1",
-            "created": "2023-04-19T13:05:01.000000Z",
-            "modified": "2023-04-19T13:05:01.000000Z",
+            "created": "2023-04-19T10:05:01.000000Z",
+            "modified": "2023-04-19T10:05:01.000000Z",
             "name": "T111",
             "description": "",
         },
@@ -1924,8 +1924,8 @@ TEST_CREATE_STIX_OBJECT_PARAM = [
             "id": "malware--bddcf01f-9fd0-5107-a013-4b174285babc",
             "type": "malware",
             "spec_version": "2.1",
-            "created": "2023-04-20T17:20:10.000000Z",
-            "modified": "2023-04-19T13:05:01.000000Z",
+            "created": "2023-04-20T14:20:10.000000Z",
+            "modified": "2023-04-19T10:05:01.000000Z",
             "name": "bad malware",
             "description": "",
             "is_family": False,
@@ -1952,6 +1952,23 @@ def test_create_stix_object(xsoar_indicator, xsoar_type, expected_stix_object, e
     assert stix_object == expected_stix_object
     assert extension_definition == {}
     assert extensions_dict == {}
+    
+    
+def test_get_parsed_date():
+    client = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'}, types_for_indicator_sdo=[],
+                          namespace_uuid=PAWN_UUID)
+    timestamp1 = '2023-04-20T17:20:10+03:00'
+    timestamp2 = '2025-01-27T12:43:16.686974282Z'
+    timestamp3 = '2023-04-20T17:20:10+00:00'
+    expected_timestamp1 = '2023-04-20T14:20:10.000000Z'
+    expected_timestamp2 = '2025-01-27T12:43:16.686974Z'
+    expected_timestamp3 = '2023-04-20T17:20:10.000000Z'
+    result1 = client.get_parsed_date(timestamp1)
+    result2 = client.get_parsed_date(timestamp2)
+    result3 = client.get_parsed_date(timestamp3)
+    assert result1 == expected_timestamp1
+    assert result2 == expected_timestamp2
+    assert result3 == expected_timestamp3
 
 
 def test_create_stix_object_unknown_file_hash():

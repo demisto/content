@@ -1,3 +1,5 @@
+import pytz
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
@@ -387,6 +389,19 @@ class XSOAR2STIXParser:
             entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
         return entry
 
+    def get_parsed_date(self, indicator_timestamp: str) -> str:
+        """
+        Args:
+            indicator_timestamp: an indicator timestamp. can be in the format of 2023-04-20T17:20:10+03:00 or
+                2025-01-27T12:43:16.686974282Z.
+        Returns:
+            The string representation of the UTC datetime object.
+        """
+        if '+' in indicator_timestamp:
+            return arg_to_datetime(indicator_timestamp, is_utc=False).strftime(STIX_DATE_FORMAT)
+        else:
+            return parse(indicator_timestamp).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+
     def create_stix_object(self, xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple[dict, dict, dict]:
         """
 
@@ -417,11 +432,11 @@ class XSOAR2STIXParser:
             return {}, {}, {}
 
         demisto.debug(f"T2API: {xsoar_indicator=}")
-        created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        created_parsed = self.get_parsed_date(xsoar_indicator.get('timestamp', ''))
         demisto.debug(f"T2API: {created_parsed=}")
 
         try:
-            modified_parsed = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+            modified_parsed = self.get_parsed_date(xsoar_indicator.get('modified', ''))
             demisto.debug(f"T2API: {modified_parsed=}")
         except Exception:
             modified_parsed = ''
@@ -730,8 +745,8 @@ class XSOAR2STIXParser:
                 continue
             try:
                 demisto.debug(f"T2API: in create_relationships_objects {relationship=}")
-                created_parsed = parse(relationship.get('createdInSystem')).strftime(STIX_DATE_FORMAT)
-                modified_parsed = parse(relationship.get('modified')).strftime(STIX_DATE_FORMAT)
+                created_parsed = self.get_parsed_date(relationship.get('createdInSystem'))
+                modified_parsed = self.get_parsed_date(relationship.get('modified'))
                 demisto.debug(f"T2API: {created_parsed=} {modified_parsed=}")
             except Exception as e:
                 created_parsed, modified_parsed = '', ''
