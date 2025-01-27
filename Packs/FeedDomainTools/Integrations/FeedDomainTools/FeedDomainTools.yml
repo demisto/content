@@ -34,6 +34,17 @@ configuration:
   hidden: false
   type: 0
   additionalinfo: Limits the number of results in the response payload.
+- display: Feed Type
+  name: feed_type
+  defaultvalue: ALL
+  required: false
+  hidden: false
+  type: 15
+  options:
+  - ALL
+  - NOD
+  - NAD
+  additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"
@@ -162,7 +173,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.1876031
+  dockerimage: demisto/vendors-sdk:1.0.0.2073752
   feed: true
   isfetch: false
   longRunning: false

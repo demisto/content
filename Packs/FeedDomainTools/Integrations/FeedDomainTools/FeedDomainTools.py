@@ -34,9 +34,13 @@ class DomainToolsClient(BaseClient):
         api_username: str,
         api_key: str,
         verify_ssl: bool = True,
-        proxy: bool = False
+        proxy: bool = False,
+        tags: str = "",
+        tlp_color: str | None = None
     ):
         self.feed_type = "nod"  # default to NOD feeds
+        self.tags = tags
+        self.tlp_color = tlp_color
 
         if not (api_username and api_key):
             raise DemistoException(
@@ -116,7 +120,7 @@ class DomainToolsClient(BaseClient):
         session_id = kwargs.get("session_id") or "dt-cortex-feeds"
         top = int(kwargs.get("top") or "5000")
         domain = kwargs.get("domain") or None
-        after = kwargs.get("after") or "-3600"
+        after = kwargs.get("after") or None
         before = kwargs.get("before") or None
 
         demisto.info(f"Start building list of indicators for {self.feed_type} feed.")
@@ -143,6 +147,8 @@ class DomainToolsClient(BaseClient):
             total_dt_feeds = len(dt_feeds)
             demisto.info(f"Fetched {total_dt_feeds} of {self.feed_type} feeds.")
 
+            ud_tags = [tag.strip() for tag in self.tags.split(",")]
+
             for feed in dt_feeds:
                 if top and limit_counter >= top:
                     break
@@ -158,7 +164,8 @@ class DomainToolsClient(BaseClient):
                         "value": indicator,
                         "type": indicator_type,
                         "timestamp": timestamp,
-                        "tags": ["DomainToolsFeeds", self.feed_type],
+                        "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
+                        "tlp_color": self.tlp_color,
                     }
 
                     limit_counter += 1
@@ -173,7 +180,7 @@ class DomainToolsClient(BaseClient):
 
 
 def fetch_indicators(
-    client: DomainToolsClient, feed_type: str = "nod", custom_tags: str = "", **kwargs
+    client: DomainToolsClient, feed_type: str = "nod", **kwargs
 ) -> list[dict]:
     """Retrieves indicators from the feed
 
@@ -192,9 +199,9 @@ def fetch_indicators(
             type_ = item.get("type")
             timestamp_ = item.get("timestamp")
             tags_ = item.get("tags") or []
+            tlp_color_ = item.get("tlp_color")
 
-            custom_tags_ = [tag.strip() for tag in custom_tags.split(",")]
-            indicator_tags = ",".join(tags_ + custom_tags_)
+            indicator_tags = ",".join(tags_)
 
             raw_data = {
                 "value": value_,
@@ -212,6 +219,10 @@ def fetch_indicators(
                 },
                 "rawJSON": raw_data,
             }
+
+            if tlp_color_:
+                indicator_obj["fields"]["trafficlightprotocol"] = tlp_color_
+
             indicators.append(indicator_obj)
 
             if idx % 1000 == 0 or (idx < 1000 and idx % 100 == 0):
@@ -245,11 +256,9 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
         "top": top,
     }
 
-    user_given_tags = params.get("feedTags") or ""
-
     demisto.debug(f"Fetching feed indicators by feed_type: {feed_type}")
     indicators = fetch_indicators(
-        client, feed_type=feed_type, custom_tags=user_given_tags, **dt_feeds_kwargs
+        client, feed_type=feed_type, **dt_feeds_kwargs
     )
 
     human_readable = tableToMarkdown(
@@ -281,7 +290,8 @@ def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
     session_id = params.get("session_id")
     after = params.get("after")
     top = params.get("top")
-    user_given_tags = params.get("feedTags") or ""
+
+    feed_type_ = params.get("feed_type") or "ALL"
 
     FEEDS_TO_PROCESS = {
         client.NOD_FEED: {"top": top, "after": after, "session_id": session_id},
@@ -291,7 +301,12 @@ def fetch_indicators_command(client: DomainToolsClient, **params) -> list[dict]:
     fetched_indicators = []
 
     for feed_type, dt_feed_kwargs in FEEDS_TO_PROCESS.items():
-        indicators = fetch_indicators(client, feed_type=feed_type, custom_tags=user_given_tags, **dt_feed_kwargs)
+        indicators = []
+        if feed_type_ == "ALL":
+            indicators = fetch_indicators(client, feed_type=feed_type, **dt_feed_kwargs)
+        if feed_type_ == feed_type.upper():
+            indicators = fetch_indicators(client, feed_type=feed_type, **dt_feed_kwargs)
+
         fetched_indicators.extend(indicators)
 
     return fetched_indicators
@@ -305,7 +320,7 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
         Outputs.
     """
     try:
-        next(client.build_iterator(top=1))
+        next(client.build_iterator(top=1, after=None))
     except Exception as e:
         raise Exception(
             "Could not fetch DomainTools Feed\n"
@@ -333,9 +348,12 @@ def main():
     api_key = params.get("api_key")
     insecure = not params.get("insecure", False)
     proxy = params.get('proxy', False)
+    user_defined_tags = params.get("feedTags") or ""
+    tlp_color = params.get("tlp_color")
 
     try:
-        client = DomainToolsClient(api_username=api_username, api_key=api_key, verify_ssl=insecure, proxy=proxy)
+        client = DomainToolsClient(api_username=api_username, api_key=api_key, verify_ssl=insecure,
+                                   proxy=proxy, tags=user_defined_tags, tlp_color=tlp_color)
 
         demisto.debug(f"Command being called is {command}")
         if command in commands:
