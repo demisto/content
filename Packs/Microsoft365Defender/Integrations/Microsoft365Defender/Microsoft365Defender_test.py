@@ -9,17 +9,17 @@ you are implementing with your integration
 """
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from unittest.mock import patch
 
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import EntryType, GetMappingFieldsResponse, SchemeTypeMapping, IncidentStatus
+from CommonServerPython import EntryType, IncidentStatus
 from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main, fetch_modified_incident_ids, \
     get_modified_remote_data_command, get_modified_incidents_close_or_repopen_entries, get_determination_value, \
     fetch_modified_incident, get_remote_data_command, \
-    get_mapping_fields_command, handle_incident_close_out_or_reactivation, mirror_out_entries, update_remote_system_command
+    handle_incident_close_out_or_reactivation, mirror_out_entries, update_remote_system_command
 
 MOCK_MAX_ENTRIES = 2
 COMMENT_TAG_FROM_MS = "CommentFromMicrosoft365Defender"
@@ -215,6 +215,9 @@ class MockMicrosoft365DefenderClient(Client):
         self.response_data = response_data
 
     def incidents_list(self, *args, **kwargs) -> dict:
+        """
+
+        """
         skip = kwargs.get("skip", 0)
         batch = self.response_data["value"][skip:skip + MOCK_MAX_ENTRIES]
         return {
