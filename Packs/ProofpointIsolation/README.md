@@ -15,7 +15,7 @@ Timestamp is extracted from the **date** field with the following format - yyyy-
 1. Navigate to **Product Settings** >  **Reporting API**.
 2. Copy the **Reporting API Key**.
 
-**On XSIAM side:**
+**On Cortex XSIAM side:**
 1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
 2. Type **Proofpoint Isolation** on the search bar.
 3. Select the **Proofpoint Isolation** integration.
