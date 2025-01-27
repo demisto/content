@@ -207,6 +207,11 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
 
 class MockMicrosoft365DefenderClient(Client):
+    """
+        A mock implementation of the Microsoft365DefenderClient for testing purposes.
+        This class simulates API responses from Microsoft 365 Defender without making actual API calls.
+        """
+
     def __init__(self, mocker, response_data: dict,
                  app_id='app_id',
                  verify=False,
@@ -216,7 +221,22 @@ class MockMicrosoft365DefenderClient(Client):
 
     def incidents_list(self, *args, **kwargs) -> dict:
         """
+        Simulates the `incidents_list` API call to retrieve a list of incidents.
 
+        Args:
+            *args: Positional arguments (not used in this mock implementation).
+            **kwargs: Keyword arguments that can include:
+                - "skip" (int): The number of entries to skip in the response data (used for pagination).
+
+        Returns:
+            dict: A simulated response containing a subset of incidents from the mock response data.
+                The returned response includes:
+                - "@odata.context": Context URL from the mock response data.
+                - "value": A list of incidents based on the "skip" and batch size (MOCK_MAX_ENTRIES).
+
+        Notes:
+            - The response is controlled by the `MOCK_MAX_ENTRIES` constant to simulate pagination.
+            - This method is useful for unit testing functions that rely on the `incidents_list` API call.
         """
         skip = kwargs.get("skip", 0)
         batch = self.response_data["value"][skip:skip + MOCK_MAX_ENTRIES]
@@ -226,9 +246,16 @@ class MockMicrosoft365DefenderClient(Client):
         }
 
 
-# Test case
 @patch("Microsoft365Defender.MAX_ENTRIES", MOCK_MAX_ENTRIES)
 def test_fetch_modified_incident_ids(mocker):
+    """
+        Given:
+          - A list of mock incident responses from the Microsoft 365 Defender API.
+        When:
+          - Fetching modified incident IDs using a mock client.
+        Then:
+          - Ensure the returned incident IDs match the expected list of IDs in the mock response.
+        """
     mock_responses = [util_load_json("./test_data/incidents_list_response.json"),
                       util_load_json("./test_data/incidents_empty_list_response.json")]
     for mock_response in mock_responses:
@@ -239,6 +266,14 @@ def test_fetch_modified_incident_ids(mocker):
 
 
 def test_get_modified_remote_data_command(mocker):
+    """
+        Given:
+          - Mocked arguments for fetching modified incident IDs.
+        When:
+          - Fetching modified remote data using a mock client.
+        Then:
+          - Ensure the returned modified incident IDs match the expected list.
+        """
     import Microsoft365Defender
     mock_args = {"lastUpdate": "2023-01-01T12:00:00Z"}
     mocker.patch.object(Microsoft365Defender, 'fetch_modified_incident_ids', return_value=["123", "456"])
@@ -246,30 +281,22 @@ def test_get_modified_remote_data_command(mocker):
     assert response.modified_incident_ids == ["123", "456"]
 
 
-@pytest.fixture
-def resolved_incidents():
-    """Fixture for resolved incidents."""
-    return [
+def test_get_modified_incidents_close_entries():
+    """
+    Given:
+      - A list of resolved incidents with different classifications.
+    When:
+      - Generating close entries for incidents with the `close_incident` flag set to True.
+    Then:
+      - Ensure the correct close entries are generated with the expected contents.
+    """
+
+    resolved_incidents = [
         {'incidentId': '1234', 'status': 'Resolved', 'classification': 'TruePositive'},
         {'incidentId': '5678', 'status': 'Resolved', 'classification': 'Unknown'},
         {'incidentId': '9012', 'status': 'Resolved', 'classification': 'FalsePositive'},
         {'incidentId': '3456', 'status': 'Resolved', 'classification': 'InformationalExpectedActivity'}
     ]
-
-
-@pytest.fixture
-def unresolved_incidents():
-    """Fixture for unresolved incidents."""
-    return [
-        {'incidentId': '1234', 'status': 'Active'},
-        {'incidentId': '5678', 'status': 'InProgress'}
-    ]
-
-
-def test_get_modified_incidents_close_entries(mocker, resolved_incidents):
-    """
-    Test when close_incident is True and incidents are Resolved.
-    """
     result = get_modified_incidents_close_or_repopen_entries(resolved_incidents, close_incident=True)
 
     assert len(result) == 4
@@ -292,33 +319,68 @@ def test_get_modified_incidents_close_entries(mocker, resolved_incidents):
     }
 
 
-def test_get_modified_incidents_reopen_entries(mocker, unresolved_incidents):
+def test_get_modified_incidents_reopen_entries():
     """
-    Test when close_incident is True and incidents are not Resolved.
-    """
+        Given:
+          - A list of unresolved incidents.
+        When:
+          - Generating reopen entries for incidents with the `close_incident` flag set to True.
+        Then:
+          - Ensure the correct reopen entries are generated with the expected contents.
+        """
+    unresolved_incidents = [
+        {'incidentId': '1234', 'status': 'Active'},
+        {'incidentId': '5678', 'status': 'InProgress'}
+    ]
     result = get_modified_incidents_close_or_repopen_entries(unresolved_incidents, close_incident=True)
     assert len(result) == 2
     assert result[0] == {'dbotIncidentReopen': True}
     assert result[1] == {'dbotIncidentReopen': True}
 
 
-def test_get_modified_incidents_close_incident_false(mocker, resolved_incidents):
+def test_get_modified_incidents_close_incident_false():
     """
-    Test when close_incident is False.
+    Given:
+      - A list of resolved incidents.
+    When:
+      - The `close_incident` flag is set to False.
+    Then:
+      - Ensure no close entries are generated.
     """
+
+    resolved_incidents = [
+        {'incidentId': '1234', 'status': 'Resolved', 'classification': 'TruePositive'},
+        {'incidentId': '5678', 'status': 'Resolved', 'classification': 'Unknown'},
+        {'incidentId': '9012', 'status': 'Resolved', 'classification': 'FalsePositive'},
+        {'incidentId': '3456', 'status': 'Resolved', 'classification': 'InformationalExpectedActivity'}
+    ]
     result = get_modified_incidents_close_or_repopen_entries(resolved_incidents, close_incident=False)
     assert result == []
 
 
 def test_get_modified_incidents_empty_list():
     """
-    Test when modified_incidents is an empty list.
-    """
+        Given:
+          - An empty list of modified incidents.
+        When:
+          - Attempting to generate close or reopen entries.
+        Then:
+          - Ensure no entries are generated.
+        """
     result = get_modified_incidents_close_or_repopen_entries([], close_incident=True)
     assert result == []
 
 
 def test_get_entries_for_comments():
+    """
+        Given:
+          - A list of comments with creation times and authors.
+          - A last update time for filtering comments.
+        When:
+          - Generating entries for comments added after the last update time.
+        Then:
+          - Ensure the correct entries are generated with the expected contents and tags.
+        """
     from Microsoft365Defender import get_entries_for_comments
 
     comments = [
@@ -334,6 +396,15 @@ def test_get_entries_for_comments():
 
 
 def test_get_entries_for_comments_ignores_mirrored_comments():
+    """
+        Given:
+          - A list of comments, some of which are mirrored from XSOAR to Microsoft.
+        When:
+          - Generating entries for comments.
+        Then:
+          - Ensure mirrored comments are ignored, and only relevant comments are included.
+        """
+
     from Microsoft365Defender import get_entries_for_comments, MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR
 
     comments = [
@@ -341,13 +412,21 @@ def test_get_entries_for_comments_ignores_mirrored_comments():
          "createdBy": "test1@gmail.com", "createdTime": "2024-01-03T12:00:00.8404534Z"}
     ]
 
-    last_update = last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
+    last_update = datetime(2024, 1, 2, 0, 0, 0, tzinfo=UTC)
     result = get_entries_for_comments(comments, last_update, COMMENT_TAG_FROM_MS)
 
     assert len(result) == 0
 
 
 def test_get_entries_for_comments_empty_comments():
+    """
+    Given:
+      - An empty list of comments.
+    When:
+      - Attempting to generate entries for comments.
+    Then:
+      - Ensure no entries are generated.
+    """
     from Microsoft365Defender import get_entries_for_comments
 
     comments = []
@@ -357,30 +436,25 @@ def test_get_entries_for_comments_empty_comments():
     assert len(result) == 0
 
 
-def mock_get_modified_incidents_close_or_reopen_entries(mirrored_objects, close_incident):
-    return [{"Type": 1, "Contents": "Mock close/reopen entry"}]
-
-
-def mock_get_entries_for_comments(comments, last_update, comment_tag):
-    return [{"Type": 1, "Contents": "Mock comment entry"}]
-
-
-@pytest.fixture
-def mock_dependencies(mocker):
+def test_get_incident_entries(mocker):
+    """
+    Given:
+      - A mirrored object with comments and a last update time.
+      - Mocked helper functions for generating close/reopen and comment entries.
+    When:
+      - Generating incident entries for mirroring.
+    Then:
+      - Ensure the function combines the outputs of the helper functions into a single list.
+    """
     mocker.patch(
         "Microsoft365Defender.get_modified_incidents_close_or_repopen_entries",
-        side_effect=mock_get_modified_incidents_close_or_reopen_entries,
+        return_value=[{"Type": 1, "Contents": "Mock close/reopen entry"}]
     )
     mocker.patch(
         "Microsoft365Defender.get_entries_for_comments",
-        side_effect=mock_get_entries_for_comments,
+        return_value=[{"Type": 1, "Contents": "Mock comment entry"}],
     )
 
-
-def test_get_incident_entries(mock_dependencies):
-    """
-    Test that the function calls both helper functions and combines their outputs into a single list.
-    """
     mirrored_object = {"id": "12345", "comments": [{"text": "Test comment", "timestamp": "2025-01-25T10:00:00Z"}]}
     last_update = datetime.strptime("2025-01-20T10:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
     close_incident = True
@@ -396,6 +470,14 @@ def test_get_incident_entries(mock_dependencies):
 
 
 def test_get_determination_value():
+    """
+        Given:
+          - Valid and invalid combinations of classification and determination values.
+        When:
+          - Determining the correct determination value based on the classification.
+        Then:
+          - Ensure the correct value is returned or an appropriate exception is raised for invalid inputs.
+        """
     # Test: Valid classification, no determination provided
     assert get_determination_value('TruePositive', None) == 'Other'
     assert get_determination_value('Unknown', None) == 'NotAvailable'
@@ -423,8 +505,13 @@ def test_get_determination_value():
 
 def test_get_meta_data_for_incident():
     """
-    Tests the `_get_meta_data_for_incident` function using the provided raw_incident.json data.
-    """
+       Given:
+         - A raw incident dictionary with various fields and alerts.
+       When:
+         - Extracting metadata from the incident.
+       Then:
+         - Ensure the metadata is correctly calculated and matches the expected values.
+       """
     from Microsoft365Defender import _get_meta_data_for_incident
 
     raw_incident = util_load_json("./test_data/raw_incident.json")
@@ -452,8 +539,14 @@ def test_get_meta_data_for_incident():
 
 def test_get_meta_data_empty_incident():
     """
-    Tests the function with an empty incident.
-    """
+       Given:
+         - An empty raw incident dictionary.
+       When:
+         - Extracting metadata from the incident.
+       Then:
+         - Ensure the metadata contains empty or default values.
+       """
+
     from Microsoft365Defender import _get_meta_data_for_incident
 
     raw_incident = {}
@@ -472,6 +565,14 @@ def test_get_meta_data_empty_incident():
 
 
 def test_fetch_modified_incident(mocker):
+    """
+        Given:
+          - A valid incident ID and mock metadata for the incident.
+        When:
+          - Fetching a modified incident.
+        Then:
+          - Ensure the fetched incident includes the metadata and the expected fields.
+        """
     client = mock_client(mocker, 'get_incident', util_load_json('./test_data/incident_get_response.json'))
     mock_meta_data = mocker.patch('Microsoft365Defender._get_meta_data_for_incident', return_value={
         'Categories': ['SuspiciousActivity'],
@@ -485,25 +586,28 @@ def test_fetch_modified_incident(mocker):
         'Mailboxes': [],
         'comments': [],
     })
-    # Valid incident ID
     incident_id = 263
     incident = fetch_modified_incident(client, incident_id)
 
     assert "incidentId" in incident
     assert incident["incidentId"] == 263
-    assert "@odata.context" not in incident  # Should be removed
-    # Assert metadata was added
+    assert "@odata.context" not in incident
     assert "Categories" in incident
     assert incident["Categories"] == ['SuspiciousActivity']
     assert "Devices" in incident
     assert incident["Devices"][0] == {'device name': 'deviceDnsName', 'risk level': 'Informational',
                                       'tags': 'new test,test add tag,testing123'}
-    assert mock_meta_data.called  # Ensure _get_meta_data_for_incident was called
+    assert mock_meta_data.called
 
 
 def test_get_remote_data_command_success(mocker):
     """
-    Test a successful run of the get_remote_data_command function.
+    Given:
+      - Valid arguments for fetching remote data and mock metadata for the incident.
+    When:
+      - Fetching remote data successfully.
+    Then:
+      - Ensure the correct incident and entries are returned.
     """
 
     params = {
@@ -543,8 +647,14 @@ def test_get_remote_data_command_success(mocker):
 
 def test_handle_incident_close_out_or_reactivation_close(mocker):
     """
-    Test that the incident is properly closed when 'close_out' is enabled and the status is DONE.
-    """
+       Given:
+         - An incident with a close reason and the status set to DONE.
+       When:
+         - Handling the incident close-out with the `close_out` flag enabled.
+       Then:
+         - Ensure the incident status, classification, and determination are updated correctly.
+       """
+
     params = {"close_out": True}
     mocker.patch.object(demisto, 'params', return_value=params)
 
@@ -564,8 +674,15 @@ def test_handle_incident_close_out_or_reactivation_close(mocker):
 
 def test_handle_incident_close_out_or_reactivation_close_other(mocker):
     """
-    Test that the incident is properly closed with 'Other' or 'Duplicate' reasons.
-    """
+       Given:
+         - An incident with a close reason and the status set to DONE.
+       When:
+         - Handling the incident close-out with the `close_out` flag enabled.
+       Then:
+         - Ensure the incident status, classification, and determination are updated correctly.
+       """
+
+
     params = {"close_out": True}
     mocker.patch.object(demisto, 'params', return_value=params)
     delta = {
@@ -584,8 +701,13 @@ def test_handle_incident_close_out_or_reactivation_close_other(mocker):
 
 def test_handle_incident_close_out_or_reactivation_reopen(mocker):
     """
-    Test that the incident is reopened when 'closeReason', 'closeNotes', or 'closingUserId' are empty.
-    """
+           Given:
+             - An incident with missing close-out information.
+           When:
+             - Handling the incident reopen process with the `close_out` flag enabled.
+           Then:
+             - Ensure the incident status is set to Active.
+           """
     params = {"close_out": True}
     mocker.patch.object(demisto, 'params', return_value=params)
     delta = {
@@ -639,7 +761,12 @@ def test_handle_incident_close_out_or_reactivation_no_delta_changes(mocker):
 
 def test_mirror_out_entries_with_comment_tag(mocker):
     """
-    Test `mirror_out_entries` where entries contain the comment tag and are mirrored out.
+    Given:
+      - A list of entries containing the comment tag for mirroring.
+    When:
+      - Mirroring out entries to Microsoft 365 Defender.
+    Then:
+      - Ensure the correct entries are mirrored, and the update_incident method is called.
     """
     client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
 
