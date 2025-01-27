@@ -2616,133 +2616,133 @@ script:
     name: prisma-cloud-asset-get
     outputs:
     - contextPath: PrismaCloud.Asset.problem.title
-      description: ''
+      description: 'The title of the problem.'
       type: String
     - contextPath: PrismaCloud.Asset.problem.status.statusCode
-      description: ''
+      description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.Asset.problem.status.reasonPhrase
-      description: ''
+      description: 'The reason of the problem.'
       type: String
     - contextPath: PrismaCloud.Asset.problem.detail
-      description: ''
+      description: 'The details of the problem.'
       type: String
     - contextPath: PrismaCloud.Asset.problem.instance
-      description: ''
+      description: 'The instance of the problem.'
       type: String
     - contextPath: PrismaCloud.Asset.problem.type
-      description: ''
+      description: 'The type of the problem.'
       type: String
     - contextPath: PrismaCloud.Asset.problem.parameters
-      description: ''
+      description: 'The parameters of the problem.'
       type: Unknown
     - contextPath: PrismaCloud.Asset.id
-      description: ''
+      description: 'The ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.prismaId
-      description: ''
+      description: 'The Prisma ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.appName
-      description: ''
+      description: 'The app name of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.externalAssetId
-      description: ''
+      description: 'The external asset ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.assetTypeId
-      description: ''
+      description: 'The asset type ID of the asset.'
       type: Number
     - contextPath: PrismaCloud.Asset.cloudType
-      description: ''
+      description: 'The cloud type of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.createdTs
-      description: ''
+      description: 'The creation timestamp of the asset.'
       type: Number
     - contextPath: PrismaCloud.Asset.insertTs
-      description: ''
+      description: 'The insertion timestamp of the asset.'
       type: Number
     - contextPath: PrismaCloud.Asset.data
-      description: ''
+      description: 'The data of the asset.'
       type: Unknown
     - contextPath: PrismaCloud.Asset.dynamicData
-      description: ''
+      description: 'The dynamic data of the asset.'
       type: Unknown
     - contextPath: PrismaCloud.Asset.riskGrade
-      description: ''
+      description: 'The risk grade of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.stateId
-      description: ''
+      description: 'The state ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.name
-      description: ''
+      description: 'The name of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.regionId
-      description: ''
+      description: 'The region ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.regionName
-      description: ''
+      description: 'The region name of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.altAssetId
-      description: ''
+      description: 'The alt asset ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.url
-      description: ''
+      description: 'The URL of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.vpcId
-      description: ''
+      description: 'The VPC ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.vpcExternalAssetId
-      description: ''
+      description: 'The VPC external asset ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.vpcName
-      description: ''
+      description: 'The VPC name of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.tags
-      description: ''
+      description: 'The tags of the asset.'
       type: Unknown
     - contextPath: PrismaCloud.Asset.relationshipCounts
-      description: ''
+      description: 'The relationship counts of the asset.'
       type: Number
     - contextPath: PrismaCloud.Asset.vulnerabilityCounts
-      description: ''
+      description: 'The vulnerability counts of the asset.'
       type: Unknown
     - contextPath: PrismaCloud.Asset.accountName
-      description: ''
+      description: 'The account name of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.assetType
-      description: ''
+      description: 'The account type of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.serviceName
-      description: ''
+      description: 'The service name of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.resourceType
-      description: ''
+      description: 'The resource type of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.deleted
-      description: ''
+      description: 'The deletion state of the asset.'
       type: Boolean
     - contextPath: PrismaCloud.Asset.assetClassId
-      description: ''
+      description: 'The asset class ID of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.assetClass
-      description: ''
+      description: 'The asset class of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.attributes
-      description: ''
+      description: 'The attributes of the asset.'
       type: Unknown
     - contextPath: PrismaCloud.Asset.alertsCount.severity
-      description: ''
+      description: 'The severity of the alerts of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.alertsCount.count
-      description: ''
+      description: 'The alert count of the asset.'
       type: Number
     - contextPath: PrismaCloud.Asset.ipAddresses
-      description: ''
+      description: 'The IP addresses of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.trueInternetExposure
-      description: ''
+      description: 'The internet exposure state of the asset.'
       type: String
     - contextPath: PrismaCloud.Asset.dataSecurity
-      description: ''
+      description: 'The data security of the asset.'
       type: Unknown
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
@@ -3008,112 +3008,112 @@ script:
     name: prisma-cloud-asset-findings-get
     outputs:
     - contextPath: PrismaCloud.AssetFindings.problem.title
-      description: ''
+      description: 'The title of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.problem.status.statusCode
-      description: ''
+      description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetFindings.problem.status.reasonPhrase
-      description: ''
+      description: 'The reason of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.problem.detail
-      description: ''
+      description: 'The details of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.problem.instance
-      description: ''
+      description: 'The instance of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.problem.type
-      description: ''
+      description: 'The type of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.problem.parameters
-      description: ''
+      description: 'The parameters of the problem.'
       type: Unknown
     - contextPath: PrismaCloud.AssetFindings.accountId
-      description: ''
+      description: 'The account ID of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.count
-      description: ''
+      description: 'The count of asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.createdOn
-      description: ''
+      description: 'The created on of the asset findings.'
       type: Number
     - contextPath: PrismaCloud.AssetFindings.customerId
-      description: ''
+      description: 'The customer ID of the asset findings.'
       type: Number
     - contextPath: PrismaCloud.AssetFindings.cveId
-      description: ''
+      description: 'The CVE ID of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.description
-      description: ''
+      description: 'The description of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.externalId
-      description: ''
+      description: 'The external ID of the asset findings.'
       type: Number
     - contextPath: PrismaCloud.AssetFindings.id
-      description: ''
+      description: 'The ID of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.normalizedName
-      description: ''
+      description: 'The normalized name of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.normalizedNames
-      description: ''
+      description: 'The normalized names of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.nvdUrl
-      description: ''
+      description: 'The nvd URL of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.link
-      description: ''
+      description: 'The link of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.rawData
-      description: ''
+      description: 'The raw data of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.regionId
-      description: ''
+      description: 'The region ID of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.resourceCloudId
-      description: ''
+      description: 'The resource cloud ID of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.resourceId
-      description: ''
+      description: 'The resource ID of the asset findings.'
       type: Number
     - contextPath: PrismaCloud.AssetFindings.resourceUrl
-      description: ''
+      description: 'The resource URL of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.riskFactors
-      description: ''
+      description: 'The risk factors of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.rlUpdatedOn
-      description: ''
+      description: 'The rl updated on of the asset findings.'
       type: Number
     - contextPath: PrismaCloud.AssetFindings.scanId
-      description: ''
+      description: 'The scan ID of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.score
-      description: ''
+      description: 'The score of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.severity
-      description: ''
+      description: 'The severity of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.source
-      description: ''
+      description: 'The source of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.sourceData
-      description: ''
+      description: 'The source data of the asset findings.'
       type: Unknown
     - contextPath: PrismaCloud.AssetFindings.status
-      description: ''
+      description: 'The status of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.title
-      description: ''
+      description: 'The title of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.type
-      description: ''
+      description: 'The type of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.packageName
-      description: ''
+      description: 'The package name of the asset findings.'
       type: String
     - contextPath: PrismaCloud.AssetFindings.updatedOn
-      description: ''
+      description: 'The updated on of the asset findings.'
       type: Number
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
@@ -3231,112 +3231,112 @@ script:
     name: prisma-cloud-asset-vulnerabilities-get
     outputs:
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.title
-      description: ''
+      description: 'The title of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.status.statusCode
-      description: ''
+      description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.status.reasonPhrase
-      description: ''
+      description: 'The reason of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.detail
-      description: ''
+      description: 'The details of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.instance
-      description: ''
+      description: 'The instance of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.type
-      description: ''
+      description: 'The type of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.problem.parameters
-      description: ''
+      description: 'The parameters of the problem.'
       type: Unknown
     - contextPath: PrismaCloud.AssetVulnerabilities.accountId
-      description: ''
+      description: 'The account ID of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.count
-      description: ''
+      description: 'The count of asset vulnerabilities.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.createdOn
-      description: ''
+      description: 'The created on of the asset vulnerability.'
       type: Number
     - contextPath: PrismaCloud.AssetVulnerabilities.customerId
-      description: ''
+      description: 'The customer ID of the asset vulnerability.'
       type: Number
     - contextPath: PrismaCloud.AssetVulnerabilities.cveId
-      description: ''
+      description: 'The CVE ID of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.description
-      description: ''
+      description: 'The description of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.externalId
-      description: ''
+      description: 'The external ID of the asset vulnerability.'
       type: Number
     - contextPath: PrismaCloud.AssetVulnerabilities.id
-      description: ''
+      description: 'The ID of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.normalizedName
-      description: ''
+      description: 'The normalized name of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.normalizedNames
-      description: ''
+      description: 'The normalized names of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.nvdUrl
-      description: ''
+      description: 'The nvd URL of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.link
-      description: ''
+      description: 'The link of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.rawData
-      description: ''
+      description: 'The raw data of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.regionId
-      description: ''
+      description: 'The region ID of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.resourceCloudId
-      description: ''
+      description: 'The resource cloud ID of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.resourceId
-      description: ''
+      description: 'The resource ID of the asset vulnerability.'
       type: Number
     - contextPath: PrismaCloud.AssetVulnerabilities.resourceUrl
-      description: ''
+      description: 'The resource URL of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.riskFactors
-      description: ''
+      description: 'The risk factors of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.rlUpdatedOn
-      description: ''
+      description: 'The rl updated on of the asset vulnerability.'
       type: Number
     - contextPath: PrismaCloud.AssetVulnerabilities.scanId
-      description: ''
+      description: 'The scan ID of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.score
-      description: ''
+      description: 'The score of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.severity
-      description: ''
+      description: 'The severity of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.source
-      description: ''
+      description: 'The source of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.sourceData
-      description: ''
+      description: 'The source data of the asset vulnerability.'
       type: Unknown
     - contextPath: PrismaCloud.AssetVulnerabilities.status
-      description: ''
+      description: 'The status of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.title
-      description: ''
+      description: 'The title of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.type
-      description: ''
+      description: 'The type of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.packageName
-      description: ''
+      description: 'The package name of the asset vulnerability.'
       type: String
     - contextPath: PrismaCloud.AssetVulnerabilities.updatedOn
-      description: ''
+      description: 'The updated on of the asset vulnerability.'
       type: Number
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
@@ -3454,49 +3454,49 @@ script:
     name: prisma-cloud-asset-alerts-get
     outputs:
     - contextPath: PrismaCloud.AssetAlerts.problem.title
-      description: ''
+      description: 'The title of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.problem.status.statusCode
-      description: ''
+      description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetAlerts.problem.status.reasonPhrase
-      description: ''
+      description: 'The reason of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.problem.detail
-      description: ''
+      description: 'The details of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.problem.instance
-      description: ''
+      description: 'The instance of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.problem.type
-      description: ''
+      description: 'The type of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.problem.parameters
-      description: ''
+      description: 'The parameters of the problem.'
       type: Unknown
     - contextPath: PrismaCloud.AssetAlerts.id
-      description: ''
+      description: 'The ID of the asset alert.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.severity
-      description: ''
+      description: 'The severity of the asset alert.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.policyId
-      description: ''
+      description: 'The policy ID of the asset alert.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.isHyperionPolicy
-      description: ''
+      description: 'The hyperion policy of the asset alert.'
       type: Boolean
     - contextPath: PrismaCloud.AssetAlerts.policyType
-      description: ''
+      description: 'The policy type of the asset alert.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.policyName
-      description: ''
+      description: 'The policy name of the asset alert.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.policyDescription
-      description: ''
+      description: 'The policy description of the asset alert.'
       type: String
     - contextPath: PrismaCloud.AssetAlerts.alertTime
-      description: ''
+      description: 'The alert time of the asset alert.'
       type: Number
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
@@ -3614,79 +3614,79 @@ script:
     name: prisma-cloud-asset-relationships-get
     outputs:
     - contextPath: PrismaCloud.AssetRelationships.assetId
-      description: ''
+      description: 'The asset ID of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.relationshipType
-      description: ''
+      description: 'The relationship type of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.assetTypeId
-      description: ''
+      description: 'The asset type ID of the asset relationship.'
       type: Number
     - contextPath: PrismaCloud.AssetRelationships.assetType
-      description: ''
+      description: 'The asset type of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.assetName
-      description: ''
+      description: 'The asset name of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.externalAssetId
-      description: ''
+      description: 'The external asset ID of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.cloudId
-      description: ''
+      description: 'The cloud ID of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.cloudName
-      description: ''
+      description: 'The cloud name of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.pseudoAsset
-      description: ''
+      description: 'The pseudoasset of the asset relationship.'
       type: Boolean
     - contextPath: PrismaCloud.AssetRelationships.region
-      description: ''
+      description: 'The region of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.cloudAccountId
-      description: ''
+      description: 'The cloud account ID of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.assetClassId
-      description: ''
+      description: 'The asset class ID of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.assetClass
-      description: ''
+      description: 'The asset class of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.alertsCount.severity
-      description: ''
+      description: 'The severity of the alerts of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.alertsCount.count
-      description: ''
+      description: 'The count fo alerts of the asset relationships.'
       type: Number
     - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.severity
-      description: ''
+      description: 'The severity of the alerts of the asset relationship.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.count
-      description: ''
+      description: 'The count of alerts by severity of the asset relationship.'
       type: Number
     - contextPath: PrismaCloud.AssetRelationships.vulnerabilityCounts
-      description: ''
+      description: 'The count of vulnerabilites of the asset relationship.'
       type: Unknown
     - contextPath: PrismaCloud.AssetRelationships.problem.title
-      description: ''
+      description: 'The title of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.problem.status.statusCode
-      description: ''
+      description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetRelationships.problem.status.reasonPhrase
-      description: ''
+      description: 'The reason of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.problem.detail
-      description: ''
+      description: 'The details of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.problem.instance
-      description: ''
+      description: 'The instance of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.problem.type
-      description: ''
+      description: 'The type of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetRelationships.problem.parameters
-      description: ''
+      description: 'The parameters of the problem.'
       type: Unknown
   - arguments:
     - description: Unified Asset Id or RRN (Restricted Resource Name).
@@ -3804,46 +3804,46 @@ script:
     name: prisma-cloud-asset-network-get
     outputs:
     - contextPath: PrismaCloud.AssetNetwork.problem.title
-      description: ''
+      description: 'The title of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.problem.status.statusCode
-      description: ''
+      description: 'The status code of the problem.'
       type: Number
     - contextPath: PrismaCloud.AssetNetwork.problem.status.reasonPhrase
-      description: ''
+      description: 'The reason of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.problem.detail
-      description: ''
+      description: 'The details of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.problem.instance
-      description: ''
+      description: 'The instance of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.problem.type
-      description: ''
+      description: 'The type of the problem.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.problem.parameters
-      description: ''
+      description: 'The parameters of the problem.'
       type: Unknown
     - contextPath: PrismaCloud.AssetNetwork.id
-      description: ''
+      description: 'The ID of the asset network.'
       type: Number
     - contextPath: PrismaCloud.AssetNetwork.access
-      description: ''
+      description: 'The access of the asset network.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.direction
-      description: ''
+      description: 'The direction of the asset network.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.ips
-      description: ''
+      description: 'The IPS of the asset network.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.ports
-      description: ''
+      description: 'The ports of the asset network.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.protocol
-      description: ''
+      description: 'The protocol of the asset network.'
       type: String
     - contextPath: PrismaCloud.AssetNetwork.priority
-      description: ''
+      description: 'The priority of the asset network.'
       type: Number
   runonce: false
 tests:
