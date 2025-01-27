@@ -3886,7 +3886,7 @@ class FullRepository(AttrsRepository):
 
             # Save the file
             attr = {
-                'last-modified': int(datetime.now(timezone.utc).timestamp()),
+                'last-modified': int(datetime.now(timezone.utc).timestamp()),  # noqa: UP017
                 'data-id': data_id,
                 'data-type': data_type,
                 'size': data_size,
@@ -4261,7 +4261,7 @@ class ServiceHandler:
     def __handle_get_archive_all(
         self
     ) -> HTTPResponse:
-        filename = datetime.now(timezone.utc).strftime('archive-%Y%m%d%H%M%S.zip')
+        filename = datetime.now(timezone.utc).strftime('archive-%Y%m%d%H%M%S.zip')  # noqa: UP017
 
         response = HTTPResponse()
         response.content_type = 'application/zip'
@@ -4717,8 +4717,8 @@ def command_list_files(
         'path': __MappingValue(lambda x: x or '', lambda x: x or ''),
         'size': __MappingValue(lambda x: pretty_size(x or 0), lambda x: x or 0),
         'last-modified': __MappingValue(
-            lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC'),
-            lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).isoformat()),
+            lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC'),  # noqa: UP017
+            lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).isoformat()),  # noqa: UP017
     }
     outputs = [
         {
