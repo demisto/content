@@ -4,7 +4,7 @@ import ast
 import hashlib
 import json
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 
 from laceworksdk import LaceworkClient
@@ -86,7 +86,7 @@ def create_search_json(start_time, end_time, filters, returns, time_delta=None):
 
     json_request = {}
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(tz=UTC)
 
     if time_delta is None:
         time_delta = timedelta(days=1)
@@ -406,7 +406,7 @@ def fetch_incidents():
     # Get data from the last run
     max_alert_id = demisto.getLastRun().get('max_alert_id', 0)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(tz=UTC)
 
     # Generate ISO8601 Timestamps
     end_time = now.strftime(LACEWORK_DATE_FORMAT)
