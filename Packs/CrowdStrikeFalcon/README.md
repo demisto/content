@@ -9,10 +9,6 @@ This pack is designed to quickly detect, analyze, block, and contain malicious a
 - Mirrors incidents between Cortex XSOAR and CrowdStrike Falcon incidents or detections.
 </~XSOAR>
 
-<~XSIAM>
-- Creates events in Cortex XSIAM from CrowdStrike Falcon incidents or detections.
-</~XSIAM>
-
 - Provides real-time response features
 - Assesses vulnerability
 - Contains endpoints (isolation/unisolation)
