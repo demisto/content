@@ -105,7 +105,7 @@
                 "Usta Stolen Credit Cards Id": {
                     "simple": "id"
                 },
-                "USTA Alert URL": {
+                "Usta Alert URL": {
 					"complex": {
 						"filters": [],
 						"root": "id",
