@@ -56,14 +56,13 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 from FeedHelloWorld import Client, get_indicators_command, fetch_indicators_command
 from CommonServerPython import tableToMarkdown, string_to_table_header
 import json
-import io
 
 
 URL = "https://openphish.com/feed.txt"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -78,7 +77,7 @@ def test_build_iterator(requests_mock):
         - Returns a list of the indicators parsed from the API's response
 
     """
-    with open('test_data/FeedHelloWorld_mock.txt', 'r') as file:
+    with open('test_data/FeedHelloWorld_mock.txt') as file:
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_url = 'https://url1.com/path'
@@ -91,7 +90,7 @@ def test_build_iterator(requests_mock):
     url_indicators = {indicator['value'] for indicator in indicators if indicator['type'] == 'URL'}
     url_relation_domains = [indicator['relations'] for indicator in indicators if indicator['type'] == 'URL']
     assert expected_url in url_indicators
-    assert 'url1.com' == url_relation_domains[0][0].get('value')
+    assert url_relation_domains[0][0].get('value') == 'url1.com'
 
 
 def test_fetch_indicators(mocker):
