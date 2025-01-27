@@ -316,15 +316,6 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "gibnationstatecybercriminalsthreatactoraliases",
-                                "height": 22,
-                                "id": "200b2690-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
                                 "fieldId": "gibnationstatecybercriminalsthreatactorcountry",
                                 "height": 22,
                                 "id": "25bad6d0-71ac-11ef-8c49-f9d8b5e80cf6",

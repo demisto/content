@@ -444,15 +444,6 @@
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibphishingdateupdated",
-                                "height": 22,
-                                "id": "26aee620-8247-11ef-a19b-c92b354e1f7d",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,

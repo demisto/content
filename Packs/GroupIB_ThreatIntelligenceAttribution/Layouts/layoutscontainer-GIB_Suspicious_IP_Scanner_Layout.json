@@ -401,15 +401,6 @@
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibscannersources",
-                                "height": 22,
-                                "id": "3e1901e0-71aa-11ef-8c49-f9d8b5e80cf6",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
