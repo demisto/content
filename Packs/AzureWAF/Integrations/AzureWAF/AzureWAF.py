@@ -17,7 +17,7 @@ UPSERT_PARAMS = {'resource_id': 'id', 'policy_settings': 'properties.policySetti
                  'tags': 'tags', 'managed_rules': 'properties.managedRules'}
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-API_VERSION = '2020-05-01'
+API_VERSION = '2024-05-01'
 BASE_URL = 'https://management.azure.com'
 POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
 
