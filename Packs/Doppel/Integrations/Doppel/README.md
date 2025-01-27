@@ -1,5 +1,3 @@
-### Get Started
-
 # Overview
 Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The XSOAR pack for Doppel provides mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
