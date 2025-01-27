@@ -2244,6 +2244,7 @@ def test_fetch_incidents_incidents_extra_datat_with_excluded_fields(mocker):
     # Assume the alert count is above ALERTS_LIMIT_PER_INCIDENTS
     mock_get_incident_extra_data.assert_called_with(
         incident_id=11,
+        exclude_artifacts=False,
         excluded_alert_fields=excluded_alert_fields,
         remove_nulls_from_alerts=remove_nulls_from_alerts
     )
