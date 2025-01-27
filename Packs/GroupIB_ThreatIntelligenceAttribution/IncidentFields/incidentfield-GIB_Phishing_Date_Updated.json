@@ -10,7 +10,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_gibphishingdateupdated",
+    "id": "gibphishingdateupdated",
     "isReadOnly": false,
     "itemVersion": "1.4.2",
     "locked": false,
@@ -29,5 +29,7 @@
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
-    "version": -1
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "99.99.99"
 }
