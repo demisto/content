@@ -3170,61 +3170,66 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             raise ValueError(f'Cisco AMP: Hash "{file_hash}" is not of type SHA-256')
 
         raw_response = client.event_list_request(detection_sha256=file_hash)
-        demisto.debug(f"########### {raw_response=} ######################")
 
         data_list = raw_response["data"]
 
-        disposition = dict_safe_get(data_list[0], ["file", "disposition"])
-        dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
-
-        file_indicator = Common.File(
-            md5=dict_safe_get(data_list[0], ["file", "identity", "md5"]),
-            sha1=dict_safe_get(data_list[0], ["file", "identity", "sha1"]),
-            sha256=file_hash,
-            path=dict_safe_get(data_list[0], ["file", "file_path"]),
-            name=dict_safe_get(data_list[0], ["file", "file_name"]),
-            hostname=dict_safe_get(data_list[0], ["computer", "hostname"]),
-            dbot_score=dbot_score,
-        )
-
-        for data in data_list[1:]:
-            disposition = dict_safe_get(data, ["file", "disposition"])
+        if data_list:
+            disposition = dict_safe_get(data_list[0], ["file", "disposition"])
             dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
 
-            file_indicator.md5 = file_indicator.md5 or dict_safe_get(
-                data, ["file", "identity", "md5"]
-            )
-            file_indicator.sha1 = file_indicator.sha1 or dict_safe_get(
-                data, ["file", "identity", "sha1"]
-            )
-            file_indicator.path = file_indicator.path or dict_safe_get(
-                data, ["file", "file_path"]
-            )
-            file_indicator.name = file_indicator.name or dict_safe_get(
-                data, ["file", "file_name"]
-            )
-            file_indicator.hostname = file_indicator.hostname or dict_safe_get(
-                data, ["computer", "hostname"]
-            )
-            file_indicator.dbot_score = file_indicator.dbot_score or dbot_score
-
-            is_all_filled = (
-                file_indicator.md5
-                and file_indicator.sha1
-                and file_indicator.sha256
-                and file_indicator.path
-                and file_indicator.name
-                and file_indicator.hostname
-                and file_indicator.dbot_score
+            file_indicator = Common.File(
+                md5=dict_safe_get(data_list[0], ["file", "identity", "md5"]),
+                sha1=dict_safe_get(data_list[0], ["file", "identity", "sha1"]),
+                sha256=file_hash,
+                path=dict_safe_get(data_list[0], ["file", "file_path"]),
+                name=dict_safe_get(data_list[0], ["file", "file_name"]),
+                hostname=dict_safe_get(data_list[0], ["computer", "hostname"]),
+                dbot_score=dbot_score,
             )
 
-            if is_all_filled:
-                break
+            for data in data_list[1:]:
+                disposition = dict_safe_get(data, ["file", "disposition"])
+                dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
 
-        file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
-        readable_output = tableToMarkdown(
-            f"Cisco AMP - Hash Reputation for: {file_hash}", file_context
-        )
+                file_indicator.md5 = file_indicator.md5 or dict_safe_get(
+                    data, ["file", "identity", "md5"]
+                )
+                file_indicator.sha1 = file_indicator.sha1 or dict_safe_get(
+                    data, ["file", "identity", "sha1"]
+                )
+                file_indicator.path = file_indicator.path or dict_safe_get(
+                    data, ["file", "file_path"]
+                )
+                file_indicator.name = file_indicator.name or dict_safe_get(
+                    data, ["file", "file_name"]
+                )
+                file_indicator.hostname = file_indicator.hostname or dict_safe_get(
+                    data, ["computer", "hostname"]
+                )
+                file_indicator.dbot_score = file_indicator.dbot_score or dbot_score
+
+                is_all_filled = (
+                    file_indicator.md5
+                    and file_indicator.sha1
+                    and file_indicator.sha256
+                    and file_indicator.path
+                    and file_indicator.name
+                    and file_indicator.hostname
+                    and file_indicator.dbot_score
+                )
+
+                if is_all_filled:
+                    break
+
+            file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
+            readable_output = tableToMarkdown(
+                f"Cisco AMP - Hash Reputation for: {file_hash}", file_context
+            )
+
+        else:  # an empty list
+            readable_output = f"Cisco AMP: {file_hash} not found in Cisco AMP v2."
+            raw_response = {"result": f"{file_hash} not found in Cisco AMP v2."}
+            file_indicator = None
 
         command_results.append(
             CommandResults(
